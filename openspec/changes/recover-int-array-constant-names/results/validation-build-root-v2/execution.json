@@ -1,0 +1,769 @@
+{
+  "schema": "int-array-constant-names-validation-build-root-v2",
+  "status": "validation-passed-cli-frozen",
+  "source_commit_base_expected": "192b0bc13eca631f44ebaf28a998db52d4f14040",
+  "environment_overrides": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "guards": {
+    "minimum_free_bytes": 21474836480,
+    "maximum_target_bytes": 1073741824
+  },
+  "preflight": {
+    "git_head": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "value": "192b0bc13eca631f44ebaf28a998db52d4f14040",
+      "stdout": {
+        "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/git-head.stdout.raw",
+        "bytes": 41,
+        "sha256": "a70f20b8ef94b0ff6b32e0bcdeed46b5e6696855da7a5ec3c9a18cbb5e835740"
+      },
+      "stderr": {
+        "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/git-head.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_expected": true
+    },
+    "source_pins_before": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+        "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+        "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+        "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "crates/jarde-java/tests/p3_patterns.rs": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+        "tests/class_static_initializer_projection.rs": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+        "tests/interface_initializer_proof.rs": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4"
+      },
+      "canonical_files": {
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd"
+      }
+    },
+    "source_pins_after": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+        "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+        "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+        "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "crates/jarde-java/tests/p3_patterns.rs": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+        "tests/class_static_initializer_projection.rs": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+        "tests/interface_initializer_proof.rs": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4"
+      },
+      "canonical_files": {
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd"
+      }
+    }
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "jarde",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--tests",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:57:20.024313+00:00",
+      "duration_seconds": 30.755525791988475,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 100276506,
+      "free_bytes_after": 27767230464,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/0.stderr.raw",
+          "bytes": 2301,
+          "sha256": "e01e75179298aefba7d1b236406b8d43173a09cded118951d06f490d2956bc04"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "integer_array_name_projection_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:57:50.807337+00:00",
+      "duration_seconds": 16.59904879098758,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 221942877,
+      "free_bytes_after": 27645915136,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/1.stdout.raw",
+          "bytes": 357,
+          "sha256": "7efe4dbed3bc6f6110b21df8054515184a7d01efb655440b777fa5cc4fe0c4d2"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/1.stderr.raw",
+          "bytes": 1182,
+          "sha256": "2e393543ba3b355c5418c39f8fca7b81712c6d8d87f32758ccf7db6743aaad19"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "class_source_body_replay",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:07.434669+00:00",
+      "duration_seconds": 1.0704494169913232,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 221942877,
+      "free_bytes_after": 27645825024,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/2.stdout.raw",
+          "bytes": 199,
+          "sha256": "3f636e006b5cd61d361f3967f18f84223d4de8e6f35c13ffd3ed28223011350f"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/2.stderr.raw",
+          "bytes": 143,
+          "sha256": "41765f5e16bb684c757c215046f01202b6b1464fbd216d4f1efe3d3d65ac6acc"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "integer_constant_name_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:08.531214+00:00",
+      "duration_seconds": 23.880588500003796,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 463111120,
+      "free_bytes_after": 27403468800,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            8,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            8,
+            0,
+            0
+          ]
+        ],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/3.stdout.raw",
+          "bytes": 1039,
+          "sha256": "de47f58e18e78e52d159a0532166342bd56d847fb04488a0490413dc4f98ff24"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/3.stderr.raw",
+          "bytes": 1471,
+          "sha256": "90a4ba706ccd3ea1db9863a33b19b2ac2ea03eb02df788637e3a9edb9ab9d45c"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "instance_array",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:32.440569+00:00",
+      "duration_seconds": 1.0836701249936596,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 463111120,
+      "free_bytes_after": 27403313152,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/4.stdout.raw",
+          "bytes": 627,
+          "sha256": "eae04b090e4e66c7919352e185d843275e7e04ab73ee838ebca168c3b1ab218f"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/4.stderr.raw",
+          "bytes": 143,
+          "sha256": "41765f5e16bb684c757c215046f01202b6b1464fbd216d4f1efe3d3d65ac6acc"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "common_instance_array_initializer_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:33.552747+00:00",
+      "duration_seconds": 1.0741802919947077,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 463111120,
+      "free_bytes_after": 27403231232,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            6,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            6,
+            0,
+            0
+          ]
+        ],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/5.stdout.raw",
+          "bytes": 887,
+          "sha256": "b7ea2e96528bad701186fca95127d0d50494d2d3cd70d73796884ec75e7a14b3"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/5.stderr.raw",
+          "bytes": 138,
+          "sha256": "45666174752218302a14735e209cdb4466c86d84650e20679f94764991c62d83"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "class_static_initializer_projection",
+        "--test",
+        "interface_initializer_proof",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:34.655825+00:00",
+      "duration_seconds": 7.3053124170110095,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 597741757,
+      "free_bytes_after": 27268788224,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ]
+        ],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/6.stdout.raw",
+          "bytes": 995,
+          "sha256": "368e05ad6e6ea4db0b728068c8a754e51343a98a331ac4e4549c56079ea48291"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/6.stderr.raw",
+          "bytes": 378,
+          "sha256": "2d67d5dfb347c380282609cecff445a6ef563e7e9e49c29ab57f9e6d74a4a435"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:41.990741+00:00",
+      "duration_seconds": 5.22230279201176,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 608143761,
+      "free_bytes_after": 27255029760,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [
+          [
+            178,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/7.stdout.raw",
+          "bytes": 15727,
+          "sha256": "fb47b50aa3eaa4e395fe5fd11a41b0a5398d8fc7def0410cf13407a62b79d11a"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/7.stderr.raw",
+          "bytes": 243,
+          "sha256": "567d3c308a1c131253c3f396341fb1c111e44192d9d320c1d840351fc92469d3"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:47.240309+00:00",
+      "duration_seconds": 1.0840108749980573,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 610016086,
+      "free_bytes_after": 27254407168,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/8.stdout.raw",
+          "bytes": 565,
+          "sha256": "1845091a70ebcb2f37f593307badc5ee5d79d0f192da3bc417f49d87b6ba8ffd"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/8.stderr.raw",
+          "bytes": 235,
+          "sha256": "9649b6a0491b7a4a557f175f4fd3f146a5edee478b17d53aefb5a9c03a1021a3"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:58:48.351850+00:00",
+      "duration_seconds": 19.762238084018463,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 900673477,
+      "free_bytes_after": 27020513280,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/9.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/validation-build-root-v2/9.stderr.raw",
+          "bytes": 1160,
+          "sha256": "bc7771e1f7ea03050f4f185d0fefa05be9f48a9567f743cfe1effb5deec51659"
+        }
+      }
+    }
+  ],
+  "freeze": {
+    "built_binary": "/Users/lordcasser/workspace/projects/jarde/target/debug/jarde-cli",
+    "cli_path": "/private/tmp/jarde-int-array-names-cli-v2",
+    "cli_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+    "cli_mode": "0o555",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-cli-v2.json",
+    "source_commit_base": "192b0bc13eca631f44ebaf28a998db52d4f14040",
+    "uncommitted_int_product": true,
+    "product_path_sets": {
+      "candidate_sources": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "test_sources": [
+        ".github/workflows/ci.yml",
+        "crates/jarde-java/tests/p3_patterns.rs",
+        "tests/class_static_initializer_projection.rs",
+        "tests/interface_initializer_proof.rs"
+      ],
+      "canonical_files": [
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java",
+        "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java"
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-ci-product-root-v2.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T04:44:57.822422+00:00",
+  "duration_seconds": 0.06047454199870117,
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "verify-root-v2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "verify-root-v2.stderr.raw",
+      "bytes": 1159,
+      "sha256": "8150292cea1c98e2a8b8a74e78a8d6d67e2e28d3fa2a042f22c9e6b2e82fb3a5"
+    }
+  },
+  "prepared_script_sha256": "f4d902ae5ce2188c757d2bc0be44fe8c524cff65e3109b60b9874b27d57249f5"
+}

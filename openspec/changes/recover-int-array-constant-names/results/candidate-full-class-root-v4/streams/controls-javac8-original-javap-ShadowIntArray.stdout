@@ -1,0 +1,104 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v4/cases/controls-javac8-original/classes/ShadowIntArray.class
+  Last modified 2026-10-10; size 526 bytes
+  MD5 checksum 512e77031fa61824a753b17375ee2407
+  Compiled from "ShadowIntArray.java"
+public class ShadowIntArray
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#22         // java/lang/Object."<init>":()V
+   #2 = Class              #23            // ShadowIntArray
+   #3 = Class              #24            // java/lang/Object
+   #4 = Utf8               VALUE
+   #5 = Utf8               I
+   #6 = Utf8               ConstantValue
+   #7 = Integer            7
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               LineNumberTable
+  #12 = Utf8               LocalVariableTable
+  #13 = Utf8               this
+  #14 = Utf8               LShadowIntArray;
+  #15 = Utf8               parameter
+  #16 = Utf8               (I)[I
+  #17 = Utf8               MethodParameters
+  #18 = Utf8               local
+  #19 = Utf8               ()[I
+  #20 = Utf8               SourceFile
+  #21 = Utf8               ShadowIntArray.java
+  #22 = NameAndType        #8:#9          // "<init>":()V
+  #23 = Utf8               ShadowIntArray
+  #24 = Utf8               java/lang/Object
+{
+  static final int VALUE;
+    descriptor: I
+    flags: ACC_STATIC, ACC_FINAL
+    ConstantValue: int 7
+
+  public ShadowIntArray();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LShadowIntArray;
+
+  static int[] parameter(int);
+    descriptor: (I)[I
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: iconst_2
+         1: newarray       int
+         3: dup
+         4: iconst_0
+         5: bipush        7
+         7: iastore
+         8: dup
+         9: iconst_1
+        10: iload_0
+        11: iastore
+        12: areturn
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      13     0 VALUE   I
+    MethodParameters:
+      Name                           Flags
+      VALUE
+
+  static int[] local();
+    descriptor: ()[I
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=0
+         0: bipush        8
+         2: istore_0
+         3: iconst_2
+         4: newarray       int
+         6: dup
+         7: iconst_0
+         8: bipush        7
+        10: iastore
+        11: dup
+        12: iconst_1
+        13: iload_0
+        14: iastore
+        15: areturn
+      LineNumberTable:
+        line 9: 0
+        line 10: 3
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            3      13     0 VALUE   I
+}
+SourceFile: "ShadowIntArray.java"

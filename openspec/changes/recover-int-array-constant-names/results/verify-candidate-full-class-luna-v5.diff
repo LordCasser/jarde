@@ -1,0 +1,108 @@
+--- verify-candidate-full-class-luna-v4.py
++++ verify-candidate-full-class-luna-v5.py
+@@ -85,6 +85,12 @@
+     out = checked_record(base, pair["stdout"], f"{label} stdout")
+     err = checked_record(base, pair["stderr"], f"{label} stderr")
+     return pair["exit"], out, err
++
++
++def imported_runtime_pair(base: Path, case: dict, label: str) -> tuple[int, bytes, bytes]:
++    out = checked_record(base, case["runtime_raw"]["stdout"], f"{label} copied stdout")
++    err = checked_record(base, case["runtime_raw"]["stderr"], f"{label} copied stderr")
++    return case["source_case"]["runtime"]["exit"], out, err
+ 
+ 
+ def method_identity(method: dict) -> tuple[str, str, int, int, str]:
+@@ -386,13 +392,19 @@
+                 segments = physical_report.get("source_map", {}).get("segments", [])
+                 require(bool(segments), f"physical source map has no BCI anchors: {row['label']}:{method_key}")
+                 method_identity_record = physical_method["item"]["identity"]
++                mapped_bcis = set()
+                 for segment in segments:
+-                    primary = segment.get("origin", {}).get("primary", {})
+-                    primary_method = primary.get("method")
+-                    bci = primary.get("bci")
+-                    require(primary_method == method_identity_record, f"source-map method identity differs from physical method: {row['label']}:{method_key}")
+-                    require(isinstance(bci, int) and bci in original_bcis, f"source-map BCI is absent from original javap method: {row['label']}:{method_key}:{bci}")
+-                    require(primary_method["owner"]["class_bytes"]["digest"] == actual_blake3, f"source-map method owner differs from original-class BLAKE3: {row['label']}:{method_key}")
++                    origin = segment.get("origin", {})
++                    origins = ([origin["primary"]] if origin.get("primary") is not None else []) + origin.get("derived", [])
++                    require(bool(origins), f"source-map segment has no primary or derived origins: {row['label']}:{method_key}")
++                    for origin_point in origins:
++                        origin_method = origin_point.get("method")
++                        bci = origin_point.get("bci")
++                        require(origin_method == method_identity_record, f"source-map method identity differs from physical method: {row['label']}:{method_key}")
++                        require(isinstance(bci, int) and bci in original_bcis, f"source-map BCI is absent from original javap method: {row['label']}:{method_key}:{bci}")
++                        require(origin_method["owner"]["class_bytes"]["digest"] == actual_blake3, f"source-map method owner differs from original-class BLAKE3: {row['label']}:{method_key}")
++                        mapped_bcis.add(bci)
++                require(mapped_bcis == original_bcis, f"source-map BCI coverage differs from original javap: {row['label']}:{method_key}; mapped={sorted(mapped_bcis)} expected={sorted(original_bcis)}")
+             input_identity.setdefault((name, leg), (file_identity["bytes"], ident["class_bytes_blake3_verified"]))
+             require(input_identity[(name, leg)] == (file_identity["bytes"], ident["class_bytes_blake3_verified"]), f"input identity changes across profiles: {row['label']}")
+             pair_text.setdefault((name, leg), {})[profile] = source
+@@ -554,7 +566,7 @@
+                 expected_raw = cases["imported-original"]
+                 original = next(item for item in expected_raw if item["jdk_leg"] == case["jdk_leg"])
+                 got = raw_pair(RUN, case["runtime"], label)
+-                exp = raw_pair(RUN, original["runtime_raw"], f"imported oracle {case['jdk_leg']}")
++                exp = imported_runtime_pair(RUN, original, f"imported oracle {case['jdk_leg']}")
+                 require(got == exp, f"array complete-class runtime differs from imported oracle: {label}")
+         if "runtime_matches_original_raw_by_assertion_mode" in case and group_name == "controls":
+             require(case["runtime_matches_original_raw_by_assertion_mode"].get("assertions-enabled") is True, f"enabled assertion raw mismatch: {label}")
+@@ -609,22 +621,31 @@
+     require(physical.get("status") == "accepted" and len(physical.get("checks", [])) == 12, "accepted ArrayFill physical-report comparison missing or incomplete")
+     require(all(check.get("physical_methods_text_map_unchanged") is True for check in physical["checks"]), "accepted ArrayFill physical comparison has a failed row")
+     imported_by_leg = {case["jdk_leg"]: case for case in cases["imported-original"]}
+-    require(set(imported_by_leg) == JDK_LEGS, "imported array oracle JDK matrix is incomplete")
+-    require(raw_pair(RUN, imported_by_leg["javac8"]["runtime_raw"], "imported array javac8") == raw_pair(RUN, imported_by_leg["javac23"]["runtime_raw"], "imported array javac23"), "imported array raw differs across JDK legs")
++    original_manifest = load_json(baseline / "manifest.json")
++    original_by_leg = {case["jdk_leg"]: case for case in original_manifest["cases"] if case["kind"] == "original"}
++    require(set(imported_by_leg) == set(original_by_leg) == JDK_LEGS, "imported array oracle JDK matrix is incomplete")
+     require(manifest["array_group"]["original_cross_jdk_raw_equal"] is True, "array original cross-JDK comparison flag is false")
+-    for leg_case in cases["imported-original"]:
+-        leg = leg_case["jdk_leg"]
++    for leg, leg_case in imported_by_leg.items():
++        original_case = original_by_leg[leg]
++        require(leg_case["source_case"] == original_case, f"imported source case differs from pinned same-JDK original case: {leg}")
+         require(leg_case["source_case"]["success"] and leg_case["source_case"]["compile_success"] and leg_case["source_case"]["runtime_success"], f"imported original is incomplete: {leg}")
+-        _, out, err = raw_pair(RUN, leg_case["runtime_raw"], f"imported runtime {leg}")
+-        require(leg_case["runtime_raw"]["exit"] == 0 and len(out) > 0 and len(err) == 0, f"bad imported raw record: {leg}")
+-        require(leg_case["source_case"]["runtime"]["stdout"]["sha256"] == leg_case["runtime_raw"]["stdout"]["sha256"], f"imported runtime differs from source oracle record: {leg}")
++        actual = imported_runtime_pair(RUN, leg_case, f"imported runtime {leg}")
++        original_command = next(command for command in original_manifest["commands"] if command["label"] == original_case["runtime"]["label"])
++        require(original_case["runtime"] == original_command, f"pinned original runtime case differs from its command-ledger row: {leg}")
++        original_stdout = checked_record(baseline, original_command["stdout"], f"pinned original command {leg} stdout")
++        original_stderr = checked_record(baseline, original_command["stderr"], f"pinned original command {leg} stderr")
++        expected = (original_command["exit"], original_stdout, original_stderr)
++        require(actual == expected, f"imported copied streams/exit differ from pinned same-JDK original: {leg}")
++        require(leg_case["runtime_raw"]["stdout"]["sha256"] == original_case["runtime"]["stdout"]["sha256"], f"imported stdout record differs from pinned original: {leg}")
++        require(leg_case["runtime_raw"]["stderr"]["sha256"] == original_case["runtime"]["stderr"]["sha256"], f"imported stderr record differs from pinned original: {leg}")
++    require(imported_runtime_pair(RUN, imported_by_leg["javac8"], "imported array javac8") == imported_runtime_pair(RUN, imported_by_leg["javac23"], "imported array javac23"), "imported array raw differs across JDK legs")
+     require(manifest["success_counts"]["imported-original"] == 0, "imported oracle rows must not be counted as current fresh successes")
+     return {"imported_oracle_rows": 2, "counted_as_current_success": False, "previous_baseline_verified": True, "previous_baseline_inventory_closed": True, "array_physical_method_reports_compared": 12}
+ 
+ 
+ def main() -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parent / "candidate-full-class-luna-v4-verification.json")
++    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parent / "candidate-full-class-luna-v5-verification.json")
+     args = parser.parse_args()
+     if args.output.exists() or args.output.resolve() == Path(__file__).resolve():
+         print(f"refusing to overwrite existing output or verifier: {args.output}", file=sys.stderr)
+@@ -635,7 +656,7 @@
+         require(manifest["schema"] == "recover-int-array-constant-names-candidate-full-class-root-v7", "unexpected v7 manifest schema")
+         require(manifest["status"] == "completed", "v7 manifest is not completed")
+         report = {
+-            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v4",
++            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v5",
+             "status": "verified",
+             "manifest_path": MANIFEST.relative_to(ROOT).as_posix(),
+             "manifest_sha256": file_sha256(MANIFEST),
+@@ -659,7 +680,7 @@
+         return 0
+     except Exception as exc:
+         report = {
+-            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v4",
++            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v5",
+             "status": "verification-failed",
+             "error": f"{type(exc).__name__}: {exc}",
+         }

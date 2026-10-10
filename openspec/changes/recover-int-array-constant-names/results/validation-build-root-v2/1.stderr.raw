@@ -1,0 +1,28 @@
+   Compiling cfg-if v1.0.4
+   Compiling equivalent v1.0.2
+   Compiling hashbrown v0.17.1
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling miniz_oxide v0.9.1
+   Compiling indexmap v2.14.2
+   Compiling serde_core v1.0.229
+   Compiling crc32fast v1.5.2
+   Compiling bitflags v2.13.2
+   Compiling arrayvec v0.7.8
+   Compiling constant_time_eq v0.4.2
+   Compiling blake3 v1.8.7
+   Compiling noak v0.7.0
+   Compiling serde v1.0.229
+   Compiling thiserror v2.0.20
+   Compiling flate2 v1.1.10
+   Compiling foldhash v0.1.5
+   Compiling rawzip v0.5.1
+   Compiling hashbrown v0.15.5
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling fixedbitset v0.5.7
+   Compiling petgraph v0.8.3
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 15.95s
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)

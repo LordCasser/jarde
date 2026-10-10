@@ -1,0 +1,8 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 8.26s
+     Running unittests src/lib.rs (target/debug/deps/jarde-19ad210870138824)
+
+thread 'facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target' (16834753) panicked at src/facade.rs:44410:9:
+the method is actually staged before the array-name adapter
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde --lib`

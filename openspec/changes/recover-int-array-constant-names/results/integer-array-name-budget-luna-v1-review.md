@@ -1,0 +1,5 @@
+# Private occupied-name budget patch review
+
+`integer-array-name-budget-luna-v1.patch` changes only the try-resource and catch-name scan in `project_class_source_integer_constants`. On the array-initializer path, each resource/catch name is polled and charged one `AnalysisSteps` and one `IrItems` before its name is cloned into `occupied`. The old switch-only path keeps its prior accounting and traversal behavior.
+
+The synthetic AST test covers sixteen empty catch clauses, with caps chosen to fail during the name scan: IR cap 8 equals the no-name complete bill for this fixture, and analysis cap 7 permits the ordinary Try/return traversal plus five names. It checks stop dimension, BCI 0, and consumed usage. A separate resource case proves the resource-name IR charge; ample-budget cases prove occupied names still refuse replacement. This patch was prepared separately and not applied by this agent. Root has applied the change in the shared workspace, formatted it, and is rebuilding; this private artifact is not itself a test result.

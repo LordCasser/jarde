@@ -1,0 +1,382 @@
+{
+  "schema": "instance-array-ci-product-acceptance-root-v3",
+  "status": "accepted",
+  "product_commit": "192b0bc13eca631f44ebaf28a998db52d4f14040",
+  "ci_run_id": 38022628853,
+  "shared_ci_helper_sha256": "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d",
+  "commit_metadata": {
+    "metadata_sha256": "b86961182a352dfa663215c47bdd3e64cf7f8a67c5e36951f2c98d020f044cfa",
+    "cli_sha256": "5abb4bc82a50a8d427eff425ad80bc2fb845253b4216a81b60229e2337711663",
+    "pin_counts": {
+      "candidate_sources": 10,
+      "test_sources": 4,
+      "canonical_files": 16
+    },
+    "commit_blob_pins_verified": 30,
+    "worktree_hashes_used_as_gate": false,
+    "build_execution_sha256": "838a69752acb2e23afb22024b6fe706d0fce14801b80fcbcc7b0a8a76de85705"
+  },
+  "candidate_replay": {
+    "manifest_sha256": "01ac7281244e5d95d92b0218098d2b2e0637fab9b3b27bd2db7210c85b991c50",
+    "inventory_sha256": "295647aa0748c6db0bc09a6d6c960db98d567dafe8c26f5e1d49066862e0f684",
+    "closed_files": 361,
+    "commands": 58,
+    "cases": 52,
+    "independent_acceptance_sha256": "910df190ceaddb2b57fda15e7b1da6922cf82a359cdee57be91bdbcc405546c6",
+    "candidate_cli_sha256": "5abb4bc82a50a8d427eff425ad80bc2fb845253b4216a81b60229e2337711663",
+    "metadata_sha256": "b86961182a352dfa663215c47bdd3e64cf7f8a67c5e36951f2c98d020f044cfa"
+  },
+  "previous_static_eight_legs": {
+    "manifest_sha256": "b3080025560171adc84f8dd755240170c1abc218468ef2cd8868df9070a639be",
+    "inventory_sha256": "46aa8f23f1ade97d0129ba8b7febaf2e6ef5d41bda2e04329b7b1ab1ae38cc95",
+    "closed_files": 97,
+    "accepted_legs": 8,
+    "original_class_families": {
+      "literal/javac8": {
+        "bytes": 262,
+        "sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891"
+      },
+      "literal/javac23": {
+        "bytes": 262,
+        "sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827"
+      },
+      "ordered/javac8": {
+        "bytes": 457,
+        "sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee"
+      },
+      "ordered/javac23": {
+        "bytes": 457,
+        "sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789"
+      }
+    },
+    "raw_runtime_legs": [
+      {
+        "label": "literal-javac8-default",
+        "class_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+        "oracle_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+        "replay_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+      },
+      {
+        "label": "literal-javac8-all",
+        "class_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+        "oracle_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+        "replay_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+      },
+      {
+        "label": "literal-javac23-default",
+        "class_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+        "oracle_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+        "replay_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+      },
+      {
+        "label": "literal-javac23-all",
+        "class_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+        "oracle_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+        "replay_stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+      },
+      {
+        "label": "ordered-javac8-default",
+        "class_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+        "oracle_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+        "replay_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+      },
+      {
+        "label": "ordered-javac8-all",
+        "class_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+        "oracle_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+        "replay_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+      },
+      {
+        "label": "ordered-javac23-default",
+        "class_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+        "oracle_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+        "replay_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+      },
+      {
+        "label": "ordered-javac23-all",
+        "class_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+        "oracle_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+        "replay_stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+      }
+    ],
+    "acceptance_sha256": "3661f2b685d4f1f8b52fe882d7e4b59d99793024eae6ef2a94fcffbc1ee50c94"
+  },
+  "local_gates": {
+    "instance_unit_tests": {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "instance_array",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "stdout_sha256": "b5a0766815ec05553507af2c2601376e4fbfaa671bb533ca134be57af832d5a6",
+      "stderr_sha256": "9ef65295060efc43154fbe6e14f0c1be1655d79df6ab8ed935c30c64db9a9407"
+    },
+    "facade_tests": {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "common_instance_array_initializer_tests",
+        "--",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "stdout_sha256": "39bfc272cc2cdaccceea289c0906f787da003ac20c1a5956a99ac57430bbe7df",
+      "stderr_sha256": "e36905a677f1044ed3d3095292846428543a1b42e58ced335a732eaa3aa5346a"
+    },
+    "reader_and_fingerprint": {
+      "execution_sha256": "6380d3e80499e0cc17ff4c6ecc09c501e0e712cd7fe774f8a18e7f9e62c65980",
+      "commands": [
+        {
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "jarde-reader",
+            "--lib",
+            "--locked"
+          ],
+          "exit": 0,
+          "stdout_sha256": "3be58035b11d818e0479ce6882c6bf204ecc22a978f7dcafaa7d4266f44f5c47",
+          "stderr_sha256": "01bc6a665a6204468eaf491b1c5abd73932f8a24c6d1717c51e7f59e359b3855"
+        },
+        {
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "jarde",
+            "--test",
+            "p5_corpus_fingerprint",
+            "--locked"
+          ],
+          "exit": 0,
+          "stdout_sha256": "faab60ddeb43b9d52c6b3ea4603891b76d1936bd9bff9bc406471f552661ba71",
+          "stderr_sha256": "cd3f02f3748bbc9f66e37a470a977f4244fb81e410944521dfbc2cf5d3e9841d"
+        }
+      ]
+    },
+    "fmt_and_strict_validation": {
+      "execution_sha256": "ffb8879251b5722c50f3d703123b450656a95df8a74594b2f4be94611695ab70",
+      "commands": [
+        {
+          "argv": [
+            "cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "openspec",
+            "validate",
+            "--all",
+            "--strict",
+            "--no-interactive"
+          ],
+          "exit": 0,
+          "stdout_sha256": "2717d130c42fb0febca775426d95c672eea0f8880be68878a444e3d2a55a15a2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "exit": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "openspec_total": "334 passed, 0 failed"
+    }
+  },
+  "ci": {
+    "run_id": 38022628853,
+    "product_commit": "192b0bc13eca631f44ebaf28a998db52d4f14040",
+    "jobs": 4,
+    "steps": 52,
+    "all_jobs_success": true,
+    "two_seed_instance_tests_passed": true,
+    "full_api_sha256": "26bf2d07c7c0544020b468b61a354b5aaf0c1c263ad6bf23836aab50dc7be32b",
+    "full_api_bytes": 10208,
+    "stable_log_gzip_sha256": "5bcf76cf8bc5f182dede5c5d35c1299b47cf4aafe7714871481e4ebc7f673c69",
+    "stable_log_raw_sha256": "72c496dbe141c2d6eb420e6339a0fceafe80c6686a83e612756990ff6f1caa81",
+    "supply_log_gzip_sha256": "c3683765aed87776ef2ab79849daab109870092041e782f74ed2352cc47b992b",
+    "supply_log_raw_sha256": "517822b8789d80a060c1ee15c094847d7714650523fc3ff36880e4289d3346e5",
+    "shared_static_ci_parser_result": {
+      "ci_json_sha256": "26bf2d07c7c0544020b468b61a354b5aaf0c1c263ad6bf23836aab50dc7be32b",
+      "stable_gzip_sha256": "5bcf76cf8bc5f182dede5c5d35c1299b47cf4aafe7714871481e4ebc7f673c69",
+      "stable_raw_sha256": "72c496dbe141c2d6eb420e6339a0fceafe80c6686a83e612756990ff6f1caa81",
+      "supply_gzip_sha256": "c3683765aed87776ef2ab79849daab109870092041e782f74ed2352cc47b992b",
+      "supply_raw_sha256": "517822b8789d80a060c1ee15c094847d7714650523fc3ff36880e4289d3346e5",
+      "jobs": 4,
+      "step_count": 52,
+      "all_jobs_and_steps_success": true,
+      "installed_jdk": "25.0.4+7.0.LTS",
+      "workspace_seed_runs": [
+        {
+          "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+          "seed": "5350648285461741569",
+          "binaries": {
+            "tests/class_static_initializer_projection.rs": {
+              "passed": 6,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/interface_initializer_proof.rs": {
+              "passed": 4,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/p3_patterns.rs": {
+              "passed": 85,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/p3_array_slot_retype_locals.rs": {
+              "passed": 6,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/recover_unicode_identifiers.rs": {
+              "passed": 4,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/p5_corpus_fingerprint.rs": {
+              "passed": 5,
+              "failed": 0,
+              "ignored": 1
+            },
+            "tests/p5_bulk_corpus.rs": {
+              "passed": 5,
+              "failed": 0,
+              "ignored": 1
+            }
+          },
+          "test_result_records": 354,
+          "passed": 3368,
+          "failed": 0,
+          "ignored": 97
+        },
+        {
+          "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+          "seed": "5350648285461741570",
+          "binaries": {
+            "tests/class_static_initializer_projection.rs": {
+              "passed": 6,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/interface_initializer_proof.rs": {
+              "passed": 4,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/p3_patterns.rs": {
+              "passed": 85,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/p3_array_slot_retype_locals.rs": {
+              "passed": 6,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/recover_unicode_identifiers.rs": {
+              "passed": 4,
+              "failed": 0,
+              "ignored": 0
+            },
+            "tests/p5_corpus_fingerprint.rs": {
+              "passed": 5,
+              "failed": 0,
+              "ignored": 1
+            },
+            "tests/p5_bulk_corpus.rs": {
+              "passed": 5,
+              "failed": 0,
+              "ignored": 1
+            }
+          },
+          "test_result_records": 354,
+          "passed": 3368,
+          "failed": 0,
+          "ignored": 97
+        }
+      ],
+      "workspace_seeds": [
+        "5350648285461741569",
+        "5350648285461741570"
+      ],
+      "ignored_comparisons": {
+        "jdk25_instruction_boundaries": {
+          "command": "cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection",
+          "records": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        "p3_execution": {
+          "command": "cargo test --test p3_execution_comparison --locked -- --ignored",
+          "records": 1,
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        },
+        "functional_constructor": {
+          "command": "cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks",
+          "records": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        "bigdecimal": {
+          "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+          "records": 1,
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        "nested": {
+          "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle",
+          "records": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        "returned": {
+          "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class",
+          "records": 1,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      "cargo_deny": {
+        "version": "0.20.2",
+        "commands": [
+          "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+          "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+        ]
+      },
+      "workflow_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a"
+    }
+  },
+  "claim_boundary": "Fixed product Git blobs, frozen CLI replay, accepted raw baseline legs, captured local gates, and the fixed full CI run; no current working-tree source bytes gate acceptance."
+}

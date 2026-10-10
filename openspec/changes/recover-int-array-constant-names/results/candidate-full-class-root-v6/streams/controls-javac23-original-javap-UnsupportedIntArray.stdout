@@ -1,0 +1,130 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UnsupportedIntArray.class
+  Last modified 2026年10月10日; size 647 bytes
+  SHA-256 checksum aa82726d20f87bfa7c2b4cca614d26a200b8b331c619a534062747b69715c8c2
+  Compiled from "UnsupportedIntArray.java"
+public class UnsupportedIntArray
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #10                         // UnsupportedIntArray
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // "[I"
+   #8 = Utf8               [I
+   #9 = Methodref          #10.#11        // UnsupportedIntArray.make:()I
+  #10 = Class              #12            // UnsupportedIntArray
+  #11 = NameAndType        #13:#14        // make:()I
+  #12 = Utf8               UnsupportedIntArray
+  #13 = Utf8               make
+  #14 = Utf8               ()I
+  #15 = Utf8               VALUE
+  #16 = Utf8               I
+  #17 = Utf8               ConstantValue
+  #18 = Integer            7
+  #19 = Utf8               Code
+  #20 = Utf8               LineNumberTable
+  #21 = Utf8               LocalVariableTable
+  #22 = Utf8               this
+  #23 = Utf8               LUnsupportedIntArray;
+  #24 = Utf8               nested
+  #25 = Utf8               ()[[I
+  #26 = Utf8               unsupportedLeaves
+  #27 = Utf8               (JI)[I
+  #28 = Utf8               source
+  #29 = Utf8               J
+  #30 = Utf8               offset
+  #31 = Utf8               MethodParameters
+  #32 = Utf8               SourceFile
+  #33 = Utf8               UnsupportedIntArray.java
+{
+  static final int VALUE;
+    descriptor: I
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+    ConstantValue: int 7
+
+  public UnsupportedIntArray();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LUnsupportedIntArray;
+
+  static int make();
+    descriptor: ()I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: bipush        7
+         2: ireturn
+      LineNumberTable:
+        line 5: 0
+
+  static int[][] nested();
+    descriptor: ()[[I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=7, locals=0, args_size=0
+         0: iconst_1
+         1: anewarray     #7                  // class "[I"
+         4: dup
+         5: iconst_0
+         6: iconst_1
+         7: newarray       int
+         9: dup
+        10: iconst_0
+        11: bipush        7
+        13: iastore
+        14: aastore
+        15: areturn
+      LineNumberTable:
+        line 9: 0
+
+  static int[] unsupportedLeaves(long, int);
+    descriptor: (JI)[I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=5, locals=3, args_size=2
+         0: iconst_3
+         1: newarray       int
+         3: dup
+         4: iconst_0
+         5: invokestatic  #9                  // Method make:()I
+         8: iastore
+         9: dup
+        10: iconst_1
+        11: lload_0
+        12: l2i
+        13: iastore
+        14: dup
+        15: iconst_2
+        16: iload_2
+        17: bipush        7
+        19: iadd
+        20: iastore
+        21: areturn
+      LineNumberTable:
+        line 13: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      22     0 source   J
+            0      22     2 offset   I
+    MethodParameters:
+      Name                           Flags
+      source
+      offset
+}
+SourceFile: "UnsupportedIntArray.java"

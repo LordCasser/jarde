@@ -1,0 +1,127 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v5/cases/controls-javac8-original/classes/UnsupportedIntArray.class
+  Last modified 2026-10-10; size 647 bytes
+  MD5 checksum 0473468fcc621df0d210f52f12a06821
+  Compiled from "UnsupportedIntArray.java"
+public class UnsupportedIntArray
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#29         // java/lang/Object."<init>":()V
+   #2 = Class              #30            // "[I"
+   #3 = Methodref          #4.#31         // UnsupportedIntArray.make:()I
+   #4 = Class              #32            // UnsupportedIntArray
+   #5 = Class              #33            // java/lang/Object
+   #6 = Utf8               VALUE
+   #7 = Utf8               I
+   #8 = Utf8               ConstantValue
+   #9 = Integer            7
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               LineNumberTable
+  #14 = Utf8               LocalVariableTable
+  #15 = Utf8               this
+  #16 = Utf8               LUnsupportedIntArray;
+  #17 = Utf8               make
+  #18 = Utf8               ()I
+  #19 = Utf8               nested
+  #20 = Utf8               ()[[I
+  #21 = Utf8               unsupportedLeaves
+  #22 = Utf8               (JI)[I
+  #23 = Utf8               source
+  #24 = Utf8               J
+  #25 = Utf8               offset
+  #26 = Utf8               MethodParameters
+  #27 = Utf8               SourceFile
+  #28 = Utf8               UnsupportedIntArray.java
+  #29 = NameAndType        #10:#11        // "<init>":()V
+  #30 = Utf8               [I
+  #31 = NameAndType        #17:#18        // make:()I
+  #32 = Utf8               UnsupportedIntArray
+  #33 = Utf8               java/lang/Object
+{
+  static final int VALUE;
+    descriptor: I
+    flags: ACC_STATIC, ACC_FINAL
+    ConstantValue: int 7
+
+  public UnsupportedIntArray();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LUnsupportedIntArray;
+
+  static int make();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: bipush        7
+         2: ireturn
+      LineNumberTable:
+        line 5: 0
+
+  static int[][] nested();
+    descriptor: ()[[I
+    flags: ACC_STATIC
+    Code:
+      stack=7, locals=0, args_size=0
+         0: iconst_1
+         1: anewarray     #2                  // class "[I"
+         4: dup
+         5: iconst_0
+         6: iconst_1
+         7: newarray       int
+         9: dup
+        10: iconst_0
+        11: bipush        7
+        13: iastore
+        14: aastore
+        15: areturn
+      LineNumberTable:
+        line 9: 0
+
+  static int[] unsupportedLeaves(long, int);
+    descriptor: (JI)[I
+    flags: ACC_STATIC
+    Code:
+      stack=5, locals=3, args_size=2
+         0: iconst_3
+         1: newarray       int
+         3: dup
+         4: iconst_0
+         5: invokestatic  #3                  // Method make:()I
+         8: iastore
+         9: dup
+        10: iconst_1
+        11: lload_0
+        12: l2i
+        13: iastore
+        14: dup
+        15: iconst_2
+        16: iload_2
+        17: bipush        7
+        19: iadd
+        20: iastore
+        21: areturn
+      LineNumberTable:
+        line 13: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      22     0 source   J
+            0      22     2 offset   I
+    MethodParameters:
+      Name                           Flags
+      source
+      offset
+}
+SourceFile: "UnsupportedIntArray.java"

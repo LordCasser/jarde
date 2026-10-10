@@ -1,0 +1,9 @@
+{
+  "status": "accepted",
+  "metadata_sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282",
+  "build_execution_sha256": "b14f28e2e1200665c4a156f0b0f3438795ce7ee455ebcbf8e4b4e247d5543af8",
+  "cli_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+  "pinned_file_count": 30,
+  "passed_command_count": 10,
+  "peak_target_bytes": 900673477
+}

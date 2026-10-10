@@ -1,0 +1,67 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/baseline-root-v2/cases/javac8-original/classes/LongArrayLimits.class
+  Last modified 2026-10-10; size 286 bytes
+  MD5 checksum 9f4dc0741b8e2dd0b300a721fd1c706f
+public class LongArrayLimits
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#18         // java/lang/Object."<init>":()V
+   #2 = Class              #19            // java/lang/Long
+   #3 = Long               9223372036854775807l
+   #5 = Long               -9223372036854775807l
+   #7 = Class              #20            // LongArrayLimits
+   #8 = Class              #21            // java/lang/Object
+   #9 = Utf8               ARRAY_SIZE
+  #10 = Utf8               I
+  #11 = Utf8               ConstantValue
+  #12 = Integer            4
+  #13 = Utf8               <init>
+  #14 = Utf8               ()V
+  #15 = Utf8               Code
+  #16 = Utf8               test
+  #17 = Utf8               ()[J
+  #18 = NameAndType        #13:#14        // "<init>":()V
+  #19 = Utf8               java/lang/Long
+  #20 = Utf8               LongArrayLimits
+  #21 = Utf8               java/lang/Object
+{
+  private static final int ARRAY_SIZE;
+    descriptor: I
+    flags: ACC_PRIVATE, ACC_STATIC, ACC_FINAL
+    ConstantValue: int 4
+
+  public LongArrayLimits();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public long[] test();
+    descriptor: ()[J
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: iconst_4
+         1: newarray       long
+         3: dup
+         4: iconst_0
+         5: lconst_0
+         6: lastore
+         7: dup
+         8: iconst_1
+         9: lconst_1
+        10: lastore
+        11: dup
+        12: iconst_2
+        13: ldc2_w        #3                  // long 9223372036854775807l
+        16: lastore
+        17: dup
+        18: iconst_3
+        19: ldc2_w        #5                  // long -9223372036854775807l
+        22: lastore
+        23: areturn
+}

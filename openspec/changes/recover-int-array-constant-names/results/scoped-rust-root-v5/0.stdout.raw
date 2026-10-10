@@ -1,0 +1,11 @@
+
+running 1 test
+test facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target ... FAILED
+
+failures:
+
+failures:
+    facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 219 filtered out; finished in 0.99s
+

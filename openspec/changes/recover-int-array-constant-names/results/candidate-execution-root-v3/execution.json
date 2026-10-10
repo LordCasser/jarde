@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v6.py",
+    "--cli",
+    "/private/tmp/jarde-int-array-names-cli-v1",
+    "--cli-sha256",
+    "146c657cdf5baeaa2b9c31e2715547ff9f1a4e129decad025f517a93400af3bf",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "c97aa02f3af4bab9064e63f9431ecaf61c4c1769e4693529cf5a0d1cdfc72180"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T04:36:44.316131+00:00",
+  "duration_seconds": 8.579214458994102,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/candidate-execution-root-v3/stdout.raw",
+      "bytes": 657,
+      "sha256": "9356a584db2784d94a6ff60f256e31fe809c8ab0f4f2635ef73365986b747f78"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/candidate-execution-root-v3/stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  },
+  "prepared_script_sha256": "b15087483d7aa17a2069b3a34b001f49a30d34025b1cf5cbd267070b52ca7364"
+}

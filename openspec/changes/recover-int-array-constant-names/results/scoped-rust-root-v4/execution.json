@@ -1,0 +1,116 @@
+{
+  "schema": "int-array-scoped-rust-root-v4",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "integer_array",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:19:09.268443+00:00",
+      "duration_seconds": 22.188236916001188,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 154152630,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v4/0.stdout.raw",
+          "bytes": 230,
+          "sha256": "6c8c55413983805b0d5a3c58d3109bb5b4142817c211b69af1dd59fc7aa87738"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v4/0.stderr.raw",
+          "bytes": 1459,
+          "sha256": "bd974afba5c270a8c2a58c0555f2f0aa8d78f5821f6bc70345d9572398e7a934"
+        }
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "class_source_body_replay",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:19:31.457614+00:00",
+      "duration_seconds": 1.008106791996397,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 151560648,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v4/1.stdout.raw",
+          "bytes": 199,
+          "sha256": "f47084ec7f53f252ee472062175469f59646b0e0c983d028585e8af21c73c40e"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v4/1.stderr.raw",
+          "bytes": 143,
+          "sha256": "41765f5e16bb684c757c215046f01202b6b1464fbd216d4f1efe3d3d65ac6acc"
+        }
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "integer_constant_name_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:19:32.466541+00:00",
+      "duration_seconds": 27.33609391702339,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 402494899,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v4/2.stdout.raw",
+          "bytes": 1189,
+          "sha256": "97eab5696dbe962947f2727e6f3f3dd23f7259cd2ce2716eb1507da7bb80e55b"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v4/2.stderr.raw",
+          "bytes": 1859,
+          "sha256": "19254499eb3db3e296e190d7a893a65ff781915c68a2cd51ab12fd1da8231cc8"
+        }
+      }
+    }
+  ]
+}

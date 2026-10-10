@@ -1,0 +1,66 @@
+    Checking cfg-if v1.0.4
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+    Checking bitflags v2.13.2
+   Compiling find-msvc-tools v0.1.12
+   Compiling shlex v2.0.1
+   Compiling serde_core v1.0.229
+   Compiling syn v3.0.5
+   Compiling cc v1.4.6
+   Compiling crc32fast v1.5.2
+    Checking equivalent v1.0.2
+    Checking hashbrown v0.17.1
+   Compiling blake3 v1.8.7
+    Checking indexmap v2.14.2
+   Compiling serde v1.0.229
+    Checking simd-adler32 v0.3.10
+    Checking adler2 v2.0.1
+   Compiling thiserror v2.0.20
+    Checking miniz_oxide v0.9.1
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.20
+    Checking constant_time_eq v0.4.2
+    Checking arrayvec v0.7.8
+    Checking flate2 v1.1.10
+    Checking noak v0.7.0
+    Checking foldhash v0.1.5
+    Checking rawzip v0.5.1
+    Checking hashbrown v0.15.5
+    Checking fixedbitset v0.5.7
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Checking petgraph v0.8.3
+   Compiling libc v0.2.189
+   Compiling getrandom v0.3.4
+   Compiling getrandom v0.4.3
+   Compiling zerocopy v0.8.57
+   Compiling rustix v1.1.4
+    Checking rand_core v0.9.5
+    Checking errno v0.3.14
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+    Checking jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling zmij v1.0.23
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Checking once_cell v1.21.4
+    Checking fastrand v2.5.0
+    Checking tempfile v3.27.0
+    Checking ppv-lite86 v0.2.21
+    Checking wait-timeout v0.2.1
+    Checking fnv v1.0.7
+   Compiling serde_json v1.0.151
+    Checking bit-vec v0.8.0
+    Checking quick-error v1.2.3
+    Checking rusty-fork v0.3.1
+    Checking bit-set v0.8.0
+    Checking rand_chacha v0.9.0
+    Checking rand v0.9.5
+    Checking rand_xorshift v0.4.0
+    Checking memchr v2.8.3
+    Checking itoa v1.0.18
+    Checking regex-syntax v0.8.11
+    Checking unarray v0.1.4
+    Checking proptest v1.11.0
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `dev` profile [unoptimized] target(s) in 29.70s

@@ -1,0 +1,22 @@
+{
+  "schema": "em18-unused-byte-array-init-independent-acceptance-luna-v2",
+  "success": false,
+  "status": "verification-failed",
+  "checks": [
+    "127-file evidence inventory closed and pinned",
+    "35 archived command records, raw streams, and tool pins",
+    "original physical javap members independently confirm <init>()V/test()V; known stale descriptor assumption isolated",
+    "ten source/class-isolated compile records and exact class sets",
+    "JADX one-class input archive and generated source files independently linked"
+  ],
+  "jadx_archive": {
+    "jar_sha256": "eb4ca1b31c4b4a6cdafb66170b2d497b1853538ce68c97a6fdd5e74b250a33cd",
+    "target_class_sha256": "0b1a7ad011a647cc7ac4c336fde0249b47710348762b1506bbd90eb4f054bea2",
+    "target_class_blake3": "b938b2cfea97b2c315b6f8c6b8737f9ff95379cfa2ad5776d6bdfb9c16948669",
+    "profiles": [
+      "default",
+      "none"
+    ]
+  },
+  "failure": "AssertionError: source map does not cover method BCIs: javac8-jarde-default/<init>()V"
+}

@@ -1,0 +1,308 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v5/cases/controls-javac8-original/classes/IntArrayControlsRunner.class
+  Last modified 2026-10-10; size 1976 bytes
+  MD5 checksum 279ebb3b7ede372cc11017de126cd2d3
+  Compiled from "IntArrayControlsRunner.java"
+public class IntArrayControlsRunner
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+    #1 = Methodref          #32.#58       // java/lang/Object."<init>":()V
+    #2 = Methodref          #59.#60       // UniqueIntArray.values:()[I
+    #3 = Fieldref           #61.#62       // java/lang/System.out:Ljava/io/PrintStream;
+    #4 = Class              #63           // java/lang/StringBuilder
+    #5 = Methodref          #4.#58        // java/lang/StringBuilder."<init>":()V
+    #6 = String             #64           // unique=
+    #7 = Methodref          #4.#65        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    #8 = Methodref          #66.#67       // java/util/Arrays.toString:([I)Ljava/lang/String;
+    #9 = Methodref          #4.#68        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #10 = Methodref          #69.#70       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #11 = String             #71           // unique-fresh=
+   #12 = Methodref          #4.#72        // java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+   #13 = String             #73           // duplicate=
+   #14 = Methodref          #74.#60       // DuplicateIntArray.values:()[I
+   #15 = String             #75           // shadow-parameter=
+   #16 = Methodref          #76.#77       // ShadowIntArray.parameter:(I)[I
+   #17 = String             #78           // shadow-local=
+   #18 = Methodref          #76.#79       // ShadowIntArray.local:()[I
+   #19 = String             #80           // unsupported-nested=
+   #20 = Methodref          #81.#82       // UnsupportedIntArray.nested:()[[I
+   #21 = Methodref          #66.#83       // java/util/Arrays.deepToString:([Ljava/lang/Object;)Ljava/lang/String;
+   #22 = String             #84           // unsupported-leaves=
+   #23 = Long               5l
+   #25 = Methodref          #81.#85       // UnsupportedIntArray.unsupportedLeaves:(JI)[I
+   #26 = String             #86           // prior-assert-ok=
+   #27 = Methodref          #87.#88       // PriorAssertIntArray.value:(Z)[I
+   #28 = String             #89           // prior-assert-false=not-thrown
+   #29 = Class              #90           // java/lang/AssertionError
+   #30 = String             #91           // prior-assert-false=caught
+   #31 = Class              #92           // IntArrayControlsRunner
+   #32 = Class              #93           // java/lang/Object
+   #33 = Utf8               <init>
+   #34 = Utf8               ()V
+   #35 = Utf8               Code
+   #36 = Utf8               LineNumberTable
+   #37 = Utf8               LocalVariableTable
+   #38 = Utf8               this
+   #39 = Utf8               LIntArrayControlsRunner;
+   #40 = Utf8               main
+   #41 = Utf8               ([Ljava/lang/String;)V
+   #42 = Utf8               expected
+   #43 = Utf8               Ljava/lang/AssertionError;
+   #44 = Utf8               args
+   #45 = Utf8               [Ljava/lang/String;
+   #46 = Utf8               uniqueFirst
+   #47 = Utf8               [I
+   #48 = Utf8               uniqueSecond
+   #49 = Utf8               StackMapTable
+   #50 = Class              #45           // "[Ljava/lang/String;"
+   #51 = Class              #47           // "[I"
+   #52 = Class              #94           // java/io/PrintStream
+   #53 = Class              #63           // java/lang/StringBuilder
+   #54 = Class              #90           // java/lang/AssertionError
+   #55 = Utf8               MethodParameters
+   #56 = Utf8               SourceFile
+   #57 = Utf8               IntArrayControlsRunner.java
+   #58 = NameAndType        #33:#34       // "<init>":()V
+   #59 = Class              #95           // UniqueIntArray
+   #60 = NameAndType        #96:#97       // values:()[I
+   #61 = Class              #98           // java/lang/System
+   #62 = NameAndType        #99:#100      // out:Ljava/io/PrintStream;
+   #63 = Utf8               java/lang/StringBuilder
+   #64 = Utf8               unique=
+   #65 = NameAndType        #101:#102     // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #66 = Class              #103          // java/util/Arrays
+   #67 = NameAndType        #104:#105     // toString:([I)Ljava/lang/String;
+   #68 = NameAndType        #104:#106     // toString:()Ljava/lang/String;
+   #69 = Class              #94           // java/io/PrintStream
+   #70 = NameAndType        #107:#108     // println:(Ljava/lang/String;)V
+   #71 = Utf8               unique-fresh=
+   #72 = NameAndType        #101:#109     // append:(Z)Ljava/lang/StringBuilder;
+   #73 = Utf8               duplicate=
+   #74 = Class              #110          // DuplicateIntArray
+   #75 = Utf8               shadow-parameter=
+   #76 = Class              #111          // ShadowIntArray
+   #77 = NameAndType        #112:#113     // parameter:(I)[I
+   #78 = Utf8               shadow-local=
+   #79 = NameAndType        #114:#97      // local:()[I
+   #80 = Utf8               unsupported-nested=
+   #81 = Class              #115          // UnsupportedIntArray
+   #82 = NameAndType        #116:#117     // nested:()[[I
+   #83 = NameAndType        #118:#119     // deepToString:([Ljava/lang/Object;)Ljava/lang/String;
+   #84 = Utf8               unsupported-leaves=
+   #85 = NameAndType        #120:#121     // unsupportedLeaves:(JI)[I
+   #86 = Utf8               prior-assert-ok=
+   #87 = Class              #122          // PriorAssertIntArray
+   #88 = NameAndType        #123:#124     // value:(Z)[I
+   #89 = Utf8               prior-assert-false=not-thrown
+   #90 = Utf8               java/lang/AssertionError
+   #91 = Utf8               prior-assert-false=caught
+   #92 = Utf8               IntArrayControlsRunner
+   #93 = Utf8               java/lang/Object
+   #94 = Utf8               java/io/PrintStream
+   #95 = Utf8               UniqueIntArray
+   #96 = Utf8               values
+   #97 = Utf8               ()[I
+   #98 = Utf8               java/lang/System
+   #99 = Utf8               out
+  #100 = Utf8               Ljava/io/PrintStream;
+  #101 = Utf8               append
+  #102 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #103 = Utf8               java/util/Arrays
+  #104 = Utf8               toString
+  #105 = Utf8               ([I)Ljava/lang/String;
+  #106 = Utf8               ()Ljava/lang/String;
+  #107 = Utf8               println
+  #108 = Utf8               (Ljava/lang/String;)V
+  #109 = Utf8               (Z)Ljava/lang/StringBuilder;
+  #110 = Utf8               DuplicateIntArray
+  #111 = Utf8               ShadowIntArray
+  #112 = Utf8               parameter
+  #113 = Utf8               (I)[I
+  #114 = Utf8               local
+  #115 = Utf8               UnsupportedIntArray
+  #116 = Utf8               nested
+  #117 = Utf8               ()[[I
+  #118 = Utf8               deepToString
+  #119 = Utf8               ([Ljava/lang/Object;)Ljava/lang/String;
+  #120 = Utf8               unsupportedLeaves
+  #121 = Utf8               (JI)[I
+  #122 = Utf8               PriorAssertIntArray
+  #123 = Utf8               value
+  #124 = Utf8               (Z)[I
+{
+  public IntArrayControlsRunner();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LIntArrayControlsRunner;
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=1
+         0: invokestatic  #2                  // Method UniqueIntArray.values:()[I
+         3: astore_1
+         4: invokestatic  #2                  // Method UniqueIntArray.values:()[I
+         7: astore_2
+         8: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #4                  // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+        18: ldc           #6                  // String unique=
+        20: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        23: aload_1
+        24: invokestatic  #8                  // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+        27: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        30: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        33: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        36: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        39: new           #4                  // class java/lang/StringBuilder
+        42: dup
+        43: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+        46: ldc           #11                 // String unique-fresh=
+        48: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        51: aload_1
+        52: aload_2
+        53: if_acmpeq     60
+        56: iconst_1
+        57: goto          61
+        60: iconst_0
+        61: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+        64: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        67: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        70: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        73: new           #4                  // class java/lang/StringBuilder
+        76: dup
+        77: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+        80: ldc           #13                 // String duplicate=
+        82: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        85: invokestatic  #14                 // Method DuplicateIntArray.values:()[I
+        88: invokestatic  #8                  // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+        91: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        94: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        97: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       100: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       103: new           #4                  // class java/lang/StringBuilder
+       106: dup
+       107: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+       110: ldc           #15                 // String shadow-parameter=
+       112: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       115: bipush        9
+       117: invokestatic  #16                 // Method ShadowIntArray.parameter:(I)[I
+       120: invokestatic  #8                  // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+       123: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       126: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       129: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       132: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       135: new           #4                  // class java/lang/StringBuilder
+       138: dup
+       139: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+       142: ldc           #17                 // String shadow-local=
+       144: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       147: invokestatic  #18                 // Method ShadowIntArray.local:()[I
+       150: invokestatic  #8                  // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+       153: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       156: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       159: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       162: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       165: new           #4                  // class java/lang/StringBuilder
+       168: dup
+       169: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+       172: ldc           #19                 // String unsupported-nested=
+       174: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       177: invokestatic  #20                 // Method UnsupportedIntArray.nested:()[[I
+       180: invokestatic  #21                 // Method java/util/Arrays.deepToString:([Ljava/lang/Object;)Ljava/lang/String;
+       183: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       186: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       189: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       192: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       195: new           #4                  // class java/lang/StringBuilder
+       198: dup
+       199: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+       202: ldc           #22                 // String unsupported-leaves=
+       204: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       207: ldc2_w        #23                 // long 5l
+       210: iconst_2
+       211: invokestatic  #25                 // Method UnsupportedIntArray.unsupportedLeaves:(JI)[I
+       214: invokestatic  #8                  // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+       217: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       220: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       223: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       226: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       229: new           #4                  // class java/lang/StringBuilder
+       232: dup
+       233: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+       236: ldc           #26                 // String prior-assert-ok=
+       238: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       241: iconst_1
+       242: invokestatic  #27                 // Method PriorAssertIntArray.value:(Z)[I
+       245: invokestatic  #8                  // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+       248: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       251: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       254: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       257: iconst_0
+       258: invokestatic  #27                 // Method PriorAssertIntArray.value:(Z)[I
+       261: pop
+       262: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       265: ldc           #28                 // String prior-assert-false=not-thrown
+       267: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       270: goto          282
+       273: astore_3
+       274: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       277: ldc           #30                 // String prior-assert-false=caught
+       279: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       282: return
+      Exception table:
+         from    to  target type
+           257   270   273   Class java/lang/AssertionError
+      LineNumberTable:
+        line 5: 0
+        line 6: 4
+        line 7: 8
+        line 8: 36
+        line 10: 70
+        line 11: 100
+        line 12: 132
+        line 13: 162
+        line 14: 192
+        line 15: 226
+        line 18: 257
+        line 19: 262
+        line 22: 270
+        line 20: 273
+        line 21: 274
+        line 23: 282
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+          274       8     3 expected   Ljava/lang/AssertionError;
+            0     283     0  args   [Ljava/lang/String;
+            4     279     1 uniqueFirst   [I
+            8     275     2 uniqueSecond   [I
+      StackMapTable: number_of_entries = 4
+        frame_type = 255 /* full_frame */
+          offset_delta = 60
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[I" ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 0
+          locals = [ class "[Ljava/lang/String;", class "[I", class "[I" ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder, int ]
+        frame_type = 247 /* same_locals_1_stack_item_frame_extended */
+          offset_delta = 211
+          stack = [ class java/lang/AssertionError ]
+        frame_type = 8 /* same */
+    MethodParameters:
+      Name                           Flags
+      args
+}
+SourceFile: "IntArrayControlsRunner.java"

@@ -1,0 +1,200 @@
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -4905,8 +4905,42 @@
+                 body,
+                 finally_body,
+             } => {
+-                occupied.extend(resources.iter().map(|resource| resource.name.clone()));
++                for resource in resources {
++                    if returns_int_array {
++                        let at = Some(stmt.origin.primary().bci());
++                        crate::stop::poll(budget, at)?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                            1,
++                            at,
++                        )?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::IrItems,
++                            1,
++                            at,
++                        )?;
++                    }
++                    occupied.insert(resource.name.clone());
++                }
+                 for catch in catches {
++                    if returns_int_array {
++                        let at = Some(stmt.origin.primary().bci());
++                        crate::stop::poll(budget, at)?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                            1,
++                            at,
++                        )?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::IrItems,
++                            1,
++                            at,
++                        )?;
++                    }
+                     occupied.insert(catch.name.clone());
+                     pending.extend(&catch.body);
+                 }
+@@ -15991,6 +16025,153 @@
+         })
+     }
+ 
++    fn try_array_ast(resource_names: &[&str], catch_names: &[&str]) -> ClassSourceMethodAst {
++        let mut ast = array_ast(&[3]);
++        let source = std::sync::Arc::make_mut(&mut ast.projection);
++        let returned = source.program.stmts.pop().expect("array fixture has a return");
++        let resources = resource_names
++            .iter()
++            .enumerate()
++            .map(|(index, name)| crate::ast::ResourceDecl {
++                ty: Type::Int,
++                name: (*name).to_owned(),
++                value: Expr::new(
++                    ExprKind::Integer(index as i64),
++                    OriginSet::new(Origin::direct(0).in_method(&source.member)),
++                ),
++            })
++            .collect();
++        let catches = catch_names
++            .iter()
++            .map(|name| crate::ast::CatchClause {
++                ty: "java.lang.Exception".to_owned(),
++                name: (*name).to_owned(),
++                body: Vec::new(),
++            })
++            .collect();
++        source.program.stmts.push(Stmt::new(
++            StmtKind::Try {
++                resources,
++                catches,
++                body: vec![returned],
++                finally_body: None,
++            },
++            OriginSet::new(Origin::direct(0).in_method(&source.member)),
++        ));
++        source.program.statements = 2;
++        ast
++    }
++
++    fn named_candidate(name: &str) -> IntegerConstantName {
++        IntegerConstantName {
++            value: 7,
++            name: name.to_owned(),
++        }
++    }
++
++    #[test]
++    fn array_try_resource_and_catch_names_are_charged_before_occupying_them() {
++        let many_catches: Vec<String> = (0..16).map(|index| format!("catch{index}")).collect();
++        let catch_names: Vec<_> = many_catches.iter().map(String::as_str).collect();
++        let catches_ast = try_array_ast(&[], &catch_names);
++
++        // Without name scanning, this fixture's complete IR bill is eight items: the initial
++        // list, the Try/return statements, one candidate, and four program nodes. Six catch
++        // names consume the remaining allowance, so the seventh must stop before its clone.
++        let mut catch_ir_limited = Budget::new(Limits {
++            ir_items: 8,
++            analysis_steps: 64,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        assert!(matches!(
++            project_class_source_integer_constants(
++                &catches_ast,
++                &[named_candidate("catch0")],
++                false,
++                true,
++                &mut catch_ir_limited,
++            ),
++            Err(crate::stop::StopReason::Budget {
++                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
++                at: Some(0),
++                ..
++            })
++        ));
++        assert_eq!(catch_ir_limited.usage().ir_items, 8);
++        assert_eq!(catch_ir_limited.usage().analysis_steps, 8);
++
++        // Analysis work is independently charged before the same name scan; this cap permits the
++        // Try node itself but not the first catch record.
++        let mut catch_analysis_limited = Budget::new(Limits {
++            ir_items: 32,
++            analysis_steps: 7,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        assert!(matches!(
++            project_class_source_integer_constants(
++                &catches_ast,
++                &[named_candidate("catch0")],
++                false,
++                true,
++                &mut catch_analysis_limited,
++            ),
++            Err(crate::stop::StopReason::Budget {
++                dimension: jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                at: Some(0),
++                ..
++            })
++        ));
++        assert_eq!(catch_analysis_limited.usage().analysis_steps, 7);
++        assert_eq!(catch_analysis_limited.usage().ir_items, 7);
++
++        let resource_ast = try_array_ast(&["resource0"], &[]);
++        let mut resource_limited = Budget::new(Limits {
++            ir_items: 2,
++            analysis_steps: 2,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        assert!(matches!(
++            project_class_source_integer_constants(
++                &resource_ast,
++                &[named_candidate("resource0")],
++                false,
++                true,
++                &mut resource_limited,
++            ),
++            Err(crate::stop::StopReason::Budget {
++                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
++                at: Some(0),
++                ..
++            })
++        ));
++        assert_eq!(resource_limited.usage().ir_items, 2);
++        assert_eq!(resource_limited.usage().analysis_steps, 2);
++
++        let mut sufficient = budget();
++        assert!(project_class_source_integer_constants(
++            &catches_ast,
++            &[named_candidate("catch0")],
++            false,
++            true,
++            &mut sufficient,
++        )
++        .unwrap()
++        .is_none());
++        let mut sufficient = budget();
++        assert!(project_class_source_integer_constants(
++            &resource_ast,
++            &[named_candidate("resource0")],
++            false,
++            true,
++            &mut sufficient,
++        )
++        .unwrap()
++        .is_none());
++    }
++
+     #[test]
+     fn array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses() {
+         let candidate = IntegerConstantName {

@@ -1,0 +1,64 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling find-msvc-tools v0.1.12
+   Compiling shlex v2.0.1
+   Compiling cc v1.4.6
+   Compiling syn v3.0.5
+   Compiling crc32fast v1.5.2
+   Compiling cfg-if v1.0.4
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.2
+   Compiling serde_core v1.0.229
+   Compiling indexmap v2.14.2
+   Compiling blake3 v1.8.7
+   Compiling serde v1.0.229
+   Compiling thiserror v2.0.20
+   Compiling simd-adler32 v0.3.10
+   Compiling adler2 v2.0.1
+   Compiling miniz_oxide v0.9.1
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.20
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayvec v0.7.8
+   Compiling bitflags v2.13.2
+   Compiling noak v0.7.0
+   Compiling flate2 v1.1.10
+   Compiling foldhash v0.1.5
+   Compiling rawzip v0.5.1
+   Compiling hashbrown v0.15.5
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling fixedbitset v0.5.7
+   Compiling petgraph v0.8.3
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+error[E0063]: missing field `instance_field_write_evidence` in initializer of `report::ClassSourceMethodAstSource`
+     --> crates/jarde-java/src/report.rs:15963:45
+      |
+15963 |             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+      |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `instance_field_write_evidence`
+
+error[E0277]: the type `str` cannot be indexed by `&std::ops::Range<usize>`
+     --> crates/jarde-java/src/report.rs:16018:39
+      |
+16018 |                 .all(|range| body.get(range.clone()) == Some("VALUE"))
+      |                                   --- ^^^^^^^^^^^^^ string indices are ranges of `usize`
+      |                                   |
+      |                                   required by a bound introduced by this call
+      |
+      = help: the trait `SliceIndex<str>` is not implemented for `&std::ops::Range<usize>`
+help: the trait `SliceIndex<str>` is implemented for `std::ops::Range<usize>`
+     --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/str/traits.rs:187:1
+      |
+  187 | const unsafe impl SliceIndex<str> for ops::Range<usize> {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+note: required by a bound in `core::str::<impl str>::get`
+     --> /opt/homebrew/Cellar/rust/1.98.1/lib/rustlib/src/rust/library/core/src/str/mod.rs:634:25
+      |
+  634 |     pub const fn get<I: [const] SliceIndex<str>>(&self, i: I) -> Option<&I::Output> {
+      |                         ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `core::str::<impl str>::get`
+
+Some errors have detailed explanations: E0063, E0277.
+For more information about an error, try `rustc --explain E0063`.
+error: could not compile `jarde-java` (lib test) due to 2 previous errors

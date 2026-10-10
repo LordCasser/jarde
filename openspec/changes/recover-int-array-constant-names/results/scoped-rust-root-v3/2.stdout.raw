@@ -1,0 +1,17 @@
+
+running 7 tests
+test facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name ... ok
+test facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins ... ok
+test facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection ... ok
+test facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key ... ok
+test facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection ... ok
+test facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target ... FAILED
+test facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals ... ok
+
+failures:
+
+failures:
+    facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 212 filtered out; finished in 2.51s
+

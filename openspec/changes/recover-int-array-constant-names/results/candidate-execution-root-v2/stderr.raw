@@ -1,0 +1,29 @@
+WARN `--no-project` was provided, but no project was found
+candidate preparation failed: TypeError: keys must be str, int, float, bool or None, not tuple
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v5.py", line 1423, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v5.py", line 1413, in main
+    inventory = prepare_closed_manifest(manifest)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v5.py", line 1188, in prepare_closed_manifest
+    write_json(manifest_path, manifest)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v5.py", line 116, in write_json
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/json/encoder.py", line 377, in _iterencode_dict
+    raise TypeError(f'keys must be str, int, float, bool or None, '
+TypeError: keys must be str, int, float, bool or None, not tuple

@@ -1,0 +1,16 @@
+{
+  "schema": "em22-mask-condition-baseline-summary-v1",
+  "status": "completed",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "original_cross_jdk_raw_equal": true,
+  "failures": []
+}

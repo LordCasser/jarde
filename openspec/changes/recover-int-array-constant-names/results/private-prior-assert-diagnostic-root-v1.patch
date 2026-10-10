@@ -1,0 +1,44 @@
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -44446,20 +44446,28 @@
+             .find(|method| method.item.name.raw().0 == b"value")
+             .unwrap();
+         assert!(value.text.contains("assert"));
+-        assert!(value.text.contains("new int[]{7}"));
++        let value_projections: Vec<_> = report
++            .integer_constant_projections
++            .iter()
++            .filter(|projection| {
++                projection.anchors.iter().any(|anchor| matches!(
++                    anchor,
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
++                        if method == &value.item.identity
++                ))
++            })
++            .collect();
+         assert!(
+-            report
+-                .integer_constant_projections
+-                .iter()
+-                .all(|projection| {
+-                    !projection.anchors.iter().any(|anchor| {
+-                        matches!(
+-                            anchor,
+-                            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
+-                                if method == &value.item.identity
+-                        )
+-                    })
+-                })
++            value.text.contains("new int[]{7}"),
++            "PriorAssert method text: {:?}; method projections: {:?}",
++            value.text,
++            value_projections
++        );
++        assert!(
++            value_projections.is_empty(),
++            "PriorAssert method text: {:?}; method projections: {:?}",
++            value.text,
++            value_projections
+         );
+     }
+ 

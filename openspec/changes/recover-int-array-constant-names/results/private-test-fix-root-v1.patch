@@ -1,0 +1,27 @@
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -15976,6 +15976,7 @@
+                 call_targets: Vec::new(),
+                 anonymous_constructor_initializer_bci: None,
+                 generic_call_init: None,
++                instance_field_write_evidence: None,
+             }),
+         }
+     }
+@@ -15983,6 +15984,7 @@
+     fn budget() -> Budget {
+         Budget::new(Limits {
+             ir_items: 1 << 20,
++            analysis_steps: 1 << 20,
+             output_bytes: 1 << 20,
+             elapsed_millis: u64::MAX,
+             ..Limits::default()
+@@ -16015,7 +16017,7 @@
+         assert!(
+             ranges
+                 .iter()
+-                .all(|range| body.get(range.clone()) == Some("VALUE"))
++                .all(|range| body.get((*range).clone()) == Some("VALUE"))
+         );
+ 
+         let mut ambiguous_budget = budget();

@@ -1,0 +1,209 @@
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -44147,12 +44147,24 @@
+         "../openspec/evidence/java-syntax-2026-09-27/cf12-integer-switch/baseline/IntegerSwitchAudit.original.class"
+     );
+ 
+-    fn source(bytes: &[u8], name: &str, budget: &mut Budget) -> ClassSourceReport {
++    fn source(bytes: &[u8], name: &str, budget: &mut Budget) -> ClassSourceReport {
++        source_with_snapshot(bytes, name, budget).0
++    }
++
++    fn source_with_snapshot(
++        bytes: &[u8],
++        name: &[u8],
++        budget: &mut Budget,
++    ) -> (
++        ClassSourceReport,
++        jarde_reader::artifact::ArtifactSnapshot,
++        jarde_jvm::environment::ResolutionEnvironment,
++    ) {
+         let engine = Engine::new();
+         let snapshot = engine
+             .open(ArtifactInput::bytes(bytes.to_vec()), budget)
+             .unwrap();
+-        let environment = EnvironmentRequest {
++        let request = EnvironmentRequest {
+             snapshot: snapshot.id().clone(),
+             scope: PhysicalScope::SnapshotAll,
+             policy: EnvironmentPolicy::SingleClass,
+@@ -44163,6 +44175,7 @@
+             },
+             loader: LoaderId("app".to_owned()),
+         };
++        let resolved = request.build(std::slice::from_ref(&snapshot)).unwrap();
+         let OperationOutcome::Performed(report) = engine
+             .class_source(
+                 std::slice::from_ref(&snapshot),
+@@ -44170,7 +44183,7 @@
+                     class: ClassRef::Name {
+                         class: ClassNameQuery::internal(name),
+                     },
+-                    environment,
++                    environment: request,
+                 },
+                 budget,
+             )
+@@ -44178,7 +44191,42 @@
+         else {
+             panic!("class must be unique");
+         };
+-        report
++        (report, snapshot, resolved)
++    }
++
++    fn ast_for_method(
++        snapshot: &jarde_reader::artifact::ArtifactSnapshot,
++        environment: &jarde_jvm::environment::ResolutionEnvironment,
++        method: &PhysicalMethodId,
++        budget: &mut Budget,
++    ) -> jarde_java::report::ClassSourceMethodAst {
++        let analyzed = jarde_jvm::analyze_method_ir(
++            std::slice::from_ref(snapshot),
++            &crate::ir::MethodAnalysisRequest {
++                environment: environment.clone(),
++                method: method.clone(),
++                stages: jarde_jvm::ir::AnalysisStage::ALL.to_vec(),
++            },
++            budget,
++        )
++        .unwrap();
++        let facts = recovery_facts(analyzed.ir().declaration(), analyzed.ir().code(), method);
++        let request = jarde_java::RecoveryRequest::new(
++            analyzed.ir(),
++            &facts,
++            environment.runtime.profile.clone(),
++        );
++        let recovered = jarde_java::report::recover_for_class_source_with_anonymous_ast(
++            &request,
++            budget,
++            false,
++            false,
++            true,
++            false,
++            false,
++        );
++        assert!(recovered.report.produced());
++        recovered.ast.expect("full class-source AST retained")
+     }
+ 
+     fn compiled(name: &str, text: &str) -> Vec<u8> {
+@@ -44393,47 +44441,84 @@
+             "ArrayPriorProjection",
+             "class ArrayPriorProjection { static final int VALUE=7; static int[] value(boolean ok){ assert ok; return new int[]{7}; } }",
+         );
+-        let report = source(
+-            &prior,
+-            "ArrayPriorProjection",
+-            &mut task_budget(&[]).unwrap(),
+-        );
+-        let value = report
++        let mut budget = task_budget(&[]).unwrap();
++        let (mut report, snapshot, environment) =
++            source_with_snapshot(&prior, "ArrayPriorProjection", &mut budget);
++        let value_index = report
+             .methods
+             .iter()
+-            .find(|method| method.item.name.raw().0 == b"value")
++            .position(|method| method.item.name.raw().0 == b"value")
+             .unwrap();
+-        assert!(
+-            value.text.contains("assert"),
+-            "an earlier assert projection owns this method"
+-        );
+-        assert!(
+-            report
+-                .projection_inputs
+-                .member_texts
+-                .iter()
+-                .any(|staged| staged.member == value.item.index),
+-            "the method is actually staged before the array-name adapter"
+-        );
++        let value = &report.methods[value_index];
++        assert!(value.text.contains("assert"), "assert is recovered in this method AST");
+         assert!(
+             value.text.contains("new int[]{7}"),
+-            "the prior target keeps its physical array literal"
++            "the physical numeric array leaf stays visible"
+         );
+-        assert!(
+-            !report
+-                .integer_constant_projections
+-                .iter()
+-                .any(|projection| {
+-                    projection.anchors.iter().any(|anchor| {
+-                        matches!(
+-                            anchor,
+-                            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
+-                                if method == &value.item.identity
+-                        )
+-                    })
+-                }),
+-            "the later array-name adapter must refuse this already-staged target"
++        let ast = ast_for_method(
++            &snapshot,
++            &environment,
++            &value.item.identity,
++            &mut budget,
+         );
++        let names: Vec<_> = report
++            .integer_constant_candidates
++            .iter()
++            .map(|candidate| jarde_java::report::IntegerConstantName {
++                value: candidate.value,
++                name: candidate.name.clone(),
++            })
++            .collect();
++        let (_, uses, original_body) = jarde_java::report::project_class_source_integer_constants(
++            &ast,
++            &names,
++            false,
++            true,
++            &mut budget,
++        )
++        .unwrap()
++        .expect("the complete AST contains the direct int-array initializer");
++        assert!(uses.iter().any(|use_site| use_site.body_range.is_some()));
++        let original_body = original_body.expect("the adapter returns the replayable original body");
++        assert_eq!(
++            report.methods[value_index]
++                .integer_constant_projection_text(&original_body)
++                .as_deref(),
++            Some(report.methods[value_index].text.as_str()),
++            "the original-AST replay gate accepts this physical method text"
++        );
++        assert!(report.integer_constant_projections.iter().all(|projection| {
++            !projection.anchors.iter().any(|anchor| matches!(
++                anchor,
++                class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
++                    if method == &report.methods[value_index].item.identity
++            ))
++        }));
++
++        // Model a prior same-method text-only projection input with the actual physical member
++        // text. The adapter must preserve it; this is independent of the assert AST above, which
++        // is recovered as part of the method and does not itself create a staged member_text.
++        report
++            .projection_inputs
++            .member_texts
++            .push(class_source::ClassSourceProjectedMemberText {
++                member: report.methods[value_index].item.index,
++                text: report.methods[value_index].text.clone(),
++                emission: None,
++            });
++        let before_text = report.text.clone();
++        let before_method_text = report.methods[value_index].text.clone();
++        let before_projections = report.integer_constant_projections.clone();
++        let asts = [(
++            report.methods[value_index].item.identity.clone(),
++            ast,
++            None,
++            None,
++        )];
++        project_class_source_integer_constant_names(&mut report, &asts, &mut budget).unwrap();
++        assert_eq!(report.text, before_text);
++        assert_eq!(report.methods[value_index].text, before_method_text);
++        assert_eq!(report.integer_constant_projections, before_projections);
+     }
+ 
+     #[test]

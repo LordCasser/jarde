@@ -1,0 +1,77 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:56:50.998501+00:00",
+      "duration_seconds": 3.4091212910134345,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/prebuild-checkpoint-root-v2/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/prebuild-checkpoint-root-v2/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:56:54.407934+00:00",
+      "duration_seconds": 0.525024583999766,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/prebuild-checkpoint-root-v2/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/prebuild-checkpoint-root-v2/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:56:54.933183+00:00",
+      "duration_seconds": 0.5273237079964019,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/prebuild-checkpoint-root-v2/2.stdout.raw",
+          "bytes": 15296,
+          "sha256": "2717d130c42fb0febca775426d95c672eea0f8880be68878a444e3d2a55a15a2"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/prebuild-checkpoint-root-v2/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

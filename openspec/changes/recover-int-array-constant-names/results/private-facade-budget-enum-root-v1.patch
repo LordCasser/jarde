@@ -1,0 +1,91 @@
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -19815,7 +19815,7 @@
+             let mut prior_same_member = false;
+             for staged in &report.projection_inputs.member_texts {
+                 budget.poll()?;
+-                budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                 if staged.member == method.item.index {
+                     prior_same_member = true;
+                     break;
+@@ -19826,7 +19826,7 @@
+             }
+             budget.poll()?;
+             budget.charge(
+-                BudgetDimension::AnalysisSteps,
++                CountedBudgetDimension::AnalysisSteps,
+                 u64::try_from(method.text.len()).unwrap_or(u64::MAX),
+             )?;
+             let original_body_matches = original_body
+@@ -19846,9 +19846,9 @@
+         for use_site in uses {
+             let span = if let Some(range) = use_site.body_range.as_ref() {
+                 budget.poll()?;
+-                budget.charge(BudgetDimension::IrItems, 1)?;
++                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                 budget.charge(
+-                    BudgetDimension::AnalysisSteps,
++                    CountedBudgetDimension::AnalysisSteps,
+                     u64::try_from(range.end.saturating_sub(range.start)).unwrap_or(u64::MAX),
+                 )?;
+                 method.integer_constant_projection_span(&body, range.start, range.end)
+@@ -19880,11 +19880,11 @@
+                 break;
+             }
+             let field = if use_site.body_range.is_some() {
+-                budget.charge(BudgetDimension::IrItems, 1)?;
++                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                 let mut matching = None;
+                 for candidate in &report.integer_constant_candidates {
+                     budget.poll()?;
+-                    budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                     if candidate.name == use_site.name {
+                         matching = Some(candidate);
+                         break;
+@@ -19902,7 +19902,7 @@
+                 break;
+             };
+             if use_site.body_range.is_some() {
+-                budget.charge(BudgetDimension::IrItems, 3)?;
++                budget.charge(CountedBudgetDimension::IrItems, 3)?;
+             }
+             derived.push(class_source::MemberFamilyDerivedProjection {
+                 kind: class_source::MemberFamilyDerivedKind::IntegerConstantName,
+@@ -19922,7 +19922,7 @@
+         }
+         if unique {
+             if has_array_use {
+-                budget.charge(BudgetDimension::IrItems, 1)?;
++                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+             }
+             projected.push(class_source::MemberFamilyMethodText {
+                 index: method.item.index,
+@@ -19944,7 +19944,7 @@
+         u64::try_from(text.len()).unwrap_or(u64::MAX),
+     )?;
+     budget.charge(
+-        BudgetDimension::IrItems,
++        CountedBudgetDimension::IrItems,
+         u64::try_from(report.methods.len()).unwrap_or(u64::MAX),
+     )?;
+     let mut staged_method_texts = vec![None; report.methods.len()];
+@@ -19952,7 +19952,7 @@
+         let mut matched_index = None;
+         for (index, method) in report.methods.iter().enumerate() {
+             budget.poll()?;
+-            budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+             if method.item.index == staged.index {
+                 matched_index = Some(index);
+                 break;
+@@ -19961,7 +19961,7 @@
+         let Some(index) = matched_index else {
+             return Ok(());
+         };
+-        budget.charge(BudgetDimension::IrItems, 1)?;
++        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+         staged_method_texts[index] = Some(staged.text.clone());
+     }
+     budget.poll()?;

@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/unused-byte-array-init-next/results/verify-baseline-luna-v3.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T04:47:46.989166+00:00",
+  "duration_seconds": 0.19663424999453127,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/unused-byte-array-init-next/results/independent-execution-root-v2/stdout.raw",
+      "bytes": 3592,
+      "sha256": "3f868c4016f5a8e2932ce413165a7b9bd119486b8659166975af17c29235417c"
+    },
+    "stderr": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/unused-byte-array-init-next/results/independent-execution-root-v2/stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  },
+  "prepared_script_sha256": "8093d2ce00af310f473f4d18f33ca678126ab1f64af4d0f58329e02a6783192e"
+}

@@ -1,0 +1,7 @@
+# Independent v5 verifier review
+
+V5 is a private successor to frozen v4; v4 and earlier artifacts remain unchanged. It has not been executed. The imported-oracle manifest rows intentionally contain only copied stdout/stderr records, while the exit code lives at `source_case.runtime.exit`. V5 builds `(exit, stdout, stderr)` from those fields, verifies the complete `source_case` object equals the same-JDK `original` case in the hash-pinned ArrayFill manifest, and verifies each copied stream byte-for-byte against that original case's actual raw stream. It does not invent or write an `exit` field into the imported row.
+
+For every source-map segment in all 32 renders, V5 checks the full `OriginSet`: the optional primary point plus every derived point. Every point must identify the physical method and original class owner, and its BCI must exist in that method's original javap instruction set. The union of those BCIs for each method must equal the complete original instruction BCI set. This follows the accepted byte-array-return verifier's OriginSet accounting and includes constructor `aload_0` BCIs carried as derived origins.
+
+The V7 source evidence was read-only inspected before preparation: imported `source_case` values exactly match their same-JDK ArrayFill original case, and both copied stdout/stderr streams equal the pinned original command bytes. V5 updates no products or historical evidence. Run it only after root review.

@@ -1,0 +1,9 @@
+{
+  "status": "accepted-local-build-freeze",
+  "cli_sha256": "146c657cdf5baeaa2b9c31e2715547ff9f1a4e129decad025f517a93400af3bf",
+  "metadata_sha256": "c97aa02f3af4bab9064e63f9431ecaf61c4c1769e4693529cf5a0d1cdfc72180",
+  "execution_sha256": "5106f32591df3c119ca56204c9d9bdd5d84cd61682528e8ac0fb22b05d81d65c",
+  "actual_commands": 7,
+  "checked_pins": 30,
+  "peak_target_bytes": 900726520
+}

@@ -1,0 +1,6 @@
+WARN `--no-project` was provided, but no project was found
+{
+  "error": "KeyError: 'exit'",
+  "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v4",
+  "status": "verification-failed"
+}

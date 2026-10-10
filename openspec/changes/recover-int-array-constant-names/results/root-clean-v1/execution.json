@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "started_at": "2026-10-10T04:13:08.901836+00:00",
+  "duration_seconds": 0.08309679201920517,
+  "exit_code": 0,
+  "free_before": 20604256256,
+  "free_after": 20999315456,
+  "target_exists_after": false,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/root-clean-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/root-clean-v1/stderr.raw",
+      "bytes": 39,
+      "sha256": "829f5f1f5cca8d0301366287fca6241c0fd5fbdfac44cf5fbc4973aa9e27d163"
+    }
+  }
+}

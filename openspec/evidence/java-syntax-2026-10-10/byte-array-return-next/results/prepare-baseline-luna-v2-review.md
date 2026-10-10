@@ -1,0 +1,9 @@
+# Byte-array return baseline collector v2 review
+
+V1 remains immutable and unexecuted. Its implementation rendered both Jarde profiles but compiled and ran only the `all` text (2 Jarde cases / 8 total legs), despite the stated four Jarde legs / ten total. V2 corrects that gap: for each original JDK class, it records default and all reports, requires their generated text to match, then compiles and runs each profile as a separate complete-class leg. Expected totals are 2 original + 4 JADX + 4 Jarde = 10 complete-source compile/runtime legs.
+
+V2 writes only to a new `baseline-root-v2`. It keeps the fixed JDK manifest, JADX 1.5.6 launcher, frozen instance CLI, original/JADX source policy, empty classpath/sourcepath, fresh output classes, and `-Xverify:all` runtime comparisons. It never edits generated target sources; only Runner package adaptation is allowed. V1's output directory is not read as evidence or reused.
+
+Report validation treats source-map completeness differently by request: default output may omit or provide a non-complete map and that state is recorded; all-evidence output must say the source-map category is complete. Any available segments are checked against the report text's UTF-8 byte length. Every emitted primary/derived origin is checked for exact class owner BLAKE3, length, standalone-root snapshot and base variant, exact method name/descriptor, and a BCI present in that method's original `javap -p -c -s -v` instructions. Per-method mapped and expected BCI sets are recorded separately; coverage gaps are not filled or fabricated. Both profiles also require the exact physical class inventory (zero fields, constructor plus `test()[B`) and exactly one `new byte[]{0, 1, 2}` expression in the complete class text.
+
+The script uses `blake3==1.0.11` for input-owner binding. Python AST parsing passed after preparation. The collector, JDKs, JADX, Jarde CLI, and runtime were not executed by this preparation.

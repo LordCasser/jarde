@@ -1,0 +1,77 @@
+{
+  "status": "accepted",
+  "checks": [
+    {
+      "class": "ConstantIntArray",
+      "leg": "javac8",
+      "profile": "default",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "ConstantIntArray",
+      "leg": "javac8",
+      "profile": "all",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "LongArrayLimits",
+      "leg": "javac8",
+      "profile": "default",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "LongArrayLimits",
+      "leg": "javac8",
+      "profile": "all",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "DependentArrayStores",
+      "leg": "javac8",
+      "profile": "default",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "DependentArrayStores",
+      "leg": "javac8",
+      "profile": "all",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "ConstantIntArray",
+      "leg": "javac23",
+      "profile": "default",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "ConstantIntArray",
+      "leg": "javac23",
+      "profile": "all",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "LongArrayLimits",
+      "leg": "javac23",
+      "profile": "default",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "LongArrayLimits",
+      "leg": "javac23",
+      "profile": "all",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "DependentArrayStores",
+      "leg": "javac23",
+      "profile": "default",
+      "physical_methods_text_map_unchanged": true
+    },
+    {
+      "class": "DependentArrayStores",
+      "leg": "javac23",
+      "profile": "all",
+      "physical_methods_text_map_unchanged": true
+    }
+  ]
+}

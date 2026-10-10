@@ -1,0 +1,42 @@
+{
+  "schema": "instance-array-scoped-rust-root-v1",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "integer_array",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:05:04.910849+00:00",
+      "duration_seconds": 15.16047679199255,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 118302234,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v1/0.stderr.raw",
+          "bytes": 3108,
+          "sha256": "dee1de6abb5d53e5f2975ba52ad9c18ba79357b1e8207145c2170fd3a4ee99a0"
+        }
+      }
+    }
+  ]
+}

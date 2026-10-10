@@ -1,0 +1,55 @@
+--- verify-candidate-full-class-luna-v1.py
++++ verify-candidate-full-class-luna-v2.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import blake3
+ import hashlib
+ import json
+ from pathlib import Path
+@@ -296,9 +297,15 @@
+             require(row["class_input_digest_matches_accepted_baseline"] is True, f"input class differs from accepted baseline: {row['label']}")
+             ident = row["original_input_identity"]
+             require(ident["input_file_bytes"] == ident["class_bytes_length_reported_by_cli"], f"class byte length mismatch: {row['label']}")
+-            require(ident["class_bytes_digest_reported_by_cli"] == ident["class_bytes_blake3_verified"], f"CLI BLAKE3 identity disagreement: {row['label']}")
+             file_identity = row["input_class"]
+-            checked_record(RUN, file_identity, f"input class {row['label']}")
++            class_bytes = checked_record(RUN, file_identity, f"input class {row['label']}")
++            actual_blake3 = blake3.blake3(class_bytes).hexdigest()
++            require(ident["class_bytes_digest_reported_by_cli"] == actual_blake3, f"CLI class digest differs from recomputed original-class BLAKE3: {row['label']}")
++            require(ident["class_bytes_blake3_verified"] == actual_blake3, f"CLI verified digest differs from recomputed original-class BLAKE3: {row['label']}")
++            require(data["class"]["class_bytes"]["digest"] == actual_blake3, f"class owner digest differs from recomputed original-class BLAKE3: {row['label']}")
++            require(data["class"]["class_bytes"]["length"] == len(class_bytes), f"class owner byte length differs from original class: {row['label']}")
++            require(all(field_identity(field)[4] == actual_blake3 for field in data["fields"]), f"one or more physical field owners differ from original-class BLAKE3: {row['label']}")
++            require(all(method_identity(method)[4] == actual_blake3 for method in data["methods"]), f"one or more physical method owners differ from original-class BLAKE3: {row['label']}")
+             require(file_identity["bytes"] == ident["input_file_bytes"] and file_identity["sha256"] == ident["input_file_sha256"], f"input identity SHA differs: {row['label']}")
+             input_identity.setdefault((name, leg), (file_identity["bytes"], ident["class_bytes_blake3_verified"]))
+             require(input_identity[(name, leg)] == (file_identity["bytes"], ident["class_bytes_blake3_verified"]), f"input identity changes across profiles: {row['label']}")
+@@ -515,7 +522,7 @@
+ 
+ def main() -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parent / "candidate-full-class-luna-v1-verification.json")
++    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parent / "candidate-full-class-luna-v2-verification.json")
+     args = parser.parse_args()
+     try:
+         require(ROOT.name == "jarde" and (ROOT / "openspec").is_dir(), "could not resolve repository root from verifier location")
+@@ -523,7 +530,7 @@
+         require(manifest["schema"] == "recover-int-array-constant-names-candidate-full-class-root-v6", "unexpected v6 manifest schema")
+         require(manifest["status"] == "completed", "v6 manifest is not completed")
+         report = {
+-            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v1",
++            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v2",
+             "status": "verified",
+             "manifest_path": MANIFEST.relative_to(ROOT).as_posix(),
+             "manifest_sha256": file_sha256(MANIFEST),
+@@ -547,7 +554,7 @@
+         return 0
+     except Exception as exc:
+         report = {
+-            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v1",
++            "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v2",
+             "status": "verification-failed",
+             "error": f"{type(exc).__name__}: {exc}",
+         }

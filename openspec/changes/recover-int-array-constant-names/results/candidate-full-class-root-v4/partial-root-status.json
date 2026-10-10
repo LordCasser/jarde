@@ -1,0 +1,7 @@
+{
+  "status": "exception-before-final-manifest",
+  "failure": "KeyError: javac23 in build_jadx_input_jar caller/context shape",
+  "actual_outer_execution": "../candidate-execution-root-v1/execution.json",
+  "inner_command_records_available": false,
+  "claim_boundary": "Preserved source/class/raw streams and 32 rendered JSON files; no completed case acceptance or reconstructed missing command argv/time is claimed."
+}

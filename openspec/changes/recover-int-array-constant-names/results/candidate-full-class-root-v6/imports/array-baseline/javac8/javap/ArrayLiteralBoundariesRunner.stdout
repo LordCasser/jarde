@@ -1,0 +1,375 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/baseline-root-v2/cases/javac8-original/classes/ArrayLiteralBoundariesRunner.class
+  Last modified 2026-10-10; size 1832 bytes
+  MD5 checksum b8663df0125d704c25604ee7dd7f918c
+public final class ArrayLiteralBoundariesRunner
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+    #1 = Methodref          #42.#56       // java/lang/Object."<init>":()V
+    #2 = Class              #57           // LongArrayLimits
+    #3 = Methodref          #2.#56        // LongArrayLimits."<init>":()V
+    #4 = Methodref          #2.#58        // LongArrayLimits.test:()[J
+    #5 = String             #59           // LongArrayLimits.test must return a fresh array
+    #6 = Methodref          #41.#60       // ArrayLiteralBoundariesRunner.check:(ZLjava/lang/String;)V
+    #7 = Class              #61           // java/lang/Long
+    #8 = Long               9223372036854775807l
+   #10 = Long               -9223372036854775807l
+   #12 = Methodref          #62.#63       // java/util/Arrays.equals:([J[J)Z
+   #13 = String             #64           // long literal values must preserve all 64 bits
+   #14 = Fieldref           #65.#66       // java/lang/System.out:Ljava/io/PrintStream;
+   #15 = Class              #67           // java/lang/StringBuilder
+   #16 = Methodref          #15.#56       // java/lang/StringBuilder."<init>":()V
+   #17 = String             #68           // longs=
+   #18 = Methodref          #15.#69       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #19 = Methodref          #15.#70       // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #20 = String             #71           // :
+   #21 = Methodref          #15.#72       // java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+   #22 = Methodref          #15.#73       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #23 = Methodref          #74.#75       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #24 = Class              #76           // ConstantIntArray
+   #25 = Methodref          #24.#56       // ConstantIntArray."<init>":()V
+   #26 = Methodref          #24.#77       // ConstantIntArray.test:()[I
+   #27 = String             #78           // ConstantIntArray.test must return a fresh array
+   #28 = String             #79           // CONST_INT keeps its exact positive value
+   #29 = Integer            65535
+   #30 = Methodref          #62.#80       // java/util/Arrays.equals:([I[I)Z
+   #31 = String             #81           // constant int array values
+   #32 = String             #82           // ints=
+   #33 = Class              #83           // DependentArrayStores
+   #34 = Methodref          #33.#56       // DependentArrayStores."<init>":()V
+   #35 = Methodref          #33.#77       // DependentArrayStores.test:()[I
+   #36 = String             #84           // DependentArrayStores.test must return a fresh array
+   #37 = String             #85           // dependent stores use previous elements
+   #38 = String             #86           // dependent=
+   #39 = Class              #87           // java/lang/AssertionError
+   #40 = Methodref          #39.#88       // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+   #41 = Class              #89           // ArrayLiteralBoundariesRunner
+   #42 = Class              #90           // java/lang/Object
+   #43 = Utf8               <init>
+   #44 = Utf8               ()V
+   #45 = Utf8               Code
+   #46 = Utf8               main
+   #47 = Utf8               ([Ljava/lang/String;)V
+   #48 = Utf8               StackMapTable
+   #49 = Class              #57           // LongArrayLimits
+   #50 = Class              #91           // "[J"
+   #51 = Class              #76           // ConstantIntArray
+   #52 = Class              #92           // "[I"
+   #53 = Class              #83           // DependentArrayStores
+   #54 = Utf8               check
+   #55 = Utf8               (ZLjava/lang/String;)V
+   #56 = NameAndType        #43:#44       // "<init>":()V
+   #57 = Utf8               LongArrayLimits
+   #58 = NameAndType        #93:#94       // test:()[J
+   #59 = Utf8               LongArrayLimits.test must return a fresh array
+   #60 = NameAndType        #54:#55       // check:(ZLjava/lang/String;)V
+   #61 = Utf8               java/lang/Long
+   #62 = Class              #95           // java/util/Arrays
+   #63 = NameAndType        #96:#97       // equals:([J[J)Z
+   #64 = Utf8               long literal values must preserve all 64 bits
+   #65 = Class              #98           // java/lang/System
+   #66 = NameAndType        #99:#100      // out:Ljava/io/PrintStream;
+   #67 = Utf8               java/lang/StringBuilder
+   #68 = Utf8               longs=
+   #69 = NameAndType        #101:#102     // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #70 = NameAndType        #101:#103     // append:(I)Ljava/lang/StringBuilder;
+   #71 = Utf8               :
+   #72 = NameAndType        #101:#104     // append:(J)Ljava/lang/StringBuilder;
+   #73 = NameAndType        #105:#106     // toString:()Ljava/lang/String;
+   #74 = Class              #107          // java/io/PrintStream
+   #75 = NameAndType        #108:#109     // println:(Ljava/lang/String;)V
+   #76 = Utf8               ConstantIntArray
+   #77 = NameAndType        #93:#110      // test:()[I
+   #78 = Utf8               ConstantIntArray.test must return a fresh array
+   #79 = Utf8               CONST_INT keeps its exact positive value
+   #80 = NameAndType        #96:#111      // equals:([I[I)Z
+   #81 = Utf8               constant int array values
+   #82 = Utf8               ints=
+   #83 = Utf8               DependentArrayStores
+   #84 = Utf8               DependentArrayStores.test must return a fresh array
+   #85 = Utf8               dependent stores use previous elements
+   #86 = Utf8               dependent=
+   #87 = Utf8               java/lang/AssertionError
+   #88 = NameAndType        #43:#112      // "<init>":(Ljava/lang/Object;)V
+   #89 = Utf8               ArrayLiteralBoundariesRunner
+   #90 = Utf8               java/lang/Object
+   #91 = Utf8               [J
+   #92 = Utf8               [I
+   #93 = Utf8               test
+   #94 = Utf8               ()[J
+   #95 = Utf8               java/util/Arrays
+   #96 = Utf8               equals
+   #97 = Utf8               ([J[J)Z
+   #98 = Utf8               java/lang/System
+   #99 = Utf8               out
+  #100 = Utf8               Ljava/io/PrintStream;
+  #101 = Utf8               append
+  #102 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #103 = Utf8               (I)Ljava/lang/StringBuilder;
+  #104 = Utf8               (J)Ljava/lang/StringBuilder;
+  #105 = Utf8               toString
+  #106 = Utf8               ()Ljava/lang/String;
+  #107 = Utf8               java/io/PrintStream
+  #108 = Utf8               println
+  #109 = Utf8               (Ljava/lang/String;)V
+  #110 = Utf8               ()[I
+  #111 = Utf8               ([I[I)Z
+  #112 = Utf8               (Ljava/lang/Object;)V
+{
+  private ArrayLiteralBoundariesRunner();
+    descriptor: ()V
+    flags: ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=6, locals=10, args_size=1
+         0: new           #2                  // class LongArrayLimits
+         3: dup
+         4: invokespecial #3                  // Method LongArrayLimits."<init>":()V
+         7: astore_1
+         8: aload_1
+         9: invokevirtual #4                  // Method LongArrayLimits.test:()[J
+        12: astore_2
+        13: aload_1
+        14: invokevirtual #4                  // Method LongArrayLimits.test:()[J
+        17: astore_3
+        18: aload_2
+        19: aload_3
+        20: if_acmpeq     27
+        23: iconst_1
+        24: goto          28
+        27: iconst_0
+        28: ldc           #5                  // String LongArrayLimits.test must return a fresh array
+        30: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+        33: aload_2
+        34: iconst_4
+        35: newarray       long
+        37: dup
+        38: iconst_0
+        39: lconst_0
+        40: lastore
+        41: dup
+        42: iconst_1
+        43: lconst_1
+        44: lastore
+        45: dup
+        46: iconst_2
+        47: ldc2_w        #8                  // long 9223372036854775807l
+        50: lastore
+        51: dup
+        52: iconst_3
+        53: ldc2_w        #10                 // long -9223372036854775807l
+        56: lastore
+        57: invokestatic  #12                 // Method java/util/Arrays.equals:([J[J)Z
+        60: ldc           #13                 // String long literal values must preserve all 64 bits
+        62: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+        65: getstatic     #14                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        68: new           #15                 // class java/lang/StringBuilder
+        71: dup
+        72: invokespecial #16                 // Method java/lang/StringBuilder."<init>":()V
+        75: ldc           #17                 // String longs=
+        77: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        80: aload_2
+        81: arraylength
+        82: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        85: ldc           #20                 // String :
+        87: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        90: aload_2
+        91: iconst_0
+        92: laload
+        93: invokevirtual #21                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+        96: ldc           #20                 // String :
+        98: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       101: aload_2
+       102: iconst_1
+       103: laload
+       104: invokevirtual #21                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       107: ldc           #20                 // String :
+       109: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       112: aload_2
+       113: iconst_2
+       114: laload
+       115: invokevirtual #21                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       118: ldc           #20                 // String :
+       120: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       123: aload_2
+       124: iconst_3
+       125: laload
+       126: invokevirtual #21                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+       129: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       132: invokevirtual #23                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       135: new           #24                 // class ConstantIntArray
+       138: dup
+       139: invokespecial #25                 // Method ConstantIntArray."<init>":()V
+       142: astore        4
+       144: aload         4
+       146: invokevirtual #26                 // Method ConstantIntArray.test:()[I
+       149: astore        5
+       151: aload         4
+       153: invokevirtual #26                 // Method ConstantIntArray.test:()[I
+       156: astore        6
+       158: aload         5
+       160: aload         6
+       162: if_acmpeq     169
+       165: iconst_1
+       166: goto          170
+       169: iconst_0
+       170: ldc           #27                 // String ConstantIntArray.test must return a fresh array
+       172: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+       175: iconst_1
+       176: ldc           #28                 // String CONST_INT keeps its exact positive value
+       178: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+       181: aload         5
+       183: iconst_3
+       184: newarray       int
+       186: dup
+       187: iconst_0
+       188: bipush        127
+       190: iastore
+       191: dup
+       192: iconst_1
+       193: sipush        129
+       196: iastore
+       197: dup
+       198: iconst_2
+       199: ldc           #29                 // int 65535
+       201: iastore
+       202: invokestatic  #30                 // Method java/util/Arrays.equals:([I[I)Z
+       205: ldc           #31                 // String constant int array values
+       207: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+       210: getstatic     #14                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       213: new           #15                 // class java/lang/StringBuilder
+       216: dup
+       217: invokespecial #16                 // Method java/lang/StringBuilder."<init>":()V
+       220: ldc           #32                 // String ints=
+       222: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       225: aload         5
+       227: arraylength
+       228: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       231: ldc           #20                 // String :
+       233: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       236: aload         5
+       238: iconst_0
+       239: iaload
+       240: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       243: ldc           #20                 // String :
+       245: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       248: aload         5
+       250: iconst_1
+       251: iaload
+       252: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       255: ldc           #20                 // String :
+       257: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       260: aload         5
+       262: iconst_2
+       263: iaload
+       264: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       267: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       270: invokevirtual #23                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       273: new           #33                 // class DependentArrayStores
+       276: dup
+       277: invokespecial #34                 // Method DependentArrayStores."<init>":()V
+       280: astore        7
+       282: aload         7
+       284: invokevirtual #35                 // Method DependentArrayStores.test:()[I
+       287: astore        8
+       289: aload         7
+       291: invokevirtual #35                 // Method DependentArrayStores.test:()[I
+       294: astore        9
+       296: aload         8
+       298: aload         9
+       300: if_acmpeq     307
+       303: iconst_1
+       304: goto          308
+       307: iconst_0
+       308: ldc           #36                 // String DependentArrayStores.test must return a fresh array
+       310: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+       313: aload         8
+       315: iconst_3
+       316: newarray       int
+       318: dup
+       319: iconst_0
+       320: iconst_1
+       321: iastore
+       322: dup
+       323: iconst_1
+       324: iconst_2
+       325: iastore
+       326: dup
+       327: iconst_2
+       328: iconst_3
+       329: iastore
+       330: invokestatic  #30                 // Method java/util/Arrays.equals:([I[I)Z
+       333: ldc           #37                 // String dependent stores use previous elements
+       335: invokestatic  #6                  // Method check:(ZLjava/lang/String;)V
+       338: getstatic     #14                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       341: new           #15                 // class java/lang/StringBuilder
+       344: dup
+       345: invokespecial #16                 // Method java/lang/StringBuilder."<init>":()V
+       348: ldc           #38                 // String dependent=
+       350: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       353: aload         8
+       355: arraylength
+       356: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       359: ldc           #20                 // String :
+       361: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       364: aload         8
+       366: iconst_0
+       367: iaload
+       368: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       371: ldc           #20                 // String :
+       373: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       376: aload         8
+       378: iconst_1
+       379: iaload
+       380: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       383: ldc           #20                 // String :
+       385: invokevirtual #18                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       388: aload         8
+       390: iconst_2
+       391: iaload
+       392: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       395: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       398: invokevirtual #23                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       401: return
+      StackMapTable: number_of_entries = 6
+        frame_type = 254 /* append */
+          offset_delta = 27
+          locals = [ class LongArrayLimits, class "[J", class "[J" ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 254 /* append */
+          offset_delta = 140
+          locals = [ class ConstantIntArray, class "[I", class "[I" ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 254 /* append */
+          offset_delta = 136
+          locals = [ class DependentArrayStores, class "[I", class "[I" ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void check(boolean, java.lang.String);
+    descriptor: (ZLjava/lang/String;)V
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iload_0
+         1: ifne          13
+         4: new           #39                 // class java/lang/AssertionError
+         7: dup
+         8: aload_1
+         9: invokespecial #40                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        12: athrow
+        13: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 13 /* same */
+}

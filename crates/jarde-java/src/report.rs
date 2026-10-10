@@ -4807,17 +4807,21 @@ pub struct IntegerConstantNameUse {
     pub name: String,
     pub bci: u32,
     pub case_label: bool,
+    /// Present only for a direct int-array initializer leaf; switch uses retain their old path.
+    pub body_range: Option<std::ops::Range<usize>>,
 }
 
-/// Project only integer switch labels and the direct integer return in a selected arm.
+/// Project integer switch names and the admitted direct int-array initializer leaves.
 /// `None` means the same-run AST proves no safe replacement; a stop is propagated before publish.
 #[doc(hidden)]
 pub fn project_class_source_integer_constants(
     ast: &ClassSourceMethodAst,
     candidates: &[IntegerConstantName],
     returns_int: bool,
+    returns_int_array: bool,
     budget: &mut Budget,
-) -> Result<Option<(String, Vec<IntegerConstantNameUse>)>, crate::stop::StopReason> {
+) -> Result<Option<(String, Vec<IntegerConstantNameUse>, Option<String>)>, crate::stop::StopReason>
+{
     use crate::ast::{ExprKind, StmtKind, SwitchLabels, Type};
     if !ast.projection.complete_code
         || candidates.is_empty()
@@ -4825,10 +4829,39 @@ pub fn project_class_source_integer_constants(
     {
         return Ok(None);
     }
+    if returns_int_array {
+        crate::stop::poll(
+            budget,
+            ast.projection
+                .program
+                .stmts
+                .first()
+                .map(|stmt| stmt.origin.primary().bci()),
+        )?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(ast.projection.parameter_names.len())
+                .unwrap_or(u64::MAX)
+                .saturating_add(
+                    u64::try_from(ast.projection.program.stmts.len()).unwrap_or(u64::MAX),
+                ),
+            None,
+        )?;
+    }
     let mut occupied = std::collections::HashSet::new();
     occupied.extend(ast.projection.parameter_names.iter().flatten().cloned());
     let mut pending: Vec<&crate::ast::Stmt> = ast.projection.program.stmts.iter().collect();
     while let Some(stmt) = pending.pop() {
+        if returns_int_array {
+            crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(stmt.origin.primary().bci()),
+            )?;
+        }
         crate::stop::charge(
             budget,
             jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -4872,8 +4905,42 @@ pub fn project_class_source_integer_constants(
                 body,
                 finally_body,
             } => {
-                occupied.extend(resources.iter().map(|resource| resource.name.clone()));
+                for resource in resources {
+                    if returns_int_array {
+                        let at = Some(stmt.origin.primary().bci());
+                        crate::stop::poll(budget, at)?;
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            at,
+                        )?;
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            1,
+                            at,
+                        )?;
+                    }
+                    occupied.insert(resource.name.clone());
+                }
                 for catch in catches {
+                    if returns_int_array {
+                        let at = Some(stmt.origin.primary().bci());
+                        crate::stop::poll(budget, at)?;
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            at,
+                        )?;
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            1,
+                            at,
+                        )?;
+                    }
                     occupied.insert(catch.name.clone());
                     pending.extend(&catch.body);
                 }
@@ -4883,11 +4950,40 @@ pub fn project_class_source_integer_constants(
             _ => {}
         }
     }
-    let names: std::collections::HashMap<i64, &str> = candidates
-        .iter()
-        .filter(|candidate| !occupied.contains(&candidate.name))
-        .map(|candidate| (i64::from(candidate.value), candidate.name.as_str()))
-        .collect();
+    let names: std::collections::HashMap<i64, &str> = if returns_int_array {
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(candidates.len()).unwrap_or(u64::MAX),
+            None,
+        )?;
+        let mut names = std::collections::HashMap::new();
+        for candidate in candidates {
+            crate::stop::poll(budget, None)?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                1,
+                None,
+            )?;
+            if occupied.contains(&candidate.name) {
+                continue;
+            }
+            if names
+                .insert(i64::from(candidate.value), candidate.name.as_str())
+                .is_some()
+            {
+                return Ok(None);
+            }
+        }
+        names
+    } else {
+        candidates
+            .iter()
+            .filter(|candidate| !occupied.contains(&candidate.name))
+            .map(|candidate| (i64::from(candidate.value), candidate.name.as_str()))
+            .collect()
+    };
     if names.is_empty() {
         return Ok(None);
     }
@@ -4903,6 +4999,116 @@ pub fn project_class_source_integer_constants(
     )?;
     let mut program = ast.projection.program.clone();
     let mut uses = Vec::new();
+    let mut array_names_present = false;
+    if returns_int_array
+        && ast.projection.member.name.0 != b"<init>"
+        && ast.projection.member.name.0 != b"<clinit>"
+        && ast.projection.member.descriptor.0.ends_with(b")[I")
+    {
+        for stmt in &mut program.stmts {
+            crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(stmt.origin.primary().bci()),
+            )?;
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(stmt.origin.primary().bci()),
+            )?;
+            let StmtKind::Return {
+                value: Some(returned),
+            } = &mut stmt.kind
+            else {
+                continue;
+            };
+            let ExprKind::NewArray {
+                element: Type::Int,
+                lengths,
+                initializers: Some(elements),
+                total_dimensions: 1,
+            } = &mut returned.kind
+            else {
+                continue;
+            };
+            if !lengths.is_empty() {
+                continue;
+            }
+            for element in elements {
+                crate::stop::poll(budget, Some(element.origin.primary().bci()))?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(element.origin.primary().bci()),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(element.origin.primary().bci()),
+                )?;
+                if element.presented != Some(Type::Int) {
+                    continue;
+                }
+                let ExprKind::Integer(number) = &mut element.kind else {
+                    continue;
+                };
+                let Some(name) = names.get(&*number) else {
+                    continue;
+                };
+                let bci = element.origin.primary().bci();
+                if element
+                    .origin
+                    .primary()
+                    .method()
+                    .is_some_and(|method| method != &ast.projection.member)
+                {
+                    return Ok(None);
+                }
+                let mut instruction_bci_found = false;
+                for instruction_bci in &ast.projection.instruction_bcis {
+                    crate::stop::poll(budget, Some(bci))?;
+                    crate::stop::charge(
+                        budget,
+                        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                        1,
+                        Some(bci),
+                    )?;
+                    if *instruction_bci == bci {
+                        instruction_bci_found = true;
+                        break;
+                    }
+                }
+                if !instruction_bci_found {
+                    return Ok(None);
+                }
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    2,
+                    Some(bci),
+                )?;
+                let name_for_use = (*name).to_owned();
+                let name_for_ast = name_for_use.clone();
+                let value = *number;
+                uses.push(IntegerConstantNameUse {
+                    name: name_for_use,
+                    bci,
+                    case_label: false,
+                    body_range: Some(0..0),
+                });
+                array_names_present = true;
+                element.kind = ExprKind::IntegerConstantName {
+                    name: name_for_ast,
+                    value,
+                };
+            }
+        }
+    }
     let mut pending: Vec<&mut crate::ast::Stmt> = program.stmts.iter_mut().collect();
     while let Some(stmt) = pending.pop() {
         crate::stop::charge(
@@ -4958,6 +5164,7 @@ pub fn project_class_source_integer_constants(
                                         name: label.clone(),
                                         bci: stmt.origin.primary().bci(),
                                         case_label: true,
+                                        body_range: None,
                                     });
                                 }
                             }
@@ -4977,6 +5184,7 @@ pub fn project_class_source_integer_constants(
                                 name: (*name).to_owned(),
                                 bci: returned.origin.primary().bci(),
                                 case_label: false,
+                                body_range: None,
                             });
                             returned.kind = ExprKind::IntegerConstantName {
                                 name: (*name).to_owned(),
@@ -5017,7 +5225,91 @@ pub fn project_class_source_integer_constants(
         1,
         budget,
     )?;
-    Ok(Some((body, uses)))
+    if array_names_present {
+        let map = crate::emit::replay_class_source_statement_segments(
+            &program.stmts,
+            &ast.projection.member,
+            ast.projection.current_class.as_deref(),
+            &ast.projection.nested_class_members,
+            1,
+            &body,
+            budget,
+        )?;
+        let mut assigned: Vec<std::ops::Range<usize>> = Vec::new();
+        for use_site in &mut uses {
+            if use_site.body_range.is_none() {
+                continue;
+            }
+            let mut matched = None;
+            for segment in map.segments() {
+                crate::stop::poll(budget, Some(use_site.bci))?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(use_site.bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(use_site.bci),
+                )?;
+                let primary = segment.origin().primary();
+                if primary.bci() == use_site.bci
+                    && primary.method() == Some(&ast.projection.member)
+                    && segment.text(&body) == use_site.name
+                {
+                    if matched.is_some() {
+                        return Ok(None);
+                    }
+                    matched = Some(segment.start()..segment.end());
+                }
+            }
+            let Some(range) = matched else {
+                return Ok(None);
+            };
+            for previous in &assigned {
+                crate::stop::poll(budget, Some(use_site.bci))?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                    1,
+                    Some(use_site.bci),
+                )?;
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(use_site.bci),
+                )?;
+                if previous.start < range.end && range.start < previous.end {
+                    return Ok(None);
+                }
+            }
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                1,
+                Some(use_site.bci),
+            )?;
+            assigned.push(range.clone());
+            use_site.body_range = Some(range);
+        }
+    }
+    let original_body = if array_names_present {
+        Some(crate::emit::emit_class_source_statements(
+            &ast.projection.program.stmts,
+            &ast.projection.member,
+            ast.projection.current_class.as_deref(),
+            &ast.projection.nested_class_members,
+            1,
+            budget,
+        )?)
+    } else {
+        None
+    };
+    Ok(Some((body, uses, original_body)))
 }
 
 /// The BCI of the one statically proved field write in the narrow anonymous constructor shape.
@@ -15635,6 +15927,301 @@ mod generic_array_return_candidate_tests {
             )
             .expect("a negative shape is an ordinary candidate refusal"),
             None
+        );
+    }
+}
+
+#[cfg(test)]
+mod integer_array_name_projection_tests {
+    use super::*;
+    use crate::ast::{Expr, Stmt};
+    use crate::source_map::{Origin, OriginSet};
+    use jarde_reader::budget::Limits;
+    use jarde_reader::model::{
+        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+        PhysicalMethodId, PhysicalVariant, SnapshotId,
+    };
+    use std::collections::BTreeMap;
+
+    fn array_ast(element_bcis: &[u32]) -> ClassSourceMethodAst {
+        let member = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId("integer-array-test".to_owned()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest("integer-array-test".to_owned()),
+                    length: 1,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"values".to_vec()),
+            descriptor: JvmBytes(b"()[I".to_vec()),
+        };
+        let elements = element_bcis
+            .iter()
+            .map(|bci| {
+                Expr::new(
+                    ExprKind::Integer(7),
+                    OriginSet::new(Origin::direct(*bci).in_method(&member)),
+                )
+            })
+            .collect();
+        let array = Expr::new(
+            ExprKind::NewArray {
+                element: Type::Int,
+                lengths: Vec::new(),
+                initializers: Some(elements),
+                total_dimensions: 1,
+            },
+            OriginSet::new(Origin::direct(0).in_method(&member)),
+        );
+        let statement = Stmt::new(
+            StmtKind::Return { value: Some(array) },
+            OriginSet::new(Origin::direct(0).in_method(&member)),
+        );
+        let program = build::Program {
+            stmts: vec![statement],
+            field_increments: BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        };
+        ClassSourceMethodAst {
+            projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+                program,
+                member,
+                current_class: None,
+                nested_class_members: Vec::new(),
+                parameter_names: Vec::new(),
+                parameter_slots: Vec::new(),
+                complete_code: true,
+                has_exception_handlers: false,
+                instruction_count: element_bcis.len() + 1,
+                instruction_bcis: std::iter::once(0)
+                    .chain(element_bcis.iter().copied())
+                    .collect(),
+                call_targets: Vec::new(),
+                anonymous_constructor_initializer_bci: None,
+                generic_call_init: None,
+                instance_field_write_evidence: None,
+            }),
+        }
+    }
+
+    fn budget() -> Budget {
+        Budget::new(Limits {
+            ir_items: 1 << 20,
+            analysis_steps: 1 << 20,
+            output_bytes: 1 << 20,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+
+    fn try_array_ast(resource_names: &[&str], catch_names: &[&str]) -> ClassSourceMethodAst {
+        let mut ast = array_ast(&[3]);
+        let source = std::sync::Arc::make_mut(&mut ast.projection);
+        let returned = source
+            .program
+            .stmts
+            .pop()
+            .expect("array fixture has a return");
+        let resources = resource_names
+            .iter()
+            .enumerate()
+            .map(|(index, name)| crate::ast::ResourceDecl {
+                ty: Type::Int,
+                name: (*name).to_owned(),
+                value: Expr::new(
+                    ExprKind::Integer(index as i64),
+                    OriginSet::new(Origin::direct(0).in_method(&source.member)),
+                ),
+            })
+            .collect();
+        let catches = catch_names
+            .iter()
+            .map(|name| crate::ast::CatchClause {
+                ty: "java.lang.Exception".to_owned(),
+                name: (*name).to_owned(),
+                body: Vec::new(),
+            })
+            .collect();
+        source.program.stmts.push(Stmt::new(
+            StmtKind::Try {
+                resources,
+                catches,
+                body: vec![returned],
+                finally_body: None,
+            },
+            OriginSet::new(Origin::direct(0).in_method(&source.member)),
+        ));
+        source.program.statements = 2;
+        ast
+    }
+
+    fn named_candidate(name: &str) -> IntegerConstantName {
+        IntegerConstantName {
+            value: 7,
+            name: name.to_owned(),
+        }
+    }
+
+    #[test]
+    fn array_try_resource_and_catch_names_are_charged_before_occupying_them() {
+        let many_catches: Vec<String> = (0..16).map(|index| format!("catch{index}")).collect();
+        let catch_names: Vec<_> = many_catches.iter().map(String::as_str).collect();
+        let catches_ast = try_array_ast(&[], &catch_names);
+
+        // Without name scanning, this fixture's complete IR bill is eight items: the initial
+        // list, the Try/return statements, one candidate, and four program nodes. Six catch
+        // names consume the remaining allowance, so the seventh must stop before its clone.
+        let mut catch_ir_limited = Budget::new(Limits {
+            ir_items: 8,
+            analysis_steps: 64,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            project_class_source_integer_constants(
+                &catches_ast,
+                &[named_candidate("catch0")],
+                false,
+                true,
+                &mut catch_ir_limited,
+            ),
+            Err(crate::stop::StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                at: Some(0),
+                written: 0,
+                limit: 8,
+            })
+        ));
+        assert_eq!(catch_ir_limited.usage().ir_items, 8);
+        assert_eq!(catch_ir_limited.usage().analysis_steps, 8);
+
+        // The Try node and six catch records fit; analysis must stop at the seventh record.
+        let mut catch_analysis_limited = Budget::new(Limits {
+            ir_items: 32,
+            analysis_steps: 7,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            project_class_source_integer_constants(
+                &catches_ast,
+                &[named_candidate("catch0")],
+                false,
+                true,
+                &mut catch_analysis_limited,
+            ),
+            Err(crate::stop::StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                at: Some(0),
+                written: 0,
+                limit: 7,
+            })
+        ));
+        assert_eq!(catch_analysis_limited.usage().analysis_steps, 7);
+        assert_eq!(catch_analysis_limited.usage().ir_items, 8);
+
+        let resource_ast = try_array_ast(&["resource0"], &[]);
+        let mut resource_limited = Budget::new(Limits {
+            ir_items: 2,
+            analysis_steps: 2,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            project_class_source_integer_constants(
+                &resource_ast,
+                &[named_candidate("resource0")],
+                false,
+                true,
+                &mut resource_limited,
+            ),
+            Err(crate::stop::StopReason::Budget {
+                dimension: jarde_reader::budget::CountedBudgetDimension::IrItems,
+                at: Some(0),
+                written: 0,
+                limit: 2,
+            })
+        ));
+        assert_eq!(resource_limited.usage().ir_items, 2);
+        assert_eq!(resource_limited.usage().analysis_steps, 2);
+
+        let mut sufficient = budget();
+        assert!(
+            project_class_source_integer_constants(
+                &catches_ast,
+                &[named_candidate("catch0")],
+                false,
+                true,
+                &mut sufficient,
+            )
+            .unwrap()
+            .is_none()
+        );
+        let mut sufficient = budget();
+        assert!(
+            project_class_source_integer_constants(
+                &resource_ast,
+                &[named_candidate("resource0")],
+                false,
+                true,
+                &mut sufficient,
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
+
+    #[test]
+    fn array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses() {
+        let candidate = IntegerConstantName {
+            value: 7,
+            name: "VALUE".to_owned(),
+        };
+        let mut distinct_budget = budget();
+        let (body, uses, original_body) = project_class_source_integer_constants(
+            &array_ast(&[3, 6]),
+            std::slice::from_ref(&candidate),
+            false,
+            true,
+            &mut distinct_budget,
+        )
+        .unwrap()
+        .expect("two direct int elements should project");
+        let ranges: Vec<_> = uses
+            .iter()
+            .filter_map(|use_site| use_site.body_range.as_ref())
+            .collect();
+        assert!(original_body.is_some());
+        assert_eq!(ranges.len(), 2);
+        assert_ne!(ranges[0], ranges[1]);
+        assert!(
+            ranges
+                .iter()
+                .all(|range| body.get((*range).clone()) == Some("VALUE"))
+        );
+
+        let mut ambiguous_budget = budget();
+        assert!(
+            project_class_source_integer_constants(
+                &array_ast(&[3, 3]),
+                &[candidate],
+                false,
+                true,
+                &mut ambiguous_budget,
+            )
+            .unwrap()
+            .is_none()
         );
     }
 }

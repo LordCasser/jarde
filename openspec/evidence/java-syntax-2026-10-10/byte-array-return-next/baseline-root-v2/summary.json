@@ -1,0 +1,16 @@
+{
+  "schema": "em18-byte-array-return-baseline-summary-v2",
+  "status": "completed",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "original_cross_jdk_raw_equal": true,
+  "failures": []
+}

@@ -1,0 +1,53 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/byte-array-return-next/baseline-root-v2/cases/javac23-original/classes/ByteArrayReturn.class
+  Last modified 2026年10月10日; size 186 bytes
+  SHA-256 checksum 65c1fdcd9d6efa1c49c3ccfbf3daa2c1e2e0f99370af6db2a53a375e139bc9a9
+public class ByteArrayReturn
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // ByteArrayReturn
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // ByteArrayReturn
+   #8 = Utf8               ByteArrayReturn
+   #9 = Utf8               Code
+  #10 = Utf8               test
+  #11 = Utf8               ()[B
+{
+  public ByteArrayReturn();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public byte[] test();
+    descriptor: ()[B
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: iconst_3
+         1: newarray       byte
+         3: dup
+         4: iconst_0
+         5: iconst_0
+         6: bastore
+         7: dup
+         8: iconst_1
+         9: iconst_1
+        10: bastore
+        11: dup
+        12: iconst_2
+        13: iconst_2
+        14: bastore
+        15: areturn
+}

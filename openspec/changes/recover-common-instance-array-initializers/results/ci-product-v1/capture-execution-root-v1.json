@@ -1,0 +1,90 @@
+{
+  "commands": [
+    {
+      "label": "api",
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38022628853",
+        "--json",
+        "databaseId,status,conclusion,headSha,jobs,url,createdAt,updatedAt"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:44:34.560747+00:00",
+      "duration_seconds": 1.778196500003105,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-run-v1.json",
+        "bytes": 10208,
+        "sha256": "26bf2d07c7c0544020b468b61a354b5aaf0c1c263ad6bf23836aab50dc7be32b",
+        "raw_bytes": 10208,
+        "raw_sha256": "26bf2d07c7c0544020b468b61a354b5aaf0c1c263ad6bf23836aab50dc7be32b",
+        "gzip_mtime": null
+      },
+      "stderr": {
+        "path": "api.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "stable",
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38022628853",
+        "--job",
+        "114126689351",
+        "--log"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:44:36.341396+00:00",
+      "duration_seconds": 10.377764125005342,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-stable-job-v1.log.gz",
+        "bytes": 276659,
+        "sha256": "5bcf76cf8bc5f182dede5c5d35c1299b47cf4aafe7714871481e4ebc7f673c69",
+        "raw_bytes": 1756821,
+        "raw_sha256": "72c496dbe141c2d6eb420e6339a0fceafe80c6686a83e612756990ff6f1caa81",
+        "gzip_mtime": 0
+      },
+      "stderr": {
+        "path": "stable.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "supply",
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38022628853",
+        "--job",
+        "114126689400",
+        "--log"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:44:46.746276+00:00",
+      "duration_seconds": 2.8157922919781413,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-supply-job-v1.log.gz",
+        "bytes": 14925,
+        "sha256": "c3683765aed87776ef2ab79849daab109870092041e782f74ed2352cc47b992b",
+        "raw_bytes": 114963,
+        "raw_sha256": "517822b8789d80a060c1ee15c094847d7714650523fc3ff36880e4289d3346e5",
+        "gzip_mtime": 0
+      },
+      "stderr": {
+        "path": "supply.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

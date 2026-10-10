@@ -1,0 +1,60 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/baseline-root-v2/cases/javac8-original/classes/DependentArrayStores.class
+  Last modified 2026-10-10; size 201 bytes
+  MD5 checksum 6e957434e871b911776b5fdf60924ebf
+public class DependentArrayStores
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#9          // java/lang/Object."<init>":()V
+   #2 = Class              #10            // DependentArrayStores
+   #3 = Class              #11            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               test
+   #8 = Utf8               ()[I
+   #9 = NameAndType        #4:#5          // "<init>":()V
+  #10 = Utf8               DependentArrayStores
+  #11 = Utf8               java/lang/Object
+{
+  public DependentArrayStores();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public int[] test();
+    descriptor: ()[I
+    flags: ACC_PUBLIC
+    Code:
+      stack=4, locals=2, args_size=1
+         0: iconst_3
+         1: newarray       int
+         3: astore_1
+         4: aload_1
+         5: iconst_0
+         6: iconst_1
+         7: iastore
+         8: aload_1
+         9: iconst_1
+        10: aload_1
+        11: iconst_0
+        12: iaload
+        13: iconst_1
+        14: iadd
+        15: iastore
+        16: aload_1
+        17: iconst_2
+        18: aload_1
+        19: iconst_1
+        20: iaload
+        21: iconst_1
+        22: iadd
+        23: iastore
+        24: aload_1
+        25: areturn
+}

@@ -1,0 +1,2329 @@
+{
+  "schema": "recover-int-array-constant-names-command-journal-v1",
+  "commands": [
+    {
+      "label": "controls-javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/input-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/input-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/input-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/input-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/input-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/input-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:44.450851+00:00",
+      "duration_seconds": 0.3609686249983497,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:44.812318+00:00",
+      "duration_seconds": 0.062329540989594534,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:44.875674+00:00",
+      "duration_seconds": 0.05441445900942199,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-javap-UniqueIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/UniqueIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:44.931316+00:00",
+      "duration_seconds": 0.15750158298760653,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-javap-UniqueIntArray.stdout",
+        "bytes": 2275,
+        "sha256": "513c8aed247376bf41317be0b643a39216999c1a70df3c10973e68f30523f5a9"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-javap-UniqueIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-javap-DuplicateIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/DuplicateIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:45.089225+00:00",
+      "duration_seconds": 0.1416906249942258,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-javap-DuplicateIntArray.stdout",
+        "bytes": 2356,
+        "sha256": "2f9e6acfc93ea1bd3a745d7fad2825bfd465777a7b33a8053962a2e7e3032f2b"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-javap-DuplicateIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-javap-ShadowIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/ShadowIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:45.231311+00:00",
+      "duration_seconds": 0.1462780410074629,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-javap-ShadowIntArray.stdout",
+        "bytes": 3142,
+        "sha256": "bb4b054f3b3a34de5ec20c727b56093eb9f68b058f6a7d5adfcbf81377e70b1f"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-javap-ShadowIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-javap-UnsupportedIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/UnsupportedIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:45.378212+00:00",
+      "duration_seconds": 0.14763108300394379,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-javap-UnsupportedIntArray.stdout",
+        "bytes": 3903,
+        "sha256": "b2afdd6c142362e6ec4b80020b5b5acfedd1c4a2f2681229cf647096c9617cc2"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-javap-UnsupportedIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-javap-PriorAssertIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/PriorAssertIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:45.526311+00:00",
+      "duration_seconds": 0.14689912501489744,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-javap-PriorAssertIntArray.stdout",
+        "bytes": 4607,
+        "sha256": "8f37389db1d4e9ce5400bd0bc547b72afff670c0ec45b81cb1a4dd1d34f14b35"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-javap-PriorAssertIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-original-javap-IntArrayControlsRunner",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/IntArrayControlsRunner.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:45.673640+00:00",
+      "duration_seconds": 0.1529784160084091,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-original-javap-IntArrayControlsRunner.stdout",
+        "bytes": 18844,
+        "sha256": "9f425de680f931bb3c5d5acc275c4d10807dce881f998bca6309ae5810287487"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-original-javap-IntArrayControlsRunner.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/input-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/input-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/input-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/input-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/input-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/input-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:45.828924+00:00",
+      "duration_seconds": 0.38277079100953415,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:46.212162+00:00",
+      "duration_seconds": 0.07942154098418541,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:46.292752+00:00",
+      "duration_seconds": 0.05692945802002214,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-javap-UniqueIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UniqueIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:46.350568+00:00",
+      "duration_seconds": 0.17378141600056551,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-javap-UniqueIntArray.stdout",
+        "bytes": 2531,
+        "sha256": "b772c84f2ed9b8479f143bb3892daf46e240e7f65bfb93de9898ad6d752e5df0"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-javap-UniqueIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-javap-DuplicateIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/DuplicateIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:46.524852+00:00",
+      "duration_seconds": 0.1657209580007475,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-javap-DuplicateIntArray.stdout",
+        "bytes": 2624,
+        "sha256": "35c72f5cb4695be552e14b59e3538e0b63c5a31f77aec39fe8a898df5ec19fef"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-javap-DuplicateIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-javap-ShadowIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/ShadowIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:46.691073+00:00",
+      "duration_seconds": 0.15576500000315718,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-javap-ShadowIntArray.stdout",
+        "bytes": 3407,
+        "sha256": "93196aacefbd056191f8c2c2e2d2167b0aa0dc484c00771482973a285e3fc921"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-javap-ShadowIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-javap-UnsupportedIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UnsupportedIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:46.847393+00:00",
+      "duration_seconds": 0.18218020800850354,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-javap-UnsupportedIntArray.stdout",
+        "bytes": 4182,
+        "sha256": "1762071cd9b73281a156ecbf40446101eff3016899190066321aaafa4a24da5d"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-javap-UnsupportedIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-javap-PriorAssertIntArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/PriorAssertIntArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.030522+00:00",
+      "duration_seconds": 0.21227441600058228,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-javap-PriorAssertIntArray.stdout",
+        "bytes": 4886,
+        "sha256": "aec665910271c5de5d07cc7f882402715c82811b10500c3bf6af5b2f4ed576ca"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-javap-PriorAssertIntArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-original-javap-IntArrayControlsRunner",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/IntArrayControlsRunner.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.243516+00:00",
+      "duration_seconds": 0.19524091700441204,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-original-javap-IntArrayControlsRunner.stdout",
+        "bytes": 18895,
+        "sha256": "3fc650767027d7048ed43ef104c7f389d8bbbd7c4e434b4628875cda79c40d57"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-original-javap-IntArrayControlsRunner.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-ConstantIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac8/classes/ConstantIntArray.class",
+        "--class",
+        "ConstantIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.440120+00:00",
+      "duration_seconds": 0.01746729199658148,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-ConstantIntArray-default-render.stdout",
+        "bytes": 23215,
+        "sha256": "8f29ed2656212767c06c9673820f50112d687bc67666a1fa87f36d75c915948c"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-ConstantIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-ConstantIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac8/classes/ConstantIntArray.class",
+        "--class",
+        "ConstantIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.458864+00:00",
+      "duration_seconds": 0.008604625007137656,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-ConstantIntArray-all-render.stdout",
+        "bytes": 24085,
+        "sha256": "24de2fd4bc36dc29080f05d589f8e3f36ea7a6d82199ec4675b8e3dafa868339"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-ConstantIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-LongArrayLimits-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac8/classes/LongArrayLimits.class",
+        "--class",
+        "LongArrayLimits",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.468809+00:00",
+      "duration_seconds": 0.008809582999674603,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-LongArrayLimits-default-render.stdout",
+        "bytes": 24023,
+        "sha256": "d03a02873c43b56e61e1f870ba5958c731d638bd03cd7a587ea8dc2e150d3c06"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-LongArrayLimits-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-LongArrayLimits-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac8/classes/LongArrayLimits.class",
+        "--class",
+        "LongArrayLimits",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.479034+00:00",
+      "duration_seconds": 0.00871195798390545,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-LongArrayLimits-all-render.stdout",
+        "bytes": 24890,
+        "sha256": "664c1a654b3383023b1536bc58374c7edd60f2d05352941688db8a133ceeccb7"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-LongArrayLimits-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-DependentArrayStores-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac8/classes/DependentArrayStores.class",
+        "--class",
+        "DependentArrayStores",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.489028+00:00",
+      "duration_seconds": 0.009088874998269603,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-DependentArrayStores-default-render.stdout",
+        "bytes": 27538,
+        "sha256": "7892728bb6516577368ae4fe804e74c28690b22598d9764bb7569e1f8956f853"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-DependentArrayStores-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-DependentArrayStores-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac8/classes/DependentArrayStores.class",
+        "--class",
+        "DependentArrayStores",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.499455+00:00",
+      "duration_seconds": 0.008706082997377962,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-DependentArrayStores-all-render.stdout",
+        "bytes": 29101,
+        "sha256": "41eae4aa36e19adac08a7ec2da3633f82e06ea7d7b87243802032e673147e04a"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-DependentArrayStores-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-ConstantIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac23/classes/ConstantIntArray.class",
+        "--class",
+        "ConstantIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.509485+00:00",
+      "duration_seconds": 0.00836520898155868,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-ConstantIntArray-default-render.stdout",
+        "bytes": 23215,
+        "sha256": "c10be386016b1981f2b12e840b2a5588d380c973458e1fc5f8c7d940af2b5101"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-ConstantIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-ConstantIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac23/classes/ConstantIntArray.class",
+        "--class",
+        "ConstantIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.519067+00:00",
+      "duration_seconds": 0.008502666983986273,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-ConstantIntArray-all-render.stdout",
+        "bytes": 24085,
+        "sha256": "2840ad97314e7542a3ac98faf9cd504a0578b58b18b4c1e6f9459dcf51e53c1b"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-ConstantIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-LongArrayLimits-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac23/classes/LongArrayLimits.class",
+        "--class",
+        "LongArrayLimits",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.529076+00:00",
+      "duration_seconds": 0.008395915996516123,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-LongArrayLimits-default-render.stdout",
+        "bytes": 24023,
+        "sha256": "7fd69f13494da317c15cbd8608c8d7e75d3d20923a8e22211b6279b397a75aa7"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-LongArrayLimits-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-LongArrayLimits-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac23/classes/LongArrayLimits.class",
+        "--class",
+        "LongArrayLimits",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.538588+00:00",
+      "duration_seconds": 0.008556583983590826,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-LongArrayLimits-all-render.stdout",
+        "bytes": 24890,
+        "sha256": "516cda5a72e55a4778453db72511e2268de0aec124c8274710ff48490bbaaf64"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-LongArrayLimits-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-DependentArrayStores-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac23/classes/DependentArrayStores.class",
+        "--class",
+        "DependentArrayStores",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.548776+00:00",
+      "duration_seconds": 0.008755832997849211,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-DependentArrayStores-default-render.stdout",
+        "bytes": 27538,
+        "sha256": "2640c5413c9765dbb54a825969b79f9064b5b3f73974f9f08961435be6e5da87"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-DependentArrayStores-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-DependentArrayStores-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/imports/array-baseline/javac23/classes/DependentArrayStores.class",
+        "--class",
+        "DependentArrayStores",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.558916+00:00",
+      "duration_seconds": 0.008346207992872223,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-DependentArrayStores-all-render.stdout",
+        "bytes": 29101,
+        "sha256": "bd63bc02dba1a523341becdc4b05616bbb0e9e60d3c7f70575d88157b3d20498"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-DependentArrayStores-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-jarde-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/generated-sources/ConstantIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/generated-sources/LongArrayLimits.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/generated-sources/DependentArrayStores.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/generated-sources/ArrayLiteralBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.568788+00:00",
+      "duration_seconds": 0.23745054201572202,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-jarde-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-jarde-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac8-jarde-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac8-jarde-full-class/classes",
+        "ArrayLiteralBoundariesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.807010+00:00",
+      "duration_seconds": 0.053808458003913984,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac8-jarde-full-class-run.stdout",
+        "bytes": 92,
+        "sha256": "40785c783f40facc3d466a43579317584f7da81e9246313c2ce441ad1854d27a"
+      },
+      "stderr": {
+        "path": "streams/array-javac8-jarde-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-jarde-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/generated-sources/ConstantIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/generated-sources/LongArrayLimits.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/generated-sources/DependentArrayStores.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/generated-sources/ArrayLiteralBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:47.862938+00:00",
+      "duration_seconds": 0.26814041601028293,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-jarde-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-jarde-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "array-javac23-jarde-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/array-javac23-jarde-full-class/classes",
+        "ArrayLiteralBoundariesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.131751+00:00",
+      "duration_seconds": 0.05644783301977441,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/array-javac23-jarde-full-class-run.stdout",
+        "bytes": 92,
+        "sha256": "40785c783f40facc3d466a43579317584f7da81e9246313c2ce441ad1854d27a"
+      },
+      "stderr": {
+        "path": "streams/array-javac23-jarde-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-UniqueIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/UniqueIntArray.class",
+        "--class",
+        "UniqueIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.189623+00:00",
+      "duration_seconds": 0.008585582982050255,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-UniqueIntArray-default-render.stdout",
+        "bytes": 22457,
+        "sha256": "78662094fef9bd832d35077d8a3de2bb4d576e8580589609ff0b2f0eaec2b058"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-UniqueIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-UniqueIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/UniqueIntArray.class",
+        "--class",
+        "UniqueIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.199367+00:00",
+      "duration_seconds": 0.007618916017236188,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-UniqueIntArray-all-render.stdout",
+        "bytes": 23321,
+        "sha256": "eea123ded28d9b2f14b5711a57804938acdf4f883c9b8883a156eda6fd9d5d3f"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-UniqueIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-DuplicateIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/DuplicateIntArray.class",
+        "--class",
+        "DuplicateIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.208459+00:00",
+      "duration_seconds": 0.007833916984964162,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-DuplicateIntArray-default-render.stdout",
+        "bytes": 20133,
+        "sha256": "7813e1d27b1932e576f9fd478ce6827361c4cf0f443053e7207511d436133c10"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-DuplicateIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-DuplicateIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/DuplicateIntArray.class",
+        "--class",
+        "DuplicateIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.217607+00:00",
+      "duration_seconds": 0.008228541002608836,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-DuplicateIntArray-all-render.stdout",
+        "bytes": 21006,
+        "sha256": "fde14c29c0b275154ba2bf3e02dfcf93fbaabc37852bae13f6b8cf944fc496b5"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-DuplicateIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-ShadowIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/ShadowIntArray.class",
+        "--class",
+        "ShadowIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.227116+00:00",
+      "duration_seconds": 0.009053707995917648,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-ShadowIntArray-default-render.stdout",
+        "bytes": 31538,
+        "sha256": "42c04371ef02bf9c2cedc277e8597634e912e6dbb2032fc5df5d0f6014e81b70"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-ShadowIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-ShadowIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/ShadowIntArray.class",
+        "--class",
+        "ShadowIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.237810+00:00",
+      "duration_seconds": 0.00930750000406988,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-ShadowIntArray-all-render.stdout",
+        "bytes": 32769,
+        "sha256": "b174e9a5dd07d0e739bcd5dc322cd69e2a2661bdad2b64429e9677e1a47123b9"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-ShadowIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-UnsupportedIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/UnsupportedIntArray.class",
+        "--class",
+        "UnsupportedIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.248975+00:00",
+      "duration_seconds": 0.009518790990114212,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-UnsupportedIntArray-default-render.stdout",
+        "bytes": 41160,
+        "sha256": "51879ffde57050bdc6fae1094519b79ca2c6a48a16808d1adceb98e0e91ca109"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-UnsupportedIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-UnsupportedIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/UnsupportedIntArray.class",
+        "--class",
+        "UnsupportedIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.260103+00:00",
+      "duration_seconds": 0.010217499977443367,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-UnsupportedIntArray-all-render.stdout",
+        "bytes": 42788,
+        "sha256": "20ea0ad3e383643c17c80af3a798c8a7445d32bb73db9091e6bf264e5c6028fc"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-UnsupportedIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-PriorAssertIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/PriorAssertIntArray.class",
+        "--class",
+        "PriorAssertIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.272221+00:00",
+      "duration_seconds": 0.010883292008657008,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-PriorAssertIntArray-default-render.stdout",
+        "bytes": 44866,
+        "sha256": "5641cd8cba563722fb9dfd4fbe5b1fb3c495060aae85ea58aedad82794944637"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-PriorAssertIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-PriorAssertIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-original/classes/PriorAssertIntArray.class",
+        "--class",
+        "PriorAssertIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.284819+00:00",
+      "duration_seconds": 0.010292292019585148,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-PriorAssertIntArray-all-render.stdout",
+        "bytes": 46908,
+        "sha256": "8c24f752ee0519a261b8fabefc6c747b0fb6c9316d4b69a3f0dbd701ad98d710"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-PriorAssertIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-UniqueIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UniqueIntArray.class",
+        "--class",
+        "UniqueIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.296815+00:00",
+      "duration_seconds": 0.008203457982745022,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-UniqueIntArray-default-render.stdout",
+        "bytes": 22457,
+        "sha256": "4c1cba968db99ea80da32184d3df46c9ec933d784e5e8afe410488eec3cf490c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-UniqueIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-UniqueIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UniqueIntArray.class",
+        "--class",
+        "UniqueIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.306503+00:00",
+      "duration_seconds": 0.008469542022794485,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-UniqueIntArray-all-render.stdout",
+        "bytes": 23321,
+        "sha256": "52b67394cc4e7f558fb7f8bd930c37b98e186d67ac1049c02bdc934ddce7ee8f"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-UniqueIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-DuplicateIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/DuplicateIntArray.class",
+        "--class",
+        "DuplicateIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.316473+00:00",
+      "duration_seconds": 0.007893792004324496,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-DuplicateIntArray-default-render.stdout",
+        "bytes": 20133,
+        "sha256": "9343d2fe933d44995e7eaac010e12821eff57469107ac07215eea59dc973467e"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-DuplicateIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-DuplicateIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/DuplicateIntArray.class",
+        "--class",
+        "DuplicateIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.325748+00:00",
+      "duration_seconds": 0.007936916983453557,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-DuplicateIntArray-all-render.stdout",
+        "bytes": 21006,
+        "sha256": "b02055a80d903444fec13fcbf64049cf134e58a09d7f20fe129cf0e4c26e80d8"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-DuplicateIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-ShadowIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/ShadowIntArray.class",
+        "--class",
+        "ShadowIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.335064+00:00",
+      "duration_seconds": 0.008822167001198977,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-ShadowIntArray-default-render.stdout",
+        "bytes": 31538,
+        "sha256": "c2d884198a6c46c07fc7276e1575b76eef98af2ce583ff7c37dc5b22340a2c36"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-ShadowIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-ShadowIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/ShadowIntArray.class",
+        "--class",
+        "ShadowIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.345414+00:00",
+      "duration_seconds": 0.009052250010427088,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-ShadowIntArray-all-render.stdout",
+        "bytes": 32769,
+        "sha256": "9e18c2f85bc389d379e7f064a5ebdb19e2ec3fae2e13a111d1d6220747d4f453"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-ShadowIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-UnsupportedIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UnsupportedIntArray.class",
+        "--class",
+        "UnsupportedIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.355871+00:00",
+      "duration_seconds": 0.009445667004911229,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-UnsupportedIntArray-default-render.stdout",
+        "bytes": 41160,
+        "sha256": "0c1f7f18606eec8b7e4dfc44b07fbbf46e5268d2ed2bc918e67aa5077c3f7b5f"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-UnsupportedIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-UnsupportedIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/UnsupportedIntArray.class",
+        "--class",
+        "UnsupportedIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.366920+00:00",
+      "duration_seconds": 0.009985915996367112,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-UnsupportedIntArray-all-render.stdout",
+        "bytes": 42788,
+        "sha256": "05dd01c0df91fe98ad99464395efc2e3ffeefcfa9d49ce8bced7ef08c3feab47"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-UnsupportedIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-PriorAssertIntArray-default-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/PriorAssertIntArray.class",
+        "--class",
+        "PriorAssertIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.379115+00:00",
+      "duration_seconds": 0.010181833000387996,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-PriorAssertIntArray-default-render.stdout",
+        "bytes": 44866,
+        "sha256": "46d31cfc8eab60289e432a0084a5107c3a5b1adfa3e0cb54abc597aafc9dd3f1"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-PriorAssertIntArray-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-PriorAssertIntArray-all-render",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-original/classes/PriorAssertIntArray.class",
+        "--class",
+        "PriorAssertIntArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.391265+00:00",
+      "duration_seconds": 0.010049667005660012,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-PriorAssertIntArray-all-render.stdout",
+        "bytes": 46908,
+        "sha256": "e28c00263efcf224a688898c9f72b782f67e55ebbca8a8ebab3b8f488c8ea07c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-PriorAssertIntArray-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jarde-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/generated-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/generated-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/generated-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/generated-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/generated-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/generated-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.403496+00:00",
+      "duration_seconds": 0.251355333981337,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jarde-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jarde-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jarde-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.655842+00:00",
+      "duration_seconds": 0.05553124999278225,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jarde-full-class-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jarde-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jarde-full-class-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jarde-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.713095+00:00",
+      "duration_seconds": 0.05351474997587502,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jarde-full-class-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jarde-full-class-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jarde-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/generated-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/generated-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/generated-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/generated-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/generated-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/generated-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:48.768900+00:00",
+      "duration_seconds": 0.27478879201225936,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jarde-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jarde-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jarde-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:49.044666+00:00",
+      "duration_seconds": 0.05517870801850222,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jarde-full-class-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jarde-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jarde-full-class-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jarde-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:49.101734+00:00",
+      "duration_seconds": 0.05670924999867566,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jarde-full-class-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jarde-full-class-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:49.161408+00:00",
+      "duration_seconds": 0.24564141599694267,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/jadx/default",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/jadx-input/IntArrayConstantTargets.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:49.408214+00:00",
+      "duration_seconds": 1.002224333002232,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/jadx/none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/jadx-input/IntArrayConstantTargets.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:50.412163+00:00",
+      "duration_seconds": 0.9810820420098025,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jadx-default-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/generated-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/generated-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/generated-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/generated-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/generated-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/generated-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:51.396147+00:00",
+      "duration_seconds": 0.2313063330075238,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jadx-default-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jadx-default-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jadx-default-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/classes",
+        "defpackage.IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:51.628671+00:00",
+      "duration_seconds": 0.055699917022138834,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jadx-default-full-class-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jadx-default-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jadx-default-full-class-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-default-full-class/classes",
+        "defpackage.IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:51.686014+00:00",
+      "duration_seconds": 0.05474424999556504,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jadx-default-full-class-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jadx-default-full-class-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jadx-default-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/generated-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/generated-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/generated-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/generated-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/generated-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/generated-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:51.743432+00:00",
+      "duration_seconds": 0.27166341699194163,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jadx-default-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jadx-default-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jadx-default-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/classes",
+        "defpackage.IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.016219+00:00",
+      "duration_seconds": 0.0558279590040911,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jadx-default-full-class-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jadx-default-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jadx-default-full-class-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-default-full-class/classes",
+        "defpackage.IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.073768+00:00",
+      "duration_seconds": 0.05408033399726264,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jadx-default-full-class-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jadx-default-full-class-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jadx-none-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/generated-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/generated-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/generated-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/generated-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/generated-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/generated-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.130931+00:00",
+      "duration_seconds": 0.2351817500020843,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jadx-none-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jadx-none-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jadx-none-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.367367+00:00",
+      "duration_seconds": 0.055556542007252574,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jadx-none-full-class-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jadx-none-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac8-jadx-none-full-class-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac8-jadx-none-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.424780+00:00",
+      "duration_seconds": 0.05414024999481626,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac8-jadx-none-full-class-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac8-jadx-none-full-class-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jadx-none-full-class-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-parameters",
+        "-encoding",
+        "UTF-8",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/generated-sources/DuplicateIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/generated-sources/PriorAssertIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/generated-sources/ShadowIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/generated-sources/UniqueIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/generated-sources/UnsupportedIntArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/generated-sources/IntArrayControlsRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.481723+00:00",
+      "duration_seconds": 0.25411808397620916,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jadx-none-full-class-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jadx-none-full-class-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jadx-none-full-class-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-ea",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.736916+00:00",
+      "duration_seconds": 0.05488108398276381,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jadx-none-full-class-run.stdout",
+        "bytes": 190,
+        "sha256": "e8bc692668c7c8aa7d354bf0fd9fd2ddd33337f58f1f3e3c47a426cf43395f98"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jadx-none-full-class-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "controls-javac23-jadx-none-full-class-run-assertions-disabled",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/cases/controls-javac23-jadx-none-full-class/classes",
+        "IntArrayControlsRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T04:36:52.793805+00:00",
+      "duration_seconds": 0.05601745899184607,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/controls-javac23-jadx-none-full-class-run-assertions-disabled.stdout",
+        "bytes": 194,
+        "sha256": "10d207217869b0552e092fe87a0ed3672c8fccb79419b6a4082d0e04005f853c"
+      },
+      "stderr": {
+        "path": "streams/controls-javac23-jadx-none-full-class-run-assertions-disabled.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

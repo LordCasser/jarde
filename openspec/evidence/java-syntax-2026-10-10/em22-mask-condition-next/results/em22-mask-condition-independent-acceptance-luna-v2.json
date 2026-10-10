@@ -1,0 +1,107 @@
+{
+  "schema": "em22-mask-condition-independent-acceptance-luna-v2",
+  "success": true,
+  "checks": [
+    "closed 128-file inventory and pinned manifest",
+    "all 35 raw command records, CLI metadata, and frozen tool pins",
+    "ten isolated complete-class compiles and unchanged sources",
+    "JADX jar is the exact javac23 target class only",
+    "four Jarde reports, exact public physical identities, UTF-8 spans, original BCIs, and observed method3 source text",
+    "ten -Xverify:all raw executions match both original JDK oracles and the manually derived Java-int stdout"
+  ],
+  "jarde_method_bcis": {
+    "javac8": {
+      "class_bytes_sha256": "bbd30b64407ae1e9053a294d6fd4818e51d0f94ee0266c8269a1dc3ce48e1845",
+      "class_bytes_blake3": "ad236816f45272caba601543d5544038f42785417561750e283b9ece608c8797",
+      "method_bcis": {
+        "<init>()V": [
+          0,
+          1,
+          4
+        ],
+        "method3(II)I": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "default_all_text_equal": true,
+      "method3_source_observations": {
+        "default": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n",
+        "all": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n"
+      }
+    },
+    "javac23": {
+      "class_bytes_sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70",
+      "class_bytes_blake3": "ce2033c4cc671768cb8cc912ac26d80e6b9a2fdd1a75429fd33d49966258ecfb",
+      "method_bcis": {
+        "<init>()V": [
+          0,
+          1,
+          4
+        ],
+        "method3(II)I": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "default_all_text_equal": true,
+      "method3_source_observations": {
+        "default": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n",
+        "all": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n"
+      }
+    }
+  },
+  "runtime": {
+    "cases": [
+      "javac8-original",
+      "javac23-original",
+      "javac8-jadx-default",
+      "javac23-jadx-default",
+      "javac8-jadx-none",
+      "javac23-jadx-none",
+      "javac8-jarde-default",
+      "javac8-jarde-all",
+      "javac23-jarde-default",
+      "javac23-jarde-all"
+    ],
+    "stdout_sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cross_jdk_equal": true
+  },
+  "manifest_sha256": "df7ff05398f1155dc868a085b443ea624a8a1e9d7ce79cda2a61a8467b097e1f",
+  "inventory_sha256": "6646f77ade835983c56bdafcaeb523a7b7b286810b8c035dbbf26461b2430961",
+  "command_count": 35,
+  "case_count": 10,
+  "closed_file_count": 128,
+  "method3_condition_observation": "The archived report text for method3(II)I is retained in the rendered JSON; verification records its observed spelling and only requires mask/zero evidence, not a fixed equivalent negation spelling."
+}

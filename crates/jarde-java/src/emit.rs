@@ -216,6 +216,41 @@ pub(crate) fn emit_class_source_statements(
     }
 }
 
+/// Replays a class-source statement body and returns exact spans for its anchored AST nodes.
+/// The commit path remains text-only; callers pay for this full temporary map only when needed.
+pub(crate) fn replay_class_source_statement_segments(
+    statements: &[Stmt],
+    member: &PhysicalMethodId,
+    current_class: Option<&str>,
+    nested_class_members: &[String],
+    indentation: usize,
+    artifact: &str,
+    budget: &mut Budget,
+) -> Result<SourceMap, StopReason> {
+    let mut phase = EvidencePhase::new();
+    let mut emitter = Emitter::replay(
+        budget,
+        Some(member),
+        current_class,
+        nested_class_members,
+        artifact,
+        SegmentPublication::Whole,
+        &mut phase,
+    );
+    emitter.initializer = member.name.0 == b"<clinit>";
+    let halt = emitter.stmts(statements, indentation).err();
+    let (map, covered) = emitter.finish_replay();
+    match halt {
+        None if covered => Ok(map),
+        None => Err(StopReason::Interrupted {
+            code: crate::stop::SOURCE_MAP_MISMATCH_CODE,
+            at: None,
+        }),
+        Some(Halt::PhaseStopped) => Err(phase.reason(budget)),
+        Some(Halt::Gate(stop)) | Some(Halt::Stop(stop)) => Err(stop),
+    }
+}
+
 pub(crate) fn emit_class_source_anonymous_return(
     statements: &[Stmt],
     member: &PhysicalMethodId,
@@ -1966,6 +2001,69 @@ mod tests {
             interface: Some(false),
             member_flags: 0,
         }
+    }
+
+    #[test]
+    fn class_source_body_replay_propagates_an_evidence_budget_stop() {
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant, SnapshotId,
+        };
+
+        let member = PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId("emit-replay-test".to_owned()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest("emit-replay-test".to_owned()),
+                    length: 1,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let statements = body();
+        let mut commit_budget = budget_with(1 << 20);
+        let text =
+            emit_class_source_statements(&statements, &member, None, &[], 1, &mut commit_budget)
+                .unwrap();
+        let mut limits = budget_with(1 << 20).limits().clone();
+        limits.ir_items = 0;
+        let mut replay_budget = Budget::new(limits);
+        assert!(matches!(
+            replay_class_source_statement_segments(
+                &statements,
+                &member,
+                None,
+                &[],
+                1,
+                &text,
+                &mut replay_budget,
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::IrItems,
+                ..
+            })
+        ));
+
+        let token = jarde_reader::budget::CancellationToken::new();
+        let mut cancelled_budget =
+            Budget::with_cancellation_token(budget_with(1 << 20).limits().clone(), token.clone());
+        token.cancel();
+        assert!(matches!(
+            replay_class_source_statement_segments(
+                &statements,
+                &member,
+                None,
+                &[],
+                1,
+                &text,
+                &mut cancelled_budget,
+            ),
+            Err(StopReason::Cancelled { .. })
+        ));
     }
 
     #[test]

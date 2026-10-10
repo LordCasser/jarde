@@ -1,0 +1,4 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 5.86s
+     Running tests/class_static_initializer_projection.rs (target/debug/deps/class_static_initializer_projection-e4746f1414842750)
+     Running tests/interface_initializer_proof.rs (target/debug/deps/interface_initializer_proof-ad43ffa556a9f15a)

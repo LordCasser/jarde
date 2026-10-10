@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-ci-product-root-v3.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T04:46:39.495139+00:00",
+  "duration_seconds": 0.7537823329912499,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "verify-root-v4.stdout.raw",
+      "bytes": 135,
+      "sha256": "e6dbe4c52d81d6742c178ec6b26ad189e526329e4dd49b311ce7232c4b6df195"
+    },
+    "stderr": {
+      "path": "verify-root-v4.stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  },
+  "prepared_script_sha256": "8502ecda55fe347c51252d50d9e7c9eefe081138d2c2647c9346a3d3b1d23e09"
+}

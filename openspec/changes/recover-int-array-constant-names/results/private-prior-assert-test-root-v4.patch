@@ -1,0 +1,80 @@
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -44387,7 +44387,7 @@
+     }
+ 
+     #[test]
+-    fn direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target() {
++    fn direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body() {
+         let unsupported = compiled(
+             "ArrayUnsupported",
+             "class ArrayUnsupported { static final int VALUE=7; static int[][] nested(){return new int[][]{{7}};} static int[] value(){return new int[]{make()};} static int make(){return 7;} }",
+@@ -44445,31 +44445,54 @@
+             .iter()
+             .find(|method| method.item.name.raw().0 == b"value")
+             .unwrap();
+-        assert!(value.text.contains("assert"));
++        assert!(value.text.contains("ArrayPriorProjection.$assertionsDisabled"));
++        assert!(value.text.contains("if (!ok)"));
++        assert!(value.text.contains("throw new java.lang.AssertionError()"));
++        assert!(value.text.contains("return new int[]{VALUE};"));
+         let value_projections: Vec<_> = report
+             .integer_constant_projections
+             .iter()
+             .filter(|projection| {
+-                projection.anchors.iter().any(|anchor| {
+-                    matches!(
+-                        anchor,
+-                        class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
+-                            if method == &value.item.identity
+-                    )
+-                })
++                projection.anchors.iter().any(|anchor| matches!(
++                    anchor,
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
++                        if method == &value.item.identity
++                ))
+             })
+             .collect();
+-        assert!(
+-            value.text.contains("new int[]{7}"),
++        assert_eq!(
++            value_projections.len(),
++            1,
+             "PriorAssert method text: {:?}; method projections: {:?}",
+             value.text,
+             value_projections
+         );
++        let projection = value_projections[0];
++        assert_eq!(projection.kind, class_source::MemberFamilyDerivedKind::IntegerConstantName);
++        assert_eq!(report.text.get(projection.start..projection.end), Some("VALUE"));
++        let value_field = report
++            .integer_constant_candidates
++            .iter()
++            .find(|candidate| candidate.name == "VALUE")
++            .expect("the fixture's unique constant candidate");
++        assert!(projection.anchors.iter().any(|anchor| matches!(
++            anchor,
++            class_source::MemberFamilyPhysicalAnchor::Field { field, index }
++                if field == &value_field.field.identity && *index == value_field.field.index
++        )));
++        assert!(projection.anchors.iter().any(|anchor| matches!(
++            anchor,
++            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci: 23 }
++                if method == &value.item.identity
++        )));
++        let class_source::ClassSourceOutcome::Recovered { report: physical, .. } = &value.outcome
++        else {
++            panic!("PriorAssert physical method must retain its recovery report");
++        };
+         assert!(
+-            value_projections.is_empty(),
+-            "PriorAssert method text: {:?}; method projections: {:?}",
+-            value.text,
+-            value_projections
++            physical.text.contains("return new int[]{7};"),
++            "physical recovery text: {:?}",
++            physical.text
+         );
+     }
+ 

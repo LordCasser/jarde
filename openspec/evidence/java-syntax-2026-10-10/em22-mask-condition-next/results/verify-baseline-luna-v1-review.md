@@ -1,0 +1,9 @@
+# EM-22 mask-condition independent verifier v1
+
+This verifier is prepared against the actual `baseline-root-v1` manifest and 128-row closed inventory. It pins their observed SHA-256 values, the 35 recorded commands and every raw stream, the current integer-names CLI binary/metadata, JDK tools, JADX 1.5.6, the two prepared source files, and the collector script. It independently checks exact source/compile argv paths, empty classpath/sourcepath, fresh two-class outputs, `-Xverify:all` execution, and all ten same-JDK raw comparisons.
+
+For Jarde output, it opens the one-member JADX jar and compares the member bytes to the javac23 original class, checks both JADX source output files, and validates each report's class owner from actual original bytes (BLAKE3, length, standalone-root snapshot, base variant). The original `javap` facts require no fields and exactly public `<init>()V` and `method3(II)I`; their BCI sets are parsed and all report source-map origins/spans are checked against those instructions. The four Jarde reports require the exact physical method identities and flags, complete all-evidence maps, and matching default/all source text per original JDK.
+
+The source fixture itself is hash-pinned and required to contain `if ((a & b) != 0)`. Generated `method3` report text is retained by JDK/profile and checked for an integer mask/zero comparison while permitting equivalent `== 0` or `!= 0` spellings. No single handwritten condition string is required from recovered output. The original Runner's expected stdout is checked against manually derived Java `int` behavior, then all generated runs are compared raw to their corresponding original run.
+
+Only Python syntax compilation has been performed. The verifier itself and all Java/JADX/Jarde tools remain unexecuted by this preparation.

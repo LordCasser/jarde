@@ -1,0 +1,116 @@
+{
+  "case_accounting": {
+    "all_current_case_success_flags_independently_verified": true,
+    "case_counts": {
+      "jadx": 4,
+      "jarde": 2,
+      "original": 2
+    },
+    "jarde_cli_render_count": 12,
+    "recorded_failures": [],
+    "status": "completed",
+    "success_counts": {
+      "jadx": 4,
+      "jarde": 2,
+      "original": 2
+    }
+  },
+  "claim_boundary": "Three focused JADX array-literal fixtures adapted to standalone classes; not a broader suite-completion claim.",
+  "closed_inventory": {
+    "closed": true,
+    "file_count": 205,
+    "manifest_sha256": "244a7b89525eacf5b2059bf580a03f5658858ab66f9b7e77f7f9d2fb63dca7de"
+  },
+  "commands_and_raw_streams": {
+    "all_raw_bytes_match_records": true,
+    "command_count": 39,
+    "raw_stream_count": 78,
+    "unique_labels": true,
+    "unique_stream_paths": true
+  },
+  "frozen_inputs": {
+    "candidate_source_pin_count": 10,
+    "cli_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "jadx_executable_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jdk_tools_verified": 6,
+    "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+    "test_source_pin_count": 4
+  },
+  "instance_initializer_implementation_claim": "not_in_scope_and_not_claimed",
+  "jadx_rebuilds": {
+    "default": {
+      "generated_sources": 3,
+      "input_jar_bound_to_javac23_original": true,
+      "package": "defpackage",
+      "rebuilt_jdk_legs": 2
+    },
+    "none": {
+      "generated_sources": 3,
+      "input_jar_bound_to_javac23_original": true,
+      "package": null,
+      "rebuilt_jdk_legs": 2
+    }
+  },
+  "jarde_full_source_rebuilds": {
+    "javac23": {
+      "full_source_files": 4,
+      "methods": 6,
+      "physical_bci_source_maps_complete": true,
+      "raw_runtime_matches_original": true,
+      "renders": 6
+    },
+    "javac8": {
+      "full_source_files": 4,
+      "methods": 6,
+      "physical_bci_source_maps_complete": true,
+      "raw_runtime_matches_original": true,
+      "renders": 6
+    }
+  },
+  "manifest_path": "openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/baseline-root-v2/manifest.json",
+  "manifest_sha256": "244a7b89525eacf5b2059bf580a03f5658858ab66f9b7e77f7f9d2fb63dca7de",
+  "originals_and_javap": {
+    "class_count_per_jdk": 4,
+    "original_runtime_raw_equal": true,
+    "source_count_per_jdk": 4
+  },
+  "preparation_execution": {
+    "argv": [
+      "python3",
+      "-B",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/prepare-baseline-luna-v2.py",
+      "--cli",
+      "/private/tmp/jarde-nonfinal-static-cli-v1"
+    ],
+    "exit": 0,
+    "raw_streams": {
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 566,
+        "sha256": "c7ad279a17af7bc5d2465ee69ad509c113c64a4c321f05929168495fc805d13c"
+      }
+    },
+    "script_sha256": "81ab55384513416c311af46ffc56d8587ce8933cb1849824bfcf992f117c72c9"
+  },
+  "schema": "array-literal-boundaries-next-baseline-verification-luna-v2",
+  "selected_upstream_bodies": {
+    "selected_members": 5,
+    "selected_methods_verified": 3
+  },
+  "semantic_observations": {
+    "ConstantIntArray": "the static final CONST_INT field and returned array entries are emitted as the literal value 65535; this confirms the constant value, not preservation of the source symbol reference",
+    "DependentArrayStores": "the generated method keeps a new int[3] temporary and the ordered element reads/writes instead of folding them into an array initializer",
+    "LongArrayLimits": "the generated long-array values retain the recorded 64-bit extrema as long literals"
+  },
+  "source_sha256": {
+    "ArrayLiteralBoundariesRunner": "3690b8528bb7dd0ea785c51973faf72c19aa95f03464949fdb22db9374f7f0ef",
+    "ConstantIntArray": "db6c3062d7ddee05df6ea1db091b55b691fb01ac96ee10065a3a0e1b39583f08",
+    "DependentArrayStores": "d21029dde313ca1a4b5ce02fc96f620a42cac6363cc0a2076bf5ad958c8f49f6",
+    "LongArrayLimits": "e42608ddd6fcd766d276e421803960ec95a90cf74023155148ec603e0c84e8f7"
+  },
+  "status": "verified-baseline-with-recorded-outcome"
+}

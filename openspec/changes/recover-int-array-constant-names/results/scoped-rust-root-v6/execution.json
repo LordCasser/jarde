@@ -1,0 +1,42 @@
+{
+  "schema": "int-array-scoped-rust-root-v6",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "integer_constant_name_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T04:23:56.303768+00:00",
+      "duration_seconds": 11.145334208005806,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 424546731,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v6/0.stdout.raw",
+          "bytes": 1039,
+          "sha256": "4c89f83d28defdf4689306a167905402e820c6021dfee5fb60bb8bd337db790a"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-array-constant-names/results/scoped-rust-root-v6/0.stderr.raw",
+          "bytes": 209,
+          "sha256": "bbeb8624b8ad3bc9e11297d7a98313f149198cebaab4af2b0820328a8643ce02"
+        }
+      }
+    }
+  ]
+}

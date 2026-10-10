@@ -1,0 +1,7 @@
+# Instance CI verifier v1 review
+
+This verifier is pinned to product `192b0bc13eca631f44ebaf28a998db52d4f14040` and workflow run `38022628853`. It reuses the static-initializer verifier v12's `verify_ci`, command-log parsing, and raw-record helpers by importing the pinned script and overriding only its CI evidence directory; it does not copy that 1,100-line verifier.
+
+The added instance scope checks the 5 implementation unit tests and 6 facade tests in both fixed-seed workspace logs and in their captured local test outputs. It also checks the captured 178 reader tests, 5 corpus fingerprint tests plus the expected ignored generator, and the actual fmt/strict OpenSpec validation record reporting 334 passed. Metadata's 10 product, 4 test, and 16 canonical file pins are checked against Git blobs at the fixed product commit, not against mutable worktree files.
+
+The verifier binds the accepted v6 replay (58 commands, 52 cases, closed 361-file inventory) to the frozen CLI and metadata, checks the previous independent 8-leg static-array acceptance and raw runtime/original-class digests, and validates all captured execution stream hashes. The output is a new file under `ci-product-v1`; it refuses to overwrite an existing acceptance record. CI evidence was still pending when this script was prepared. Only static JSON/raw evidence inspection and Python AST parsing were performed; no Git command, CI query, verifier run, or toolchain was executed by this preparation.

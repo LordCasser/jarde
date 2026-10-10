@@ -8,6 +8,6 @@ root审private v6并补真实编译/发射断言修正。`results/scoped-rust-ro
 
 旧literal/ordered完整回归v3实际24命令/8腿全部重编-Xverify/raw通过，default/all正文相等，静态initializer proof完全保持、实例b正确提升；物理method.item、原report.text/source_map保持。root独立脚本接受97闭合文件，见static-array-regression-root-acceptance-v1.json。v2实际全部重编运行成功，仅错误比较包含request/usage的整个方法容器而误标失败，原manifest/raw保留。
 
-当前tasks6/8。主线提交后的实例产品自己的完整双seed/JDK25/MSRV/fuzz/supply CI待验收，不能借6fd静态片CI或宣称EM18整单元完成。整数数组常量名私有v4尚未应用。
+当前tasks8/8。主线192b0bc13eca631f44ebaf28a998db52d4f14040已推送，自己的CI38022628853全部成功；04:46 UTC root实际独立verify-instance-ci-product-root-v3接受4jobs/52steps、两seed各3368 passed/0 failed/97 ignored、各354条结果记录，以及全部11新实例用例、JDK25对照/MSRV/fuzz/supply。完整API/stable/supply gzip及执行记录在results/ci-product-v1，acceptance SHA e18979f851b8b1e9c5aa61694af8566efb6bed38a998f7c83811cbadc27d5799；全部30文件pins按192b不可变Git blobs核验，不借当前整数工作区。系统Python缺blake3与v2错误假设candidate inventory有path的真实失败保留；UV环境+v3精确各自policy后接受。整数片已另应用，独立提交及自身CI待完成。不能据本窄片宣称EM18整单元完成。
 
 最终root-checkpoint-validation-v1：cargo fmt/all OpenSpec strict334/ git diff --check全部退出0，10产品/4test/16canonical当前pins均与冻结metadata一致。04:00 UTC只cargo clean本仓target，释放864.1MiB、target不存在，原source/class/raw及冻结CLI保留。

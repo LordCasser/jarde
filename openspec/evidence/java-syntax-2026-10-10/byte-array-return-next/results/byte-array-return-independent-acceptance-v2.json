@@ -1,0 +1,94 @@
+{
+  "schema": "em18-byte-array-return-independent-acceptance-v2",
+  "success": true,
+  "checks": [
+    "closed 127-file inventory and pinned manifest",
+    "all 35 raw command records and frozen tool pins",
+    "ten isolated complete-class compiles and unchanged sources",
+    "JADX jar is the exact javac23 target class only",
+    "four Jarde reports, owner identities, UTF-8 source spans, and original BCIs",
+    "ten -Xverify:all raw executions match both original JDK oracles"
+  ],
+  "jarde_method_bcis": {
+    "javac8": {
+      "class_bytes_sha256": "78b11f0281fc43062c8efcc31dc4b2bbc70396d4ae09ae88ba013efab45e0bb7",
+      "class_bytes_blake3": "7f3c4529f08ca339f7c809d2c248098a93e613bab485f1800e66d3e69cff3f95",
+      "method_bcis": {
+        "<init>()V": [
+          0,
+          1,
+          4
+        ],
+        "test()[B": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "default_all_text_equal": true
+    },
+    "javac23": {
+      "class_bytes_sha256": "65c1fdcd9d6efa1c49c3ccfbf3daa2c1e2e0f99370af6db2a53a375e139bc9a9",
+      "class_bytes_blake3": "036d0ba1e8e23a4f74603e8f7ec776732a3514cf12e692b1a3a1909ce070e46f",
+      "method_bcis": {
+        "<init>()V": [
+          0,
+          1,
+          4
+        ],
+        "test()[B": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "default_all_text_equal": true
+    }
+  },
+  "runtime": {
+    "cases": [
+      "javac8-original",
+      "javac23-original",
+      "javac8-jadx-default",
+      "javac23-jadx-default",
+      "javac8-jadx-none",
+      "javac23-jadx-none",
+      "javac8-jarde-default",
+      "javac8-jarde-all",
+      "javac23-jarde-default",
+      "javac23-jarde-all"
+    ],
+    "stdout_sha256": "02e77ebcf894d51fefff8b409360cc94cfe59f3d557b78ee897fabefae9dae14",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cross_jdk_equal": true
+  },
+  "manifest_sha256": "113b6eeeedd92d20d2d9f3ad8e6e18fc1998537ca117f35b6a7cdb2ec244f658",
+  "inventory_sha256": "057e751872b807576a8e9635216160132e855e63d14da55c75bdfce2a21fd2e1",
+  "command_count": 35,
+  "case_count": 10,
+  "closed_file_count": 127
+}

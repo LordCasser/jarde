@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T05:00:28.203936+00:00",
+  "duration_seconds": 0.18497316699358635,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/root-clean-v3/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/root-clean-v3/stderr.raw",
+      "bytes": 40,
+      "sha256": "2ee9f9d0a8b4304bc56d2e74f4db54d7b9688b405e1bff7d72b1a5f06ab6bb16"
+    }
+  },
+  "free_bytes_before": 21216620544,
+  "free_bytes_after": 22057861120,
+  "target_exists": false
+}

@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/results/verify-baseline-luna-v2.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T05:05:58.473575+00:00",
+  "duration_seconds": 0.18618479100405239,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/results/independent-execution-root-v1/stdout.raw",
+      "bytes": 4359,
+      "sha256": "a505846ae3ebaaf95d5fbc9f8081dcc900255f05f44c4e5f0d12b2b189a063b3"
+    },
+    "stderr": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/results/independent-execution-root-v1/stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  },
+  "prepared_script_sha256": "54f1069ef4bcd755ac386a84758120e16100e7f61d1e32b85a7a80020c343e20"
+}

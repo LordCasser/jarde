@@ -1,0 +1,9 @@
+unique=[7, 7]
+unique-fresh=true
+duplicate=[7]
+shadow-parameter=[7, 9]
+shadow-local=[7, 8]
+unsupported-nested=[[7]]
+unsupported-leaves=[7, 5, 9]
+prior-assert-ok=[7]
+prior-assert-false=not-thrown

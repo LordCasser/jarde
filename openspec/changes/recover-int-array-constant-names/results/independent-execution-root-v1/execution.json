@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/verify-candidate-full-class-luna-v4.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T05:04:50.502274+00:00",
+  "duration_seconds": 0.2926786250027362,
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/independent-execution-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/independent-execution-root-v1/stderr.raw",
+      "bytes": 220,
+      "sha256": "283427436fb8a98b353b801a703d1a4afb716e2e8f9f86469d9344237d8c5f73"
+    }
+  },
+  "prepared_script_sha256": "70ed59f86bd2e192242b684cbbbfabc20722d1eef9d80e4a6aa3d269c794c4de"
+}

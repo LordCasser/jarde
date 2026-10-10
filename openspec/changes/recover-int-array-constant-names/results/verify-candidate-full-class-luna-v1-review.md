@@ -1,0 +1,11 @@
+# Independent v6 verifier review
+
+The verifier is prepared for `candidate-full-class-root-v6/manifest.json`. It has not been executed. It reads the frozen CLI, metadata, JDK manifest, raw command journal, original sources/classes, render JSON, rebuilt class sets, and prior accepted array baseline; it does not import or invoke the collector or any compiler/decompiler/CLI.
+
+It checks the v6 inventory SHA and exact directory closure; the pinned 10 product files, 4 test/workflow files, 16 canonical files, CLI, JADX 1.5.6 binary, and two-JDK manifest/tool hashes; all 75 command records and 150 raw streams; the 12-case accounting (with imported original runs excluded from fresh success counts); all 32 default/all renders; and the 10 fresh full-class compile/runtime legs.
+
+For the three ArrayFill classes, it reopens all 12 old accepted `class_source.json` files and independently compares physical field items plus each physical method item, report text, source map, and execution status. It intentionally does not compare request/evidence/usage containers. For controls, it checks current class member identities/order/flags against the original per-JDK `javap` member census, verifies each positive BCI against that method's instruction table and physical report source map, verifies UTF-8 output spans and field/method owner anchors, and checks the named / refused boundary families. Runtime stdout/stderr are compared byte-for-byte to the original same-JDK oracle in both assertion modes.
+
+The candidate's BLAKE3 is checked for agreement among the CLI's verified class digest, its owner/anchor records, the prior accepted ArrayFill class-source record where applicable, and the SHA-256-pinned class bytes. This script does not implement a second BLAKE3 algorithm; it treats the CLI's `class_bytes_blake3_verified` as the recorded cryptographic identity and independently checks all surrounding byte/hash links.
+
+The result is written beside the v6 run as `candidate-full-class-luna-v1-verification.json`, so the immutable 417-entry run inventory remains closed. Passing this verifier establishes only the recorded full-class/runtime observations and source-map invariants; it does not establish that the original Java source used the rendered constant symbol, or complete the whole OpenSpec change.

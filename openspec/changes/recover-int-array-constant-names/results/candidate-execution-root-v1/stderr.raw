@@ -1,0 +1,13 @@
+WARN `--no-project` was provided, but no project was found
+candidate preparation failed: KeyError: 'javac23'
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v4.py", line 1393, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v4.py", line 1294, in main
+    jadx_jar, jadx_members, jadx_missing = build_jadx_input_jar(control_contexts["javac23"])
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/prepare-candidate-full-class-root-v4.py", line 1045, in build_jadx_input_jar
+    leg_context = original_controls["javac23"]
+                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: 'javac23'

@@ -1,0 +1,86 @@
+{
+  "case_accounting": {
+    "case_counts": {
+      "control-original": 2,
+      "imported-original": 2,
+      "jadx-candidate": 4,
+      "jarde-candidate": 4
+    },
+    "imported_oracles_excluded_from_success_count": true,
+    "recorded_failures": [],
+    "success_counts": {
+      "control-original": 2,
+      "imported-original": 0,
+      "jadx-candidate": 4,
+      "jarde-candidate": 4
+    }
+  },
+  "claim_boundary": "Complete-class candidate/source and runtime observations for three accepted array-fill targets plus five isolated integer-array controls. A rendered constant name demonstrates semantic agreement for this input; it does not prove the original Java source used that symbol.",
+  "closed_inventory": {
+    "closed": true,
+    "file_count": 417,
+    "sha256": "4eb840839ca5190977a3f2946773e4689c2d2a6c68409f7e5a0b5b86b80d6ad8"
+  },
+  "commands_and_raw_streams": {
+    "all_commands_zero": true,
+    "command_count": 75,
+    "raw_stream_count": 150,
+    "unique_labels": true
+  },
+  "complete_class_rebuilds": {
+    "all_runtime_raw_matches": true,
+    "empty_cp_sp": true,
+    "fresh_complete_class_legs": 10,
+    "verify_all": true
+  },
+  "frozen_inputs": {
+    "canonical_pin_count": 16,
+    "cli_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+    "jadx_input_archive": {
+      "matches_original_javac23_bytes": true,
+      "member_count": 5,
+      "names": [
+        "DuplicateIntArray.class",
+        "PriorAssertIntArray.class",
+        "ShadowIntArray.class",
+        "UniqueIntArray.class",
+        "UnsupportedIntArray.class"
+      ],
+      "runner_absent": true
+    },
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jdk_tool_sha256": {
+      "javac23": {
+        "java": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "javac": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "javap": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      },
+      "javac8": {
+        "java": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "javac": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "javap": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    },
+    "metadata_sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282",
+    "product_pin_count": 10,
+    "test_pin_count": 4
+  },
+  "imported_baseline": {
+    "array_physical_method_reports_compared": 12,
+    "counted_as_current_success": false,
+    "imported_oracle_rows": 2,
+    "previous_baseline_inventory_closed": true,
+    "previous_baseline_verified": true
+  },
+  "manifest_path": "openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v7/manifest.json",
+  "manifest_sha256": "2ddecb3db651cd26a16327f481f04c03d4da3e927be49a41d56c35f1fafd9540",
+  "render_and_provenance": {
+    "default_all_text_equal": true,
+    "negative_default_observations": 10,
+    "positive_default_observations": 8,
+    "render_count": 32
+  },
+  "schema": "recover-int-array-constant-names-full-class-independent-verification-luna-v5",
+  "status": "verified"
+}

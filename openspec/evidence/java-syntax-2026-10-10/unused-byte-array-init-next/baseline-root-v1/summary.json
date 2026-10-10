@@ -1,0 +1,20 @@
+{
+  "schema": "em18-unused-byte-array-init-baseline-summary-v1",
+  "status": "baseline-with-failures",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "success_counts": {
+    "original": 0,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "original_cross_jdk_raw_equal": true,
+  "failures": [
+    "javac8-original",
+    "javac23-original",
+    "success counts differ: {'original': 0, 'jadx': 4, 'jarde': 4}"
+  ]
+}

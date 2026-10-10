@@ -1,0 +1,23 @@
+{
+  "status": "completed",
+  "case_counts": {
+    "imported-original": 2,
+    "control-original": 2,
+    "jarde-candidate": 4,
+    "jadx-candidate": 4
+  },
+  "success_counts": {
+    "imported-original": 0,
+    "control-original": 2,
+    "jarde-candidate": 4,
+    "jadx-candidate": 4
+  },
+  "command_count": 75,
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "file_count": 417,
+    "sha256": "dea6e75e4fd40e7773fab34cdb7757da2a5a4e94031224713ac6f1c06d99beb8"
+  },
+  "failures": [],
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-full-class-root-v6/manifest.json"
+}

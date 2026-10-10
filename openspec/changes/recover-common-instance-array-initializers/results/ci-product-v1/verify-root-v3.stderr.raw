@@ -1,0 +1,14 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-ci-product-root-v2.py", line 368, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-ci-product-root-v2.py", line 352, in main
+    replay = verify_candidate_replay()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-ci-product-root-v2.py", line 174, in verify_candidate_replay
+    manifest, inventory = close_inventory(CANDIDATE_ROOT, CANDIDATE_MANIFEST_SHA256,
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-ci-product-root-v2.py", line 116, in close_inventory
+    assert policy["path"] == "file-inventory.json" and policy["excludes"] == ["file-inventory.json"]
+           ~~~~~~^^^^^^^^
+KeyError: 'path'

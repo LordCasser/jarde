@@ -1,0 +1,3507 @@
+{
+  "schema": "em22-mask-condition-baseline-luna-v1",
+  "status": "completed",
+  "claim_boundary": "One active TestRedundantBrackets.method3 integer bit-mask condition adapted to a standalone ordinary class; 2 original, 4 JADX, and 4 Jarde complete-source compile/run legs. No claim about cast/instanceof/array expressions, ECJ, DEX, or all EM-22 cases.",
+  "oracle": "Fresh original complete class plus the same Runner on each fixed JDK; all reconstructed complete-source legs compare exit/stdout/stderr byte-for-byte to the same-JDK original. Expected output is independently derived from Java int semantics and still requires original-class confirmation.",
+  "source": {
+    "path": "original-sources/MaskCondition.java",
+    "bytes": 216,
+    "sha256": "507a40ffd0e2f67e7c085e38599a7afd57bad53175ad90c075374a70bd39dc20"
+  },
+  "runner": {
+    "path": "original-sources/Runner.java",
+    "bytes": 390,
+    "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+  },
+  "prepared_input_sha256": {
+    "source": "507a40ffd0e2f67e7c085e38599a7afd57bad53175ad90c075374a70bd39dc20",
+    "runner": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+  },
+  "expected_original_stdout": "3\n84\n7\n-6\n2147483647\n",
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "jdk_legs": {
+    "javac8": {
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      }
+    },
+    "javac23": {
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      }
+    }
+  },
+  "frozen_jarde_cli": {
+    "path": "/private/tmp/jarde-int-array-names-cli-v2",
+    "sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-cli-v2.json",
+    "metadata_sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282",
+    "metadata_copy": {
+      "path": "inputs/candidate-cli-metadata.json",
+      "bytes": 5084,
+      "sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282"
+    }
+  },
+  "jadx": {
+    "launcher": "/opt/homebrew/bin/jadx",
+    "resolved_launcher": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "expected_version": "1.5.6",
+    "version_command": {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.812243+00:00",
+      "duration_seconds": 0.19265420798910782,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-version.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "streams/jadx-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "input_jar": {
+      "path": "jadx-input/MaskCondition.class.jar",
+      "bytes": 356,
+      "sha256": "579dca8aea82339cf757a9c63c9590f209f78486c7433a19ebfbf8af3c1a6e02"
+    },
+    "jar_members": [
+      {
+        "name": "MaskCondition.class",
+        "bytes": 220,
+        "sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70",
+        "blake3": "ce2033c4cc671768cb8cc912ac26d80e6b9a2fdd1a75429fd33d49966258ecfb"
+      }
+    ],
+    "input_jar_exact": true,
+    "profiles": [
+      {
+        "profile": "default",
+        "command": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:08.005655+00:00",
+          "duration_seconds": 0.9470942079788074,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-default-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-default-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/default/sources/defpackage/MaskCondition.java",
+            "bytes": 275,
+            "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          "defpackage"
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      {
+        "profile": "none",
+        "command": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:08.953956+00:00",
+          "duration_seconds": 0.9483298340055626,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-none-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-none-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/none/sources/MaskCondition.java",
+            "bytes": 274,
+            "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          null
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      }
+    ]
+  },
+  "javac8_and_javac23_original_class_facts": [
+    {
+      "path": "cases/javac8-original/classes/MaskCondition.class",
+      "bytes": 220,
+      "sha256": "bbd30b64407ae1e9053a294d6fd4818e51d0f94ee0266c8269a1dc3ce48e1845",
+      "blake3": "ad236816f45272caba601543d5544038f42785417561750e283b9ece608c8797"
+    },
+    {
+      "path": "cases/javac23-original/classes/MaskCondition.class",
+      "bytes": 220,
+      "sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70",
+      "blake3": "ce2033c4cc671768cb8cc912ac26d80e6b9a2fdd1a75429fd33d49966258ecfb"
+    }
+  ],
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "expected_case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "original_cross_jdk_raw_equal": true,
+  "preflight": [
+    {
+      "label": "fixture-source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/inputs-prepared-luna-v1/MaskCondition.java",
+      "expected_sha256": "507a40ffd0e2f67e7c085e38599a7afd57bad53175ad90c075374a70bd39dc20",
+      "actual_sha256": "507a40ffd0e2f67e7c085e38599a7afd57bad53175ad90c075374a70bd39dc20",
+      "ok": true
+    },
+    {
+      "label": "runner-source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/inputs-prepared-luna-v1/Runner.java",
+      "expected_sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd",
+      "actual_sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd",
+      "ok": true
+    },
+    {
+      "label": "fixed-jdk-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "jdk-leg-set",
+      "expected": [
+        "javac8",
+        "javac23"
+      ],
+      "actual": [
+        "javac23",
+        "javac8"
+      ],
+      "ok": true
+    },
+    {
+      "label": "frozen-jarde-cli",
+      "path": "/private/tmp/jarde-int-array-names-cli-v2",
+      "expected_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+      "actual_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+      "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-cli-v2.json",
+      "metadata_sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282",
+      "metadata_cli_matches": true,
+      "ok": true
+    },
+    {
+      "label": "fixed-jadx-launcher",
+      "path": "/opt/homebrew/bin/jadx",
+      "resolved_path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "expected_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "actual_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "ok": true
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:06.703807+00:00",
+      "duration_seconds": 0.030706791003467515,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-java-version.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-java-version.stderr.raw",
+          "bytes": 174,
+          "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+        }
+      }
+    },
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:06.735237+00:00",
+      "duration_seconds": 0.06175845902180299,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-javac-version.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-javac-version.stderr.raw",
+          "bytes": 16,
+          "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+        }
+      }
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:06.797534+00:00",
+      "duration_seconds": 0.07092933298554271,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-javap-version.stdout.raw",
+          "bytes": 10,
+          "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+        },
+        "stderr": {
+          "path": "streams/javac8-javap-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:06.869348+00:00",
+      "duration_seconds": 0.18558108402066864,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.055403+00:00",
+      "duration_seconds": 0.04593612501048483,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes/MaskCondition.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.102287+00:00",
+      "duration_seconds": 0.13189670798601583,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-original-javap.stdout.raw",
+          "bytes": 1772,
+          "sha256": "3200391446c659c5550bfd19e14442650817fd1ab82f960eb7cf76b29855ce12"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.235244+00:00",
+      "duration_seconds": 0.022779708000598475,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-java-version.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-java-version.stderr.raw",
+          "bytes": 152,
+          "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+        }
+      }
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.258565+00:00",
+      "duration_seconds": 0.08027962502092123,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-javac-version.stdout.raw",
+          "bytes": 13,
+          "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+        },
+        "stderr": {
+          "path": "streams/javac23-javac-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.339558+00:00",
+      "duration_seconds": 0.056792166986269876,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-javap-version.stdout.raw",
+          "bytes": 7,
+          "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+        },
+        "stderr": {
+          "path": "streams/javac23-javap-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.397602+00:00",
+      "duration_seconds": 0.20637724999687634,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.604472+00:00",
+      "duration_seconds": 0.050747750006848946,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes/MaskCondition.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.656082+00:00",
+      "duration_seconds": 0.15461466598208062,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-original-javap.stdout.raw",
+          "bytes": 2018,
+          "sha256": "dac71a48732586246a095ebbde744d739ae363988a2fde02a66b861a2c396723"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:07.812243+00:00",
+      "duration_seconds": 0.19265420798910782,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-version.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "streams/jadx-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/default",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:08.005655+00:00",
+      "duration_seconds": 0.9470942079788074,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-default-decompile.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/jadx-default-decompile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:08.953956+00:00",
+      "duration_seconds": 0.9483298340055626,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-none-decompile.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/jadx-none-decompile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:09.905642+00:00",
+      "duration_seconds": 0.20027716699405573,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.106394+00:00",
+      "duration_seconds": 0.046597583015682176,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-default-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.154390+00:00",
+      "duration_seconds": 0.1923276250017807,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.347204+00:00",
+      "duration_seconds": 0.048802082979818806,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-default-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.397545+00:00",
+      "duration_seconds": 0.18568283400963992,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-none-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.583708+00:00",
+      "duration_seconds": 0.04581945901736617,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-none-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.630816+00:00",
+      "duration_seconds": 0.2013265839777887,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-none-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.832580+00:00",
+      "duration_seconds": 0.05050412501441315,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-none-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-render-default",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes/MaskCondition.class",
+        "--class",
+        "MaskCondition",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.884147+00:00",
+      "duration_seconds": 0.015002041996922344,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-render-default.stdout.raw",
+          "bytes": 25717,
+          "sha256": "1117fde01fa98ea89ac30c3abe4952f1d1891da154ac43d8208f922dd262e2c0"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-render-all",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes/MaskCondition.class",
+        "--class",
+        "MaskCondition",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.900220+00:00",
+      "duration_seconds": 0.006430000008549541,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-render-all.stdout.raw",
+          "bytes": 26581,
+          "sha256": "00b61097fbd1bd64031d20d004fe7c043b86f8629350896da303f24838d96722"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:10.907874+00:00",
+      "duration_seconds": 0.18461537500843406,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-default-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.092969+00:00",
+      "duration_seconds": 0.04655020800419152,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-default-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-default-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.140831+00:00",
+      "duration_seconds": 0.18527370900847018,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-all-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-all-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.326600+00:00",
+      "duration_seconds": 0.04797941699507646,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-all-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-all-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-render-default",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes/MaskCondition.class",
+        "--class",
+        "MaskCondition",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.375643+00:00",
+      "duration_seconds": 0.007238916994538158,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-render-default.stdout.raw",
+          "bytes": 25717,
+          "sha256": "913e230f00dc89bd14cb8e3e4f78faee354cf0e6a87fdf96d2b3129d09d6a946"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-render-all",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes/MaskCondition.class",
+        "--class",
+        "MaskCondition",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.383905+00:00",
+      "duration_seconds": 0.006261957983952016,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-render-all.stdout.raw",
+          "bytes": 26581,
+          "sha256": "0700f3103643f498912a55de69b23de3749cd1a5d6a345c22a49c9bbd7bc431c"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.391408+00:00",
+      "duration_seconds": 0.2089502090238966,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-default-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.600853+00:00",
+      "duration_seconds": 0.04838216700591147,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-default-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-default-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/MaskCondition.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.650567+00:00",
+      "duration_seconds": 0.21445187498466112,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-all-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-all-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T05:01:11.865492+00:00",
+      "duration_seconds": 0.05069795899908058,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-all-run.stdout.raw",
+          "bytes": 21,
+          "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-all-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:06.869348+00:00",
+        "duration_seconds": 0.18558108402066864,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-original-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-original-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:07.055403+00:00",
+        "duration_seconds": 0.04593612501048483,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-original-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac8-original-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-original/MaskCondition.java",
+          "bytes": 216,
+          "sha256": "507a40ffd0e2f67e7c085e38599a7afd57bad53175ad90c075374a70bd39dc20"
+        },
+        {
+          "path": "cases/javac8-original/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/MaskCondition.class",
+          "bytes": 220,
+          "sha256": "bbd30b64407ae1e9053a294d6fd4818e51d0f94ee0266c8269a1dc3ce48e1845"
+        },
+        {
+          "path": "cases/javac8-original/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "d3b79422d09f63b7986e0e92d9d50b57a803a95b530aa88b5669cc6c14456021"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "complete_class_set": true,
+      "javap": {
+        "command": {
+          "label": "javac8-original-javap",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes/MaskCondition.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "started_at": "2026-10-10T05:01:07.102287+00:00",
+          "duration_seconds": 0.13189670798601583,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac8-original-javap.stdout.raw",
+              "bytes": 1772,
+              "sha256": "3200391446c659c5550bfd19e14442650817fd1ab82f960eb7cf76b29855ce12"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "text": {
+          "path": "cases/javac8-original/javap.txt",
+          "bytes": 1772,
+          "sha256": "3200391446c659c5550bfd19e14442650817fd1ab82f960eb7cf76b29855ce12"
+        },
+        "physical_fields": [],
+        "physical_methods": {
+          "<init>()V": [
+            0,
+            1,
+            4
+          ],
+          "method3(II)I": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "physical_members_exact": true
+      },
+      "actual_class": {
+        "path": "cases/javac8-original/classes/MaskCondition.class",
+        "bytes": 220,
+        "sha256": "bbd30b64407ae1e9053a294d6fd4818e51d0f94ee0266c8269a1dc3ce48e1845",
+        "blake3": "ad236816f45272caba601543d5544038f42785417561750e283b9ece608c8797"
+      },
+      "success": true,
+      "runtime_raw": {
+        "exit": 0,
+        "stdout_sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:07.397602+00:00",
+        "duration_seconds": 0.20637724999687634,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-original-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-original-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:07.604472+00:00",
+        "duration_seconds": 0.050747750006848946,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-original-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac23-original-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-original/MaskCondition.java",
+          "bytes": 216,
+          "sha256": "507a40ffd0e2f67e7c085e38599a7afd57bad53175ad90c075374a70bd39dc20"
+        },
+        {
+          "path": "cases/javac23-original/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/MaskCondition.class",
+          "bytes": 220,
+          "sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70"
+        },
+        {
+          "path": "cases/javac23-original/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "6cfa7060bf70059a74882e7ee71ea90623548dce228dc343e84386f0deb6726d"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "complete_class_set": true,
+      "javap": {
+        "command": {
+          "label": "javac23-original-javap",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes/MaskCondition.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:07.656082+00:00",
+          "duration_seconds": 0.15461466598208062,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac23-original-javap.stdout.raw",
+              "bytes": 2018,
+              "sha256": "dac71a48732586246a095ebbde744d739ae363988a2fde02a66b861a2c396723"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "text": {
+          "path": "cases/javac23-original/javap.txt",
+          "bytes": 2018,
+          "sha256": "dac71a48732586246a095ebbde744d739ae363988a2fde02a66b861a2c396723"
+        },
+        "physical_fields": [],
+        "physical_methods": {
+          "<init>()V": [
+            0,
+            1,
+            4
+          ],
+          "method3(II)I": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "physical_members_exact": true
+      },
+      "actual_class": {
+        "path": "cases/javac23-original/classes/MaskCondition.class",
+        "bytes": 220,
+        "sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70",
+        "blake3": "ce2033c4cc671768cb8cc912ac26d80e6b9a2fdd1a75429fd33d49966258ecfb"
+      },
+      "success": true,
+      "runtime_raw": {
+        "exit": 0,
+        "stdout_sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:09.905642+00:00",
+        "duration_seconds": 0.20027716699405573,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-default-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.106394+00:00",
+        "duration_seconds": 0.046597583015682176,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-default-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-default-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-default/MaskCondition.java",
+          "bytes": 275,
+          "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+        },
+        {
+          "path": "cases/javac8-jadx-default/Runner.java",
+          "bytes": 411,
+          "sha256": "dcb1f2f864261a0b132c595cd6c1693eefd2b84a5decce9bba2acc879ecc7809"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/MaskCondition.class",
+          "bytes": 235,
+          "sha256": "905e4162395e078219bcfb57df072d1c6fb136b35208ac58039dc515d65a6cac"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/Runner.class",
+          "bytes": 471,
+          "sha256": "07e77a9f11f771c73d91324c625d143bcb3cdf31dc04401e02c3290cc7444520"
+        }
+      ],
+      "expected_class_paths": [
+        "defpackage/MaskCondition.class",
+        "defpackage/Runner.class"
+      ],
+      "actual_class_paths": [
+        "defpackage/MaskCondition.class",
+        "defpackage/Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "generated_source": {
+        "path": "jadx-output/default/sources/defpackage/MaskCondition.java",
+        "bytes": 275,
+        "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac8-jadx-default/Runner.java",
+        "bytes": 411,
+        "sha256": "dcb1f2f864261a0b132c595cd6c1693eefd2b84a5decce9bba2acc879ecc7809"
+      },
+      "runner_class": "defpackage.Runner",
+      "decompilation": {
+        "profile": "default",
+        "command": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:08.005655+00:00",
+          "duration_seconds": 0.9470942079788074,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-default-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-default-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/default/sources/defpackage/MaskCondition.java",
+            "bytes": 275,
+            "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          "defpackage"
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.154390+00:00",
+        "duration_seconds": 0.1923276250017807,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-default-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.347204+00:00",
+        "duration_seconds": 0.048802082979818806,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-default-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-default-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-default/MaskCondition.java",
+          "bytes": 275,
+          "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+        },
+        {
+          "path": "cases/javac23-jadx-default/Runner.java",
+          "bytes": 411,
+          "sha256": "dcb1f2f864261a0b132c595cd6c1693eefd2b84a5decce9bba2acc879ecc7809"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/MaskCondition.class",
+          "bytes": 235,
+          "sha256": "a041e26eddb5e5e9264698a487c52cc5bb0f8332c73bbdd521cd2340bc05e8eb"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/Runner.class",
+          "bytes": 471,
+          "sha256": "69c1820af38495f68da6d9b685c266638e27d0294170f577a61d5820b40a79e6"
+        }
+      ],
+      "expected_class_paths": [
+        "defpackage/MaskCondition.class",
+        "defpackage/Runner.class"
+      ],
+      "actual_class_paths": [
+        "defpackage/MaskCondition.class",
+        "defpackage/Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "generated_source": {
+        "path": "jadx-output/default/sources/defpackage/MaskCondition.java",
+        "bytes": 275,
+        "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac23-jadx-default/Runner.java",
+        "bytes": 411,
+        "sha256": "dcb1f2f864261a0b132c595cd6c1693eefd2b84a5decce9bba2acc879ecc7809"
+      },
+      "runner_class": "defpackage.Runner",
+      "decompilation": {
+        "profile": "default",
+        "command": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:08.005655+00:00",
+          "duration_seconds": 0.9470942079788074,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-default-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-default-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/default/sources/defpackage/MaskCondition.java",
+            "bytes": 275,
+            "sha256": "448ba9383c93ac9946d89d31bd0e368a98d66b59ec356d725015830e8c9be6d4"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          "defpackage"
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.397545+00:00",
+        "duration_seconds": 0.18568283400963992,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-none-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-none-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.583708+00:00",
+        "duration_seconds": 0.04581945901736617,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-none-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-none-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-none/MaskCondition.java",
+          "bytes": 274,
+          "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+        },
+        {
+          "path": "cases/javac8-jadx-none/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-none/classes/MaskCondition.class",
+          "bytes": 224,
+          "sha256": "768a4504b3057714be265957ee2fcd3885629b867eeac7258e70675fef8ce534"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "d3b79422d09f63b7986e0e92d9d50b57a803a95b530aa88b5669cc6c14456021"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac8",
+      "generated_source": {
+        "path": "jadx-output/none/sources/MaskCondition.java",
+        "bytes": 274,
+        "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac8-jadx-none/Runner.java",
+        "bytes": 390,
+        "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+      },
+      "runner_class": "Runner",
+      "decompilation": {
+        "profile": "none",
+        "command": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:08.953956+00:00",
+          "duration_seconds": 0.9483298340055626,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-none-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-none-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/none/sources/MaskCondition.java",
+            "bytes": 274,
+            "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          null
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.630816+00:00",
+        "duration_seconds": 0.2013265839777887,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-none-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-none-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.832580+00:00",
+        "duration_seconds": 0.05050412501441315,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-none-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-none-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-none/MaskCondition.java",
+          "bytes": 274,
+          "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+        },
+        {
+          "path": "cases/javac23-jadx-none/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-none/classes/MaskCondition.class",
+          "bytes": 224,
+          "sha256": "a3fa9a1bb9008713e878636ff6b421266a36097d0a46c231185d445783b7f9c1"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "6cfa7060bf70059a74882e7ee71ea90623548dce228dc343e84386f0deb6726d"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac23",
+      "generated_source": {
+        "path": "jadx-output/none/sources/MaskCondition.java",
+        "bytes": 274,
+        "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac23-jadx-none/Runner.java",
+        "bytes": 390,
+        "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+      },
+      "runner_class": "Runner",
+      "decompilation": {
+        "profile": "none",
+        "command": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-output/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/jadx-input/MaskCondition.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:08.953956+00:00",
+          "duration_seconds": 0.9483298340055626,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-none-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-none-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/none/sources/MaskCondition.java",
+            "bytes": 274,
+            "sha256": "1296e17c2a79d6383a6c884d86fb908663619203a1b4bd7bae4186d9706de543"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          null
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac8-jarde-default",
+      "compile": {
+        "label": "javac8-jarde-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:10.907874+00:00",
+        "duration_seconds": 0.18461537500843406,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jarde-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jarde-default-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-jarde-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.092969+00:00",
+        "duration_seconds": 0.04655020800419152,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jarde-default-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac8-jarde-default-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde-default/MaskCondition.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        {
+          "path": "cases/javac8-jarde-default/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jarde-default/classes/MaskCondition.class",
+          "bytes": 220,
+          "sha256": "bbd30b64407ae1e9053a294d6fd4818e51d0f94ee0266c8269a1dc3ce48e1845"
+        },
+        {
+          "path": "cases/javac8-jarde-default/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "d3b79422d09f63b7986e0e92d9d50b57a803a95b530aa88b5669cc6c14456021"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "evidence_mode": "default",
+      "rendered_profile": {
+        "mode": "default",
+        "command": {
+          "label": "javac8-jarde-render-default",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes/MaskCondition.class",
+            "--class",
+            "MaskCondition",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "started_at": "2026-10-10T05:01:10.884147+00:00",
+          "duration_seconds": 0.015002041996922344,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac8-jarde-render-default.stdout.raw",
+              "bytes": 25717,
+              "sha256": "1117fde01fa98ea89ac30c3abe4952f1d1891da154ac43d8208f922dd262e2c0"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-default.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": true,
+        "document": {
+          "path": "cases/javac8-jarde-render/class-source-default.json",
+          "bytes": 25717,
+          "sha256": "1117fde01fa98ea89ac30c3abe4952f1d1891da154ac43d8208f922dd262e2c0"
+        },
+        "generated_text": {
+          "path": "cases/javac8-jarde-render/MaskCondition-default.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        "physical_field_count": 0,
+        "physical_method_count": 2,
+        "physical_method_identity_set_exact": true,
+        "input_owner_exact": true,
+        "source_map_facts": {
+          "input_owner_exact_b3_length_location_variant": true,
+          "physical_field_count": 0,
+          "physical_method_count": 2,
+          "physical_method_identity_set_exact": true,
+          "source_map_complete_required": false,
+          "methods": [
+            {
+              "method": [
+                "<init>",
+                "()V"
+              ],
+              "method_index": 0,
+              "source_map_state": "complete",
+              "source_map_segments": 2,
+              "source_map_origins": 3,
+              "mapped_bcis": [
+                0,
+                1,
+                4
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                4
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            },
+            {
+              "method": [
+                "method3",
+                "(II)I"
+              ],
+              "method_index": 1,
+              "source_map_state": "complete",
+              "source_map_segments": 20,
+              "source_map_origins": 22,
+              "mapped_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            }
+          ]
+        },
+        "method3_report_text": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n",
+        "method3_condition_tokens_present": true
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac8-jarde-default/Runner.java",
+        "bytes": 390,
+        "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac8-jarde-all",
+      "compile": {
+        "label": "javac8-jarde-all-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.140831+00:00",
+        "duration_seconds": 0.18527370900847018,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jarde-all-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jarde-all-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-jarde-all-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.326600+00:00",
+        "duration_seconds": 0.04797941699507646,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jarde-all-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac8-jarde-all-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde-all/MaskCondition.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        {
+          "path": "cases/javac8-jarde-all/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jarde-all/classes/MaskCondition.class",
+          "bytes": 220,
+          "sha256": "bbd30b64407ae1e9053a294d6fd4818e51d0f94ee0266c8269a1dc3ce48e1845"
+        },
+        {
+          "path": "cases/javac8-jarde-all/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "d3b79422d09f63b7986e0e92d9d50b57a803a95b530aa88b5669cc6c14456021"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-jarde-all/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "evidence_mode": "all",
+      "rendered_profile": {
+        "mode": "all",
+        "command": {
+          "label": "javac8-jarde-render-all",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac8-original/classes/MaskCondition.class",
+            "--class",
+            "MaskCondition",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "started_at": "2026-10-10T05:01:10.900220+00:00",
+          "duration_seconds": 0.006430000008549541,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac8-jarde-render-all.stdout.raw",
+              "bytes": 26581,
+              "sha256": "00b61097fbd1bd64031d20d004fe7c043b86f8629350896da303f24838d96722"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-all.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": true,
+        "document": {
+          "path": "cases/javac8-jarde-render/class-source-all.json",
+          "bytes": 26581,
+          "sha256": "00b61097fbd1bd64031d20d004fe7c043b86f8629350896da303f24838d96722"
+        },
+        "generated_text": {
+          "path": "cases/javac8-jarde-render/MaskCondition-all.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        "physical_field_count": 0,
+        "physical_method_count": 2,
+        "physical_method_identity_set_exact": true,
+        "input_owner_exact": true,
+        "source_map_facts": {
+          "input_owner_exact_b3_length_location_variant": true,
+          "physical_field_count": 0,
+          "physical_method_count": 2,
+          "physical_method_identity_set_exact": true,
+          "source_map_complete_required": true,
+          "methods": [
+            {
+              "method": [
+                "<init>",
+                "()V"
+              ],
+              "method_index": 0,
+              "source_map_state": "complete",
+              "source_map_segments": 2,
+              "source_map_origins": 3,
+              "mapped_bcis": [
+                0,
+                1,
+                4
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                4
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            },
+            {
+              "method": [
+                "method3",
+                "(II)I"
+              ],
+              "method_index": 1,
+              "source_map_state": "complete",
+              "source_map_segments": 20,
+              "source_map_origins": 22,
+              "mapped_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            }
+          ]
+        },
+        "method3_report_text": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n",
+        "method3_condition_tokens_present": true
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac8-jarde-all/Runner.java",
+        "bytes": 390,
+        "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac23-jarde-default",
+      "compile": {
+        "label": "javac23-jarde-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.391408+00:00",
+        "duration_seconds": 0.2089502090238966,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jarde-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jarde-default-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-jarde-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.600853+00:00",
+        "duration_seconds": 0.04838216700591147,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jarde-default-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac23-jarde-default-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde-default/MaskCondition.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        {
+          "path": "cases/javac23-jarde-default/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jarde-default/classes/MaskCondition.class",
+          "bytes": 220,
+          "sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70"
+        },
+        {
+          "path": "cases/javac23-jarde-default/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "6cfa7060bf70059a74882e7ee71ea90623548dce228dc343e84386f0deb6726d"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "evidence_mode": "default",
+      "rendered_profile": {
+        "mode": "default",
+        "command": {
+          "label": "javac23-jarde-render-default",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes/MaskCondition.class",
+            "--class",
+            "MaskCondition",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:11.375643+00:00",
+          "duration_seconds": 0.007238916994538158,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac23-jarde-render-default.stdout.raw",
+              "bytes": 25717,
+              "sha256": "913e230f00dc89bd14cb8e3e4f78faee354cf0e6a87fdf96d2b3129d09d6a946"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-default.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": true,
+        "document": {
+          "path": "cases/javac23-jarde-render/class-source-default.json",
+          "bytes": 25717,
+          "sha256": "913e230f00dc89bd14cb8e3e4f78faee354cf0e6a87fdf96d2b3129d09d6a946"
+        },
+        "generated_text": {
+          "path": "cases/javac23-jarde-render/MaskCondition-default.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        "physical_field_count": 0,
+        "physical_method_count": 2,
+        "physical_method_identity_set_exact": true,
+        "input_owner_exact": true,
+        "source_map_facts": {
+          "input_owner_exact_b3_length_location_variant": true,
+          "physical_field_count": 0,
+          "physical_method_count": 2,
+          "physical_method_identity_set_exact": true,
+          "source_map_complete_required": false,
+          "methods": [
+            {
+              "method": [
+                "<init>",
+                "()V"
+              ],
+              "method_index": 0,
+              "source_map_state": "complete",
+              "source_map_segments": 2,
+              "source_map_origins": 3,
+              "mapped_bcis": [
+                0,
+                1,
+                4
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                4
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            },
+            {
+              "method": [
+                "method3",
+                "(II)I"
+              ],
+              "method_index": 1,
+              "source_map_state": "complete",
+              "source_map_segments": 20,
+              "source_map_origins": 22,
+              "mapped_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            }
+          ]
+        },
+        "method3_report_text": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n",
+        "method3_condition_tokens_present": true
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac23-jarde-default/Runner.java",
+        "bytes": 390,
+        "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac23-jarde-all",
+      "compile": {
+        "label": "javac23-jarde-all-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/MaskCondition.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.650567+00:00",
+        "duration_seconds": 0.21445187498466112,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jarde-all-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jarde-all-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-jarde-all-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T05:01:11.865492+00:00",
+        "duration_seconds": 0.05069795899908058,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jarde-all-run.stdout.raw",
+            "bytes": 21,
+            "sha256": "e00ef111ca648e9502e639126de1861ae414ee24548105a9682d2dd3bc702cf2"
+          },
+          "stderr": {
+            "path": "streams/javac23-jarde-all-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde-all/MaskCondition.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        {
+          "path": "cases/javac23-jarde-all/Runner.java",
+          "bytes": 390,
+          "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jarde-all/classes/MaskCondition.class",
+          "bytes": 220,
+          "sha256": "b041460729b2658fac7cb95512c024a13181c2f0f79acc64cc15cb0bc43dec70"
+        },
+        {
+          "path": "cases/javac23-jarde-all/classes/Runner.class",
+          "bytes": 449,
+          "sha256": "6cfa7060bf70059a74882e7ee71ea90623548dce228dc343e84386f0deb6726d"
+        }
+      ],
+      "expected_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "actual_class_paths": [
+        "MaskCondition.class",
+        "Runner.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-jarde-all/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "evidence_mode": "all",
+      "rendered_profile": {
+        "mode": "all",
+        "command": {
+          "label": "javac23-jarde-render-all",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/baseline-root-v1/cases/javac23-original/classes/MaskCondition.class",
+            "--class",
+            "MaskCondition",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T05:01:11.383905+00:00",
+          "duration_seconds": 0.006261957983952016,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac23-jarde-render-all.stdout.raw",
+              "bytes": 26581,
+              "sha256": "0700f3103643f498912a55de69b23de3749cd1a5d6a345c22a49c9bbd7bc431c"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-all.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": true,
+        "document": {
+          "path": "cases/javac23-jarde-render/class-source-all.json",
+          "bytes": 26581,
+          "sha256": "0700f3103643f498912a55de69b23de3749cd1a5d6a345c22a49c9bbd7bc431c"
+        },
+        "generated_text": {
+          "path": "cases/javac23-jarde-render/MaskCondition-all.java",
+          "bytes": 1071,
+          "sha256": "7932f2ba3293b0537f9590141ea88be848490f8ce3160839137a27a96dc95654"
+        },
+        "physical_field_count": 0,
+        "physical_method_count": 2,
+        "physical_method_identity_set_exact": true,
+        "input_owner_exact": true,
+        "source_map_facts": {
+          "input_owner_exact_b3_length_location_variant": true,
+          "physical_field_count": 0,
+          "physical_method_count": 2,
+          "physical_method_identity_set_exact": true,
+          "source_map_complete_required": true,
+          "methods": [
+            {
+              "method": [
+                "<init>",
+                "()V"
+              ],
+              "method_index": 0,
+              "source_map_state": "complete",
+              "source_map_segments": 2,
+              "source_map_origins": 3,
+              "mapped_bcis": [
+                0,
+                1,
+                4
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                4
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            },
+            {
+              "method": [
+                "method3",
+                "(II)I"
+              ],
+              "method_index": 1,
+              "source_map_state": "complete",
+              "source_map_segments": 20,
+              "source_map_origins": 22,
+              "mapped_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "expected_javap_bcis": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21
+              ],
+              "bci_coverage_complete": true,
+              "all_present_origins_bind_to_exact_method_and_javap": true
+            }
+          ]
+        },
+        "method3_report_text": "// @method method3(II)I\n// @declaration an instance method of `MaskCondition`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    if (arg1 + arg2 < 10) {\n        return arg1;\n    } else if ((arg1 & arg2) != 0) {\n        return arg1 * arg2;\n} else {\n        return arg2;\n}\n}\n",
+        "method3_condition_tokens_present": true
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac23-jarde-all/Runner.java",
+        "bytes": 390,
+        "sha256": "1d69b66ac5b23a85dd2d7d0ecf1a66fe43b6e73dec8ef02b2b67927f117f28fd"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    }
+  ],
+  "failures": [],
+  "execution_policy": {
+    "removed_environment": [
+      "JAVA_TOOL_OPTIONS",
+      "_JAVA_OPTIONS",
+      "JDK_JAVA_OPTIONS",
+      "CLASSPATH"
+    ],
+    "complete_class_compile": [
+      "-source",
+      "8",
+      "-target",
+      "8",
+      "-g:none"
+    ],
+    "empty_classpath_and_sourcepath": true,
+    "runtime_verifier": "-Xverify:all",
+    "all_generated_target_sources_compiled_unmodified": true,
+    "condition_presentation_is_recorded_not_assumed": true,
+    "both_jarde_default_and_all_texts_compiled_per_jdk": true,
+    "default_source_map_completeness_required": false,
+    "all_source_map_completeness_required": true
+  },
+  "prepared_script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em22-mask-condition-next/results/prepare-baseline-luna-v1.py",
+    "bytes": 34840,
+    "sha256": "3ef8ed1951b0a130c72f4d241bac15ced765342f4c5a9aab73dea0b4ef91c0ad"
+  },
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json",
+      "summary.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

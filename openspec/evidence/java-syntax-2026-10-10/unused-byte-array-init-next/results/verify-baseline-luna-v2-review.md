@@ -1,0 +1,7 @@
+# Unused byte-array initializer baseline verifier v2
+
+v2 preserves v1 and adds the requested independent bindings: the `local_initializer_presentation` claim is read from each rendered profile; the Jarde method's raw name and descriptor are compared to its identity bytes; the original `javap` command record is linked to the exact pinned tool, class path, JDK home, and successful exit; and the JADX jar is opened and required to contain exactly the javac23 original `UnusedByteArrayInit.class`. Both JADX generated source files are independently linked to their output paths and archived hashes.
+
+The original collector error remains explicit: its two `success=false` flags arise from the stale physical-method descriptor assumption, while actual `javap` independently confirms `<init>()V` and `test()V`, no fields, and the complete BCI sets. The verifier requires exactly those two recorded case failures plus the recorded success-count failure, then validates compile/runtime/class outputs separately. It reports `accepted-baseline-with-recorded-collector-error`; it does not rewrite or repair the original manifest.
+
+The initializer assertion is source-presentation evidence only. Jarde's explicit `new byte[]{10, 20, 30}` and JADX's shorthand `{10, 20, 30}` are both recorded. The Runner's `done` output only confirms the whole source compiled and ran; it does not observe the local array or prove element values. This verifier has not been run; only Python syntax compilation is used during preparation.
