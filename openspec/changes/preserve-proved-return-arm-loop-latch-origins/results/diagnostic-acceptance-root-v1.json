@@ -1,0 +1,47 @@
+{
+  "schema": "cf07-lastindex-diagnostic-root-acceptance-v1",
+  "status": "accepted_actual_region",
+  "product_commit": "1f386686c6a31813254a85fed48d2af0af84a61c",
+  "diagnostic_execution_sha256": "968c5f27473f910116dd09a693a31fcfd331d1e31521134762439cf439f3f399",
+  "checked_raw": [
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/diagnostic-root-v2/2.stdout.raw",
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/diagnostic-root-v2/2.stderr.raw",
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/diagnostic-root-v2/3.stdout.raw",
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/diagnostic-root-v2/3.stderr.raw"
+  ],
+  "actual_test": [
+    1,
+    0,
+    0
+  ],
+  "restored_pins": 52,
+  "peak_target_bytes": 153324998,
+  "candidate_bci": 25,
+  "candidate_canonical": 22,
+  "header_bci": 5,
+  "if_branch_bci": 16,
+  "if_join": null,
+  "return_arm_canonical": 19,
+  "latch_arm_canonical": 22,
+  "natural_latches": [
+    22
+  ],
+  "full_latch_outgoing": [
+    [
+      22,
+      "Normal",
+      5
+    ]
+  ],
+  "owner_counts": {
+    "then": 0,
+    "else": 1,
+    "if": 1,
+    "loop": 1,
+    "method": 1,
+    "continue_leaf_mentions": 0
+  },
+  "target_absent": true,
+  "v1_failure": "Private diagnostic owner_count had one too few reference dereferences; E0277 retained; root v2 only corrected **owner.",
+  "production_application": false
+}

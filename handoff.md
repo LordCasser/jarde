@@ -13,9 +13,9 @@
 
 ## 下一步操作
 
-本片提交推送后查询该产品head自己的CI。已审results/capture-ci-product-root-v2.py与verify-ci-product-root-v2.py要求真实 --product-commit/--run-id，以及 --expected-lib-count336、--expected-gateway-count12、--expected-total-passed3389；这是预期，只有实际raw满足才接受。检查4jobs/52steps、两fixed seed各354记录/97ignored、新If三名与build内部异常名、旧integer11名、52live+Git产品pins。自身CI接受之前不要关闭3.2，不借前片或后续文档CI。
+本片产品已推送 `1f386686c6a31813254a85fed48d2af0af84a61c`，自身CI [38068627541](https://github.com/LordCasser/jarde/actions/runs/38068627541) 尚未最终接受（真实API快照 supply chain/MSRV成功，stable/fuzz执行中）。已审results/capture-ci-product-root-v2.py与verify-ci-product-root-v2.py要求真实 --product-commit/--run-id，以及 --expected-lib-count336、--expected-gateway-count12、--expected-total-passed3389；这是预期，只有实际raw满足才接受。检查4jobs/52steps、两fixed seed各354记录/97ignored、新If三名与build内部异常名、旧integer11名、52live+Git产品pins。自身CI接受之前不要关闭3.2，不借前片或后续文档CI。
 
-关闭本片3.2/3.3后，下一明确项是 **CF07 lastIndexOf@25→5** 的循环来源。现有implicit_tail_latch_origin仅body最后直接Straight，实际正文的update在末尾If else中；仍须临时内部同一次IR诊断证实真实Region/唯一natural latch/准确owner/全canonical出边，再写独立OpenSpec。Luna私有诊断在 `/private/tmp/jarde-cf07-lastindexof-region-diagnostic-v1/diagnostic.patch`，尚未root读审、应用、编译或运行，不能把私有预计形状当事实。不混入当前If片，不引入通用来源补洞或新Frame。
+关闭本片3.2/3.3后，下一明确项 **preserve-proved-return-arm-loop-latch-origins** 规划4/4、strict340/0、实现1/7：root同次真实IR诊断v2已实际1/0/0，证明lastIndex Loop5/末尾直接If16 joinNone/thenStraight19 return21/elseStraight22 SSA22,25/唯一natural latch22/全canonical仅Normal5/唯一owner；52pins已恢复，cargo clean144.8MiB。v1私有诊断E0277原始失败与root **owner修正都保留。本片限制单block直接双arm，其中一return/另一唯一exact latch，复用既有证书和gateway_origins，无新实体。Luna正在private准备最小patch与新CF07完整collector/verifier，root前片CI接受后才应用。另有真实独立for呈现缺口：preheader初值门仅Push(Int)+Store，end-1的load/sub不满足，不能把来源缺口关闭算整CF07追平。
 
 ## 已闭合前片
 
@@ -32,3 +32,5 @@ For来源片 `preserve-proved-for-latch-origins` **6/6**、产品d714a6bcc86c7df
 本片真实反例显示外层named Try→Loop→If：Frame::protected设置own_try，Frame::loop_body清为None，普通named catch没有现有finally/guard证书恢复它，故If then以ExceptionEdge拒绝。整方法fallback还只有blockleader来源、physical21缺span。这两项单列在If/results/exception-case-architecture-root-v1.md，不扩大本片。还有arithmetic iadd@5来源、flat Signature generic arity、receiver-tail预算、CF16浅层组合、handler ctor goto19和else-if缩进，均按原独立债务推进。
 
 长期账本：[71单元summary](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。先完成当前精确自身CI与clean交付，再推进下一项；持续目标仍active，不暂停也不宣称已完成。
+
+并行方向只读清单在下一片results/next-ledger-triage-luna-v1.md：CF-12整数switch、DT-02静态成员类、EM-23字段更新按本地JADX活动断言/已有完整基线扩验；Luna目前准备CF-12五测试真实重放计划，尚无该单元新产品或完成宣称。

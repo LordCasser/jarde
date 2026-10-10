@@ -1,0 +1,6 @@
+
+running 1 test
+test region::tests::diagnose_cf07_last_index_latch_region_ownership_from_real_class_ir ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 336 filtered out; finished in 0.01s
+

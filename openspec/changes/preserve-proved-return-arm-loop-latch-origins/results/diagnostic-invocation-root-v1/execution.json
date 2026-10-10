@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T16:42:35.336162+00:00",
+  "duration_seconds": 25.32934616698185,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-lastindex-diagnostic-runner-root-v1.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 99,
+      "sha256": "9df7099a3ada6bb88890643e16e2c71a7a9732086236d0abffa7b790fbe3cbf4"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

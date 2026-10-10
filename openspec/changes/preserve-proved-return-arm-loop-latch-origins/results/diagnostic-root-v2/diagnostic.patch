@@ -1,0 +1,307 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -13638,6 +13638,304 @@
+             reason.message().contains("[44, 45]"),
+             "{}",
+             reason.message()
++        );
++    }
++
++
++    #[test]
++    fn diagnose_cf07_last_index_latch_region_ownership_from_real_class_ir() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        const CLASS: &[u8] = include_bytes!(
++            "../../../openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class"
++        );
++
++        fn find_loop(region: &Region, bci: u32) -> Option<&Region> {
++            match region {
++                Region::Loop { header, .. } if header.bci() == bci => Some(region),
++                Region::Loop { body, .. } | Region::Sequence { regions: body } => {
++                    body.iter().find_map(|child| find_loop(child, bci))
++                }
++                Region::If { then_arm, else_arm, .. } => {
++                    find_loop(then_arm, bci).or_else(|| find_loop(else_arm, bci))
++                }
++                _ => None,
++            }
++        }
++
++        fn find_if(region: &Region, bci: u32) -> Option<&Region> {
++            match region {
++                Region::If { branch_bci, .. } if *branch_bci == bci => Some(region),
++                Region::If { then_arm, else_arm, .. } => {
++                    find_if(then_arm, bci).or_else(|| find_if(else_arm, bci))
++                }
++                Region::Loop { body, .. } | Region::Sequence { regions: body } => {
++                    body.iter().find_map(|child| find_if(child, bci))
++                }
++                _ => None,
++            }
++        }
++
++        fn owner_count(region: &Region, block: &CanonicalBlockId) -> usize {
++            region.blocks().iter().filter(|owner| **owner == block).count()
++        }
++
++        fn continue_count(region: &Region, source_bci: u32, header: &CanonicalBlockId) -> usize {
++            match region {
++                Region::LoopContinue { source_bci: source, loop_header } => {
++                    if *source == source_bci && loop_header == header { 1 } else { 0 }
++                }
++                Region::Sequence { regions } | Region::Loop { body: regions, .. } => regions
++                    .iter()
++                    .map(|region| continue_count(region, source_bci, header))
++                    .sum(),
++                Region::If { then_arm, else_arm, .. } => {
++                    continue_count(then_arm, source_bci, header)
++                        + continue_count(else_arm, source_bci, header)
++                }
++                _ => 0,
++            }
++        }
++
++        let mut budget = Budget::new(jarde_reader::budget::Limits {
++            input_bytes: 1 << 20,
++            archive_entries: 100,
++            entry_bytes: 1 << 20,
++            read_bytes: 1 << 20,
++            class_bytes: 1 << 20,
++            attribute_bytes: 1 << 20,
++            code_bytes: 1 << 20,
++            result_items: 1 << 20,
++            output_bytes: 1 << 20,
++            class_headers: 100,
++            method_bodies: 100,
++            ir_items: 1 << 20,
++            ir_edges: 1 << 20,
++            analysis_steps: 1 << 20,
++            normalization_clones: 1 << 20,
++            nested_depth: 32,
++            dependency_depth: 32,
++            elapsed_millis: u64::MAX,
++        });
++        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
++            .expect("frozen CF07 class opens");
++        let definition = PhysicalDefinitionId {
++            location: PhysicalClassLocation::StandaloneRoot {
++                snapshot: snapshot.id().clone(),
++            },
++            class_bytes: ClassBytesId {
++                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
++                length: u64::try_from(CLASS.len()).expect("fixture length fits u64"),
++            },
++            variant: PhysicalVariant::Base,
++        };
++        let domain = LoadDomain {
++            loader: LoaderId("app".to_string()),
++            parent_loader: None,
++            delegation: DelegationPolicy::ParentFirst,
++            roots: vec![LoadRoot::StandaloneClass {
++                snapshot: snapshot.id().clone(),
++            }],
++            module_mode: ModuleMode::ClassPath,
++            external_override: RuntimeUncertainty::None,
++            runtime_transformation: RuntimeUncertainty::None,
++        };
++        let request = MethodAnalysisRequest {
++            environment: ResolutionEnvironment {
++                runtime: RuntimeView {
++                    physical: PhysicalView {
++                        snapshot: snapshot.id().clone(),
++                        scope: PhysicalScope::SnapshotAll,
++                    },
++                    profile: RuntimeProfile {
++                        java_release: 23,
++                        multi_release: MultiReleasePolicy::Disabled,
++                        layout: LayoutMode::Generic,
++                    },
++                    load_domain: domain.clone(),
++                },
++                domains: vec![domain],
++                providers: Vec::new(),
++            },
++            method: PhysicalMethodId {
++                owner: definition,
++                name: JvmBytes(b"lastIndexOf".to_vec()),
++                descriptor: JvmBytes(b"([IIII)I".to_vec()),
++            },
++            stages: AnalysisStage::ALL.to_vec(),
++        };
++        let analysis = analyze_method_ir(&[snapshot], &request, &mut budget)
++            .expect("frozen lastIndexOf completes one real JVM analysis");
++        let ir = analysis.ir();
++        let canonical = ir.canonical().expect("canonical CFG from that analysis");
++        let ssa = ir.ssa().expect("SSA from that analysis");
++        let code = ir.code().expect("decoded code from that analysis");
++        let operations = Operations::of(code, ir.constant_pool());
++        let chains = crate::concat::plan_four_conditional_strings(
++            ssa,
++            canonical,
++            &operations,
++            &crate::build::FieldCopies::default(),
++            &mut budget,
++        )
++        .expect("the real method's existing concat plan completes");
++        let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
++            .expect("normal-flow view from that canonical CFG");
++        let recovered = recover(
++            canonical,
++            &view,
++            ssa,
++            &operations,
++            ir.constant_pool(),
++            &chains,
++            &crate::init::Sites::empty(),
++            code,
++            Some(false),
++            false,
++            &crate::pass::JAVA_8,
++            &mut budget,
++        )
++        .expect("the real method region walk completes");
++
++        eprintln!("lastIndexOf recovered regions: {:#?}", recovered.regions);
++        let loop_region = recovered
++            .regions
++            .iter()
++            .find_map(|region| find_loop(region, 5))
++            .expect("real recovered loop with javap header BCI 5");
++        let Region::Loop {
++            header,
++            body,
++            form,
++            for_header,
++            gateway_origins,
++            ..
++        } = loop_region
++        else {
++            unreachable!();
++        };
++        let inner_if = body
++            .iter()
++            .find_map(|region| find_if(region, 16))
++            .expect("real nested If with javap branch BCI 16");
++        let Region::If {
++            branch,
++            branch_bci,
++            then_arm,
++            else_arm,
++            join,
++            ..
++        } = inner_if
++        else {
++            unreachable!();
++        };
++        let goto_fact = code
++            .instructions
++            .iter()
++            .find(|instruction| instruction.bci == 25)
++            .expect("javap's physical latch goto BCI 25 exists");
++        assert_eq!(goto_fact.opcode, 0xa7);
++        assert_eq!(operations.get(25), Some(&Operation::Transfer));
++        let latch_block = canonical
++            .blocks()
++            .iter()
++            .find(|block| {
++                block.id().path().is_empty()
++                    && block.id().bci() <= goto_fact.bci
++                    && goto_fact.bci < block.end_bci()
++            })
++            .expect("the real canonical span owns physical BCI 25");
++        let latch_id = latch_block.id();
++        let latch_ssa = ssa.block(latch_id).expect("the real latch has SSA");
++        let latch_bcis: Vec<_> = latch_ssa
++            .instructions()
++            .iter()
++            .map(SsaInstruction::bci)
++            .collect();
++        let latch_edges: Vec<_> = canonical
++            .edges()
++            .iter()
++            .filter(|edge| edge.from() == latch_id)
++            .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
++            .collect();
++        let all_edges: Vec<_> = canonical
++            .edges()
++            .iter()
++            .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
++            .collect();
++        let header_node = view.index_of(header).expect("the header is in normal flow");
++        let natural = view
++            .loop_entered_at(header_node)
++            .expect("the actual header owns a natural loop");
++        let natural_blocks: Vec<_> = natural
++            .blocks()
++            .iter()
++            .filter_map(|node| view.id_of(*node).cloned())
++            .collect();
++        let latch_nodes: Vec<_> = natural
++            .latches()
++            .iter()
++            .filter_map(|node| view.id_of(*node).cloned())
++            .collect();
++        let method_owner_count: usize = recovered
++            .regions
++            .iter()
++            .map(|region| owner_count(region, latch_id))
++            .sum();
++        let loop_owner_count = owner_count(loop_region, latch_id);
++        let if_owner_count = owner_count(inner_if, latch_id);
++        let then_owner_count = owner_count(then_arm, latch_id);
++        let else_owner_count = owner_count(else_arm, latch_id);
++        let physical_continue_count = recovered
++            .regions
++            .iter()
++            .map(|region| continue_count(region, 25, header))
++            .sum::<usize>();
++
++        eprintln!(
++            "outer_loop header={header:?} form={form:?} for_header={for_header:?} gateway_origins={gateway_origins:?}"
+         );
++        eprintln!(
++            "nested_if branch_block={branch:?} branch_bci={branch_bci} join={join:?} then={then_arm:#?} else={else_arm:#?}"
++        );
++        eprintln!(
++            "latch_physical=(bci={}, opcode=0x{:02x}, width={}) canonical={latch_id:?} span={}..{} ssa_bcis={latch_bcis:?}",
++            goto_fact.bci,
++            goto_fact.opcode,
++            goto_fact.width,
++            latch_id.bci(),
++            latch_block.end_bci()
++        );
++        eprintln!(
++            "normal_flow_natural_loop header={} blocks={natural_blocks:?} latches={latch_nodes:?} irreducible={}",
++            natural.header(),
++            natural.is_irreducible()
++        );
++        eprintln!("latch_canonical_outgoing={latch_edges:?}");
++        eprintln!("canonical_all_edges={all_edges:?}");
++        eprintln!(
++            "latch_block_owner_counts: then={then_owner_count} else={else_owner_count} if={if_owner_count} loop={loop_owner_count} method={method_owner_count} continue_leaf_mentions={physical_continue_count}"
++        );
++
++        assert_eq!(header.bci(), 5);
++        assert_eq!(*branch_bci, 16);
++        assert_eq!(goto_fact.bci, 25);
++        assert_eq!(latch_id.bci(), 22);
++        assert!(latch_edges.iter().any(|(_, kind, target)| {
++            *kind == CanonicalEdgeKind::Normal && *target == header.bci()
++        }));
++        assert!(natural.latches().contains(&view.index_of(latch_id).expect("latch index")));
+     }
+ }

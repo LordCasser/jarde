@@ -1,0 +1,129 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 30.71s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+lastIndexOf recovered regions: [
+    Straight {
+        blocks: [
+            CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+        ],
+    },
+    Loop {
+        header: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        tests: [
+            (
+                CanonicalBlockId {
+                    bci: 5,
+                    path: [],
+                },
+                8,
+                FallThrough,
+            ),
+        ],
+        test_operator: None,
+        form: While,
+        for_header: None,
+        body: [
+            If {
+                prefix: [],
+                branch: CanonicalBlockId {
+                    bci: 11,
+                    path: [],
+                },
+                branch_bci: 16,
+                then_arm: Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 19,
+                            path: [],
+                        },
+                    ],
+                },
+                else_arm: Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 22,
+                            path: [],
+                        },
+                    ],
+                },
+                join: None,
+            },
+        ],
+        exit: Some(
+            CanonicalBlockId {
+                bci: 28,
+                path: [],
+            },
+        ),
+        gateway_origins: [],
+    },
+    Straight {
+        blocks: [
+            CanonicalBlockId {
+                bci: 28,
+                path: [],
+            },
+        ],
+    },
+]
+outer_loop header=CanonicalBlockId { bci: 5, path: [] } form=While for_header=None gateway_origins=[]
+nested_if branch_block=CanonicalBlockId { bci: 11, path: [] } branch_bci=16 join=None then=Straight {
+    blocks: [
+        CanonicalBlockId {
+            bci: 19,
+            path: [],
+        },
+    ],
+} else=Straight {
+    blocks: [
+        CanonicalBlockId {
+            bci: 22,
+            path: [],
+        },
+    ],
+}
+latch_physical=(bci=25, opcode=0xa7, width=3) canonical=CanonicalBlockId { bci: 22, path: [] } span=22..28 ssa_bcis=[22, 25]
+normal_flow_natural_loop header=1 blocks=[CanonicalBlockId { bci: 5, path: [] }, CanonicalBlockId { bci: 11, path: [] }, CanonicalBlockId { bci: 22, path: [] }] latches=[CanonicalBlockId { bci: 22, path: [] }] irreducible=false
+latch_canonical_outgoing=[(22, Normal, 5)]
+canonical_all_edges=[(0, Normal, 5), (5, Normal, 11), (5, Normal, 28), (11, Normal, 19), (11, Normal, 22), (22, Normal, 5)]
+latch_block_owner_counts: then=0 else=1 if=1 loop=1 method=1 continue_leaf_mentions=0

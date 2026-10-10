@@ -1,0 +1,229 @@
+{
+  "schema": "cf07-lastindex-real-region-diagnostic-root-v1",
+  "product_commit": "1f386686c6a31813254a85fed48d2af0af84a61c",
+  "pins_before": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "2f60027b615ff2b8687cb3555c5cfa6fe1ac5a65b4244faa613ee70efaee466c",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+    "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734",
+    ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+    "crates/jarde-java/tests/p3_effectful_exits.rs": "ad03f864744cb2c3b17552ca464db019bbb691a6ae601b148f3e4d70711887d5",
+    "crates/jarde-java/tests/p3_loop_body_double_jumps.rs": "b4e4ca7786740e86311fa2a66ad2620ddd9b5877d86271bad34a8e84ce5d0963",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "85855d95bfb682e1f48035a799b05f0880835845887d8e14c10636b8415a8b9b",
+    "crates/jarde-java/tests/p3_loop_terminal_return.rs": "51d2f1387c29708b2b23678f6f36d18a7b13dc007e0dd7a6a1c4f9a299f7d48d",
+    "tests/p3_loop_arm_join.rs": "b37866c07eb2ea7718cb31fe9cd1b46a243509bc39fc45eddad6f47ff392898d",
+    "tests/p3_loop_boolean_exit.rs": "e3b6728bdd6639c7d3a7c5e601cf699469e226ea119b177e54ade57dfdb0ac6c",
+    "tests/p5_corpus_fingerprint.rs": "a29cc5ca21c3201466c7c4bca62d84e16fe3cfe5b40b05a2bafcf29b2fc3ffaa",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJLoops.class": "51412a18470844c5c5c80f4f98049ed7b2122692a4e4209520cba9c26c311efe",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJTripleJump.class": "ed9bcdc4d40c1ff10e82c537c6bfc2aecbcb631d5ce99706db7df1946ec7193d",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L1.class": "538a551413509655fe7aefa2661a0f59a6097d714e9a26058ab2780bdad4db97",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L2.class": "54080c587e19b40044927a10c4cf677734830179a940f25bf01e2f65de68acbc",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L5.class": "baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55",
+    "openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class": "a9d90b1b42d69cf3ec6e30dd6d16cacf0c0264fe86adc88f1ba27d897046de2f",
+    "openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class": "b5a7541fc6dc6a6eaff229f3559968cd7e20a4f48c063e4fd019186f92b4a240",
+    "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+    "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989",
+    "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class": "b1e6bd92f8fe92e726e7a2a95461327dd3f7abe65ee7f451f1225777ed7ea6d4",
+    "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class": "4a3a1c09a64993411fcfb3f167cebd46fa51f5e1afe1eac330ee2663b9951096",
+    "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class": "2b29c9a9ba3812ed5083d8e983e907f9575dcb700dc52b2a7842e7fcc4667bee",
+    "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class": "4253b590f7b9e051c1b2d3f26157744920205915c84f4239f32290e471494006",
+    "tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class": "8f29f5db6c51e8a62fbcec09b4f162e498004ba19159daa56721563a2af1b1be",
+    "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class": "dd1cd6cd5faca218508416c2431f350e0a470936915ace9d54bfc9ad3755e533",
+    "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExits.class": "2e27cffb9361cbd78a689b404457b68d6bc31f1739362659ce71c0e276c0bae8",
+    "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoin.class": "542c856a156103f8c4e20372fcbeb3bc767b0c706f3270d73d5ec6dddfefdc2a",
+    "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoinExtraBreak.class": "14ba9f16f39c051b680a4d886656571e40f41a8b13a881ba6f0ddef6ebe6d954",
+    "tests/fixtures/p3-loop-boolean-exit/LoopBool.java": "57056904a51f6d8278703a0a34de89fb11f8204766639ce519c4fab4fcbf7391",
+    "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class": "cc727795087999f893efffd1f98ccafb93e25f988b62689850af51be1f25914f",
+    "tests/fixtures/p3-loop-gateway/EndlessInts.class": "bf215f7654fd928d7255bc04db8c97de6a8cb064b3390235c9c815d7ea0f8fc4",
+    "tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class": "c760085f59e5b7320b34bb4b56940258924e5eea35636c4ff4bd39ee16c9797d",
+    "tests/fixtures/p3-loop-gateway/cf08/LoopGatewayNegatives.class": "90217a24e3370215334ccbf94eeb86c7616cd2f9c733523e07ef872b0647d85f",
+    "tests/fixtures/p3-loop-terminal/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+    "tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class": "b006bce3a47e211f69bb07e989036c2cd32dede94dcf5a8fcab47b39832877c5",
+    "tests/fixtures/p3-loop-terminal/cf07/LoopTerminalNegatives.class": "afd0b5ef202935165f6b9566a107e073f6ea5d89148901acda8a4a94920534fd"
+  },
+  "patch_sha256": "0a3ad0456f1faa6aa564cba2600ebbbc1d50eaf77bfc43279c061337b2097474",
+  "guard_template_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+  "runner_sha256": "39e19bfaf4c2da369ad555e73b2eebee6e27a720b2a5f820caba90438cbab5fe",
+  "jdk": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "commands": [
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "region::tests::diagnose_cf07_last_index_latch_region_ownership_from_real_class_ir",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T16:42:12.108148+00:00",
+      "duration_seconds": 22.186593582999194,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 118302315,
+      "free_bytes_after": 62975094784,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-lastindex-diagnostic-root-v1/2.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-lastindex-diagnostic-root-v1/2.stderr.raw",
+          "bytes": 2997,
+          "sha256": "b00774fc3f845dc9616761e2d2d9f43f08bef1f739ab9d5c1eec95918f8c8715"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T16:42:34.313240+00:00",
+      "duration_seconds": 1.010530250001466,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 118302315,
+      "free_bytes_after": 63089438720,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "actual": [],
+        "expected": [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "required_test": "region::tests::diagnose_cf07_last_index_latch_region_ownership_from_real_class_ir",
+        "ok": false
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-lastindex-diagnostic-root-v1/3.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-lastindex-diagnostic-root-v1/3.stderr.raw",
+          "bytes": 52,
+          "sha256": "8921877f60f032e9d99619f143abb05652684c4351a4360922ec256ca3821ce2"
+        }
+      }
+    }
+  ],
+  "diagnostic_region_sha256": "a24b7f91192db5753a2424e5475135e3393a255832862543f70e24fee41e95ce",
+  "pins_after_restore": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+    "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+    "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+    "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+    "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+    "crates/jarde-java/src/build.rs": "2f60027b615ff2b8687cb3555c5cfa6fe1ac5a65b4244faa613ee70efaee466c",
+    "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+    "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+    "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+    "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+    "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+    "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+    "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+    "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+    "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734",
+    ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+    "crates/jarde-java/tests/p3_effectful_exits.rs": "ad03f864744cb2c3b17552ca464db019bbb691a6ae601b148f3e4d70711887d5",
+    "crates/jarde-java/tests/p3_loop_body_double_jumps.rs": "b4e4ca7786740e86311fa2a66ad2620ddd9b5877d86271bad34a8e84ce5d0963",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "85855d95bfb682e1f48035a799b05f0880835845887d8e14c10636b8415a8b9b",
+    "crates/jarde-java/tests/p3_loop_terminal_return.rs": "51d2f1387c29708b2b23678f6f36d18a7b13dc007e0dd7a6a1c4f9a299f7d48d",
+    "tests/p3_loop_arm_join.rs": "b37866c07eb2ea7718cb31fe9cd1b46a243509bc39fc45eddad6f47ff392898d",
+    "tests/p3_loop_boolean_exit.rs": "e3b6728bdd6639c7d3a7c5e601cf699469e226ea119b177e54ade57dfdb0ac6c",
+    "tests/p5_corpus_fingerprint.rs": "a29cc5ca21c3201466c7c4bca62d84e16fe3cfe5b40b05a2bafcf29b2fc3ffaa",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJLoops.class": "51412a18470844c5c5c80f4f98049ed7b2122692a4e4209520cba9c26c311efe",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJTripleJump.class": "ed9bcdc4d40c1ff10e82c537c6bfc2aecbcb631d5ce99706db7df1946ec7193d",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L1.class": "538a551413509655fe7aefa2661a0f59a6097d714e9a26058ab2780bdad4db97",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L2.class": "54080c587e19b40044927a10c4cf677734830179a940f25bf01e2f65de68acbc",
+    "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L5.class": "baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55",
+    "openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class": "a9d90b1b42d69cf3ec6e30dd6d16cacf0c0264fe86adc88f1ba27d897046de2f",
+    "openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class": "b5a7541fc6dc6a6eaff229f3559968cd7e20a4f48c063e4fd019186f92b4a240",
+    "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+    "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989",
+    "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class": "b1e6bd92f8fe92e726e7a2a95461327dd3f7abe65ee7f451f1225777ed7ea6d4",
+    "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class": "4a3a1c09a64993411fcfb3f167cebd46fa51f5e1afe1eac330ee2663b9951096",
+    "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class": "2b29c9a9ba3812ed5083d8e983e907f9575dcb700dc52b2a7842e7fcc4667bee",
+    "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class": "4253b590f7b9e051c1b2d3f26157744920205915c84f4239f32290e471494006",
+    "tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class": "8f29f5db6c51e8a62fbcec09b4f162e498004ba19159daa56721563a2af1b1be",
+    "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class": "dd1cd6cd5faca218508416c2431f350e0a470936915ace9d54bfc9ad3755e533",
+    "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExits.class": "2e27cffb9361cbd78a689b404457b68d6bc31f1739362659ce71c0e276c0bae8",
+    "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoin.class": "542c856a156103f8c4e20372fcbeb3bc767b0c706f3270d73d5ec6dddfefdc2a",
+    "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoinExtraBreak.class": "14ba9f16f39c051b680a4d886656571e40f41a8b13a881ba6f0ddef6ebe6d954",
+    "tests/fixtures/p3-loop-boolean-exit/LoopBool.java": "57056904a51f6d8278703a0a34de89fb11f8204766639ce519c4fab4fcbf7391",
+    "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class": "cc727795087999f893efffd1f98ccafb93e25f988b62689850af51be1f25914f",
+    "tests/fixtures/p3-loop-gateway/EndlessInts.class": "bf215f7654fd928d7255bc04db8c97de6a8cb064b3390235c9c815d7ea0f8fc4",
+    "tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class": "c760085f59e5b7320b34bb4b56940258924e5eea35636c4ff4bd39ee16c9797d",
+    "tests/fixtures/p3-loop-gateway/cf08/LoopGatewayNegatives.class": "90217a24e3370215334ccbf94eeb86c7616cd2f9c733523e07ef872b0647d85f",
+    "tests/fixtures/p3-loop-terminal/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+    "tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class": "b006bce3a47e211f69bb07e989036c2cd32dede94dcf5a8fcab47b39832877c5",
+    "tests/fixtures/p3-loop-terminal/cf07/LoopTerminalNegatives.class": "afd0b5ef202935165f6b9566a107e073f6ea5d89148901acda8a4a94920534fd"
+  },
+  "all_52_restored": true,
+  "target_absent_after_clean": true,
+  "status": "failed"
+}

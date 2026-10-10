@@ -1,0 +1,60 @@
+worktree /Users/lordcasser/workspace/projects/jarde
+HEAD 1f386686c6a31813254a85fed48d2af0af84a61c
+branch refs/heads/main
+
+worktree /Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde
+HEAD 698a219ec580819e12af487c4c8a3771e9baaa85
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+
+worktree /Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde
+HEAD b3a01e24c86755dfe9a356f4ffc72636194eda70
+detached
+

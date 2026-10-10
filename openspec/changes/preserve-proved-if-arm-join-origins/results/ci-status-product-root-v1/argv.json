@@ -1,0 +1,8 @@
+[
+  "gh",
+  "run",
+  "view",
+  "38068627541",
+  "--json",
+  "headSha,status,conclusion,url,jobs"
+]

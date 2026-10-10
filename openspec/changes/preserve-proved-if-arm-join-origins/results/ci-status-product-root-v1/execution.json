@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-10T16:44:02.783791+00:00",
+  "duration_seconds": 2.300800833007088,
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "38068627541",
+    "--json",
+    "headSha,status,conclusion,url,jobs"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 9595,
+      "sha256": "00a345331d6f9e3ce4871f6557139e515c3f5de31bf252b86877bca4e68ae602"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
