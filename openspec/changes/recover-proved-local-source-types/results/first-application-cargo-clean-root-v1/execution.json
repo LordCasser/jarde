@@ -1,0 +1,50 @@
+{
+  "schema": "typed-first-application-cargo-clean-root-v1",
+  "status": "cleaned",
+  "command": {
+    "index": 0,
+    "argv": [
+      "cargo",
+      "clean"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T18:46:01.344952+00:00",
+    "duration_seconds": 1.01304320798954,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 203604637,
+    "free_bytes_after": 61142925312,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": {
+      "expected": null,
+      "actual": [],
+      "required": false,
+      "required_gateway_tests": [],
+      "required_gateway_tests_present": null,
+      "required_boolean_loop_tests": [],
+      "required_boolean_loop_tests_present": null,
+      "ok": true,
+      "failure_reason": null
+    },
+    "streams": {
+      "stdout": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/first-application-cargo-clean-root-v1/0.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/first-application-cargo-clean-root-v1/0.stderr.raw",
+        "bytes": 52,
+        "sha256": "5d314f8b92956020988fc7d14bd4df1d2641d5fab4080e7a01723f1de9a07c84"
+      }
+    }
+  },
+  "target_absent": true
+}

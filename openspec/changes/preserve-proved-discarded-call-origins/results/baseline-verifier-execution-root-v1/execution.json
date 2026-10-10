@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-10T18:50:57.502302+00:00",
+  "duration_seconds": 0.17329416697612032,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-discarded-call-origins/results/verify-baseline-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 426,
+      "sha256": "d9b60a51ba475c2144e5dc46a698115dfc6b03fd7989dfc486b5f53c22dc2d5c"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac8/original/discardprobe/ProbePop2.class
+  Last modified 2026-10-11; size 244 bytes
+  MD5 checksum 9d274a975828bc3b3abbe92c5aa2608b
+public final class discardprobe.ProbePop2
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#13         // java/lang/Object."<init>":()V
+   #2 = Long               7l
+   #4 = Methodref          #5.#14         // discardprobe/ProbePop2.wide:()J
+   #5 = Class              #15            // discardprobe/ProbePop2
+   #6 = Class              #16            // java/lang/Object
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Utf8               Code
+  #10 = Utf8               wide
+  #11 = Utf8               ()J
+  #12 = Utf8               discardWide
+  #13 = NameAndType        #7:#8          // "<init>":()V
+  #14 = NameAndType        #10:#11        // wide:()J
+  #15 = Utf8               discardprobe/ProbePop2
+  #16 = Utf8               java/lang/Object
+{
+  private discardprobe.ProbePop2();
+    descriptor: ()V
+    flags: ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static long wide();
+    descriptor: ()J
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: ldc2_w        #2                  // long 7l
+         3: lreturn
+
+  public static void discardWide();
+    descriptor: ()V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: invokestatic  #4                  // Method wide:()J
+         3: pop2
+         4: return
+}

@@ -1,0 +1,540 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -2448,6 +2448,15 @@
+             };
+             // A local proof examines every physical write of this variable, including its
+             // placement path and the value actually stored. Bill the write before reading it.
++            #[cfg(test)]
++            observe_local_type_budget_gate(
++                LocalTypeBudgetGate::CharWrite,
++                *variable,
++                use_.bci,
++                1,
++                1,
++                budget,
++            );
+             charge(
+                 budget,
+                 CountedBudgetDimension::AnalysisSteps,
+@@ -2842,13 +2851,30 @@
+             let inferred_type = match specialized_type {
+                 Some(ty) => Some(ty),
+                 None if char_candidates.contains(variable) => Some(Type::Char),
+-                None => null_leading_reference_type(
+-                    write,
+-                    uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
+-                    ssa,
+-                    operations,
+-                    budget,
+-                )?,
++                None => {
++                    let local_uses = uses.get(variable).map(Vec::as_slice).unwrap_or(&[]);
++                    #[cfg(test)]
++                    if matches!(ssa.value(write.stored).ty(), Value::Null) {
++                        observe_local_type_budget_gate(
++                            LocalTypeBudgetGate::NullReferenceWrites,
++                            *variable,
++                            write.at,
++                            u64::try_from(local_uses.len()).unwrap_or(u64::MAX),
++                            local_uses
++                                .iter()
++                                .filter(|use_| use_.written.is_some())
++                                .count(),
++                            budget,
++                        );
++                    }
++                    null_leading_reference_type(
++                        write,
++                        local_uses,
++                        ssa,
++                        operations,
++                        budget,
++                    )?
++                }
+             };
+             match inferred_type {
+                 Some(ty) => Decided::Type(ty),
+@@ -3098,8 +3124,111 @@
+         common = Some(ty);
+     }
+     Ok(has_non_null.then_some(common).flatten())
++}
++
++// Test-only gate tracing lets a budget bound be derived from this real method's own preceding work.
++// It records no SSA facts and does not change non-test builds.
++#[cfg(test)]
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++enum LocalTypeBudgetGate {
++    CharWrite,
++    NullReferenceWrites,
++}
++
++#[cfg(test)]
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++struct LocalTypeBudgetTarget {
++    gate: LocalTypeBudgetGate,
++    slot: u16,
++    index: u16,
++    bci: u32,
++}
++
++#[cfg(test)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++struct LocalTypeBudgetMark {
++    gate: LocalTypeBudgetGate,
++    slot: u16,
++    index: u16,
++    bci: u32,
++    start_steps: u64,
++    amount: u64,
++    writes: usize,
++}
++
++#[cfg(test)]
++struct LocalTypeBudgetTrace {
++    marks: Vec<LocalTypeBudgetMark>,
++    cancel_at: Option<LocalTypeBudgetTarget>,
++    did_cancel: bool,
++}
++
++#[cfg(test)]
++std::thread_local! {
++    static LOCAL_TYPE_BUDGET_TRACE: std::cell::RefCell<Option<LocalTypeBudgetTrace>> =
++        std::cell::RefCell::new(None);
++}
++
++#[cfg(test)]
++fn start_local_type_budget_trace(cancel_at: Option<LocalTypeBudgetTarget>) {
++    LOCAL_TYPE_BUDGET_TRACE.with(|trace| {
++        *trace.borrow_mut() = Some(LocalTypeBudgetTrace {
++            marks: Vec::new(),
++            cancel_at,
++            did_cancel: false,
++        });
++    });
++}
++
++#[cfg(test)]
++fn observe_local_type_budget_gate(
++    gate: LocalTypeBudgetGate,
++    variable: LocalVariable,
++    bci: u32,
++    amount: u64,
++    writes: usize,
++    budget: &Budget,
++) {
++    LOCAL_TYPE_BUDGET_TRACE.with(|trace| {
++        let mut trace = trace.borrow_mut();
++        let Some(trace) = trace.as_mut() else {
++            return;
++        };
++        let mark = LocalTypeBudgetMark {
++            gate,
++            slot: variable.slot(),
++            index: variable.index(),
++            bci,
++            start_steps: budget.counted_usage(CountedBudgetDimension::AnalysisSteps),
++            amount,
++            writes,
++        };
++        if !trace.did_cancel
++            && trace.cancel_at
++                == Some(LocalTypeBudgetTarget {
++                    gate,
++                    slot: mark.slot,
++                    index: mark.index,
++                    bci,
++                })
++        {
++            trace.did_cancel = true;
++            budget.cancellation_token().cancel();
++        }
++        trace.marks.push(mark);
++    });
+ }
+ 
++#[cfg(test)]
++fn take_local_type_budget_trace() -> Vec<LocalTypeBudgetMark> {
++    LOCAL_TYPE_BUDGET_TRACE.with(|trace| {
++        trace
++            .borrow_mut()
++            .take()
++            .map_or_else(Vec::new, |trace| trace.marks)
++    })
++}
++
+ /// Whether one local variable is a `boolean` **accumulate counter**
+ /// (`recover-boolean-int-bitwise-operands`).
+ ///
+@@ -37678,6 +37807,371 @@
+         assert!(!single_varargs_element_may_be_fixed_array(
+             &Expr::direct(ExprKind::Integer(1), 5),
+             &Type::Reference("int[]".to_owned())
++        ));
++    }
++
++    const CF12_CHAR_CLASS: &[u8] = include_bytes!(
++        "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class"
++    );
++    const CF12_NULL_CLASS: &[u8] = include_bytes!(
++        "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class"
++    );
++
++    fn cf12_debug_locals(
++        code: Option<&jarde_reader::classfile::MethodCodeFacts>,
++    ) -> Vec<crate::names::DebugLocal> {
++        let Some(code) = code else {
++            return Vec::new();
++        };
++        let jarde_reader::classfile::LocalDebugTable::Read(records) = code.debug() else {
++            return Vec::new();
++        };
++        let generic_records = match code.generic_debug() {
++            jarde_reader::classfile::LocalDebugTypeTable::Read(records) => records.as_slice(),
++            jarde_reader::classfile::LocalDebugTypeTable::Absent
++            | jarde_reader::classfile::LocalDebugTypeTable::Unstated => &[],
++        };
++        let mut local_counts = std::collections::BTreeMap::new();
++        for record in records {
++            let key = (
++                record.slot,
++                record.start_bci,
++                record.end_bci,
++                record.name.0.as_slice(),
++            );
++            *local_counts.entry(key).or_insert(0usize) += 1;
++        }
++        let mut generic_by_local = std::collections::BTreeMap::new();
++        for generic in generic_records {
++            let key = (
++                generic.slot,
++                generic.start_bci,
++                generic.end_bci,
++                generic.name.0.as_slice(),
++            );
++            generic_by_local
++                .entry(key)
++                .or_insert_with(Vec::new)
++                .push(generic);
++        }
++        records
++            .iter()
++            .map(|record| {
++                let key = (
++                    record.slot,
++                    record.start_bci,
++                    record.end_bci,
++                    record.name.0.as_slice(),
++                );
++                let local = crate::names::DebugLocal::over(
++                    record.slot,
++                    record.name_lossy(),
++                    record.start_bci,
++                    record.end_bci,
++                );
++                if local_counts.get(&key) == Some(&1)
++                    && let Some([generic]) = generic_by_local.get(&key).map(Vec::as_slice)
++                {
++                    local.with_type_metadata(
++                        record.descriptor.0.clone(),
++                        generic.signature.0.clone(),
++                    )
++                } else {
++                    local
++                }
++            })
++            .collect()
++    }
++
++    fn analyze_cf12_method(
++        class: &[u8],
++        owner: &str,
++        name: &str,
++        descriptor: &str,
++    ) -> (
++        jarde_jvm::method_ir::MethodIrAnalysis,
++        crate::facts::RecoveryFacts,
++    ) {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile,
++            RuntimeUncertainty, RuntimeView,
++        };
++
++        let mut analysis_budget = child_array_test_budget();
++        let snapshot = ArtifactSnapshot::open(
++            ArtifactInput::bytes(class.to_vec()),
++            &mut analysis_budget,
++        )
++        .expect("frozen CF12 class opens");
++        let definition = PhysicalDefinitionId {
++            location: PhysicalClassLocation::StandaloneRoot {
++                snapshot: snapshot.id().clone(),
++            },
++            class_bytes: ClassBytesId {
++                digest: Digest(blake3::hash(class).to_hex().to_string()),
++                length: u64::try_from(class.len()).expect("frozen class length fits"),
++            },
++            variant: PhysicalVariant::Base,
++        };
++        let method = PhysicalMethodId {
++            owner: definition,
++            name: JvmBytes(name.as_bytes().to_vec()),
++            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
++        };
++        let domain = LoadDomain {
++            loader: LoaderId("app".to_owned()),
++            parent_loader: None,
++            delegation: DelegationPolicy::ParentFirst,
++            roots: vec![LoadRoot::StandaloneClass {
++                snapshot: snapshot.id().clone(),
++            }],
++            module_mode: ModuleMode::ClassPath,
++            external_override: RuntimeUncertainty::None,
++            runtime_transformation: RuntimeUncertainty::None,
++        };
++        let analysis = analyze_method_ir(
++            &[snapshot.clone()],
++            &MethodAnalysisRequest {
++                environment: ResolutionEnvironment {
++                    runtime: RuntimeView {
++                        physical: PhysicalView {
++                            snapshot: snapshot.id().clone(),
++                            scope: PhysicalScope::SnapshotAll,
++                        },
++                        profile: RuntimeProfile {
++                            java_release: 8,
++                            multi_release: MultiReleasePolicy::Disabled,
++                            layout: LayoutMode::Generic,
++                        },
++                        load_domain: domain.clone(),
++                    },
++                    domains: vec![domain],
++                    providers: Vec::new(),
++                },
++                method,
++                stages: AnalysisStage::ALL.to_vec(),
++            },
++            &mut analysis_budget,
++        )
++        .expect("frozen method completes actual decode/canonical/frame/SSA analysis");
++        let ir = analysis.ir();
++        let declaration = ir.declaration().expect("same analysis publishes declaration");
++        assert_eq!(
++            String::from_utf8_lossy(&declaration.class_name().0),
++            owner,
++            "the physical class header is the requested fixture"
++        );
++        let facts = crate::facts::RecoveryFacts::new(
++            crate::facts::MethodFacts::new(
++                String::from_utf8_lossy(&declaration.name().0).into_owned(),
++                String::from_utf8_lossy(&declaration.descriptor().0).into_owned(),
++                declaration.parameter_slots(),
++            )
++            .with_access_flags(declaration.access_flags())
++            .with_declaring_class(
++                crate::facts::DeclaringClass::new(
++                    String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
++                    declaration.class_access_flags(),
++                )
++                .with_inner_class_members(declaration.inner_class_members().iter().map(
++                    |member| String::from_utf8_lossy(&member.0).replace('/', "."),
++                )),
++            ),
++        )
++        .with_debug_locals(cf12_debug_locals(ir.code()));
++        (analysis, facts)
++    }
++
++    fn recover_cf12_with_gate_budget(
++        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
++        facts: &crate::facts::RecoveryFacts,
++        analysis_steps: u64,
++        cancel_at: Option<LocalTypeBudgetTarget>,
++    ) -> (
++        crate::report::RecoveryReport,
++        Vec<LocalTypeBudgetMark>,
++    ) {
++        let mut limits = child_array_test_budget().limits().clone();
++        limits.analysis_steps = analysis_steps;
++        let mut budget = Budget::new(limits);
++        start_local_type_budget_trace(cancel_at);
++        let report = crate::report::recover(
++            &crate::report::RecoveryRequest::new(analysis.ir(), facts, crate::pass::JAVA_8)
++                .with_evidence(crate::evidence::RecoveryEvidenceRequest::all()),
++            &mut budget,
++        );
++        let marks = take_local_type_budget_trace();
++        (report, marks)
++    }
++
++    fn cf12_mark(
++        marks: &[LocalTypeBudgetMark],
++        gate: LocalTypeBudgetGate,
++        slot: u16,
++        index: u16,
++        bci: u32,
++    ) -> LocalTypeBudgetMark {
++        marks
++            .iter()
++            .find(|mark| {
++                mark.gate == gate
++                    && mark.slot == slot
++                    && mark.index == index
++                    && mark.bci == bci
++            })
++            .cloned()
++            .unwrap_or_else(|| {
++                panic!("real recovery never reached {gate:?} slot {slot}/{index} at BCI {bci}: {marks:#?}")
++            })
++    }
++
++    #[test]
++    fn cf12_typed_local_proof_gates_charge_real_all_writes_and_cancel_atomically() {
++        let (char_analysis, char_facts) = analyze_cf12_method(
++            CF12_CHAR_CLASS,
++            "jadx/tests/integration/switches/TestSwitch$TestCls",
++            "test",
++            "(Ljava/lang/String;)Ljava/lang/String;",
++        );
++        let (char_full, char_marks) = recover_cf12_with_gate_budget(
++            &char_analysis,
++            &char_facts,
++            1 << 20,
++            None,
++        );
++        assert!(char_full.produced(), "{:?}", char_full.outcome);
++        assert!(char_full.text.contains("char c"), "{}", char_full.text);
++        let char_gate = cf12_mark(&char_marks, LocalTypeBudgetGate::CharWrite, 5, 0, 29);
++        assert_eq!(char_gate.amount, 1, "the frozen method has this real local write");
++        assert_eq!(char_gate.writes, 1);
++
++        // The limit is the actual AnalysisSteps count immediately before the BCI 29 write charge.
++        // Identical analysis input and deterministic recovery therefore reaches that proof entry;
++        // the next unit is refused by the char all-write scan itself.
++        let (char_stopped, char_attempts) = recover_cf12_with_gate_budget(
++            &char_analysis,
++            &char_facts,
++            char_gate.start_steps,
++            None,
++        );
++        assert!(matches!(
++            char_stopped.stop(),
++            Some(StopReason::Budget {
++                dimension: CountedBudgetDimension::AnalysisSteps,
++                at: Some(29),
++                ..
++            })
+         ));
++        assert!(char_stopped.text.is_empty() && char_stopped.source_map.is_empty());
++        assert_eq!(
++            cf12_mark(&char_attempts, LocalTypeBudgetGate::CharWrite, 5, 0, 29).start_steps,
++            char_gate.start_steps,
++        );
++
++        // Cancel after full IR analysis, exactly when the same real char proof gate is entered.
++        let (char_cancelled, cancel_marks) = recover_cf12_with_gate_budget(
++            &char_analysis,
++            &char_facts,
++            1 << 20,
++            Some(LocalTypeBudgetTarget {
++                gate: LocalTypeBudgetGate::CharWrite,
++                slot: 5,
++                index: 0,
++                bci: 29,
++            }),
++        );
++        assert!(matches!(
++            char_cancelled.stop(),
++            Some(StopReason::Cancelled { at: Some(29) })
++        ));
++        assert!(char_cancelled.text.is_empty() && char_cancelled.source_map.is_empty());
++        cf12_mark(&cancel_marks, LocalTypeBudgetGate::CharWrite, 5, 0, 29);
++
++        let (null_analysis, null_facts) = analyze_cf12_method(
++            CF12_NULL_CLASS,
++            "jadx/tests/integration/switches/TestSwitchNoDefault$TestCls",
++            "test",
++            "(I)V",
++        );
++        let (null_full, null_marks) = recover_cf12_with_gate_budget(
++            &null_analysis,
++            &null_facts,
++            1 << 20,
++            None,
++        );
++        assert!(null_full.produced(), "{:?}", null_full.outcome);
++        assert!(null_full.text.contains("String s"), "{}", null_full.text);
++        let null_gate = cf12_mark(
++            &null_marks,
++            LocalTypeBudgetGate::NullReferenceWrites,
++            2,
++            0,
++            1,
++        );
++        assert_eq!(null_gate.writes, 5, "the actual local has five physical writes");
++        assert!(null_gate.amount >= null_gate.writes as u64);
++        let null_limit = null_gate
++            .start_steps
++            .checked_add(null_gate.amount - 1)
++            .expect("real local access count fits the AnalysisSteps limit");
++        let (null_stopped, null_attempts) = recover_cf12_with_gate_budget(
++            &null_analysis,
++            &null_facts,
++            null_limit,
++            None,
++        );
++        assert!(matches!(
++            null_stopped.stop(),
++            Some(StopReason::Budget {
++                dimension: CountedBudgetDimension::AnalysisSteps,
++                at: Some(1),
++                ..
++            })
++        ));
++        assert!(null_stopped.text.is_empty() && null_stopped.source_map.is_empty());
++        assert_eq!(
++            cf12_mark(
++                &null_attempts,
++                LocalTypeBudgetGate::NullReferenceWrites,
++                2,
++                0,
++                1,
++            )
++            .amount,
++            null_gate.amount,
++        );
++
++        let (null_cancelled, null_cancel_marks) = recover_cf12_with_gate_budget(
++            &null_analysis,
++            &null_facts,
++            1 << 20,
++            Some(LocalTypeBudgetTarget {
++                gate: LocalTypeBudgetGate::NullReferenceWrites,
++                slot: 2,
++                index: 0,
++                bci: 1,
++            }),
++        );
++        assert!(matches!(
++            null_cancelled.stop(),
++            Some(StopReason::Cancelled { at: Some(1) })
++        ));
++        assert!(null_cancelled.text.is_empty() && null_cancelled.source_map.is_empty());
++        cf12_mark(
++            &null_cancel_marks,
++            LocalTypeBudgetGate::NullReferenceWrites,
++            2,
++            0,
++            1,
++        );
+     }
+ }

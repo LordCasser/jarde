@@ -1,0 +1,36 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.52s
+[1m[92m     Running[0m tests/cf12_proved_local_source_types.rs (target/debug/deps/cf12_proved_local_source_types-931dbdf9dae24e1d)
+
+thread 'cf12_charat_stored_value_drives_char_source_type_and_full_origins' (21709297) panicked at crates/jarde-java/tests/cf12_proved_local_source_types.rs:286:5:
+missing exact physical sources for BCIs [82, 92, 105]: // @method test(Ljava/lang/String;)Ljava/lang/String;
+// @declaration an instance method of `jadx.tests.integration.switches.TestSwitch$TestCls`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    int len;
+    java.lang.StringBuilder sb;
+    int i;
+    len = str.length();
+    sb = new java.lang.StringBuilder(len);
+    for (i = 0; i < len; i = i + 1) {
+        char c = str.charAt(i);
+        switch (c) {
+            case '.':
+            case '/':
+                sb.append('_');
+                break;
+            case '?':
+                break;
+            case ']':
+                sb.append('A');
+                break;
+            default:
+                sb.append(c);
+                break;
+        }
+    }
+    return sb.toString();
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --test cf12_proved_local_source_types`

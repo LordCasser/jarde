@@ -1,0 +1,157 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac8/original/discardprobe/DiscardedCallSourceProbe.class
+  Last modified 2026-10-11; size 979 bytes
+  MD5 checksum 8ecf68dab48410c73f45758d70795d66
+public final class discardprobe.DiscardedCallSourceProbe
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #17.#32        // java/lang/Object."<init>":()V
+   #2 = Class              #33            // java/lang/IllegalStateException
+   #3 = String             #34            // give-failed
+   #4 = Methodref          #2.#35         // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+   #5 = String             #36            // given
+   #6 = Methodref          #16.#37        // discardprobe/DiscardedCallSourceProbe.give:(Z)Ljava/lang/String;
+   #7 = Class              #38            // java/lang/StringBuilder
+   #8 = Methodref          #7.#32         // java/lang/StringBuilder."<init>":()V
+   #9 = Methodref          #7.#39         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #10 = Methodref          #7.#40         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #11 = Class              #41            // java/util/ArrayList
+  #12 = Methodref          #11.#32        // java/util/ArrayList."<init>":()V
+  #13 = InterfaceMethodref #42.#43        // java/util/List.add:(Ljava/lang/Object;)Z
+  #14 = InterfaceMethodref #42.#44        // java/util/List.get:(I)Ljava/lang/Object;
+  #15 = Class              #45            // java/lang/String
+  #16 = Class              #46            // discardprobe/DiscardedCallSourceProbe
+  #17 = Class              #47            // java/lang/Object
+  #18 = Utf8               <init>
+  #19 = Utf8               ()V
+  #20 = Utf8               Code
+  #21 = Utf8               give
+  #22 = Utf8               (Z)Ljava/lang/String;
+  #23 = Utf8               StackMapTable
+  #24 = Utf8               discardStatic
+  #25 = Utf8               (Z)V
+  #26 = Utf8               discardAppend
+  #27 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #28 = Utf8               discardListAdd
+  #29 = Utf8               consumeReturn
+  #30 = Utf8               ()Ljava/lang/String;
+  #31 = Utf8               deferToLocal
+  #32 = NameAndType        #18:#19        // "<init>":()V
+  #33 = Utf8               java/lang/IllegalStateException
+  #34 = Utf8               give-failed
+  #35 = NameAndType        #18:#48        // "<init>":(Ljava/lang/String;)V
+  #36 = Utf8               given
+  #37 = NameAndType        #21:#22        // give:(Z)Ljava/lang/String;
+  #38 = Utf8               java/lang/StringBuilder
+  #39 = NameAndType        #49:#50        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #40 = NameAndType        #51:#30        // toString:()Ljava/lang/String;
+  #41 = Utf8               java/util/ArrayList
+  #42 = Class              #52            // java/util/List
+  #43 = NameAndType        #53:#54        // add:(Ljava/lang/Object;)Z
+  #44 = NameAndType        #55:#56        // get:(I)Ljava/lang/Object;
+  #45 = Utf8               java/lang/String
+  #46 = Utf8               discardprobe/DiscardedCallSourceProbe
+  #47 = Utf8               java/lang/Object
+  #48 = Utf8               (Ljava/lang/String;)V
+  #49 = Utf8               append
+  #50 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #51 = Utf8               toString
+  #52 = Utf8               java/util/List
+  #53 = Utf8               add
+  #54 = Utf8               (Ljava/lang/Object;)Z
+  #55 = Utf8               get
+  #56 = Utf8               (I)Ljava/lang/Object;
+{
+  private discardprobe.DiscardedCallSourceProbe();
+    descriptor: ()V
+    flags: ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String give(boolean);
+    descriptor: (Z)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: iload_0
+         1: ifeq          14
+         4: new           #2                  // class java/lang/IllegalStateException
+         7: dup
+         8: ldc           #3                  // String give-failed
+        10: invokespecial #4                  // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        13: athrow
+        14: ldc           #5                  // String given
+        16: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 14 /* same */
+
+  public static void discardStatic(boolean);
+    descriptor: (Z)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: invokestatic  #6                  // Method give:(Z)Ljava/lang/String;
+         4: pop
+         5: return
+
+  public static java.lang.String discardAppend(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: new           #7                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #8                  // Method java/lang/StringBuilder."<init>":()V
+         7: astore_1
+         8: aload_1
+         9: aload_0
+        10: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: pop
+        14: aload_1
+        15: invokevirtual #10                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        18: areturn
+
+  public static java.lang.String discardListAdd(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: new           #11                 // class java/util/ArrayList
+         3: dup
+         4: invokespecial #12                 // Method java/util/ArrayList."<init>":()V
+         7: astore_1
+         8: aload_1
+         9: aload_0
+        10: invokeinterface #13,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+        15: pop
+        16: aload_1
+        17: iconst_0
+        18: invokeinterface #14,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        23: checkcast     #15                 // class java/lang/String
+        26: areturn
+
+  public static java.lang.String consumeReturn();
+    descriptor: ()Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: invokestatic  #6                  // Method give:(Z)Ljava/lang/String;
+         4: areturn
+
+  public static java.lang.String deferToLocal();
+    descriptor: ()Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: iconst_0
+         1: invokestatic  #6                  // Method give:(Z)Ljava/lang/String;
+         4: astore_0
+         5: aload_0
+         6: areturn
+}

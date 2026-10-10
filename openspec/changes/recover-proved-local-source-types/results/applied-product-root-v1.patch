@@ -1,0 +1,309 @@
+diff --git a/crates/jarde-java/src/build.rs b/crates/jarde-java/src/build.rs
+index 753d95de3..479b210f4 100644
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -2436,23 +2436,67 @@ fn decide_types(
+     // The write each variable's type is decided from: the first one in method order, which is the
+     // write both declaration paths read today.
+     let mut first: BTreeMap<LocalVariable, FirstWrite> = BTreeMap::new();
++    let mut char_candidates = BTreeSet::new();
+     for (variable, variable_uses) in uses {
+-        let Some(use_) = variable_uses
+-            .iter()
+-            .filter(|use_| use_.written.is_some())
+-            .min_by_key(|use_| (use_.path.clone(), use_.bci))
+-        else {
++        let mut first_use: Option<&SlotUse> = None;
++        let mut has_char_source = false;
++        let mut all_char_writes_supported = true;
++        let mut complete_paths = true;
++        for use_ in variable_uses {
++            let Some(written) = use_.written else {
++                continue;
++            };
++            // A local proof examines every physical write of this variable, including its
++            // placement path and the value actually stored. Bill the write before reading it.
++            charge(
++                budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(use_.bci),
++            )?;
++            poll(budget, Some(use_.bci))?;
++            complete_paths &= use_.path.is_some();
++            if variable.slot() >= parameters {
++                let stored = use_.stored.unwrap_or(written);
++                let is_char_source = local_value_has_char_source(
++                    stored,
++                    ssa,
++                    operations,
++                    parameter_types,
++                    parameters,
++                    budget,
++                )?;
++                has_char_source |= is_char_source;
++                all_char_writes_supported &= is_char_source
++                    || local_value_is_char_literal(stored, ssa, operations);
++            }
++            let earlier = first_use.is_none_or(|first| {
++                (use_.path.clone(), use_.bci) < (first.path.clone(), first.bci)
++            });
++            if earlier {
++                first_use = Some(use_);
++            }
++        }
++        let Some(use_) = first_use else {
+             continue;
+         };
+         let Some(written) = use_.written else {
+             continue;
+         };
++        let stored = use_.stored.unwrap_or(written);
++        if variable.slot() >= parameters
++            && complete_paths
++            && has_char_source
++            && all_char_writes_supported
++        {
++            char_candidates.insert(*variable);
++        }
+         first.insert(
+             *variable,
+             FirstWrite {
+                 at: use_.bci,
+                 written,
+-                stored: use_.stored.unwrap_or(written),
++                stored,
+             },
+         );
+     }
+@@ -2775,7 +2819,7 @@ fn decide_types(
+             // The frames' reading of the value, or — where they state only an unknown reference — the
+             // array a creation of this very body built (P3 2b): a `newarray`'s frame entry states no
+             // name, and the instruction's own element type is what types the local it filled.
+-            let inferred_type = match nullable_type {
++            let specialized_type = match nullable_type {
+                 Some(ty) => Some(ty),
+                 None => multi_return_list_type(
+                     variable,
+@@ -2795,6 +2839,17 @@ fn decide_types(
+                     budget,
+                 )?),
+             };
++            let inferred_type = match specialized_type {
++                Some(ty) => Some(ty),
++                None if char_candidates.contains(variable) => Some(Type::Char),
++                None => null_leading_reference_type(
++                    write,
++                    uses.get(variable).map(Vec::as_slice).unwrap_or(&[]),
++                    ssa,
++                    operations,
++                    budget,
++                )?,
++            };
+             match inferred_type {
+                 Some(ty) => Decided::Type(ty),
+                 None => match written_type(ssa, operations, write.written) {
+@@ -2848,6 +2903,203 @@ fn decide_types(
+     Ok(decided)
+ }
+ 
++/// Whether the actual SSA operand of a local write is directly stated as Java `char`.
++///
++/// This is deliberately one producer step: descriptors on an invocation/field, the explicit
++/// `i2c` opcode, or a load whose local read is the method-entry value of a char parameter. A
++/// frame's shared `Int` category and a consumer's required argument type are not evidence.
++fn local_value_has_char_source(
++    value: ValueId,
++    ssa: &SsaTable,
++    operations: &Operations,
++    parameter_types: &BTreeMap<u16, Type>,
++    parameters: u16,
++    budget: &mut Budget,
++) -> Result<bool, StopReason> {
++    let Definition::Instruction {
++        block: definition_block,
++        bci,
++    } = ssa.value(value).def()
++    else {
++        return Ok(false);
++    };
++    let is_char = match operations.get(*bci) {
++        Some(Operation::PrimitiveConversion {
++            target: Type::Char,
++            ..
++        }) => true,
++        Some(Operation::Invoke(target)) => return_type(target.descriptor()) == Some(Type::Char),
++        Some(Operation::Field {
++            access: FieldAccess::Read,
++            descriptor,
++            ..
++        }) => descriptor == "C",
++        Some(Operation::Load { slot }) if *slot < parameters => {
++            if parameter_types.get(slot) != Some(&Type::Char) {
++                false
++            } else {
++                let Some(block) = ssa.block(definition_block) else {
++                    return Ok(false);
++                };
++                let mut is_entry_load = false;
++                for instruction in block.instructions() {
++                    charge(
++                        budget,
++                        CountedBudgetDimension::AnalysisSteps,
++                        1,
++                        Some(instruction.bci()),
++                    )?;
++                    poll(budget, Some(instruction.bci()))?;
++                    if instruction.bci() != *bci {
++                        continue;
++                    }
++                    for (read_slot, read_value) in instruction.reads() {
++                        charge(
++                            budget,
++                            CountedBudgetDimension::AnalysisSteps,
++                            1,
++                            Some(instruction.bci()),
++                        )?;
++                        poll(budget, Some(instruction.bci()))?;
++                        if read_slot == &Slot::Local(*slot)
++                            && matches!(
++                                ssa.value(*read_value).def(),
++                                Definition::Entry {
++                                    slot: Slot::Local(entry_slot),
++                                    ..
++                                } if entry_slot == slot
++                            )
++                        {
++                            is_entry_load = true;
++                            break;
++                        }
++                    }
++                    break;
++                }
++                is_entry_load
++            }
++        }
++        _ => false,
++    };
++    Ok(is_char)
++}
++
++/// A literal can initialize or assign a `char` only through Java's constant-assignment range.
++fn local_value_is_char_literal(
++    value: ValueId,
++    ssa: &SsaTable,
++    operations: &Operations,
++) -> bool {
++    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
++        return false;
++    };
++    matches!(
++        operations.get(*bci),
++        Some(Operation::Push(ConstantValue::Int(value))) if (0..=u16::MAX as i64).contains(value)
++    )
++}
++
++/// One non-null local write's exact type, only when its stored SSA value comes directly from a
++/// producer that states a reference type. This boundary deliberately does not follow Load/Store,
++/// Duplicate, Phi, or an arbitrary unknown-reference chain.
++fn direct_reference_write_type(
++    value: ValueId,
++    ssa: &SsaTable,
++    operations: &Operations,
++) -> Option<Type> {
++    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
++        return None;
++    };
++    match operations.get(*bci)? {
++        Operation::Push(ConstantValue::String(_)) => {
++            Some(Type::Reference("java.lang.String".to_owned()))
++        }
++        Operation::Push(ConstantValue::Class { .. }) => {
++            Some(Type::Reference("java.lang.Class".to_owned()))
++        }
++        Operation::Invoke(target) => {
++            let result = return_type(target.descriptor());
++            match result {
++                Some(ty @ Type::Reference(_)) => Some(ty),
++                None
++                    if target.kind() == InvokeKind::Special
++                        && target.name() == "<init>"
++                        && target.descriptor().ends_with(")V")
++                        && matches!(
++                            ssa.value(value).ty(),
++                            Value::Ref(RefType::Named { name, .. })
++                                if name.as_slice() == target.owner().as_bytes()
++                        ) =>
++                {
++                    // Frame verification permits exactly this call to convert an uninitialized
++                    // allocation token. SSA records the converted aliases as definitions at this
++                    // BCI, typed with the allocated class; requiring that name to equal the
++                    // constructor owner excludes an unrelated/incorrectly named receiver.
++                    spell_reference(target.owner()).map(Type::Reference)
++                }
++                _ => None,
++            }
++        }
++        Operation::Field {
++            access: FieldAccess::Read,
++            descriptor,
++            ..
++        } => descriptor_type(descriptor).filter(|ty| matches!(ty, Type::Reference(_))),
++        Operation::Allocate { ty } => spell_reference(ty).map(Type::Reference),
++        Operation::NewArray {
++            element,
++            total_dimensions,
++            ..
++        } => array_spelling(element, u32::from(*total_dimensions)),
++        _ => None,
++    }
++}
++
++/// The only fallback that refines an actual null first write: every non-null stored operand must
++/// independently state the same exact reference type, and at least one such write must exist.
++fn null_leading_reference_type(
++    first: &FirstWrite,
++    uses: &[SlotUse],
++    ssa: &SsaTable,
++    operations: &Operations,
++    budget: &mut Budget,
++) -> Result<Option<Type>, StopReason> {
++    if !matches!(ssa.value(first.stored).ty(), Value::Null) {
++        return Ok(None);
++    }
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        u64::try_from(uses.len()).unwrap_or(u64::MAX),
++        Some(first.at),
++    )?;
++    let mut common = None;
++    let mut has_non_null = false;
++    for use_ in uses {
++        poll(budget, Some(use_.bci))?;
++        if use_.path.is_none() {
++            return Ok(None);
++        }
++        let Some(written) = use_.written else {
++            continue;
++        };
++        let stored = use_.stored.unwrap_or(written);
++        if matches!(ssa.value(stored).ty(), Value::Null) {
++            continue;
++        }
++        let Some(ty @ Type::Reference(_)) = direct_reference_write_type(stored, ssa, operations)
++        else {
++            return Ok(None);
++        };
++        has_non_null = true;
++        if common.as_ref().is_some_and(|previous| previous != &ty) {
++            return Ok(None);
++        }
++        common = Some(ty);
++    }
++    Ok(has_non_null.then_some(common).flatten())
++}
++
+ /// Whether one local variable is a `boolean` **accumulate counter**
+ /// (`recover-boolean-int-bitwise-operands`).
+ ///

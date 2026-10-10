@@ -352,3 +352,7 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 ### 2026-10-11 return-arm 干净主线闭合
 
 6118e565已实际提交推送并审计接受：仅main、HEAD/main/origin同、15worktrees全clean、14辅助detached main祖先、无target/fuzz target/待合入或分支占用、free68,071,964,672 bytes。return-arm片7/7；关闭记录推送后root再次private实核再应用类型片。整CF07仍有computed-init for两独立门与ForHeader末尾If来源债务；71单元/612测试计数不变，持续目标active。
+
+### 2026-10-11 typed 首次工具链与独立 pop 来源债务
+
+typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/String全来源与atomic Stop通过；char已正确呈现但完整来源缺[82,92,105]，均append后pop，不接受2.1/2.2/2.3或整CF12。完整保存实际typed diff/test/失败raw后已恢复HEAD。独立preserve-proved-discarded-call-origins按既有discards精确一对一证据补成功语句derived来源，两条创建路径共用有限预算消费，不新增IR/Frame/计划；先自身完整类/CI/clean再恢复typed。静态qualifier-pop潜在来源遗漏另记，不泛化到本片。71单元/612测试及完成数不变。

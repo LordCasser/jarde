@@ -1,0 +1,13 @@
+
+running 3 tests
+test cf12_charat_stored_value_drives_char_source_type_and_full_origins ... FAILED
+test cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins ... ok
+test cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source ... ok
+
+failures:
+
+failures:
+    cf12_charat_stored_value_drives_char_source_type_and_full_origins
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

@@ -1,0 +1,6 @@
+[
+  "git",
+  "apply",
+  "--check",
+  "/private/tmp/jarde-discarded-call-origins-impl-luna-v2/implementation.patch"
+]

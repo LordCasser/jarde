@@ -1,0 +1,119 @@
+{
+  "schema": "local-source-types-focused-root-v1",
+  "runner_sha256": "2b69928423c3bcaedd4b9cc593452389e4a7e0ee707c56b4add8b73745fb9cb0",
+  "guards": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T18:39:24.305934+00:00",
+      "duration_seconds": 6.048922332993243,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 65884069888,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-proved-local-source-types/results/focused-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-proved-local-source-types/results/focused-root-v1/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "cf12_proved_local_source_types",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T18:39:30.366379+00:00",
+      "duration_seconds": 31.444564125005854,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 204220969,
+      "free_bytes_after": 62144020480,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-proved-local-source-types/results/focused-root-v1/1.stdout.raw",
+          "bytes": 463,
+          "sha256": "37aca75010cdb35e369c113855c78ef7e57d9651a44c18c69d522808ec8b477e"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-proved-local-source-types/results/focused-root-v1/1.stderr.raw",
+          "bytes": 3138,
+          "sha256": "2df68353b1d29c8f9e5762a718f4136106bedc700614f65219dca13ae43d813e"
+        }
+      }
+    }
+  ],
+  "status": "failed",
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "error": "AssertionError: "
+}

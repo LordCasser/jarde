@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-10T18:51:32.865455+00:00",
+  "duration_seconds": 0.010500333009986207,
+  "argv": [
+    "git",
+    "apply",
+    "--check",
+    "/private/tmp/jarde-discarded-call-origins-impl-luna-v1/implementation.patch"
+  ],
+  "exit_code": 128,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 144,
+      "sha256": "06036686763314ae96a888900fc7c87d713fe6f9ca041487fa44c571b11b615f"
+    }
+  }
+}

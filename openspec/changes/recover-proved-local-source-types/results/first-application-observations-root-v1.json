@@ -1,0 +1,32 @@
+{
+  "schema": "typed-first-application-root-observations-v1",
+  "status": "failed-full-origin-acceptance-preserved",
+  "pin_count_restored_to_head": 52,
+  "runs": [
+    {
+      "path": "focused-root-v1/execution.json",
+      "sha256": "00ea66ac230455c4f0e2c4730153da80a67120445d9fda45cf327be94f7a7611",
+      "actual_counts": [
+        2,
+        1,
+        0
+      ],
+      "guard_stop": null,
+      "cargo_exit": 101
+    },
+    {
+      "path": "focused-root-v2/execution.json",
+      "sha256": "c0301ac65db6c9308ccd80c1e7aa93119ffc578c1fd353ab1dd10b9284549e5d",
+      "actual_counts": [
+        2,
+        1,
+        0
+      ],
+      "guard_stop": null,
+      "cargo_exit": 101
+    }
+  ],
+  "typed_tasks_marked_complete": false,
+  "clean_execution_sha256": "6669bf6afae0e3c541a9592dd4bf813168cf70d036621890f610efb6f5b8e790",
+  "independent_origin_prerequisite": "preserve-proved-discarded-call-origins"
+}

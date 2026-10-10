@@ -1,0 +1,21 @@
+{
+  "schema": "discarded-call-source-baseline-root-acceptance-v1",
+  "status": "accepted-baseline-observations-only",
+  "manifest_sha256": "48a675bf6bf2ffc2c58b8a8ac0e90cad69e5077730a2470ed23f4b52639dbd1e",
+  "commands": 26,
+  "complete_runtime_legs": 8,
+  "method_profiles": 28,
+  "expected_missing_pop_bcis": {
+    "discardStatic": [
+      4
+    ],
+    "discardAppend": [
+      13
+    ],
+    "discardListAdd": [
+      15
+    ]
+  },
+  "no_typed_product": true,
+  "candidate_fix_accepted": false
+}

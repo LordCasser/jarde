@@ -1,0 +1,1184 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -546,6 +546,13 @@
+         source_bci: u32,
+         loop_header: CanonicalBlockId,
+     },
++    /// An edge out of a switch arm to that switch's proved join. It is not a loop edge and does
++    /// not own the join block; the identity keeps a nested switch from consuming its parent.
++    SwitchBreak {
++        source_bci: u32,
++        switch_bci: u32,
++        join: CanonicalBlockId,
++    },
+     /// A run of blocks that could not be shown to be a Java structure; the text quotes it.
+     Fallback {
+         blocks: Vec<CanonicalBlockId>,
+@@ -700,6 +707,7 @@
+             | Self::SharedTailEarlyReturn { .. }
+             | Self::LoopBreak { .. }
+             | Self::LoopContinue { .. }
++            | Self::SwitchBreak { .. }
+             | Self::Fallback { .. } => {}
+             Self::ShortCircuitValue { tail, .. } => {
+                 for region in tail {
+@@ -847,6 +855,7 @@
+             Self::Fallback { blocks, .. } => blocks.iter().collect(),
+             Self::LoopBreak { .. } => Vec::new(),
+             Self::LoopContinue { .. } => Vec::new(),
++            Self::SwitchBreak { .. } => Vec::new(),
+             Self::Guard { prefix, plan, .. } => {
+                 let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
+                 blocks.extend(plan.owned());
+@@ -902,6 +911,7 @@
+             Self::Fallback { .. } => false,
+             Self::LoopBreak { .. } => true,
+             Self::LoopContinue { .. } => true,
++            Self::SwitchBreak { .. } => true,
+         }
+     }
+ 
+@@ -939,6 +949,7 @@
+             Self::Fallback { reason, .. } => vec![reason.clone()],
+             Self::LoopBreak { .. } => Vec::new(),
+             Self::LoopContinue { .. } => Vec::new(),
++            Self::SwitchBreak { .. } => Vec::new(),
+         }
+     }
+ 
+@@ -960,6 +971,7 @@
+             Self::Loop { .. } => Some(crate::pass::LOOP.rule()),
+             Self::LoopBreak { .. } => Some(crate::pass::LOOP.rule()),
+             Self::LoopContinue { .. } => Some(crate::pass::LOOP.rule()),
++            Self::SwitchBreak { .. } => Some(crate::pass::SWITCH.rule()),
+             Self::Guard { plan, .. } => Some(plan.pass().rule()),
+             // No pass of this build claims a `try`/`catch`: the statement is the exception table's
+             // own structure, read here and written by the builder, and naming a rule for it would
+@@ -1071,7 +1083,8 @@
+             | Region::Fallback { .. }
+             | Region::Guard { body: None, .. }
+             | Region::LoopBreak { .. }
+-            | Region::LoopContinue { .. } => {}
++            | Region::LoopContinue { .. }
++            | Region::SwitchBreak { .. } => {}
+         }
+         Ok(())
+     }
+@@ -1981,6 +1994,10 @@
+     transfer_source_bci: Option<u32>,
+     /// A switch's own join must remain a switch break instead of becoming a loop break.
+     switch_join: Option<usize>,
++    /// The switch whose conditional fallthrough proof owns `switch_join`.
++    switch_branch_bci: Option<u32>,
++    /// The adjacent case target reached by at least one path from this arm, when proved.
++    switch_fallthrough_target: Option<u32>,
+     /// Only a proved switch arm may treat the current loop's update as a continue transfer.
+     switch_continue: Option<usize>,
+ }
+@@ -2077,6 +2094,8 @@
+             },
+             transfer_source_bci: None,
+             switch_join: self.switch_join,
++            switch_branch_bci: self.switch_branch_bci,
++            switch_fallthrough_target: self.switch_fallthrough_target,
+             switch_continue: None,
+         }
+     }
+@@ -2110,6 +2129,8 @@
+             loop_targets: self.loop_targets.clone(),
+             transfer_source_bci: source_bci.or(self.transfer_source_bci),
+             switch_join: self.switch_join,
++            switch_branch_bci: self.switch_branch_bci,
++            switch_fallthrough_target: self.switch_fallthrough_target,
+             switch_continue: self.switch_continue,
+         }
+     }
+@@ -2121,6 +2142,7 @@
+         entries: &BTreeSet<usize>,
+         source_bci: u32,
+         continue_target: Option<usize>,
++        fallthrough_target: Option<u32>,
+     ) -> Self {
+         let mut case_entries = self.case_entries.clone().unwrap_or_default();
+         case_entries.extend(entries.iter().copied());
+@@ -2143,6 +2165,12 @@
+             loop_targets: self.loop_targets.clone(),
+             transfer_source_bci: Some(source_bci),
+             switch_join: join.or(self.switch_join),
++            switch_branch_bci: join.map(|_| source_bci).or(self.switch_branch_bci),
++            switch_fallthrough_target: if join.is_some() {
++                fallthrough_target
++            } else {
++                self.switch_fallthrough_target
++            },
+             switch_continue: continue_target,
+         }
+     }
+@@ -2173,6 +2201,8 @@
+             loop_targets: self.loop_targets.clone(),
+             transfer_source_bci: self.transfer_source_bci,
+             switch_join: self.switch_join,
++            switch_branch_bci: self.switch_branch_bci,
++            switch_fallthrough_target: self.switch_fallthrough_target,
+             switch_continue: self.switch_continue,
+         }
+     }
+@@ -2510,6 +2540,32 @@
+                 return Ok(gap(prefix, vec![current.clone()], reason, None));
+             };
+             if frame.stops_at_switch_boundary(node) {
++                if frame.switch_join == Some(node)
++                    && frame.switch_fallthrough_target.is_some()
++                {
++                    let leaf = match prefix.last() {
++                        Some(source) => self.switch_break_transfer(source, &current, frame)?,
++                        None => None,
++                    };
++                    let Some(leaf) = leaf else {
++                        let switch_bci = frame.switch_branch_bci.unwrap_or(current.bci());
++                        self.unclosed_tail_at.get_or_insert(switch_bci);
++                        return Ok(gap(
++                            prefix,
++                            Vec::new(),
++                            FallbackReason::SwitchShape {
++                                block_bci: switch_bci,
++                            },
++                            Some(current),
++                        ));
++                    };
++                    let mut run = Vec::with_capacity(2);
++                    if !prefix.is_empty() {
++                        run.push(Region::Straight { blocks: prefix });
++                    }
++                    run.push(leaf);
++                    return Ok((run, None));
++                }
+                 return Ok(one(Region::Straight { blocks: prefix }, None));
+             }
+             let successors_here = self.view.successors(node);
+@@ -3475,7 +3531,34 @@
+                         // an enclosing loop. In that case an empty arm drops a real exit edge and
+                         // can turn a terminating loop into an infinite one; retain the transfer as
+                         // the existing `LoopBreak` leaf.
+-                        let join_arm = frame
++                        let switch_join_arm = if frame.switch_fallthrough_target.is_some()
++                            && frame.switch_join == Some(join_node)
++                        {
++                            match self.switch_break_branch(
++                                &branch,
++                                branch_bci,
++                                join_node,
++                                frame,
++                            )? {
++                                Some(leaf) => Some(leaf),
++                                None => {
++                                    let switch_bci =
++                                        frame.switch_branch_bci.unwrap_or(branch_bci);
++                                    self.unclosed_tail_at.get_or_insert(switch_bci);
++                                    return Ok(gap(
++                                        prefix,
++                                        vec![branch.clone()],
++                                        FallbackReason::SwitchShape {
++                                            block_bci: switch_bci,
++                                        },
++                                        join.clone(),
++                                    ));
++                                }
++                            }
++                        } else {
++                            None
++                        };
++                        let join_arm = switch_join_arm.unwrap_or_else(|| frame
+                             .loop_targets
+                             .iter()
+                             .rev()
+@@ -3488,7 +3571,7 @@
+                                     }
+                                 })
+                             })
+-                            .unwrap_or(Region::Straight { blocks: Vec::new() });
++                            .unwrap_or(Region::Straight { blocks: Vec::new() }));
+                         let empty = Box::new(join_arm);
+                         let (then_arm, else_arm) = if then_node == Some(join_node) {
+                             (empty, Box::new(arm))
+@@ -3856,6 +3939,17 @@
+                             && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
+                         let else_breaks = else_next.is_none()
+                             && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
++                        let switch_breaks = |run: &[Region]| {
++                            frame.switch_fallthrough_target.is_some()
++                                && matches!(run.last(), Some(Region::SwitchBreak {
++                                    switch_bci,
++                                    join,
++                                    ..
++                                }) if frame.switch_branch_bci == Some(*switch_bci)
++                                    && self.view.index_of(join) == Some(join_node))
++                        };
++                        let then_switch_breaks = then_next.is_none() && switch_breaks(&then_run);
++                        let else_switch_breaks = else_next.is_none() && switch_breaks(&else_run);
+                         // A proved `continue` transfer ends its arm the same way a `break` does:
+                         // the edge left for its target loop's destination and never comes back to
+                         // this join. It is the loop-side jump of a two-edge body whose other arm
+@@ -3895,7 +3989,8 @@
+                                         || (else_edge && then_at_join))
+                             }))
+                             && !(local_switch_join
+-                                && ((then_meets && else_breaks) || (else_meets && then_breaks)))
++                                && ((then_meets && (else_breaks || else_switch_breaks))
++                                    || (else_meets && (then_breaks || then_switch_breaks))))
+                             // The shared-latch re-election proved both arms' edges from the graph
+                             // already — the continue bridge by exclusive ownership, the nested
+                             // loop by containment and its exit set — and the one arm ends at
+@@ -12766,8 +12861,14 @@
+                     .map(|node| (group.2, node))
+             })
+             .collect();
+-        let fall_throughs =
+-            self.switch_fallthroughs(&groups, &targets, join_node, join_bci, branch.bci())?;
++        let fall_throughs = self.switch_fallthroughs(
++            &groups,
++            &targets,
++            join_node,
++            join_bci,
++            node,
++            branch.bci(),
++        )?;
+         let mut ordered_groups = groups.clone();
+         let case_entries: BTreeSet<usize> = targets.values().copied().collect();
+         if let Some(fall_throughs) = &fall_throughs
+@@ -12838,14 +12939,30 @@
+                 if let Some(current) = current {
+                     other_entries.remove(&current);
+                 }
+-                frame.switch_arm(join_node, &other_entries, branch_bci, switch_continue)
++                frame.switch_arm(
++                    join_node,
++                    &other_entries,
++                    branch_bci,
++                    switch_continue,
++                    fallthroughs
++                        .as_ref()
++                        .and_then(|fallthroughs| fallthroughs.get(&target).copied()),
++                )
+             } else if join_node.is_some() {
+                 // The switch's shared join belongs to the continuation after the switch. The
+                 // ordinary branch boundary is checked only after `visited` is changed, so two arms
+                 // reaching it would be mistaken for a loop re-entry. Keep other case entries
+                 // unbounded unless fallthrough was proved: otherwise a cross-case route could be
+                 // silently emitted as an independent arm with an inserted `break`.
+-                frame.switch_arm(join_node, &BTreeSet::new(), branch_bci, None)
++                frame.switch_arm(
++                    join_node,
++                    &BTreeSet::new(),
++                    branch_bci,
++                    None,
++                    fallthroughs
++                        .as_ref()
++                        .and_then(|fallthroughs| fallthroughs.get(&target).copied()),
++                )
+             } else {
+                 // With no proven join, preserve the ordinary frame's transfer and ownership rules.
+                 frame.arm(join_node, Some(branch_bci))
+@@ -12917,6 +13034,131 @@
+         }];
+         run.extend(tails);
+         Ok((run, join))
++    }
++
++    /// The terminal goto from one arm path to the switch's proved join. The path probe has
++    /// already certified the complete DAG; this rechecks the exact source/target edge before
++    /// placing the zero-block control leaf in the Region tree.
++    fn switch_break_transfer(
++        &mut self,
++        source: &CanonicalBlockId,
++        join: &CanonicalBlockId,
++        frame: &Frame,
++    ) -> Result<Option<Region>, StopReason> {
++        let (Some(switch_bci), Some(_)) = (
++            frame.switch_branch_bci,
++            frame.switch_fallthrough_target,
++        ) else {
++            return Ok(None);
++        };
++        let Some(join_node) = self.view.index_of(join) else {
++            return Ok(None);
++        };
++        if frame.switch_join != Some(join_node) || source.path() != join.path() {
++            return Ok(None);
++        }
++        let Some(source_bci) = self.terminal_bci(source) else {
++            return Ok(None);
++        };
++        if !matches!(self.operations.get(source_bci), Some(Operation::Transfer)) {
++            return Ok(None);
++        }
++        let Some(source_node) = self.view.index_of(source) else {
++            return Ok(None);
++        };
++        if self.view.successors(source_node) != [join_node] {
++            return Ok(None);
++        }
++        let mut actual = Vec::new();
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(source_bci))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(source_bci),
++            )?;
++            if edge.from() == source {
++                actual.push((edge.kind(), edge.to().clone()));
++            }
++        }
++        if actual.as_slice() != [(CanonicalEdgeKind::Normal, join.clone())] {
++            return Ok(None);
++        }
++        Ok(Some(Region::SwitchBreak {
++            source_bci,
++            switch_bci,
++            join: join.clone(),
++        }))
++    }
++
++    /// A conditional's direct edge to the switch join. Unlike a transfer leaf, the branch block
++    /// has two canonical Normal successors; the other branch is kept in the sibling arm.
++    fn switch_break_branch(
++        &mut self,
++        branch: &CanonicalBlockId,
++        branch_bci: u32,
++        join_node: usize,
++        frame: &Frame,
++    ) -> Result<Option<Region>, StopReason> {
++        let (Some(switch_bci), Some(_)) = (
++            frame.switch_branch_bci,
++            frame.switch_fallthrough_target,
++        ) else {
++            return Ok(None);
++        };
++        if frame.switch_join != Some(join_node)
++            || self.terminal_bci(branch) != Some(branch_bci)
++            || !self
++                .operations
++                .get(branch_bci)
++                .is_some_and(|operation| operation.comparison().is_some())
++        {
++            return Ok(None);
++        }
++        let Some(join) = self.view.id_of(join_node).cloned() else {
++            return Ok(None);
++        };
++        if branch.path() != join.path() {
++            return Ok(None);
++        }
++        let Some(branch_node) = self.view.index_of(branch) else {
++            return Ok(None);
++        };
++        let expected: BTreeSet<_> = self
++            .view
++            .successors(branch_node)
++            .iter()
++            .filter_map(|successor| self.view.id_of(*successor).cloned())
++            .collect();
++        if expected.len() != 2 || !expected.contains(&join) {
++            return Ok(None);
++        }
++        let mut actual = Vec::new();
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(branch_bci))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(branch_bci),
++            )?;
++            if edge.from() == branch {
++                if edge.kind() != CanonicalEdgeKind::Normal {
++                    return Ok(None);
++                }
++                actual.push(edge.to().clone());
++            }
++        }
++        actual.sort();
++        if actual != expected.into_iter().collect::<Vec<_>>() {
++            return Ok(None);
++        }
++        Ok(Some(Region::SwitchBreak {
++            source_bci: branch_bci,
++            switch_bci,
++            join,
++        }))
+     }
+ 
+     /// Keep one child switch's proved join inside its enclosing case. This is the single
+@@ -13185,18 +13427,17 @@
+             .is_some_and(|operation| matches!(operation, Operation::Return | Operation::Throw))
+     }
+ 
+-    /// Prove the ordinary fallthrough edges that can be represented by ordering case labels.
+-    ///
+-    /// This intentionally handles only a straight, single-successor route from one case entry to
+-    /// another. A branch, cycle, or any other ambiguous route returns `None`; the caller then uses
+-    /// the ordinary arm walk, which will preserve its existing overlap refusal. `Some(empty)` is a
+-    /// complete proof that no case entry flows directly into another case entry.
++    /// Prove the case-entry outcomes that can be represented by ordering labels and explicit
++    /// switch-break leaves. The probe is read-only: it walks a finite DAG with an explicit stack,
++    /// validates full canonical incident edges, and publishes no partial map on refusal.
++    /// `Some(empty)` is a complete proof that no case entry flows into another case entry.
+     fn switch_fallthroughs(
+         &mut self,
+         groups: &[(Vec<i64>, bool, u32)],
+         targets: &BTreeMap<u32, usize>,
+         join: Option<usize>,
+         join_bci: Option<u32>,
++        dispatch_node: usize,
+         switch_bci: u32,
+     ) -> Result<Option<BTreeMap<u32, u32>>, StopReason> {
+         let entries: BTreeMap<usize, u32> =
+@@ -13210,12 +13451,76 @@
+         {
+             return Ok(None);
+         }
+-
++        let Some(dispatch) = self.view.id_of(dispatch_node) else {
++            return Ok(None);
++        };
++        let dispatch = dispatch.clone();
++
++        // Preserve parallel rows here: a duplicate canonical edge is not a unique route even if
++        // the normal-flow projection collapses it to one successor.
++        let mut incoming: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
++            BTreeMap::new();
++        let mut outgoing: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
++            BTreeMap::new();
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(switch_bci))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(switch_bci),
++            )?;
++            incoming
++                .entry(edge.to().clone())
++                .or_default()
++                .push((edge.kind(), edge.from().clone()));
++            outgoing
++                .entry(edge.from().clone())
++                .or_default()
++                .push((edge.kind(), edge.to().clone()));
++        }
++        let dispatch_rows = outgoing.get(&dispatch).cloned().unwrap_or_default();
++        if dispatch_rows
++            .iter()
++            .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
++        {
++            return Ok(None);
++        }
++        let mut canonical_dispatch: Vec<_> =
++            dispatch_rows.iter().map(|(_, target)| target.clone()).collect();
++        let Some(mut view_dispatch): Option<Vec<_>> = self
++            .view
++            .successors(dispatch_node)
++            .iter()
++            .map(|successor| self.view.id_of(*successor).cloned())
++            .collect()
++        else {
++            return Ok(None);
++        };
++        canonical_dispatch.sort();
++        view_dispatch.sort();
++        if canonical_dispatch != view_dispatch
++            || canonical_dispatch.iter().collect::<BTreeSet<_>>().len()
++                != canonical_dispatch.len()
++        {
++            return Ok(None);
++        }
++
++        let mut closures: BTreeMap<u32, BTreeSet<usize>> = BTreeMap::new();
++        let mut case_exits: BTreeMap<u32, BTreeSet<u32>> = BTreeMap::new();
+         let mut fallthroughs = BTreeMap::new();
+         for (from_bci, start) in targets {
+-            let mut current = *start;
+-            let mut seen = BTreeSet::new();
+-            loop {
++            let Some(start_id) = self.view.id_of(*start).cloned() else {
++                return Ok(None);
++            };
++            if start_id.path() != dispatch.path() {
++                return Ok(None);
++            }
++            let mut color: BTreeMap<usize, u8> = BTreeMap::new();
++            let mut owned = BTreeSet::new();
++            let mut exits = BTreeSet::new();
++            let mut work = vec![(*start, false)];
++            while let Some((node, finishing)) = work.pop() {
+                 poll(self.budget, Some(switch_bci))?;
+                 charge(
+                     self.budget,
+@@ -13223,26 +13528,259 @@
+                     1,
+                     Some(switch_bci),
+                 )?;
+-                if !seen.insert(current) {
++                let Some(id) = self.view.id_of(node).cloned() else {
++                    return Ok(None);
++                };
++                if id.path() != start_id.path() || id == dispatch {
+                     return Ok(None);
+                 }
+-                let successors = self.view.successors(current);
+-                match successors.as_slice() {
+-                    [] => break,
+-                    [next] => {
+-                        if Some(*next) == join {
+-                            break;
++                if Some(node) == join {
++                    continue;
++                }
++                if let Some(target_bci) = entries.get(&node).copied()
++                    && node != *start
++                {
++                    if target_bci <= *from_bci {
++                        return Ok(None);
++                    }
++                    exits.insert(target_bci);
++                    continue;
++                }
++                if finishing {
++                    color.insert(node, 2);
++                    continue;
++                }
++                match color.get(&node).copied() {
++                    Some(1) => return Ok(None),
++                    Some(2) => continue,
++                    _ => {}
++                }
++                color.insert(node, 1);
++                owned.insert(node);
++
++                let canonical_rows = outgoing.get(&id).cloned().unwrap_or_default();
++                if canonical_rows
++                    .iter()
++                    .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
++                {
++                    return Ok(None);
++                }
++                let mut canonical_successors: Vec<_> =
++                    canonical_rows.iter().map(|(_, target)| target.clone()).collect();
++                let Some(mut view_successors): Option<Vec<_>> = self
++                    .view
++                    .successors(node)
++                    .iter()
++                    .map(|successor| self.view.id_of(*successor).cloned())
++                    .collect()
++                else {
++                    return Ok(None);
++                };
++                canonical_successors.sort();
++                view_successors.sort();
++                if canonical_successors != view_successors
++                    || canonical_successors.iter().collect::<BTreeSet<_>>().len()
++                        != canonical_successors.len()
++                {
++                    return Ok(None);
++                }
++                let terminal_bci = self.terminal_bci(&id);
++                match canonical_successors.as_slice() {
++                    [] => {
++                        if !terminal_bci
++                            .and_then(|bci| self.operations.get(bci))
++                            .is_some_and(|operation| {
++                                matches!(operation, Operation::Return | Operation::Throw)
++                            })
++                        {
++                            return Ok(None);
+                         }
+-                        if let Some(to_bci) = entries.get(next) {
+-                            if to_bci <= from_bci {
++                        color.insert(node, 2);
++                    }
++                    successors => {
++                        if let Some(join_node) = join
++                            && successors.iter().any(|successor| {
++                                self.view.index_of(successor) == Some(join_node)
++                            })
++                        {
++                            let source_is_presentable = terminal_bci
++                                .and_then(|bci| self.operations.get(bci))
++                                .is_some_and(|operation| {
++                                    matches!(operation, Operation::Transfer)
++                                        || operation.comparison().is_some()
++                                });
++                            if !source_is_presentable {
+                                 return Ok(None);
+                             }
+-                            fallthroughs.insert(*from_bci, *to_bci);
+-                            break;
+                         }
+-                        current = *next;
++                        if successors.len() > 1
++                            && !terminal_bci
++                                .and_then(|bci| self.operations.get(bci))
++                                .is_some_and(|operation| operation.comparison().is_some())
++                        {
++                            return Ok(None);
++                        }
++                        work.push((node, true));
++                        for successor in successors.iter().rev() {
++                            poll(self.budget, Some(switch_bci))?;
++                            charge(
++                                self.budget,
++                                CountedBudgetDimension::AnalysisSteps,
++                                1,
++                                Some(switch_bci),
++                            )?;
++                            let Some(next) = self.view.index_of(successor) else {
++                                return Ok(None);
++                            };
++                            if color.get(&next) == Some(&1) {
++                                return Ok(None);
++                            }
++                            if color.get(&next) != Some(&2)
++                                && Some(next) != join
++                                && !entries.contains_key(&next)
++                            {
++                                work.push((next, false));
++                            } else if Some(next) == join || entries.contains_key(&next) {
++                                work.push((next, false));
++                            }
++                        }
+                     }
+-                    _ => return Ok(None),
++                }
++            }
++            if exits.len() > 1 {
++                return Ok(None);
++            }
++            if let Some(to_bci) = exits.first().copied() {
++                fallthroughs.insert(*from_bci, to_bci);
++            }
++            case_exits.insert(*from_bci, exits);
++            closures.insert(*from_bci, owned);
++        }
++
++        // Case entries are boundaries, not arm owners. Their incoming rows may be the switch
++        // dispatch plus only the earlier arms whose complete probe ended at this entry.
++        let positions: BTreeMap<u32, usize> = {
++            let mut ordered: Vec<_> = groups.iter().map(|group| group.2).collect();
++            ordered.sort_unstable();
++            ordered
++                .into_iter()
++                .enumerate()
++                .map(|(index, bci)| (bci, index))
++                .collect()
++        };
++        let post_scan_nodes = closures.values().map(BTreeSet::len).sum::<usize>();
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(post_scan_nodes.saturating_mul(2).saturating_add(entries.len()))
++                .unwrap_or(u64::MAX),
++            Some(switch_bci),
++        )?;
++        let mut owner_by_node = BTreeMap::new();
++        for (from_bci, nodes) in &closures {
++            for node in nodes {
++                poll(self.budget, Some(switch_bci))?;
++                if owner_by_node.insert(*node, *from_bci).is_some() {
++                    return Ok(None);
++                }
++            }
++        }
++        for (entry_node, entry_bci) in &entries {
++            poll(self.budget, Some(switch_bci))?;
++            let Some(entry_id) = self.view.id_of(*entry_node) else {
++                return Ok(None);
++            };
++            let rows = incoming.get(entry_id).cloned().unwrap_or_default();
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(rows.len()).unwrap_or(u64::MAX),
++                Some(switch_bci),
++            )?;
++            for _ in &rows {
++                poll(self.budget, Some(switch_bci))?;
++            }
++            if rows.len() != rows.iter().collect::<BTreeSet<_>>().len()
++                || rows
++                    .iter()
++                    .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
++            {
++                return Ok(None);
++            }
++            if !rows.iter().any(|(_, from)| from == &dispatch) {
++                return Ok(None);
++            }
++            for (_, from) in &rows {
++                if from == &dispatch {
++                    continue;
++                }
++                let Some(source_node) = self.view.index_of(from) else {
++                    return Ok(None);
++                };
++                let Some(owner) = owner_by_node.get(&source_node) else {
++                    return Ok(None);
++                };
++                if positions.get(owner) >= positions.get(entry_bci)
++                    || !case_exits
++                        .get(owner)
++                        .is_some_and(|exits| exits.contains(entry_bci))
++                {
++                    return Ok(None);
++                }
++            }
++        }
++        for (from_bci, nodes) in &closures {
++            let Some(start) = targets.get(from_bci) else {
++                return Ok(None);
++            };
++            for node in nodes {
++                poll(self.budget, Some(switch_bci))?;
++                let Some(id) = self.view.id_of(*node) else {
++                    return Ok(None);
++                };
++                let rows = incoming.get(id).cloned().unwrap_or_default();
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    u64::try_from(rows.len()).unwrap_or(u64::MAX),
++                    Some(switch_bci),
++                )?;
++                for _ in &rows {
++                    poll(self.budget, Some(switch_bci))?;
++                }
++                if rows.len() != rows.iter().collect::<BTreeSet<_>>().len()
++                    || rows
++                        .iter()
++                        .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
++                {
++                    return Ok(None);
++                }
++                for (_, source) in &rows {
++                    if node != start {
++                        let Some(source_node) = self.view.index_of(source) else {
++                            return Ok(None);
++                        };
++                        if !nodes.contains(&source_node) {
++                            return Ok(None);
++                        }
++                        continue;
++                    }
++                    if source == &dispatch {
++                        continue;
++                    }
++                    let Some(source_node) = self.view.index_of(source) else {
++                        return Ok(None);
++                    };
++                    let Some(owner) = owner_by_node.get(&source_node) else {
++                        return Ok(None);
++                    };
++                    if positions.get(owner) >= positions.get(&id.bci())
++                        || !case_exits
++                            .get(owner)
++                            .is_some_and(|exits| exits.contains(&id.bci()))
++                    {
++                        return Ok(None);
++                    }
+                 }
+             }
+         }
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -2086,7 +2086,8 @@
+             | Region::Fallback { .. }
+             | Region::Guard { body: None, .. }
+             | Region::LoopBreak { .. }
+-            | Region::LoopContinue { .. } => {}
++            | Region::LoopContinue { .. }
++            | Region::SwitchBreak { .. } => {}
+         }
+     }
+     Ok(proved)
+@@ -3254,7 +3255,8 @@
+         | Region::Straight { .. }
+         | Region::Fallback { .. }
+         | Region::LoopBreak { .. }
+-        | Region::LoopContinue { .. } => {}
++        | Region::LoopContinue { .. }
++        | Region::SwitchBreak { .. } => {}
+     }
+ }
+ 
+@@ -3349,7 +3351,8 @@
+             | Region::SharedTailEarlyReturn { .. }
+             | Region::Fallback { .. }
+             | Region::LoopBreak { .. }
+-            | Region::LoopContinue { .. } => {}
++            | Region::LoopContinue { .. }
++            | Region::SwitchBreak { .. } => {}
+             Region::ShortCircuitValue { tail, .. } => pending.extend(tail),
+         }
+     }
+@@ -4177,7 +4180,8 @@
+         | Region::Fallback { .. }
+         | Region::Guard { body: None, .. }
+         | Region::LoopBreak { .. }
+-        | Region::LoopContinue { .. } => {}
++        | Region::LoopContinue { .. }
++        | Region::SwitchBreak { .. } => {}
+         // A composed continuation is this region's own statement sequence, so its blocks stand
+         // at the same lexical path: the declaration the store consumer anchors and the reads the
+         // continuation makes share one region path, which is what keeps a local's Boolean
+@@ -4289,7 +4293,7 @@
+             );
+             blocks
+         }
+-        Region::LoopBreak { .. } | Region::LoopContinue { .. } => Vec::new(),
++        Region::LoopBreak { .. } | Region::LoopContinue { .. } | Region::SwitchBreak { .. } => Vec::new(),
+         Region::Fallback { blocks, .. } => blocks.clone(),
+         Region::ShortCircuitValue {
+             prefix,
+@@ -4404,7 +4408,8 @@
+         Region::Straight { .. }
+         | Region::Guard { body: None, .. }
+         | Region::LoopBreak { .. }
+-        | Region::LoopContinue { .. } => {}
++        | Region::LoopContinue { .. }
++        | Region::SwitchBreak { .. } => {}
+     }
+     bcis
+ }
+@@ -7851,6 +7856,7 @@
+         labeled_loop_headers: BTreeSet::new(),
+         loop_labels: BTreeMap::new(),
+         switch_depth: 0,
++        switch_break_targets: Vec::new(),
+         body_span: None,
+         nested_pair: None,
+         finally_return: None,
+@@ -9052,6 +9058,8 @@
+     loop_labels: BTreeMap<u32, String>,
+     /// A switch intercepts an unlabelled break, so a loop break from one of its arms is labeled.
+     switch_depth: usize,
++    /// The active switch identities that may own a proved `SwitchBreak` leaf.
++    switch_break_targets: Vec<SwitchBreakTarget>,
+     /// Physical slice of the structured guard body while its internal Region is written — a
+     /// proved `finally`'s or a nested `synchronized`'s: instructions the block holds outside the
+     /// slice produce no statement of their own, exactly the way the statement's header does not.
+@@ -9158,6 +9166,15 @@
+     loop_headers: Vec<u32>,
+     labeled_loop_headers: BTreeSet<u32>,
+     loop_labels: BTreeMap<u32, String>,
++    switch_depth: usize,
++    switch_break_targets: Vec<SwitchBreakTarget>,
++}
++
++#[derive(Clone, Debug)]
++struct SwitchBreakTarget {
++    branch_bci: u32,
++    join: Option<CanonicalBlockId>,
++    loop_depth: usize,
+     switch_depth: usize,
+ }
+ 
+@@ -15282,6 +15299,7 @@
+             labeled_loop_headers: self.labeled_loop_headers.clone(),
+             loop_labels: self.loop_labels.clone(),
+             switch_depth: self.switch_depth,
++            switch_break_targets: self.switch_break_targets.clone(),
+         }
+     }
+ 
+@@ -15310,6 +15328,7 @@
+         self.labeled_loop_headers = checkpoint.labeled_loop_headers;
+         self.loop_labels = checkpoint.loop_labels;
+         self.switch_depth = checkpoint.switch_depth;
++        self.switch_break_targets = checkpoint.switch_break_targets;
+         self.body_span = None;
+         self.finally_return = None;
+         self.multi_return_finally = None;
+@@ -16122,7 +16141,8 @@
+             | Region::Fallback { .. }
+             | Region::Guard { body: None, .. }
+             | Region::LoopBreak { .. }
+-            | Region::LoopContinue { .. } => {}
++            | Region::LoopContinue { .. }
++            | Region::SwitchBreak { .. } => {}
+         }
+         Ok(())
+     }
+@@ -17666,6 +17686,12 @@
+                 let joined = self.switch_join(join.as_ref(), groups);
+                 let mut arms = Vec::with_capacity(groups.len());
+                 self.switch_depth += 1;
++                self.switch_break_targets.push(SwitchBreakTarget {
++                    branch_bci: proof.final_switch_bci,
++                    join: join.clone(),
++                    loop_depth: self.loop_headers.len(),
++                    switch_depth: self.switch_depth,
++                });
+                 for (index, group) in groups.iter().enumerate() {
+                     let mut body = Vec::new();
+                     self.switch_arm(
+@@ -17692,6 +17718,7 @@
+                         body,
+                     });
+                 }
++                self.switch_break_targets.pop();
+                 self.switch_depth -= 1;
+                 if let Some((join_bci, values)) = joined {
+                     let mut returns = Vec::with_capacity(values.len());
+@@ -17778,6 +17805,12 @@
+                 let joined = self.switch_join(join.as_ref(), groups);
+                 let mut arms = Vec::with_capacity(groups.len());
+                 self.switch_depth += 1;
++                self.switch_break_targets.push(SwitchBreakTarget {
++                    branch_bci: *branch_bci,
++                    join: join.clone(),
++                    loop_depth: self.loop_headers.len(),
++                    switch_depth: self.switch_depth,
++                });
+                 for (index, group) in groups.iter().enumerate() {
+                     let mut body = Vec::new();
+                     self.switch_arm(
+@@ -17793,6 +17826,7 @@
+                         body,
+                     });
+                 }
++                self.switch_break_targets.pop();
+                 self.switch_depth -= 1;
+                 // Render the `return`s only now, after all producer refusals and successful
+                 // declarations from the arms are visible. An arm may declare the local the join's
+@@ -18142,6 +18176,34 @@
+                     origin.plus_derived(Origin::derived(*bci))
+                 });
+                 self.push(Stmt::new(kind, origin))
++            }
++            Region::SwitchBreak {
++                source_bci,
++                switch_bci,
++                join,
++            } => {
++                let Some(target) = self.switch_break_targets.last() else {
++                    return self.fallback(
++                        vec![*source_bci],
++                        "a switch break targets no active switch proved by the region tree",
++                        *source_bci,
++                    );
++                };
++                if target.branch_bci != *switch_bci
++                    || target.join.as_ref() != Some(join)
++                    || target.loop_depth != self.loop_headers.len()
++                    || target.switch_depth != self.switch_depth
++                {
++                    return self.fallback(
++                        vec![*source_bci],
++                        "a switch break does not target the nearest active switch without crossing an inner loop or switch",
++                        *source_bci,
++                    );
++                }
++                self.push(Stmt::new(
++                    StmtKind::Break { label: None },
++                    OriginSet::new(Origin::direct(*source_bci)),
++                ))
+             }
+             Region::LoopBreak {
+                 source_bci,
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -13358,7 +13358,14 @@
+     let blocks: Vec<u32> = region.blocks().iter().map(|block| block.bci()).collect();
+     let reasons = region.fallbacks();
+     RegionRecord {
+-        bci: blocks.first().copied().unwrap_or(0),
++        bci: blocks
++            .first()
++            .copied()
++            .or_else(|| match region {
++                Region::SwitchBreak { source_bci, .. } => Some(*source_bci),
++                _ => None,
++            })
++            .unwrap_or(0),
+         structured: region.is_structured(),
+         blocks,
+         code: reasons.first().map(FallbackReason::code),
+--- /dev/null
++++ b/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
+@@ -0,0 +1,175 @@
++//! The frozen CF12 conditional case keeps its adjacent-case path and explicit switch-exit paths.
++
++use jarde_java::{
++    DeclaringClass, MethodFacts, RecoveryEvidenceRequest, RecoveryFacts, RecoveryRequest,
++    pass::JAVA_8, recover,
++};
++use jarde_jvm::engine::analyze_method_ir;
++use jarde_jvm::environment::ResolutionEnvironment;
++use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++use jarde_reader::budget::{Budget, Limits};
++use jarde_reader::model::{
++    ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
++    PhysicalVariant,
++};
++use jarde_reader::view::{
++    DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode, MultiReleasePolicy,
++    PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty, RuntimeView,
++};
++
++const CLASS: &[u8] = include_bytes!(
++    "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
++);
++const OWNER: &str = "jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls";
++const DESCRIPTOR: &str = "(IZZ)Ljava/lang/String;";
++
++fn limits() -> Limits {
++    Limits {
++        input_bytes: 1 << 20,
++        archive_entries: 100,
++        entry_bytes: 1 << 20,
++        read_bytes: 1 << 20,
++        class_bytes: 1 << 20,
++        attribute_bytes: 1 << 20,
++        code_bytes: 1 << 20,
++        result_items: 1 << 20,
++        output_bytes: 1 << 20,
++        class_headers: 10,
++        method_bodies: 10,
++        ir_items: 1 << 20,
++        ir_edges: 1 << 20,
++        analysis_steps: 1 << 20,
++        normalization_clones: 1 << 20,
++        nested_depth: 16,
++        dependency_depth: 8,
++        elapsed_millis: u64::MAX,
++    }
++}
++
++fn report() -> jarde_java::RecoveryReport {
++    let mut budget = Budget::new(limits());
++    let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
++        .expect("frozen complete target class opens");
++    let definition = PhysicalDefinitionId {
++        location: PhysicalClassLocation::StandaloneRoot {
++            snapshot: snapshot.id().clone(),
++        },
++        class_bytes: ClassBytesId {
++            digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
++            length: u64::try_from(CLASS.len()).expect("fixture length fits"),
++        },
++        variant: PhysicalVariant::Base,
++    };
++    let domain = LoadDomain {
++        loader: LoaderId("app".to_string()),
++        parent_loader: None,
++        delegation: DelegationPolicy::ParentFirst,
++        roots: vec![LoadRoot::StandaloneClass {
++            snapshot: snapshot.id().clone(),
++        }],
++        module_mode: ModuleMode::ClassPath,
++        external_override: RuntimeUncertainty::None,
++        runtime_transformation: RuntimeUncertainty::None,
++    };
++    let analysis = analyze_method_ir(
++        &[snapshot],
++        &MethodAnalysisRequest {
++            environment: ResolutionEnvironment {
++                runtime: RuntimeView {
++                    physical: PhysicalView {
++                        snapshot: definition_snapshot(&definition),
++                        scope: PhysicalScope::SnapshotAll,
++                    },
++                    profile: RuntimeProfile {
++                        java_release: 23,
++                        multi_release: MultiReleasePolicy::Disabled,
++                        layout: LayoutMode::Generic,
++                    },
++                    load_domain: domain.clone(),
++                },
++                domains: vec![domain],
++                providers: Vec::new(),
++            },
++            method: PhysicalMethodId {
++                owner: definition,
++                name: JvmBytes(b"test".to_vec()),
++                descriptor: JvmBytes(DESCRIPTOR.as_bytes().to_vec()),
++            },
++            stages: AnalysisStage::ALL.to_vec(),
++        },
++        &mut budget,
++    )
++    .expect("complete class method analysis succeeds");
++    let facts = RecoveryFacts::new(
++        MethodFacts::new("test", DESCRIPTOR, 4)
++            .with_access_flags(0x0001)
++            .with_declaring_class(DeclaringClass::new(OWNER, 0x0021)),
++    );
++    recover(
++        &RecoveryRequest::new(analysis.ir(), &facts, JAVA_8)
++            .with_evidence(RecoveryEvidenceRequest::all()),
++        &mut budget,
++    )
++}
++
++// Keep the requested PhysicalView tied to the exact snapshot already embedded in the owner.
++fn definition_snapshot(definition: &PhysicalDefinitionId) -> jarde_reader::model::SnapshotId {
++    match &definition.location {
++        PhysicalClassLocation::StandaloneRoot { snapshot } => snapshot.clone(),
++        _ => unreachable!("the test uses one standalone frozen class"),
++    }
++}
++
++#[test]
++fn cf12_conditional_switch_paths_keep_case_and_join_breaks() {
++    assert_eq!(CLASS.len(), 1563, "frozen input class changed");
++    let report = report();
++    assert!(report.produced(), "{:?}", report.outcome);
++    assert!(
++        !report.text.contains("@bytecode"),
++        "the real method must be fully structured:\n{}",
++        report.text
++    );
++    assert!(report.text.contains("case 1:"), "{}", report.text);
++    assert_eq!(report.text.matches("case 2:").count(), 1, "{}", report.text);
++    let switch = report
++        .regions
++        .iter()
++        .find(|region| region.bci == 0 && region.rule.is_some_and(|rule| rule.rule() == "switch"))
++        .expect("the real switch has a structured region record");
++    assert!(switch.blocks.contains(&117), "case 2 must belong to the switch: {switch:?}");
++    assert!(!switch.blocks.contains(&171), "the common join must remain after the switch: {switch:?}");
++    assert_eq!(
++        report.text.matches("break;").count(),
++        2,
++        "the two paths to BCI 171 need explicit switch exits:\n{}",
++        report.text
++    );
++    for bci in [89, 114] {
++        assert!(
++            report
++                .source_map
++                .of_bci(bci)
++                .iter()
++                .any(|segment| segment.text(&report.text).contains("break;")),
++            "join-transfer BCI {bci} must map to its own break statement:\n{}",
++            report.text
++        );
++    }
++    assert!(
++        !report
++            .regions
++            .iter()
++            .any(|region| region.rule.is_some_and(|rule| rule.rule() == "loop")),
++        "the switch graph is acyclic and must not be reported as a loop: {:?}",
++        report.regions
++    );
++    for bci in [32, 59, 63, 67, 89, 92, 114, 117, 121, 171, 195] {
++        assert!(
++            !report.source_map.of_bci(bci).is_empty(),
++            "BCI {bci} lost source provenance:\n{}",
++            report.text
++        );
++    }
++}
