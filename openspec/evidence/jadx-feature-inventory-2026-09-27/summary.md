@@ -371,3 +371,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-11：局部类型片已6/8；真实class9永久tests、22个debug/no-debug结构边界profile全物理来源与default/all一致，char来源及null-first同型String在既有类型决策中恢复。14cmd645/0/2本地验证、新CLI冻结；完整99cmd两锚8条双JDK/profile运行同原/JADX，其他8控制profile保持独立post-pop基线；另9cmd准确append(I)重载完整类运行46\n通过。slot-conflict组合类仍拒绝；JADX全null println歧义经Runner仅package适配后双JDK独立编译确认。产品自身CI及最终clean待完成，不增加CF12/71整单元完成数。见[类型root验收](../../changes/recover-proved-local-source-types/verification-root.md)。
 
 2026-10-11：typed产品8b8997781的自身CI38084415019在旧p3_meeting的int局部拼写断言失败；不接受3.2。root更新为准确char局部/int方法返回，保留全部转换与pop控制；追加focused6/0/0及完整Meet 12成员双JDK×原/JADX/default/all八腿逐值65536返回完全一致。生产CLI及原17/10/50冻结pins不变。一次本地全workspace编译正确触发target1GiB守卫，已清理并改小批全量验证；修复提交新CI与clean尚待完成，71/612及整CF12计数不变。条件switch五边界21命令和十个真实公开IR profiles独立接受观察：JADX每JDK五行行为差异、Jarde整类四missing-return；不把私有证书草稿计为实现。
+
+2026-10-11：同一typed旧断言审计追加RequiredConversions char声明与NullThenBuilder null→准确StringBuilder，两测试修复后focused v7共22/0/0；其他七引用拒绝边界与原baseline保持，生产17/10/50冻结闭包不变。完整13成员/3成员双JDK八运行腿实际通过，但独立复核与新提交自身CI/clean未闭合；Null原源码不可得，仅canonical class原执行oracle。全workspace小批正在从旧断言失败命令续跑，不预先计通过。typed6/8、71/612及整CF12不变。

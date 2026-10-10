@@ -1,0 +1,1 @@
+历史raw与私有草稿原字节复制；manifest逐项记录原绝对路径、字节数与SHA。v3为map误比较失败，v4/v5为新增测试private字段访问编译失败，v6/v7定向通过，最终产品断言以v7为准。adapter v4静态审查后待准确自身CI；不修改原metadata/sourcebase。

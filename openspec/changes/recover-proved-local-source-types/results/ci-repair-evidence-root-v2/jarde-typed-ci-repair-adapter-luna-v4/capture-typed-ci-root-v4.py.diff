@@ -1,0 +1,11 @@
+--- /private/tmp/jarde-typed-ci-repair-adapter-luna-v3/capture-typed-ci-root-v3.py
++++ /private/tmp/jarde-typed-ci-repair-adapter-luna-v4/capture-typed-ci-root-v4.py
+@@ -4,7 +4,7 @@
+ import argparse, datetime, gzip, hashlib, json, os, re, subprocess, time
+ from pathlib import Path
+ ROOT=Path('/Users/lordcasser/workspace/projects/jarde')
+-OUT=Path('/private/tmp/jarde-typed-ci-capture-root-v3')
++OUT=Path('/private/tmp/jarde-typed-ci-capture-root-v4')
+ TIMEOUT=35
+ APPEND=('results-receiver.actions.githubusercontent.com','productionresultssa1.blob.core.windows.net')
+ JOBS=(('stable / test and specification','ci-stable-job-v1.log.gz'),('supply chain','ci-supply-job-v1.log.gz'))

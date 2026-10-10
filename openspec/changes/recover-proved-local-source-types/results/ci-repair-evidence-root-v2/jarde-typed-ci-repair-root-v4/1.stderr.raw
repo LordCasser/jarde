@@ -1,0 +1,25 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[91merror[E0616][0m[1m: field `segments` of struct `jarde::SourceMap` is private[0m
+   [1m[94m--> [0mtests/p3_reference_slot_lifetimes.rs:362:35
+    [1m[94m|[0m
+[1m[94m362[0m [1m[94m|[0m         assert!(!right.source_map.segments.is_empty());
+    [1m[94m|[0m                                   [1m[91m^^^^^^^^[0m [1m[91mprivate field[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: a method `segments` also exists, call it with parentheses
+    [1m[94m|[0m
+[1m[94m362[0m [1m[94m| [0m        assert!(!right.source_map.segments[92m()[0m.is_empty());
+    [1m[94m|[0m                                           [92m++[0m
+
+[1m[91merror[E0616][0m[1m: field `segments` of struct `jarde::SourceMap` is private[0m
+   [1m[94m--> [0mtests/p3_reference_slot_lifetimes.rs:363:42
+    [1m[94m|[0m
+[1m[94m363[0m [1m[94m|[0m         for segment in &right.source_map.segments {
+    [1m[94m|[0m                                          [1m[91m^^^^^^^^[0m [1m[91mprivate field[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: a method `segments` also exists, call it with parentheses
+    [1m[94m|[0m
+[1m[94m363[0m [1m[94m| [0m        for segment in &right.source_map.segments[92m()[0m {
+    [1m[94m|[0m                                                  [92m++[0m
+
+[1mFor more information about this error, try `rustc --explain E0616`.[0m
+[1m[91merror[0m: could not compile `jarde` (test "p3_reference_slot_lifetimes") due to 2 previous errors

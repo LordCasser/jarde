@@ -1,0 +1,1 @@
+{"status": "failed", "error": "AssertionError: (['cargo', 'test', '--test', 'p3_meeting', '--test', 'p3_required_conversions', '--test', 'p3_reference_slot_lifetimes', '--locked'], 101, None)", "workspace_summary_count": null, "workspace_totals": null, "pins_unchanged": true}

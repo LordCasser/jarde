@@ -1,0 +1,25 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[91merror[E0616][0m[1m: field `origin` of struct `jarde_java::source_map::Segment` is private[0m
+   [1m[94m--> [0mtests/p3_reference_slot_lifetimes.rs:364:52
+    [1m[94m|[0m
+[1m[94m364[0m [1m[94m|[0m             for origin in std::iter::once(&segment.origin.primary).chain(&segment.origin.derived) {
+    [1m[94m|[0m                                                    [1m[91m^^^^^^[0m [1m[91mprivate field[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: a method `origin` also exists, call it with parentheses
+    [1m[94m|[0m
+[1m[94m364[0m [1m[94m| [0m            for origin in std::iter::once(&segment.origin[92m()[0m.primary).chain(&segment.origin.derived) {
+    [1m[94m|[0m                                                          [92m++[0m
+
+[1m[91merror[E0616][0m[1m: field `origin` of struct `jarde_java::source_map::Segment` is private[0m
+   [1m[94m--> [0mtests/p3_reference_slot_lifetimes.rs:364:83
+    [1m[94m|[0m
+[1m[94m364[0m [1m[94m|[0m             for origin in std::iter::once(&segment.origin.primary).chain(&segment.origin.derived) {
+    [1m[94m|[0m                                                                                   [1m[91m^^^^^^[0m [1m[91mprivate field[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: a method `origin` also exists, call it with parentheses
+    [1m[94m|[0m
+[1m[94m364[0m [1m[94m| [0m            for origin in std::iter::once(&segment.origin.primary).chain(&segment.origin[92m()[0m.derived) {
+    [1m[94m|[0m                                                                                         [92m++[0m
+
+[1mFor more information about this error, try `rustc --explain E0616`.[0m
+[1m[91merror[0m: could not compile `jarde` (test "p3_reference_slot_lifetimes") due to 2 previous errors

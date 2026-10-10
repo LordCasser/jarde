@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:17:24.274573+00:00",
+  "duration_seconds": 4.15257604198996,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-run-typed-ci-repair-root-v4.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 277,
+      "sha256": "1287a63194ccf3170ecf29bcb9f8252d9d4c944f09719d6e855798dd6b5c706e"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
