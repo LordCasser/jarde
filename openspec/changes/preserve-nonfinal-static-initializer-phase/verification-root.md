@@ -25,3 +25,11 @@ Luna patch v1上下文遗漏既有unknown-static拒绝分支，apply check失败
 新产品须提交推送后验自己的确切CI，两个固定seed全仓、真实Temurin25完整对照、MSRV、全仓Clippy/fuzz/supply及reader/fingerprint不借 acd/6dd 旧结果。results/verify-ci-product-root-v2.py 已审阅准备但未执行；准备版错误的22 canonical计数和候选结果字段名已按实际16文件/真实schema修正。
 
 本机限定20 GiB余量/1 GiB target守卫，实际测试/build/Clippy均未停；冻结CLI后只clean本仓target **658441395字节**，target已不存在，全部输入/raw/CLI hash未变，见 results/root-clean-v1。后续其它进程用量以实时空间为准。
+
+## 7196 产品 CI 的旧断言与实际修复
+
+确切7196a365 CI38010503464失败于 enum_constants::tests::ordinary_class_fields_and_static_initializer_keep_the_existing_projection，仍断言bare first/second与static块。完整API/stable原始日志在results/ci-7196-failure-v1；另3job成功，不能算产品验收。此次仅更新该测试函数，Proved2顺序/field index/static nonfinal flags、根声明与无重复块、物理clinit原writes及write BCI来源全部校验；enum NotApplicable、default/all正文一致继续保留，无生产变化。root本机精准测试1pass，20GiB/1GiB守卫未停。
+
+同一SOURCE以-g重新编译双JDK，默认/完整证据4份全生成源码原样重编、fresh-Xverify/raw等于原程序，24命令/76闭合文件，root实际独立验收results/ordinary-static-regression-root-acceptance-v1.json。CLI并不serialize Engine enum_constant_proof；首轮v1仅因错误要求此JSON键而判失败，实际四运行均正确，raw保留；rootv3脚本修正视图边界并重新执行v2采集接受。该Engine断言由准确Rust测试验证。冻结CLI产品10pins未变化，cfg(test)的enum断言修复另pin，不改历史metadata。
+
+已清本仓target286902139字节，raw/CLI/pins保留，见results/root-clean-v2。新CI verifier v3已准备额外测试pin/差异仅限目标函数和双seed确切测试名，尚未执行；本片仍6/7，须待修复提交自己的全仓CI。CF16的acd检查点已独立11/11验收，不借其绿灯。

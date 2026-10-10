@@ -37,3 +37,9 @@ N=2 的 loop header BCI0 已未通过证明，finally 异常副本在 BCI26；�
 root实际四次`javap -p -s -v`核对全部物理字段/方法name、descriptor、flags与CLI JSON。历史1.1/1.2的3/6 Code计数来自未带-p的javap，遗漏private static mark；物理完整计数应为**4/7 Code**，原始历史证据不篡改。Normal run来源BCI集合与全部实际指令集合完全相同（含保存/重载返回、正常/异常清理副本、重抛）。root独立verifier v3实际 **536checks/0errors**；v2的javap声明识别错误及重现raw保留，v3只将声明识别限定到两空格成员层级，不改raw。Luna prepared v1只作准备，root修复入口/类身份/候选查找与固定oracle后实际验收。
 
 资源/monitor/typed-catch邻近回归继承相同产品提交6dd确切CI38001720578（四job/52steps全通过），包括p3_finally_straight、p3_guard、nested_monitor_regions与p3_java_recovery；没有将其算成新增公共测试的CI。任务3.1完成，当前10/11，3.2等待新测试检查点自己的完整CI。fmt、全OpenSpec strict和diff check已通过，记录root-checkpoint-readonly-v2。完整85测试后再次只清本仓178.5MiB/348文件，见root-clean-checkpoint-v2，冻结CLI与source/class/raw保留。
+
+## CF16 检查点确切 CI 已验收，11/11
+
+acd55c213ac7c670c6e76609871281a341d03ad0 的 CI38007755097 已全成功，四job/52steps，两固定seed各354记录、3355passed/0failed/97ignored；新增两个公共停止测试都真实执行，p3_patterns85/85，nested_monitor4/4、p3_java_recovery54/54。真Temurin25的完整对照、MSRV、Clippy/fuzz/API/tree/OpenSpec与cargo-deny0.20.2 root/fuzz四政策全通过。完整JSON与stable/supply原始gzip保存ci-checkpoint-v1，root实际verifier v3核不可变Git blob与冻结旧CLI、物理fixture和历史local gates后接受，见 results/ci-checkpoint-root-acceptance-v3.json。
+
+API job-log下载失败，改用gh run view --job --log完整输出，capture-method-v1.json记录真实命令；v2在本地历史reader记录的短测试名匹配失败，v3只改为实际完整classfile::tests名字，失败版本/raw保留。当前main另有7196非final静态产品修正，其CI必须另验，不借本检查点。CF16本slice11/11不代表所有finally场景或71单元整单元追平，覆盖型/浅层loop组合与默认小栈限制继续单列。

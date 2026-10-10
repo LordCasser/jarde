@@ -1,0 +1,1 @@
+gh api job log下载失败，使用gh run view --job --log完整原始输出；capture-method-v1.json记录实际argv/exit，gzip未裁剪。root v2已实际核完CI/seed/supply/固定身份后，在历史reader gate的短测试名匹配失败；v3只将本来真实执行的名字改为classfile::tests::repository_class_fixtures_validate_without_false_target_rejections，输出另存v3。v2与实际raw均保留，不改变通过条件或历史测试。

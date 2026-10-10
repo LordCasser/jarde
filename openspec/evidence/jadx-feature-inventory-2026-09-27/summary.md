@@ -294,3 +294,7 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 非final静态阶段最小修正已通过静态6/6、接口4/4及scoped Clippy。新冻结CLI原样完整候选四腿4/4，root独立2245checks/0errors，ordered四静态字段按原写入顺序提升，无重复static块，原clinit/map保留；实例不提升。本change当前5/7，确切新产品CI/提交仍pending，不借旧head CI，不改变71/EM18整单元状态。
 
 本片代码/证据已提交推送main，6/7，3.2保留等待确切新产品CI；机器target已清658441395字节，准备的实例构造器探针未运行。
+
+2026-10-10 CF16检查点acd55c213ac7c670c6e76609871281a341d03ad0确切CI38007755097四job/52steps成功，双seed各354records/3355passed/0failed/97ignored，真Temurin25及所有门禁成功；root实际完整日志/pins验收v3通过，CF16本change11/11。不代表浅层loop+saved-return/Completion组合或小栈安全均覆盖。
+
+7196非final静态产品CI38010503464失败于一条旧ordinary class静态块断言；仅该test更新后本机精准1pass，完整OrdinaryInit双JDK原2/2+candidate4/4 raw一致，修复提交自己的CI仍待验收。本change仍6/7，非产品逻辑回退。实例字段下一组31命令/8腿独立v7验收：原2/2/Jarde2/2，JADX四份完整生成源码均编译但DifferentRHS运行失败(31代32)，不能称8/8。第一MVP限all direct-super共享数组前缀，this链保留现状；无需先建构造图，强RHS比较替代软opcode同形。71分母/EM18整单元状态不变。

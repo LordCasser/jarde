@@ -4,10 +4,14 @@
 
 `ClassSourceMethodAst`保留完整同轮AST；body consumer视图有field写和构造调用的BCI/表达式/catch scope。`init@1`知道prologue为this还是super，但这些都不等于跨构造器共同初始化证明。`ClassInitializerCandidates`明确属于clinit有序静态写，不能为了复用名字把它扩义为构造器集合。
 
-下一片应消费现有AST加field@1的owner/descriptor/类型/效果与同轮字段表，证明所有direct-super构造路径的共同初始化前缀，并确认this委托链只在终端执行一次。随后一次性改字段声明和全部相关构造器派生正文，物理方法及原BCI仍保留。不能只从一个构造器删除一条赋值就声称支持实例初始化。
+下一片应消费现有AST加field@1的owner/descriptor/类型/效果与同轮字段表，证明所有direct-super构造路径的共同初始化前缀，任意this委托构造器先整组保守退出，保持现有正确呈现；终端链恰一次证明不作为第一MVP前置。随后一次性改字段声明和全部相关构造器派生正文，物理方法及原BCI仍保留。不能只从一个构造器删除一条赋值就声称支持实例初始化。
 
 本地JADX ExtractFieldInit的moveCommonFieldsInit先收集每个构造器IPUT并过滤，再逐条isSame比较，通过才统一删除写/加field attr。其singlePath/canReorder、多次写与依赖排除值得参考，但isSame不能替代本项目物理身份与来源证书；this委托构造器没有IPUT时它也会整组保守退出。
 
-验收至少覆盖当前单ctor数组控制、两个direct-super ctor共享、this链不重复、不同RHS/漏写/重复写拒绝，以及效果次序、前向读/异常边和预算取消。实例提升另立change，当前非final静态阶段修正不承担这些工作。
+验收至少覆盖当前单ctor数组控制、两个direct-super ctor共享、this链保留原赋值且不重复、不同RHS/漏写/重复写拒绝，以及效果次序、前向读/异常边和预算取消。实例提升另立change，当前非final静态阶段修正不承担这些工作。
 
 root用当前文件复核了src/facade.rs的prove/project_static_initializer_group、report.rs的ClassSourceMethodAst/ClassSourceMethodBodyConsumers及init.rs的构造prologue。Atlas仅作scope内符号导航，缓存行号/source片段已旧，以当前文件为准。CF16默认小栈溢出也另列限制，不混入字段提升。
+
+## fresh 基线后的范围收敛
+
+instance-field-init-next实际8腿/31命令已由root verifier v7接受，JADX common direct-super提升，但this委托也保留构造器；DifferentRHS四份JADX生成源码虽能编译，均把mark32改成31而运行失败。第一片无需constructor graph，也不能沿用本地JADX soft isSame来比RHS。需要同轮opaque AST内的连续前缀适配器，因为body consumer列表不证明顶层stmt完整覆盖；复用已有ClassSourceMethodAst、emit_class_source_statements和根member_texts原子暂存，不开放AST internals或扩义clinit候选。强比较需实际field/call身份、字面值/调用参数/类型/数组元素顺序相等，只忽略各ctor物理origin差异；参数/this读、异常scope和不同写顺序保守拒绝。

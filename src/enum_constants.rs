@@ -7101,18 +7101,93 @@ public final class PackageArgsRunner {
             ClassSourceEnumConstantProof::NotApplicable
         );
         assert_eq!(default.text, all.text);
-        assert!(default.text.contains("static int first;"));
-        assert!(default.text.contains("static int second;"));
-        assert!(default.text.contains("static {"));
-        assert!(default.text.contains("OrdinaryInit.first = 4;"));
-        assert!(default.text.contains("OrdinaryInit.second = twice();"));
         assert_eq!(default.fields.len(), 2);
-        assert!(
-            default
-                .methods
+
+        let crate::ClassSourceInitializerProof::Proved { fields } = &default.initializer_proof
+        else {
+            panic!(
+                "ordinary runtime static writes are projected: {:?}",
+                default.initializer_proof
+            );
+        };
+        assert_eq!(fields.len(), 2);
+        assert_eq!(
+            fields
                 .iter()
-                .any(|method| method.item.name.raw().0 == b"<clinit>")
+                .map(|field| field.write_order)
+                .collect::<Vec<_>>(),
+            vec![0, 1]
         );
+        let first = default
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"first")
+            .unwrap();
+        let second = default
+            .fields
+            .iter()
+            .find(|field| field.item.name.raw().0 == b"second")
+            .unwrap();
+        assert_eq!(
+            fields
+                .iter()
+                .map(|field| field.field_index)
+                .collect::<Vec<_>>(),
+            vec![first.item.index, second.item.index]
+        );
+        for field in [first, second] {
+            assert_ne!(
+                field.item.access_flags & 0x0008,
+                0,
+                "runtime fields remain static"
+            );
+            assert_eq!(
+                field.item.access_flags & 0x0010,
+                0,
+                "runtime fields remain nonfinal"
+            );
+        }
+        assert!(first.declaration.as_deref().unwrap().contains("first = 4"));
+        assert!(
+            second
+                .declaration
+                .as_deref()
+                .unwrap()
+                .contains("second = twice()")
+        );
+        let first_decl = default.text.find("static int first = 4;").unwrap();
+        let second_decl = default.text.find("static int second = twice();").unwrap();
+        assert!(
+            first_decl < second_decl,
+            "proved field declarations keep physical order"
+        );
+        assert!(
+            !default.text.contains("static {"),
+            "root projection has no duplicate initializer block"
+        );
+
+        let clinit = default
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"<clinit>")
+            .expect("physical <clinit> remains in the class report");
+        let crate::ClassSourceOutcome::Recovered { report: body, .. } = &clinit.outcome else {
+            panic!("physical <clinit> keeps its recovery outcome")
+        };
+        assert!(clinit.text.contains("static {"));
+        assert!(clinit.text.contains("OrdinaryInit.first = 4;"));
+        assert!(clinit.text.contains("OrdinaryInit.second = twice();"));
+        assert!(
+            !body.source_map.segments().is_empty(),
+            "physical initializer keeps its source map"
+        );
+        for field in fields {
+            assert!(
+                !body.source_map.of_bci(field.write_bci).is_empty(),
+                "physical write BCI {} remains anchored",
+                field.write_bci
+            );
+        }
     }
 
     #[test]
