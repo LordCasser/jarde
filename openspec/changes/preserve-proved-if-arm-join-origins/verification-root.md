@@ -25,3 +25,5 @@ results/candidate-whole-classes-acceptance-root-v1.json及old-controls-exact-acc
 root提交推送本片全部代码/class/源码/raw后，核提交head自身CI；已审capture-ci-product-root-v2.py和verify-ci-product-root-v2.py将证据保存在results/ci-product-v2。运行参数须使用真实产品40位SHA与run id；预期lib336/gateway12/workspace每seed3389（以真实日志验证，不预先宣称通过），仍要求4jobs/52steps、354结果记录、97ignored和所有新旧测试名。不得借For或文档CI。
 
 完成自身CI后更新账本/handoff、提交推送记录，核main/origin、全部15 worktrees、仅main分支/辅助detached、没有待合入/占用，关闭3.2/3.3。当前cargo clean已实际释放3022files/669.2MiB；冻结CLI、源码/class与raw保留。资源守卫继续按用户批准的5GiB free/本仓target1GiB、一秒进程组中止执行。
+
+2026-10-10 16:48 UTC：产品已提交推送 `1f386686c6a31813254a85fed48d2af0af84a61c`；准确自身CI为 [38068627541](https://github.com/LordCasser/jarde/actions/runs/38068627541)。真实API快照中 supply chain/MSRV成功，stable双seed与fuzz仍执行，不作最终接受。产品checkpoint实际main/origin同、15worktrees全clean、仅main/14辅助detached祖先且无target/free63095857152；这不是CI后最终交付。等待期间下一片真实lastIndex诊断实际1/0/0，52pins已还原/target已再次clean144.8MiB，证据和独立规划见preserve-proved-return-arm-loop-latch-origins；当前If仍5/7。
