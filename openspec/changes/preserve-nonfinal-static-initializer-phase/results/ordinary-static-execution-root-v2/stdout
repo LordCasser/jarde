@@ -1,0 +1,5 @@
+{
+  "status": "completed",
+  "case_count": 6,
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2"
+}

@@ -1,0 +1,85 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class
+  Last modified 2026-10-10; size 446 bytes
+  MD5 checksum d81e0b53df875e69f285c4adc97f3ef6
+  Compiled from "OrdinaryInit.java"
+class OrdinaryInit
+  minor version: 0
+  major version: 52
+  flags: ACC_SUPER
+Constant pool:
+   #1 = Methodref          #6.#22         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #5.#23         // OrdinaryInit.first:I
+   #3 = Methodref          #5.#24         // OrdinaryInit.twice:()I
+   #4 = Fieldref           #5.#25         // OrdinaryInit.second:I
+   #5 = Class              #26            // OrdinaryInit
+   #6 = Class              #27            // java/lang/Object
+   #7 = Utf8               first
+   #8 = Utf8               I
+   #9 = Utf8               second
+  #10 = Utf8               <init>
+  #11 = Utf8               ()V
+  #12 = Utf8               Code
+  #13 = Utf8               LineNumberTable
+  #14 = Utf8               LocalVariableTable
+  #15 = Utf8               this
+  #16 = Utf8               LOrdinaryInit;
+  #17 = Utf8               twice
+  #18 = Utf8               ()I
+  #19 = Utf8               <clinit>
+  #20 = Utf8               SourceFile
+  #21 = Utf8               OrdinaryInit.java
+  #22 = NameAndType        #10:#11        // "<init>":()V
+  #23 = NameAndType        #7:#8          // first:I
+  #24 = NameAndType        #17:#18        // twice:()I
+  #25 = NameAndType        #9:#8          // second:I
+  #26 = Utf8               OrdinaryInit
+  #27 = Utf8               java/lang/Object
+{
+  static int first;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int second;
+    descriptor: I
+    flags: ACC_STATIC
+
+  OrdinaryInit();
+    descriptor: ()V
+    flags:
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LOrdinaryInit;
+
+  static int twice();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #2                  // Field first:I
+         3: iconst_2
+         4: imul
+         5: ireturn
+      LineNumberTable:
+        line 7: 0
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_4
+         1: putstatic     #2                  // Field first:I
+         4: invokestatic  #3                  // Method twice:()I
+         7: putstatic     #4                  // Field second:I
+        10: return
+      LineNumberTable:
+        line 5: 0
+}
+SourceFile: "OrdinaryInit.java"

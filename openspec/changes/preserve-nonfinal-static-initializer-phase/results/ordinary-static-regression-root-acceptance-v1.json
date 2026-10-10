@@ -1,0 +1,13 @@
+{
+  "status": "accepted",
+  "manifest_sha256": "68eb0e5d47e1550a23b5108a615ef70a63f61198e6d60d6b9bc25b433de45f51",
+  "inventory_sha256": "00720d42b3709fb2f35de367049fc58edfa5c5f74c47696496244f6ff2183743",
+  "file_count": 76,
+  "command_count": 24,
+  "original_legs": 2,
+  "candidate_legs": 4,
+  "all_raw_equal": true,
+  "all_text_equal": true,
+  "test_source_sha256": "e08766db22e14e5e7496492de38242af04dacb78c78652ae2de0995dc3aafa6d",
+  "claim_boundary": "Frozen production CLI full-source replay plus independently executed exact Rust regression test; CLI does not serialize Engine enum_constant_proof."
+}

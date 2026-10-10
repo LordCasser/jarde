@@ -1,0 +1,3332 @@
+{
+  "schema": "instance-field-init-next-baseline-root-v1",
+  "status": "baseline-with-failures",
+  "scope": "Three complete fixture classes and one Runner, replayed as source/JADX/Jarde sets on two frozen JDKs.",
+  "claim_boundary": "Fresh javac original runs are per-JDK observations. JADX default/none are decompiled once from a jar containing only the three fresh original classes, then each complete generated source set plus the frozen Runner is independently compiled/run on both JDKs. Jarde renders each class independently per JDK, then compiles all three generated sources plus the frozen Runner together.",
+  "oracle": "The two fresh original runs and their raw streams are recorded as observations; no reconstructed source is assumed equivalent. Constructor presentation differences are recorded without semantic inference.",
+  "fixtures": {
+    "CommonDirectSuperByteArray": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/CommonDirectSuperByteArray.java",
+      "bytes": 461,
+      "sha256": "3603615dca19077f68a74e720c344978a1a94526638454452566f88b8fc59ae6"
+    },
+    "ThisDelegatingByteArray": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/ThisDelegatingByteArray.java",
+      "bytes": 408,
+      "sha256": "4e480f0496061dc9ec42048ee4da780cdad587a69f9dc9b7d86baec8e43d7a6d"
+    },
+    "DifferentRhsByteArray": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/DifferentRhsByteArray.java",
+      "bytes": 426,
+      "sha256": "4e170b0816fa6db04838ddacca2d1f78a3dd00c1667f9a32426811909957d6fe"
+    }
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/InstanceFieldInitRunner.java",
+    "bytes": 2891,
+    "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+  },
+  "script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/prepare-baseline-root-v3.py",
+    "bytes": 26691,
+    "sha256": "2e3c2d911ee72eca0516b5c6cf20483d49531881d2e848615d8570a8b69ca0e2"
+  },
+  "jadx_executable": {
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "bytes": 160,
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+  },
+  "cli_metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  },
+  "frozen_cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e"
+  },
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "src/facade.rs": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "jadx": {
+    "path": "/opt/homebrew/bin/jadx",
+    "expected_version": "1.5.6",
+    "version_command": {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "input_jar": {
+      "path": "jadx-input/instance-field-init-fixtures.jar",
+      "bytes": 1713,
+      "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+    },
+    "jar_members": [
+      {
+        "name": "CommonDirectSuperByteArray.class",
+        "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+        "bytes": 731,
+        "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+      },
+      {
+        "name": "ThisDelegatingByteArray.class",
+        "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+        "bytes": 723,
+        "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+      },
+      {
+        "name": "DifferentRhsByteArray.class",
+        "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+        "bytes": 710,
+        "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+      }
+    ]
+  },
+  "environment_policy": {
+    "removed_for_every_process": [
+      "JAVA_TOOL_OPTIONS",
+      "_JAVA_OPTIONS",
+      "JDK_JAVA_OPTIONS",
+      "CLASSPATH"
+    ],
+    "java_home_and_path_set_for_jdk_processes": true
+  },
+  "preflight": [
+    {
+      "label": "metadata-sha256",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+      "expected_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "actual_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "ok": true
+    },
+    {
+      "label": "cli-path",
+      "expected": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "actual": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "ok": true
+    },
+    {
+      "label": "cli-sha256",
+      "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "metadata_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "ok": true
+    },
+    {
+      "label": "product-pin-set",
+      "expected": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "actual": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/init.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/report.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/ast.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/emit.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/emit.rs",
+      "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/asserts.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/asserts.rs",
+      "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/field.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "ok": true
+    },
+    {
+      "label": "product-source:src/facade.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "ok": true
+    },
+    {
+      "label": "product-source:src/class_source.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "ok": true
+    },
+    {
+      "label": "product-source:Cargo.lock",
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "ok": true
+    },
+    {
+      "label": "test-source-pins-present",
+      "ok": true
+    },
+    {
+      "label": "jdk-controls-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "two-jdk-legs",
+      "expected": [
+        "javac8",
+        "javac23"
+      ],
+      "actual": [
+        "javac23",
+        "javac8"
+      ],
+      "ok": true
+    },
+    {
+      "label": "fixture:CommonDirectSuperByteArray",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/CommonDirectSuperByteArray.java",
+      "bytes": 461,
+      "sha256": "3603615dca19077f68a74e720c344978a1a94526638454452566f88b8fc59ae6",
+      "ok": true
+    },
+    {
+      "label": "fixture:ThisDelegatingByteArray",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/ThisDelegatingByteArray.java",
+      "bytes": 408,
+      "sha256": "4e480f0496061dc9ec42048ee4da780cdad587a69f9dc9b7d86baec8e43d7a6d",
+      "ok": true
+    },
+    {
+      "label": "fixture:DifferentRhsByteArray",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/DifferentRhsByteArray.java",
+      "bytes": 426,
+      "sha256": "4e170b0816fa6db04838ddacca2d1f78a3dd00c1667f9a32426811909957d6fe",
+      "ok": true
+    },
+    {
+      "label": "runner",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/InstanceFieldInitRunner.java",
+      "bytes": 2891,
+      "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5",
+      "ok": true
+    },
+    {
+      "label": "jadx-version",
+      "expected": "1.5.6",
+      "actual_stdout": "1.5.6",
+      "exit": 0,
+      "command": {
+        "label": "jadx-version",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--version"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/jadx-version.stdout",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "streams/jadx-version.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "ok": true
+    }
+  ],
+  "original_cross_jdk_equal": true,
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 0,
+    "jarde": 2
+  },
+  "commands": [
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes",
+        "InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 143,
+        "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-javap-CommonDirectSuperByteArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/CommonDirectSuperByteArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-javap-CommonDirectSuperByteArray.stdout",
+        "bytes": 8012,
+        "sha256": "fdabed8835abbd6882764ebf4b3d90609d88f539c487a055d24b0132fbff346d"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-javap-CommonDirectSuperByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-javap-ThisDelegatingByteArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/ThisDelegatingByteArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-javap-ThisDelegatingByteArray.stdout",
+        "bytes": 7716,
+        "sha256": "72dca7bbdb2f93dca555eb33797df00c4dd0da9298c0d8198df4f57c209c797d"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-javap-ThisDelegatingByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-javap-DifferentRhsByteArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/DifferentRhsByteArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-javap-DifferentRhsByteArray.stdout",
+        "bytes": 7663,
+        "sha256": "959a348644e313a82c11a1a393bab8c3376f8d426f57ec9689a3bf6abbb2398e"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-javap-DifferentRhsByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes",
+        "InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 143,
+        "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-javap-CommonDirectSuperByteArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/CommonDirectSuperByteArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-javap-CommonDirectSuperByteArray.stdout",
+        "bytes": 8307,
+        "sha256": "4949f8f8adae6e6b37d11f6edb59bfcceff707cbdb6a48cdf3be34cc18364da8"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-javap-CommonDirectSuperByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-javap-ThisDelegatingByteArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/ThisDelegatingByteArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-javap-ThisDelegatingByteArray.stdout",
+        "bytes": 8008,
+        "sha256": "f93fc82b3461699070a56cd2fee52eca51a7872583e902c3f47ed02a2e1a1f30"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-javap-ThisDelegatingByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-javap-DifferentRhsByteArray",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/DifferentRhsByteArray.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-javap-DifferentRhsByteArray.stdout",
+        "bytes": 7953,
+        "sha256": "f87b236adbabef1ab0d813c5eeae33c22598326c2b2b7a6984dd0eecbd3778f0"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-javap-DifferentRhsByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/default",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/classes",
+        "defpackage.InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 1,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-run.stdout",
+        "bytes": 123,
+        "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-run.stderr",
+        "bytes": 256,
+        "sha256": "5a861acfc16fd4850ab81a2331d843d5f49ab456a11dbc0c8c878f61d69ef4c0"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/classes",
+        "defpackage.InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 1,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-run.stdout",
+        "bytes": 123,
+        "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-run.stderr",
+        "bytes": 256,
+        "sha256": "5a861acfc16fd4850ab81a2331d843d5f49ab456a11dbc0c8c878f61d69ef4c0"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/classes",
+        "InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 1,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-run.stdout",
+        "bytes": 123,
+        "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-run.stderr",
+        "bytes": 223,
+        "sha256": "7e382f20c6049c8434e05763ad56082d6dcb36a9c5a469539b36201f7a55b77b"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/classes",
+        "InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 1,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-run.stdout",
+        "bytes": 123,
+        "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-run.stderr",
+        "bytes": 223,
+        "sha256": "7e382f20c6049c8434e05763ad56082d6dcb36a9c5a469539b36201f7a55b77b"
+      }
+    },
+    {
+      "label": "javac8-jarde-render-CommonDirectSuperByteArray",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/CommonDirectSuperByteArray.class",
+        "--class",
+        "CommonDirectSuperByteArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-render-CommonDirectSuperByteArray.stdout",
+        "bytes": 71590,
+        "sha256": "88d431115f3e5d53e59224c4ae2dd05e642f6a87710bf45c2ca8e6e18d9347f0"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-render-CommonDirectSuperByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-render-ThisDelegatingByteArray",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/ThisDelegatingByteArray.class",
+        "--class",
+        "ThisDelegatingByteArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-render-ThisDelegatingByteArray.stdout",
+        "bytes": 65975,
+        "sha256": "b7d35a89ea9f8608ccdae2f5693132f0b9e3b80b11eda784ac4262b751473210"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-render-ThisDelegatingByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-render-DifferentRhsByteArray",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/DifferentRhsByteArray.class",
+        "--class",
+        "DifferentRhsByteArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-render-DifferentRhsByteArray.stdout",
+        "bytes": 67247,
+        "sha256": "9f4900f618bb01a81cb7804f70ac73f1d8bf14c33754853417739bd550b3ce5d"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-render-DifferentRhsByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/classes",
+        "InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-run.stdout",
+        "bytes": 143,
+        "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-render-CommonDirectSuperByteArray",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+        "--class",
+        "CommonDirectSuperByteArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-render-CommonDirectSuperByteArray.stdout",
+        "bytes": 71583,
+        "sha256": "c24208b35d0d6b5a782b3dca67e20798e39a06763923ee6dc1ba22ce9bf22f4f"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-render-CommonDirectSuperByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-render-ThisDelegatingByteArray",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/ThisDelegatingByteArray.class",
+        "--class",
+        "ThisDelegatingByteArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-render-ThisDelegatingByteArray.stdout",
+        "bytes": 65975,
+        "sha256": "1a48badb58ac45f06527ba006a0f1d83b3a132336bacabc0c58b8d1f1a3eec3e"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-render-ThisDelegatingByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-render-DifferentRhsByteArray",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/DifferentRhsByteArray.class",
+        "--class",
+        "DifferentRhsByteArray",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-render-DifferentRhsByteArray.stdout",
+        "bytes": 67247,
+        "sha256": "478dbb1def547ca9f5bc65c5d8fa528d7b1f329702e7922b6b7c745bb2691905"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-render-DifferentRhsByteArray.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/CommonDirectSuperByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/ThisDelegatingByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/DifferentRhsByteArray.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/InstanceFieldInitRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/classes",
+        "InstanceFieldInitRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-run.stdout",
+        "bytes": 143,
+        "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes",
+          "InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout",
+          "bytes": 143,
+          "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/CommonDirectSuperByteArray.java",
+          "bytes": 461,
+          "sha256": "3603615dca19077f68a74e720c344978a1a94526638454452566f88b8fc59ae6"
+        },
+        {
+          "path": "original-sources/ThisDelegatingByteArray.java",
+          "bytes": 408,
+          "sha256": "4e480f0496061dc9ec42048ee4da780cdad587a69f9dc9b7d86baec8e43d7a6d"
+        },
+        {
+          "path": "original-sources/DifferentRhsByteArray.java",
+          "bytes": 426,
+          "sha256": "4e170b0816fa6db04838ddacca2d1f78a3dd00c1667f9a32426811909957d6fe"
+        },
+        {
+          "path": "original-sources/InstanceFieldInitRunner.java",
+          "bytes": 2891,
+          "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "3d9b4cf53dd9716a727a5ebf71e4709ed3047450c19b783d1becefd7cab44121"
+        },
+        {
+          "path": "cases/javac8-original/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "79d331988393a92d8e8fb1dec6d970a2a217527277206a0b8a48ee63086d31b3"
+        },
+        {
+          "path": "cases/javac8-original/classes/InstanceFieldInitRunner.class",
+          "bytes": 2453,
+          "sha256": "da397ab355c7f5ef861858a76f14945d05db37b4a6d9572a4f2d083ca61849ea"
+        },
+        {
+          "path": "cases/javac8-original/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "3ba264f2408aa605b4939cd4cf9ed2ee5476e0481d5280600ffc7f45a2f4b36f"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "runner": "InstanceFieldInitRunner",
+      "complete_class_set": [
+        "CommonDirectSuperByteArray.class",
+        "DifferentRhsByteArray.class",
+        "InstanceFieldInitRunner.class",
+        "ThisDelegatingByteArray.class"
+      ],
+      "produced_class_names": [
+        "CommonDirectSuperByteArray.class",
+        "DifferentRhsByteArray.class",
+        "InstanceFieldInitRunner.class",
+        "ThisDelegatingByteArray.class"
+      ],
+      "all_expected_classes_produced": true,
+      "success": true,
+      "javap": [
+        {
+          "class": "CommonDirectSuperByteArray",
+          "class_file": {
+            "path": "cases/javac8-original/classes/CommonDirectSuperByteArray.class",
+            "bytes": 731,
+            "sha256": "3d9b4cf53dd9716a727a5ebf71e4709ed3047450c19b783d1becefd7cab44121"
+          },
+          "command": {
+            "label": "javac8-original-javap-CommonDirectSuperByteArray",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/CommonDirectSuperByteArray.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-javap-CommonDirectSuperByteArray.stdout",
+              "bytes": 8012,
+              "sha256": "fdabed8835abbd6882764ebf4b3d90609d88f539c487a055d24b0132fbff346d"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap-CommonDirectSuperByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        },
+        {
+          "class": "ThisDelegatingByteArray",
+          "class_file": {
+            "path": "cases/javac8-original/classes/ThisDelegatingByteArray.class",
+            "bytes": 723,
+            "sha256": "3ba264f2408aa605b4939cd4cf9ed2ee5476e0481d5280600ffc7f45a2f4b36f"
+          },
+          "command": {
+            "label": "javac8-original-javap-ThisDelegatingByteArray",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/ThisDelegatingByteArray.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-javap-ThisDelegatingByteArray.stdout",
+              "bytes": 7716,
+              "sha256": "72dca7bbdb2f93dca555eb33797df00c4dd0da9298c0d8198df4f57c209c797d"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap-ThisDelegatingByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        },
+        {
+          "class": "DifferentRhsByteArray",
+          "class_file": {
+            "path": "cases/javac8-original/classes/DifferentRhsByteArray.class",
+            "bytes": 710,
+            "sha256": "79d331988393a92d8e8fb1dec6d970a2a217527277206a0b8a48ee63086d31b3"
+          },
+          "command": {
+            "label": "javac8-original-javap-DifferentRhsByteArray",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/DifferentRhsByteArray.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-javap-DifferentRhsByteArray.stdout",
+              "bytes": 7663,
+              "sha256": "959a348644e313a82c11a1a393bab8c3376f8d426f57ec9689a3bf6abbb2398e"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap-DifferentRhsByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        }
+      ],
+      "runtime_matches_original_raw": true
+    },
+    {
+      "label": "javac23-original",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/original-sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes",
+          "InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout",
+          "bytes": 143,
+          "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/CommonDirectSuperByteArray.java",
+          "bytes": 461,
+          "sha256": "3603615dca19077f68a74e720c344978a1a94526638454452566f88b8fc59ae6"
+        },
+        {
+          "path": "original-sources/ThisDelegatingByteArray.java",
+          "bytes": 408,
+          "sha256": "4e480f0496061dc9ec42048ee4da780cdad587a69f9dc9b7d86baec8e43d7a6d"
+        },
+        {
+          "path": "original-sources/DifferentRhsByteArray.java",
+          "bytes": 426,
+          "sha256": "4e170b0816fa6db04838ddacca2d1f78a3dd00c1667f9a32426811909957d6fe"
+        },
+        {
+          "path": "original-sources/InstanceFieldInitRunner.java",
+          "bytes": 2891,
+          "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+        },
+        {
+          "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+        },
+        {
+          "path": "cases/javac23-original/classes/InstanceFieldInitRunner.class",
+          "bytes": 2438,
+          "sha256": "ad2b25ca63c3819ffd676ce74cd3c5b715b11e1a1671f3874c991b24109eb686"
+        },
+        {
+          "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "runner": "InstanceFieldInitRunner",
+      "complete_class_set": [
+        "CommonDirectSuperByteArray.class",
+        "DifferentRhsByteArray.class",
+        "InstanceFieldInitRunner.class",
+        "ThisDelegatingByteArray.class"
+      ],
+      "produced_class_names": [
+        "CommonDirectSuperByteArray.class",
+        "DifferentRhsByteArray.class",
+        "InstanceFieldInitRunner.class",
+        "ThisDelegatingByteArray.class"
+      ],
+      "all_expected_classes_produced": true,
+      "success": true,
+      "javap": [
+        {
+          "class": "CommonDirectSuperByteArray",
+          "class_file": {
+            "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+            "bytes": 731,
+            "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+          },
+          "command": {
+            "label": "javac23-original-javap-CommonDirectSuperByteArray",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/CommonDirectSuperByteArray.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-javap-CommonDirectSuperByteArray.stdout",
+              "bytes": 8307,
+              "sha256": "4949f8f8adae6e6b37d11f6edb59bfcceff707cbdb6a48cdf3be34cc18364da8"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap-CommonDirectSuperByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        },
+        {
+          "class": "ThisDelegatingByteArray",
+          "class_file": {
+            "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+            "bytes": 723,
+            "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+          },
+          "command": {
+            "label": "javac23-original-javap-ThisDelegatingByteArray",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/ThisDelegatingByteArray.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-javap-ThisDelegatingByteArray.stdout",
+              "bytes": 8008,
+              "sha256": "f93fc82b3461699070a56cd2fee52eca51a7872583e902c3f47ed02a2e1a1f30"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap-ThisDelegatingByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        },
+        {
+          "class": "DifferentRhsByteArray",
+          "class_file": {
+            "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+            "bytes": 710,
+            "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+          },
+          "command": {
+            "label": "javac23-original-javap-DifferentRhsByteArray",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/DifferentRhsByteArray.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-javap-DifferentRhsByteArray.stdout",
+              "bytes": 7953,
+              "sha256": "f87b236adbabef1ab0d813c5eeae33c22598326c2b2b7a6984dd0eecbd3778f0"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap-DifferentRhsByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        }
+      ],
+      "runtime_matches_original_raw": true
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/classes",
+          "defpackage.InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 1,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-run.stdout",
+          "bytes": 123,
+          "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-run.stderr",
+          "bytes": 256,
+          "sha256": "5a861acfc16fd4850ab81a2331d843d5f49ab456a11dbc0c8c878f61d69ef4c0"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-default/sources/CommonDirectSuperByteArray.java",
+          "bytes": 505,
+          "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+        },
+        {
+          "path": "cases/javac8-jadx-default/sources/DifferentRhsByteArray.java",
+          "bytes": 475,
+          "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+        },
+        {
+          "path": "cases/javac8-jadx-default/sources/ThisDelegatingByteArray.java",
+          "bytes": 546,
+          "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+        },
+        {
+          "path": "cases/javac8-jadx-default/sources/InstanceFieldInitRunner.java",
+          "bytes": 2912,
+          "sha256": "74f608cc1dc4f64c060962e5df7230a33db7c99a49087be7178542281de43222"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/CommonDirectSuperByteArray.class",
+          "bytes": 742,
+          "sha256": "641d4192f1924d1a70b36798fe9d367f3ec77fac8534b00b3a47462977803f52"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/DifferentRhsByteArray.class",
+          "bytes": 721,
+          "sha256": "51817c32d3a91e0aee77d8c2e2d1263340929ac3a1090e94db02f44b5eaacc30"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/InstanceFieldInitRunner.class",
+          "bytes": 2497,
+          "sha256": "0eb9cadd1b68a404e6dcaff8458d5ae4e36d11aeb9ed0fee6a3b2983dd057829"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/ThisDelegatingByteArray.class",
+          "bytes": 734,
+          "sha256": "f05419e2a3782100e95c289bc882629c2c3a26d5142a8ce6ac8e013b8b625ec3"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": false,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "decompile": {
+        "label": "jadx-default",
+        "profile": "default",
+        "jar": {
+          "path": "jadx-input/instance-field-init-fixtures.jar",
+          "bytes": 1713,
+          "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+        },
+        "jar_members": [
+          {
+            "name": "CommonDirectSuperByteArray.class",
+            "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+            "bytes": 731,
+            "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+          },
+          {
+            "name": "ThisDelegatingByteArray.class",
+            "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+            "bytes": 723,
+            "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+          },
+          {
+            "name": "DifferentRhsByteArray.class",
+            "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+            "bytes": 710,
+            "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-default-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-default-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/default/sources/defpackage/CommonDirectSuperByteArray.java",
+            "bytes": 505,
+            "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+          },
+          {
+            "path": "jadx/default/sources/defpackage/DifferentRhsByteArray.java",
+            "bytes": 475,
+            "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+          },
+          {
+            "path": "jadx/default/sources/defpackage/ThisDelegatingByteArray.java",
+            "bytes": 546,
+            "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+          }
+        ],
+        "generated_source_count": 3,
+        "packages": [
+          "defpackage"
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac8-jadx-default/jadx-sources/CommonDirectSuperByteArray.java",
+          "bytes": 505,
+          "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+        },
+        {
+          "path": "cases/javac8-jadx-default/jadx-sources/DifferentRhsByteArray.java",
+          "bytes": 475,
+          "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+        },
+        {
+          "path": "cases/javac8-jadx-default/jadx-sources/ThisDelegatingByteArray.java",
+          "bytes": 546,
+          "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+        }
+      ],
+      "runner_package_adaptation": {
+        "path": "cases/javac8-jadx-default/sources/InstanceFieldInitRunner.java",
+        "bytes": 2912,
+        "sha256": "74f608cc1dc4f64c060962e5df7230a33db7c99a49087be7178542281de43222"
+      },
+      "runner_class_name": "defpackage.InstanceFieldInitRunner",
+      "all_generated_sources_compiled": {
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/CommonDirectSuperByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/DifferentRhsByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-default/sources/ThisDelegatingByteArray.java": true
+      },
+      "success": false,
+      "runtime_matches_original_raw": false
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/classes",
+          "defpackage.InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 1,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-run.stdout",
+          "bytes": 123,
+          "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-run.stderr",
+          "bytes": 256,
+          "sha256": "5a861acfc16fd4850ab81a2331d843d5f49ab456a11dbc0c8c878f61d69ef4c0"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-default/sources/CommonDirectSuperByteArray.java",
+          "bytes": 505,
+          "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+        },
+        {
+          "path": "cases/javac23-jadx-default/sources/DifferentRhsByteArray.java",
+          "bytes": 475,
+          "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+        },
+        {
+          "path": "cases/javac23-jadx-default/sources/ThisDelegatingByteArray.java",
+          "bytes": 546,
+          "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+        },
+        {
+          "path": "cases/javac23-jadx-default/sources/InstanceFieldInitRunner.java",
+          "bytes": 2912,
+          "sha256": "74f608cc1dc4f64c060962e5df7230a33db7c99a49087be7178542281de43222"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/CommonDirectSuperByteArray.class",
+          "bytes": 742,
+          "sha256": "b8992f26afc55cdb1bed754ec3fdeb979c1d64aa4fbea080c378d783f848c4cb"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/DifferentRhsByteArray.class",
+          "bytes": 721,
+          "sha256": "366e18db73131473d846c2f0f1c433e625bf1914cfa37b4698eb5193af70b43e"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/InstanceFieldInitRunner.class",
+          "bytes": 2482,
+          "sha256": "6e6b479a8dd9371f512cc5b20de0b14ac1a9e7946a33e5eecf81190311fa927c"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/ThisDelegatingByteArray.class",
+          "bytes": 734,
+          "sha256": "2f45328ad207776058adc1a930fae5920c232bb4e658b85eec8166f929930e5b"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": false,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "decompile": {
+        "label": "jadx-default",
+        "profile": "default",
+        "jar": {
+          "path": "jadx-input/instance-field-init-fixtures.jar",
+          "bytes": 1713,
+          "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+        },
+        "jar_members": [
+          {
+            "name": "CommonDirectSuperByteArray.class",
+            "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+            "bytes": 731,
+            "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+          },
+          {
+            "name": "ThisDelegatingByteArray.class",
+            "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+            "bytes": 723,
+            "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+          },
+          {
+            "name": "DifferentRhsByteArray.class",
+            "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+            "bytes": 710,
+            "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-default-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-default-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/default/sources/defpackage/CommonDirectSuperByteArray.java",
+            "bytes": 505,
+            "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+          },
+          {
+            "path": "jadx/default/sources/defpackage/DifferentRhsByteArray.java",
+            "bytes": 475,
+            "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+          },
+          {
+            "path": "jadx/default/sources/defpackage/ThisDelegatingByteArray.java",
+            "bytes": 546,
+            "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+          }
+        ],
+        "generated_source_count": 3,
+        "packages": [
+          "defpackage"
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac23-jadx-default/jadx-sources/CommonDirectSuperByteArray.java",
+          "bytes": 505,
+          "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+        },
+        {
+          "path": "cases/javac23-jadx-default/jadx-sources/DifferentRhsByteArray.java",
+          "bytes": 475,
+          "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+        },
+        {
+          "path": "cases/javac23-jadx-default/jadx-sources/ThisDelegatingByteArray.java",
+          "bytes": 546,
+          "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+        }
+      ],
+      "runner_package_adaptation": {
+        "path": "cases/javac23-jadx-default/sources/InstanceFieldInitRunner.java",
+        "bytes": 2912,
+        "sha256": "74f608cc1dc4f64c060962e5df7230a33db7c99a49087be7178542281de43222"
+      },
+      "runner_class_name": "defpackage.InstanceFieldInitRunner",
+      "all_generated_sources_compiled": {
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/CommonDirectSuperByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/DifferentRhsByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-default/sources/ThisDelegatingByteArray.java": true
+      },
+      "success": false,
+      "runtime_matches_original_raw": false
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/classes",
+          "InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 1,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-run.stdout",
+          "bytes": 123,
+          "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-run.stderr",
+          "bytes": 223,
+          "sha256": "7e382f20c6049c8434e05763ad56082d6dcb36a9c5a469539b36201f7a55b77b"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-none/sources/CommonDirectSuperByteArray.java",
+          "bytes": 504,
+          "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+        },
+        {
+          "path": "cases/javac8-jadx-none/sources/DifferentRhsByteArray.java",
+          "bytes": 474,
+          "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+        },
+        {
+          "path": "cases/javac8-jadx-none/sources/ThisDelegatingByteArray.java",
+          "bytes": 545,
+          "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+        },
+        {
+          "path": "cases/javac8-jadx-none/sources/InstanceFieldInitRunner.java",
+          "bytes": 2891,
+          "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-none/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "3d9b4cf53dd9716a727a5ebf71e4709ed3047450c19b783d1becefd7cab44121"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "f961e8778e5b096a8b9a3ecc2a9188ce6d06523324f79bc4c786c4e855e714a6"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/InstanceFieldInitRunner.class",
+          "bytes": 2453,
+          "sha256": "da397ab355c7f5ef861858a76f14945d05db37b4a6d9572a4f2d083ca61849ea"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "3ba264f2408aa605b4939cd4cf9ed2ee5476e0481d5280600ffc7f45a2f4b36f"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": false,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac8",
+      "decompile": {
+        "label": "jadx-none",
+        "profile": "none",
+        "jar": {
+          "path": "jadx-input/instance-field-init-fixtures.jar",
+          "bytes": 1713,
+          "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+        },
+        "jar_members": [
+          {
+            "name": "CommonDirectSuperByteArray.class",
+            "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+            "bytes": 731,
+            "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+          },
+          {
+            "name": "ThisDelegatingByteArray.class",
+            "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+            "bytes": 723,
+            "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+          },
+          {
+            "name": "DifferentRhsByteArray.class",
+            "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+            "bytes": 710,
+            "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-none-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-none-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/none/sources/CommonDirectSuperByteArray.java",
+            "bytes": 504,
+            "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+          },
+          {
+            "path": "jadx/none/sources/DifferentRhsByteArray.java",
+            "bytes": 474,
+            "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+          },
+          {
+            "path": "jadx/none/sources/ThisDelegatingByteArray.java",
+            "bytes": 545,
+            "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+          }
+        ],
+        "generated_source_count": 3,
+        "packages": [
+          null
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac8-jadx-none/jadx-sources/CommonDirectSuperByteArray.java",
+          "bytes": 504,
+          "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+        },
+        {
+          "path": "cases/javac8-jadx-none/jadx-sources/DifferentRhsByteArray.java",
+          "bytes": 474,
+          "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+        },
+        {
+          "path": "cases/javac8-jadx-none/jadx-sources/ThisDelegatingByteArray.java",
+          "bytes": 545,
+          "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+        }
+      ],
+      "runner_package_adaptation": {
+        "path": "cases/javac8-jadx-none/sources/InstanceFieldInitRunner.java",
+        "bytes": 2891,
+        "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+      },
+      "runner_class_name": "InstanceFieldInitRunner",
+      "all_generated_sources_compiled": {
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/CommonDirectSuperByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/DifferentRhsByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jadx-none/sources/ThisDelegatingByteArray.java": true
+      },
+      "success": false,
+      "runtime_matches_original_raw": false
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/classes",
+          "InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 1,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-run.stdout",
+          "bytes": 123,
+          "sha256": "2d35a8cfd27fe45aeb612f347d820abd4127fd52b7e56d06b20b4455c3f87dce"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-run.stderr",
+          "bytes": 223,
+          "sha256": "7e382f20c6049c8434e05763ad56082d6dcb36a9c5a469539b36201f7a55b77b"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-none/sources/CommonDirectSuperByteArray.java",
+          "bytes": 504,
+          "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+        },
+        {
+          "path": "cases/javac23-jadx-none/sources/DifferentRhsByteArray.java",
+          "bytes": 474,
+          "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+        },
+        {
+          "path": "cases/javac23-jadx-none/sources/ThisDelegatingByteArray.java",
+          "bytes": 545,
+          "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+        },
+        {
+          "path": "cases/javac23-jadx-none/sources/InstanceFieldInitRunner.java",
+          "bytes": 2891,
+          "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-none/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "6140284a767137372392c587841f1ee204a291dde887998cf5f2b3cf845473e9"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/InstanceFieldInitRunner.class",
+          "bytes": 2438,
+          "sha256": "ad2b25ca63c3819ffd676ce74cd3c5b715b11e1a1671f3874c991b24109eb686"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": false,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac23",
+      "decompile": {
+        "label": "jadx-none",
+        "profile": "none",
+        "jar": {
+          "path": "jadx-input/instance-field-init-fixtures.jar",
+          "bytes": 1713,
+          "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+        },
+        "jar_members": [
+          {
+            "name": "CommonDirectSuperByteArray.class",
+            "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+            "bytes": 731,
+            "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+          },
+          {
+            "name": "ThisDelegatingByteArray.class",
+            "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+            "bytes": 723,
+            "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+          },
+          {
+            "name": "DifferentRhsByteArray.class",
+            "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+            "bytes": 710,
+            "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-none-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-none-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/none/sources/CommonDirectSuperByteArray.java",
+            "bytes": 504,
+            "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+          },
+          {
+            "path": "jadx/none/sources/DifferentRhsByteArray.java",
+            "bytes": 474,
+            "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+          },
+          {
+            "path": "jadx/none/sources/ThisDelegatingByteArray.java",
+            "bytes": 545,
+            "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+          }
+        ],
+        "generated_source_count": 3,
+        "packages": [
+          null
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac23-jadx-none/jadx-sources/CommonDirectSuperByteArray.java",
+          "bytes": 504,
+          "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+        },
+        {
+          "path": "cases/javac23-jadx-none/jadx-sources/DifferentRhsByteArray.java",
+          "bytes": 474,
+          "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+        },
+        {
+          "path": "cases/javac23-jadx-none/jadx-sources/ThisDelegatingByteArray.java",
+          "bytes": 545,
+          "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+        }
+      ],
+      "runner_package_adaptation": {
+        "path": "cases/javac23-jadx-none/sources/InstanceFieldInitRunner.java",
+        "bytes": 2891,
+        "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+      },
+      "runner_class_name": "InstanceFieldInitRunner",
+      "all_generated_sources_compiled": {
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/CommonDirectSuperByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/DifferentRhsByteArray.java": true,
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jadx-none/sources/ThisDelegatingByteArray.java": true
+      },
+      "success": false,
+      "runtime_matches_original_raw": false
+    },
+    {
+      "label": "javac8-jarde",
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "rendered_classes": [
+        {
+          "class": "CommonDirectSuperByteArray",
+          "command": {
+            "label": "javac8-jarde-render-CommonDirectSuperByteArray",
+            "argv": [
+              "/private/tmp/jarde-nonfinal-static-cli-v1",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/CommonDirectSuperByteArray.class",
+              "--class",
+              "CommonDirectSuperByteArray",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-jarde-render-CommonDirectSuperByteArray.stdout",
+              "bytes": 71590,
+              "sha256": "88d431115f3e5d53e59224c4ae2dd05e642f6a87710bf45c2ca8e6e18d9347f0"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-CommonDirectSuperByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "json": {
+            "path": "cases/javac8-jarde/class-source/CommonDirectSuperByteArray.json",
+            "bytes": 71590,
+            "sha256": "88d431115f3e5d53e59224c4ae2dd05e642f6a87710bf45c2ca8e6e18d9347f0"
+          },
+          "text": {
+            "path": "cases/javac8-jarde/class-source/CommonDirectSuperByteArray.txt",
+            "bytes": 1909,
+            "sha256": "df07dedc9fe27267a592a196bd89f30eef84fc4962731aecfd1da5ee06492b34"
+          },
+          "source": {
+            "path": "cases/javac8-jarde/class-source/CommonDirectSuperByteArray.java",
+            "bytes": 1909,
+            "sha256": "df07dedc9fe27267a592a196bd89f30eef84fc4962731aecfd1da5ee06492b34"
+          },
+          "member_count": 4,
+          "field_count": 2
+        },
+        {
+          "class": "ThisDelegatingByteArray",
+          "command": {
+            "label": "javac8-jarde-render-ThisDelegatingByteArray",
+            "argv": [
+              "/private/tmp/jarde-nonfinal-static-cli-v1",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/ThisDelegatingByteArray.class",
+              "--class",
+              "ThisDelegatingByteArray",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-jarde-render-ThisDelegatingByteArray.stdout",
+              "bytes": 65975,
+              "sha256": "b7d35a89ea9f8608ccdae2f5693132f0b9e3b80b11eda784ac4262b751473210"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-ThisDelegatingByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "json": {
+            "path": "cases/javac8-jarde/class-source/ThisDelegatingByteArray.json",
+            "bytes": 65975,
+            "sha256": "b7d35a89ea9f8608ccdae2f5693132f0b9e3b80b11eda784ac4262b751473210"
+          },
+          "text": {
+            "path": "cases/javac8-jarde/class-source/ThisDelegatingByteArray.txt",
+            "bytes": 1823,
+            "sha256": "73846c1379ba4f2e684a1e0f44868b06c4a6fd5e07069405e70a8a0809287c7b"
+          },
+          "source": {
+            "path": "cases/javac8-jarde/class-source/ThisDelegatingByteArray.java",
+            "bytes": 1823,
+            "sha256": "73846c1379ba4f2e684a1e0f44868b06c4a6fd5e07069405e70a8a0809287c7b"
+          },
+          "member_count": 4,
+          "field_count": 2
+        },
+        {
+          "class": "DifferentRhsByteArray",
+          "command": {
+            "label": "javac8-jarde-render-DifferentRhsByteArray",
+            "argv": [
+              "/private/tmp/jarde-nonfinal-static-cli-v1",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-original/classes/DifferentRhsByteArray.class",
+              "--class",
+              "DifferentRhsByteArray",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-jarde-render-DifferentRhsByteArray.stdout",
+              "bytes": 67247,
+              "sha256": "9f4900f618bb01a81cb7804f70ac73f1d8bf14c33754853417739bd550b3ce5d"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-DifferentRhsByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "json": {
+            "path": "cases/javac8-jarde/class-source/DifferentRhsByteArray.json",
+            "bytes": 67247,
+            "sha256": "9f4900f618bb01a81cb7804f70ac73f1d8bf14c33754853417739bd550b3ce5d"
+          },
+          "text": {
+            "path": "cases/javac8-jarde/class-source/DifferentRhsByteArray.txt",
+            "bytes": 1824,
+            "sha256": "ef5dc6263a2e74815655284cc4541feaf3e366ad0351db86f36b7abde4267b9c"
+          },
+          "source": {
+            "path": "cases/javac8-jarde/class-source/DifferentRhsByteArray.java",
+            "bytes": 1824,
+            "sha256": "ef5dc6263a2e74815655284cc4541feaf3e366ad0351db86f36b7abde4267b9c"
+          },
+          "member_count": 4,
+          "field_count": 2
+        }
+      ],
+      "source_failures": [],
+      "runner_package_adaptation": {
+        "path": "cases/javac8-jarde/sources/InstanceFieldInitRunner.java",
+        "bytes": 2891,
+        "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+      },
+      "runner_class_name": "InstanceFieldInitRunner",
+      "compile": {
+        "label": "javac8-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/classes",
+          "InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-run.stdout",
+          "bytes": 143,
+          "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde/sources/CommonDirectSuperByteArray.java",
+          "bytes": 1909,
+          "sha256": "df07dedc9fe27267a592a196bd89f30eef84fc4962731aecfd1da5ee06492b34"
+        },
+        {
+          "path": "cases/javac8-jarde/sources/ThisDelegatingByteArray.java",
+          "bytes": 1823,
+          "sha256": "73846c1379ba4f2e684a1e0f44868b06c4a6fd5e07069405e70a8a0809287c7b"
+        },
+        {
+          "path": "cases/javac8-jarde/sources/DifferentRhsByteArray.java",
+          "bytes": 1824,
+          "sha256": "ef5dc6263a2e74815655284cc4541feaf3e366ad0351db86f36b7abde4267b9c"
+        },
+        {
+          "path": "cases/javac8-jarde/sources/InstanceFieldInitRunner.java",
+          "bytes": 2891,
+          "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jarde/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "3d9b4cf53dd9716a727a5ebf71e4709ed3047450c19b783d1becefd7cab44121"
+        },
+        {
+          "path": "cases/javac8-jarde/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "79d331988393a92d8e8fb1dec6d970a2a217527277206a0b8a48ee63086d31b3"
+        },
+        {
+          "path": "cases/javac8-jarde/classes/InstanceFieldInitRunner.class",
+          "bytes": 2453,
+          "sha256": "da397ab355c7f5ef861858a76f14945d05db37b4a6d9572a4f2d083ca61849ea"
+        },
+        {
+          "path": "cases/javac8-jarde/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "3ba264f2408aa605b4939cd4cf9ed2ee5476e0481d5280600ffc7f45a2f4b36f"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac8-jarde/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "all_three_sources_rendered": true,
+      "success": true,
+      "runtime_matches_original_raw": true
+    },
+    {
+      "label": "javac23-jarde",
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "rendered_classes": [
+        {
+          "class": "CommonDirectSuperByteArray",
+          "command": {
+            "label": "javac23-jarde-render-CommonDirectSuperByteArray",
+            "argv": [
+              "/private/tmp/jarde-nonfinal-static-cli-v1",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+              "--class",
+              "CommonDirectSuperByteArray",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-jarde-render-CommonDirectSuperByteArray.stdout",
+              "bytes": 71583,
+              "sha256": "c24208b35d0d6b5a782b3dca67e20798e39a06763923ee6dc1ba22ce9bf22f4f"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-CommonDirectSuperByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "json": {
+            "path": "cases/javac23-jarde/class-source/CommonDirectSuperByteArray.json",
+            "bytes": 71583,
+            "sha256": "c24208b35d0d6b5a782b3dca67e20798e39a06763923ee6dc1ba22ce9bf22f4f"
+          },
+          "text": {
+            "path": "cases/javac23-jarde/class-source/CommonDirectSuperByteArray.txt",
+            "bytes": 1909,
+            "sha256": "df07dedc9fe27267a592a196bd89f30eef84fc4962731aecfd1da5ee06492b34"
+          },
+          "source": {
+            "path": "cases/javac23-jarde/class-source/CommonDirectSuperByteArray.java",
+            "bytes": 1909,
+            "sha256": "df07dedc9fe27267a592a196bd89f30eef84fc4962731aecfd1da5ee06492b34"
+          },
+          "member_count": 4,
+          "field_count": 2
+        },
+        {
+          "class": "ThisDelegatingByteArray",
+          "command": {
+            "label": "javac23-jarde-render-ThisDelegatingByteArray",
+            "argv": [
+              "/private/tmp/jarde-nonfinal-static-cli-v1",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/ThisDelegatingByteArray.class",
+              "--class",
+              "ThisDelegatingByteArray",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-jarde-render-ThisDelegatingByteArray.stdout",
+              "bytes": 65975,
+              "sha256": "1a48badb58ac45f06527ba006a0f1d83b3a132336bacabc0c58b8d1f1a3eec3e"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-ThisDelegatingByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "json": {
+            "path": "cases/javac23-jarde/class-source/ThisDelegatingByteArray.json",
+            "bytes": 65975,
+            "sha256": "1a48badb58ac45f06527ba006a0f1d83b3a132336bacabc0c58b8d1f1a3eec3e"
+          },
+          "text": {
+            "path": "cases/javac23-jarde/class-source/ThisDelegatingByteArray.txt",
+            "bytes": 1823,
+            "sha256": "73846c1379ba4f2e684a1e0f44868b06c4a6fd5e07069405e70a8a0809287c7b"
+          },
+          "source": {
+            "path": "cases/javac23-jarde/class-source/ThisDelegatingByteArray.java",
+            "bytes": 1823,
+            "sha256": "73846c1379ba4f2e684a1e0f44868b06c4a6fd5e07069405e70a8a0809287c7b"
+          },
+          "member_count": 4,
+          "field_count": 2
+        },
+        {
+          "class": "DifferentRhsByteArray",
+          "command": {
+            "label": "javac23-jarde-render-DifferentRhsByteArray",
+            "argv": [
+              "/private/tmp/jarde-nonfinal-static-cli-v1",
+              "class-source",
+              "--input",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/DifferentRhsByteArray.class",
+              "--class",
+              "DifferentRhsByteArray",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-jarde-render-DifferentRhsByteArray.stdout",
+              "bytes": 67247,
+              "sha256": "478dbb1def547ca9f5bc65c5d8fa528d7b1f329702e7922b6b7c745bb2691905"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-DifferentRhsByteArray.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "json": {
+            "path": "cases/javac23-jarde/class-source/DifferentRhsByteArray.json",
+            "bytes": 67247,
+            "sha256": "478dbb1def547ca9f5bc65c5d8fa528d7b1f329702e7922b6b7c745bb2691905"
+          },
+          "text": {
+            "path": "cases/javac23-jarde/class-source/DifferentRhsByteArray.txt",
+            "bytes": 1824,
+            "sha256": "ef5dc6263a2e74815655284cc4541feaf3e366ad0351db86f36b7abde4267b9c"
+          },
+          "source": {
+            "path": "cases/javac23-jarde/class-source/DifferentRhsByteArray.java",
+            "bytes": 1824,
+            "sha256": "ef5dc6263a2e74815655284cc4541feaf3e366ad0351db86f36b7abde4267b9c"
+          },
+          "member_count": 4,
+          "field_count": 2
+        }
+      ],
+      "source_failures": [],
+      "runner_package_adaptation": {
+        "path": "cases/javac23-jarde/sources/InstanceFieldInitRunner.java",
+        "bytes": 2891,
+        "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+      },
+      "runner_class_name": "InstanceFieldInitRunner",
+      "compile": {
+        "label": "javac23-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/CommonDirectSuperByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/ThisDelegatingByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/DifferentRhsByteArray.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/sources/InstanceFieldInitRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/classes",
+          "InstanceFieldInitRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-run.stdout",
+          "bytes": 143,
+          "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde/sources/CommonDirectSuperByteArray.java",
+          "bytes": 1909,
+          "sha256": "df07dedc9fe27267a592a196bd89f30eef84fc4962731aecfd1da5ee06492b34"
+        },
+        {
+          "path": "cases/javac23-jarde/sources/ThisDelegatingByteArray.java",
+          "bytes": 1823,
+          "sha256": "73846c1379ba4f2e684a1e0f44868b06c4a6fd5e07069405e70a8a0809287c7b"
+        },
+        {
+          "path": "cases/javac23-jarde/sources/DifferentRhsByteArray.java",
+          "bytes": 1824,
+          "sha256": "ef5dc6263a2e74815655284cc4541feaf3e366ad0351db86f36b7abde4267b9c"
+        },
+        {
+          "path": "cases/javac23-jarde/sources/InstanceFieldInitRunner.java",
+          "bytes": 2891,
+          "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jarde/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+        },
+        {
+          "path": "cases/javac23-jarde/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+        },
+        {
+          "path": "cases/javac23-jarde/classes/InstanceFieldInitRunner.class",
+          "bytes": 2438,
+          "sha256": "ad2b25ca63c3819ffd676ce74cd3c5b715b11e1a1671f3874c991b24109eb686"
+        },
+        {
+          "path": "cases/javac23-jarde/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-jarde/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "all_three_sources_rendered": true,
+      "success": true,
+      "runtime_matches_original_raw": true
+    }
+  ],
+  "jadx_profiles": [
+    {
+      "label": "jadx-default",
+      "profile": "default",
+      "jar": {
+        "path": "jadx-input/instance-field-init-fixtures.jar",
+        "bytes": 1713,
+        "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+      },
+      "jar_members": [
+        {
+          "name": "CommonDirectSuperByteArray.class",
+          "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+        },
+        {
+          "name": "ThisDelegatingByteArray.class",
+          "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+        },
+        {
+          "name": "DifferentRhsByteArray.class",
+          "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+        }
+      ],
+      "decompile": {
+        "label": "jadx-default-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/default",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/jadx-default-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/jadx-default-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generated_sources": [
+        {
+          "path": "jadx/default/sources/defpackage/CommonDirectSuperByteArray.java",
+          "bytes": 505,
+          "sha256": "1c34045a54e9eeba1a8a890fbb515e44562725bdaeef50458b3e5d9b23c3d215"
+        },
+        {
+          "path": "jadx/default/sources/defpackage/DifferentRhsByteArray.java",
+          "bytes": 475,
+          "sha256": "6ce1eddb789eca8eeb86abce7e2f240b4ec6262cc339211443118ad64e4b2b1f"
+        },
+        {
+          "path": "jadx/default/sources/defpackage/ThisDelegatingByteArray.java",
+          "bytes": 546,
+          "sha256": "d22d6694638d7d975ddafcf27a7822fec1beb51e6673fb97b8420112800aca34"
+        }
+      ],
+      "generated_source_count": 3,
+      "packages": [
+        "defpackage"
+      ],
+      "decompile_success": true
+    },
+    {
+      "label": "jadx-none",
+      "profile": "none",
+      "jar": {
+        "path": "jadx-input/instance-field-init-fixtures.jar",
+        "bytes": 1713,
+        "sha256": "c65f0a0a81d06f5d85f989dc99aa984e69844c52be19a960b90bc71dc90a58e2"
+      },
+      "jar_members": [
+        {
+          "name": "CommonDirectSuperByteArray.class",
+          "path": "cases/javac23-original/classes/CommonDirectSuperByteArray.class",
+          "bytes": 731,
+          "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+        },
+        {
+          "name": "ThisDelegatingByteArray.class",
+          "path": "cases/javac23-original/classes/ThisDelegatingByteArray.class",
+          "bytes": 723,
+          "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+        },
+        {
+          "name": "DifferentRhsByteArray.class",
+          "path": "cases/javac23-original/classes/DifferentRhsByteArray.class",
+          "bytes": 710,
+          "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+        }
+      ],
+      "decompile": {
+        "label": "jadx-none-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx/none",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/jadx-input/instance-field-init-fixtures.jar"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/jadx-none-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/jadx-none-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generated_sources": [
+        {
+          "path": "jadx/none/sources/CommonDirectSuperByteArray.java",
+          "bytes": 504,
+          "sha256": "4d0b087f914d3413831838ae6823274b4490e0ef8a1be9d17ba2e1bd9d48cc41"
+        },
+        {
+          "path": "jadx/none/sources/DifferentRhsByteArray.java",
+          "bytes": 474,
+          "sha256": "10cf079476af9300ecd743d55cf1149a5ac2d7edd29c82556143b3463c3a1bcf"
+        },
+        {
+          "path": "jadx/none/sources/ThisDelegatingByteArray.java",
+          "bytes": 545,
+          "sha256": "9b92e612bb83d31e846ec5c9b02e76ae6a1d1eecc3b01271c70dcb38bc2f247e"
+        }
+      ],
+      "generated_source_count": 3,
+      "packages": [
+        null
+      ],
+      "decompile_success": true
+    }
+  ],
+  "failures": [
+    "javac8-jadx-default",
+    "javac23-jadx-default",
+    "javac8-jadx-none",
+    "javac23-jadx-none"
+  ],
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+
+running 1 test
+test enum_constants::tests::ordinary_class_fields_and_static_initializer_keep_the_existing_projection ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 210 filtered out; finished in 0.41s
+

@@ -1,0 +1,88 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v1/cases/javac23-original/classes/OrdinaryInit.class
+  Last modified 2026年10月10日; size 446 bytes
+  SHA-256 checksum acb8a9a9f1111a43d308c753d799ec413f50ae2a46285b444e20c4ecff078b92
+  Compiled from "OrdinaryInit.java"
+class OrdinaryInit
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #8                          // OrdinaryInit
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // OrdinaryInit.first:I
+   #8 = Class              #10            // OrdinaryInit
+   #9 = NameAndType        #11:#12        // first:I
+  #10 = Utf8               OrdinaryInit
+  #11 = Utf8               first
+  #12 = Utf8               I
+  #13 = Methodref          #8.#14         // OrdinaryInit.twice:()I
+  #14 = NameAndType        #15:#16        // twice:()I
+  #15 = Utf8               twice
+  #16 = Utf8               ()I
+  #17 = Fieldref           #8.#18         // OrdinaryInit.second:I
+  #18 = NameAndType        #19:#12        // second:I
+  #19 = Utf8               second
+  #20 = Utf8               Code
+  #21 = Utf8               LineNumberTable
+  #22 = Utf8               LocalVariableTable
+  #23 = Utf8               this
+  #24 = Utf8               LOrdinaryInit;
+  #25 = Utf8               <clinit>
+  #26 = Utf8               SourceFile
+  #27 = Utf8               OrdinaryInit.java
+{
+  static int first;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static int second;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  OrdinaryInit();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LOrdinaryInit;
+
+  static int twice();
+    descriptor: ()I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field first:I
+         3: iconst_2
+         4: imul
+         5: ireturn
+      LineNumberTable:
+        line 7: 0
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_4
+         1: putstatic     #7                  // Field first:I
+         4: invokestatic  #13                 // Method twice:()I
+         7: putstatic     #17                 // Field second:I
+        10: return
+      LineNumberTable:
+        line 5: 0
+}
+SourceFile: "OrdinaryInit.java"

@@ -1,0 +1,156 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/baseline-root-v3/cases/javac23-original/classes/DifferentRhsByteArray.class
+  Last modified 2026年10月10日; size 710 bytes
+  SHA-256 checksum b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11
+public class DifferentRhsByteArray
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // DifferentRhsByteArray
+  super_class: #29                        // java/lang/Object
+  interfaces: 0, fields: 2, methods: 4, attributes: 0
+Constant pool:
+   #1 = Class              #2             // java/lang/StringBuilder
+   #2 = Utf8               java/lang/StringBuilder
+   #3 = Methodref          #1.#4          // java/lang/StringBuilder."<init>":()V
+   #4 = NameAndType        #5:#6          // "<init>":()V
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // DifferentRhsByteArray.trace:Ljava/lang/String;
+   #8 = Class              #10            // DifferentRhsByteArray
+   #9 = NameAndType        #11:#12        // trace:Ljava/lang/String;
+  #10 = Utf8               DifferentRhsByteArray
+  #11 = Utf8               trace
+  #12 = Utf8               Ljava/lang/String;
+  #13 = Methodref          #1.#14         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #14 = NameAndType        #15:#16        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #15 = Utf8               append
+  #16 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #17 = String             #18            // eval:
+  #18 = Utf8               eval:
+  #19 = Methodref          #1.#20         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #20 = NameAndType        #15:#21        // append:(I)Ljava/lang/StringBuilder;
+  #21 = Utf8               (I)Ljava/lang/StringBuilder;
+  #22 = String             #23            // ;
+  #23 = Utf8               ;
+  #24 = Methodref          #1.#25         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #25 = NameAndType        #26:#27        // toString:()Ljava/lang/String;
+  #26 = Utf8               toString
+  #27 = Utf8               ()Ljava/lang/String;
+  #28 = Methodref          #29.#4         // java/lang/Object."<init>":()V
+  #29 = Class              #30            // java/lang/Object
+  #30 = Utf8               java/lang/Object
+  #31 = Methodref          #8.#32         // DifferentRhsByteArray.mark:(I)B
+  #32 = NameAndType        #33:#34        // mark:(I)B
+  #33 = Utf8               mark
+  #34 = Utf8               (I)B
+  #35 = Fieldref           #8.#36         // DifferentRhsByteArray.bytes:[B
+  #36 = NameAndType        #37:#38        // bytes:[B
+  #37 = Utf8               bytes
+  #38 = Utf8               [B
+  #39 = String             #40            // body:noarg;
+  #40 = Utf8               body:noarg;
+  #41 = String             #42            // body:int:
+  #42 = Utf8               body:int:
+  #43 = String             #44            //
+  #44 = Utf8
+  #45 = Utf8               Code
+  #46 = Utf8               (I)V
+  #47 = Utf8               <clinit>
+{
+  static java.lang.String trace;
+    descriptor: Ljava/lang/String;
+    flags: (0x0008) ACC_STATIC
+
+  byte[] bytes;
+    descriptor: [B
+    flags: (0x0000)
+
+  static byte mark(int);
+    descriptor: (I)B
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #1                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #7                  // Field trace:Ljava/lang/String;
+        10: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #17                 // String eval:
+        15: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: iload_0
+        19: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        22: ldc           #22                 // String ;
+        24: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        30: putstatic     #7                  // Field trace:Ljava/lang/String;
+        33: iload_0
+        34: i2b
+        35: ireturn
+
+  public DifferentRhsByteArray();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #28                 // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_1
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: bipush        31
+        12: invokestatic  #31                 // Method mark:(I)B
+        15: bastore
+        16: putfield      #35                 // Field bytes:[B
+        19: new           #1                  // class java/lang/StringBuilder
+        22: dup
+        23: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+        26: getstatic     #7                  // Field trace:Ljava/lang/String;
+        29: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: ldc           #39                 // String body:noarg;
+        34: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        37: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        40: putstatic     #7                  // Field trace:Ljava/lang/String;
+        43: return
+
+  public DifferentRhsByteArray(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=5, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #28                 // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_1
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: bipush        32
+        12: invokestatic  #31                 // Method mark:(I)B
+        15: bastore
+        16: putfield      #35                 // Field bytes:[B
+        19: new           #1                  // class java/lang/StringBuilder
+        22: dup
+        23: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+        26: getstatic     #7                  // Field trace:Ljava/lang/String;
+        29: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: ldc           #41                 // String body:int:
+        34: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        37: iload_1
+        38: invokevirtual #19                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        41: ldc           #22                 // String ;
+        43: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        46: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        49: putstatic     #7                  // Field trace:Ljava/lang/String;
+        52: return
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #43                 // String
+         2: putstatic     #7                  // Field trace:Ljava/lang/String;
+         5: return
+}

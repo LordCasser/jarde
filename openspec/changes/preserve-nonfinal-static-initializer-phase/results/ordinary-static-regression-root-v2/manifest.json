@@ -1,0 +1,1613 @@
+{
+  "schema": "ordinary-static-regression-root-v2",
+  "status": "completed",
+  "scope": "OrdinaryInit from src/enum_constants.rs, source/target 8, JDK 8 and 23; default and evidence-all class-source renders",
+  "claim_boundary": "Public rendering and full generated-source runtime comparison only; no internal rollback claim.",
+  "preparation_script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/prepare-ordinary-static-regression-root-v3.py",
+    "bytes": 20218,
+    "sha256": "00bbd81297830aa35e48e1b72cb39a57150a3091f886e1cf6d1d80ceeba48679"
+  },
+  "source": {
+    "path": "original-sources/OrdinaryInit.java",
+    "bytes": 151,
+    "sha256": "8e80d6eaf01159ae69ec8faf84e97ff6129b89549517c7b3c6f050fda0d2d1ae"
+  },
+  "regression_test_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/src/enum_constants.rs",
+    "bytes": 390777,
+    "sha256": "e08766db22e14e5e7496492de38242af04dacb78c78652ae2de0995dc3aafa6d"
+  },
+  "runner": {
+    "path": "original-sources/Runner.java",
+    "bytes": 409,
+    "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "preflight": [
+    {
+      "label": "frozen-cli-metadata",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+      "expected_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "actual_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/init.rs",
+      "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/report.rs",
+      "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/build.rs",
+      "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/ast.rs",
+      "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/emit.rs",
+      "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/asserts.rs",
+      "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "ok": true
+    },
+    {
+      "label": "crates/jarde-java/src/field.rs",
+      "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "ok": true
+    },
+    {
+      "label": "src/facade.rs",
+      "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "ok": true
+    },
+    {
+      "label": "src/class_source.rs",
+      "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "ok": true
+    },
+    {
+      "label": "Cargo.lock",
+      "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "ok": true
+    },
+    {
+      "label": "frozen-cli",
+      "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "ok": true
+    },
+    {
+      "label": "fixed-jdk-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "two-required-jdk-legs",
+      "ok": true
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-java-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-java-version.stderr",
+        "bytes": 174,
+        "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+      }
+    },
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javac-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-javac-version.stderr",
+        "bytes": 16,
+        "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+      }
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javap-version.stdout",
+        "bytes": 10,
+        "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+      },
+      "stderr": {
+        "path": "streams/javac8-javap-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/OrdinaryInit.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 50,
+        "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-javap.stdout",
+        "bytes": 2858,
+        "sha256": "af3d0c98471c2ce08b7201445a6ff9f50bb42344e38a1ed9a550dcb1ab9e79ed"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-java-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-java-version.stderr",
+        "bytes": 152,
+        "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+      }
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javac-version.stdout",
+        "bytes": 13,
+        "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+      },
+      "stderr": {
+        "path": "streams/javac23-javac-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javap-version.stdout",
+        "bytes": 7,
+        "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+      },
+      "stderr": {
+        "path": "streams/javac23-javap-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/OrdinaryInit.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 50,
+        "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-javap.stdout",
+        "bytes": 3130,
+        "sha256": "2c1404e2701072f6305ca7ddd4a87d2079f0368f36038927a4574d844b1299e9"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-default-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class",
+        "--class",
+        "OrdinaryInit",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-default-render.stdout",
+        "bytes": 27790,
+        "sha256": "f423579c941d21809634859714ab30dda4decc2fe480cad1371767a1dde4f8f5"
+      },
+      "stderr": {
+        "path": "streams/javac8-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/OrdinaryInit.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-default-run.stdout",
+        "bytes": 50,
+        "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+      },
+      "stderr": {
+        "path": "streams/javac8-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-all-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class",
+        "--class",
+        "OrdinaryInit",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-all-render.stdout",
+        "bytes": 29467,
+        "sha256": "e4430dac217fa87b16252453bb080d414c4035631fcb7e6d8e3ca567db1a471b"
+      },
+      "stderr": {
+        "path": "streams/javac8-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-all-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/OrdinaryInit.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-all-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-all-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-all-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-all-run.stdout",
+        "bytes": 50,
+        "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+      },
+      "stderr": {
+        "path": "streams/javac8-all-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-default-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class",
+        "--class",
+        "OrdinaryInit",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-default-render.stdout",
+        "bytes": 27790,
+        "sha256": "b92216434f52e7e77f3bcba2755d896df2b6e0e4f906e08f78324c22c3d20ec0"
+      },
+      "stderr": {
+        "path": "streams/javac23-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/OrdinaryInit.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-default-run.stdout",
+        "bytes": 50,
+        "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+      },
+      "stderr": {
+        "path": "streams/javac23-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-all-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class",
+        "--class",
+        "OrdinaryInit",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-all-render.stdout",
+        "bytes": 29467,
+        "sha256": "ad71655fbcd9418e34b7f7738a51683522d9cacb9d001c85423743fcf0d720e4"
+      },
+      "stderr": {
+        "path": "streams/javac23-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-all-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/OrdinaryInit.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-all-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-all-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-all-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-all-run.stdout",
+        "bytes": 50,
+        "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+      },
+      "stderr": {
+        "path": "streams/javac23-all-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/OrdinaryInit.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout",
+          "bytes": 50,
+          "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/OrdinaryInit.java",
+          "bytes": 151,
+          "sha256": "8e80d6eaf01159ae69ec8faf84e97ff6129b89549517c7b3c6f050fda0d2d1ae"
+        },
+        {
+          "path": "original-sources/Runner.java",
+          "bytes": 409,
+          "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/OrdinaryInit.class",
+          "bytes": 446,
+          "sha256": "d9f2bb7704c8fff49713e8b8705ac2e683519beda8b4614e5951eb688c3319bd"
+        },
+        {
+          "path": "cases/javac8-original/classes/Runner.class",
+          "bytes": 984,
+          "sha256": "18c97c9887255098063a82f85a15df01cfe63bba01a7f6a46f388a575ddedba9"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "success": true,
+      "javap": {
+        "label": "javac8-original-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-javap.stdout",
+          "bytes": 2858,
+          "sha256": "af3d0c98471c2ce08b7201445a6ff9f50bb42344e38a1ed9a550dcb1ab9e79ed"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "javap_success": true,
+      "javap_text": "Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class\n  Last modified 2026-10-10; size 446 bytes\n  MD5 checksum d81e0b53df875e69f285c4adc97f3ef6\n  Compiled from \"OrdinaryInit.java\"\nclass OrdinaryInit\n  minor version: 0\n  major version: 52\n  flags: ACC_SUPER\nConstant pool:\n   #1 = Methodref          #6.#22         // java/lang/Object.\"<init>\":()V\n   #2 = Fieldref           #5.#23         // OrdinaryInit.first:I\n   #3 = Methodref          #5.#24         // OrdinaryInit.twice:()I\n   #4 = Fieldref           #5.#25         // OrdinaryInit.second:I\n   #5 = Class              #26            // OrdinaryInit\n   #6 = Class              #27            // java/lang/Object\n   #7 = Utf8               first\n   #8 = Utf8               I\n   #9 = Utf8               second\n  #10 = Utf8               <init>\n  #11 = Utf8               ()V\n  #12 = Utf8               Code\n  #13 = Utf8               LineNumberTable\n  #14 = Utf8               LocalVariableTable\n  #15 = Utf8               this\n  #16 = Utf8               LOrdinaryInit;\n  #17 = Utf8               twice\n  #18 = Utf8               ()I\n  #19 = Utf8               <clinit>\n  #20 = Utf8               SourceFile\n  #21 = Utf8               OrdinaryInit.java\n  #22 = NameAndType        #10:#11        // \"<init>\":()V\n  #23 = NameAndType        #7:#8          // first:I\n  #24 = NameAndType        #17:#18        // twice:()I\n  #25 = NameAndType        #9:#8          // second:I\n  #26 = Utf8               OrdinaryInit\n  #27 = Utf8               java/lang/Object\n{\n  static int first;\n    descriptor: I\n    flags: ACC_STATIC\n\n  static int second;\n    descriptor: I\n    flags: ACC_STATIC\n\n  OrdinaryInit();\n    descriptor: ()V\n    flags:\n    Code:\n      stack=1, locals=1, args_size=1\n         0: aload_0\n         1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n         4: return\n      LineNumberTable:\n        line 1: 0\n      LocalVariableTable:\n        Start  Length  Slot  Name   Signature\n            0       5     0  this   LOrdinaryInit;\n\n  static int twice();\n    descriptor: ()I\n    flags: ACC_STATIC\n    Code:\n      stack=2, locals=0, args_size=0\n         0: getstatic     #2                  // Field first:I\n         3: iconst_2\n         4: imul\n         5: ireturn\n      LineNumberTable:\n        line 7: 0\n\n  static {};\n    descriptor: ()V\n    flags: ACC_STATIC\n    Code:\n      stack=1, locals=0, args_size=0\n         0: iconst_4\n         1: putstatic     #2                  // Field first:I\n         4: invokestatic  #3                  // Method twice:()I\n         7: putstatic     #4                  // Field second:I\n        10: return\n      LineNumberTable:\n        line 5: 0\n}\nSourceFile: \"OrdinaryInit.java\"\n"
+    },
+    {
+      "label": "javac23-original",
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/OrdinaryInit.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/original-sources/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout",
+          "bytes": 50,
+          "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/OrdinaryInit.java",
+          "bytes": 151,
+          "sha256": "8e80d6eaf01159ae69ec8faf84e97ff6129b89549517c7b3c6f050fda0d2d1ae"
+        },
+        {
+          "path": "original-sources/Runner.java",
+          "bytes": 409,
+          "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/OrdinaryInit.class",
+          "bytes": 446,
+          "sha256": "acb8a9a9f1111a43d308c753d799ec413f50ae2a46285b444e20c4ecff078b92"
+        },
+        {
+          "path": "cases/javac23-original/classes/Runner.class",
+          "bytes": 984,
+          "sha256": "d03edc9355a948c07538cff5a5f09fea9903261dc1ef2783461a57aae4723cf4"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "success": true,
+      "javap": {
+        "label": "javac23-original-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-javap.stdout",
+          "bytes": 3130,
+          "sha256": "2c1404e2701072f6305ca7ddd4a87d2079f0368f36038927a4574d844b1299e9"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "javap_success": true,
+      "javap_text": "Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class\n  Last modified 2026\u5e7410\u670810\u65e5; size 446 bytes\n  SHA-256 checksum acb8a9a9f1111a43d308c753d799ec413f50ae2a46285b444e20c4ecff078b92\n  Compiled from \"OrdinaryInit.java\"\nclass OrdinaryInit\n  minor version: 0\n  major version: 52\n  flags: (0x0020) ACC_SUPER\n  this_class: #8                          // OrdinaryInit\n  super_class: #2                         // java/lang/Object\n  interfaces: 0, fields: 2, methods: 3, attributes: 1\nConstant pool:\n   #1 = Methodref          #2.#3          // java/lang/Object.\"<init>\":()V\n   #2 = Class              #4             // java/lang/Object\n   #3 = NameAndType        #5:#6          // \"<init>\":()V\n   #4 = Utf8               java/lang/Object\n   #5 = Utf8               <init>\n   #6 = Utf8               ()V\n   #7 = Fieldref           #8.#9          // OrdinaryInit.first:I\n   #8 = Class              #10            // OrdinaryInit\n   #9 = NameAndType        #11:#12        // first:I\n  #10 = Utf8               OrdinaryInit\n  #11 = Utf8               first\n  #12 = Utf8               I\n  #13 = Methodref          #8.#14         // OrdinaryInit.twice:()I\n  #14 = NameAndType        #15:#16        // twice:()I\n  #15 = Utf8               twice\n  #16 = Utf8               ()I\n  #17 = Fieldref           #8.#18         // OrdinaryInit.second:I\n  #18 = NameAndType        #19:#12        // second:I\n  #19 = Utf8               second\n  #20 = Utf8               Code\n  #21 = Utf8               LineNumberTable\n  #22 = Utf8               LocalVariableTable\n  #23 = Utf8               this\n  #24 = Utf8               LOrdinaryInit;\n  #25 = Utf8               <clinit>\n  #26 = Utf8               SourceFile\n  #27 = Utf8               OrdinaryInit.java\n{\n  static int first;\n    descriptor: I\n    flags: (0x0008) ACC_STATIC\n\n  static int second;\n    descriptor: I\n    flags: (0x0008) ACC_STATIC\n\n  OrdinaryInit();\n    descriptor: ()V\n    flags: (0x0000)\n    Code:\n      stack=1, locals=1, args_size=1\n         0: aload_0\n         1: invokespecial #1                  // Method java/lang/Object.\"<init>\":()V\n         4: return\n      LineNumberTable:\n        line 1: 0\n      LocalVariableTable:\n        Start  Length  Slot  Name   Signature\n            0       5     0  this   LOrdinaryInit;\n\n  static int twice();\n    descriptor: ()I\n    flags: (0x0008) ACC_STATIC\n    Code:\n      stack=2, locals=0, args_size=0\n         0: getstatic     #7                  // Field first:I\n         3: iconst_2\n         4: imul\n         5: ireturn\n      LineNumberTable:\n        line 7: 0\n\n  static {};\n    descriptor: ()V\n    flags: (0x0008) ACC_STATIC\n    Code:\n      stack=1, locals=0, args_size=0\n         0: iconst_4\n         1: putstatic     #7                  // Field first:I\n         4: invokestatic  #13                 // Method twice:()I\n         7: putstatic     #17                 // Field second:I\n        10: return\n      LineNumberTable:\n        line 5: 0\n}\nSourceFile: \"OrdinaryInit.java\"\n"
+    },
+    {
+      "label": "javac8-default",
+      "kind": "rendered",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "render": {
+        "label": "javac8-default-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class",
+          "--class",
+          "OrdinaryInit",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-default-render.stdout",
+          "bytes": 27790,
+          "sha256": "f423579c941d21809634859714ab30dda4decc2fe480cad1371767a1dde4f8f5"
+        },
+        "stderr": {
+          "path": "streams/javac8-default-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac8-default/class-source.json",
+        "bytes": 27790,
+        "sha256": "f423579c941d21809634859714ab30dda4decc2fe480cad1371767a1dde4f8f5"
+      },
+      "text_sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e",
+      "checks": {
+        "initializer_proof_is_proved": true,
+        "initializer_proves_exactly_first_second": true,
+        "proved_fields_are_nonfinal_static": true,
+        "proof_order_and_bcis": true,
+        "root_has_no_static_block": true,
+        "text_keeps_ordered_nonfinal_declarations": true,
+        "physical_clinit_member_retained": true,
+        "physical_clinit_has_exactly_two_target_writes": true,
+        "physical_clinit_text_retained": true,
+        "proof_bcis_match_physical_writes": true,
+        "both_physical_clinit_writes_have_source_map_origins": true,
+        "clinit_report_is_structured_with_source_map": true
+      },
+      "generated_text_unchanged": true,
+      "runner_package": null,
+      "compile": {
+        "label": "javac8-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/OrdinaryInit.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-default/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-default-run.stdout",
+          "bytes": 50,
+          "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+        },
+        "stderr": {
+          "path": "streams/javac8-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-default/OrdinaryInit.java",
+          "bytes": 951,
+          "sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e"
+        },
+        {
+          "path": "cases/javac8-default/Runner.java",
+          "bytes": 409,
+          "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-default/classes/OrdinaryInit.class",
+          "bytes": 454,
+          "sha256": "6a0065b77d1e9bd8ea74693c1be7b6943264ba28a51e7c29f9feee58ec1784a2"
+        },
+        {
+          "path": "cases/javac8-default/classes/Runner.class",
+          "bytes": 984,
+          "sha256": "18c97c9887255098063a82f85a15df01cfe63bba01a7f6a46f388a575ddedba9"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true
+    },
+    {
+      "label": "javac8-all",
+      "kind": "rendered",
+      "profile": "all",
+      "jdk_leg": "javac8",
+      "render": {
+        "label": "javac8-all-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-original/classes/OrdinaryInit.class",
+          "--class",
+          "OrdinaryInit",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-all-render.stdout",
+          "bytes": 29467,
+          "sha256": "e4430dac217fa87b16252453bb080d414c4035631fcb7e6d8e3ca567db1a471b"
+        },
+        "stderr": {
+          "path": "streams/javac8-all-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac8-all/class-source.json",
+        "bytes": 29467,
+        "sha256": "e4430dac217fa87b16252453bb080d414c4035631fcb7e6d8e3ca567db1a471b"
+      },
+      "text_sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e",
+      "checks": {
+        "initializer_proof_is_proved": true,
+        "initializer_proves_exactly_first_second": true,
+        "proved_fields_are_nonfinal_static": true,
+        "proof_order_and_bcis": true,
+        "root_has_no_static_block": true,
+        "text_keeps_ordered_nonfinal_declarations": true,
+        "physical_clinit_member_retained": true,
+        "physical_clinit_has_exactly_two_target_writes": true,
+        "physical_clinit_text_retained": true,
+        "proof_bcis_match_physical_writes": true,
+        "both_physical_clinit_writes_have_source_map_origins": true,
+        "clinit_report_is_structured_with_source_map": true
+      },
+      "generated_text_unchanged": true,
+      "runner_package": null,
+      "compile": {
+        "label": "javac8-all-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/OrdinaryInit.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-all-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-all-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-all-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac8-all/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-all-run.stdout",
+          "bytes": 50,
+          "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+        },
+        "stderr": {
+          "path": "streams/javac8-all-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-all/OrdinaryInit.java",
+          "bytes": 951,
+          "sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e"
+        },
+        {
+          "path": "cases/javac8-all/Runner.java",
+          "bytes": 409,
+          "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-all/classes/OrdinaryInit.class",
+          "bytes": 454,
+          "sha256": "6a0065b77d1e9bd8ea74693c1be7b6943264ba28a51e7c29f9feee58ec1784a2"
+        },
+        {
+          "path": "cases/javac8-all/classes/Runner.class",
+          "bytes": 984,
+          "sha256": "18c97c9887255098063a82f85a15df01cfe63bba01a7f6a46f388a575ddedba9"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true
+    },
+    {
+      "label": "javac23-default",
+      "kind": "rendered",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "render": {
+        "label": "javac23-default-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class",
+          "--class",
+          "OrdinaryInit",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-default-render.stdout",
+          "bytes": 27790,
+          "sha256": "b92216434f52e7e77f3bcba2755d896df2b6e0e4f906e08f78324c22c3d20ec0"
+        },
+        "stderr": {
+          "path": "streams/javac23-default-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac23-default/class-source.json",
+        "bytes": 27790,
+        "sha256": "b92216434f52e7e77f3bcba2755d896df2b6e0e4f906e08f78324c22c3d20ec0"
+      },
+      "text_sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e",
+      "checks": {
+        "initializer_proof_is_proved": true,
+        "initializer_proves_exactly_first_second": true,
+        "proved_fields_are_nonfinal_static": true,
+        "proof_order_and_bcis": true,
+        "root_has_no_static_block": true,
+        "text_keeps_ordered_nonfinal_declarations": true,
+        "physical_clinit_member_retained": true,
+        "physical_clinit_has_exactly_two_target_writes": true,
+        "physical_clinit_text_retained": true,
+        "proof_bcis_match_physical_writes": true,
+        "both_physical_clinit_writes_have_source_map_origins": true,
+        "clinit_report_is_structured_with_source_map": true
+      },
+      "generated_text_unchanged": true,
+      "runner_package": null,
+      "compile": {
+        "label": "javac23-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/OrdinaryInit.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-default/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-default-run.stdout",
+          "bytes": 50,
+          "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+        },
+        "stderr": {
+          "path": "streams/javac23-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-default/OrdinaryInit.java",
+          "bytes": 951,
+          "sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e"
+        },
+        {
+          "path": "cases/javac23-default/Runner.java",
+          "bytes": 409,
+          "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-default/classes/OrdinaryInit.class",
+          "bytes": 454,
+          "sha256": "d8a4e28d84160619a5b6a5f5b1b6509c3b797e7e0cf0b1ada141cde1a9581469"
+        },
+        {
+          "path": "cases/javac23-default/classes/Runner.class",
+          "bytes": 984,
+          "sha256": "d03edc9355a948c07538cff5a5f09fea9903261dc1ef2783461a57aae4723cf4"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true
+    },
+    {
+      "label": "javac23-all",
+      "kind": "rendered",
+      "profile": "all",
+      "jdk_leg": "javac23",
+      "render": {
+        "label": "javac23-all-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-original/classes/OrdinaryInit.class",
+          "--class",
+          "OrdinaryInit",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-all-render.stdout",
+          "bytes": 29467,
+          "sha256": "ad71655fbcd9418e34b7f7738a51683522d9cacb9d001c85423743fcf0d720e4"
+        },
+        "stderr": {
+          "path": "streams/javac23-all-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac23-all/class-source.json",
+        "bytes": 29467,
+        "sha256": "ad71655fbcd9418e34b7f7738a51683522d9cacb9d001c85423743fcf0d720e4"
+      },
+      "text_sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e",
+      "checks": {
+        "initializer_proof_is_proved": true,
+        "initializer_proves_exactly_first_second": true,
+        "proved_fields_are_nonfinal_static": true,
+        "proof_order_and_bcis": true,
+        "root_has_no_static_block": true,
+        "text_keeps_ordered_nonfinal_declarations": true,
+        "physical_clinit_member_retained": true,
+        "physical_clinit_has_exactly_two_target_writes": true,
+        "physical_clinit_text_retained": true,
+        "proof_bcis_match_physical_writes": true,
+        "both_physical_clinit_writes_have_source_map_origins": true,
+        "clinit_report_is_structured_with_source_map": true
+      },
+      "generated_text_unchanged": true,
+      "runner_package": null,
+      "compile": {
+        "label": "javac23-all-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/OrdinaryInit.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-all-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-all-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-all-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v2/cases/javac23-all/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-all-run.stdout",
+          "bytes": 50,
+          "sha256": "cd1ebb62d8e646b1b042b4845f6e13f20c7edcb251fcf1d847789100226fb549"
+        },
+        "stderr": {
+          "path": "streams/javac23-all-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-all/OrdinaryInit.java",
+          "bytes": 951,
+          "sha256": "20ab663d3eb78a0a81e20b254b156445261b15d3e99ed0403f18e3b06ec7688e"
+        },
+        {
+          "path": "cases/javac23-all/Runner.java",
+          "bytes": 409,
+          "sha256": "333756d4713333c9bfb08897e3441d3fbf3d1a9e43cbf437cb8c3fc5b76b3520"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-all/classes/OrdinaryInit.class",
+          "bytes": 454,
+          "sha256": "d8a4e28d84160619a5b6a5f5b1b6509c3b797e7e0cf0b1ada141cde1a9581469"
+        },
+        {
+          "path": "cases/javac23-all/classes/Runner.class",
+          "bytes": 984,
+          "sha256": "d03edc9355a948c07538cff5a5f09fea9903261dc1ef2783461a57aae4723cf4"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true
+    }
+  ],
+  "cross_profile_text_equal": true,
+  "failures": [],
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json",
+      "preflight.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

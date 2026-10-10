@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-luna-v1.patch",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-ordinary-static-test-v1/stdout"
+  ],
+  "exit": 0,
+  "excluded_immutable_raw": [
+    {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-luna-v1.patch",
+      "sha256": "71f03d814f12a756e30a77f73ed32f1f21081a05559b308805464fd2917c3e3e",
+      "reason": "unified patch blank context line or actual libtest final blank line; preserve raw bytes"
+    },
+    {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-ordinary-static-test-v1/stdout",
+      "sha256": "52bff3fe6cc5e2f95ce1a37a4e272bb109062ab5a9cd9ca1388d3ac7192aa84b",
+      "reason": "unified patch blank context line or actual libtest final blank line; preserve raw bytes"
+    }
+  ],
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

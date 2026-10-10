@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.AssertionError: array: [31]
+	at defpackage.InstanceFieldInitRunner.require(Unknown Source)
+	at defpackage.InstanceFieldInitRunner.requireArray(Unknown Source)
+	at defpackage.InstanceFieldInitRunner.main(Unknown Source)

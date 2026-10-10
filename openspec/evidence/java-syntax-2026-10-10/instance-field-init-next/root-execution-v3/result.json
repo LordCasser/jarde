@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/prepare-baseline-root-v3.py",
+    "--cli",
+    "/private/tmp/jarde-nonfinal-static-cli-v1"
+  ],
+  "exit": 1,
+  "stdout_sha256": "2e317e2211a39f207381f11023adc2dad96d13fc04b036e524f891872f2ba405",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -16,4 +16,4 @@
 ## 3. 整类对照与主代理验收
 
 - [x] 3.1 用重建 Engine/CLI 不修改生成文本地编译/运行非覆盖型完整类，与原 class/JADX 的正常返回、try 抛错与 cleanup 抛错逐行比较；重放 1.2 覆盖型拒绝、资源/monitor/typed-catch 与现有 guard 回归。冻结当前CLI fresh完整类双JDK正例2/2、覆盖型整类编译拒绝2/2；历史JADX source重编的566/8负例保持，root独立536checks/0errors。资源/monitor/typed-catch等回归由相同产品6dd确切CI继承，新公共测试自己的CI另验。
-- [ ] 3.2 root 独立审查副本等价、完成优先级、区域归属与失败来源，冻结重建 CLI 复跑整类/负例；运行受影响 Rust/Java 测试、reader census、fingerprint、fmt、Clippy、OpenSpec strict 与磁盘核查，分开登记既存债务。
+- [x] 3.2 root 独立审查副本等价、完成优先级、区域归属与失败来源，冻结重建 CLI 复跑整类/负例；运行受影响 Rust/Java 测试、reader census、fingerprint、fmt、Clippy、OpenSpec strict 与磁盘核查，分开登记既存债务。

@@ -1,0 +1,8 @@
+{
+  "status": "capture-failed-after-toolchain-commands-before-manifest",
+  "observed_error": "KeyError label in final raw-comparison summary; compile_and_run did not retain case label",
+  "executed_script": "prepare-baseline-root-v2.py",
+  "script_sha256": "d274f90fb866ed3f61e6104c128aab2edec73b50f7fc0e62feabb3aa78d18ae6",
+  "raw_files_retained": true,
+  "no_semantic_acceptance_claim": true
+}

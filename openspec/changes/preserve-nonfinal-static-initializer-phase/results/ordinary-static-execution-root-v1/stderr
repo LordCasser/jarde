@@ -1,0 +1,10 @@
+{
+  "status": "completed-with-failures",
+  "failures": [
+    "javac8-default",
+    "javac8-all",
+    "javac23-default",
+    "javac23-all"
+  ],
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/ordinary-static-regression-root-v1"
+}

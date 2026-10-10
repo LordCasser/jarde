@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/prepare-ordinary-static-regression-root-v3.py"
+  ],
+  "exit": 0,
+  "streams": {
+    "stdout": {
+      "bytes": 208,
+      "sha256": "60bc576e45e7eda0c98e7db9146d7bf81d79d8e6eb4989424d93b2ef8b3f3ccc"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
