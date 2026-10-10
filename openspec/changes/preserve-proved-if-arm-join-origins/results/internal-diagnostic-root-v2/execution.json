@@ -1,0 +1,147 @@
+{
+  "schema": "preserve-proved-if-arm-join-origins-internal-diagnostic-root-v1",
+  "status": "diagnostic-passed",
+  "test": "diagnose_cf07_counted_if_join_from_real_class_ir",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--lib",
+    "--locked",
+    "region::tests::diagnose_cf07_counted_if_join_from_real_class_ir",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T15:58:11.627021+00:00",
+  "diagnostic_runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/run-internal-diagnostic-root-v2.py",
+    "sha256": "a4a7a6d3ef84c5c8ad568e14073e4beff3451f642ba079e9acee0570b2af825b"
+  },
+  "guarded_runner_template": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "environment_overrides": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_TERM_COLOR": "always"
+  },
+  "stripped_java_environment_keys": [],
+  "guards": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_interval_seconds": 1,
+    "process_group_stop": true
+  },
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+    "sha256_before": "7998bf1e6e24c5dc6527efdefbe6ae25b265ee5a7f534d9f0543c5b0c237fdb6",
+    "sha256_after": "7998bf1e6e24c5dc6527efdefbe6ae25b265ee5a7f534d9f0543c5b0c237fdb6",
+    "unchanged_during_test": true,
+    "note": "temporary diagnostic source is not a product pin"
+  },
+  "preflight": {
+    "free_bytes": 69404274688,
+    "target_bytes": 118320292
+  },
+  "command": {
+    "index": 2,
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--lib",
+      "--locked",
+      "region::tests::diagnose_cf07_counted_if_join_from_real_class_ir",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T15:58:11.630903+00:00",
+    "duration_seconds": 12.15497662499547,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 154734787,
+    "free_bytes_after": 69370933248,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": {
+      "expected": [
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "actual": [
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "required": true,
+      "ok": true,
+      "required_test_names": [
+        "region::tests::diagnose_cf07_counted_if_join_from_real_class_ir"
+      ],
+      "required_test_names_present": true
+    },
+    "streams": {
+      "stdout": {
+        "path": "openspec/changes/preserve-proved-if-arm-join-origins/results/internal-diagnostic-root-v2/2.stdout.raw",
+        "bytes": 190,
+        "sha256": "618536f8768e2c8e879d06ff416b43d39a429cee03740b1f07aaa1fa570b551a"
+      },
+      "stderr": {
+        "path": "openspec/changes/preserve-proved-if-arm-join-origins/results/internal-diagnostic-root-v2/2.stderr.raw",
+        "bytes": 1024,
+        "sha256": "0c0a8a873959782b00aea3541065949b2fdee328141141caeadf4336f848f889"
+      }
+    }
+  },
+  "exact_test_line": [
+    "test region::tests::diagnose_cf07_counted_if_join_from_real_class_ir ... ok"
+  ],
+  "summary_matches": [
+    [
+      "1",
+      "0",
+      "0"
+    ]
+  ],
+  "free_bytes_after": 69370933248
+}

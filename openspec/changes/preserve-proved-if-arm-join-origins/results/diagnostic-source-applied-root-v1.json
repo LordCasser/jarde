@@ -1,0 +1,15 @@
+{
+  "schema": "if-arm-internal-diagnostic-application-root-v1",
+  "source_base": "16f9122923f13ab5568ee350c7f04da4c9808b6b",
+  "source_before_sha256": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+  "backup_path": "/private/tmp/jarde-if-diag-original-region-v1.rs",
+  "patch_path": "openspec/changes/preserve-proved-if-arm-join-origins/results/internal-diagnostic-luna-v2.patch",
+  "patch_sha256": "dbe1510e269ab12dc6de742e1211eedf8a75ab901f01192c2dcf8ecfec36c38d",
+  "prior_for_ci_acceptance_path": "openspec/changes/preserve-proved-for-latch-origins/results/ci-product-v1/acceptance-proved-for-latch-ci-root-v2.json",
+  "restored": false,
+  "source_diagnostic_sha256": "aa576ff5b4c5bc39775b72596eb1fca9ce7891045e8a7da906ec41ec90018222",
+  "source_base_clean_audit_path": "openspec/changes/preserve-proved-if-arm-join-origins/results/prior-for-final-clean-root-v1/execution.json",
+  "class_input_path": "openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+  "class_input_sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+  "class_input_bytes": 419
+}

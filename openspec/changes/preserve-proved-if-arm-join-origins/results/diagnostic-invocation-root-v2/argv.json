@@ -1,0 +1,7 @@
+[
+  "python3",
+  "-B",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/run-internal-diagnostic-root-v2.py",
+  "--expected-patch-region-sha256",
+  "7998bf1e6e24c5dc6527efdefbe6ae25b265ee5a7f534d9f0543c5b0c237fdb6"
+]

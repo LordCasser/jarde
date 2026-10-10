@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-10T15:57:29.346379+00:00",
+  "duration_seconds": 20.28252937499201,
+  "argv": [
+    "python3",
+    "-B",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/run-internal-diagnostic-root-v1.py",
+    "--expected-patch-region-sha256",
+    "aa576ff5b4c5bc39775b72596eb1fca9ce7891045e8a7da906ec41ec90018222"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

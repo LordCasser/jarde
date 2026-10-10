@@ -1,0 +1,12 @@
+{
+  "status": "compile_failure_preserved_root_type_corrections_applied",
+  "source_before": "aa576ff5b4c5bc39775b72596eb1fca9ce7891045e8a7da906ec41ec90018222",
+  "source_after": "7998bf1e6e24c5dc6527efdefbe6ae25b265ee5a7f534d9f0543c5b0c237fdb6",
+  "root_corrections": [
+    "qualify existing crate::build::FieldCopies",
+    "consume Vec<&CanonicalBlockId> into_iter for four arm counts; retain flat_map borrowed-filter form"
+  ],
+  "failed_invocation": "diagnostic-invocation-root-v1",
+  "failed_guard_record": "internal-diagnostic-root-v1/execution.json",
+  "patch": "internal-diagnostic-root-v3.patch"
+}

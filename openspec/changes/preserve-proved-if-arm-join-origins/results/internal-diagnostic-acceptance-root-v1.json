@@ -1,0 +1,56 @@
+{
+  "schema": "if-arm-internal-diagnostic-root-acceptance-v1",
+  "status": "accepted_real_nested_region_observation",
+  "source_base": "16f9122923f13ab5568ee350c7f04da4c9808b6b",
+  "prior_product_ci": "d714a6bcc/38062706229 accepted v2",
+  "test_result": [
+    1,
+    0,
+    0
+  ],
+  "outer_loop_header": 6,
+  "canonical_branch_leader": 11,
+  "physical_branch_bci": 14,
+  "if_join": 27,
+  "then_terminal_canonical_block": 17,
+  "then_instructions": [
+    [
+      17,
+      132,
+      3
+    ],
+    [
+      20,
+      167,
+      3
+    ]
+  ],
+  "then_full_outgoing": [
+    [
+      17,
+      "Normal",
+      27
+    ]
+  ],
+  "then_owner_counts": {
+    "then": 1,
+    "else": 0,
+    "method": 1
+  },
+  "source_restored_and_50_pins_rechecked": true,
+  "peak_target_bytes": 154734787,
+  "free_bytes_after_clean": 69501063168,
+  "target_absent": true,
+  "full_source_or_new_cli_implementation_accepted": false,
+  "compile_failure_preserved": "internal-diagnostic-root-v1;diagnostic-invocation-root-v1",
+  "evidence_sha256": {
+    "internal-diagnostic-root-v3.patch": "3fd04f401e99097e7af7064598d762b9ae806222ba68ac9b11e7eff27a13bb3f",
+    "run-internal-diagnostic-root-v2.py": "a4a7a6d3ef84c5c8ad568e14073e4beff3451f642ba079e9acee0570b2af825b",
+    "internal-diagnostic-root-v2/execution.json": "c9c36d9f49931bde0082d8e2947fb61595173cc6a609988d5d8b24b9f3448828",
+    "internal-diagnostic-root-v2/2.stdout.raw": "618536f8768e2c8e879d06ff416b43d39a429cee03740b1f07aaa1fa570b551a",
+    "internal-diagnostic-root-v2/2.stderr.raw": "0c0a8a873959782b00aea3541065949b2fdee328141141caeadf4336f848f889",
+    "diagnostic-invocation-root-v2/execution.json": "306077840e4b6c390cc84b8e1ec4bec2edfcbb40f51f3a9cc190019653e61176",
+    "diagnostic-source-restoration-root-v1.json": "76207aa536f71c54f00ec261477c963a0070f2ed848394df1bdee6b09a121beb",
+    "diagnostic-clean-root-v1/execution.json": "ca598087061de4a3b02e360cf46cf28b0bd49b9ca077512fba51797a208a12e3"
+  }
+}

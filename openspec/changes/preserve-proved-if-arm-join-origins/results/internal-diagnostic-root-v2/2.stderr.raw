@@ -1,0 +1,12 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.59s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+outer_loop_header=CanonicalBlockId { bci: 6, path: [] }
+inner_if_branch_block=CanonicalBlockId { bci: 11, path: [] } branch_bci=14 join=Some(CanonicalBlockId { bci: 27, path: [] })
+then_last_straight=[CanonicalBlockId { bci: 17, path: [] }] instructions=[(17, 132, 3), (20, 167, 3)]
+else_last_straight=[CanonicalBlockId { bci: 23, path: [] }] instructions=[(23, 28, 1), (24, 5, 1), (25, 104, 1), (26, 61, 1)]
+then_source_outgoing=[(17, Normal, 27)]
+else_source_outgoing=[(23, Normal, 27)]
+canonical_all_edges=[(0, Normal, 6), (6, Normal, 11), (6, Normal, 33), (11, Normal, 17), (11, Normal, 23), (17, Normal, 27), (23, Normal, 27), (27, Normal, 6)]
+then_source_owner_counts: then=1 else=0 method=1
+else_source_owner_counts: then=0 else=1 method=1

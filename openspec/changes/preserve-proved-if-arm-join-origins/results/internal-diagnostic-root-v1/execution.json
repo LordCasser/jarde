@@ -1,0 +1,118 @@
+{
+  "schema": "preserve-proved-if-arm-join-origins-internal-diagnostic-root-v1",
+  "status": "diagnostic-failed",
+  "test": "diagnose_cf07_counted_if_join_from_real_class_ir",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--lib",
+    "--locked",
+    "region::tests::diagnose_cf07_counted_if_join_from_real_class_ir",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T15:57:09.112381+00:00",
+  "diagnostic_runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/run-internal-diagnostic-root-v1.py",
+    "sha256": "f3f70733e5d9368feae621d9150ec149298b5da6e71a7ba9e8d26c37da0498c1"
+  },
+  "guarded_runner_template": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "environment_overrides": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_TERM_COLOR": "always"
+  },
+  "stripped_java_environment_keys": [],
+  "guards": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_interval_seconds": 1,
+    "process_group_stop": true
+  },
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+    "sha256_before": "aa576ff5b4c5bc39775b72596eb1fca9ce7891045e8a7da906ec41ec90018222",
+    "sha256_after": "aa576ff5b4c5bc39775b72596eb1fca9ce7891045e8a7da906ec41ec90018222",
+    "unchanged_during_test": true,
+    "note": "temporary diagnostic source is not a product pin"
+  },
+  "preflight": {
+    "free_bytes": 68815474688,
+    "target_bytes": 0
+  },
+  "command": {
+    "index": 2,
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--lib",
+      "--locked",
+      "region::tests::diagnose_cf07_counted_if_join_from_real_class_ir",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T15:57:09.112530+00:00",
+    "duration_seconds": 20.226921499997843,
+    "exit_code": 101,
+    "guard_stop": null,
+    "peak_target_bytes": 118320292,
+    "free_bytes_after": 69394894848,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": null,
+    "streams": {
+      "stdout": {
+        "path": "openspec/changes/preserve-proved-if-arm-join-origins/results/internal-diagnostic-root-v1/2.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "openspec/changes/preserve-proved-if-arm-join-origins/results/internal-diagnostic-root-v1/2.stderr.raw",
+        "bytes": 6685,
+        "sha256": "b580f6526a2dcfb01bb7181feed36c2842b7ad819da97c373d09de2bfb6ed1e7"
+      }
+    }
+  },
+  "exact_test_line": [],
+  "summary_matches": [],
+  "free_bytes_after": 69394894848
+}

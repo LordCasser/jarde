@@ -1,0 +1,101 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[91merror[E0433][0m[1m: cannot find type `FieldCopies` in this scope[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:13777:14
+      [1m[94m|[0m
+[1m[94m13777[0m [1m[94m|[0m             &FieldCopies::default(),
+      [1m[94m|[0m              [1m[91m^^^^^^^^^^^[0m [1m[91muse of undeclared type `FieldCopies`[0m
+      [1m[94m|[0m
+[1m[96mhelp[0m: consider importing this struct
+      [1m[94m|[0m
+[1m[94m13354[0m [92m+ [0m    [92muse crate::build::FieldCopies;[0m
+      [1m[94m|[0m
+
+[1m[91merror[E0277][0m[1m: can't compare `&jarde_jvm::method_ir::CanonicalBlockId` with `jarde_jvm::method_ir::CanonicalBlockId`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:13863:30
+      [1m[94m|[0m
+[1m[94m13863[0m [1m[94m|[0m             .filter(|id| *id == then_source)
+      [1m[94m|[0m                              [1m[91m^^[0m [1m[91mno implementation for `&jarde_jvm::method_ir::CanonicalBlockId == jarde_jvm::method_ir::CanonicalBlockId`[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mhelp[0m: the trait `PartialEq<jarde_jvm::method_ir::CanonicalBlockId>` is not implemented for `&jarde_jvm::method_ir::CanonicalBlockId`
+      [1m[94m= [0m[1mnote[0m: required for `&&jarde_jvm::method_ir::CanonicalBlockId` to implement `PartialEq<&jarde_jvm::method_ir::CanonicalBlockId>`
+[1m[96mhelp[0m: consider dereferencing here
+      [1m[94m|[0m
+[1m[94m13863[0m [1m[94m| [0m            .filter(|id| [92m*[0m*id == then_source)
+      [1m[94m|[0m                          [92m+[0m
+
+[1m[91merror[E0277][0m[1m: can't compare `&jarde_jvm::method_ir::CanonicalBlockId` with `jarde_jvm::method_ir::CanonicalBlockId`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:13868:30
+      [1m[94m|[0m
+[1m[94m13868[0m [1m[94m|[0m             .filter(|id| *id == then_source)
+      [1m[94m|[0m                              [1m[91m^^[0m [1m[91mno implementation for `&jarde_jvm::method_ir::CanonicalBlockId == jarde_jvm::method_ir::CanonicalBlockId`[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mhelp[0m: the trait `PartialEq<jarde_jvm::method_ir::CanonicalBlockId>` is not implemented for `&jarde_jvm::method_ir::CanonicalBlockId`
+      [1m[94m= [0m[1mnote[0m: required for `&&jarde_jvm::method_ir::CanonicalBlockId` to implement `PartialEq<&jarde_jvm::method_ir::CanonicalBlockId>`
+[1m[96mhelp[0m: consider dereferencing here
+      [1m[94m|[0m
+[1m[94m13868[0m [1m[94m| [0m            .filter(|id| [92m*[0m*id == then_source)
+      [1m[94m|[0m                          [92m+[0m
+
+[1m[91merror[E0277][0m[1m: can't compare `&jarde_jvm::method_ir::CanonicalBlockId` with `jarde_jvm::method_ir::CanonicalBlockId`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:13879:30
+      [1m[94m|[0m
+[1m[94m13879[0m [1m[94m|[0m             .filter(|id| *id == else_source)
+      [1m[94m|[0m                              [1m[91m^^[0m [1m[91mno implementation for `&jarde_jvm::method_ir::CanonicalBlockId == jarde_jvm::method_ir::CanonicalBlockId`[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mhelp[0m: the trait `PartialEq<jarde_jvm::method_ir::CanonicalBlockId>` is not implemented for `&jarde_jvm::method_ir::CanonicalBlockId`
+      [1m[94m= [0m[1mnote[0m: required for `&&jarde_jvm::method_ir::CanonicalBlockId` to implement `PartialEq<&jarde_jvm::method_ir::CanonicalBlockId>`
+[1m[96mhelp[0m: consider dereferencing here
+      [1m[94m|[0m
+[1m[94m13879[0m [1m[94m| [0m            .filter(|id| [92m*[0m*id == else_source)
+      [1m[94m|[0m                          [92m+[0m
+
+[1m[91merror[E0277][0m[1m: can't compare `&jarde_jvm::method_ir::CanonicalBlockId` with `jarde_jvm::method_ir::CanonicalBlockId`[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:13884:30
+      [1m[94m|[0m
+[1m[94m13884[0m [1m[94m|[0m             .filter(|id| *id == else_source)
+      [1m[94m|[0m                              [1m[91m^^[0m [1m[91mno implementation for `&jarde_jvm::method_ir::CanonicalBlockId == jarde_jvm::method_ir::CanonicalBlockId`[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mhelp[0m: the trait `PartialEq<jarde_jvm::method_ir::CanonicalBlockId>` is not implemented for `&jarde_jvm::method_ir::CanonicalBlockId`
+      [1m[94m= [0m[1mnote[0m: required for `&&jarde_jvm::method_ir::CanonicalBlockId` to implement `PartialEq<&jarde_jvm::method_ir::CanonicalBlockId>`
+[1m[96mhelp[0m: consider dereferencing here
+      [1m[94m|[0m
+[1m[94m13884[0m [1m[94m| [0m            .filter(|id| [92m*[0m*id == else_source)
+      [1m[94m|[0m                          [92m+[0m
+
+[1mSome errors have detailed explanations: E0277, E0433.[0m
+[1mFor more information about an error, try `rustc --explain E0277`.[0m
+[1m[91merror[0m: could not compile `jarde-java` (lib test) due to 5 previous errors
