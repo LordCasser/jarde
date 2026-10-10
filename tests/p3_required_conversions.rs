@@ -345,9 +345,9 @@ fn a_return_states_the_members_own_type() {
 }
 
 /// A write meets the **variable's or the field's own type**: the declaration's type is the plan's
-/// decision for the local, and a field write's is the descriptor the pool states. Both are positions
-/// that perform the widening themselves (P3 2c.29), so the value's own text is what they read — and
-/// `int local1 = arg0;` for a `char` argument is the same slot value the `istore` stored.
+/// decision for the local, and a field write's is the descriptor the pool states. The complete write
+/// set proves char locals here; their int return positions widen implicitly. The field remains int
+/// by its descriptor. Neither position needs a redundant cast (P3 2c.29).
 #[test]
 fn a_write_states_the_written_types_own_type() {
     let engine = Engine::new();
@@ -356,7 +356,7 @@ fn a_write_states_the_written_types_own_type() {
     let declared = presented(&sample, b"declared", b"(C)I");
     assert_eq!(
         body(&declared),
-        "int local1 = arg0;\nreturn local1;",
+        "char local1 = arg0;\nreturn local1;",
         "the declaration's value is the value the store wrote:\n{}",
         declared.text
     );
@@ -364,7 +364,7 @@ fn a_write_states_the_written_types_own_type() {
     let assigned = presented(&sample, b"assigned", b"(C)I");
     assert_eq!(
         body(&assigned),
-        "int local1 = 0;\nlocal1 = arg0;\nreturn local1;",
+        "char local1 = '\\u0000';\nlocal1 = arg0;\nreturn local1;",
         "the assignment after the declaration is the same position:\n{}",
         assigned.text
     );

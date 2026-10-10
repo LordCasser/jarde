@@ -188,7 +188,6 @@ const NEGATIVE_CASES: &[(&str, &[u8], &str)] = &[
     negative_case!("cfg-loop-phi", V4),
     negative_case!("handler", SlotReuseBoundaries),
     negative_case!("parameter-header", ParameterHeader),
-    negative_case!("unknown-null", NullThenBuilder),
     negative_case!("held-use", HeldUse),
     negative_case!("cfg-backedge-disjoint", RefLoopBack),
 ];
@@ -327,13 +326,49 @@ fn same_name_lvt_sources_keep_their_existing_failure_verbatim() {
 
 #[test]
 fn unsupported_reference_boundaries_keep_the_cli9_source_verbatim() {
-    assert_eq!(NEGATIVE_CASES.len(), 8);
+    assert_eq!(NEGATIVE_CASES.len(), 7);
     for (name, bytes, baseline) in NEGATIVE_CASES {
         let report = recover(bytes, name, &RecoveryEvidenceRequest::all());
         assert_eq!(
             report.text, *baseline,
             "{name}: unsupported-shape output changed"
         );
+    }
+}
+
+/// Null followed by one exact constructor producer is now a proved reference local. Preserve the
+/// historical baseline and require the entire class to differ only in that declaration's type.
+#[test]
+fn null_first_exact_builder_writes_refine_only_the_local_type() {
+    let (name, bytes, baseline) = negative_case!("unknown-null", NullThenBuilder);
+    assert_eq!(baseline.matches("Object local2;").count(), 1);
+    let expected = baseline.replace("Object local2;", "java.lang.StringBuilder local2;");
+    let essential = recover(bytes, name, &RecoveryEvidenceRequest::essential());
+    let all = recover(bytes, name, &RecoveryEvidenceRequest::all());
+    assert_eq!(essential.text, expected);
+    assert_eq!(all.text, expected);
+    assert_eq!(essential.methods.len(), 3);
+    assert_eq!(all.methods.len(), 3);
+    assert!(all.methods.iter().all(|method| method.markers.is_empty()));
+    for (left, right) in essential.methods.iter().zip(&all.methods) {
+        assert_eq!(left.item, right.item);
+        let identity = left.item.identity.clone();
+        let (
+            ClassSourceOutcome::Recovered { report: left, .. },
+            ClassSourceOutcome::Recovered { report: right, .. },
+        ) = (&left.outcome, &right.outcome)
+        else {
+            panic!("whole-class member recovery remains present");
+        };
+        assert_eq!(left.text, right.text);
+        assert!(!right.source_map.segments().is_empty());
+        for segment in right.source_map.segments() {
+            for origin in
+                std::iter::once(segment.origin().primary()).chain(segment.origin().derived().iter())
+            {
+                assert_eq!(origin.method(), Some(&identity));
+            }
+        }
     }
 }
 

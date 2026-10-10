@@ -51,3 +51,13 @@ root 已全文读 replay v2、v3，均有静态缺陷，未执行候选。v3仍�
 追加独立 [focused repair](results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/execution.json) 实际 fmt 与6/0/0通过。完整 Meet 类全部12成员保留，[char 全范围接受](results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/acceptance-root-v1.json) 实际19命令/38raw，两JDK8/23 × 原源码/JADX/Jarde default/all 共8腿，每腿逐值检查0..65535，输出均 `chars=65536,sum=2147450880`，正文/全部方法身份/既有来源map在default/all相同。root独立verifier退出0。首次CLI参数误写debug而非evidence、首次verifier过度比较debug报告计数的失败均保留，未修改任何生成源码来通过。
 
 追加 repair inputs 与原17/10/50冻结构建闭包分开核，不回写历史meta/build或重建未改的生产CLI。新CI adapter沿用完整冻结核验，每seed额外核六项p3_meeting准确测试名、原class/源码/测试的Git与live SHA。任务仍6/8，修复提交自身CI待实测接受。本地一次全workspace编译触发1GiB target守卫，真实中止/清理保留；小批全量验证正在执行，不能把中止算测试通过。
+
+## 后续两个旧断言修复
+
+只读审计与冻结CLI实际整类报告又定位两项相同的旧期待：RequiredConversions 的 declared/assigned 全写满足 char 证明，旧 int 声明断言改为 char；field/int 调用/拼接所需转换保持。NullThenBuilder 原历史 Object 局部现在由 null 后准确 StringBuilder 构造写证明，移出旧 unknown-null 拒绝列表，新增完整类只改局部声明类型的正例，并核三成员、essential/all 正文一致及 all 全来源身份。历史class与baseline原字节保留，其余七个拒绝边界保持。生产源码及原17/10/50冻结闭包未改。
+
+[focused repair v7](results/ci-repair-evidence-root-v2/jarde-typed-ci-repair-root-v7/execution.json) 实际fmt与三组测试通过：Meeting6、ReferenceSlots8、RequiredConversions8，共22/0/0，无守卫中止。新增测试先错误比较essential空map与all完整map，后两次误访问private字段，实际失败v3/v4/v5均保留；v6通过后补齐三成员数量约束，最终v7再次通过。
+
+RequiredConversions 完整13成员与field、NullThenBuilder 完整三成员的源/JADX/Jarde default/all双JDK实际运行均通过：前者逐值检查65536char及五个相关方法，后者 true/false 两值结果7/6。Null的原Java不可得，原执行腿使用原canonical class，不声称恢复原源码；独立verifier复核尚未完成。全工作区小批验证已保留前49个成功命令，从此前Null旧断言失败的第49号命令开始补完，其结果不能预先视为通过。新提交自身CI及最终clean仍待完成，任务6/8不变。
+
+root审查CI adapter v4：局部repair三个Cargo Running headers来自stderr，准确名字/计数来自stdout；CI combined日志继续严格核目标header与双seed。九项追加repair pins独立核Git/live与实际repair，不混入历史冻结闭包。v3私稿与v4及审查改动保留，不把静态适配当CI验收。
