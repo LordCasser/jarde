@@ -11063,7 +11063,9 @@ fn prove_static_initializer_group(
                 field.name
             )));
         }
-        if !expression_state.has_nonconstant_shape {
+        if !expression_state.has_nonconstant_shape
+            && field_headers[field_index].access_flags & 0x0010 != 0
+        {
             return Ok(initializer_refused(format!(
                 "RHS of field `{}` is a Java constant expression and would change initialization phase",
                 field.name

@@ -1,0 +1,64 @@
+{
+  "status": "accepted",
+  "checks": 2093,
+  "errors": [],
+  "baselines": {
+    "literal": {
+      "manifest_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+      "inventory_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+      "commands": 31,
+      "case_counts": {
+        "original": 2,
+        "jadx": 4,
+        "jarde": 2
+      },
+      "success_counts": {
+        "original": 2,
+        "jadx": 4,
+        "jarde": 2
+      }
+    },
+    "ordered": {
+      "manifest_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+      "inventory_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+      "commands": 31,
+      "case_counts": {
+        "original": 2,
+        "jadx": 4,
+        "jarde": 2
+      },
+      "success_counts": {
+        "original": 2,
+        "jadx": 4,
+        "jarde": 2
+      }
+    }
+  },
+  "total_commands": 62,
+  "total_class_jadx_jarde_legs": 16,
+  "observed_original_raw_oracles": {
+    "literal": {
+      "source": "streams/javac8-original-run.stdout",
+      "stdout": "static=[10, 20, 30]\nfirst=[40, 50, 60]\nsecond=[40, 50, 60]\nfresh=true\n",
+      "stdout_sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0,
+      "provenance": "raw stdout/stderr/exit from fresh original javac8 run; javac23 checked byte-equal; recorded after execution"
+    },
+    "ordered": {
+      "source": "streams/javac8-original-run.stdout",
+      "stdout": "static=12345:1:[2, 3, 4]:5\nfirst=123456789:[6, 7, 8]\nsecond=1912282837:[6, 7, 8]\n",
+      "stdout_sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0,
+      "provenance": "raw stdout/stderr/exit from fresh original javac8 run; javac23 checked byte-equal; recorded after execution"
+    }
+  },
+  "source_map_scope": "per-method allocation, byte-array element stores, putfield/putstatic, helper calls, and constructor invokespecial BCIs are sourced",
+  "interpretation": {
+    "literal": "static array initializer group proved and projected; instance array remains at constructor; this is a presentation boundary, not an EM-18 gap",
+    "ordered": "static group refusal is caused by the explicit trace=0 initialization-phase constraint; all members remain structured and full-source raw execution matches; this is not an array semantic gap",
+    "em18": "partial; these two initializer-position slices do not complete EM-18",
+    "oracle": "fixed stdout byte strings were read from fresh original runs after execution and are not prior expected values"
+  }
+}

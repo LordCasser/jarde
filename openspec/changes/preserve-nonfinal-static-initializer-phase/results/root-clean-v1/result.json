@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "cargo",
+    "clean",
+    "--target-dir",
+    "/Users/lordcasser/workspace/projects/jarde/target"
+  ],
+  "exit": 0,
+  "target_bytes_before": 658441395,
+  "free_before": 21896855552,
+  "free_after": 22517186560,
+  "target_exists_after": false,
+  "cli_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+  "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "8b338377146e6ecabe3ba48d9ff61720f6b8a499f8dd77c495ced056239b8acb",
+  "frozen_sources_unchanged": true
+}

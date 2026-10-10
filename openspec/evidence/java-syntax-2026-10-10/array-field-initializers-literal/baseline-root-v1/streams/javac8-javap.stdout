@@ -1,0 +1,81 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class
+  Last modified 2026-10-10; size 262 bytes
+  MD5 checksum 9a5f4832ce8d66dd59580ebc5c015336
+public class ArrayFieldLiteral
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#13         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #4.#14         // ArrayFieldLiteral.b:[B
+   #3 = Fieldref           #4.#15         // ArrayFieldLiteral.a:[B
+   #4 = Class              #16            // ArrayFieldLiteral
+   #5 = Class              #17            // java/lang/Object
+   #6 = Utf8               a
+   #7 = Utf8               [B
+   #8 = Utf8               b
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               <clinit>
+  #13 = NameAndType        #9:#10         // "<init>":()V
+  #14 = NameAndType        #8:#7          // b:[B
+  #15 = NameAndType        #6:#7          // a:[B
+  #16 = Utf8               ArrayFieldLiteral
+  #17 = Utf8               java/lang/Object
+{
+  static byte[] a;
+    descriptor: [B
+    flags: ACC_STATIC
+
+  byte[] b;
+    descriptor: [B
+    flags:
+
+  public ArrayFieldLiteral();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_3
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: bipush        40
+        12: bastore
+        13: dup
+        14: iconst_1
+        15: bipush        50
+        17: bastore
+        18: dup
+        19: iconst_2
+        20: bipush        60
+        22: bastore
+        23: putfield      #2                  // Field b:[B
+        26: return
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_3
+         1: newarray       byte
+         3: dup
+         4: iconst_0
+         5: bipush        10
+         7: bastore
+         8: dup
+         9: iconst_1
+        10: bipush        20
+        12: bastore
+        13: dup
+        14: iconst_2
+        15: bipush        30
+        17: bastore
+        18: putstatic     #3                  // Field a:[B
+        21: return
+}

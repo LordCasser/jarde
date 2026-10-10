@@ -1,0 +1,11 @@
+
+running 6 tests
+test em06_projects_only_the_complete_static_chain ... ok
+test final_runtime_constant_without_constant_value_still_refuses_phase_change ... ok
+test incomplete_or_unsafe_static_groups_remain_in_clinit ... ok
+test nonfinal_runtime_constant_keeps_its_phase_in_an_ordered_static_group ... ok
+test ordinary_class_without_clinit_has_no_initializer_group ... ok
+test output_stop_and_cancellation_do_not_commit_a_prefix ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.56s
+

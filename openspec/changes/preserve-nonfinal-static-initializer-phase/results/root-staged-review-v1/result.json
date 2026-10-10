@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/nonfinal-phase-luna-v1.patch",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/nonfinal-phase-root-v2.patch",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-interface-tests-v1/stdout",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-static-tests-v2/stdout"
+  ],
+  "exit": 0,
+  "raw_whitespace_only_exclusions": [
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/nonfinal-phase-luna-v1.patch",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/nonfinal-phase-root-v2.patch",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-interface-tests-v1/stdout",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-static-tests-v2/stdout"
+  ],
+  "preserve_raw_reason": "two exact unified patches require context spaces; two actual libtest stdout files end in blank lines; do not rewrite hashed raw",
+  "python_ast_parse_files": [
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/prepare-candidate-luna-v1.py",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/run-root-gate-v1.py",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/run-root-gate-v2.py",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-candidate-root-prepared-v1.py",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-candidate-root-v2.py",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-prepared-v1.py",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v2.py",
+    "openspec/changes/recover-proved-finally-cleanup/results/verify-ci-checkpoint-root-prepared-v1.py",
+    "openspec/changes/recover-proved-finally-cleanup/results/verify-ci-checkpoint-root-v2.py",
+    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/prepare-baseline-luna-v1.py",
+    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/prepare-baseline-luna-v1.py",
+    "openspec/evidence/java-syntax-2026-10-10/verify-array-field-initializers-root-prepared-v1.py",
+    "openspec/evidence/java-syntax-2026-10-10/verify-array-field-initializers-root-v2.py"
+  ],
+  "python_ast_parse_pass": true
+}

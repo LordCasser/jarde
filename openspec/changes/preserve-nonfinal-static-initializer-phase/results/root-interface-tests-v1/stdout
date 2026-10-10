@@ -1,0 +1,9 @@
+
+running 4 tests
+test admits_a_qualified_forward_read_only_when_original_write_time_is_preserved ... ok
+test proves_all_runtime_writes_and_keeps_constantvalue_separate ... ok
+test refuses_exception_edges_and_runtime_constants_that_would_change_initialization_phase ... ok
+test rejects_unclaimed_effects_duplicate_and_missing_writes_and_branches_as_whole_groups ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

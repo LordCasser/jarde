@@ -286,3 +286,11 @@ CF16 ImplicitCleanup现有实现经当前CLI完整双JDK/all和essential四腿16
 field/branch N=33 双 JDK 在 BCI450 命中既有 jre_recursion_bound，NotProduced且零正文/来源，root独立204checks/0errors。永久双版本fixture与公共exact测试新增；v6 libtest默认小栈溢出保留，v7明确8 MiB测试线程栈后完整p3_patterns85/85。CF16现9/11（2.4完成）；浅层组合仍fallback，不能计整单元追平，生产小栈安全也未证明。最终整类/新检查点CI仍待验收。
 
 CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde完整编译执行2/2与原raw相同，Completion覆盖型完整类继续编译拒绝，固定历史JADX源码重编的566/8错误保留。-p完整物理Code计数为4/7（旧3/6漏private mark）。当前10/11，3.2等待本检查点自己的CI；71单元分母/整单元状态不变。
+
+## 2026-10-10 EM18 字段初始化完整对照
+
+依据 JADX TestArrayInitField.test()，literal/ordered 两组各 31 命令、8 腿，原双 JDK 2/2、fresh JADX default/none 4/4、冻结 Jarde 2/2。root 独立 2093 checks/0 errors，见 [实际验收](../java-syntax-2026-10-10/array-field-initializers-root-verification-v2.json)。static literal 数组已提升；显式非 final trace=0 使 ordered 静态组过于保守拒绝，已有 OpenSpec preserve-nonfinal-static-initializer-phase 最小 flags 修正。实例数组保留构造器赋值，跨构造器共同初始化证明另片处理。71 单元分母与 EM18 整单元状态不因这两组语义成功而改变。
+
+非final静态阶段最小修正已通过静态6/6、接口4/4及scoped Clippy。新冻结CLI原样完整候选四腿4/4，root独立2245checks/0errors，ordered四静态字段按原写入顺序提升，无重复static块，原clinit/map保留；实例不提升。本change当前5/7，确切新产品CI/提交仍pending，不借旧head CI，不改变71/EM18整单元状态。
+
+本片代码/证据已提交推送main，6/7，3.2保留等待确切新产品CI；机器target已清658441395字节，准备的实例构造器探针未运行。

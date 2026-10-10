@@ -20,10 +20,7 @@ class 的实际运行记录确定，不能从本计划推定。
 
 - `ArrayInitializers::prove` 已证明有序分配/元素写入闭合链、索引、别名、异常与消费者约束；
   `array-field-store/README.md` 的 root 验收进一步证明它可与方法体的实例 `FieldWrite` 消费点组合。
-- `<clinit>` 同轮事实已有有序 `ClassInitializerStep::FieldWrite`、字段读取身份及 RHS AST；静态字段访问计划也
-  能区分 `putstatic`。EM-06 报告记录了普通类静态字段候选的结构证明和 writer，但当前普通类投影入口为
-  `NotApplicable`，已有启用范围是接口。故值得先测“已知 array proof + 已有有序静态 field-write 事实”能否形成
-  一组声明初始化器；这只是候选方向，尚未证明这里存在差距。
+- `<clinit>` 同轮事实已有有序 `ClassInitializerStep::FieldWrite`、字段读取身份及 RHS AST；静态字段访问计划也能区分 `putstatic`。root核对当前 `src/facade.rs` 的实际入口后纠正此前从EM-06历史继承的判断：普通类已经调用 `prove_static_initializer_group` 与 `project_static_initializer_group`，并非只支持接口。普通类组要求完整表、完整无fallback的clinit、每个runtime static field唯一写、唯一尾return及有序效果证明；ConstantValue混合/未显式初始化的runtime字段等仍会整组拒绝。`ExprKind::NewArray` 已在RHS效果证明中遍历长度/元素。因此先用原JADX纯字面量控制，再用显式trace=0和mark有序扩展验证现有组合，而不是默认新建机制。
 - 实例字段 initializer 的 JVM 写入位于构造器 `super`/`this` 链之后；现有字段机制对
   `UninitializedThis` 有专门身份约束，初始化投影也已经消费数组事实。`TestArrayInitField` 的实例字段可作为
   同类控制臂，检查字段呈现是否跨越构造器接缝，但不要据此把已验收的普通方法体 `putfield` 等同于构造器字段提升。

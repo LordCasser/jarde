@@ -1,0 +1,1449 @@
+{
+  "schema": "preserve-nonfinal-static-initializer-candidate-luna-v1",
+  "scope": "two frozen complete Java 8 array-field classes across javac8 and javac23; candidate source is compiled unchanged",
+  "status": "completed",
+  "claim_boundary": "Checks static initializer projection only. Instance byte[] b remains a declaration plus constructor assignment; instance-field restoration is not claimed.",
+  "oracle": "The original class and previously accepted baseline Jarde run stdout, stderr, and exit per JDK leg; expected observations are read from baseline raw files, not hardcoded.",
+  "arguments": {
+    "cli": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json"
+  },
+  "metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "bytes": 4981,
+    "sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e"
+  },
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "src/facade.rs": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "baseline_manifests": {
+    "literal": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+      "sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1"
+    },
+    "ordered": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+      "sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5"
+    }
+  },
+  "preflight": [
+    {
+      "label": "metadata-cli-path",
+      "ok": true,
+      "actual": "/private/tmp/jarde-nonfinal-static-cli-v1"
+    },
+    {
+      "label": "candidate-cli",
+      "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "ok": true
+    },
+    {
+      "label": "candidate-source-pin-set",
+      "expected": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "actual": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/init.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/report.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/ast.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/emit.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/emit.rs",
+      "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/asserts.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/asserts.rs",
+      "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/field.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:src/facade.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:src/class_source.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:Cargo.lock",
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "ok": true
+    },
+    {
+      "label": "jdk-controls-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "literal-baseline-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+      "sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+      "expected_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+      "source_sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+      "runner_sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+      "ok": true
+    },
+    {
+      "label": "literal-javac8-original-class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+      "expected_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+      "actual_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+      "baseline_expected_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+      "ok": true
+    },
+    {
+      "label": "literal-javac23-original-class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+      "expected_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+      "actual_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+      "baseline_expected_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+      "ok": true
+    },
+    {
+      "label": "ordered-baseline-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+      "sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+      "expected_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+      "source_sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+      "runner_sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+      "ok": true
+    },
+    {
+      "label": "ordered-javac8-original-class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+      "expected_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+      "actual_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+      "baseline_expected_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+      "ok": true
+    },
+    {
+      "label": "ordered-javac23-original-class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+      "expected_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+      "actual_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+      "baseline_expected_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+      "ok": true
+    }
+  ],
+  "case_counts": {
+    "candidate": 4
+  },
+  "success_counts": {
+    "candidate": 4
+  },
+  "commands": [
+    {
+      "label": "literal-javac8-candidate-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+        "--class",
+        "ArrayFieldLiteral",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac8-candidate-render.stdout",
+        "bytes": 31732,
+        "sha256": "4f4c2e3f7c263aef432f1c94a194a85f16380f5935a274a652d55db9b84934ff"
+      },
+      "stderr": {
+        "path": "streams/literal-javac8-candidate-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac8-candidate-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/ArrayFieldLiteral.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac8-candidate-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/literal-javac8-candidate-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac8-candidate-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac8-candidate-run.stdout",
+        "bytes": 70,
+        "sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+      },
+      "stderr": {
+        "path": "streams/literal-javac8-candidate-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac8-candidate-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/classes/ArrayFieldLiteral.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac8-candidate-javap.stdout",
+        "bytes": 2449,
+        "sha256": "b17166177d14dca3fd3c88d867689a6d4b2d9f333620124d60f7faf016d5edfe"
+      },
+      "stderr": {
+        "path": "streams/literal-javac8-candidate-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac23-candidate-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+        "--class",
+        "ArrayFieldLiteral",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac23-candidate-render.stdout",
+        "bytes": 31732,
+        "sha256": "84e3c850819c32eb47dd71c8bd0d86605bf1d4d25c0437b7a4d8fc5f0e10a649"
+      },
+      "stderr": {
+        "path": "streams/literal-javac23-candidate-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac23-candidate-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/ArrayFieldLiteral.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac23-candidate-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/literal-javac23-candidate-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac23-candidate-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac23-candidate-run.stdout",
+        "bytes": 70,
+        "sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+      },
+      "stderr": {
+        "path": "streams/literal-javac23-candidate-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "literal-javac23-candidate-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/classes/ArrayFieldLiteral.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/literal-javac23-candidate-javap.stdout",
+        "bytes": 2717,
+        "sha256": "f542f950b6246c9d4fb7d7d42a4a0ff6de792ff3bfde84833e38e129b946e531"
+      },
+      "stderr": {
+        "path": "streams/literal-javac23-candidate-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac8-candidate-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+        "--class",
+        "ArrayFieldInitializers",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac8-candidate-render.stdout",
+        "bytes": 54681,
+        "sha256": "6eddf8f65d83a5cd83f80b7c3b882506cca17bdc8aa554f76f9b9caddbd4d3b4"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac8-candidate-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac8-candidate-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/ArrayFieldInitializers.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac8-candidate-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac8-candidate-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac8-candidate-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac8-candidate-run.stdout",
+        "bytes": 81,
+        "sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac8-candidate-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac8-candidate-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/classes/ArrayFieldInitializers.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac8-candidate-javap.stdout",
+        "bytes": 4659,
+        "sha256": "71a4793530a470fe699d7399feebd751d44da1e34b8a362a303e4ea4ccef0c0a"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac8-candidate-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac23-candidate-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+        "--class",
+        "ArrayFieldInitializers",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac23-candidate-render.stdout",
+        "bytes": 54681,
+        "sha256": "aa139ecc1784efdd20c67f5816e7e6b28b452d4bca8e8404e7d40127ef3bf7cd"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac23-candidate-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac23-candidate-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/ArrayFieldInitializers.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac23-candidate-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac23-candidate-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac23-candidate-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac23-candidate-run.stdout",
+        "bytes": 81,
+        "sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac23-candidate-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "ordered-javac23-candidate-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes/ArrayFieldInitializers.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/ordered-javac23-candidate-javap.stdout",
+        "bytes": 4968,
+        "sha256": "7d9cd71b155795a06946f9526168c1326dcd809d5bd8934b960ce31a6624f669"
+      },
+      "stderr": {
+        "path": "streams/ordered-javac23-candidate-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "literal-javac8-candidate",
+      "family": "literal",
+      "jdk_leg": "javac8",
+      "original_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+        "bytes": 262,
+        "sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891"
+      },
+      "success": true,
+      "render": {
+        "label": "literal-javac8-candidate-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+          "--class",
+          "ArrayFieldLiteral",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac8-candidate-render.stdout",
+          "bytes": 31732,
+          "sha256": "4f4c2e3f7c263aef432f1c94a194a85f16380f5935a274a652d55db9b84934ff"
+        },
+        "stderr": {
+          "path": "streams/literal-javac8-candidate-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "document": {
+        "path": "cases/literal-javac8-candidate/class-source.json",
+        "bytes": 31732,
+        "sha256": "4f4c2e3f7c263aef432f1c94a194a85f16380f5935a274a652d55db9b84934ff"
+      },
+      "render_success": true,
+      "runner_package_adaptation": null,
+      "proof_checks": {
+        "initializer_proof_proved": true,
+        "proved_static_fields_in_order": true,
+        "proof_field_count": true,
+        "proved_fields_are_static": true,
+        "proof_write_order_is_physical_order": true,
+        "static_initializer_declaration_order": true,
+        "no_root_static_block": true,
+        "instance_b_remains_uninitialized_field": true,
+        "physical_clinit_retained": true,
+        "all_methods_have_physical_identity": true,
+        "clinit_report_produced_structured": true,
+        "clinit_source_map_retained": true,
+        "instance_b_assigned_in_constructor": true,
+        "literal_proof_only_static_a": true
+      },
+      "member_count": 2,
+      "field_count": 2,
+      "compile": {
+        "label": "literal-javac8-candidate-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/ArrayFieldLiteral.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac8-candidate-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/literal-javac8-candidate-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "literal-javac8-candidate-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac8-candidate-run.stdout",
+          "bytes": 70,
+          "sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+        },
+        "stderr": {
+          "path": "streams/literal-javac8-candidate-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/literal-javac8-candidate/ArrayFieldLiteral.java",
+          "bytes": 774,
+          "sha256": "ea3917bc6bdc755c9c11a854ef95c8b1b8130021ef3d9b22c16713f497d5adb5"
+        },
+        {
+          "path": "cases/literal-javac8-candidate/Runner.java",
+          "bytes": 450,
+          "sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/literal-javac8-candidate/classes/ArrayFieldLiteral.class",
+          "bytes": 262,
+          "sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891"
+        },
+        {
+          "path": "cases/literal-javac8-candidate/classes/Runner.class",
+          "bytes": 916,
+          "sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true,
+      "runtime_matches_frozen_jarde_raw": true,
+      "javap": {
+        "label": "literal-javac8-candidate-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac8-candidate/classes/ArrayFieldLiteral.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac8-candidate-javap.stdout",
+          "bytes": 2449,
+          "sha256": "b17166177d14dca3fd3c88d867689a6d4b2d9f333620124d60f7faf016d5edfe"
+        },
+        "stderr": {
+          "path": "streams/literal-javac8-candidate-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "javap_class": {
+        "path": "cases/literal-javac8-candidate/classes/ArrayFieldLiteral.class",
+        "bytes": 262,
+        "sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891"
+      }
+    },
+    {
+      "label": "literal-javac23-candidate",
+      "family": "literal",
+      "jdk_leg": "javac23",
+      "original_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+        "bytes": 262,
+        "sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827"
+      },
+      "success": true,
+      "render": {
+        "label": "literal-javac23-candidate-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+          "--class",
+          "ArrayFieldLiteral",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac23-candidate-render.stdout",
+          "bytes": 31732,
+          "sha256": "84e3c850819c32eb47dd71c8bd0d86605bf1d4d25c0437b7a4d8fc5f0e10a649"
+        },
+        "stderr": {
+          "path": "streams/literal-javac23-candidate-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "document": {
+        "path": "cases/literal-javac23-candidate/class-source.json",
+        "bytes": 31732,
+        "sha256": "84e3c850819c32eb47dd71c8bd0d86605bf1d4d25c0437b7a4d8fc5f0e10a649"
+      },
+      "render_success": true,
+      "runner_package_adaptation": null,
+      "proof_checks": {
+        "initializer_proof_proved": true,
+        "proved_static_fields_in_order": true,
+        "proof_field_count": true,
+        "proved_fields_are_static": true,
+        "proof_write_order_is_physical_order": true,
+        "static_initializer_declaration_order": true,
+        "no_root_static_block": true,
+        "instance_b_remains_uninitialized_field": true,
+        "physical_clinit_retained": true,
+        "all_methods_have_physical_identity": true,
+        "clinit_report_produced_structured": true,
+        "clinit_source_map_retained": true,
+        "instance_b_assigned_in_constructor": true,
+        "literal_proof_only_static_a": true
+      },
+      "member_count": 2,
+      "field_count": 2,
+      "compile": {
+        "label": "literal-javac23-candidate-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/ArrayFieldLiteral.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac23-candidate-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/literal-javac23-candidate-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "literal-javac23-candidate-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac23-candidate-run.stdout",
+          "bytes": 70,
+          "sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+        },
+        "stderr": {
+          "path": "streams/literal-javac23-candidate-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/literal-javac23-candidate/ArrayFieldLiteral.java",
+          "bytes": 774,
+          "sha256": "ea3917bc6bdc755c9c11a854ef95c8b1b8130021ef3d9b22c16713f497d5adb5"
+        },
+        {
+          "path": "cases/literal-javac23-candidate/Runner.java",
+          "bytes": 450,
+          "sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/literal-javac23-candidate/classes/ArrayFieldLiteral.class",
+          "bytes": 262,
+          "sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827"
+        },
+        {
+          "path": "cases/literal-javac23-candidate/classes/Runner.class",
+          "bytes": 907,
+          "sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true,
+      "runtime_matches_frozen_jarde_raw": true,
+      "javap": {
+        "label": "literal-javac23-candidate-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/literal-javac23-candidate/classes/ArrayFieldLiteral.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/literal-javac23-candidate-javap.stdout",
+          "bytes": 2717,
+          "sha256": "f542f950b6246c9d4fb7d7d42a4a0ff6de792ff3bfde84833e38e129b946e531"
+        },
+        "stderr": {
+          "path": "streams/literal-javac23-candidate-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "javap_class": {
+        "path": "cases/literal-javac23-candidate/classes/ArrayFieldLiteral.class",
+        "bytes": 262,
+        "sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827"
+      }
+    },
+    {
+      "label": "ordered-javac8-candidate",
+      "family": "ordered",
+      "jdk_leg": "javac8",
+      "original_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+        "bytes": 457,
+        "sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee"
+      },
+      "success": true,
+      "render": {
+        "label": "ordered-javac8-candidate-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+          "--class",
+          "ArrayFieldInitializers",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac8-candidate-render.stdout",
+          "bytes": 54681,
+          "sha256": "6eddf8f65d83a5cd83f80b7c3b882506cca17bdc8aa554f76f9b9caddbd4d3b4"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac8-candidate-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "document": {
+        "path": "cases/ordered-javac8-candidate/class-source.json",
+        "bytes": 54681,
+        "sha256": "6eddf8f65d83a5cd83f80b7c3b882506cca17bdc8aa554f76f9b9caddbd4d3b4"
+      },
+      "render_success": true,
+      "runner_package_adaptation": null,
+      "proof_checks": {
+        "initializer_proof_proved": true,
+        "proved_static_fields_in_order": true,
+        "proof_field_count": true,
+        "proved_fields_are_static": true,
+        "proof_write_order_is_physical_order": true,
+        "static_initializer_declaration_order": true,
+        "no_root_static_block": true,
+        "instance_b_remains_uninitialized_field": true,
+        "physical_clinit_retained": true,
+        "all_methods_have_physical_identity": true,
+        "clinit_report_produced_structured": true,
+        "clinit_source_map_retained": true,
+        "instance_b_assigned_in_constructor": true,
+        "ordered_proof_has_four_fields": true
+      },
+      "member_count": 3,
+      "field_count": 5,
+      "compile": {
+        "label": "ordered-javac8-candidate-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/ArrayFieldInitializers.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac8-candidate-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac8-candidate-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "ordered-javac8-candidate-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac8-candidate-run.stdout",
+          "bytes": 81,
+          "sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac8-candidate-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/ordered-javac8-candidate/ArrayFieldInitializers.java",
+          "bytes": 1278,
+          "sha256": "49d0bc0efd4ce68c7a27e63044d65c7c92ac3240519f30433416ab458043a3ce"
+        },
+        {
+          "path": "cases/ordered-javac8-candidate/Runner.java",
+          "bytes": 627,
+          "sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/ordered-javac8-candidate/classes/ArrayFieldInitializers.class",
+          "bytes": 457,
+          "sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee"
+        },
+        {
+          "path": "cases/ordered-javac8-candidate/classes/Runner.class",
+          "bytes": 891,
+          "sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true,
+      "runtime_matches_frozen_jarde_raw": true,
+      "javap": {
+        "label": "ordered-javac8-candidate-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac8-candidate/classes/ArrayFieldInitializers.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac8-candidate-javap.stdout",
+          "bytes": 4659,
+          "sha256": "71a4793530a470fe699d7399feebd751d44da1e34b8a362a303e4ea4ccef0c0a"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac8-candidate-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "javap_class": {
+        "path": "cases/ordered-javac8-candidate/classes/ArrayFieldInitializers.class",
+        "bytes": 457,
+        "sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee"
+      }
+    },
+    {
+      "label": "ordered-javac23-candidate",
+      "family": "ordered",
+      "jdk_leg": "javac23",
+      "original_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+        "bytes": 457,
+        "sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789"
+      },
+      "success": true,
+      "render": {
+        "label": "ordered-javac23-candidate-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+          "--class",
+          "ArrayFieldInitializers",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac23-candidate-render.stdout",
+          "bytes": 54681,
+          "sha256": "aa139ecc1784efdd20c67f5816e7e6b28b452d4bca8e8404e7d40127ef3bf7cd"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac23-candidate-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "document": {
+        "path": "cases/ordered-javac23-candidate/class-source.json",
+        "bytes": 54681,
+        "sha256": "aa139ecc1784efdd20c67f5816e7e6b28b452d4bca8e8404e7d40127ef3bf7cd"
+      },
+      "render_success": true,
+      "runner_package_adaptation": null,
+      "proof_checks": {
+        "initializer_proof_proved": true,
+        "proved_static_fields_in_order": true,
+        "proof_field_count": true,
+        "proved_fields_are_static": true,
+        "proof_write_order_is_physical_order": true,
+        "static_initializer_declaration_order": true,
+        "no_root_static_block": true,
+        "instance_b_remains_uninitialized_field": true,
+        "physical_clinit_retained": true,
+        "all_methods_have_physical_identity": true,
+        "clinit_report_produced_structured": true,
+        "clinit_source_map_retained": true,
+        "instance_b_assigned_in_constructor": true,
+        "ordered_proof_has_four_fields": true
+      },
+      "member_count": 3,
+      "field_count": 5,
+      "compile": {
+        "label": "ordered-javac23-candidate-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/ArrayFieldInitializers.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac23-candidate-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac23-candidate-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "ordered-javac23-candidate-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac23-candidate-run.stdout",
+          "bytes": 81,
+          "sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac23-candidate-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/ordered-javac23-candidate/ArrayFieldInitializers.java",
+          "bytes": 1278,
+          "sha256": "49d0bc0efd4ce68c7a27e63044d65c7c92ac3240519f30433416ab458043a3ce"
+        },
+        {
+          "path": "cases/ordered-javac23-candidate/Runner.java",
+          "bytes": 627,
+          "sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/ordered-javac23-candidate/classes/ArrayFieldInitializers.class",
+          "bytes": 457,
+          "sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789"
+        },
+        {
+          "path": "cases/ordered-javac23-candidate/classes/Runner.class",
+          "bytes": 891,
+          "sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runtime_matches_original_raw": true,
+      "runtime_matches_frozen_jarde_raw": true,
+      "javap": {
+        "label": "ordered-javac23-candidate-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes/ArrayFieldInitializers.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/ordered-javac23-candidate-javap.stdout",
+          "bytes": 4968,
+          "sha256": "7d9cd71b155795a06946f9526168c1326dcd809d5bd8934b960ce31a6624f669"
+        },
+        "stderr": {
+          "path": "streams/ordered-javac23-candidate-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "javap_class": {
+        "path": "cases/ordered-javac23-candidate/classes/ArrayFieldInitializers.class",
+        "bytes": 457,
+        "sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789"
+      }
+    }
+  ],
+  "failures": [],
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

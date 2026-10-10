@@ -1,0 +1,143 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-luna-v1/cases/ordered-javac23-candidate/classes/ArrayFieldInitializers.class
+  Last modified 2026年10月10日; size 457 bytes
+  SHA-256 checksum 3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789
+public class ArrayFieldInitializers
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // ArrayFieldInitializers
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 5, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // ArrayFieldInitializers.mark:(I)B
+   #8 = Class              #10            // ArrayFieldInitializers
+   #9 = NameAndType        #11:#12        // mark:(I)B
+  #10 = Utf8               ArrayFieldInitializers
+  #11 = Utf8               mark
+  #12 = Utf8               (I)B
+  #13 = Fieldref           #8.#14         // ArrayFieldInitializers.b:[B
+  #14 = NameAndType        #15:#16        // b:[B
+  #15 = Utf8               b
+  #16 = Utf8               [B
+  #17 = Fieldref           #8.#18         // ArrayFieldInitializers.trace:I
+  #18 = NameAndType        #19:#20        // trace:I
+  #19 = Utf8               trace
+  #20 = Utf8               I
+  #21 = Fieldref           #8.#22         // ArrayFieldInitializers.before:B
+  #22 = NameAndType        #23:#24        // before:B
+  #23 = Utf8               before
+  #24 = Utf8               B
+  #25 = Fieldref           #8.#26         // ArrayFieldInitializers.a:[B
+  #26 = NameAndType        #27:#16        // a:[B
+  #27 = Utf8               a
+  #28 = Fieldref           #8.#29         // ArrayFieldInitializers.after:B
+  #29 = NameAndType        #30:#24        // after:B
+  #30 = Utf8               after
+  #31 = Utf8               Code
+  #32 = Utf8               <clinit>
+{
+  static int trace;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static byte before;
+    descriptor: B
+    flags: (0x0008) ACC_STATIC
+
+  static byte[] a;
+    descriptor: [B
+    flags: (0x0008) ACC_STATIC
+
+  static byte after;
+    descriptor: B
+    flags: (0x0008) ACC_STATIC
+
+  byte[] b;
+    descriptor: [B
+    flags: (0x0000)
+
+  public ArrayFieldInitializers();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_3
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: bipush        6
+        12: invokestatic  #7                  // Method mark:(I)B
+        15: bastore
+        16: dup
+        17: iconst_1
+        18: bipush        7
+        20: invokestatic  #7                  // Method mark:(I)B
+        23: bastore
+        24: dup
+        25: iconst_2
+        26: bipush        8
+        28: invokestatic  #7                  // Method mark:(I)B
+        31: bastore
+        32: putfield      #13                 // Field b:[B
+        35: bipush        9
+        37: invokestatic  #7                  // Method mark:(I)B
+        40: pop
+        41: return
+
+  static byte mark(int);
+    descriptor: (I)B
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #17                 // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iload_0
+         7: iadd
+         8: putstatic     #17                 // Field trace:I
+        11: iload_0
+        12: i2b
+        13: ireturn
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #17                 // Field trace:I
+         4: iconst_1
+         5: invokestatic  #7                  // Method mark:(I)B
+         8: putstatic     #21                 // Field before:B
+        11: iconst_3
+        12: newarray       byte
+        14: dup
+        15: iconst_0
+        16: iconst_2
+        17: invokestatic  #7                  // Method mark:(I)B
+        20: bastore
+        21: dup
+        22: iconst_1
+        23: iconst_3
+        24: invokestatic  #7                  // Method mark:(I)B
+        27: bastore
+        28: dup
+        29: iconst_2
+        30: iconst_4
+        31: invokestatic  #7                  // Method mark:(I)B
+        34: bastore
+        35: putstatic     #25                 // Field a:[B
+        38: iconst_5
+        39: invokestatic  #7                  // Method mark:(I)B
+        42: putstatic     #28                 // Field after:B
+        45: return
+}

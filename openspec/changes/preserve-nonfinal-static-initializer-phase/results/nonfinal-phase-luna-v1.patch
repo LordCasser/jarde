@@ -1,0 +1,137 @@
+diff --git a/src/facade.rs b/src/facade.rs
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -11056,10 +11056,12 @@ fn prove_static_initializer_group(
+                 "the AST and field@1 read claims inside RHS of `{}` are not one-to-one",
+                 field.name
+             )));
+         }
+-        if !expression_state.has_nonconstant_shape {
++        if !expression_state.has_nonconstant_shape
++            && field_headers[field_index].access_flags & 0x0010 != 0
++        {
+             return Ok(initializer_refused(format!(
+                 "RHS of field `{}` is a Java constant expression and would change initialization phase",
+                 field.name
+             )));
+         }
+
+diff --git a/tests/class_static_initializer_projection.rs b/tests/class_static_initializer_projection.rs
+--- a/tests/class_static_initializer_projection.rs
++++ b/tests/class_static_initializer_projection.rs
+@@ -17,6 +17,18 @@ class Constant { static final int K = 7; static String a = next(); static String
+ class Handler { static String a; static { try { a = next(); } catch (RuntimeException ex) { a = "x"; } } static String next() { return "a"; } }
+ "#;
+ 
++const NONFINAL_RUNTIME: &str = r#"
++class NonfinalRuntime {
++    static int trace = 0;
++    static byte[] marks = new byte[] { (byte) mark(), (byte) (trace + 2) };
++    static int mark() { System.out.print("M"); return 7; }
++}
++"#;
++
++const FINAL_RUNTIME: &str = r#"
++class FinalRuntime { static final int value; static { value = 7; } }
++"#;
++
+ fn budget() -> Budget {
+     task_budget(&[]).expect("bounded default budget")
+ }
+@@ -159,5 +171,96 @@ fn em06_projects_only_the_complete_static_chain() {
+     fs::remove_dir_all(dir).expect("remove scratch directory");
+ }
+ 
++#[test]
++fn nonfinal_runtime_constant_keeps_its_phase_in_an_ordered_static_group() {
++    let dir = std::env::temp_dir().join(format!("jarde-em06-nonfinal-{}", std::process::id()));
++    fs::create_dir_all(&dir).expect("scratch directory");
++    compile(&dir, "NonfinalRuntime.java", NONFINAL_RUNTIME);
++    let bytes = fs::read(dir.join("NonfinalRuntime.class")).expect("compiled class");
++    let report = report(&bytes, "NonfinalRuntime");
++    let ClassSourceInitializerProof::Proved { fields } = &report.initializer_proof else {
++        panic!("nonfinal runtime initializer group refused: {:?}", report.initializer_proof)
++    };
++    assert_eq!(fields.len(), 2);
++    assert_eq!(
++        fields.iter().map(|field| field.write_order).collect::<Vec<_>>(),
++        [0, 1]
++    );
++
++    let trace = report.fields.iter().find(|field| field.item.name.raw().0 == b"trace").unwrap();
++    let marks = report.fields.iter().find(|field| field.item.name.raw().0 == b"marks").unwrap();
++    assert_eq!(
++        fields.iter().map(|proof| proof.field_index).collect::<Vec<_>>(),
++        vec![trace.item.index, marks.item.index]
++    );
++    assert_eq!(trace.item.access_flags & 0x0010, 0, "trace stays nonfinal");
++    assert!(trace.declaration.as_deref().unwrap().contains("trace = 0"));
++    assert!(marks.declaration.as_deref().unwrap().contains("byte[] marks ="));
++    assert!(marks.declaration.as_deref().unwrap().contains("mark()"));
++    assert_eq!(report.text.matches("trace = 0").count(), 1);
++    assert_eq!(report.text.matches("marks = ").count(), 1);
++    assert!(!report.text.contains("static {"), "{}", report.text);
++
++    let clinit = report
++        .methods
++        .iter()
++        .find(|method| method.item.identity.name.0 == b"<clinit>")
++        .expect("physical <clinit> remains in the class report");
++    let ClassSourceOutcome::Recovered { report: body, .. } = &clinit.outcome else {
++        panic!("the physical initializer remains recovered")
++    };
++    assert_eq!(clinit.text.matches("static {").count(), 1);
++    for proof in fields {
++        assert!(
++            !body.source_map.of_bci(proof.write_bci).is_empty(),
++            "physical write BCI {} remains anchored",
++            proof.write_bci
++        );
++    }
++    assert!(report.methods.iter().any(|method| method.item.identity.name.0 == b"mark"));
++    fs::remove_dir_all(dir).expect("remove scratch directory");
++}
++
++#[test]
++fn final_runtime_constant_without_constant_value_still_refuses_phase_change() {
++    let dir = std::env::temp_dir().join(format!("jarde-em06-final-phase-{}", std::process::id()));
++    fs::create_dir_all(&dir).expect("scratch directory");
++    compile(&dir, "FinalRuntime.java", FINAL_RUNTIME);
++    let bytes = fs::read(dir.join("FinalRuntime.class")).expect("compiled class");
++    let report = report(&bytes, "FinalRuntime");
++    let ClassSourceInitializerProof::Refused { reason } = &report.initializer_proof else {
++        panic!(
++            "blank-final runtime constant must remain in <clinit>: {:?}",
++            report.initializer_proof
++        )
++    };
++    assert!(
++        reason.contains("constant expression") && reason.contains("initialization phase"),
++        "{reason}"
++    );
++    let value = report.fields.iter().find(|field| field.item.name.raw().0 == b"value").unwrap();
++    assert_ne!(value.item.access_flags & 0x0010, 0, "value remains final");
++    assert!(value.declaration.as_deref().is_some_and(|text| !text.contains(" = ")));
++    assert!(report.text.contains("final int value;"));
++    assert!(report.text.contains("static {"));
++    assert!(report.text.contains("value = 7"), "{}", report.text);
++
++    let clinit = report
++        .methods
++        .iter()
++        .find(|method| method.item.identity.name.0 == b"<clinit>")
++        .expect("physical <clinit> is retained");
++    let ClassSourceOutcome::Recovered { report: body, .. } = &clinit.outcome else {
++        panic!("physical <clinit> remains recoverable")
++    };
++    assert!(clinit.text.contains("static {"));
++    assert!(clinit.text.contains("value = 7"));
++    assert!(
++        !body.source_map.segments.is_empty(),
++        "physical initializer keeps source origins"
++    );
++    fs::remove_dir_all(dir).expect("remove scratch directory");
++}
++
+ #[test]
+ fn incomplete_or_unsafe_static_groups_remain_in_clinit() {

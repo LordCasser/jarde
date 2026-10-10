@@ -1,0 +1,13 @@
+{
+  "status": "baseline complete",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  }
+}

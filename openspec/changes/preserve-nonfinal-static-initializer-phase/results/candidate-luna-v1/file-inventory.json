@@ -1,0 +1,267 @@
+[
+  {
+    "path": "cases/literal-javac23-candidate/ArrayFieldLiteral.java",
+    "bytes": 774,
+    "sha256": "ea3917bc6bdc755c9c11a854ef95c8b1b8130021ef3d9b22c16713f497d5adb5"
+  },
+  {
+    "path": "cases/literal-javac23-candidate/Runner.java",
+    "bytes": 450,
+    "sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163"
+  },
+  {
+    "path": "cases/literal-javac23-candidate/class-source.json",
+    "bytes": 31732,
+    "sha256": "84e3c850819c32eb47dd71c8bd0d86605bf1d4d25c0437b7a4d8fc5f0e10a649"
+  },
+  {
+    "path": "cases/literal-javac23-candidate/classes/ArrayFieldLiteral.class",
+    "bytes": 262,
+    "sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827"
+  },
+  {
+    "path": "cases/literal-javac23-candidate/classes/Runner.class",
+    "bytes": 907,
+    "sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca"
+  },
+  {
+    "path": "cases/literal-javac8-candidate/ArrayFieldLiteral.java",
+    "bytes": 774,
+    "sha256": "ea3917bc6bdc755c9c11a854ef95c8b1b8130021ef3d9b22c16713f497d5adb5"
+  },
+  {
+    "path": "cases/literal-javac8-candidate/Runner.java",
+    "bytes": 450,
+    "sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163"
+  },
+  {
+    "path": "cases/literal-javac8-candidate/class-source.json",
+    "bytes": 31732,
+    "sha256": "4f4c2e3f7c263aef432f1c94a194a85f16380f5935a274a652d55db9b84934ff"
+  },
+  {
+    "path": "cases/literal-javac8-candidate/classes/ArrayFieldLiteral.class",
+    "bytes": 262,
+    "sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891"
+  },
+  {
+    "path": "cases/literal-javac8-candidate/classes/Runner.class",
+    "bytes": 916,
+    "sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff"
+  },
+  {
+    "path": "cases/ordered-javac23-candidate/ArrayFieldInitializers.java",
+    "bytes": 1278,
+    "sha256": "49d0bc0efd4ce68c7a27e63044d65c7c92ac3240519f30433416ab458043a3ce"
+  },
+  {
+    "path": "cases/ordered-javac23-candidate/Runner.java",
+    "bytes": 627,
+    "sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd"
+  },
+  {
+    "path": "cases/ordered-javac23-candidate/class-source.json",
+    "bytes": 54681,
+    "sha256": "aa139ecc1784efdd20c67f5816e7e6b28b452d4bca8e8404e7d40127ef3bf7cd"
+  },
+  {
+    "path": "cases/ordered-javac23-candidate/classes/ArrayFieldInitializers.class",
+    "bytes": 457,
+    "sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789"
+  },
+  {
+    "path": "cases/ordered-javac23-candidate/classes/Runner.class",
+    "bytes": 891,
+    "sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75"
+  },
+  {
+    "path": "cases/ordered-javac8-candidate/ArrayFieldInitializers.java",
+    "bytes": 1278,
+    "sha256": "49d0bc0efd4ce68c7a27e63044d65c7c92ac3240519f30433416ab458043a3ce"
+  },
+  {
+    "path": "cases/ordered-javac8-candidate/Runner.java",
+    "bytes": 627,
+    "sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd"
+  },
+  {
+    "path": "cases/ordered-javac8-candidate/class-source.json",
+    "bytes": 54681,
+    "sha256": "6eddf8f65d83a5cd83f80b7c3b882506cca17bdc8aa554f76f9b9caddbd4d3b4"
+  },
+  {
+    "path": "cases/ordered-javac8-candidate/classes/ArrayFieldInitializers.class",
+    "bytes": 457,
+    "sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee"
+  },
+  {
+    "path": "cases/ordered-javac8-candidate/classes/Runner.class",
+    "bytes": 891,
+    "sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae"
+  },
+  {
+    "path": "manifest.json",
+    "bytes": 66040,
+    "sha256": "d809cea43b8e0748226280265cec70b1b55b5bdfebd8e8ccae04c585f22011ac"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-javap.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-javap.stdout",
+    "bytes": 2717,
+    "sha256": "f542f950b6246c9d4fb7d7d42a4a0ff6de792ff3bfde84833e38e129b946e531"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-render.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-render.stdout",
+    "bytes": 31732,
+    "sha256": "84e3c850819c32eb47dd71c8bd0d86605bf1d4d25c0437b7a4d8fc5f0e10a649"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac23-candidate-run.stdout",
+    "bytes": 70,
+    "sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-javap.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-javap.stdout",
+    "bytes": 2449,
+    "sha256": "b17166177d14dca3fd3c88d867689a6d4b2d9f333620124d60f7faf016d5edfe"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-render.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-render.stdout",
+    "bytes": 31732,
+    "sha256": "4f4c2e3f7c263aef432f1c94a194a85f16380f5935a274a652d55db9b84934ff"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/literal-javac8-candidate-run.stdout",
+    "bytes": 70,
+    "sha256": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-javap.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-javap.stdout",
+    "bytes": 4968,
+    "sha256": "7d9cd71b155795a06946f9526168c1326dcd809d5bd8934b960ce31a6624f669"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-render.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-render.stdout",
+    "bytes": 54681,
+    "sha256": "aa139ecc1784efdd20c67f5816e7e6b28b452d4bca8e8404e7d40127ef3bf7cd"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac23-candidate-run.stdout",
+    "bytes": 81,
+    "sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-javap.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-javap.stdout",
+    "bytes": 4659,
+    "sha256": "71a4793530a470fe699d7399feebd751d44da1e34b8a362a303e4ea4ccef0c0a"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-render.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-render.stdout",
+    "bytes": 54681,
+    "sha256": "6eddf8f65d83a5cd83f80b7c3b882506cca17bdc8aa554f76f9b9caddbd4d3b4"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/ordered-javac8-candidate-run.stdout",
+    "bytes": 81,
+    "sha256": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015"
+  }
+]

@@ -1,0 +1,95 @@
+{
+  "schema": "preserve-nonfinal-static-initializer-candidate-root-verification-v1",
+  "status": "accepted",
+  "checks": 2245,
+  "candidate_manifest_sha256": "d809cea43b8e0748226280265cec70b1b55b5bdfebd8e8ccae04c585f22011ac",
+  "candidate_inventory_sha256": "8d0dc4783538eb69a6f86f54c18e9c5090e418f782872303053b62def4de749f",
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  },
+  "candidate_sources": {
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "src/facade.rs": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d"
+  },
+  "baseline_manifests": {
+    "literal": {
+      "manifest_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+      "inventory_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762"
+    },
+    "ordered": {
+      "manifest_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+      "inventory_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e"
+    }
+  },
+  "command_count": 16,
+  "candidate_legs": [
+    {
+      "label": "literal-javac8-candidate",
+      "family": "literal",
+      "jdk_leg": "javac8",
+      "member_count": 2,
+      "static_group_fields": 1,
+      "runtime_sha256": {
+        "stdout": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_matches_original_and_baseline_jarde": true
+    },
+    {
+      "label": "literal-javac23-candidate",
+      "family": "literal",
+      "jdk_leg": "javac23",
+      "member_count": 2,
+      "static_group_fields": 1,
+      "runtime_sha256": {
+        "stdout": "b91579dca022d97c7fe52cc3b181b6c571e6fe90ff178d738240906fd1607f5c",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_matches_original_and_baseline_jarde": true
+    },
+    {
+      "label": "ordered-javac8-candidate",
+      "family": "ordered",
+      "jdk_leg": "javac8",
+      "member_count": 3,
+      "static_group_fields": 4,
+      "runtime_sha256": {
+        "stdout": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_matches_original_and_baseline_jarde": true
+    },
+    {
+      "label": "ordered-javac23-candidate",
+      "family": "ordered",
+      "jdk_leg": "javac23",
+      "member_count": 3,
+      "static_group_fields": 4,
+      "runtime_sha256": {
+        "stdout": "dbe7f597b845fd000cc44fe7f934eb71f3c5422042ed194cf4c88eb825ad2015",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_matches_original_and_baseline_jarde": true
+    }
+  ],
+  "static_group_sizes": {
+    "literal": 1,
+    "ordered": 4
+  },
+  "claim_boundary": "Checks static initializer projection only. Instance byte[] b remains a declaration plus constructor assignment; instance-field restoration is not claimed.",
+  "oracle": "Each fresh candidate runtime exit/stdout/stderr is byte-equal to both the fresh original and already accepted baseline Jarde raw triple for that same class and JDK leg.",
+  "verifier": "verify-candidate-root-v2.py",
+  "errors": [],
+  "verification_scope": "Original-input BCIs and full owner identities; closed inventories and raw command streams; frozen CLI/product metadata and JDK tool pins; complete-source empty-CP/SP compile and fresh -Xverify runtime; physical javap members/flags/ConstantValue; ordered JSON field groups; method-identity-bound array, field, and call BCIs in source maps."
+}

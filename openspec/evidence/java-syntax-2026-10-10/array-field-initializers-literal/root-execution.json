@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "python3",
+    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/prepare-baseline-luna-v1.py"
+  ],
+  "exit": 0,
+  "stdout_sha256": "ed9f2a996a3cad310f24c42fc4869b63c5420e272eec4f42cd4d62ffe83bab85",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
