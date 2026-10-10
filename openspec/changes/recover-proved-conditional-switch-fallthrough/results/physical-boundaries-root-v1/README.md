@@ -1,0 +1,1 @@
+完整partialBreak分支offset-only物理负例：root执行16条JDK命令，original与两个变体共6条runtime每条36行，JDK8/23均-Xverify:all成功；javap实核37/47跳转目标。每class仅两个低operand字节不同，含构造器和五业务方法完整保留。Luna私稿误要求四个差异字节与五member，root审阅在执行前修为实际两个差异字节/六member，私稿保留。8个冻结typed CLI profiles仅作独立旧产品基线。不存在匹配变体的Java源码；下一步必须重读真实canonical/SSA，尤其不可预填原50块的unreachable处理或声称B已触发adjacency门。本片没有应用conditional产品或完成任务。

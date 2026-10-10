@@ -71,3 +71,13 @@ P5既有ignored recorder实跑六个固定archive形状，逐项复核只有Anal
 两个完整类运行现在已独立接受：[RequiredConversions](results/ci-repair-evidence-root-v3/jarde-required-char-root-v1/acceptance-root-v1.json)与[NullThenBuilder](results/ci-repair-evidence-root-v3/jarde-null-builder-runtime-root-v1/acceptance-root-v1.json)各19命令/38raw/8运行腿，root实核完整sources、精确argv、13/3成员及field、源map spans与所有physical owners、live工具SHA和独立BLAKE3。Required逐值调用五个相关方法，其余成员完整保留并编译；Null原Java不可得，original仍仅准确class oracle。Luna verifier先误读identity.name为对象而非raw数组，root修正后实际退出0，原失败保留。冻结CLI与17/10/50闭包不变。
 
 CI adapter v4的source/local预验收真实退出0，核77分类条目/28构建raw及三组22测试/9追加pins与Git/live相同；它不接受CI。root生成预验收脚本的newline syntax失败原样保留后v5修正。任务仍6/8，待包含P5修复的精确自身双seed CI及clean主线。
+
+## 完整本地工作区与交付前检查
+
+[workspace-complete-root-v1](results/workspace-complete-root-v1/README.md) 保留94条实际命令、356个metadata目标及全部188条原始stream，含前几轮已成功命令的原始carry路径。root独立核编译artifact身份、unfiltered执行header/摘要、86条Git与live source pins：单固定seed全工作区 **3408/0/97**，target峰值799452287bytes，接受范围仅本地，不替代自身双seed CI。最终cargo clean实际1665files/664.2MiB；后续只读负例observer另清348files/172.2MiB，生产未改。
+
+产品43dffc9b806dc2b69102e50f52ee78a50850c6d0已实际提交推送；提交时main/origin相同、15 worktrees全clean/14辅助detached祖先、本地与真实远端仅main、全部无target，free66015203328bytes。新增归档尚待交付，不能把这个历史checkpoint当成新增文档的最终clean。此前2c提交的CI38087514715被root主动取消；完整API状态cancelled保留，不计为失败。当前43产品自身CI38087978610第一seed已成功，第二seed仍运行，暂不接受任务3.2或3.3。
+
+## 精确产品 CI 最终接受
+
+[typed-ci-product-root-v7](results/typed-ci-product-root-v7/README.md) 保存精确43dffc9b产品run38087978610：4jobs/52steps全部成功，两seed各356摘要、3408/0/97；root实际v7独立verifier退出0，准确typed9名及全部86Git/live pins通过。v6只因combined Cargo header空白边界误吞后续摘要而失败，原失败与原capture保留，v7复用严格单binary解析，不改变产品或测试。任务3.2在本次strict实际通过后关闭，3.3待新增全部归档提交推送及全worktree clean实核。
