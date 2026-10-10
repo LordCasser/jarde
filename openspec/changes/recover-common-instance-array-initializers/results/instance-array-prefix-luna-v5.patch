@@ -1,0 +1,1183 @@
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -3176,6 +3176,7 @@
+             .anonymous_constructor_initializer_bci
+             .clone(),
+         generic_call_init: ast.projection.generic_call_init.clone(),
++        instance_field_write_evidence: ast.projection.instance_field_write_evidence.clone(),
+     };
+     Ok(Some(ClassSourceMethodAst {
+         projection: Arc::new(projection),
+@@ -3385,7 +3386,18 @@
+         .first()
+         .map(|stmt| stmt.origin.primary().bci());
+     crate::stop::poll(budget, first_bci)?;
+-    let node_count = program_node_count(&source.program);
++    let node_count = program_node_count(&source.program).saturating_add(
++        source.instance_field_write_evidence.as_ref().map_or(0, |items| {
++            u64::try_from(items.len()).unwrap_or(u64::MAX).saturating_add(
++                items.iter().fold(0u64, |total, item| {
++                    total.saturating_add(
++                        u64::try_from(item.owner.len() + item.name.len() + item.descriptor.len())
++                            .unwrap_or(u64::MAX),
++                    )
++                }),
++            )
++        }),
++    );
+     crate::stop::charge(
+         budget,
+         jarde_reader::budget::CountedBudgetDimension::IrItems,
+@@ -3713,6 +3725,291 @@
+         indentation,
+         budget,
+     )
++}
++
++/// One direct-super constructor's same-run contiguous primitive-array write prefix.
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayConstructorProjection {
++    pub member: PhysicalMethodId,
++    pub writes: Vec<ClassSourceInstanceArrayFieldWrite>,
++}
++
++/// Field identity and BCI only; its RHS remains in the retained physical AST.
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayFieldWrite {
++    pub bci: u32,
++    pub owner: String,
++    pub name: String,
++    pub descriptor: String,
++    pub element: Type,
++}
++
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayCall {
++    pub target: crate::facts::CallTarget,
++    pub presented: Option<Type>,
++    pub arguments: Vec<Option<Type>>,
++}
++
++#[doc(hidden)]
++pub fn class_source_instance_array_constructor_projection(
++    ast: &ClassSourceMethodAst,
++    budget: &mut Budget,
++) -> Result<Option<ClassSourceInstanceArrayConstructorProjection>, crate::stop::StopReason> {
++    let source = &ast.projection;
++    let Some(init) = source.generic_call_init.as_ref() else { return Ok(None) };
++    let first_is_super = source.program.stmts.first().is_some_and(|stmt| {
++        matches!(&stmt.kind, StmtKind::ConstructorCall { target: ConstructorTarget::Super, .. })
++            && Some(stmt.origin.primary().bci()) == init.bci
++    });
++    if !source.complete_code || source.has_exception_handlers || !init.presented
++        || init.target != Some(ConstructorTarget::Super) || !first_is_super { return Ok(None) }
++    let Some(inventory) = source.instance_field_write_evidence.as_ref() else { return Ok(None) };
++    let map_items = u64::try_from(inventory.len()).unwrap_or(u64::MAX).saturating_mul(2);
++    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, map_items, source.instruction_bcis.first().copied())?;
++    let mut by_bci = std::collections::HashMap::with_capacity(inventory.len());
++    let mut by_field = std::collections::HashMap::<(&str, &str, &str), Vec<u32>>::with_capacity(inventory.len());
++    for write in inventory {
++        crate::stop::poll(budget,Some(write.bci))?;
++        crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(write.bci))?;
++        by_bci.insert(write.bci,write);
++        by_field.entry((write.owner.as_str(), write.name.as_str(), write.descriptor.as_str())).or_default().push(write.bci);
++    }
++    let mut writes=Vec::new();
++    for stmt in source.program.stmts.iter().skip(1) {
++        let bci=stmt.origin.primary().bci();
++        crate::stop::poll(budget,Some(bci))?;
++        crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(bci))?;
++        let StmtKind::FieldAssign { receiver:Some(receiver),name,op:AssignOp::Assign,value }=&stmt.kind else { break };
++        if !matches!(&receiver.kind,ExprKind::Local(name) if name=="this") || !primitive_array_initializer(value,budget)? { break }
++        let ExprKind::NewArray { element, .. }=&value.kind else { break };
++        let Some(evidence)=by_bci.get(&bci).copied() else { break };
++        if evidence.is_static || evidence.name!=*name { break }
++        let key=(evidence.owner.as_str(), evidence.name.as_str(), evidence.descriptor.as_str());
++        let Some(all)=by_field.get(&key) else { return Ok(None) };
++        if all.len()!=1 || all[0]!=bci { return Ok(None) }
++        let fact_cost = evidence.owner.len().saturating_add(evidence.name.len()).saturating_add(evidence.descriptor.len()).saturating_add(1);
++        crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, u64::try_from(fact_cost).unwrap_or(u64::MAX), Some(bci))?;
++        writes.push(ClassSourceInstanceArrayFieldWrite { bci,owner:evidence.owner.clone(),name:evidence.name.clone(),descriptor:evidence.descriptor.clone(),element:element.clone() });
++    }
++    Ok((!writes.is_empty()).then_some(ClassSourceInstanceArrayConstructorProjection { member:source.member.clone(),writes }))
++}
++
++fn primitive_array_initializer(expr:&Expr,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(expr.origin.primary().bci()))?;
++    crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(expr.origin.primary().bci()))?;
++    let ExprKind::NewArray{element,lengths,initializers:Some(values),total_dimensions:1}=&expr.kind else{return Ok(false)};
++    if !lengths.is_empty()||!matches!(element,Type::Boolean|Type::Byte|Type::Char|Type::Short|Type::Int|Type::Long|Type::Float|Type::Double)
++        || expr.presented.as_ref()!=Some(&Type::Reference(format!("{}[]",element.spell()))){return Ok(false)}
++    for value in values{if !primitive_array_value(value,budget)?{return Ok(false)}}Ok(true)
++}
++fn primitive_array_value(expr: &Expr, budget: &mut Budget) -> Result<bool, crate::stop::StopReason> {
++    let mut current = expr;
++    loop {
++        crate::stop::poll(budget, Some(current.origin.primary().bci()))?;
++        crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, 1, Some(current.origin.primary().bci()))?;
++        match &current.kind {
++            ExprKind::Integer(_) | ExprKind::Boolean(_) | ExprKind::Long(_) | ExprKind::Float(_) | ExprKind::Double(_) => return Ok(true),
++            ExprKind::Cast { ty, value } if matches!(ty, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long | Type::Float | Type::Double) => current = value,
++            ExprKind::Call { receiver: None, args, .. } => {
++                for arg in args {
++                    if !primitive_array_literal(arg, budget)? { return Ok(false); }
++                }
++                return Ok(true);
++            }
++            _ => return Ok(false),
++        }
++    }
++}
++
++fn primitive_array_literal(expr: &Expr, budget: &mut Budget) -> Result<bool, crate::stop::StopReason> {
++    let mut current = expr;
++    loop {
++        crate::stop::poll(budget, Some(current.origin.primary().bci()))?;
++        crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, 1, Some(current.origin.primary().bci()))?;
++        match &current.kind {
++            ExprKind::Integer(_) | ExprKind::Boolean(_) | ExprKind::Long(_) | ExprKind::Float(_) | ExprKind::Double(_) => return Ok(true),
++            ExprKind::Cast { ty, value } if matches!(ty, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long | Type::Float | Type::Double) => current = value,
++            _ => return Ok(false),
++        }
++    }
++}
++
++fn field_write_value<'a>(ast:&'a ClassSourceMethodAst,bci:u32,budget:&mut Budget)->Result<Option<&'a Expr>,crate::stop::StopReason>{
++    for stmt in &ast.projection.program.stmts { crate::stop::poll(budget,Some(stmt.origin.primary().bci()))?; crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(stmt.origin.primary().bci()))?; if stmt.origin.primary().bci()==bci { return Ok(match &stmt.kind { StmtKind::FieldAssign{value,..}=>Some(value),_=>None }); } }
++    Ok(None)
++}
++
++#[doc(hidden)]
++pub fn class_source_instance_array_rhs_equal(a:&ClassSourceMethodAst,ab:u32,b:&ClassSourceMethodAst,bb:u32,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    let (Some(left),Some(right))=(field_write_value(a,ab,budget)?,field_write_value(b,bb,budget)?) else{return Ok(false)};
++    compare_array_expr(left,&a.projection,right,&b.projection,budget)
++}
++
++fn compare_array_expr(a:&Expr,asrc:&ClassSourceMethodAstSource,b:&Expr,bsrc:&ClassSourceMethodAstSource,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(a.origin.primary().bci()))?; crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(a.origin.primary().bci()))?;
++    if a.presented!=b.presented{return Ok(false)}
++    let (ExprKind::NewArray{element:ae,lengths:al,initializers:Some(av),total_dimensions:ad},ExprKind::NewArray{element:be,lengths:bl,initializers:Some(bv),total_dimensions:bd})=(&a.kind,&b.kind) else{return Ok(false)};
++    if ae!=be||ad!=bd||!al.is_empty()||!bl.is_empty()||av.len()!=bv.len(){return Ok(false)}
++    for (x,y) in av.iter().zip(bv){if !compare_array_value(x,asrc,y,bsrc,budget)?{return Ok(false)}}
++    Ok(true)
++}
++fn compare_array_value(a: &Expr, asrc: &ClassSourceMethodAstSource, b: &Expr, bsrc: &ClassSourceMethodAstSource, budget: &mut Budget) -> Result<bool, crate::stop::StopReason> {
++    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, 1, Some(a.origin.primary().bci()))?;
++    let mut pending = vec![(a, b)];
++    while let Some((left, right)) = pending.pop() {
++        crate::stop::poll(budget, Some(left.origin.primary().bci()))?;
++        crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, 1, Some(left.origin.primary().bci()))?;
++        if left.presented != right.presented { return Ok(false); }
++        match (&left.kind, &right.kind) {
++            (ExprKind::Integer(x), ExprKind::Integer(y)) if x == y => {}
++            (ExprKind::Boolean(x), ExprKind::Boolean(y)) if x == y => {}
++            (ExprKind::Long(x), ExprKind::Long(y)) if x == y => {}
++            (ExprKind::Float(x), ExprKind::Float(y)) if x == y => {}
++            (ExprKind::Double(x), ExprKind::Double(y)) if x == y => {}
++            (ExprKind::Cast { ty: x, value: xv }, ExprKind::Cast { ty: y, value: yv }) if x == y => {
++                crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, 1, Some(left.origin.primary().bci()))?;
++                pending.push((xv, yv));
++            },
++            (ExprKind::Call { receiver: None, name: x, args: xa }, ExprKind::Call { receiver: None, name: y, args: ya }) => {
++                let xt = array_call_target(asrc, left.origin.primary().bci(), x, budget)?;
++                let yt = array_call_target(bsrc, right.origin.primary().bci(), y, budget)?;
++                if x != y || xt.is_none() || xt != yt || xa.len() != ya.len() { return Ok(false); }
++                crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, u64::try_from(xa.len()).unwrap_or(u64::MAX), Some(left.origin.primary().bci()))?;
++                for (xarg, yarg) in xa.iter().zip(ya) { pending.push((xarg, yarg)); }
++            }
++            _ => return Ok(false),
++        }
++    }
++    Ok(true)
++}
++
++fn array_call_target(source:&ClassSourceMethodAstSource,bci:u32,name:&str,budget:&mut Budget)->Result<Option<crate::facts::CallTarget>,crate::stop::StopReason>{
++    let mut found=None;
++    for (site,opcode,target) in &source.call_targets {
++        crate::stop::poll(budget,Some(*site))?;
++        crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(*site))?;
++        if *site==bci&&*opcode==0xb8&&target.name()==name {
++            if found.is_some(){return Ok(None)}
++            let fact_cost=target.owner().len().saturating_add(target.name().len()).saturating_add(target.descriptor().len()).saturating_add(1);
++            crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::IrItems,u64::try_from(fact_cost).unwrap_or(u64::MAX),Some(*site))?;
++            found=Some(target.clone());
++        }
++    }
++    Ok(found)
++}
++
++#[doc(hidden)]
++pub fn class_source_instance_array_calls(ast:&ClassSourceMethodAst,bci:u32,budget:&mut Budget)->Result<Option<Vec<ClassSourceInstanceArrayCall>>,crate::stop::StopReason>{
++    let Some(value) = field_write_value(ast, bci, budget)? else { return Ok(None); };
++    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, 1, Some(bci))?;
++    let mut pending = vec![value];
++    let mut calls = Vec::new();
++    while let Some(expr) = pending.pop() {
++        crate::stop::poll(budget, Some(expr.origin.primary().bci()))?;
++        crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, 1, Some(expr.origin.primary().bci()))?;
++        match &expr.kind {
++            ExprKind::Call { receiver: None, name, args } => {
++                let Some(target) = array_call_target(&ast.projection, expr.origin.primary().bci(), name, budget)? else { return Ok(None); };
++                let fact_cost = target.owner().len().saturating_add(target.name().len()).saturating_add(target.descriptor().len()).saturating_add(args.len()).saturating_add(1);
++                crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, u64::try_from(fact_cost).unwrap_or(u64::MAX), Some(expr.origin.primary().bci()))?;
++                calls.push(ClassSourceInstanceArrayCall {
++                    target,
++                    presented: expr.presented.clone(),
++                    arguments: args.iter().map(|argument| argument.presented.clone()).collect(),
++                });
++                pending.extend(args.iter());
++            }
++            ExprKind::Cast { value, .. } => {
++                crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, 1, Some(expr.origin.primary().bci()))?;
++                pending.push(value);
++            }
++            ExprKind::NewArray { initializers: Some(values), .. } => {
++                crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, u64::try_from(values.len()).unwrap_or(u64::MAX), Some(expr.origin.primary().bci()))?;
++                pending.extend(values.iter());
++            }
++            _ => {}
++        }
++    }
++    Ok(Some(calls))
++}
++
++#[doc(hidden)]
++pub fn emit_class_source_instance_array_initializer(ast:&ClassSourceMethodAst,bci:u32,budget:&mut Budget)->Result<Option<String>,crate::stop::StopReason>{
++    let Some(value)=field_write_value(ast,bci,budget)? else{return Ok(None)};Ok(Some(emit_class_initializer_value(value,&ast.projection.member,ast.projection.current_class.as_deref(),&ast.projection.nested_class_members,budget)?))
++}
++
++#[doc(hidden)]
++pub fn emit_class_source_instance_array_constructor_body(ast:&ClassSourceMethodAst,removed_bcis:&[u32],budget:&mut Budget)->Result<String,crate::stop::StopReason>{
++    let first_bci=ast.projection.instruction_bcis.first().copied();
++    crate::stop::poll(budget,first_bci)?;
++    crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::IrItems,program_node_count(&ast.projection.program),first_bci)?;
++    crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::IrItems,u64::try_from(removed_bcis.len()).unwrap_or(u64::MAX),first_bci)?;
++    let mut removed=std::collections::BTreeSet::new();for bci in removed_bcis{crate::stop::poll(budget,Some(*bci))?;crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(*bci))?;removed.insert(*bci)}
++    let mut stmts=Vec::new();for stmt in &ast.projection.program.stmts{let bci=stmt.origin.primary().bci();crate::stop::poll(budget,Some(bci))?;crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(bci))?;if !removed.contains(&bci){stmts.push(stmt.clone())}}
++    crate::emit::emit_class_source_statements(&stmts,&ast.projection.member,ast.projection.current_class.as_deref(),&ast.projection.nested_class_members,4,budget)
++}
++
++#[cfg(test)]
++mod instance_array_prefix_tests {
++    use super::*;
++    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
++    use jarde_reader::{budget::{Budget, Limits}, model::{ClassBytesId,Digest,JvmBytes,PhysicalClassLocation,PhysicalDefinitionId,PhysicalVariant,SnapshotId}};
++    use std::collections::BTreeMap;
++
++    fn ast(value: Expr, target: ConstructorTarget, handlers: bool, evidence: Option<Vec<crate::field::Evidence>>) -> ClassSourceMethodAst {
++        let owner=PhysicalDefinitionId{location:PhysicalClassLocation::StandaloneRoot{snapshot:SnapshotId("instance-array-test".into())},class_bytes:ClassBytesId{digest:Digest("instance-array-test".into()),length:1},variant:PhysicalVariant::Base};
++        let member=PhysicalMethodId{owner,name:JvmBytes(b"<init>".to_vec()),descriptor:JvmBytes(b"()V".to_vec())};
++        let call_origin=OriginSet::new(crate::source_map::Origin::direct(0));
++        let assign_origin=OriginSet::new(crate::source_map::Origin::direct(2));
++        let receiver=Expr::direct(ExprKind::Local("this".into()),2).presenting(Type::Reference("sample.ArrayFieldStore".into()));
++        let mut stmts=vec![Stmt::new(StmtKind::ConstructorCall{target,args:vec![Expr::direct(ExprKind::Integer(7),0)]},call_origin),Stmt::new(StmtKind::FieldAssign{receiver:Some(receiver),name:"bytes".into(),op:AssignOp::Assign,value},assign_origin)];
++        stmts.push(Stmt::new(StmtKind::Return{value:None},OriginSet::new(crate::source_map::Origin::direct(7))));
++        let source=ClassSourceMethodAstSource{program:build::Program{stmts,field_increments:BTreeMap::new(),statements:3,ragged:false,lambdas:Vec::new(),accessors:Vec::new(),array_constructor_sites:Vec::new(),lambda_refusals:Vec::new(),accessor_refusals:Vec::new(),lambdas_presented:0,accessors_presented:0},member,current_class:Some("sample.ArrayFieldStore".into()),nested_class_members:Vec::new(),parameter_names:Vec::new(),parameter_slots:Vec::new(),complete_code:true,has_exception_handlers:handlers,instruction_count:8,instruction_bcis:(0..8).collect(),call_targets:Vec::new(),anonymous_constructor_initializer_bci:None,generic_call_init:Some(crate::init::InitRecord{bci:Some(0),target:Some(target),class:Some("java/lang/Object".into()),declared:Some("sample/ArrayFieldStore".into()),presented:true,refusal:None}),instance_field_write_evidence:evidence};
++        ClassSourceMethodAst{projection:std::sync::Arc::new(source)}
++    }
++
++    fn byte_array(value:i64)->Expr { Expr::direct(ExprKind::NewArray{element:Type::Byte,lengths:Vec::new(),initializers:Some(vec![Expr::direct(ExprKind::Integer(value),3).presenting(Type::Byte)]),total_dimensions:1},2).presenting(Type::Reference("byte[]".into())) }
++    fn evidence()->Vec<crate::field::Evidence>{vec![crate::field::Evidence{bci:2,access:crate::facts::FieldAccess::Write,is_static:false,owner:"sample/ArrayFieldStore".into(),name:"bytes".into(),descriptor:"[B".into()}]}
++    fn budget()->Budget{Budget::new(Limits{ir_items:1000,analysis_steps:1000,elapsed_millis:u64::MAX,..Limits::default()})}
++    fn call_array(argument:i64,descriptor:&str)->ClassSourceMethodAst{let mut ast=ast(byte_array(0),ConstructorTarget::Super,false,Some(evidence()));let source=std::sync::Arc::get_mut(&mut ast.projection).unwrap();let target=crate::facts::CallTarget::new(crate::facts::InvokeKind::Static,"sample/ArrayFieldStore","mark",descriptor,false);let arg=Expr::direct(ExprKind::Integer(argument),4).presenting(Type::Int);let call=Expr::direct(ExprKind::Call{receiver:None,name:"mark".into(),args:vec![arg]},3).presenting(Type::Byte);let value=Expr::direct(ExprKind::NewArray{element:Type::Byte,lengths:Vec::new(),initializers:Some(vec![call]),total_dimensions:1},2).presenting(Type::Reference("byte[]".into()));let StmtKind::FieldAssign{value:old,..}=&mut source.program.stmts[1].kind else{unreachable!()};*old=value;source.call_targets=vec![(3,0xb8,target)];ast}
++
++    #[test]
++    fn prefix_emission_keeps_super_arguments_and_final_return() {
++        let ast=ast(byte_array(10),ConstructorTarget::Super,false,Some(evidence()));
++        let mut b=budget();let projection=class_source_instance_array_constructor_projection(&ast,&mut b).unwrap().unwrap();
++        let body=emit_class_source_instance_array_constructor_body(&ast,&projection.writes.iter().map(|w|w.bci).collect::<Vec<_>>(),&mut b).unwrap();
++        assert!(body.contains("super(7);"));assert!(body.contains("return;"));assert!(!body.contains("this.bytes"));
++    }
++
++    #[test]
++    fn non_super_handlers_unclaimed_duplicate_and_rhs_mismatch_refuse() {
++        for ast in [ast(byte_array(10),ConstructorTarget::This,false,Some(evidence())),ast(byte_array(10),ConstructorTarget::Super,true,Some(evidence())),ast(byte_array(10),ConstructorTarget::Super,false,None)] {let mut b=budget();assert!(class_source_instance_array_constructor_projection(&ast,&mut b).unwrap().is_none());}
++        let mut duplicate=evidence();duplicate.extend(evidence());let duplicate_ast=ast(byte_array(10),ConstructorTarget::Super,false,Some(duplicate));let mut b=budget();assert!(class_source_instance_array_constructor_projection(&duplicate_ast,&mut b).unwrap().is_none());
++        let a=ast(byte_array(10),ConstructorTarget::Super,false,Some(evidence()));let b_ast=ast(byte_array(11),ConstructorTarget::Super,false,Some(evidence()));let mut b=budget();assert!(!class_source_instance_array_rhs_equal(&a,2,&b_ast,2,&mut b).unwrap());
++    }
++
++    #[test]
++    fn static_rhs_call_arguments_and_overload_descriptor_are_exact() {
++        let left=call_array(31,"(I)B");let other_argument=call_array(32,"(I)B");let other_overload=call_array(31,"(J)B");let mut b=budget();
++        assert!(!class_source_instance_array_rhs_equal(&left,2,&other_argument,2,&mut b).unwrap());
++        assert!(!class_source_instance_array_rhs_equal(&left,2,&other_overload,2,&mut b).unwrap());
++    }
++
++    #[test]
++    fn rhs_comparison_preserves_long_and_float_double_raw_bits() {
++        let source=ast(byte_array(0),ConstructorTarget::Super,false,Some(evidence()));let mut b=budget();
++        for (left,right) in [(Expr::direct(ExprKind::Long(1),1),Expr::direct(ExprKind::Long(2),9)),(Expr::direct(ExprKind::Float(0x7fc00001),1),Expr::direct(ExprKind::Float(0x7fc00002),9)),(Expr::direct(ExprKind::Double(0x7ff8000000000001),1),Expr::direct(ExprKind::Double(0x7ff8000000000002),9))] { assert!(!compare_array_value(&left,&source.projection,&right,&source.projection,&mut b).unwrap()); }
++    }
++
++    #[test]
++    fn budget_stop_returns_no_candidate() {
++        let ast=ast(byte_array(10),ConstructorTarget::Super,false,Some(evidence()));let mut b=Budget::new(Limits{analysis_steps:0,..Limits::default()});
++        assert!(matches!(class_source_instance_array_constructor_projection(&ast,&mut b),Err(crate::stop::StopReason::Budget{..})));
++    }
+ }
+ 
+ /// The javac assert-switch field name, for the class-source projection that census-checks it.
+@@ -4955,6 +5252,9 @@
+     /// Same-run verified constructor prologue, retained only for generic-call proofs. The public
+     /// `RuleDetails` selection may omit this record even though the body and SSA were recovered.
+     pub(crate) generic_call_init: Option<crate::init::InitRecord>,
++    /// Complete same-run instance-field write inventory, present only when every physical write
++    /// was claimed. `None` means unavailable or incomplete.
++    pub(crate) instance_field_write_evidence: Option<Vec<crate::field::Evidence>>,
+ }
+ 
+ #[doc(hidden)]
+@@ -10280,7 +10580,7 @@
+         } else {
+             None
+         };
+-        let generic_call_init = if retain_generic_call_asts
++        let generic_call_init = if (retain_generic_call_asts || retain_all_method_asts)
+             && request.facts.method().name() == "<init>"
+             && let Some(prologue) = prologues.prologue()
+         {
+@@ -10303,6 +10603,26 @@
+         } else {
+             None
+         };
++        let instance_field_write_evidence = if retain_all_method_asts
++            && request.facts.method().name() == "<init>"
++        {
++            let mut evidence = Vec::new();
++            let mut complete = true;
++            for (bci, operation) in operations.iter() {
++                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
++                    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, 1, Some(*bci))
++                }) { return stopped(method, profile.clone(), &selection, stop, budget); }
++                let crate::facts::Operation::Field { access: crate::facts::FieldAccess::Write, is_static: false, .. } = operation else { continue; };
++                let Some((field, shape)) = fields.claim(*bci) else { complete = false; continue; };
++                if !shape.writes() || field.is_static { complete = false; continue; }
++                let item_cost = field.owner.len().saturating_add(field.name.len()).saturating_add(field.descriptor.len()).saturating_add(1);
++                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
++                    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::IrItems, u64::try_from(item_cost).unwrap_or(u64::MAX), Some(*bci))
++                }) { return stopped(method, profile.clone(), &selection, stop, budget); }
++                evidence.push(field.clone());
++            }
++            complete.then_some(evidence)
++        } else { None };
+         *slot = Some(ClassSourceMethodAst {
+             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+                 program: program.clone(),
+@@ -10332,6 +10652,7 @@
+                 call_targets,
+                 anonymous_constructor_initializer_bci,
+                 generic_call_init,
++                instance_field_write_evidence,
+             }),
+         });
+     }
+@@ -12153,6 +12474,7 @@
+             call_targets: vec![(3, 0xb6, target)],
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: None,
+         };
+         (
+             ClassSourceMethodAst {
+@@ -12326,6 +12648,7 @@
+             call_targets,
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: None,
+         };
+         (
+             ClassSourceMethodAst {
+@@ -13742,6 +14065,7 @@
+             call_targets: Vec::new(),
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: None,
+         }
+     }
+ 
+@@ -13834,6 +14158,7 @@
+                 call_targets: Vec::new(),
+                 anonymous_constructor_initializer_bci: None,
+                 generic_call_init: None,
++                instance_field_write_evidence: None,
+             }),
+         }
+     }
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -7158,6 +7158,22 @@
+                 field.name.raw().0 == jarde_java::report::ASSERT_SWITCH_FIELD_NAME.as_bytes()
+                     && field.access_flags & (0x0008 | 0x0010 | 0x1000) == (0x0008 | 0x0010 | 0x1000)
+             });
++        let mut constructor_count = 0usize;
++        let mut has_primitive_array_field = false;
++        if !ended && structure_complete && read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) == 0 {
++            for method in &read.facts.methods {
++                if let Err(error)=budget.poll().and_then(|()|budget.charge(CountedBudgetDimension::AnalysisSteps,1)) { merge_execution(&mut execution,stop_execution(&error,budget));diagnostics.push(stop_diagnostic(&error,class_provenance.clone()));ended=true;break }
++                if method.name.raw().0==b"<init>" { constructor_count+=1; }
++            }
++            if !ended {
++                for field in &read.facts.fields {
++                    if let Err(error)=budget.poll().and_then(|()|budget.charge(CountedBudgetDimension::AnalysisSteps,1)) { merge_execution(&mut execution,stop_execution(&error,budget));diagnostics.push(stop_diagnostic(&error,class_provenance.clone()));ended=true;break }
++                    let descriptor=field.descriptor.raw().0.as_slice();
++                    if field.access_flags & 0x0008 == 0 && (descriptor==b"[Z"||descriptor==b"[B"||descriptor==b"[C"||descriptor==b"[S"||descriptor==b"[I"||descriptor==b"[J"||descriptor==b"[F"||descriptor==b"[D") { has_primitive_array_field=true; }
++                }
++            }
++        }
++        let capture_instance_array_ctor_asts = !ended && structure_complete && read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) == 0 && constructor_count>=1 && has_primitive_array_field;
+         for (index, field) in read.facts.fields.iter().enumerate() {
+             if ended {
+                 break;
+@@ -7558,6 +7574,7 @@
+                                 capture_array_helper_use_table: array_helper_use_runs.is_empty(),
+                                 capture_anonymous_child_asts,
+                                 capture_assert_asts,
++                                capture_instance_array_ctor_asts,
+                                 capture_integer_constant_asts: !integer_constant_candidates
+                                     .is_empty(),
+                                 // Generic call publication needs a closed same-run inventory even
+@@ -9599,7 +9616,44 @@
+                 diagnostics.push(diagnostic);
+                 None
+             }
+-        };
++            Err(InitializerProjectionFailure::Error(error)) => {
++                merge_execution(&mut execution, stop_execution(&error, budget));
++                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
++                None
++            }
++        };
++        if capture_instance_array_ctor_asts && !ended && matches!(&execution, ExecutionReport::Complete { .. }) {
++            if let Err(error) = budget.charge(
++                CountedBudgetDimension::IrItems,
++                u64::try_from(staged_member_emissions.len()).unwrap_or(u64::MAX),
++            ) {
++                merge_execution(&mut execution, stop_execution(&error, budget));
++                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
++                ended = true;
++            }
++            let mut already_staged_members = Vec::with_capacity(staged_member_emissions.len());
++            for (member, _, _, _) in &staged_member_emissions {
++                if let Err(error) = budget.charge(CountedBudgetDimension::AnalysisSteps, 1) {
++                    merge_execution(&mut execution, stop_execution(&error, budget));
++                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
++                    ended = true;
++                    break;
++                }
++                already_staged_members.push(*member);
++            }
++            if !ended { match project_instance_array_initializer_group(
++                &declaration, &read.facts.methods, &mut fields, &methods, &method_asts,
++                &read.facts.fields, initializer_field_order.as_deref(), &mut array_projection_method_texts,
++                &already_staged_members, budget,
++            ) {
++                Ok(()) => {},
++                Err(InitializerProjectionFailure::Refused(_)) => {},
++                Err(InitializerProjectionFailure::Stopped(stop)) => {
++                    let (stop, diagnostic)=initializer_projection_stop(&stop,budget,class_provenance.clone()); merge_execution(&mut execution,stop); diagnostics.push(diagnostic);
++                },
++                Err(InitializerProjectionFailure::Error(error)) => { merge_execution(&mut execution,stop_execution(&error,budget)); diagnostics.push(stop_diagnostic(&error,class_provenance.clone())); },
++            } }
++        }
+         let mut enum_constant_proof = if read.facts.stopped_at.is_some()
+             || !matches!(&execution, ExecutionReport::Complete { .. })
+         {
+@@ -11106,6 +11160,399 @@
+ enum InitializerProjectionFailure {
+     Refused(String),
+     Stopped(StopReason),
++    Error(Error),
++}
++
++fn project_instance_array_initializer_group(
++    declaration: &ClassSourceDeclaration,
++    headers: &[MemberHeader],
++    fields: &mut [ClassSourceField],
++    methods: &[ClassSourceMethod],
++    asts: &[(PhysicalMethodId, jarde_java::report::ClassSourceMethodAst, Option<jarde_java::report::GenericConstructorCandidate>, Option<jarde_java::report::AnonymousAllocationScan>)],
++    field_headers: &[MemberHeader],
++    field_order: Option<&[usize]>,
++    member_texts: &mut Vec<(u64, String)>,
++    already_staged_members: &[u64],
++    budget: &mut Budget,
++) -> std::result::Result<(), InitializerProjectionFailure> {
++    if declaration.item.declaration.access_flags & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000 | 0x8000) != 0
++        || headers.len() != methods.len()
++        || field_headers.len() != fields.len()
++    {
++        return Ok(());
++    }
++
++    // `headers` and `methods` are the complete physical member census. Non-constructors remain in
++    // that census but need no constructor AST. Count first, then allocate the selected constructor
++    // records only after their exact IR cost has been charged.
++    let mut constructor_count = 0usize;
++    for header in headers {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        if header.name.raw().0 == b"<init>" {
++            if !class_source_runs_body(header) {
++                return Ok(());
++            }
++            constructor_count = constructor_count.saturating_add(1);
++        }
++    }
++    if constructor_count == 0 {
++        return Ok(());
++    }
++
++    // A non-static ConstantValue is unusual but still physically stated. Moving any constructor
++    // assignment across it could change the field writer's chosen initialization representation.
++    for header in field_headers {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        if header.access_flags & 0x0008 == 0 && class_source::declares_constant_value(header) {
++            return Ok(());
++        }
++    }
++
++    budget.charge(
++        CountedBudgetDimension::IrItems,
++        u64::try_from(constructor_count).unwrap_or(u64::MAX),
++    )
++    .map_err(InitializerProjectionFailure::Error)?;
++    let mut selected = Vec::with_capacity(constructor_count);
++    for header in headers {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        if header.name.raw().0 != b"<init>" {
++            continue;
++        }
++        let mut ast_match = None;
++        for candidate in asts {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if candidate.0.name.0 == header.name.raw().0
++                && candidate.0.descriptor.0 == header.descriptor.raw().0
++            {
++                if ast_match.is_some() {
++                    return Ok(());
++                }
++                ast_match = Some(candidate);
++            }
++        }
++        let Some((identity, ast, _, _)) = ast_match else {
++            return Ok(());
++        };
++        let mut method_match = None;
++        for method in methods {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if method.item.identity == *identity {
++                if method_match.is_some() {
++                    return Ok(());
++                }
++                method_match = Some(method);
++            }
++        }
++        let Some(method) = method_match else { return Ok(()); };
++        let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome else {
++            return Ok(());
++        };
++        if !matches!(&report.execution, ExecutionReport::Complete { .. })
++            || !matches!(&analysis.execution, ExecutionReport::Complete { .. })
++            || report.quality != Quality::Structured
++            || report.representation != crate::ir::Representation::Java
++            || report.content != RecoveryContent::ContainsStatements
++            || !report.fallbacks.is_empty()
++        {
++            return Ok(());
++        }
++        let Some(projection) = jarde_java::report::class_source_instance_array_constructor_projection(ast, budget)
++            .map_err(InitializerProjectionFailure::Stopped)?
++        else {
++            return Ok(());
++        };
++        if projection.member != *identity {
++            return Ok(());
++        }
++        selected.push((method.item.index, method, (*ast).clone(), projection));
++    }
++
++    let Some((_, _, first_ast, first)) = selected.first() else { return Ok(()); };
++    for (_, _, ast, projection) in selected.iter().skip(1) {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        if projection.writes.len() != first.writes.len() {
++            return Ok(());
++        }
++        for (left, right) in first.writes.iter().zip(&projection.writes) {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if left.owner != right.owner
++                || left.name != right.name
++                || left.descriptor != right.descriptor
++                || !jarde_java::report::class_source_instance_array_rhs_equal(
++                    first_ast, left.bci, ast, right.bci, budget,
++                )
++                .map_err(InitializerProjectionFailure::Stopped)?
++            {
++                return Ok(());
++            }
++        }
++    }
++
++    let class_name = declaration.item.declaration.this_class.raw().0.as_slice();
++    let stage_items = u64::try_from(first.writes.len()).unwrap_or(u64::MAX).saturating_mul(2);
++    budget.charge(CountedBudgetDimension::IrItems, stage_items)
++        .map_err(InitializerProjectionFailure::Error)?;
++    let mut staged_fields = Vec::with_capacity(first.writes.len());
++    let mut field_indices = Vec::with_capacity(first.writes.len());
++    for write in &first.writes {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        if write.owner.as_bytes() != class_name
++            || !primitive_array_descriptor(&write.element, &write.descriptor)
++        {
++            return Ok(());
++        }
++        let mut found = None;
++        for (index, field) in fields.iter().enumerate() {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if field.item.name.raw().0 == write.name.as_bytes()
++                && field.item.descriptor.raw().0 == write.descriptor.as_bytes()
++            {
++                if found.is_some() {
++                    return Ok(());
++                }
++                found = Some((index, field));
++            }
++        }
++        let Some((index, field)) = found else { return Ok(()); };
++        if field.item.access_flags & 0x0008 != 0
++            || field.declaration.as_ref().is_none_or(|text| text.contains('='))
++        {
++            return Ok(());
++        }
++        let mut matching_header = None;
++        for header in field_headers {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if header.name.raw().0 == write.name.as_bytes()
++                && header.descriptor.raw().0 == write.descriptor.as_bytes()
++            {
++                if matching_header.is_some() {
++                    return Ok(());
++                }
++                matching_header = Some(header);
++            }
++        }
++        let Some(header) = matching_header else { return Ok(()); };
++        if class_source::declares_constant_value(header)
++            || class_source::declares_signature(header)
++        {
++            return Ok(());
++        }
++        let Some(fragment) = jarde_java::report::emit_class_source_instance_array_initializer(
++            first_ast, write.bci, budget,
++        )
++        .map_err(InitializerProjectionFailure::Stopped)?
++        else {
++            return Ok(());
++        };
++        let declaration = field.declaration.as_ref().expect("checked above");
++        budget.charge(
++            CountedBudgetDimension::OutputBytes,
++            u64::try_from(declaration.len().saturating_add(fragment.len())).unwrap_or(u64::MAX),
++        )
++        .map_err(InitializerProjectionFailure::Error)?;
++        let projected = format!("{declaration}{fragment}");
++        staged_fields.push((*index, projected));
++        field_indices.push(*index);
++
++        let Some(calls) = jarde_java::report::class_source_instance_array_calls(
++            first_ast, write.bci, budget,
++        )
++        .map_err(InitializerProjectionFailure::Stopped)?
++        else {
++            return Ok(());
++        };
++        for call in calls {
++            let target = &call.target;
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if target.kind() != jarde_java::facts::InvokeKind::Static
++                || target.owner().as_bytes() != class_name
++                || target.is_interface_reference()
++            {
++                return Ok(());
++            }
++            let mut matching_header = None;
++            for header in headers {
++                budget.poll().map_err(InitializerProjectionFailure::Error)?;
++                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                    .map_err(InitializerProjectionFailure::Error)?;
++                if header.name.raw().0 == target.name().as_bytes()
++                    && header.descriptor.raw().0 == target.descriptor().as_bytes()
++                {
++                    if matching_header.is_some() {
++                        return Ok(());
++                    }
++                    matching_header = Some(header);
++                }
++            }
++            let Some(header) = matching_header else { return Ok(()); };
++            if header.access_flags & 0x0008 == 0 || class_source::declares_exceptions(header) {
++                return Ok(());
++            }
++            let Ok(descriptor) = descriptor_facts(target.descriptor().as_bytes(), DescriptorKind::Method) else {
++                return Ok(());
++            };
++            let Some(result_type) = descriptor.result().and_then(primitive_descriptor_type) else {
++                return Ok(());
++            };
++            if descriptor.parameters().len() != call.arguments.len()
++                || Some(result_type) != call.presented
++            {
++                return Ok(());
++            }
++            for (argument, parameter) in call.arguments.iter().zip(descriptor.parameters()) {
++                budget.poll().map_err(InitializerProjectionFailure::Error)?;
++                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                    .map_err(InitializerProjectionFailure::Error)?;
++                if parameter.dimensions() != 0
++                    || primitive_descriptor_type(parameter) != *argument
++                {
++                    return Ok(());
++                }
++            }
++        }
++    }
++
++    let mut prior = None;
++    for index in &field_indices {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        let position = if let Some(order) = field_order {
++            let mut found = None;
++            for (position, candidate) in order.iter().enumerate() {
++                budget.poll().map_err(InitializerProjectionFailure::Error)?;
++                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                    .map_err(InitializerProjectionFailure::Error)?;
++                if candidate == index { found = Some(position); break; }
++            }
++            let Some(position) = found else { return Ok(()); };
++            position
++        } else {
++            *index
++        };
++        if prior.is_some_and(|previous| previous >= position) { return Ok(()); }
++        prior = Some(position);
++    }
++
++    let stage_methods = u64::try_from(selected.len()).unwrap_or(u64::MAX);
++    budget.charge(CountedBudgetDimension::IrItems, stage_methods)
++        .map_err(InitializerProjectionFailure::Error)?;
++    let mut staged_methods = Vec::with_capacity(selected.len());
++    for (member_index, method, ast, projection) in &selected {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++            .map_err(InitializerProjectionFailure::Error)?;
++        for (index, _) in member_texts.iter() {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if *index == *member_index { return Ok(()); }
++        }
++        for index in already_staged_members {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            if *index == *member_index { return Ok(()); }
++        }
++        let class_source::ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
++            return Ok(());
++        };
++        let original_statements = jarde_java::report::emit_class_source_method_ast(ast, 4, budget)
++            .map_err(InitializerProjectionFailure::Stopped)?;
++        budget.charge(
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(report.text.len().saturating_add(original_statements.len())).unwrap_or(u64::MAX),
++        )
++        .map_err(InitializerProjectionFailure::Error)?;
++        if !method.matches_current_text(&report.text)
++            || !lines_match(&report.text, &original_statements)
++        {
++            return Ok(());
++        }
++        budget.charge(
++            CountedBudgetDimension::IrItems,
++            u64::try_from(projection.writes.len()).unwrap_or(u64::MAX),
++        )
++        .map_err(InitializerProjectionFailure::Error)?;
++        let mut removed = Vec::with_capacity(projection.writes.len());
++        for write in &projection.writes {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)
++                .map_err(InitializerProjectionFailure::Error)?;
++            removed.push(write.bci);
++        }
++        let body = jarde_java::report::emit_class_source_instance_array_constructor_body(
++            ast, &removed, budget,
++        )
++        .map_err(InitializerProjectionFailure::Stopped)?;
++        let Some(text) = method.assert_projection_text(&body) else {
++            return Ok(());
++        };
++        budget.charge(
++            CountedBudgetDimension::OutputBytes,
++            u64::try_from(text.len()).unwrap_or(u64::MAX),
++        )
++        .map_err(InitializerProjectionFailure::Error)?;
++        staged_methods.push((*member_index, text));
++    }
++
++    // The proof, all fields, all text-only constructor placements and every output charge are
++    // complete. Poll before the no-fail commit; reserved IR cost already covers each staged
++    // record. No body emission is registered: this projection has no re-spellable anchor table,
++    // and its member_texts entry reserves the constructor against a later competing rewrite.
++    budget.poll().map_err(InitializerProjectionFailure::Error)?;
++    for (index, declaration) in staged_fields {
++        fields[index].declaration = Some(declaration);
++    }
++    member_texts.extend(staged_methods);
++    Ok(())
++}
++
++fn primitive_descriptor_type(component: &jarde_reader::classfile::DescriptorComponent) -> Option<JavaType> {
++    if component.dimensions() != 0 { return None; }
++    let jarde_reader::classfile::Base::Primitive(base) = component.base() else { return None; };
++    Some(match base {
++        jarde_reader::classfile::BaseType::Boolean => JavaType::Boolean,
++        jarde_reader::classfile::BaseType::Byte => JavaType::Byte,
++        jarde_reader::classfile::BaseType::Char => JavaType::Char,
++        jarde_reader::classfile::BaseType::Short => JavaType::Short,
++        jarde_reader::classfile::BaseType::Int => JavaType::Int,
++        jarde_reader::classfile::BaseType::Long => JavaType::Long,
++        jarde_reader::classfile::BaseType::Float => JavaType::Float,
++        jarde_reader::classfile::BaseType::Double => JavaType::Double,
++    })
++}
++
++fn primitive_array_descriptor(element: &JavaType, descriptor: &str) -> bool {
++    let suffix = match element {
++        JavaType::Boolean => "Z", JavaType::Byte => "B", JavaType::Char => "C",
++        JavaType::Short => "S", JavaType::Int => "I", JavaType::Long => "J",
++        JavaType::Float => "F", JavaType::Double => "D", JavaType::Reference(_) => return false,
++    };
++    descriptor == format!("[{suffix}")
+ }
+ 
+ /// Commits an admitted runtime initializer group only after every RHS fragment has been emitted.
+@@ -19321,6 +19768,7 @@
+     capture_array_helper_use_table: bool,
+     capture_anonymous_child_asts: bool,
+     capture_assert_asts: bool,
++    capture_instance_array_ctor_asts: bool,
+     capture_integer_constant_asts: bool,
+     capture_member_uses: bool,
+     capture_member_use_bootstrap: bool,
+@@ -19440,6 +19888,7 @@
+         options.capture_anonymous_child_asts
+             || options.array_helper_census_needed
+             || options.capture_assert_asts
++            || (options.capture_instance_array_ctor_asts && request.method.name.0 == b"<init>")
+             || integer_switch_ast,
+         options.retain_generic_call_asts,
+         budget,
+@@ -43817,3 +44266,279 @@
+         }
+     }
+ }
++
++#[cfg(test)]
++mod common_instance_array_initializer_tests {
++    use super::*;
++    use jarde_reader::budget::{CancellationToken, Limits};
++    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
++    use std::io::{Cursor, Write};
++
++    const COMMON: &[u8] = include_bytes!(
++        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class"
++    );
++    const DIFFERENT: &[u8] = include_bytes!(
++        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/DifferentRhsByteArray.class"
++    );
++    const DELEGATING: &[u8] = include_bytes!(
++        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ThisDelegatingByteArray.class"
++    );
++    const REVERSED: &[u8] = include_bytes!(
++        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ReverseFieldOrderByteArray.class"
++    );
++    const SINGLETON: &[u8] = include_bytes!(
++        "../openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class"
++    );
++
++    fn limits() -> Limits {
++        Limits {
++            input_bytes: u64::MAX, archive_entries: u64::MAX, entry_bytes: u64::MAX,
++            read_bytes: u64::MAX, class_bytes: u64::MAX, attribute_bytes: u64::MAX,
++            code_bytes: u64::MAX, result_items: u64::MAX, output_bytes: u64::MAX,
++            class_headers: u64::MAX, method_bodies: u64::MAX, ir_items: u64::MAX,
++            ir_edges: u64::MAX, analysis_steps: u64::MAX, normalization_clones: u64::MAX,
++            nested_depth: u64::MAX, dependency_depth: u64::MAX, elapsed_millis: u64::MAX,
++        }
++    }
++
++    fn one_class_jar(name: &str, bytes: &[u8]) -> Vec<u8> {
++        let mut output = Cursor::new(Vec::new());
++        let mut zip = ZipArchiveWriter::new(&mut output);
++        let (mut entry, config) = zip
++            .new_file(EntryPath::verbatim(format!("{name}.class").into_bytes()))
++            .compression_method(CompressionMethod::new(0))
++            .start()
++            .unwrap();
++        let mut writer = config.wrap(&mut entry);
++        writer.write_all(bytes).unwrap();
++        let (_, descriptor) = writer.finish().unwrap();
++        entry.finish(descriptor).unwrap();
++        zip.finish().unwrap();
++        output.into_inner()
++    }
++
++    fn read_u2(bytes: &[u8], at: usize) -> usize {
++        usize::from(u16::from_be_bytes([bytes[at], bytes[at + 1]]))
++    }
++
++    fn class_with_nonstatic_constant_value(bytes: &[u8]) -> Vec<u8> {
++        let cp_count = read_u2(bytes, 8);
++        let mut cp_end = 10;
++        let mut index = 1;
++        while index < cp_count {
++            let tag = bytes[cp_end];
++            cp_end += 1;
++            match tag {
++                1 => {
++                    let length = read_u2(bytes, cp_end);
++                    cp_end += 2;
++                    cp_end += length;
++                }
++                3 | 4 => cp_end += 4,
++                5 | 6 => { cp_end += 8; index += 1; }
++                7 | 8 | 16 | 19 | 20 => cp_end += 2,
++                9 | 10 | 11 | 12 | 17 | 18 => cp_end += 4,
++                15 => cp_end += 3,
++                _ => panic!("unexpected constant-pool tag {tag}"),
++            }
++            index += 1;
++        }
++        let constant_value_name = cp_count;
++        let marker_name = cp_count + 1;
++        let int_descriptor = cp_count + 2;
++        let integer_value = cp_count + 3;
++        let mut extra = Vec::new();
++        for name in [b"ConstantValue".as_slice(), b"marker".as_slice(), b"I".as_slice()] {
++            extra.push(1);
++            extra.extend_from_slice(&u16::try_from(name.len()).unwrap().to_be_bytes());
++            extra.extend_from_slice(name);
++        }
++        extra.push(3);
++        extra.extend_from_slice(&1i32.to_be_bytes());
++        let mut rewritten = Vec::with_capacity(bytes.len() + extra.len() + 18);
++        rewritten.extend_from_slice(&bytes[..8]);
++        rewritten.extend_from_slice(&u16::try_from(cp_count + 4).unwrap().to_be_bytes());
++        rewritten.extend_from_slice(&bytes[10..cp_end]);
++        rewritten.extend_from_slice(&extra);
++        rewritten.extend_from_slice(&bytes[cp_end..]);
++
++        let mut cursor = cp_end + extra.len() + 6; // access flags, this_class, super_class
++        let interfaces = read_u2(&rewritten, cursor);
++        cursor += 2 + interfaces * 2;
++        let field_count_at = cursor;
++        let field_count = read_u2(&rewritten, cursor);
++        cursor += 2;
++        for _ in 0..field_count {
++            cursor += 6;
++            let attributes = read_u2(&rewritten, cursor);
++            cursor += 2;
++            for _ in 0..attributes {
++                let length = (rewritten[cursor + 2] as usize) << 24
++                    | (rewritten[cursor + 3] as usize) << 16
++                    | (rewritten[cursor + 4] as usize) << 8
++                    | rewritten[cursor + 5] as usize;
++                cursor += 6 + length;
++            }
++        }
++        rewritten[field_count_at..field_count_at + 2]
++            .copy_from_slice(&u16::try_from(field_count + 1).unwrap().to_be_bytes());
++        let mut field = Vec::with_capacity(16);
++        field.extend_from_slice(&0u16.to_be_bytes()); // package-private, non-static
++        field.extend_from_slice(&u16::try_from(marker_name).unwrap().to_be_bytes());
++        field.extend_from_slice(&u16::try_from(int_descriptor).unwrap().to_be_bytes());
++        field.extend_from_slice(&1u16.to_be_bytes());
++        field.extend_from_slice(&u16::try_from(constant_value_name).unwrap().to_be_bytes());
++        field.extend_from_slice(&2u32.to_be_bytes());
++        field.extend_from_slice(&u16::try_from(integer_value).unwrap().to_be_bytes());
++        rewritten.splice(cursor..cursor, field);
++        rewritten
++    }
++
++    fn source_for(name: &str, bytes: &[u8], budget: &mut Budget) -> ClassSourceReport {
++        let engine = Engine::new();
++        let snapshot = engine.open(ArtifactInput::bytes(one_class_jar(name, bytes)), budget).unwrap();
++        let environment = EnvironmentRequest {
++            snapshot: snapshot.id().clone(),
++            scope: PhysicalScope::SnapshotAll,
++            policy: EnvironmentPolicy::PlainJar,
++            profile: RuntimeProfile {
++                java_release: 8,
++                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
++                layout: LayoutMode::Generic,
++            },
++            loader: LoaderId("app".to_owned()),
++        };
++        let OperationOutcome::Performed(report) = engine.class_source(
++            std::slice::from_ref(&snapshot),
++            &ClassSourceRequest {
++                class: ClassRef::Name { class: ClassNameQuery::internal(name) },
++                environment,
++            },
++            budget,
++        ).unwrap() else {
++            panic!("complete fixture should produce a class-source report")
++        };
++        report
++    }
++
++    #[test]
++    fn direct_constructor_group_and_single_constructor_literal_are_projected() {
++        let mut budget = Budget::new(limits());
++        let common = source_for("CommonDirectSuperByteArray", COMMON, &mut budget);
++        assert!(common.text.contains("byte[] bytes = new byte[] { mark(10), mark(20) };"));
++        assert!(!common.text.contains("this.bytes = new byte[]"));
++        assert!(matches!(common.execution, ExecutionReport::Complete { .. }));
++        for method in common.methods.iter().filter(|method| method.item.identity.name.0 == b"<init>") {
++            let staged = common.projection_inputs.member_texts.iter()
++                .find(|member| member.member == method.item.index)
++                .expect("each promoted physical constructor has one projected member text");
++            assert!(staged.emission.is_none(), "text-only constructor projection must not invent body anchors");
++            assert!(method.text.contains("this.bytes = new byte[]"), "physical method text remains unchanged");
++        }
++
++        let mut budget = Budget::new(limits());
++        let singleton = source_for("ArrayFieldLiteral", SINGLETON, &mut budget);
++        assert!(singleton.text.contains("byte[] b = new byte[] { 40, 50, 60 };"));
++        assert!(!singleton.text.contains("this.b = new byte[]"));
++    }
++
++    #[test]
++    fn unequal_this_delegating_and_reverse_order_groups_keep_constructor_writes() {
++        for (name, bytes, field) in [
++            ("DifferentRhsByteArray", DIFFERENT, "bytes"),
++            ("ThisDelegatingByteArray", DELEGATING, "bytes"),
++            ("ReverseFieldOrderByteArray", REVERSED, "first"),
++        ] {
++            let mut budget = Budget::new(limits());
++            let report = source_for(name, bytes, &mut budget);
++            assert!(!report.text.contains(&format!("byte[] {field} = new byte[]")), "{name}");
++            assert!(report.text.contains(&format!("this.{field} = new byte[]")), "{name}");
++        }
++    }
++
++    #[test]
++    fn constant_value_on_any_nonstatic_field_refuses_the_whole_group() {
++        let bytes = class_with_nonstatic_constant_value(COMMON);
++        let mut budget = Budget::new(limits());
++        let report = source_for("CommonDirectSuperByteArray", &bytes, &mut budget);
++        assert!(!report.text.contains("byte[] bytes = new byte[]"));
++        assert!(report.text.contains("this.bytes = new byte[]"));
++    }
++
++    #[test]
++    fn public_class_source_budget_stop_does_not_publish_a_partial_field_group() {
++        let engine = Engine::new();
++        let mut open_budget = Budget::new(limits());
++        let snapshot = engine.open(
++            ArtifactInput::bytes(one_class_jar("CommonDirectSuperByteArray", COMMON)),
++            &mut open_budget,
++        ).unwrap();
++        let mut constrained = limits();
++        constrained.analysis_steps = 0;
++        let mut budget = Budget::new(constrained);
++        let environment = EnvironmentRequest {
++            snapshot: snapshot.id().clone(),
++            scope: PhysicalScope::SnapshotAll,
++            policy: EnvironmentPolicy::PlainJar,
++            profile: RuntimeProfile {
++                java_release: 8,
++                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
++                layout: LayoutMode::Generic,
++            },
++            loader: LoaderId("app".to_owned()),
++        };
++        match engine.class_source(
++            std::slice::from_ref(&snapshot),
++            &ClassSourceRequest {
++                class: ClassRef::Name { class: ClassNameQuery::internal("CommonDirectSuperByteArray") },
++                environment,
++            },
++            &mut budget,
++        ).unwrap() {
++            OperationOutcome::Performed(report) => {
++                assert!(!report.text.contains("byte[] bytes = new byte[]"));
++                assert!(!matches!(report.execution, ExecutionReport::Complete { .. }));
++            }
++            OperationOutcome::Incomplete(candidates) => {
++                assert!(matches!(candidates.execution, ExecutionReport::Partial { .. } | ExecutionReport::Cancelled { .. }));
++            }
++        }
++    }
++
++    #[test]
++    fn public_class_source_honors_pre_cancelled_request() {
++        let engine = Engine::new();
++        let mut open_budget = Budget::new(limits());
++        let snapshot = engine.open(
++            ArtifactInput::bytes(one_class_jar("CommonDirectSuperByteArray", COMMON)),
++            &mut open_budget,
++        ).unwrap();
++        let cancellation = CancellationToken::new();
++        cancellation.cancel();
++        let mut cancelled = Budget::with_cancellation_token(limits(), cancellation);
++        let environment = EnvironmentRequest {
++            snapshot: snapshot.id().clone(),
++            scope: PhysicalScope::SnapshotAll,
++            policy: EnvironmentPolicy::PlainJar,
++            profile: RuntimeProfile {
++                java_release: 8,
++                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
++                layout: LayoutMode::Generic,
++            },
++            loader: LoaderId("app".to_owned()),
++        };
++        let outcome = engine.class_source(
++            std::slice::from_ref(&snapshot),
++            &ClassSourceRequest {
++                class: ClassRef::Name { class: ClassNameQuery::internal("CommonDirectSuperByteArray") },
++                environment,
++            },
++            &mut cancelled,
++        ).unwrap();
++        let execution = match outcome {
++            OperationOutcome::Performed(report) => report.execution,
++            OperationOutcome::Incomplete(candidates) => candidates.execution,
++        };
++        assert!(matches!(execution, ExecutionReport::Cancelled { .. }));
++    }
++}

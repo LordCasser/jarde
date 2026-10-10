@@ -1,0 +1,77 @@
+{
+  "schema": "instance-array-scoped-rust-root-v6",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "instance_array",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:31:25.802171+00:00",
+      "duration_seconds": 10.118732666000142,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 432194982,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/scoped-rust-root-v6/0.stdout.raw",
+          "bytes": 627,
+          "sha256": "b5a0766815ec05553507af2c2601376e4fbfaa671bb533ca134be57af832d5a6"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/scoped-rust-root-v6/0.stderr.raw",
+          "bytes": 238,
+          "sha256": "4c9c0eb2bdba29d4c5894fb40bf73aedca1db216bbe426574e4bbaadef4b4f98"
+        }
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "common_instance_array_initializer_tests",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:31:35.921568+00:00",
+      "duration_seconds": 15.167758374998812,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 426431150,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/scoped-rust-root-v6/1.stdout.raw",
+          "bytes": 887,
+          "sha256": "39bfc272cc2cdaccceea289c0906f787da003ac20c1a5956a99ac57430bbe7df"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/scoped-rust-root-v6/1.stderr.raw",
+          "bytes": 304,
+          "sha256": "c0884d5bf5a60363131281f3883b17d18fb753fa4970501a57e2d4da3302133f"
+        }
+      }
+    }
+  ]
+}

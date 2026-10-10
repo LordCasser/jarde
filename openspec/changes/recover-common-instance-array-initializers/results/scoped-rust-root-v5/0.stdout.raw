@@ -1,0 +1,10 @@
+
+running 5 tests
+test report::instance_array_prefix_tests::rhs_comparison_preserves_long_and_float_double_raw_bits ... ok
+test report::instance_array_prefix_tests::budget_stop_returns_no_candidate ... ok
+test report::instance_array_prefix_tests::static_rhs_call_arguments_and_overload_descriptor_are_exact ... ok
+test report::instance_array_prefix_tests::non_super_handlers_unclaimed_duplicate_and_rhs_mismatch_refuse ... ok
+test report::instance_array_prefix_tests::prefix_emission_keeps_super_arguments_and_final_return ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 325 filtered out; finished in 0.01s
+

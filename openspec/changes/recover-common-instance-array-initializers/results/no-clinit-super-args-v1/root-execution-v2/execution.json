@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/prepare-baseline-luna-v2.py",
+    "--cli",
+    "/private/tmp/jarde-nonfinal-static-cli-v1"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T02:57:04.249492+00:00",
+  "elapsed_seconds": 5.816088542007492,
+  "exit": 1,
+  "script_sha256": "3b39947a8062a4b38fdf94b2eb55f121612b7a3046fb5a5f082424def9a367a0",
+  "streams": {
+    "stdout": {
+      "path": "stdout",
+      "bytes": 677,
+      "sha256": "71c226474fdff039baf9e7e2b89c5cbaf038e63e07b712b54a1c99ca28bea635"
+    },
+    "stderr": {
+      "path": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-unicode-ci-luna-v3.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 1,
+  "started_at": "2026-10-10T03:39:07.459730+00:00",
+  "duration_seconds": 0.6907049580040621,
+  "script_sha256": "738c6ffca3809157ae3877c17545d026ad3c89c6d620b4e92ad6f1666185c506",
+  "streams": {
+    "stdout": {
+      "path": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr",
+      "bytes": 858,
+      "sha256": "317d36809a1cb44fe9b33b375b1366b5d1257098f26e40093eb0c6e1fd35829d"
+    }
+  }
+}

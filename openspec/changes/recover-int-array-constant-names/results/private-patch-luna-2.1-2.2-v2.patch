@@ -1,0 +1,1204 @@
+diff --git a/crates/jarde-java/src/report.rs b/crates/jarde-java/src/report.rs
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -3822,28 +3822,63 @@
+     pub name: String,
+     pub bci: u32,
+     pub case_label: bool,
+-}
+-
+-/// Project only integer switch labels and the direct integer return in a selected arm.
++    /// Present only for a direct int-array initializer leaf; switch uses retain their old path.
++    pub body_range: Option<std::ops::Range<usize>>,
++}
++
++/// Project integer switch names and the admitted direct int-array initializer leaves.
+ /// `None` means the same-run AST proves no safe replacement; a stop is propagated before publish.
+ #[doc(hidden)]
+ pub fn project_class_source_integer_constants(
+     ast: &ClassSourceMethodAst,
+     candidates: &[IntegerConstantName],
+     returns_int: bool,
++    returns_int_array: bool,
+     budget: &mut Budget,
+-) -> Result<Option<(String, Vec<IntegerConstantNameUse>)>, crate::stop::StopReason> {
++) -> Result<Option<(String, Vec<IntegerConstantNameUse>, Option<String>)>, crate::stop::StopReason> {
+     use crate::ast::{ExprKind, StmtKind, SwitchLabels, Type};
+-    if !ast.projection.complete_code
+-        || candidates.is_empty()
+-        || ast.projection.parameter_names.iter().any(Option::is_none)
+-    {
++    if !ast.projection.complete_code || candidates.is_empty() {
+         return Ok(None);
+     }
++    for parameter_name in &ast.projection.parameter_names {
++        crate::stop::poll(budget, None)?;
++        crate::stop::charge(
++            budget,
++            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++            1,
++            None,
++        )?;
++        if parameter_name.is_none() {
++            return Ok(None);
++        }
++    }
++    crate::stop::poll(
++        budget,
++        ast.projection
++            .program
++            .stmts
++            .first()
++            .map(|stmt| stmt.origin.primary().bci()),
++    )?;
++    crate::stop::charge(
++        budget,
++        jarde_reader::budget::CountedBudgetDimension::IrItems,
++        u64::try_from(ast.projection.parameter_names.len())
++            .unwrap_or(u64::MAX)
++            .saturating_add(u64::try_from(ast.projection.program.stmts.len()).unwrap_or(u64::MAX)),
++        None,
++    )?;
+     let mut occupied = std::collections::HashSet::new();
+     occupied.extend(ast.projection.parameter_names.iter().flatten().cloned());
+     let mut pending: Vec<&crate::ast::Stmt> = ast.projection.program.stmts.iter().collect();
+     while let Some(stmt) = pending.pop() {
++        crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++        crate::stop::charge(
++            budget,
++            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++            1,
++            Some(stmt.origin.primary().bci()),
++        )?;
+         crate::stop::charge(
+             budget,
+             jarde_reader::budget::CountedBudgetDimension::IrItems,
+@@ -3898,11 +3933,28 @@
+             _ => {}
+         }
+     }
+-    let names: std::collections::HashMap<i64, &str> = candidates
+-        .iter()
+-        .filter(|candidate| !occupied.contains(&candidate.name))
+-        .map(|candidate| (i64::from(candidate.value), candidate.name.as_str()))
+-        .collect();
++    crate::stop::charge(
++        budget,
++        jarde_reader::budget::CountedBudgetDimension::IrItems,
++        u64::try_from(candidates.len()).unwrap_or(u64::MAX),
++        None,
++    )?;
++    let mut names = std::collections::HashMap::new();
++    for candidate in candidates {
++        crate::stop::poll(budget, None)?;
++        crate::stop::charge(
++            budget,
++            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++            1,
++            None,
++        )?;
++        if occupied.contains(&candidate.name) {
++            continue;
++        }
++        if names.insert(i64::from(candidate.value), candidate.name.as_str()).is_some() {
++            return Ok(None);
++        }
++    }
+     if names.is_empty() {
+         return Ok(None);
+     }
+@@ -3918,8 +3970,131 @@
+     )?;
+     let mut program = ast.projection.program.clone();
+     let mut uses = Vec::new();
++    let mut array_names_present = false;
++    if returns_int_array
++        && ast.projection.member.name.0 != b"<init>"
++        && ast.projection.member.name.0 != b"<clinit>"
++        && ast.projection.member.descriptor.0.ends_with(b")[I")
++    {
++        for stmt in &mut program.stmts {
++            crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++            crate::stop::charge(
++                budget,
++                jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                1,
++                Some(stmt.origin.primary().bci()),
++            )?;
++            crate::stop::charge(
++                budget,
++                jarde_reader::budget::CountedBudgetDimension::IrItems,
++                1,
++                Some(stmt.origin.primary().bci()),
++            )?;
++            let StmtKind::Return {
++                value: Some(returned),
++            } = &mut stmt.kind
++            else {
++                continue;
++            };
++            let ExprKind::NewArray {
++                element: Type::Int,
++                lengths,
++                initializers: Some(elements),
++                total_dimensions: 1,
++            } = &mut returned.kind
++            else {
++                continue;
++            };
++            if !lengths.is_empty() {
++                continue;
++            }
++            for element in elements {
++                crate::stop::poll(budget, Some(element.origin.primary().bci()))?;
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(element.origin.primary().bci()),
++                )?;
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::IrItems,
++                    1,
++                    Some(element.origin.primary().bci()),
++                )?;
++                if element.presented != Some(Type::Int) {
++                    continue;
++                }
++                let ExprKind::Integer(number) = &mut element.kind else {
++                    continue;
++                };
++                let Some(name) = names.get(&*number) else {
++                    continue;
++                };
++                let bci = element.origin.primary().bci();
++                if element
++                    .origin
++                    .primary()
++                    .method()
++                    .is_some_and(|method| method != &ast.projection.member)
++                {
++                    return Ok(None);
++                }
++                let mut instruction_bci_found = false;
++                for instruction_bci in &ast.projection.instruction_bcis {
++                    crate::stop::poll(budget, Some(bci))?;
++                    crate::stop::charge(
++                        budget,
++                        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                        1,
++                        Some(bci),
++                    )?;
++                    if *instruction_bci == bci {
++                        instruction_bci_found = true;
++                        break;
++                    }
++                }
++                if !instruction_bci_found {
++                    return Ok(None);
++                }
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::IrItems,
++                    2,
++                    Some(bci),
++                )?;
++                let name_for_use = (*name).to_owned();
++                let name_for_ast = name_for_use.clone();
++                let value = *number;
++                uses.push(IntegerConstantNameUse {
++                    name: name_for_use,
++                    bci,
++                    case_label: false,
++                    body_range: Some(0..0),
++                });
++                array_names_present = true;
++                element.kind = ExprKind::IntegerConstantName {
++                    name: name_for_ast,
++                    value,
++                };
++            }
++        }
++    }
++    crate::stop::charge(
++        budget,
++        jarde_reader::budget::CountedBudgetDimension::IrItems,
++        u64::try_from(program.stmts.len()).unwrap_or(u64::MAX),
++        None,
++    )?;
+     let mut pending: Vec<&mut crate::ast::Stmt> = program.stmts.iter_mut().collect();
+     while let Some(stmt) = pending.pop() {
++        crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++        crate::stop::charge(
++            budget,
++            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++            1,
++            Some(stmt.origin.primary().bci()),
++        )?;
+         crate::stop::charge(
+             budget,
+             jarde_reader::budget::CountedBudgetDimension::IrItems,
+@@ -3949,9 +4124,22 @@
+             StmtKind::Switch { value, arms } => {
+                 if value.presented == Some(Type::Int) {
+                     for arm in arms.iter_mut() {
++                        crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                            1,
++                            Some(stmt.origin.primary().bci()),
++                        )?;
+                         if arm.labels.is_some() {
+                             continue;
+                         }
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::IrItems,
++                            u64::try_from(arm.keys.len()).unwrap_or(u64::MAX),
++                            Some(stmt.origin.primary().bci()),
++                        )?;
+                         let labels: Vec<String> = arm
+                             .keys
+                             .iter()
+@@ -3961,6 +4149,13 @@
+                                     .map_or_else(|| key.to_string(), |name| (*name).to_owned())
+                             })
+                             .collect();
++                        crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                            u64::try_from(arm.keys.len()).unwrap_or(u64::MAX),
++                            Some(stmt.origin.primary().bci()),
++                        )?;
+                         let replaced = arm
+                             .keys
+                             .iter()
+@@ -3968,16 +4163,37 @@
+                             .any(|(key, label)| *label != key.to_string());
+                         if replaced {
+                             for (key, label) in arm.keys.iter().zip(&labels) {
++                                crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++                                crate::stop::charge(
++                                    budget,
++                                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                                    1,
++                                    Some(stmt.origin.primary().bci()),
++                                )?;
+                                 if *label != key.to_string() {
++                                    crate::stop::charge(
++                                        budget,
++                                        jarde_reader::budget::CountedBudgetDimension::IrItems,
++                                        1,
++                                        Some(stmt.origin.primary().bci()),
++                                    )?;
+                                     uses.push(IntegerConstantNameUse {
+                                         name: label.clone(),
+                                         bci: stmt.origin.primary().bci(),
+                                         case_label: true,
++                                        body_range: None,
+                                     });
+                                 }
+                             }
+                             arm.labels = Some(SwitchLabels::Integer(labels));
+                         }
++                        crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
++                        crate::stop::charge(
++                            budget,
++                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                            1,
++                            Some(stmt.origin.primary().bci()),
++                        )?;
+                         if returns_int
+                             && !arm.keys.is_empty()
+                             && let [direct] = arm.body.as_mut_slice()
+@@ -3988,10 +4204,17 @@
+                             && let ExprKind::Integer(number) = returned.kind
+                             && let Some(name) = names.get(&number)
+                         {
++                            crate::stop::charge(
++                                budget,
++                                jarde_reader::budget::CountedBudgetDimension::IrItems,
++                                2,
++                                Some(returned.origin.primary().bci()),
++                            )?;
+                             uses.push(IntegerConstantNameUse {
+                                 name: (*name).to_owned(),
+                                 bci: returned.origin.primary().bci(),
+                                 case_label: false,
++                                body_range: None,
+                             });
+                             returned.kind = ExprKind::IntegerConstantName {
+                                 name: (*name).to_owned(),
+@@ -4032,7 +4255,91 @@
+         1,
+         budget,
+     )?;
+-    Ok(Some((body, uses)))
++    if array_names_present {
++        let map = crate::emit::replay_class_source_statement_segments(
++            &program.stmts,
++            &ast.projection.member,
++            ast.projection.current_class.as_deref(),
++            &ast.projection.nested_class_members,
++            1,
++            &body,
++            budget,
++        )?;
++        let mut assigned: Vec<std::ops::Range<usize>> = Vec::new();
++        for use_site in &mut uses {
++            if use_site.body_range.is_none() {
++                continue;
++            }
++            let mut matched = None;
++            for segment in map.segments() {
++                crate::stop::poll(budget, Some(use_site.bci))?;
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(use_site.bci),
++                )?;
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::IrItems,
++                    1,
++                    Some(use_site.bci),
++                )?;
++                let primary = segment.origin().primary();
++                if primary.bci() == use_site.bci
++                    && primary.method() == Some(&ast.projection.member)
++                    && segment.text(&body) == use_site.name
++                {
++                    if matched.is_some() {
++                        return Ok(None);
++                    }
++                    matched = Some(segment.start()..segment.end());
++                }
++            }
++            let Some(range) = matched else {
++                return Ok(None);
++            };
++            for previous in &assigned {
++                crate::stop::poll(budget, Some(use_site.bci))?;
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                    1,
++                    Some(use_site.bci),
++                )?;
++                crate::stop::charge(
++                    budget,
++                    jarde_reader::budget::CountedBudgetDimension::IrItems,
++                    1,
++                    Some(use_site.bci),
++                )?;
++                if previous.start < range.end && range.start < previous.end {
++                    return Ok(None);
++                }
++            }
++            crate::stop::charge(
++                budget,
++                jarde_reader::budget::CountedBudgetDimension::IrItems,
++                1,
++                Some(use_site.bci),
++            )?;
++            assigned.push(range.clone());
++            use_site.body_range = Some(range);
++        }
++    }
++    let original_body = if array_names_present {
++        Some(crate::emit::emit_class_source_statements(
++            &ast.projection.program.stmts,
++            &ast.projection.member,
++            ast.projection.current_class.as_deref(),
++            &ast.projection.nested_class_members,
++            1,
++            budget,
++        )?)
++    } else {
++        None
++    };
++    Ok(Some((body, uses, original_body)))
+ }
+ 
+ /// The BCI of the one statically proved field write in the narrow anonymous constructor shape.
+@@ -14592,3 +14899,135 @@
+         );
+     }
+ }
++
++#[cfg(test)]
++mod integer_array_name_projection_tests {
++    use super::*;
++    use crate::ast::{Expr, Stmt};
++    use crate::source_map::{Origin, OriginSet};
++    use jarde_reader::budget::Limits;
++    use jarde_reader::model::{
++        ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++        PhysicalMethodId, PhysicalVariant, SnapshotId,
++    };
++    use std::collections::BTreeMap;
++
++    fn array_ast(element_bcis: &[u32]) -> ClassSourceMethodAst {
++        let member = PhysicalMethodId {
++            owner: PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot {
++                    snapshot: SnapshotId("integer-array-test".to_owned()),
++                },
++                class_bytes: ClassBytesId {
++                    digest: Digest("integer-array-test".to_owned()),
++                    length: 1,
++                },
++                variant: PhysicalVariant::Base,
++            },
++            name: JvmBytes(b"values".to_vec()),
++            descriptor: JvmBytes(b"()[I".to_vec()),
++        };
++        let elements = element_bcis
++            .iter()
++            .map(|bci| {
++                Expr::new(
++                    ExprKind::Integer(7),
++                    OriginSet::new(Origin::direct(*bci).in_method(&member)),
++                )
++            })
++            .collect();
++        let array = Expr::new(
++            ExprKind::NewArray {
++                element: Type::Int,
++                lengths: Vec::new(),
++                initializers: Some(elements),
++                total_dimensions: 1,
++            },
++            OriginSet::new(Origin::direct(0).in_method(&member)),
++        );
++        let statement = Stmt::new(
++            StmtKind::Return { value: Some(array) },
++            OriginSet::new(Origin::direct(0).in_method(&member)),
++        );
++        let program = build::Program {
++            stmts: vec![statement],
++            field_increments: BTreeMap::new(),
++            statements: 1,
++            ragged: false,
++            lambdas: Vec::new(),
++            accessors: Vec::new(),
++            array_constructor_sites: Vec::new(),
++            lambda_refusals: Vec::new(),
++            accessor_refusals: Vec::new(),
++            lambdas_presented: 0,
++            accessors_presented: 0,
++        };
++        ClassSourceMethodAst {
++            projection: std::sync::Arc::new(ClassSourceMethodAstSource {
++                program,
++                member,
++                current_class: None,
++                nested_class_members: Vec::new(),
++                parameter_names: Vec::new(),
++                parameter_slots: Vec::new(),
++                complete_code: true,
++                has_exception_handlers: false,
++                instruction_count: element_bcis.len() + 1,
++                instruction_bcis: std::iter::once(0)
++                    .chain(element_bcis.iter().copied())
++                    .collect(),
++                call_targets: Vec::new(),
++                anonymous_constructor_initializer_bci: None,
++                generic_call_init: None,
++            }),
++        }
++    }
++
++    fn budget() -> Budget {
++        Budget::new(Limits {
++            ir_items: 1 << 20,
++            output_bytes: 1 << 20,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        })
++    }
++
++    #[test]
++    fn array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses() {
++        let candidate = IntegerConstantName {
++            value: 7,
++            name: "VALUE".to_owned(),
++        };
++        let mut distinct_budget = budget();
++        let (body, uses, original_body) = project_class_source_integer_constants(
++            &array_ast(&[3, 6]),
++            std::slice::from_ref(&candidate),
++            false,
++            true,
++            &mut distinct_budget,
++        )
++        .unwrap()
++        .expect("two direct int elements should project");
++        let ranges: Vec<_> = uses
++            .iter()
++            .filter_map(|use_site| use_site.body_range.as_ref())
++            .collect();
++        assert!(original_body.is_some());
++        assert_eq!(ranges.len(), 2);
++        assert_ne!(ranges[0], ranges[1]);
++        assert!(ranges
++            .iter()
++            .all(|range| body.get(range.clone()) == Some("VALUE")));
++
++        let mut ambiguous_budget = budget();
++        assert!(project_class_source_integer_constants(
++            &array_ast(&[3, 3]),
++            &[candidate],
++            false,
++            true,
++            &mut ambiguous_budget,
++        )
++        .unwrap()
++        .is_none());
++    }
++}
+diff --git a/crates/jarde-java/src/emit.rs b/crates/jarde-java/src/emit.rs
+--- a/crates/jarde-java/src/emit.rs
++++ b/crates/jarde-java/src/emit.rs
+@@ -213,6 +213,41 @@
+         Err(Halt::Stop(stop)) => Err(stop),
+         Err(Halt::PhaseStopped) => unreachable!("class-source emission has no phase"),
+         Err(Halt::Gate(_)) => unreachable!("class-source emission does not replay"),
++    }
++}
++
++/// Replays a class-source statement body and returns exact spans for its anchored AST nodes.
++/// The commit path remains text-only; callers pay for this full temporary map only when needed.
++pub(crate) fn replay_class_source_statement_segments(
++    statements: &[Stmt],
++    member: &PhysicalMethodId,
++    current_class: Option<&str>,
++    nested_class_members: &[String],
++    indentation: usize,
++    artifact: &str,
++    budget: &mut Budget,
++) -> Result<SourceMap, StopReason> {
++    let mut phase = EvidencePhase::new();
++    let mut emitter = Emitter::replay(
++        budget,
++        Some(member),
++        current_class,
++        nested_class_members,
++        artifact,
++        SegmentPublication::Whole,
++        &mut phase,
++    );
++    emitter.initializer = member.name.0 == b"<clinit>";
++    let halt = emitter.stmts(statements, indentation).err();
++    let (map, covered) = emitter.finish_replay();
++    match halt {
++        None if covered => Ok(map),
++        None => Err(StopReason::Interrupted {
++            code: crate::stop::SOURCE_MAP_MISMATCH_CODE,
++            at: None,
++        }),
++        Some(Halt::PhaseStopped) => Err(phase.reason(budget)),
++        Some(Halt::Gate(stop)) | Some(Halt::Stop(stop)) => Err(stop),
+     }
+ }
+ 
+@@ -1969,6 +2004,77 @@
+     }
+ 
+     #[test]
++    fn class_source_body_replay_propagates_an_evidence_budget_stop() {
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant, SnapshotId,
++        };
++
++        let member = PhysicalMethodId {
++            owner: PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot {
++                    snapshot: SnapshotId("emit-replay-test".to_owned()),
++                },
++                class_bytes: ClassBytesId {
++                    digest: Digest("emit-replay-test".to_owned()),
++                    length: 1,
++                },
++                variant: PhysicalVariant::Base,
++            },
++            name: JvmBytes(b"run".to_vec()),
++            descriptor: JvmBytes(b"()V".to_vec()),
++        };
++        let statements = body();
++        let mut commit_budget = budget_with(1 << 20);
++        let text = emit_class_source_statements(
++            &statements,
++            &member,
++            None,
++            &[],
++            1,
++            &mut commit_budget,
++        )
++        .unwrap();
++        let mut limits = budget_with(1 << 20).limits().clone();
++        limits.ir_items = 0;
++        let mut replay_budget = Budget::new(limits);
++        assert!(matches!(
++            replay_class_source_statement_segments(
++                &statements,
++                &member,
++                None,
++                &[],
++                1,
++                &text,
++                &mut replay_budget,
++            ),
++            Err(StopReason::Budget {
++                dimension: CountedBudgetDimension::IrItems,
++                ..
++            })
++        ));
++
++        let token = jarde_reader::budget::CancellationToken::new();
++        let mut cancelled_budget = Budget::with_cancellation_token(
++            budget_with(1 << 20).limits().clone(),
++            token.clone(),
++        );
++        token.cancel();
++        assert!(matches!(
++            replay_class_source_statement_segments(
++                &statements,
++                &member,
++                None,
++                &[],
++                1,
++                &text,
++                &mut cancelled_budget,
++            ),
++            Err(StopReason::Cancelled { .. })
++        ));
++    }
++
++    #[test]
+     fn a_static_initializer_tail_return_closes_the_block_and_keeps_its_origin() {
+         let stmts = vec![
+             Stmt::new(
+diff --git a/src/facade.rs b/src/facade.rs
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -19168,6 +19168,18 @@
+     Other,
+ }
+ 
++fn integer_array_projection_source_is_current(
++    method: &class_source::ClassSourceMethod,
++    original_body: Option<&str>,
++    prior_same_member_projection: bool,
++) -> bool {
++    !prior_same_member_projection
++        && original_body
++            .and_then(|body| method.integer_constant_projection_text(body))
++            .as_deref()
++            == Some(method.text.as_str())
++}
++
+ fn project_class_source_integer_constant_names(
+     report: &mut ClassSourceReport,
+     asts: &[(
+@@ -19180,13 +19192,24 @@
+ ) -> Result<()> {
+     if report.integer_constant_candidates.is_empty()
+         || !matches!(report.execution, ExecutionReport::Complete { .. })
+-        || report.methods.iter().any(|method| {
+-            matches!(&method.outcome, class_source::ClassSourceOutcome::Recovered { report, .. }
+-                if !matches!(report.execution, ExecutionReport::Complete { .. }))
+-        })
+     {
+         return Ok(());
+     }
++    for method in &report.methods {
++        budget.poll()?;
++        budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++        if matches!(
++            &method.outcome,
++            class_source::ClassSourceOutcome::Recovered { report, .. }
++                if !matches!(report.execution, ExecutionReport::Complete { .. })
++        ) {
++            return Ok(());
++        }
++    }
++    budget.charge(
++        CountedBudgetDimension::IrItems,
++        u64::try_from(report.integer_constant_candidates.len()).unwrap_or(u64::MAX),
++    )?;
+     let candidates: Vec<_> = report
+         .integer_constant_candidates
+         .iter()
+@@ -19195,6 +19218,10 @@
+             name: candidate.name.clone(),
+         })
+         .collect();
++    budget.charge(
++        CountedBudgetDimension::IrItems,
++        u64::try_from(report.methods.len()).unwrap_or(u64::MAX),
++    )?;
+     let mut projected = Vec::new();
+     for method in &report.methods {
+         let class_source::ClassSourceOutcome::Recovered {
+@@ -19210,16 +19237,25 @@
+         {
+             continue;
+         }
+-        let Some((_, ast, _, _)) = asts
+-            .iter()
+-            .find(|(identity, _, _, _)| *identity == method.item.identity)
+-        else {
++        let mut matching_ast = None;
++        for (identity, ast, _, _) in asts {
++            budget.poll()?;
++            budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++            if *identity == method.item.identity {
++                matching_ast = Some(ast);
++                break;
++            }
++        }
++        let Some(ast) = matching_ast else {
+             continue;
+         };
+-        let Some((body, uses)) = jarde_java::report::project_class_source_integer_constants(
++        let returns_int = method.item.descriptor.raw().0.ends_with(b")I");
++        let returns_int_array = method.item.descriptor.raw().0.ends_with(b")[I");
++        let Some((mut body, mut uses, original_body)) = jarde_java::report::project_class_source_integer_constants(
+             ast,
+             &candidates,
+-            method.item.descriptor.raw().0.ends_with(b")I"),
++            returns_int,
++            returns_int_array,
+             budget,
+         )
+         .map_err(|stop| {
+@@ -19232,41 +19268,127 @@
+         else {
+             continue;
+         };
++        let mut has_array_use = false;
++        for use_site in &uses {
++            budget.poll()?;
++            budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++            if use_site.body_range.is_some() {
++                has_array_use = true;
++            }
++        }
++        if has_array_use {
++            let mut prior_same_member = false;
++            for staged in &report.projection_inputs.member_texts {
++                budget.poll()?;
++                budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++                if staged.member == method.item.index {
++                    prior_same_member = true;
++                    break;
++                }
++            }
++            budget.poll()?;
++            budget.charge(
++                BudgetDimension::AnalysisSteps,
++                u64::try_from(method.text.len()).unwrap_or(u64::MAX),
++            )?;
++            budget.charge(BudgetDimension::IrItems, 1)?;
++            let original_body_matches = integer_array_projection_source_is_current(
++                method,
++                original_body.as_deref(),
++                prior_same_member,
++            );
++            if !original_body_matches {
++                if !returns_int {
++                    continue;
++                }
++                let Some((switch_body, switch_uses, _)) =
++                    jarde_java::report::project_class_source_integer_constants(
++                        ast,
++                        &candidates,
++                        returns_int,
++                        false,
++                        budget,
++                    )
++                    .map_err(|stop| {
++                        enum_projection_stop_error(
++                            stop,
++                            "integer constant switch projection",
++                            "integer_constant_ir_missing",
++                        )
++                    })?
++                else {
++                    continue;
++                };
++                body = switch_body;
++                uses = switch_uses;
++            }
++        }
++        budget.charge(BudgetDimension::IrItems, 1)?;
+         let Some(text) = method.integer_constant_projection_text(&body) else {
+             continue;
+         };
+         let mut derived = Vec::new();
+         let mut unique = true;
+         for use_site in uses {
+-            let prefix = if use_site.case_label {
+-                "case "
++            let span = if let Some(range) = use_site.body_range.as_ref() {
++                budget.poll()?;
++                budget.charge(BudgetDimension::IrItems, 1)?;
++                budget.charge(
++                    BudgetDimension::AnalysisSteps,
++                    u64::try_from(range.end.saturating_sub(range.start)).unwrap_or(u64::MAX),
++                )?;
++                method.integer_constant_projection_span(&body, range.start, range.end)
+             } else {
+-                "return "
++                let (prefix, suffix) = if use_site.case_label {
++                    ("case ", ":")
++                } else {
++                    ("return ", ";")
++                };
++                let needle = format!("{prefix}{}{suffix}", use_site.name);
++                budget.poll()?;
++                budget.charge(
++                    BudgetDimension::AnalysisSteps,
++                    u64::try_from(text.len()).unwrap_or(u64::MAX),
++                )?;
++                let mut matches = text.match_indices(&needle);
++                let Some((at, _)) = matches.next() else {
++                    unique = false;
++                    break;
++                };
++                if matches.next().is_some() {
++                    unique = false;
++                    break;
++                }
++                let start = at + prefix.len();
++                Some((start, start + use_site.name.len()))
+             };
+-            let suffix = if use_site.case_label { ":" } else { ";" };
+-            let needle = format!("{prefix}{}{suffix}", use_site.name);
+-            let mut matches = text.match_indices(&needle);
+-            let Some((at, _)) = matches.next() else {
++            let Some((start, end)) = span else {
+                 unique = false;
+                 break;
+             };
+-            if matches.next().is_some() {
++            if text.get(start..end) != Some(use_site.name.as_str()) {
+                 unique = false;
+                 break;
+             }
+-            let start = at + prefix.len();
+-            let Some(field) = report
+-                .integer_constant_candidates
+-                .iter()
+-                .find(|candidate| candidate.name == use_site.name)
+-            else {
++            budget.charge(BudgetDimension::IrItems, 1)?;
++            let mut field = None;
++            for candidate in &report.integer_constant_candidates {
++                budget.poll()?;
++                budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++                if candidate.name == use_site.name {
++                    field = Some(candidate);
++                    break;
++                }
++            }
++            let Some(field) = field else {
+                 unique = false;
+                 break;
+             };
++            budget.charge(BudgetDimension::IrItems, 3)?;
+             derived.push(class_source::MemberFamilyDerivedProjection {
+                 kind: class_source::MemberFamilyDerivedKind::IntegerConstantName,
+                 start,
+-                end: start + use_site.name.len(),
++                end,
+                 anchors: vec![
+                     class_source::MemberFamilyPhysicalAnchor::Field {
+                         field: field.field.identity.clone(),
+@@ -19280,6 +19402,7 @@
+             });
+         }
+         if unique {
++            budget.charge(BudgetDimension::IrItems, 1)?;
+             projected.push(class_source::MemberFamilyMethodText {
+                 index: method.item.index,
+                 text,
+@@ -19299,12 +19422,31 @@
+         CountedBudgetDimension::OutputBytes,
+         u64::try_from(text.len()).unwrap_or(u64::MAX),
+     )?;
+-    for method in &mut report.methods {
+-        if let Some(staged) = projected
+-            .iter()
+-            .find(|staged| staged.index == method.item.index)
+-        {
+-            method.text = staged.text.clone();
++    budget.charge(
++        BudgetDimension::IrItems,
++        u64::try_from(report.methods.len()).unwrap_or(u64::MAX),
++    )?;
++    let mut staged_method_texts = vec![None; report.methods.len()];
++    for staged in &projected {
++        let mut matched_index = None;
++        for (index, method) in report.methods.iter().enumerate() {
++            budget.poll()?;
++            budget.charge(BudgetDimension::AnalysisSteps, 1)?;
++            if method.item.index == staged.index {
++                matched_index = Some(index);
++                break;
++            }
++        }
++        let Some(index) = matched_index else {
++            return Ok(());
++        };
++        budget.charge(BudgetDimension::IrItems, 1)?;
++        staged_method_texts[index] = Some(staged.text.clone());
++    }
++    budget.poll()?;
++    for (method, staged) in report.methods.iter_mut().zip(staged_method_texts) {
++        if let Some(text) = staged {
++            method.text = text;
+         }
+     }
+     report.text = text;
+@@ -19399,11 +19541,15 @@
+     } else {
+         None
+     };
+-    let integer_switch_ast = options.capture_integer_constant_asts
++    let integer_constant_ast = options.capture_integer_constant_asts
+         && analyzed.ir().code().is_some_and(|code| {
+-            code.instructions
+-                .iter()
+-                .any(|instruction| matches!(instruction.opcode, 0xaa | 0xab))
++            code.instructions.iter().any(|instruction| {
++                matches!(instruction.opcode, 0xaa | 0xab)
++                    || (request.method.name.0 != b"<init>"
++                        && request.method.name.0 != b"<clinit>"
++                        && request.method.descriptor.0.ends_with(b")[I")
++                        && instruction.opcode == 0xbc)
++            })
+         });
+     if analyzed.ir().code().is_some() {
+         // The prepared half of the same demand-path decode (`crate::d0_counts`): one count per
+@@ -19440,7 +19586,7 @@
+         options.capture_anonymous_child_asts
+             || options.array_helper_census_needed
+             || options.capture_assert_asts
+-            || integer_switch_ast,
++            || integer_constant_ast,
+         options.retain_generic_call_asts,
+         budget,
+     )?;
+@@ -43609,6 +43755,137 @@
+     }
+ 
+     #[test]
++    fn direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection() {
++        let bytes = compiled(
++            "ArrayConstantNames",
++            "class ArrayConstantNames { static final int VALUE=7; static int[] values(){return new int[]{7,7,8};} static int pick(int x){switch(x){case 7:return 9;default:return 0;}} }",
++        );
++        let report = source(&bytes, "ArrayConstantNames", &mut task_budget(&[]).unwrap());
++        assert!(report.text.contains("new int[]{VALUE, VALUE, 8}"));
++        assert!(report.text.contains("case VALUE:"));
++        let values = report
++            .methods
++            .iter()
++            .find(|method| method.item.name.raw().0 == b"values")
++            .unwrap();
++        let array_names: Vec<_> = report
++            .integer_constant_projections
++            .iter()
++            .filter(|projection| {
++                projection.anchors.iter().any(|anchor| matches!(
++                    anchor,
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
++                        if method == &values.item.identity
++                ))
++            })
++            .collect();
++        assert_eq!(array_names.len(), 2);
++        let mut bcis = Vec::new();
++        let mut ranges = Vec::new();
++        for projection in array_names {
++            assert_eq!(&report.text[projection.start..projection.end], "VALUE");
++            assert!(projection.anchors.iter().any(|anchor| matches!(
++                anchor,
++                class_source::MemberFamilyPhysicalAnchor::Field { .. }
++            )));
++            let class_source::MemberFamilyPhysicalAnchor::MethodPoint { bci, .. } = projection
++                .anchors
++                .iter()
++                .find(|anchor| matches!(
++                    anchor,
++                    class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
++                        if method == &values.item.identity
++                ))
++                .unwrap()
++            else {
++                unreachable!()
++            };
++            bcis.push(*bci);
++            ranges.push((projection.start, projection.end));
++        }
++        bcis.sort_unstable();
++        bcis.dedup();
++        assert_eq!(bcis.len(), 2);
++        ranges.sort_unstable();
++        assert_ne!(ranges[0], ranges[1]);
++        let class_source::ClassSourceOutcome::Recovered {
++            report: physical, ..
++        } = &values.outcome
++        else {
++            panic!()
++        };
++        assert!(physical.text.contains("new int[]{7, 7, 8}"));
++    }
++
++    #[test]
++    fn direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_staged_target() {
++        let unsupported = compiled(
++            "ArrayUnsupported",
++            "class ArrayUnsupported { static final int VALUE=7; static int[][] nested(){return new int[][]{{7}};} static int[] value(){return new int[]{make()};} static int make(){return 7;} }",
++        );
++        let report = source(&unsupported, "ArrayUnsupported", &mut task_budget(&[]).unwrap());
++        let value = report
++            .methods
++            .iter()
++            .find(|method| method.item.name.raw().0 == b"value")
++            .unwrap();
++        assert!(!value.text.contains("VALUE"));
++        assert!(report.integer_constant_projections.is_empty());
++
++        let shadowed = compiled(
++            "ArrayShadow",
++            "class ArrayShadow { static final int VALUE=7; static int[] value(int VALUE){return new int[]{7};} static int[] local(){int VALUE=8; return new int[]{7};} }",
++        );
++        let report = source(&shadowed, "ArrayShadow", &mut task_budget(&[]).unwrap());
++        let value = report
++            .methods
++            .iter()
++            .find(|method| method.item.name.raw().0 == b"value")
++            .unwrap();
++        assert!(value.text.contains("new int[]{7}"));
++        assert!(report.integer_constant_projections.is_empty());
++
++        let duplicate = compiled(
++            "ArrayDuplicate",
++            "class ArrayDuplicate { static final int VALUE=7; static final int OTHER=7; static int[] value(){return new int[]{7};} }",
++        );
++        let report = source(&duplicate, "ArrayDuplicate", &mut task_budget(&[]).unwrap());
++        let value = report
++            .methods
++            .iter()
++            .find(|method| method.item.name.raw().0 == b"value")
++            .unwrap();
++        assert!(value.text.contains("new int[]{7}"));
++        assert!(report.integer_constant_projections.is_empty());
++
++        let bytes = compiled(
++            "ArrayPriorProjection",
++            "class ArrayPriorProjection { static final int VALUE=7; static int[] value(){return new int[]{7};} }",
++        );
++        let report = source(&bytes, "ArrayPriorProjection", &mut task_budget(&[]).unwrap());
++        let method = report
++            .methods
++            .iter()
++            .find(|method| method.item.name.raw().0 == b"value")
++            .unwrap();
++        let prior = [class_source::ClassSourceProjectedMemberText {
++            member: method.item.index,
++            text: method.text.clone(),
++            emission: None,
++        }];
++        let prior_same_member = prior
++            .iter()
++            .any(|staged| staged.member == method.item.index);
++        assert!(!integer_array_projection_source_is_current(
++            method,
++            Some(""),
++            prior_same_member,
++        ));
++        assert!(!integer_array_projection_source_is_current(method, None, false));
++        assert!(!integer_array_projection_source_is_current(method, Some(""), false));
++    }
++
++    #[test]
+     fn case_and_return_candidates_are_independent_with_narrow_refusals() {
+         let variants = [
+             (
+diff --git a/src/class_source.rs b/src/class_source.rs
+--- a/src/class_source.rs
++++ b/src/class_source.rs
+@@ -11330,6 +11330,20 @@
+         if !self.markers.is_empty() {
+             return None;
+         }
++        let original_text = prefix_method_annotations(
++            block_member(
++                declaration,
++                Placed::Block(Artifact {
++                    envelope: original.envelope,
++                    statements: original.statements,
++                }),
++                &self.markers,
++            ),
++            &self.annotations,
++        );
++        if self.text != original_text {
++            return None;
++        }
+         let staged = Artifact {
+             envelope: original.envelope,
+             statements: body,
+@@ -11338,6 +11352,43 @@
+             block_member(declaration, Placed::Block(staged), &self.markers),
+             &self.annotations,
+         ))
++    }
++
++    /// Maps a body-only replay range through the exact original envelope and method placement.
++    pub(crate) fn integer_constant_projection_span(
++        &self,
++        body: &str,
++        start: usize,
++        end: usize,
++    ) -> Option<(usize, usize)> {
++        let declaration = self.declaration.as_ref()?;
++        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
++            return None;
++        };
++        let original = artifact(&report.text)?;
++        if !self.markers.is_empty() || start >= end {
++            return None;
++        }
++        let source = body.get(start..end)?;
++        if source.contains('\n') {
++            return None;
++        }
++        let artifact_start = original.envelope.len().checked_add(2)?.checked_add(start)?;
++        let artifact_end = original.envelope.len().checked_add(2)?.checked_add(end)?;
++        let annotations = self
++            .annotations
++            .uses
++            .iter()
++            .map(|annotation| 4 + annotation.len() + 1)
++            .sum::<usize>();
++        let block_prefix = annotations + format!("    {declaration} {{\n").len();
++        let staged = Artifact {
++            envelope: original.envelope,
++            statements: body,
++        };
++        let mapped = placed_artifact_span(&staged, artifact_start, artifact_end, block_prefix)?;
++        let text = self.integer_constant_projection_text(body)?;
++        (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
+     }
+ 
+     /// This member's text with its body replaced by the assert projection's staged statements,

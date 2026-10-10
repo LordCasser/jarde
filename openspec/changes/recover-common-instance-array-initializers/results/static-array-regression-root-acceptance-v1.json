@@ -1,0 +1,10 @@
+{
+  "status": "accepted",
+  "manifest_sha256": "b3080025560171adc84f8dd755240170c1abc218468ef2cd8868df9070a639be",
+  "inventory_sha256": "46aa8f23f1ade97d0129ba8b7febaf2e6ef5d41bda2e04329b7b1ab1ae38cc95",
+  "closed_files": 97,
+  "commands": 24,
+  "complete_source_runtime_legs": 8,
+  "physical_report_scope": "complete item/text/source_map equality checked by the root-reviewed collector; evidence requests and budget usage excluded",
+  "candidate_cli_sha256": "5abb4bc82a50a8d427eff425ad80bc2fb845253b4216a81b60229e2337711663"
+}

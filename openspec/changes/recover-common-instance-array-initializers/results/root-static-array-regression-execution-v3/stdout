@@ -1,0 +1,11 @@
+{
+  "status": "completed",
+  "case_counts": {
+    "candidate_legs": 8,
+    "expected_candidate_legs": 8
+  },
+  "success_counts": {
+    "candidate_legs": 8
+  },
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/static-array-regression-root-v3"
+}

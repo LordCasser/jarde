@@ -1,0 +1,11 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-unicode-ci-luna-v3.py", line 696, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-unicode-ci-luna-v3.py", line 461, in main
+    source_map_rows = document_source_map_checks(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-unicode-ci-luna-v3.py", line 232, in document_source_map_checks
+    assert source_map_inventory == expected_inventory
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

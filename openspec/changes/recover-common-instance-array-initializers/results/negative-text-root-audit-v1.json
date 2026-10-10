@@ -1,0 +1,177 @@
+{
+  "schema": "instance-array-negative-text-root-audit-v1",
+  "cases": [
+    {
+      "label": "controls-javac8-ThisDelegatingByteArray-default",
+      "same_text": true,
+      "text_sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+    },
+    {
+      "label": "controls-javac8-ThisDelegatingByteArray-all",
+      "same_text": true,
+      "text_sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+    },
+    {
+      "label": "controls-javac8-DifferentRhsByteArray-default",
+      "same_text": true,
+      "text_sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+    },
+    {
+      "label": "controls-javac8-DifferentRhsByteArray-all",
+      "same_text": true,
+      "text_sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+    },
+    {
+      "label": "controls-javac8-MissingWriteByteArray-default",
+      "same_text": true,
+      "text_sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+    },
+    {
+      "label": "controls-javac8-MissingWriteByteArray-all",
+      "same_text": true,
+      "text_sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+    },
+    {
+      "label": "controls-javac8-DuplicateWriteByteArray-default",
+      "same_text": true,
+      "text_sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+    },
+    {
+      "label": "controls-javac8-DuplicateWriteByteArray-all",
+      "same_text": true,
+      "text_sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+    },
+    {
+      "label": "controls-javac8-InterveningEffectByteArray-default",
+      "same_text": true,
+      "text_sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+    },
+    {
+      "label": "controls-javac8-InterveningEffectByteArray-all",
+      "same_text": true,
+      "text_sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+    },
+    {
+      "label": "controls-javac8-ParameterRhsByteArray-default",
+      "same_text": true,
+      "text_sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+    },
+    {
+      "label": "controls-javac8-ParameterRhsByteArray-all",
+      "same_text": true,
+      "text_sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+    },
+    {
+      "label": "controls-javac8-ReverseFieldOrderByteArray-default",
+      "same_text": true,
+      "text_sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+    },
+    {
+      "label": "controls-javac8-ReverseFieldOrderByteArray-all",
+      "same_text": true,
+      "text_sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+    },
+    {
+      "label": "controls-javac8-HandlerArrayByteArray-default",
+      "same_text": true,
+      "text_sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+    },
+    {
+      "label": "controls-javac8-HandlerArrayByteArray-all",
+      "same_text": true,
+      "text_sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+    },
+    {
+      "label": "controls-javac23-ThisDelegatingByteArray-default",
+      "same_text": true,
+      "text_sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+    },
+    {
+      "label": "controls-javac23-ThisDelegatingByteArray-all",
+      "same_text": true,
+      "text_sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+    },
+    {
+      "label": "controls-javac23-DifferentRhsByteArray-default",
+      "same_text": true,
+      "text_sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+    },
+    {
+      "label": "controls-javac23-DifferentRhsByteArray-all",
+      "same_text": true,
+      "text_sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+    },
+    {
+      "label": "controls-javac23-MissingWriteByteArray-default",
+      "same_text": true,
+      "text_sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+    },
+    {
+      "label": "controls-javac23-MissingWriteByteArray-all",
+      "same_text": true,
+      "text_sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+    },
+    {
+      "label": "controls-javac23-DuplicateWriteByteArray-default",
+      "same_text": true,
+      "text_sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+    },
+    {
+      "label": "controls-javac23-DuplicateWriteByteArray-all",
+      "same_text": true,
+      "text_sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+    },
+    {
+      "label": "controls-javac23-InterveningEffectByteArray-default",
+      "same_text": true,
+      "text_sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+    },
+    {
+      "label": "controls-javac23-InterveningEffectByteArray-all",
+      "same_text": true,
+      "text_sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+    },
+    {
+      "label": "controls-javac23-ParameterRhsByteArray-default",
+      "same_text": true,
+      "text_sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+    },
+    {
+      "label": "controls-javac23-ParameterRhsByteArray-all",
+      "same_text": true,
+      "text_sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+    },
+    {
+      "label": "controls-javac23-ReverseFieldOrderByteArray-default",
+      "same_text": true,
+      "text_sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+    },
+    {
+      "label": "controls-javac23-ReverseFieldOrderByteArray-all",
+      "same_text": true,
+      "text_sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+    },
+    {
+      "label": "controls-javac23-HandlerArrayByteArray-default",
+      "same_text": true,
+      "text_sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+    },
+    {
+      "label": "controls-javac23-HandlerArrayByteArray-all",
+      "same_text": true,
+      "text_sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+    }
+  ],
+  "negative_classes": [
+    "DifferentRhsByteArray",
+    "DuplicateWriteByteArray",
+    "HandlerArrayByteArray",
+    "InterveningEffectByteArray",
+    "MissingWriteByteArray",
+    "ParameterRhsByteArray",
+    "ReverseFieldOrderByteArray",
+    "ThisDelegatingByteArray"
+  ],
+  "passed": 32,
+  "failed": 0
+}

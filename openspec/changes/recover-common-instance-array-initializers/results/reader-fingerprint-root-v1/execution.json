@@ -1,0 +1,74 @@
+{
+  "schema": "instance-array-reader-fingerprint-root-v1",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:57:31.380401+00:00",
+      "duration_seconds": 5.3982275830057915,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 897913934,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/reader-fingerprint-root-v1/0.stdout.raw",
+          "bytes": 15727,
+          "sha256": "3be58035b11d818e0479ce6882c6bf204ecc22a978f7dcafaa7d4266f44f5c47"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/reader-fingerprint-root-v1/0.stderr.raw",
+          "bytes": 243,
+          "sha256": "01bc6a665a6204468eaf491b1c5abd73932f8a24c6d1717c51e7f59e359b3855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:57:36.779391+00:00",
+      "duration_seconds": 1.0550999999977648,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 904167534,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/reader-fingerprint-root-v1/1.stdout.raw",
+          "bytes": 565,
+          "sha256": "faab60ddeb43b9d52c6b3ea4603891b76d1936bd9bff9bc406471f552661ba71"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/reader-fingerprint-root-v1/1.stderr.raw",
+          "bytes": 235,
+          "sha256": "cd3f02f3748bbc9f66e37a470a977f4244fb81e410944521dfbc2cf5d3e9841d"
+        }
+      }
+    }
+  ]
+}

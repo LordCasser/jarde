@@ -1,0 +1,78 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "started_at": "2026-10-10T04:00:19.143296+00:00",
+      "duration_seconds": 3.0634454999817535,
+      "streams": {
+        "stdout": {
+          "path": "0.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "0.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "started_at": "2026-10-10T04:00:22.207081+00:00",
+      "duration_seconds": 0.5761867500259541,
+      "streams": {
+        "stdout": {
+          "path": "1.stdout",
+          "bytes": 15296,
+          "sha256": "2717d130c42fb0febca775426d95c672eea0f8880be68878a444e3d2a55a15a2"
+        },
+        "stderr": {
+          "path": "1.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit": 0,
+      "started_at": "2026-10-10T04:00:22.783461+00:00",
+      "duration_seconds": 0.5284396670176648,
+      "streams": {
+        "stdout": {
+          "path": "2.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "2.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "metadata_current_product_pins_all_equal": true
+}

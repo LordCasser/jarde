@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/prepare-static-array-regression-root-v2.py",
+    "--cli",
+    "/private/tmp/jarde-instance-array-cli-v1",
+    "--cli-sha256",
+    "5abb4bc82a50a8d427eff425ad80bc2fb845253b4216a81b60229e2337711663",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "b86961182a352dfa663215c47bdd3e64cf7f8a67c5e36951f2c98d020f044cfa"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 1,
+  "started_at": "2026-10-10T03:56:35.500434+00:00",
+  "duration_seconds": 2.789952082996024,
+  "script_sha256": "098381e67594f52dd2c14f7363de68034a43ccef989002814665fb1ff1cb89f6",
+  "streams": {
+    "stdout": {
+      "path": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr",
+      "bytes": 290,
+      "sha256": "98503e8ba3c5b692280a174ddc92837c0ad1efc7a9086606b22864a83507d655"
+    }
+  }
+}

@@ -1,0 +1,1807 @@
+[
+  {
+    "bytes": 1843,
+    "path": "cases/controls/javac23/CommonDirectSuperByteArray/all/CommonDirectSuperByteArray.java",
+    "sha256": "94f6ae7cb52755bd516c182383bb7ae1385cf6995c6337d22c8fa39f51a8b8ce"
+  },
+  {
+    "bytes": 72772,
+    "path": "cases/controls/javac23/CommonDirectSuperByteArray/all/class-source.json",
+    "sha256": "85f52b19b5d996489f73bc01e6ce108001e03b79c2b388b845009a5cc76d7b04"
+  },
+  {
+    "bytes": 103622,
+    "path": "cases/controls/javac23/CommonDirectSuperByteArray/all/physical-facts.json",
+    "sha256": "0dfcbe191a7a5b3c30d81088059840e05ffedbf9204a8a161a1277f215fc187b"
+  },
+  {
+    "bytes": 1843,
+    "path": "cases/controls/javac23/CommonDirectSuperByteArray/default/CommonDirectSuperByteArray.java",
+    "sha256": "94f6ae7cb52755bd516c182383bb7ae1385cf6995c6337d22c8fa39f51a8b8ce"
+  },
+  {
+    "bytes": 66845,
+    "path": "cases/controls/javac23/CommonDirectSuperByteArray/default/class-source.json",
+    "sha256": "93c57776444ff0698418b81126a67e04b534b519afe935e3504a10eccf26ad55"
+  },
+  {
+    "bytes": 103626,
+    "path": "cases/controls/javac23/CommonDirectSuperByteArray/default/physical-facts.json",
+    "sha256": "4a30050967d5489da7979a4cf79f1d5885dfdfc2ab5689449cfac3e9a35394b4"
+  },
+  {
+    "bytes": 1831,
+    "path": "cases/controls/javac23/DifferentRhsByteArray/all/DifferentRhsByteArray.java",
+    "sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+  },
+  {
+    "bytes": 67273,
+    "path": "cases/controls/javac23/DifferentRhsByteArray/all/class-source.json",
+    "sha256": "dc4d2d8f5d663d68bfcd7951b017d996c514fc258a8d1ea75b3f5477a754ab2a"
+  },
+  {
+    "bytes": 91894,
+    "path": "cases/controls/javac23/DifferentRhsByteArray/all/physical-facts.json",
+    "sha256": "a5e8592567b2b6d1e60affed586aaf2bb29a3311f7350b99c10ca282a883595d"
+  },
+  {
+    "bytes": 1831,
+    "path": "cases/controls/javac23/DifferentRhsByteArray/default/DifferentRhsByteArray.java",
+    "sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+  },
+  {
+    "bytes": 61436,
+    "path": "cases/controls/javac23/DifferentRhsByteArray/default/class-source.json",
+    "sha256": "9e1968ec0df07f31e409b06395285b869a5a1a9fe2383243bbed5a03cff57ec7"
+  },
+  {
+    "bytes": 91898,
+    "path": "cases/controls/javac23/DifferentRhsByteArray/default/physical-facts.json",
+    "sha256": "dbac5918bcbef4e9b5872a5dd67240e1a25afff5e55a98425fedfbe1b6260953"
+  },
+  {
+    "bytes": 1900,
+    "path": "cases/controls/javac23/DuplicateWriteByteArray/all/DuplicateWriteByteArray.java",
+    "sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+  },
+  {
+    "bytes": 71382,
+    "path": "cases/controls/javac23/DuplicateWriteByteArray/all/class-source.json",
+    "sha256": "01eef6ef8a2e201b21c0089ec7cbb2d154c451b9f82edce019ebaab571ea748f"
+  },
+  {
+    "bytes": 102503,
+    "path": "cases/controls/javac23/DuplicateWriteByteArray/all/physical-facts.json",
+    "sha256": "06fb550cff49aafcb69c2e8caff017b4b27ab56dfdd1924bfba57f53f3e02769"
+  },
+  {
+    "bytes": 1900,
+    "path": "cases/controls/javac23/DuplicateWriteByteArray/default/DuplicateWriteByteArray.java",
+    "sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+  },
+  {
+    "bytes": 65364,
+    "path": "cases/controls/javac23/DuplicateWriteByteArray/default/class-source.json",
+    "sha256": "2d44fc02aa13ac40ac0058731873ba6e60ad8d589143eb879639be8ff7eba041"
+  },
+  {
+    "bytes": 102507,
+    "path": "cases/controls/javac23/DuplicateWriteByteArray/default/physical-facts.json",
+    "sha256": "c6ab08894b4960193dd87c80dc4032372dda2fb11d73a90e36af4d280f103240"
+  },
+  {
+    "bytes": 1396,
+    "path": "cases/controls/javac23/FinalLiteralTwoArrays/all/FinalLiteralTwoArrays.java",
+    "sha256": "fdd859b6ec35769377ff0f55e2e280d8bdfa60f6fd1adffff8e6ed583d8ea264"
+  },
+  {
+    "bytes": 65502,
+    "path": "cases/controls/javac23/FinalLiteralTwoArrays/all/class-source.json",
+    "sha256": "584a4515d41b49d0d9d049569f11f83ed97032c89299f33933b4f932fbc02dff"
+  },
+  {
+    "bytes": 105275,
+    "path": "cases/controls/javac23/FinalLiteralTwoArrays/all/physical-facts.json",
+    "sha256": "0be580c06249ec1b33f518905bde826387fa11fd71419f9b9ae965e9ae7f25b0"
+  },
+  {
+    "bytes": 1396,
+    "path": "cases/controls/javac23/FinalLiteralTwoArrays/default/FinalLiteralTwoArrays.java",
+    "sha256": "fdd859b6ec35769377ff0f55e2e280d8bdfa60f6fd1adffff8e6ed583d8ea264"
+  },
+  {
+    "bytes": 60937,
+    "path": "cases/controls/javac23/FinalLiteralTwoArrays/default/class-source.json",
+    "sha256": "324d367000f3529f0db0126ccee47faf4e125933a39d43975af1d41d90f53672"
+  },
+  {
+    "bytes": 105279,
+    "path": "cases/controls/javac23/FinalLiteralTwoArrays/default/physical-facts.json",
+    "sha256": "60776f1da8011d1bfac51b8e10c8d2f6ceb6ee8bd274ecb066ad821cf7213633"
+  },
+  {
+    "bytes": 2704,
+    "path": "cases/controls/javac23/HandlerArrayByteArray/all/HandlerArrayByteArray.java",
+    "sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+  },
+  {
+    "bytes": 88162,
+    "path": "cases/controls/javac23/HandlerArrayByteArray/all/class-source.json",
+    "sha256": "830762a690ede8e7581d8fb5f21cf457ea918e07b0c26f106394b758a7d9bedb"
+  },
+  {
+    "bytes": 134505,
+    "path": "cases/controls/javac23/HandlerArrayByteArray/all/physical-facts.json",
+    "sha256": "b4f4cda3703930ab5093e2014e38e1e9d03fdc13545ebf8b21379774d208943e"
+  },
+  {
+    "bytes": 2704,
+    "path": "cases/controls/javac23/HandlerArrayByteArray/default/HandlerArrayByteArray.java",
+    "sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+  },
+  {
+    "bytes": 79673,
+    "path": "cases/controls/javac23/HandlerArrayByteArray/default/class-source.json",
+    "sha256": "da1bbcd66b9ae73803ada929d367b1702988f72425408de480977aa735afff69"
+  },
+  {
+    "bytes": 134509,
+    "path": "cases/controls/javac23/HandlerArrayByteArray/default/physical-facts.json",
+    "sha256": "cc28c7d62487319ece3b14fdfa4f5bc637a2100310696e00455ab0eeebc70018"
+  },
+  {
+    "bytes": 2037,
+    "path": "cases/controls/javac23/InterveningEffectByteArray/all/InterveningEffectByteArray.java",
+    "sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+  },
+  {
+    "bytes": 74345,
+    "path": "cases/controls/javac23/InterveningEffectByteArray/all/class-source.json",
+    "sha256": "a9f0ad43003d0eadf404c087286b7294971accb6e258f643f5aef39067660de8"
+  },
+  {
+    "bytes": 105261,
+    "path": "cases/controls/javac23/InterveningEffectByteArray/all/physical-facts.json",
+    "sha256": "9c2e24bf4f3228b9c1f8e0db19654537aad3e96f6151801f5f93bc9946e7ad88"
+  },
+  {
+    "bytes": 2037,
+    "path": "cases/controls/javac23/InterveningEffectByteArray/default/InterveningEffectByteArray.java",
+    "sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+  },
+  {
+    "bytes": 67298,
+    "path": "cases/controls/javac23/InterveningEffectByteArray/default/class-source.json",
+    "sha256": "496baf3b0fdafe9a776d081aeecba1e598db4914bc671a69999ae712ef8c7d7c"
+  },
+  {
+    "bytes": 105265,
+    "path": "cases/controls/javac23/InterveningEffectByteArray/default/physical-facts.json",
+    "sha256": "0ec2d643a732e21f009b43aa8e2f8e7372861f7c1c6931a406cc8bd6622bfa31"
+  },
+  {
+    "bytes": 1789,
+    "path": "cases/controls/javac23/MissingWriteByteArray/all/MissingWriteByteArray.java",
+    "sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+  },
+  {
+    "bytes": 63386,
+    "path": "cases/controls/javac23/MissingWriteByteArray/all/class-source.json",
+    "sha256": "f83bb16ad3e2792a5b4135791cb9fdf48eace0e745a51e50daa2d8450dc56e9e"
+  },
+  {
+    "bytes": 81231,
+    "path": "cases/controls/javac23/MissingWriteByteArray/all/physical-facts.json",
+    "sha256": "0070f841f90ec2af82d13a32ec7cb80dff629d667893eb009932f95916d0b647"
+  },
+  {
+    "bytes": 1789,
+    "path": "cases/controls/javac23/MissingWriteByteArray/default/MissingWriteByteArray.java",
+    "sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+  },
+  {
+    "bytes": 57697,
+    "path": "cases/controls/javac23/MissingWriteByteArray/default/class-source.json",
+    "sha256": "57a9516b5207e845acbcfa55c1e30b8f3954dbf75b7a6f351939ec9f2ba1bb58"
+  },
+  {
+    "bytes": 81235,
+    "path": "cases/controls/javac23/MissingWriteByteArray/default/physical-facts.json",
+    "sha256": "c9366981d3f2e253131cb31fd34f96ab7c6f9d99259de061012bdcc0b374a850"
+  },
+  {
+    "bytes": 1835,
+    "path": "cases/controls/javac23/ParameterRhsByteArray/all/ParameterRhsByteArray.java",
+    "sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+  },
+  {
+    "bytes": 67281,
+    "path": "cases/controls/javac23/ParameterRhsByteArray/all/class-source.json",
+    "sha256": "0da7fb15ec572f2781f4aa3106cdbd0b85a3010d59cf984c7232426ac84dd184"
+  },
+  {
+    "bytes": 91946,
+    "path": "cases/controls/javac23/ParameterRhsByteArray/all/physical-facts.json",
+    "sha256": "f644da6a715d9b4f3fceec10602b3b44c02f6def871b36b9381bb52d3175a236"
+  },
+  {
+    "bytes": 1835,
+    "path": "cases/controls/javac23/ParameterRhsByteArray/default/ParameterRhsByteArray.java",
+    "sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+  },
+  {
+    "bytes": 61444,
+    "path": "cases/controls/javac23/ParameterRhsByteArray/default/class-source.json",
+    "sha256": "b35c554fe7198b1062db05250e1864ee07405f90db1fb319b68e398a7996de70"
+  },
+  {
+    "bytes": 91950,
+    "path": "cases/controls/javac23/ParameterRhsByteArray/default/physical-facts.json",
+    "sha256": "9d92c53e0edac00eea2d71aabd5e553388e6d752d6c811a2e9ef14d8e98ea210"
+  },
+  {
+    "bytes": 2004,
+    "path": "cases/controls/javac23/ReverseFieldOrderByteArray/all/ReverseFieldOrderByteArray.java",
+    "sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+  },
+  {
+    "bytes": 76282,
+    "path": "cases/controls/javac23/ReverseFieldOrderByteArray/all/class-source.json",
+    "sha256": "7cff7396da723a6a1000ad9d5834951463446698f792e9d67937ca1d1184b6cc"
+  },
+  {
+    "bytes": 113976,
+    "path": "cases/controls/javac23/ReverseFieldOrderByteArray/all/physical-facts.json",
+    "sha256": "4f29f9da179522cd44f9c4b44514577dc9c7a36831bcc46ef6bbfcc92a6a94c5"
+  },
+  {
+    "bytes": 2004,
+    "path": "cases/controls/javac23/ReverseFieldOrderByteArray/default/ReverseFieldOrderByteArray.java",
+    "sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+  },
+  {
+    "bytes": 70057,
+    "path": "cases/controls/javac23/ReverseFieldOrderByteArray/default/class-source.json",
+    "sha256": "278a2ae7a24b4dfd03f3ebea4cf69a0d65ce5efae6fe663d2d86c367a47c19d9"
+  },
+  {
+    "bytes": 113980,
+    "path": "cases/controls/javac23/ReverseFieldOrderByteArray/default/physical-facts.json",
+    "sha256": "7b94ea3f9c73dc8b83831181c315a38b2677219bcf158ea1bec212dfe6c1373a"
+  },
+  {
+    "bytes": 1830,
+    "path": "cases/controls/javac23/ThisDelegatingByteArray/all/ThisDelegatingByteArray.java",
+    "sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+  },
+  {
+    "bytes": 66093,
+    "path": "cases/controls/javac23/ThisDelegatingByteArray/all/class-source.json",
+    "sha256": "472ec93378b9460ee2eae421052c54a914d299e86e7bbb1e8f57344ac209bcaf"
+  },
+  {
+    "bytes": 88616,
+    "path": "cases/controls/javac23/ThisDelegatingByteArray/all/physical-facts.json",
+    "sha256": "9ff648303a2ff83dd3d774259240271a3380e9a1203d5934b22d1996091233aa"
+  },
+  {
+    "bytes": 1830,
+    "path": "cases/controls/javac23/ThisDelegatingByteArray/default/ThisDelegatingByteArray.java",
+    "sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+  },
+  {
+    "bytes": 60363,
+    "path": "cases/controls/javac23/ThisDelegatingByteArray/default/class-source.json",
+    "sha256": "b98ad6add94d9312f55308b5aa2c0f57ed477675abd55434f409c322780071ca"
+  },
+  {
+    "bytes": 88620,
+    "path": "cases/controls/javac23/ThisDelegatingByteArray/default/physical-facts.json",
+    "sha256": "a5b2da0b558ceeb0703d8dfca9fcdf9204c7bac5b5572aa922d2bb72a7871a7c"
+  },
+  {
+    "bytes": 731,
+    "path": "cases/controls/javac23/full-source/classes/CommonDirectSuperByteArray.class",
+    "sha256": "734ce038830794b69accba215c9aa3383025518b6c92654300a8734ddf0d6a80"
+  },
+  {
+    "bytes": 8444,
+    "path": "cases/controls/javac23/full-source/classes/ControlsRunner.class",
+    "sha256": "8eab87574e43b320bf839bfe3102edf3066196233db1bbe91c7d78d96f2298bc"
+  },
+  {
+    "bytes": 710,
+    "path": "cases/controls/javac23/full-source/classes/DifferentRhsByteArray.class",
+    "sha256": "b5b68d622dfc0270af0afc7347b0ad0405cbaa6395398ebf51ebca74a6154b11"
+  },
+  {
+    "bytes": 727,
+    "path": "cases/controls/javac23/full-source/classes/DuplicateWriteByteArray.class",
+    "sha256": "eca1a3aca5256d7bd843a03c73ec549ffea23728645f30466742469a2777966b"
+  },
+  {
+    "bytes": 670,
+    "path": "cases/controls/javac23/full-source/classes/FinalLiteralTwoArrays.class",
+    "sha256": "7214d2f589db2a0115515507b4e17154229202c1ce56243b5cc63056aa7b1c61"
+  },
+  {
+    "bytes": 1004,
+    "path": "cases/controls/javac23/full-source/classes/HandlerArrayByteArray.class",
+    "sha256": "f8237bf20e63e55644a0ed34c8df98283c9bfdd32a32623a17946684ae590a1c"
+  },
+  {
+    "bytes": 2438,
+    "path": "cases/controls/javac23/full-source/classes/InstanceFieldInitRunner.class",
+    "sha256": "ad2b25ca63c3819ffd676ce74cd3c5b715b11e1a1671f3874c991b24109eb686"
+  },
+  {
+    "bytes": 749,
+    "path": "cases/controls/javac23/full-source/classes/InterveningEffectByteArray.class",
+    "sha256": "23da8cb5083832c873eeeab523378f729ce17d53bfc82e354ab36a71ff75d7f3"
+  },
+  {
+    "bytes": 696,
+    "path": "cases/controls/javac23/full-source/classes/MissingWriteByteArray.class",
+    "sha256": "e79cb4a79f5bc06087f2ff6bd494f8bc08e7caff6f5567f069b3861a75202126"
+  },
+  {
+    "bytes": 709,
+    "path": "cases/controls/javac23/full-source/classes/ParameterRhsByteArray.class",
+    "sha256": "93abbd4771145ba2059cebca67232c865ed4a920929b83b6d092756f51d1afc7"
+  },
+  {
+    "bytes": 772,
+    "path": "cases/controls/javac23/full-source/classes/ReverseFieldOrderByteArray.class",
+    "sha256": "b97d2f6c3160413e0cb16ef6c224a01e968ec26f13a4d94db96d3de543848fde"
+  },
+  {
+    "bytes": 723,
+    "path": "cases/controls/javac23/full-source/classes/ThisDelegatingByteArray.class",
+    "sha256": "6442972d5cede07aa80ff12887961c9af299ca472ffabceb3e09940e504a7d01"
+  },
+  {
+    "bytes": 1843,
+    "path": "cases/controls/javac23/full-source/sources/CommonDirectSuperByteArray.java",
+    "sha256": "94f6ae7cb52755bd516c182383bb7ae1385cf6995c6337d22c8fa39f51a8b8ce"
+  },
+  {
+    "bytes": 14173,
+    "path": "cases/controls/javac23/full-source/sources/ControlsRunner.java",
+    "sha256": "1c30b5367246f6106b7a8098c940624bb2f2a474fd1d79ae38ca5ea23c335cba"
+  },
+  {
+    "bytes": 1831,
+    "path": "cases/controls/javac23/full-source/sources/DifferentRhsByteArray.java",
+    "sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+  },
+  {
+    "bytes": 1900,
+    "path": "cases/controls/javac23/full-source/sources/DuplicateWriteByteArray.java",
+    "sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+  },
+  {
+    "bytes": 1396,
+    "path": "cases/controls/javac23/full-source/sources/FinalLiteralTwoArrays.java",
+    "sha256": "fdd859b6ec35769377ff0f55e2e280d8bdfa60f6fd1adffff8e6ed583d8ea264"
+  },
+  {
+    "bytes": 2704,
+    "path": "cases/controls/javac23/full-source/sources/HandlerArrayByteArray.java",
+    "sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+  },
+  {
+    "bytes": 2891,
+    "path": "cases/controls/javac23/full-source/sources/InstanceFieldInitRunner.java",
+    "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+  },
+  {
+    "bytes": 2037,
+    "path": "cases/controls/javac23/full-source/sources/InterveningEffectByteArray.java",
+    "sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+  },
+  {
+    "bytes": 1789,
+    "path": "cases/controls/javac23/full-source/sources/MissingWriteByteArray.java",
+    "sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+  },
+  {
+    "bytes": 1835,
+    "path": "cases/controls/javac23/full-source/sources/ParameterRhsByteArray.java",
+    "sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+  },
+  {
+    "bytes": 2004,
+    "path": "cases/controls/javac23/full-source/sources/ReverseFieldOrderByteArray.java",
+    "sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+  },
+  {
+    "bytes": 1830,
+    "path": "cases/controls/javac23/full-source/sources/ThisDelegatingByteArray.java",
+    "sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+  },
+  {
+    "bytes": 1843,
+    "path": "cases/controls/javac8/CommonDirectSuperByteArray/all/CommonDirectSuperByteArray.java",
+    "sha256": "94f6ae7cb52755bd516c182383bb7ae1385cf6995c6337d22c8fa39f51a8b8ce"
+  },
+  {
+    "bytes": 72772,
+    "path": "cases/controls/javac8/CommonDirectSuperByteArray/all/class-source.json",
+    "sha256": "601f77a8c65f94b6c7bdfac0c64a496cf512d327c03edefc6622745dfc80534f"
+  },
+  {
+    "bytes": 103622,
+    "path": "cases/controls/javac8/CommonDirectSuperByteArray/all/physical-facts.json",
+    "sha256": "d244caa5f16194c7245b5794277139fdbf676b490867815b64bdafefd532993c"
+  },
+  {
+    "bytes": 1843,
+    "path": "cases/controls/javac8/CommonDirectSuperByteArray/default/CommonDirectSuperByteArray.java",
+    "sha256": "94f6ae7cb52755bd516c182383bb7ae1385cf6995c6337d22c8fa39f51a8b8ce"
+  },
+  {
+    "bytes": 66851,
+    "path": "cases/controls/javac8/CommonDirectSuperByteArray/default/class-source.json",
+    "sha256": "3706d1763e3062085472859fd4715d1dcaae22b6bc36ded71d2bc12279bd3d3c"
+  },
+  {
+    "bytes": 103626,
+    "path": "cases/controls/javac8/CommonDirectSuperByteArray/default/physical-facts.json",
+    "sha256": "8806587f6f02bb4182542d29592778a60a6ee5f24a7304191475e3db3fbb91c4"
+  },
+  {
+    "bytes": 1831,
+    "path": "cases/controls/javac8/DifferentRhsByteArray/all/DifferentRhsByteArray.java",
+    "sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+  },
+  {
+    "bytes": 67273,
+    "path": "cases/controls/javac8/DifferentRhsByteArray/all/class-source.json",
+    "sha256": "71b541ccc4e59b86cc781a91c68f81efabf36d02e3bd9c7c04f32bc05e481800"
+  },
+  {
+    "bytes": 91894,
+    "path": "cases/controls/javac8/DifferentRhsByteArray/all/physical-facts.json",
+    "sha256": "e5386014ef52f8f2869b21ef9233b5f944b1d6cd6e6091d38f58c11eabdb2d14"
+  },
+  {
+    "bytes": 1831,
+    "path": "cases/controls/javac8/DifferentRhsByteArray/default/DifferentRhsByteArray.java",
+    "sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+  },
+  {
+    "bytes": 61436,
+    "path": "cases/controls/javac8/DifferentRhsByteArray/default/class-source.json",
+    "sha256": "8afa5445ceff1542df650060a5f59d97262fe65094a409ae431facf9157bad5c"
+  },
+  {
+    "bytes": 91898,
+    "path": "cases/controls/javac8/DifferentRhsByteArray/default/physical-facts.json",
+    "sha256": "e2f02b9c34747f7426fb7889dc1a171dd4fe58894131c3f2e28526f7ba1cb1c0"
+  },
+  {
+    "bytes": 1900,
+    "path": "cases/controls/javac8/DuplicateWriteByteArray/all/DuplicateWriteByteArray.java",
+    "sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+  },
+  {
+    "bytes": 71382,
+    "path": "cases/controls/javac8/DuplicateWriteByteArray/all/class-source.json",
+    "sha256": "ab801ff3523eca36e33bcc1dc9716f7468ef2cf415623f2d4f0cd2a56772ecbc"
+  },
+  {
+    "bytes": 102503,
+    "path": "cases/controls/javac8/DuplicateWriteByteArray/all/physical-facts.json",
+    "sha256": "9824a8f26126763be1996bcac6052e42b2f6618f6c9d2685a61916343054d43d"
+  },
+  {
+    "bytes": 1900,
+    "path": "cases/controls/javac8/DuplicateWriteByteArray/default/DuplicateWriteByteArray.java",
+    "sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+  },
+  {
+    "bytes": 65364,
+    "path": "cases/controls/javac8/DuplicateWriteByteArray/default/class-source.json",
+    "sha256": "a1500ccbe02834c8cbf4032d753ce0bca766701a24d0e2293088627e98ef6345"
+  },
+  {
+    "bytes": 102507,
+    "path": "cases/controls/javac8/DuplicateWriteByteArray/default/physical-facts.json",
+    "sha256": "0467335431a7e7db81723cd32fb4eed5553d646de0bbb7ca6deb217a64cf6e6c"
+  },
+  {
+    "bytes": 1396,
+    "path": "cases/controls/javac8/FinalLiteralTwoArrays/all/FinalLiteralTwoArrays.java",
+    "sha256": "fdd859b6ec35769377ff0f55e2e280d8bdfa60f6fd1adffff8e6ed583d8ea264"
+  },
+  {
+    "bytes": 65502,
+    "path": "cases/controls/javac8/FinalLiteralTwoArrays/all/class-source.json",
+    "sha256": "fab1dbfbd93b69edc215789674e405f7038492672f6dffad12a23c20d49cf707"
+  },
+  {
+    "bytes": 105275,
+    "path": "cases/controls/javac8/FinalLiteralTwoArrays/all/physical-facts.json",
+    "sha256": "571960826bb5063740943113a60eea25746d01502b2c05361ccbdd2497dd3bd2"
+  },
+  {
+    "bytes": 1396,
+    "path": "cases/controls/javac8/FinalLiteralTwoArrays/default/FinalLiteralTwoArrays.java",
+    "sha256": "fdd859b6ec35769377ff0f55e2e280d8bdfa60f6fd1adffff8e6ed583d8ea264"
+  },
+  {
+    "bytes": 60937,
+    "path": "cases/controls/javac8/FinalLiteralTwoArrays/default/class-source.json",
+    "sha256": "71972a2a960df9646a425bc4760b0613a137713115e14ff2cd785441251d4035"
+  },
+  {
+    "bytes": 105279,
+    "path": "cases/controls/javac8/FinalLiteralTwoArrays/default/physical-facts.json",
+    "sha256": "b654a7c74fc802601ea42fd740490fef162ef125e76d5eede5923b85d292920a"
+  },
+  {
+    "bytes": 2704,
+    "path": "cases/controls/javac8/HandlerArrayByteArray/all/HandlerArrayByteArray.java",
+    "sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+  },
+  {
+    "bytes": 88162,
+    "path": "cases/controls/javac8/HandlerArrayByteArray/all/class-source.json",
+    "sha256": "c4b7923a798f261d58b522f5a34299b8d6ed8c1f17a9880e77a0f12bb204d075"
+  },
+  {
+    "bytes": 134505,
+    "path": "cases/controls/javac8/HandlerArrayByteArray/all/physical-facts.json",
+    "sha256": "60a563f3a7770995bb25900825416e7a45e87e21fd7ed5c9e747c484f284c75e"
+  },
+  {
+    "bytes": 2704,
+    "path": "cases/controls/javac8/HandlerArrayByteArray/default/HandlerArrayByteArray.java",
+    "sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+  },
+  {
+    "bytes": 79673,
+    "path": "cases/controls/javac8/HandlerArrayByteArray/default/class-source.json",
+    "sha256": "ab13aa4121856a34bf55cf0931b1727805e73d7112be257b195a2acb4d8f52c8"
+  },
+  {
+    "bytes": 134509,
+    "path": "cases/controls/javac8/HandlerArrayByteArray/default/physical-facts.json",
+    "sha256": "3baadc8d6aa3f34356f94c96c40d23e121d455803ff3ef297012547cf1212441"
+  },
+  {
+    "bytes": 2037,
+    "path": "cases/controls/javac8/InterveningEffectByteArray/all/InterveningEffectByteArray.java",
+    "sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+  },
+  {
+    "bytes": 74345,
+    "path": "cases/controls/javac8/InterveningEffectByteArray/all/class-source.json",
+    "sha256": "126710dadc4cfcb1c18e4a7695cce9b17de7bb4be52b2886ca03cea4e5c47074"
+  },
+  {
+    "bytes": 105261,
+    "path": "cases/controls/javac8/InterveningEffectByteArray/all/physical-facts.json",
+    "sha256": "a4060402c476df8bbed1fbf69c96945c0d77782aae411a741024b604b95d6229"
+  },
+  {
+    "bytes": 2037,
+    "path": "cases/controls/javac8/InterveningEffectByteArray/default/InterveningEffectByteArray.java",
+    "sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+  },
+  {
+    "bytes": 67298,
+    "path": "cases/controls/javac8/InterveningEffectByteArray/default/class-source.json",
+    "sha256": "0e4fefe36fbbbe3cb6831110397afcc9abdb6dfc8ff069954012fc28f433e03f"
+  },
+  {
+    "bytes": 105265,
+    "path": "cases/controls/javac8/InterveningEffectByteArray/default/physical-facts.json",
+    "sha256": "6efdc7b23e40309afbe8c389fd330346277fe41196682e4ac02cee39a07db014"
+  },
+  {
+    "bytes": 1789,
+    "path": "cases/controls/javac8/MissingWriteByteArray/all/MissingWriteByteArray.java",
+    "sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+  },
+  {
+    "bytes": 63386,
+    "path": "cases/controls/javac8/MissingWriteByteArray/all/class-source.json",
+    "sha256": "fdb7b2f6c08fd0a3d5f4b9af38572318618335984fe12404eef8e6c6180e75d3"
+  },
+  {
+    "bytes": 81231,
+    "path": "cases/controls/javac8/MissingWriteByteArray/all/physical-facts.json",
+    "sha256": "e13f54db5b518811defc080902394aa5fffc1c0cb8924776a295829f3b5a3255"
+  },
+  {
+    "bytes": 1789,
+    "path": "cases/controls/javac8/MissingWriteByteArray/default/MissingWriteByteArray.java",
+    "sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+  },
+  {
+    "bytes": 57697,
+    "path": "cases/controls/javac8/MissingWriteByteArray/default/class-source.json",
+    "sha256": "331b3340886c6d394a0877ae632fda9464614b487187431c75b0a8007b372803"
+  },
+  {
+    "bytes": 81235,
+    "path": "cases/controls/javac8/MissingWriteByteArray/default/physical-facts.json",
+    "sha256": "701b8f2865fc7aa15c173fed23cd29934c9f480b3193de23e6ca1396ea8b1173"
+  },
+  {
+    "bytes": 1835,
+    "path": "cases/controls/javac8/ParameterRhsByteArray/all/ParameterRhsByteArray.java",
+    "sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+  },
+  {
+    "bytes": 67281,
+    "path": "cases/controls/javac8/ParameterRhsByteArray/all/class-source.json",
+    "sha256": "84bac9cde82a5b088bce996f458c8179f10ad6a477da1b3656ae93e0b92b3bbe"
+  },
+  {
+    "bytes": 91946,
+    "path": "cases/controls/javac8/ParameterRhsByteArray/all/physical-facts.json",
+    "sha256": "d0f70c3fce6926a96fb33f5eff75c14f927cf582659c7f7ddefa57ae4a368b95"
+  },
+  {
+    "bytes": 1835,
+    "path": "cases/controls/javac8/ParameterRhsByteArray/default/ParameterRhsByteArray.java",
+    "sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+  },
+  {
+    "bytes": 61444,
+    "path": "cases/controls/javac8/ParameterRhsByteArray/default/class-source.json",
+    "sha256": "4e6e497eda058fbb02bf3e5a51a45fdb2ce3e425fe4248ba13a2e07f62e88669"
+  },
+  {
+    "bytes": 91950,
+    "path": "cases/controls/javac8/ParameterRhsByteArray/default/physical-facts.json",
+    "sha256": "1ade30d22b511f4353de7f73f5cea00cb516f0d1861ce7719e2da21223861f0e"
+  },
+  {
+    "bytes": 2004,
+    "path": "cases/controls/javac8/ReverseFieldOrderByteArray/all/ReverseFieldOrderByteArray.java",
+    "sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+  },
+  {
+    "bytes": 76282,
+    "path": "cases/controls/javac8/ReverseFieldOrderByteArray/all/class-source.json",
+    "sha256": "a0ec4bd38e3f209d9f92405888b7700067fb730a9c817366ea906bc5d67e9c55"
+  },
+  {
+    "bytes": 113976,
+    "path": "cases/controls/javac8/ReverseFieldOrderByteArray/all/physical-facts.json",
+    "sha256": "f492a30fe7ca1c0df2a738763ac65048c60a560bc84f05b8bf4a6385f912fb85"
+  },
+  {
+    "bytes": 2004,
+    "path": "cases/controls/javac8/ReverseFieldOrderByteArray/default/ReverseFieldOrderByteArray.java",
+    "sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+  },
+  {
+    "bytes": 70057,
+    "path": "cases/controls/javac8/ReverseFieldOrderByteArray/default/class-source.json",
+    "sha256": "5b4e735ad59e79eb5f9e9d58f5c60ce1c3ab323143c7f0210e951ce3e31a516a"
+  },
+  {
+    "bytes": 113980,
+    "path": "cases/controls/javac8/ReverseFieldOrderByteArray/default/physical-facts.json",
+    "sha256": "e016752602a976fe67cf2430630d79c27e67be55016fc6ebb0a4ce5915aff90a"
+  },
+  {
+    "bytes": 1830,
+    "path": "cases/controls/javac8/ThisDelegatingByteArray/all/ThisDelegatingByteArray.java",
+    "sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+  },
+  {
+    "bytes": 66093,
+    "path": "cases/controls/javac8/ThisDelegatingByteArray/all/class-source.json",
+    "sha256": "b82142327fafc92a9cf9ffd3344fcc4479cc96e4b7b75a032c47eeafac8a3888"
+  },
+  {
+    "bytes": 88616,
+    "path": "cases/controls/javac8/ThisDelegatingByteArray/all/physical-facts.json",
+    "sha256": "cd2eb6c817790ae610fcec4c59434b6c3449846480feee13410173f9e394e0b0"
+  },
+  {
+    "bytes": 1830,
+    "path": "cases/controls/javac8/ThisDelegatingByteArray/default/ThisDelegatingByteArray.java",
+    "sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+  },
+  {
+    "bytes": 60363,
+    "path": "cases/controls/javac8/ThisDelegatingByteArray/default/class-source.json",
+    "sha256": "ef42c767e3b194099357df45ec5767f9426b51ae07c28c41ae764f9fd78ca42b"
+  },
+  {
+    "bytes": 88620,
+    "path": "cases/controls/javac8/ThisDelegatingByteArray/default/physical-facts.json",
+    "sha256": "d4660e38b3d52328801138252ed087b39371923fb606abfd572d2a91eea8e745"
+  },
+  {
+    "bytes": 731,
+    "path": "cases/controls/javac8/full-source/classes/CommonDirectSuperByteArray.class",
+    "sha256": "3d9b4cf53dd9716a727a5ebf71e4709ed3047450c19b783d1becefd7cab44121"
+  },
+  {
+    "bytes": 8420,
+    "path": "cases/controls/javac8/full-source/classes/ControlsRunner.class",
+    "sha256": "b35eff3e917b57b1af3eb6136b94e651398db4b2165faf03bb1a2d8068dc2155"
+  },
+  {
+    "bytes": 710,
+    "path": "cases/controls/javac8/full-source/classes/DifferentRhsByteArray.class",
+    "sha256": "79d331988393a92d8e8fb1dec6d970a2a217527277206a0b8a48ee63086d31b3"
+  },
+  {
+    "bytes": 727,
+    "path": "cases/controls/javac8/full-source/classes/DuplicateWriteByteArray.class",
+    "sha256": "1c9f87cd56781091f37af25f9c2a98315b68b0566732eb46eff4f4a6a802ba27"
+  },
+  {
+    "bytes": 670,
+    "path": "cases/controls/javac8/full-source/classes/FinalLiteralTwoArrays.class",
+    "sha256": "c697751529dd4ae743bf664a9f4958410143f6010a712b5954430206cbd6292c"
+  },
+  {
+    "bytes": 1010,
+    "path": "cases/controls/javac8/full-source/classes/HandlerArrayByteArray.class",
+    "sha256": "75ba5ddfa261a435f8cd435fe55c65e647fc05d50053537e3e0ed51f3bf226b8"
+  },
+  {
+    "bytes": 2453,
+    "path": "cases/controls/javac8/full-source/classes/InstanceFieldInitRunner.class",
+    "sha256": "da397ab355c7f5ef861858a76f14945d05db37b4a6d9572a4f2d083ca61849ea"
+  },
+  {
+    "bytes": 749,
+    "path": "cases/controls/javac8/full-source/classes/InterveningEffectByteArray.class",
+    "sha256": "e7124122a303c579b7e07b6339f5b25bac102b5191a480bd849554bd43d673ef"
+  },
+  {
+    "bytes": 696,
+    "path": "cases/controls/javac8/full-source/classes/MissingWriteByteArray.class",
+    "sha256": "40e96b4a10a47ca134ee4ab6462421e40f10674f421ccb5b541ff071ab14245d"
+  },
+  {
+    "bytes": 709,
+    "path": "cases/controls/javac8/full-source/classes/ParameterRhsByteArray.class",
+    "sha256": "2c7c79141678158eb9bab3635456eab022b133bc2bbc629187da107d785dbaab"
+  },
+  {
+    "bytes": 772,
+    "path": "cases/controls/javac8/full-source/classes/ReverseFieldOrderByteArray.class",
+    "sha256": "92741a34c3b136401347ce53b45119d59e878c286325405b9e5bd1640b86f279"
+  },
+  {
+    "bytes": 723,
+    "path": "cases/controls/javac8/full-source/classes/ThisDelegatingByteArray.class",
+    "sha256": "3ba264f2408aa605b4939cd4cf9ed2ee5476e0481d5280600ffc7f45a2f4b36f"
+  },
+  {
+    "bytes": 1843,
+    "path": "cases/controls/javac8/full-source/sources/CommonDirectSuperByteArray.java",
+    "sha256": "94f6ae7cb52755bd516c182383bb7ae1385cf6995c6337d22c8fa39f51a8b8ce"
+  },
+  {
+    "bytes": 14173,
+    "path": "cases/controls/javac8/full-source/sources/ControlsRunner.java",
+    "sha256": "1c30b5367246f6106b7a8098c940624bb2f2a474fd1d79ae38ca5ea23c335cba"
+  },
+  {
+    "bytes": 1831,
+    "path": "cases/controls/javac8/full-source/sources/DifferentRhsByteArray.java",
+    "sha256": "35ca0136b04792fa748642110a6de6f6fc850faaaee8190f10c77f2282f64dfc"
+  },
+  {
+    "bytes": 1900,
+    "path": "cases/controls/javac8/full-source/sources/DuplicateWriteByteArray.java",
+    "sha256": "f10fcd34b9f1c41e3b63ddece03fd7fdb5423ecb89cef65f4c92dc42d81bec48"
+  },
+  {
+    "bytes": 1396,
+    "path": "cases/controls/javac8/full-source/sources/FinalLiteralTwoArrays.java",
+    "sha256": "fdd859b6ec35769377ff0f55e2e280d8bdfa60f6fd1adffff8e6ed583d8ea264"
+  },
+  {
+    "bytes": 2704,
+    "path": "cases/controls/javac8/full-source/sources/HandlerArrayByteArray.java",
+    "sha256": "eb16068ee96c5a0c357e1ac4842b524081c5155b9dcb3bd17d5c3a70fc2f99e1"
+  },
+  {
+    "bytes": 2891,
+    "path": "cases/controls/javac8/full-source/sources/InstanceFieldInitRunner.java",
+    "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+  },
+  {
+    "bytes": 2037,
+    "path": "cases/controls/javac8/full-source/sources/InterveningEffectByteArray.java",
+    "sha256": "2e312703c02db54fcd64934d7937e13ff33dc5209ab6f155268279eb252048c3"
+  },
+  {
+    "bytes": 1789,
+    "path": "cases/controls/javac8/full-source/sources/MissingWriteByteArray.java",
+    "sha256": "f31ea8ed23f6feee8ce75590b2ff4ef986dd5c93cd822a50d3c48b6a7f8b7edd"
+  },
+  {
+    "bytes": 1835,
+    "path": "cases/controls/javac8/full-source/sources/ParameterRhsByteArray.java",
+    "sha256": "08b1215ecab9c68fe8c723271cf07e43dfb3531bed614a06b55146698a449dcb"
+  },
+  {
+    "bytes": 2004,
+    "path": "cases/controls/javac8/full-source/sources/ReverseFieldOrderByteArray.java",
+    "sha256": "dfc4e50f7068da84e01a450fb53ec7fea781a56ac5898acf05b5a74d76bb6dc2"
+  },
+  {
+    "bytes": 1830,
+    "path": "cases/controls/javac8/full-source/sources/ThisDelegatingByteArray.java",
+    "sha256": "835189574078def38c34e9ff61fba1894df8691dbda971f7efbd6b787669e5e0"
+  },
+  {
+    "bytes": 725,
+    "path": "cases/no-clinit/javac23/ArrayFieldInitBase/all/ArrayFieldInitBase.java",
+    "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+  },
+  {
+    "bytes": 13642,
+    "path": "cases/no-clinit/javac23/ArrayFieldInitBase/all/class-source.json",
+    "sha256": "a88ece9d42fae4912c90d1df1eef4c40bcc41a60bc8add69a3d7cc16a12466ff"
+  },
+  {
+    "bytes": 9473,
+    "path": "cases/no-clinit/javac23/ArrayFieldInitBase/all/physical-facts.json",
+    "sha256": "7d10ef9f6643abd1049e23205a0a4cc26e8e838000963cf55950cc87e7e33a5c"
+  },
+  {
+    "bytes": 725,
+    "path": "cases/no-clinit/javac23/ArrayFieldInitBase/default/ArrayFieldInitBase.java",
+    "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+  },
+  {
+    "bytes": 12962,
+    "path": "cases/no-clinit/javac23/ArrayFieldInitBase/default/class-source.json",
+    "sha256": "ea4b4a624a7066381873c7ba130766a371c9c0c553cbb43a0956dab33ff7d3ec"
+  },
+  {
+    "bytes": 9477,
+    "path": "cases/no-clinit/javac23/ArrayFieldInitBase/default/physical-facts.json",
+    "sha256": "7898d699e4c6736f7931c0505ec22812f6feffbfdf93e780851a309881d66b20"
+  },
+  {
+    "bytes": 1877,
+    "path": "cases/no-clinit/javac23/CommonNoClinitArrayInit/all/CommonNoClinitArrayInit.java",
+    "sha256": "b5c85ddfe867ef9f4321e19baea498c4bbd3caa78618c990eab2c9d62b7c3ecd"
+  },
+  {
+    "bytes": 68091,
+    "path": "cases/no-clinit/javac23/CommonNoClinitArrayInit/all/class-source.json",
+    "sha256": "eba79c96ea706645762b9f5f43973978e6ba93d626bfaf782a1d79fa55b9781f"
+  },
+  {
+    "bytes": 105940,
+    "path": "cases/no-clinit/javac23/CommonNoClinitArrayInit/all/physical-facts.json",
+    "sha256": "7917806b38d5f68eac3d0b783ee01897a6d61fa03be6ecf77908c0ff0bddebc4"
+  },
+  {
+    "bytes": 1877,
+    "path": "cases/no-clinit/javac23/CommonNoClinitArrayInit/default/CommonNoClinitArrayInit.java",
+    "sha256": "b5c85ddfe867ef9f4321e19baea498c4bbd3caa78618c990eab2c9d62b7c3ecd"
+  },
+  {
+    "bytes": 64784,
+    "path": "cases/no-clinit/javac23/CommonNoClinitArrayInit/default/class-source.json",
+    "sha256": "25e24023ea89fc3af0a6132f42574cfe0c43985973736093fa4f05dac52d4802"
+  },
+  {
+    "bytes": 105944,
+    "path": "cases/no-clinit/javac23/CommonNoClinitArrayInit/default/physical-facts.json",
+    "sha256": "702adac5c42613755b9a4354a8392d1e26e1f625919c1ee3ad10770f83e47a1e"
+  },
+  {
+    "bytes": 178,
+    "path": "cases/no-clinit/javac23/full-source/classes/ArrayFieldInitBase.class",
+    "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+  },
+  {
+    "bytes": 479,
+    "path": "cases/no-clinit/javac23/full-source/classes/CommonNoClinitArrayInit.class",
+    "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+  },
+  {
+    "bytes": 1246,
+    "path": "cases/no-clinit/javac23/full-source/classes/Runner.class",
+    "sha256": "cacdbb874219459f9b7c48151858f91d6023ed26a07dc5e51fb023983f0e67ae"
+  },
+  {
+    "bytes": 725,
+    "path": "cases/no-clinit/javac23/full-source/sources/ArrayFieldInitBase.java",
+    "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+  },
+  {
+    "bytes": 1877,
+    "path": "cases/no-clinit/javac23/full-source/sources/CommonNoClinitArrayInit.java",
+    "sha256": "b5c85ddfe867ef9f4321e19baea498c4bbd3caa78618c990eab2c9d62b7c3ecd"
+  },
+  {
+    "bytes": 1028,
+    "path": "cases/no-clinit/javac23/full-source/sources/Runner.java",
+    "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+  },
+  {
+    "bytes": 725,
+    "path": "cases/no-clinit/javac8/ArrayFieldInitBase/all/ArrayFieldInitBase.java",
+    "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+  },
+  {
+    "bytes": 13642,
+    "path": "cases/no-clinit/javac8/ArrayFieldInitBase/all/class-source.json",
+    "sha256": "f9b7da227698258b46afeedf97d5c0d7b02e75ac3f5cb5b6f3e6389b402a8b89"
+  },
+  {
+    "bytes": 9473,
+    "path": "cases/no-clinit/javac8/ArrayFieldInitBase/all/physical-facts.json",
+    "sha256": "b51af531afeb6985fb377d4515a20c199a0d5731b1324e423f45b0e1fcce6481"
+  },
+  {
+    "bytes": 725,
+    "path": "cases/no-clinit/javac8/ArrayFieldInitBase/default/ArrayFieldInitBase.java",
+    "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+  },
+  {
+    "bytes": 12962,
+    "path": "cases/no-clinit/javac8/ArrayFieldInitBase/default/class-source.json",
+    "sha256": "8699123326d5ed6c9eccb7e62e7e371e70867308fb48545c60dd432c2c72a1bb"
+  },
+  {
+    "bytes": 9477,
+    "path": "cases/no-clinit/javac8/ArrayFieldInitBase/default/physical-facts.json",
+    "sha256": "913bb7c577893c5460cbb95c0f6e60a643022912783b2c5e143693d7f205520c"
+  },
+  {
+    "bytes": 1877,
+    "path": "cases/no-clinit/javac8/CommonNoClinitArrayInit/all/CommonNoClinitArrayInit.java",
+    "sha256": "b5c85ddfe867ef9f4321e19baea498c4bbd3caa78618c990eab2c9d62b7c3ecd"
+  },
+  {
+    "bytes": 68091,
+    "path": "cases/no-clinit/javac8/CommonNoClinitArrayInit/all/class-source.json",
+    "sha256": "bd4d1bf111c9a0d5a844a65a700b17b0ff374c367b2605fe89ff4dd87fff3138"
+  },
+  {
+    "bytes": 105940,
+    "path": "cases/no-clinit/javac8/CommonNoClinitArrayInit/all/physical-facts.json",
+    "sha256": "76dae84350b2259f1d04680615b8730aec5f1f54acae923057da4fa5f2e56c2c"
+  },
+  {
+    "bytes": 1877,
+    "path": "cases/no-clinit/javac8/CommonNoClinitArrayInit/default/CommonNoClinitArrayInit.java",
+    "sha256": "b5c85ddfe867ef9f4321e19baea498c4bbd3caa78618c990eab2c9d62b7c3ecd"
+  },
+  {
+    "bytes": 64784,
+    "path": "cases/no-clinit/javac8/CommonNoClinitArrayInit/default/class-source.json",
+    "sha256": "522f74b0a03bc1d057d0783c2d4147e9b85ec1f878a03cc38a34e6d6962dce21"
+  },
+  {
+    "bytes": 105944,
+    "path": "cases/no-clinit/javac8/CommonNoClinitArrayInit/default/physical-facts.json",
+    "sha256": "529aa26678cf277e8c01318352ac96ab8887f70e902bf266c9de13452723d9a7"
+  },
+  {
+    "bytes": 178,
+    "path": "cases/no-clinit/javac8/full-source/classes/ArrayFieldInitBase.class",
+    "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+  },
+  {
+    "bytes": 479,
+    "path": "cases/no-clinit/javac8/full-source/classes/CommonNoClinitArrayInit.class",
+    "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+  },
+  {
+    "bytes": 1255,
+    "path": "cases/no-clinit/javac8/full-source/classes/Runner.class",
+    "sha256": "33423c358b3e08da50166394598d68f74f13cf35989c3012ad0fdf5459513de9"
+  },
+  {
+    "bytes": 725,
+    "path": "cases/no-clinit/javac8/full-source/sources/ArrayFieldInitBase.java",
+    "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+  },
+  {
+    "bytes": 1877,
+    "path": "cases/no-clinit/javac8/full-source/sources/CommonNoClinitArrayInit.java",
+    "sha256": "b5c85ddfe867ef9f4321e19baea498c4bbd3caa78618c990eab2c9d62b7c3ecd"
+  },
+  {
+    "bytes": 1028,
+    "path": "cases/no-clinit/javac8/full-source/sources/Runner.java",
+    "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+  },
+  {
+    "bytes": 5088,
+    "path": "inputs/candidate-cli-metadata.json",
+    "sha256": "b86961182a352dfa663215c47bdd3e64cf7f8a67c5e36951f2c98d020f044cfa"
+  },
+  {
+    "bytes": 1024,
+    "path": "inputs/controls/javac23/classes/CommonDirectSuperByteArray.class",
+    "sha256": "22e3515bf12c41464964e5d6b62c345e14c8e54c2db4d611888f30d48fa10036"
+  },
+  {
+    "bytes": 993,
+    "path": "inputs/controls/javac23/classes/DifferentRhsByteArray.class",
+    "sha256": "d8ff6abe441804b1de270c3a26eaa4d3440a82425677454e228e67d915a92dcc"
+  },
+  {
+    "bytes": 1018,
+    "path": "inputs/controls/javac23/classes/DuplicateWriteByteArray.class",
+    "sha256": "06d2d166838320f8ece12bbd8772cccd27aef2bd145a32279a4e2428ee2a393c"
+  },
+  {
+    "bytes": 919,
+    "path": "inputs/controls/javac23/classes/FinalLiteralTwoArrays.class",
+    "sha256": "665031b1a4836ee352307be77df43ed33d7af1d5f2f561fff457ce3781113bdd"
+  },
+  {
+    "bytes": 1380,
+    "path": "inputs/controls/javac23/classes/HandlerArrayByteArray.class",
+    "sha256": "f7ed2cc901c552d1554a395c0ccd4024ee82b87336d3926499af82cd6c889cf5"
+  },
+  {
+    "bytes": 1046,
+    "path": "inputs/controls/javac23/classes/InterveningEffectByteArray.class",
+    "sha256": "08ad8ab44c956bb1be1c0a559abbcf5f0b216b7a0299302d421a1fcaeb1d9227"
+  },
+  {
+    "bytes": 975,
+    "path": "inputs/controls/javac23/classes/MissingWriteByteArray.class",
+    "sha256": "9d6c2aa64a2c25f023f28bdda60bbacdfd0e9ae1b3defde2459cf83bc537c0d6"
+  },
+  {
+    "bytes": 992,
+    "path": "inputs/controls/javac23/classes/ParameterRhsByteArray.class",
+    "sha256": "f9cb1a761dcaac6a41aabd7c4f84f80f038248185db1422ac30b2801733b8cf9"
+  },
+  {
+    "bytes": 1073,
+    "path": "inputs/controls/javac23/classes/ReverseFieldOrderByteArray.class",
+    "sha256": "9ef31ba39eb528c7e80d54184e9b4529249fb5e103ace75a2b8652d793ec4f9b"
+  },
+  {
+    "bytes": 1006,
+    "path": "inputs/controls/javac23/classes/ThisDelegatingByteArray.class",
+    "sha256": "dd0ef40ec1ee4bbe04d88d7e39a0b705e9465b6ef166046baffdd713a1074ea2"
+  },
+  {
+    "bytes": 1024,
+    "path": "inputs/controls/javac8/classes/CommonDirectSuperByteArray.class",
+    "sha256": "304761e5c1fc796cfc126d209d1407d92b0bc7addcb1ce9a39d100ebe672c144"
+  },
+  {
+    "bytes": 993,
+    "path": "inputs/controls/javac8/classes/DifferentRhsByteArray.class",
+    "sha256": "592c7eb7b86953064d4e5b7c121937b5730f9206574a2b95a73e701a90e62b1e"
+  },
+  {
+    "bytes": 1018,
+    "path": "inputs/controls/javac8/classes/DuplicateWriteByteArray.class",
+    "sha256": "00e224059e1a77d883d58431b6ddbcf40ca54e84583e8a57949a96ca9295be90"
+  },
+  {
+    "bytes": 919,
+    "path": "inputs/controls/javac8/classes/FinalLiteralTwoArrays.class",
+    "sha256": "65bd1c83d860f919f00ce1bea4ed8d374c87dd00305d59a3ef863b8289f1da78"
+  },
+  {
+    "bytes": 1386,
+    "path": "inputs/controls/javac8/classes/HandlerArrayByteArray.class",
+    "sha256": "b1cae0418ebb8d7c9607e2814ba51459227f04fcf68aad7b4a7203150201aafb"
+  },
+  {
+    "bytes": 1046,
+    "path": "inputs/controls/javac8/classes/InterveningEffectByteArray.class",
+    "sha256": "0a8514b5f4613e9fad0c7fef48bff06fa7938283422e4907f160cde85001a764"
+  },
+  {
+    "bytes": 975,
+    "path": "inputs/controls/javac8/classes/MissingWriteByteArray.class",
+    "sha256": "af8381952cf5ab1377da4db6694466932760edb8b74c99749789b95557f68c9e"
+  },
+  {
+    "bytes": 992,
+    "path": "inputs/controls/javac8/classes/ParameterRhsByteArray.class",
+    "sha256": "c89a930f853860ad8cfa36c505707cd8c7d9f37fc45c968399eb71ee1b9050cd"
+  },
+  {
+    "bytes": 1073,
+    "path": "inputs/controls/javac8/classes/ReverseFieldOrderByteArray.class",
+    "sha256": "52437efd3c2ea14ec7608303c9868bb5424ab009b573efa235239c24d10faa1a"
+  },
+  {
+    "bytes": 1006,
+    "path": "inputs/controls/javac8/classes/ThisDelegatingByteArray.class",
+    "sha256": "800368fbb19014ba545ac7b2d50979de688421a643c7313b37a30d342f8c039a"
+  },
+  {
+    "bytes": 461,
+    "path": "inputs/controls/sources/CommonDirectSuperByteArray.java",
+    "sha256": "3603615dca19077f68a74e720c344978a1a94526638454452566f88b8fc59ae6"
+  },
+  {
+    "bytes": 14173,
+    "path": "inputs/controls/sources/ControlsRunner.java",
+    "sha256": "1c30b5367246f6106b7a8098c940624bb2f2a474fd1d79ae38ca5ea23c335cba"
+  },
+  {
+    "bytes": 426,
+    "path": "inputs/controls/sources/DifferentRhsByteArray.java",
+    "sha256": "4e170b0816fa6db04838ddacca2d1f78a3dd00c1667f9a32426811909957d6fe"
+  },
+  {
+    "bytes": 472,
+    "path": "inputs/controls/sources/DuplicateWriteByteArray.java",
+    "sha256": "19dc4f1c745c581982b4145a348da9cd6b63d83cf8c8193c686fd4194013ee6f"
+  },
+  {
+    "bytes": 428,
+    "path": "inputs/controls/sources/FinalLiteralTwoArrays.java",
+    "sha256": "3f195d39b724c4862b4bbd7d47464c824dae4331d987a9f2d4c726339deeb2a5"
+  },
+  {
+    "bytes": 673,
+    "path": "inputs/controls/sources/HandlerArrayByteArray.java",
+    "sha256": "ecf2979abf9b07fa9d1bab5d0c28a8e04edc00d40284a8377cc58d09d41bb24b"
+  },
+  {
+    "bytes": 2891,
+    "path": "inputs/controls/sources/InstanceFieldInitRunner.java",
+    "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5"
+  },
+  {
+    "bytes": 460,
+    "path": "inputs/controls/sources/InterveningEffectByteArray.java",
+    "sha256": "70f4067c276b5cc2fd0ee3538fe382dc1734295ae94d408c19a43f65fc9d63fe"
+  },
+  {
+    "bytes": 387,
+    "path": "inputs/controls/sources/MissingWriteByteArray.java",
+    "sha256": "c8847a066fa0ea24568b9238eeb8919bda44854b7d6f41d5a81a3cb547b4dc78"
+  },
+  {
+    "bytes": 430,
+    "path": "inputs/controls/sources/ParameterRhsByteArray.java",
+    "sha256": "92ceb1a44f29ff23383a65ec2cd9b9b63b956f75e196d6946645aec0d047710a"
+  },
+  {
+    "bytes": 539,
+    "path": "inputs/controls/sources/ReverseFieldOrderByteArray.java",
+    "sha256": "f88edc7b84ae72ae3b9282ca2aa14538d34cc36245e39654be03529fe675a91e"
+  },
+  {
+    "bytes": 408,
+    "path": "inputs/controls/sources/ThisDelegatingByteArray.java",
+    "sha256": "4e480f0496061dc9ec42048ee4da780cdad587a69f9dc9b7d86baec8e43d7a6d"
+  },
+  {
+    "bytes": 178,
+    "path": "inputs/no-clinit/javac23/classes/ArrayFieldInitBase.class",
+    "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+  },
+  {
+    "bytes": 479,
+    "path": "inputs/no-clinit/javac23/classes/CommonNoClinitArrayInit.class",
+    "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+  },
+  {
+    "bytes": 178,
+    "path": "inputs/no-clinit/javac8/classes/ArrayFieldInitBase.class",
+    "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+  },
+  {
+    "bytes": 479,
+    "path": "inputs/no-clinit/javac8/classes/CommonNoClinitArrayInit.class",
+    "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+  },
+  {
+    "bytes": 129,
+    "path": "inputs/no-clinit/sources/ArrayFieldInitBase.java",
+    "sha256": "16c212caacb1e4fcfb67e78670b4fdd3418cf6e3d5e3977cfd80535403b3d1a9"
+  },
+  {
+    "bytes": 710,
+    "path": "inputs/no-clinit/sources/CommonNoClinitArrayInit.java",
+    "sha256": "617ff8efc82edec37b50b5d87a3ef43e74fe64374c10caad95ac24211b3521d1"
+  },
+  {
+    "bytes": 1028,
+    "path": "inputs/no-clinit/sources/Runner.java",
+    "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+  },
+  {
+    "bytes": 482493,
+    "path": "manifest.json",
+    "sha256": "01ac7281244e5d95d92b0218098d2b2e0637fab9b3b27bd2db7210c85b991c50"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-CommonDirectSuperByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 72772,
+    "path": "streams/controls-javac23-CommonDirectSuperByteArray-all-render.stdout",
+    "sha256": "85f52b19b5d996489f73bc01e6ce108001e03b79c2b388b845009a5cc76d7b04"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-CommonDirectSuperByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 66845,
+    "path": "streams/controls-javac23-CommonDirectSuperByteArray-default-render.stdout",
+    "sha256": "93c57776444ff0698418b81126a67e04b534b519afe935e3504a10eccf26ad55"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ControlsRunner-run.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 305,
+    "path": "streams/controls-javac23-ControlsRunner-run.stdout",
+    "sha256": "84ce6bdfedc2b3526f44d1896a1b45999315b34c52b3f43cee09888590c778af"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-DifferentRhsByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 67273,
+    "path": "streams/controls-javac23-DifferentRhsByteArray-all-render.stdout",
+    "sha256": "dc4d2d8f5d663d68bfcd7951b017d996c514fc258a8d1ea75b3f5477a754ab2a"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-DifferentRhsByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 61436,
+    "path": "streams/controls-javac23-DifferentRhsByteArray-default-render.stdout",
+    "sha256": "9e1968ec0df07f31e409b06395285b869a5a1a9fe2383243bbed5a03cff57ec7"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-DuplicateWriteByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 71382,
+    "path": "streams/controls-javac23-DuplicateWriteByteArray-all-render.stdout",
+    "sha256": "01eef6ef8a2e201b21c0089ec7cbb2d154c451b9f82edce019ebaab571ea748f"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-DuplicateWriteByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 65364,
+    "path": "streams/controls-javac23-DuplicateWriteByteArray-default-render.stdout",
+    "sha256": "2d44fc02aa13ac40ac0058731873ba6e60ad8d589143eb879639be8ff7eba041"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-FinalLiteralTwoArrays-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 65502,
+    "path": "streams/controls-javac23-FinalLiteralTwoArrays-all-render.stdout",
+    "sha256": "584a4515d41b49d0d9d049569f11f83ed97032c89299f33933b4f932fbc02dff"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-FinalLiteralTwoArrays-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 60937,
+    "path": "streams/controls-javac23-FinalLiteralTwoArrays-default-render.stdout",
+    "sha256": "324d367000f3529f0db0126ccee47faf4e125933a39d43975af1d41d90f53672"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-HandlerArrayByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 88162,
+    "path": "streams/controls-javac23-HandlerArrayByteArray-all-render.stdout",
+    "sha256": "830762a690ede8e7581d8fb5f21cf457ea918e07b0c26f106394b758a7d9bedb"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-HandlerArrayByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 79673,
+    "path": "streams/controls-javac23-HandlerArrayByteArray-default-render.stdout",
+    "sha256": "da1bbcd66b9ae73803ada929d367b1702988f72425408de480977aa735afff69"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-InstanceFieldInitRunner-run.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 143,
+    "path": "streams/controls-javac23-InstanceFieldInitRunner-run.stdout",
+    "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-InterveningEffectByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 74345,
+    "path": "streams/controls-javac23-InterveningEffectByteArray-all-render.stdout",
+    "sha256": "a9f0ad43003d0eadf404c087286b7294971accb6e258f643f5aef39067660de8"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-InterveningEffectByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 67298,
+    "path": "streams/controls-javac23-InterveningEffectByteArray-default-render.stdout",
+    "sha256": "496baf3b0fdafe9a776d081aeecba1e598db4914bc671a69999ae712ef8c7d7c"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-MissingWriteByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 63386,
+    "path": "streams/controls-javac23-MissingWriteByteArray-all-render.stdout",
+    "sha256": "f83bb16ad3e2792a5b4135791cb9fdf48eace0e745a51e50daa2d8450dc56e9e"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-MissingWriteByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 57697,
+    "path": "streams/controls-javac23-MissingWriteByteArray-default-render.stdout",
+    "sha256": "57a9516b5207e845acbcfa55c1e30b8f3954dbf75b7a6f351939ec9f2ba1bb58"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ParameterRhsByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 67281,
+    "path": "streams/controls-javac23-ParameterRhsByteArray-all-render.stdout",
+    "sha256": "0da7fb15ec572f2781f4aa3106cdbd0b85a3010d59cf984c7232426ac84dd184"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ParameterRhsByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 61444,
+    "path": "streams/controls-javac23-ParameterRhsByteArray-default-render.stdout",
+    "sha256": "b35c554fe7198b1062db05250e1864ee07405f90db1fb319b68e398a7996de70"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ReverseFieldOrderByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 76282,
+    "path": "streams/controls-javac23-ReverseFieldOrderByteArray-all-render.stdout",
+    "sha256": "7cff7396da723a6a1000ad9d5834951463446698f792e9d67937ca1d1184b6cc"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ReverseFieldOrderByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 70057,
+    "path": "streams/controls-javac23-ReverseFieldOrderByteArray-default-render.stdout",
+    "sha256": "278a2ae7a24b4dfd03f3ebea4cf69a0d65ce5efae6fe663d2d86c367a47c19d9"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ThisDelegatingByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 66093,
+    "path": "streams/controls-javac23-ThisDelegatingByteArray-all-render.stdout",
+    "sha256": "472ec93378b9460ee2eae421052c54a914d299e86e7bbb1e8f57344ac209bcaf"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-ThisDelegatingByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 60363,
+    "path": "streams/controls-javac23-ThisDelegatingByteArray-default-render.stdout",
+    "sha256": "b98ad6add94d9312f55308b5aa2c0f57ed477675abd55434f409c322780071ca"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-full-source-compile.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac23-full-source-compile.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-CommonDirectSuperByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 72772,
+    "path": "streams/controls-javac8-CommonDirectSuperByteArray-all-render.stdout",
+    "sha256": "601f77a8c65f94b6c7bdfac0c64a496cf512d327c03edefc6622745dfc80534f"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-CommonDirectSuperByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 66851,
+    "path": "streams/controls-javac8-CommonDirectSuperByteArray-default-render.stdout",
+    "sha256": "3706d1763e3062085472859fd4715d1dcaae22b6bc36ded71d2bc12279bd3d3c"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ControlsRunner-run.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 305,
+    "path": "streams/controls-javac8-ControlsRunner-run.stdout",
+    "sha256": "84ce6bdfedc2b3526f44d1896a1b45999315b34c52b3f43cee09888590c778af"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-DifferentRhsByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 67273,
+    "path": "streams/controls-javac8-DifferentRhsByteArray-all-render.stdout",
+    "sha256": "71b541ccc4e59b86cc781a91c68f81efabf36d02e3bd9c7c04f32bc05e481800"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-DifferentRhsByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 61436,
+    "path": "streams/controls-javac8-DifferentRhsByteArray-default-render.stdout",
+    "sha256": "8afa5445ceff1542df650060a5f59d97262fe65094a409ae431facf9157bad5c"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-DuplicateWriteByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 71382,
+    "path": "streams/controls-javac8-DuplicateWriteByteArray-all-render.stdout",
+    "sha256": "ab801ff3523eca36e33bcc1dc9716f7468ef2cf415623f2d4f0cd2a56772ecbc"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-DuplicateWriteByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 65364,
+    "path": "streams/controls-javac8-DuplicateWriteByteArray-default-render.stdout",
+    "sha256": "a1500ccbe02834c8cbf4032d753ce0bca766701a24d0e2293088627e98ef6345"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-FinalLiteralTwoArrays-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 65502,
+    "path": "streams/controls-javac8-FinalLiteralTwoArrays-all-render.stdout",
+    "sha256": "fab1dbfbd93b69edc215789674e405f7038492672f6dffad12a23c20d49cf707"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-FinalLiteralTwoArrays-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 60937,
+    "path": "streams/controls-javac8-FinalLiteralTwoArrays-default-render.stdout",
+    "sha256": "71972a2a960df9646a425bc4760b0613a137713115e14ff2cd785441251d4035"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-HandlerArrayByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 88162,
+    "path": "streams/controls-javac8-HandlerArrayByteArray-all-render.stdout",
+    "sha256": "c4b7923a798f261d58b522f5a34299b8d6ed8c1f17a9880e77a0f12bb204d075"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-HandlerArrayByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 79673,
+    "path": "streams/controls-javac8-HandlerArrayByteArray-default-render.stdout",
+    "sha256": "ab13aa4121856a34bf55cf0931b1727805e73d7112be257b195a2acb4d8f52c8"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-InstanceFieldInitRunner-run.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 143,
+    "path": "streams/controls-javac8-InstanceFieldInitRunner-run.stdout",
+    "sha256": "12156f0e762df395221841279195ea64f197d6405703b5e9f2a41f13d13199a7"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-InterveningEffectByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 74345,
+    "path": "streams/controls-javac8-InterveningEffectByteArray-all-render.stdout",
+    "sha256": "126710dadc4cfcb1c18e4a7695cce9b17de7bb4be52b2886ca03cea4e5c47074"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-InterveningEffectByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 67298,
+    "path": "streams/controls-javac8-InterveningEffectByteArray-default-render.stdout",
+    "sha256": "0e4fefe36fbbbe3cb6831110397afcc9abdb6dfc8ff069954012fc28f433e03f"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-MissingWriteByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 63386,
+    "path": "streams/controls-javac8-MissingWriteByteArray-all-render.stdout",
+    "sha256": "fdb7b2f6c08fd0a3d5f4b9af38572318618335984fe12404eef8e6c6180e75d3"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-MissingWriteByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 57697,
+    "path": "streams/controls-javac8-MissingWriteByteArray-default-render.stdout",
+    "sha256": "331b3340886c6d394a0877ae632fda9464614b487187431c75b0a8007b372803"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ParameterRhsByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 67281,
+    "path": "streams/controls-javac8-ParameterRhsByteArray-all-render.stdout",
+    "sha256": "84bac9cde82a5b088bce996f458c8179f10ad6a477da1b3656ae93e0b92b3bbe"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ParameterRhsByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 61444,
+    "path": "streams/controls-javac8-ParameterRhsByteArray-default-render.stdout",
+    "sha256": "4e6e497eda058fbb02bf3e5a51a45fdb2ce3e425fe4248ba13a2e07f62e88669"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ReverseFieldOrderByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 76282,
+    "path": "streams/controls-javac8-ReverseFieldOrderByteArray-all-render.stdout",
+    "sha256": "a0ec4bd38e3f209d9f92405888b7700067fb730a9c817366ea906bc5d67e9c55"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ReverseFieldOrderByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 70057,
+    "path": "streams/controls-javac8-ReverseFieldOrderByteArray-default-render.stdout",
+    "sha256": "5b4e735ad59e79eb5f9e9d58f5c60ce1c3ab323143c7f0210e951ce3e31a516a"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ThisDelegatingByteArray-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 66093,
+    "path": "streams/controls-javac8-ThisDelegatingByteArray-all-render.stdout",
+    "sha256": "b82142327fafc92a9cf9ffd3344fcc4479cc96e4b7b75a032c47eeafac8a3888"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-ThisDelegatingByteArray-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 60363,
+    "path": "streams/controls-javac8-ThisDelegatingByteArray-default-render.stdout",
+    "sha256": "ef42c767e3b194099357df45ec5767f9426b51ae07c28c41ae764f9fd78ca42b"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-full-source-compile.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/controls-javac8-full-source-compile.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-ArrayFieldInitBase-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 13642,
+    "path": "streams/no-clinit-javac23-ArrayFieldInitBase-all-render.stdout",
+    "sha256": "a88ece9d42fae4912c90d1df1eef4c40bcc41a60bc8add69a3d7cc16a12466ff"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-ArrayFieldInitBase-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 12962,
+    "path": "streams/no-clinit-javac23-ArrayFieldInitBase-default-render.stdout",
+    "sha256": "ea4b4a624a7066381873c7ba130766a371c9c0c553cbb43a0956dab33ff7d3ec"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-CommonNoClinitArrayInit-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 68091,
+    "path": "streams/no-clinit-javac23-CommonNoClinitArrayInit-all-render.stdout",
+    "sha256": "eba79c96ea706645762b9f5f43973978e6ba93d626bfaf782a1d79fa55b9781f"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-CommonNoClinitArrayInit-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 64784,
+    "path": "streams/no-clinit-javac23-CommonNoClinitArrayInit-default-render.stdout",
+    "sha256": "25e24023ea89fc3af0a6132f42574cfe0c43985973736093fa4f05dac52d4802"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-Runner-run.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 129,
+    "path": "streams/no-clinit-javac23-Runner-run.stdout",
+    "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-full-source-compile.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac23-full-source-compile.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-ArrayFieldInitBase-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 13642,
+    "path": "streams/no-clinit-javac8-ArrayFieldInitBase-all-render.stdout",
+    "sha256": "f9b7da227698258b46afeedf97d5c0d7b02e75ac3f5cb5b6f3e6389b402a8b89"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-ArrayFieldInitBase-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 12962,
+    "path": "streams/no-clinit-javac8-ArrayFieldInitBase-default-render.stdout",
+    "sha256": "8699123326d5ed6c9eccb7e62e7e371e70867308fb48545c60dd432c2c72a1bb"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-CommonNoClinitArrayInit-all-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 68091,
+    "path": "streams/no-clinit-javac8-CommonNoClinitArrayInit-all-render.stdout",
+    "sha256": "bd4d1bf111c9a0d5a844a65a700b17b0ff374c367b2605fe89ff4dd87fff3138"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-CommonNoClinitArrayInit-default-render.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 64784,
+    "path": "streams/no-clinit-javac8-CommonNoClinitArrayInit-default-render.stdout",
+    "sha256": "522f74b0a03bc1d057d0783c2d4147e9b85ec1f878a03cc38a34e6d6962dce21"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-Runner-run.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 129,
+    "path": "streams/no-clinit-javac8-Runner-run.stdout",
+    "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-full-source-compile.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "bytes": 0,
+    "path": "streams/no-clinit-javac8-full-source-compile.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

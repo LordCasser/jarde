@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v5.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 1,
+  "started_at": "2026-10-10T03:54:52.287777+00:00",
+  "duration_seconds": 0.4310088330239523,
+  "script_sha256": "6dc0446cf7412b679ba0f1a29449ddf0f1b060ff0e03442e3d6fd8b56d0ddfb0",
+  "streams": {
+    "stdout": {
+      "path": "stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr",
+      "bytes": 2206,
+      "sha256": "c5fa6a54eaff3af712a61df82c3b45df3cd8849efcb30c55398ed132094dfb10"
+    }
+  }
+}

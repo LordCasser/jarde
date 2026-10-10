@@ -1,0 +1,2731 @@
+{
+  "bci_boundary": "Observed anchors only; equality is against the accepted original CLI facts, not a claim that every bytecode offset is mapped.",
+  "class": "MissingWriteByteArray",
+  "class_file_blake3": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+  "fields": [
+    {
+      "access_flags": 8,
+      "identity": {
+        "member": {
+          "descriptor": [
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            83,
+            116,
+            114,
+            105,
+            110,
+            103,
+            59
+          ],
+          "kind": "field",
+          "name": [
+            116,
+            114,
+            97,
+            99,
+            101
+          ]
+        },
+        "owner": {
+          "class_bytes": {
+            "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+            "length": 975
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 0
+    },
+    {
+      "access_flags": 0,
+      "identity": {
+        "member": {
+          "descriptor": [
+            91,
+            66
+          ],
+          "kind": "field",
+          "name": [
+            98,
+            121,
+            116,
+            101,
+            115
+          ]
+        },
+        "owner": {
+          "class_bytes": {
+            "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+            "length": 975
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 1
+    }
+  ],
+  "methods": [
+    {
+      "access_flags": 8,
+      "identity": {
+        "descriptor": [
+          40,
+          73,
+          41,
+          66
+        ],
+        "name": [
+          109,
+          97,
+          114,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+            "length": 975
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 0,
+      "report_text": "// @method mark(I)B\n// @declaration a static method of `MissingWriteByteArray`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    MissingWriteByteArray.trace = new java.lang.StringBuilder().append(MissingWriteByteArray.trace).append(\"eval:\").append(value).append(\";\").toString();\n    return (byte) value;\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 194,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 173
+          },
+          {
+            "end": 232,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 3,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 261,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 7,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 240
+          },
+          {
+            "end": 267,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 7,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 240
+          },
+          {
+            "end": 268,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 10,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 283,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 13,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 276
+          },
+          {
+            "end": 284,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 15,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 297,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 18,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 292
+          },
+          {
+            "end": 298,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 19,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 309,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 22,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 306
+          },
+          {
+            "end": 310,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 24,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 321,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 27,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 323,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 169
+          },
+          {
+            "end": 346,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 33,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 341
+          },
+          {
+            "end": 346,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 34,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 334
+          },
+          {
+            "end": 348,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 35,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 323
+          }
+        ]
+      }
+    },
+    {
+      "access_flags": 1,
+      "identity": {
+        "descriptor": [
+          40,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+            "length": 975
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 1,
+      "report_text": "// @method <init>()V\n// @declaration a constructor of `MissingWriteByteArray`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    this.bytes = new byte[]{mark(41)};\n    MissingWriteByteArray.trace = new java.lang.StringBuilder().append(MissingWriteByteArray.trace).append(\"body:write;\").toString();\n    return;\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 181,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 1,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 168
+          },
+          {
+            "end": 189,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 185
+          },
+          {
+            "end": 216,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 10,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 214
+          },
+          {
+            "end": 217,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 12,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 209
+          },
+          {
+            "end": 218,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 5,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 8,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 9,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 15,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 6,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 198
+          },
+          {
+            "end": 220,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 16,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 181
+          },
+          {
+            "end": 245,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 40,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 224
+          },
+          {
+            "end": 283,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 19,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 22,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 23,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 254
+          },
+          {
+            "end": 312,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 26,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 291
+          },
+          {
+            "end": 318,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 26,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 291
+          },
+          {
+            "end": 319,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 29,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 254
+          },
+          {
+            "end": 340,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 32,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 327
+          },
+          {
+            "end": 341,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 34,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 254
+          },
+          {
+            "end": 352,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 37,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 254
+          },
+          {
+            "end": 354,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 40,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 220
+          },
+          {
+            "end": 366,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 43,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 354
+          }
+        ]
+      }
+    },
+    {
+      "access_flags": 1,
+      "identity": {
+        "descriptor": [
+          40,
+          73,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+            "length": 975
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 2,
+      "report_text": "// @method <init>(I)V\n// @declaration a constructor of `MissingWriteByteArray`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    MissingWriteByteArray.trace = new java.lang.StringBuilder().append(MissingWriteByteArray.trace).append(\"body:omit:\").append(marker).append(\";\").toString();\n    return;\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 182,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 1,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 169
+          },
+          {
+            "end": 207,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 34,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 186
+          },
+          {
+            "end": 245,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 4,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 7,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                        "length": 975
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 8,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 216
+          },
+          {
+            "end": 274,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 11,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 253
+          },
+          {
+            "end": 280,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 11,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 253
+          },
+          {
+            "end": 281,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 14,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 216
+          },
+          {
+            "end": 301,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 17,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 289
+          },
+          {
+            "end": 302,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 19,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 216
+          },
+          {
+            "end": 316,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 22,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 310
+          },
+          {
+            "end": 317,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 23,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 216
+          },
+          {
+            "end": 328,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 26,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 325
+          },
+          {
+            "end": 329,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 28,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 216
+          },
+          {
+            "end": 340,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 31,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 216
+          },
+          {
+            "end": 342,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 34,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 182
+          },
+          {
+            "end": 354,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 37,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 342
+          }
+        ]
+      }
+    },
+    {
+      "access_flags": 8,
+      "identity": {
+        "descriptor": [
+          40,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          99,
+          108,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+            "length": 975
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 3,
+      "report_text": "// @method <clinit>()V\n// @declaration a static initializer of `MissingWriteByteArray`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    MissingWriteByteArray.trace = \"\";\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 202,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 2,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 181
+          },
+          {
+            "end": 213,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 0,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 211
+          },
+          {
+            "end": 215,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 2,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 177
+          },
+          {
+            "end": 217,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 5,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66",
+                      "length": 975
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "2140361409078ca0660664dafb25aa8d41f0a13a940fc12e9a23d0cfeea7aa66"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 215
+          }
+        ]
+      }
+    }
+  ],
+  "observed_source_map_bcis": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    22,
+    23,
+    24,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    37,
+    40,
+    43
+  ],
+  "profile": "all",
+  "schema": "instance-array-physical-facts-v1"
+}

@@ -1,0 +1,191 @@
+    Checking jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+    Checking rand_xorshift v0.4.0
+    Checking memchr v2.8.3
+    Checking regex-syntax v0.8.11
+    Checking itoa v1.0.18
+    Checking unarray v0.1.4
+    Checking proptest v1.11.0
+    Checking serde_json v1.0.151
+    Checking jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+    Checking jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+    Checking jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Checking jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error: passing a unit value to a function
+    --> tests/p5_optimize_workloads.rs:1259:9
+     |
+1259 |         Some(counts_before()),
+     |         ^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unit_arg
+     = note: `-D clippy::unit-arg` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::unit_arg)]`
+help: move the expression in front of the call and replace it with the unit literal `()`
+     |
+1259 ~         {
+1260 +             counts_before();
+1261 +             Some(())
+1262 ~         },
+     |
+
+error: passing a unit value to a function
+    --> tests/p5_optimize_workloads.rs:1271:9
+     |
+1271 |         Some(counts_before()),
+     |         ^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unit_arg
+help: move the expression in front of the call and replace it with the unit literal `()`
+     |
+1271 ~         {
+1272 +             counts_before();
+1273 +             Some(())
+1274 ~         },
+     |
+
+error: passing a unit value to a function
+    --> tests/p5_optimize_workloads.rs:1289:9
+     |
+1289 |         Some(counts_before()),
+     |         ^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unit_arg
+help: move the expression in front of the call and replace it with the unit literal `()`
+     |
+1289 ~         {
+1290 +             counts_before();
+1291 +             Some(())
+1292 ~         },
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:1309:5
+     |
+1309 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+     = note: `-D clippy::let-unit-value` implied by `-D warnings`
+     = help: to override `-D warnings` add `#[allow(clippy::let_unit_value)]`
+help: omit the `let` binding and replace variable usages with `()`
+     |
+1309 ~     counts_before();
+1310 |     let (text_bytes, methods, declaration_present) = source.stages.phase("request", || {
+ ...
+1327 |     });
+1328 ~     source.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:1428:5
+     |
+1428 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+1428 ~     counts_before();
+1429 |     let mut control = 0_u64;
+ ...
+1484 |     });
+1485 ~     sample.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:1532:5
+     |
+1532 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+1532 ~     counts_before();
+1533 |     let view = sample.stages.phase("request", || {
+ ...
+1548 |     });
+1549 ~     sample.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:1575:5
+     |
+1575 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+1575 ~     counts_before();
+1576 |     sample.stages.phase("request", || {
+ ...
+1614 |     });
+1615 ~     sample.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:1766:5
+     |
+1766 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+1766 ~     counts_before();
+1767 |     let started = Instant::now();
+ ...
+1822 |         .phase("output", || (0_u64, lines_domain(&lines)));
+1823 ~     sample.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:1983:5
+     |
+1983 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+1983 ~     counts_before();
+1984 |     let small_pages = small.stages.phase("request", || {
+ ...
+1987 |     let (small_bytes, small_domain) = rendered_pages(&mut small, &small_pages);
+1988 ~     small.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:2439:5
+     |
+2439 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+2439 ~     counts_before();
+2440 |     sample.stages.phase("request", || {
+ ...
+2478 |     });
+2479 ~     sample.counts = counts_after(());
+     |
+
+error: this let-binding has unit value
+    --> tests/p5_optimize_workloads.rs:2518:5
+     |
+2518 |     let before = counts_before();
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_unit_value
+help: omit the `let` binding and replace variable usages with `()`
+     |
+2518 ~     counts_before();
+2519 |     let swept = sweep(config, &opened, &mut sample, config.workers, config.mode);
+ ...
+2540 |     sample.bulk = Some(bulk_accounts(&swept));
+2541 ~     sample.counts = counts_after(());
+     |
+
+error: could not compile `jarde` (test "p5_optimize_workloads") due to 11 previous errors
+warning: build failed, waiting for other jobs to finish...

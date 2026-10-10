@@ -1,0 +1,23 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v5.py", line 95, in record_bytes
+    path.resolve(strict=True).relative_to(base.resolve(strict=True))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/pathlib.py", line 1240, in resolve
+    s = self._flavour.realpath(self, strict=strict)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 427, in realpath
+  File "<frozen posixpath>", line 462, in _joinrealpath
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/ArrayFieldInitBase.java'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v5.py", line 628, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v5.py", line 520, in main
+    source = record_bytes(spec["root"], record)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v5.py", line 97, in record_bytes
+    raise AssertionError(f"evidence path escapes or is missing under {base}: {path}")
+AssertionError: evidence path escapes or is missing under /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/ArrayFieldInitBase.java

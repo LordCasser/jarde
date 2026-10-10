@@ -1,0 +1,9 @@
+# Instance candidate replay verifier v2
+
+This is an independent, read-only verifier for the already captured instance-array replay. It does not invoke Rust, JDK, JADX, or the candidate CLI. If the root elects to run it with the pinned Python environment, it checks the closed manifest inventory and raw streams, binds the candidate CLI/metadata to the captured build record, and compares the 48 default/all render records against the accepted controls and no-clinit baselines.
+
+The verifier also checks all eight negative-control texts against the accepted controls baseline, confirms only the three intended classes expose the five intended promoted byte-array fields, and verifies the four full-source builds use the exact generated sources, a fresh empty classpath/sourcepath, and complete expected class sets. The six runtime stdout/stderr/exit triplets are compared with the same-JDK captured original runs. Physical field/method facts, report text, and source maps are compared with accepted baseline documents; mapped BCI anchors are checked only against those accepted baseline maps. This is not an all-BCI completeness claim.
+
+The no-clinit evidence retains its original `baseline-with-failures` preparation status. Its separate accepted verification result (1,053 passed, 0 failed) is the comparison baseline; the preserved javac 8 `javap` parse failure is not rewritten.
+
+The v2 changes from v1 are limited to three static corrections: resolve the repository root from this results-directory location (`parents[3]`), use the verified manifest digest `01ac7281…b991c50`, and index the parsed JDK manifest's already-unwrapped `jdk_tools` map for full-source javac/java argv checks. Both versions are unexecuted; only v2 received a Python AST syntax parse. No candidate, source, build, or captured raw evidence was changed.

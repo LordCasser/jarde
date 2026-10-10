@@ -1,0 +1,4464 @@
+{
+  "bci_boundary": "Observed anchors only; equality is against the accepted original CLI facts, not a claim that every bytecode offset is mapped.",
+  "class": "HandlerArrayByteArray",
+  "class_file_blake3": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+  "fields": [
+    {
+      "access_flags": 8,
+      "identity": {
+        "member": {
+          "descriptor": [
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            83,
+            116,
+            114,
+            105,
+            110,
+            103,
+            59
+          ],
+          "kind": "field",
+          "name": [
+            116,
+            114,
+            97,
+            99,
+            101
+          ]
+        },
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 0
+    },
+    {
+      "access_flags": 8,
+      "identity": {
+        "member": {
+          "descriptor": [
+            90
+          ],
+          "kind": "field",
+          "name": [
+            102,
+            97,
+            105,
+            108
+          ]
+        },
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 1
+    },
+    {
+      "access_flags": 0,
+      "identity": {
+        "member": {
+          "descriptor": [
+            91,
+            66
+          ],
+          "kind": "field",
+          "name": [
+            98,
+            121,
+            116,
+            101,
+            115
+          ]
+        },
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 2
+    }
+  ],
+  "methods": [
+    {
+      "access_flags": 8,
+      "identity": {
+        "descriptor": [
+          40,
+          73,
+          41,
+          66
+        ],
+        "name": [
+          109,
+          97,
+          114,
+          107
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 0,
+      "report_text": "// @method mark(I)B\n// @declaration a static method of `HandlerArrayByteArray`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    HandlerArrayByteArray.trace = new java.lang.StringBuilder().append(HandlerArrayByteArray.trace).append(\"eval:\").append(value).append(\";\").toString();\n    if (HandlerArrayByteArray.fail) {\n        throw new java.lang.IllegalStateException(\"requested failure\");\n    } else {\n        return (byte) value;\n    }\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 194,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 173
+          },
+          {
+            "end": 232,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 3,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 261,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 7,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 240
+          },
+          {
+            "end": 267,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 7,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 240
+          },
+          {
+            "end": 268,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 10,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 283,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 13,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 276
+          },
+          {
+            "end": 284,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 15,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 297,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 18,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 292
+          },
+          {
+            "end": 298,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 19,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 309,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 22,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 306
+          },
+          {
+            "end": 310,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 24,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 321,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 27,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 203
+          },
+          {
+            "end": 323,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 169
+          },
+          {
+            "end": 352,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 33,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 331
+          },
+          {
+            "end": 357,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 36,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 33,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 331
+          },
+          {
+            "end": 430,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 43,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 411
+          },
+          {
+            "end": 431,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 39,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 42,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      66
+                    ],
+                    "name": [
+                      109,
+                      97,
+                      114,
+                      107
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 45,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 375
+          },
+          {
+            "end": 433,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 48,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 361
+          },
+          {
+            "end": 473,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 49,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 468
+          },
+          {
+            "end": 473,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 50,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 461
+          },
+          {
+            "end": 475,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 51,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 446
+          },
+          {
+            "end": 481,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 36,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    66
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    114,
+                    107
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 323
+          }
+        ]
+      }
+    },
+    {
+      "access_flags": 1,
+      "identity": {
+        "descriptor": [
+          40,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 1,
+      "report_text": "// @method <init>()V\n// @declaration a constructor of `HandlerArrayByteArray`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    try {\n        this.bytes = new byte[]{mark(91)};\n    } catch (java.lang.IllegalStateException ex) {\n        HandlerArrayByteArray.trace = new java.lang.StringBuilder().append(HandlerArrayByteArray.trace).append(\"caught;\").toString();\n    }\n    HandlerArrayByteArray.trace = new java.lang.StringBuilder().append(HandlerArrayByteArray.trace).append(\"body:noarg;\").toString();\n    return;\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 181,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 1,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 168
+          },
+          {
+            "end": 203,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 199
+          },
+          {
+            "end": 230,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 10,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 228
+          },
+          {
+            "end": 231,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 12,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 223
+          },
+          {
+            "end": 232,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 5,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 8,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 9,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 15,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 6,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 212
+          },
+          {
+            "end": 234,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 16,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 191
+          },
+          {
+            "end": 314,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 44,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 293
+          },
+          {
+            "end": 352,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 23,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 26,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 27,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 323
+          },
+          {
+            "end": 381,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 360
+          },
+          {
+            "end": 387,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 360
+          },
+          {
+            "end": 388,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 33,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 323
+          },
+          {
+            "end": 405,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 36,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 396
+          },
+          {
+            "end": 406,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 38,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 323
+          },
+          {
+            "end": 417,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 41,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 323
+          },
+          {
+            "end": 419,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 44,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 285
+          },
+          {
+            "end": 425,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 22,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 0,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 181
+          },
+          {
+            "end": 450,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 68,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 429
+          },
+          {
+            "end": 488,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 47,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 50,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 51,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 459
+          },
+          {
+            "end": 517,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 54,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 496
+          },
+          {
+            "end": 523,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 54,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 496
+          },
+          {
+            "end": 524,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 57,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 459
+          },
+          {
+            "end": 545,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 60,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 532
+          },
+          {
+            "end": 546,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 62,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 459
+          },
+          {
+            "end": 557,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 65,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 459
+          },
+          {
+            "end": 559,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 68,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 425
+          },
+          {
+            "end": 571,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 71,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 559
+          }
+        ]
+      }
+    },
+    {
+      "access_flags": 1,
+      "identity": {
+        "descriptor": [
+          40,
+          73,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 2,
+      "report_text": "// @method <init>(I)V\n// @declaration a constructor of `HandlerArrayByteArray`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    try {\n        this.bytes = new byte[]{mark(91)};\n    } catch (java.lang.IllegalStateException ex) {\n        HandlerArrayByteArray.trace = new java.lang.StringBuilder().append(HandlerArrayByteArray.trace).append(\"caught;\").toString();\n    }\n    HandlerArrayByteArray.trace = new java.lang.StringBuilder().append(HandlerArrayByteArray.trace).append(\"body:int:\").append(marker).append(\";\").toString();\n    return;\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 182,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 1,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 169
+          },
+          {
+            "end": 204,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 200
+          },
+          {
+            "end": 231,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 10,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 229
+          },
+          {
+            "end": 232,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 12,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 224
+          },
+          {
+            "end": 233,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 5,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 8,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 9,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 15,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 6,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 213
+          },
+          {
+            "end": 235,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 16,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 192
+          },
+          {
+            "end": 315,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 44,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 294
+          },
+          {
+            "end": 353,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 23,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 26,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 27,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 324
+          },
+          {
+            "end": 382,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 361
+          },
+          {
+            "end": 388,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 30,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 361
+          },
+          {
+            "end": 389,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 33,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 324
+          },
+          {
+            "end": 406,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 36,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 397
+          },
+          {
+            "end": 407,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 38,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 324
+          },
+          {
+            "end": 418,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 41,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 324
+          },
+          {
+            "end": 420,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 44,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 286
+          },
+          {
+            "end": 426,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 22,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 0,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 182
+          },
+          {
+            "end": 451,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 77,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 430
+          },
+          {
+            "end": 489,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 47,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                },
+                {
+                  "bci": 50,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                        "length": 1380
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 51,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 460
+          },
+          {
+            "end": 518,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 54,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 497
+          },
+          {
+            "end": 524,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 54,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 497
+          },
+          {
+            "end": 525,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 57,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 460
+          },
+          {
+            "end": 544,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 60,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 533
+          },
+          {
+            "end": 545,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 62,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 460
+          },
+          {
+            "end": 559,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 65,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 553
+          },
+          {
+            "end": 560,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 66,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 460
+          },
+          {
+            "end": 571,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 69,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 568
+          },
+          {
+            "end": 572,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 71,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 460
+          },
+          {
+            "end": 583,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 74,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 460
+          },
+          {
+            "end": 585,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 77,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 426
+          },
+          {
+            "end": 597,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 80,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 585
+          }
+        ]
+      }
+    },
+    {
+      "access_flags": 8,
+      "identity": {
+        "descriptor": [
+          40,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          99,
+          108,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+            "length": 1380
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 3,
+      "report_text": "// @method <clinit>()V\n// @declaration a static initializer of `HandlerArrayByteArray`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    HandlerArrayByteArray.trace = \"\";\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 202,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 2,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 181
+          },
+          {
+            "end": 213,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 0,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 211
+          },
+          {
+            "end": 215,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 2,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 177
+          },
+          {
+            "end": 217,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 5,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    99,
+                    108,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3",
+                      "length": 1380
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "821e68ce510c62da8b374e8c8d43b0ad43ad6d567c9a33519239cfb4039e82e3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 215
+          }
+        ]
+      }
+    }
+  ],
+  "observed_source_map_bcis": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13,
+    15,
+    16,
+    18,
+    19,
+    22,
+    23,
+    24,
+    26,
+    27,
+    30,
+    33,
+    36,
+    38,
+    39,
+    41,
+    42,
+    43,
+    44,
+    45,
+    47,
+    48,
+    49,
+    50,
+    51,
+    54,
+    57,
+    60,
+    62,
+    65,
+    66,
+    68,
+    69,
+    71,
+    74,
+    77,
+    80
+  ],
+  "profile": "default",
+  "schema": "instance-array-physical-facts-v1"
+}

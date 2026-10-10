@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/prepare-instance-candidate-replay-root-v1.py",
+    "--cli",
+    "/private/tmp/jarde-instance-array-cli-v1",
+    "--cli-sha256",
+    "5abb4bc82a50a8d427eff425ad80bc2fb845253b4216a81b60229e2337711663",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "b86961182a352dfa663215c47bdd3e64cf7f8a67c5e36951f2c98d020f044cfa"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "started_at": "2026-10-10T03:42:10.113027+00:00",
+  "duration_seconds": 2.709191040994483,
+  "script_sha256": "e542e5e5cd866d3c050dc91132941d0dab5d9ae16d8cbd2d9752d9980b2dafac",
+  "streams": {
+    "stdout": {
+      "path": "stdout",
+      "bytes": 224,
+      "sha256": "8a288b40d6aec6e527bdd902147dbfa9295ac77161c0e1c9c32c37532c768d18"
+    },
+    "stderr": {
+      "path": "stderr",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

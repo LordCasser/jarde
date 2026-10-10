@@ -1,0 +1,11 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v10.py", line 1145, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v10.py", line 1105, in main
+    unicode_test = verify_unicode_test_only(product)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v10.py", line 453, in verify_unicode_test_only
+    assert submitted == expected, "the submitted test-only file must contain exactly the two audited string replacements"
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: the submitted test-only file must contain exactly the two audited string replacements

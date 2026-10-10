@@ -1,0 +1,3 @@
+manifest: /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/instance-candidate-replay-root-v1/manifest.json
+status: completed
+commands: 58; cases: 52; failures: 0

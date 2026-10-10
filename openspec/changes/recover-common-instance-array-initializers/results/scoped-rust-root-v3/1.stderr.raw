@@ -1,0 +1,115 @@
+   Compiling libc v0.2.189
+   Compiling bitflags v2.13.2
+   Compiling getrandom v0.3.4
+   Compiling getrandom v0.4.3
+   Compiling zerocopy v0.8.57
+   Compiling rustix v1.1.4
+   Compiling rand_core v0.9.5
+   Compiling errno v0.3.14
+   Compiling noak v0.7.0
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling zmij v1.0.23
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling tempfile v3.27.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling wait-timeout v0.2.1
+   Compiling fnv v1.0.7
+   Compiling quick-error v1.2.3
+   Compiling bit-vec v0.8.0
+   Compiling serde_json v1.0.151
+   Compiling bit-set v0.8.0
+   Compiling rusty-fork v0.3.1
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling rand_chacha v0.9.0
+   Compiling rand_xorshift v0.4.0
+   Compiling rand v0.9.5
+   Compiling regex-syntax v0.8.11
+   Compiling unarray v0.1.4
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling proptest v1.11.0
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+error[E0433]: cannot find type `ClassSourceOutcome` in this scope
+     --> src/facade.rs:44698:17
+      |
+44698 |             let ClassSourceOutcome::Recovered {
+      |                 ^^^^^^^^^^^^^^^^^^ use of undeclared type `ClassSourceOutcome`
+      |
+help: a struct with a similar name exists
+      |
+44698 -             let ClassSourceOutcome::Recovered {
+44698 +             let ClassSourceMethod::Recovered {
+      |
+help: consider importing this enum through its public re-export
+      |
+44399 +     use crate::ClassSourceOutcome;
+      |
+
+error[E0614]: type `usize` cannot be dereferenced
+     --> src/facade.rs:11463:29
+      |
+11463 |         staged_fields.push((*index, projected));
+      |                             ^^^^^^ can't be dereferenced
+
+error[E0614]: type `usize` cannot be dereferenced
+     --> src/facade.rs:11464:28
+      |
+11464 |         field_indices.push(*index);
+      |                            ^^^^^^ can't be dereferenced
+
+error[E0004]: non-exhaustive patterns: `facade::OperationOutcome::Ambiguous(_)` not covered
+     --> src/facade.rs:44792:15
+      |
+44792 |           match engine
+      |  _______________^
+44793 | |             .class_source(
+44794 | |                 std::slice::from_ref(&snapshot),
+44795 | |                 &ClassSourceRequest {
+...     |
+44803 | |             .unwrap()
+      | |_____________________^ pattern `facade::OperationOutcome::Ambiguous(_)` not covered
+      |
+note: `facade::OperationOutcome<class_source::ClassSourceReport>` defined here
+     --> src/facade.rs:41836:10
+      |
+41836 | pub enum OperationOutcome<T> {
+      |          ^^^^^^^^^^^^^^^^
+...
+41842 |     Ambiguous(Box<TargetCandidates>),
+      |     --------- not covered
+      = note: the matched value is of type `facade::OperationOutcome<class_source::ClassSourceReport>`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+      |
+44817 ~             },
+44818 +             facade::OperationOutcome::Ambiguous(_) => todo!()
+      |
+
+error[E0004]: non-exhaustive patterns: `facade::OperationOutcome::Ambiguous(_)` not covered
+     --> src/facade.rs:44857:31
+      |
+44857 |         let execution = match outcome {
+      |                               ^^^^^^^ pattern `facade::OperationOutcome::Ambiguous(_)` not covered
+      |
+note: `facade::OperationOutcome<class_source::ClassSourceReport>` defined here
+     --> src/facade.rs:41836:10
+      |
+41836 | pub enum OperationOutcome<T> {
+      |          ^^^^^^^^^^^^^^^^
+...
+41842 |     Ambiguous(Box<TargetCandidates>),
+      |     --------- not covered
+      = note: the matched value is of type `facade::OperationOutcome<class_source::ClassSourceReport>`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+      |
+44859 ~             OperationOutcome::Incomplete(candidates) => candidates.execution,
+44860 ~             facade::OperationOutcome::Ambiguous(_) => todo!(),
+      |
+
+Some errors have detailed explanations: E0004, E0433, E0614.
+For more information about an error, try `rustc --explain E0004`.
+error: could not compile `jarde` (lib test) due to 5 previous errors

@@ -1,0 +1,72 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38019682442",
+        "--json",
+        "headSha,status,conclusion,url,jobs"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:53:26.438490+00:00",
+      "duration_seconds": 4.7210242910077795,
+      "exit": 0,
+      "raw_stdout_bytes": 10113,
+      "raw_stdout_sha256": "1aedb468f4ec5d74d4ca0aed0c758a9d4b48c7a49cadafe1eb3e55d5b8aa1252",
+      "output_file": "ci-run-v1.json",
+      "output_bytes": 10113,
+      "output_sha256": "1aedb468f4ec5d74d4ca0aed0c758a9d4b48c7a49cadafe1eb3e55d5b8aa1252",
+      "stderr_file": "ci-run-v1.json.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38019682442",
+        "--job",
+        "114117685863",
+        "--log"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:53:31.160067+00:00",
+      "duration_seconds": 23.365808333008317,
+      "exit": 0,
+      "raw_stdout_bytes": 1752511,
+      "raw_stdout_sha256": "051fbed3cf68c0ee41bcc23f82b37b4c800a31af6b477ef4303d0baedf7a4097",
+      "output_file": "ci-stable-job-v1.log.gz",
+      "output_bytes": 275712,
+      "output_sha256": "68605f27d3a6cc571fa9b661cfdbe269526610e1f0868ba692b38deb7c0afdd0",
+      "stderr_file": "ci-stable-job-v1.log.gz.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38019682442",
+        "--job",
+        "114117685925",
+        "--log"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:53:54.526857+00:00",
+      "duration_seconds": 1.7538163329882082,
+      "exit": 0,
+      "raw_stdout_bytes": 114221,
+      "raw_stdout_sha256": "94610f66e096036e9859a68ab132eb7a3d23a64f547e9e6a935aa07b8d21e3e3",
+      "output_file": "ci-supply-job-v1.log.gz",
+      "output_bytes": 14922,
+      "output_sha256": "6212f8b54bfe4377a64fc2d404d44082fd772acaa9679e3eda1ece8b17020174",
+      "stderr_file": "ci-supply-job-v1.log.gz.stderr",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

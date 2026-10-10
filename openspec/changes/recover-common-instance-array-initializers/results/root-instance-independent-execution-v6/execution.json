@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-root-v6.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "started_at": "2026-10-10T03:55:27.634212+00:00",
+  "duration_seconds": 0.4962919999961741,
+  "script_sha256": "edb48a7ef2a0ece32367d5fc50eac35143ffea32b7e428ddbaa3624e02c7c3ad",
+  "streams": {
+    "stdout": {
+      "path": "stdout",
+      "bytes": 13082,
+      "sha256": "910df190ceaddb2b57fda15e7b1da6922cf82a359cdee57be91bdbcc405546c6"
+    },
+    "stderr": {
+      "path": "stderr",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

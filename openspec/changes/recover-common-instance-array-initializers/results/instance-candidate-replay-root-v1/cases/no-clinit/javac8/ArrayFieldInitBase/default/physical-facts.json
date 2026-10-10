@@ -1,0 +1,332 @@
+{
+  "bci_boundary": "Observed anchors only; equality is against the accepted original CLI facts, not a claim that every bytecode offset is mapped.",
+  "class": "ArrayFieldInitBase",
+  "class_file_blake3": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+  "fields": [
+    {
+      "access_flags": 16,
+      "identity": {
+        "member": {
+          "descriptor": [
+            73
+          ],
+          "kind": "field",
+          "name": [
+            114,
+            101,
+            99,
+            101,
+            105,
+            118,
+            101,
+            100
+          ]
+        },
+        "owner": {
+          "class_bytes": {
+            "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+            "length": 178
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 0
+    }
+  ],
+  "methods": [
+    {
+      "access_flags": 0,
+      "identity": {
+        "descriptor": [
+          40,
+          73,
+          41,
+          86
+        ],
+        "name": [
+          60,
+          105,
+          110,
+          105,
+          116,
+          62
+        ],
+        "owner": {
+          "class_bytes": {
+            "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+            "length": 178
+          },
+          "location": {
+            "kind": "standalone_root",
+            "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+          },
+          "variant": {
+            "kind": "base"
+          }
+        }
+      },
+      "index": 0,
+      "report_text": "// @method <init>(I)V\n// @declaration a constructor of `ArrayFieldInitBase`, member flags 0x0000\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    this.received = arg1;\n    return;\n}\n",
+      "source_map": {
+        "segments": [
+          {
+            "end": 179,
+            "origin": {
+              "derived": [
+                {
+                  "bci": 0,
+                  "cp": null,
+                  "method": {
+                    "descriptor": [
+                      40,
+                      73,
+                      41,
+                      86
+                    ],
+                    "name": [
+                      60,
+                      105,
+                      110,
+                      105,
+                      116,
+                      62
+                    ],
+                    "owner": {
+                      "class_bytes": {
+                        "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+                        "length": 178
+                      },
+                      "location": {
+                        "kind": "standalone_root",
+                        "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+                      },
+                      "variant": {
+                        "kind": "base"
+                      }
+                    }
+                  },
+                  "provenance": "Derived"
+                }
+              ],
+              "primary": {
+                "bci": 1,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+                      "length": 178
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 166
+          },
+          {
+            "end": 187,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 4,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+                      "length": 178
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 183
+          },
+          {
+            "end": 203,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 5,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+                      "length": 178
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 199
+          },
+          {
+            "end": 205,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 6,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+                      "length": 178
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 179
+          },
+          {
+            "end": 217,
+            "origin": {
+              "derived": [],
+              "primary": {
+                "bci": 9,
+                "cp": null,
+                "method": {
+                  "descriptor": [
+                    40,
+                    73,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    60,
+                    105,
+                    110,
+                    105,
+                    116,
+                    62
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3",
+                      "length": 178
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "4246912a7bd402318a8f3a9d57274f4c7971c85f6d7121c779ebf0aaa1fe65a3"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                },
+                "provenance": "Direct"
+              }
+            },
+            "start": 205
+          }
+        ]
+      }
+    }
+  ],
+  "observed_source_map_bcis": [
+    0,
+    1,
+    4,
+    5,
+    6,
+    9
+  ],
+  "profile": "default",
+  "schema": "instance-array-physical-facts-v1"
+}

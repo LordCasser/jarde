@@ -1,0 +1,11 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v4.py", line 627, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v4.py", line 471, in main
+    map_check = validate_doc_maps(doc, class_bytes, baseline_doc)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/verify-instance-candidate-replay-luna-v4.py", line 196, in validate_doc_maps
+    assert doc["class"]["class_bytes"] == owner["class_bytes"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

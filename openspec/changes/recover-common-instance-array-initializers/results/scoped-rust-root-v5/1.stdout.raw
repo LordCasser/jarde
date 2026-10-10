@@ -1,0 +1,51 @@
+
+running 6 tests
+test facade::common_instance_array_initializer_tests::public_class_source_honors_pre_cancelled_request ... ok
+test facade::common_instance_array_initializer_tests::public_class_source_budget_stop_does_not_publish_a_partial_field_group ... ok
+test facade::common_instance_array_initializer_tests::no_clinit_two_constructor_group_preserves_super_calls_suffixes_and_physical_maps ... ok
+test facade::common_instance_array_initializer_tests::constant_value_on_any_nonstatic_field_refuses_the_whole_group ... ok
+candidate common:
+// jarde: presentation of `CommonDirectSuperByteArray` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class CommonDirectSuperByteArray extends java.lang.Object {
+    static java.lang.String trace = "";
+
+    byte[] bytes = new byte[]{mark(10), mark(20)};
+
+    static byte mark(int value) {
+        // @method mark(I)B
+        // @declaration a static method of `CommonDirectSuperByteArray`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        CommonDirectSuperByteArray.trace = new java.lang.StringBuilder().append(CommonDirectSuperByteArray.trace).append("eval:").append(value).append(";").toString();
+        return (byte) value;
+    }
+
+    public CommonDirectSuperByteArray() {
+        // @method <init>()V
+        // @declaration a constructor of `CommonDirectSuperByteArray`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+                    super();
+                    CommonDirectSuperByteArray.trace = new java.lang.StringBuilder().append(CommonDirectSuperByteArray.trace).append("body:noarg;").toString();
+                    return;
+    }
+
+    public CommonDirectSuperByteArray(int marker) {
+        // @method <init>(I)V
+        // @declaration a constructor of `CommonDirectSuperByteArray`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+                    super();
+                    CommonDirectSuperByteArray.trace = new java.lang.StringBuilder().append(CommonDirectSuperByteArray.trace).append("body:int:").append(marker).append(";").toString();
+                    return;
+    }
+}
+
+test facade::common_instance_array_initializer_tests::direct_constructor_group_and_single_constructor_literal_are_projected ... FAILED
+test facade::common_instance_array_initializer_tests::unequal_this_delegating_and_reverse_order_groups_keep_constructor_writes ... ok
+
+failures:
+
+failures:
+    facade::common_instance_array_initializer_tests::direct_constructor_group_and_single_constructor_literal_are_projected
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 211 filtered out; finished in 0.02s
+

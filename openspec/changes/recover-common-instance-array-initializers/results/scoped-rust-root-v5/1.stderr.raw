@@ -1,0 +1,8 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 8.09s
+     Running unittests src/lib.rs (target/debug/deps/jarde-19ad210870138824)
+
+thread 'facade::common_instance_array_initializer_tests::direct_constructor_group_and_single_constructor_literal_are_projected' (16660209) panicked at src/facade.rs:44585:9:
+assertion failed: common.text.contains("byte[] bytes = new byte[] { mark(10), mark(20) };")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde --lib`

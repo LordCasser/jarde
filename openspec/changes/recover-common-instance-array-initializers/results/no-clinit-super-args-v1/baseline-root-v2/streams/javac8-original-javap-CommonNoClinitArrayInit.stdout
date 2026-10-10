@@ -1,0 +1,151 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/CommonNoClinitArrayInit.class
+  Last modified 2026-10-10; size 479 bytes
+  MD5 checksum 70d0c87793d4647159f8fc80cdfb1a38
+public class CommonNoClinitArrayInit extends ArrayFieldInitBase
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Fieldref           #7.#21         // CommonNoClinitArrayInit.trace:I
+   #2 = Methodref          #7.#22         // CommonNoClinitArrayInit.mark:(I)B
+   #3 = Methodref          #8.#23         // ArrayFieldInitBase."<init>":(I)V
+   #4 = Fieldref           #7.#24         // CommonNoClinitArrayInit.first:[B
+   #5 = Methodref          #7.#25         // CommonNoClinitArrayInit.run:(I)B
+   #6 = Fieldref           #7.#26         // CommonNoClinitArrayInit.second:[B
+   #7 = Class              #27            // CommonNoClinitArrayInit
+   #8 = Class              #28            // ArrayFieldInitBase
+   #9 = Utf8               trace
+  #10 = Utf8               I
+  #11 = Utf8               first
+  #12 = Utf8               [B
+  #13 = Utf8               second
+  #14 = Utf8               mark
+  #15 = Utf8               (I)B
+  #16 = Utf8               Code
+  #17 = Utf8               run
+  #18 = Utf8               <init>
+  #19 = Utf8               ()V
+  #20 = Utf8               (I)V
+  #21 = NameAndType        #9:#10         // trace:I
+  #22 = NameAndType        #14:#15        // mark:(I)B
+  #23 = NameAndType        #18:#20        // "<init>":(I)V
+  #24 = NameAndType        #11:#12        // first:[B
+  #25 = NameAndType        #17:#15        // run:(I)B
+  #26 = NameAndType        #13:#12        // second:[B
+  #27 = Utf8               CommonNoClinitArrayInit
+  #28 = Utf8               ArrayFieldInitBase
+{
+  static int trace;
+    descriptor: I
+    flags: ACC_STATIC
+
+  final byte[] first;
+    descriptor: [B
+    flags: ACC_FINAL
+
+  final byte[] second;
+    descriptor: [B
+    flags: ACC_FINAL
+
+  static byte mark(int);
+    descriptor: (I)B
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #1                  // Field trace:I
+         3: bipush        31
+         5: imul
+         6: iload_0
+         7: iadd
+         8: putstatic     #1                  // Field trace:I
+        11: iload_0
+        12: i2b
+        13: ireturn
+
+  static byte run(int);
+    descriptor: (I)B
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: invokestatic  #2                  // Method mark:(I)B
+         4: ireturn
+
+  public CommonNoClinitArrayInit();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: bipush        7
+         3: invokespecial #3                  // Method ArrayFieldInitBase."<init>":(I)V
+         6: aload_0
+         7: iconst_2
+         8: newarray       byte
+        10: dup
+        11: iconst_0
+        12: bipush        11
+        14: invokestatic  #2                  // Method mark:(I)B
+        17: bastore
+        18: dup
+        19: iconst_1
+        20: bipush        12
+        22: invokestatic  #2                  // Method mark:(I)B
+        25: bastore
+        26: putfield      #4                  // Field first:[B
+        29: aload_0
+        30: iconst_1
+        31: newarray       byte
+        33: dup
+        34: iconst_0
+        35: bipush        21
+        37: invokestatic  #5                  // Method run:(I)B
+        40: bastore
+        41: putfield      #6                  // Field second:[B
+        44: getstatic     #1                  // Field trace:I
+        47: bipush        31
+        49: imul
+        50: bipush        91
+        52: iadd
+        53: putstatic     #1                  // Field trace:I
+        56: return
+
+  public CommonNoClinitArrayInit(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=2, args_size=2
+         0: aload_0
+         1: iload_1
+         2: invokespecial #3                  // Method ArrayFieldInitBase."<init>":(I)V
+         5: aload_0
+         6: iconst_2
+         7: newarray       byte
+         9: dup
+        10: iconst_0
+        11: bipush        11
+        13: invokestatic  #2                  // Method mark:(I)B
+        16: bastore
+        17: dup
+        18: iconst_1
+        19: bipush        12
+        21: invokestatic  #2                  // Method mark:(I)B
+        24: bastore
+        25: putfield      #4                  // Field first:[B
+        28: aload_0
+        29: iconst_1
+        30: newarray       byte
+        32: dup
+        33: iconst_0
+        34: bipush        21
+        36: invokestatic  #5                  // Method run:(I)B
+        39: bastore
+        40: putfield      #6                  // Field second:[B
+        43: getstatic     #1                  // Field trace:I
+        46: bipush        31
+        48: imul
+        49: iload_1
+        50: iadd
+        51: putstatic     #1                  // Field trace:I
+        54: return
+}

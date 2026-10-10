@@ -1,0 +1,7 @@
+# Instance candidate replay verifier v3 review
+
+The only logic change from v2 is correcting the frozen `inputs.baselines.no_clinit.acceptance_policy` string to match the captured replay manifest exactly. The v2 failed execution remains preserved at `root-instance-independent-execution-v2`; its assertion failure was the policy-string equality at line 331, not a CLI or product result.
+
+I checked the remaining manifest shapes directly against the captured files: controls source rows store archive records under `archive`, while no-clinit source rows are direct file records; all 48 candidate render JSON documents have string-valued class text and `execution.status == "complete"` (including all profiles); all four full-source compile argv arrays use the exact empty classpath/sourcepath and contain 12 controls sources or 3 no-clinit sources; the six runtime argv rows use the expected JDK executable, `-Xverify:all`, exact output directory, and runner class. Runner adaptations are `copy` in these records. The no-clinit accepted baseline policy retains its original javac 8 javap parse failure while its independent 1,053-check acceptance remains the reference.
+
+V3 was syntax-parsed only. It has not been run; no toolchain, candidate CLI, baseline raw output, or product file was changed. The verifier retains the bounded source-map claim: it checks mapped origins against anchors present in accepted baseline maps and does not assert all-BCI coverage.

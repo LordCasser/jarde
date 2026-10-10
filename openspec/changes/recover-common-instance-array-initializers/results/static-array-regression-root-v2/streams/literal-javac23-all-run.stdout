@@ -1,0 +1,4 @@
+static=[10, 20, 30]
+first=[40, 50, 60]
+second=[40, 50, 60]
+fresh=true

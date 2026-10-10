@@ -1,0 +1,44 @@
+{
+  "schema": "instance-array-validation-build-root-v1",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "jarde",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T03:33:46.130619+00:00",
+      "duration_seconds": 6.121268208997208,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 438551001,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/validation-build-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-common-instance-array-initializers/results/validation-build-root-v1/0.stderr.raw",
+          "bytes": 2224,
+          "sha256": "89bbc715e0de4f5515b356f7fcaf6ddfb77e4ebd65a7ef3ec55f05f80083ebcf"
+        }
+      }
+    }
+  ]
+}

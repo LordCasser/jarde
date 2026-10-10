@@ -1,0 +1,8 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 10.31s
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+
+thread 'report::instance_array_prefix_tests::prefix_emission_keeps_super_arguments_and_final_return' (16640076) panicked at crates/jarde-java/src/report.rs:4573:10:
+called `Result::unwrap()` on an `Err` value: Budget { dimension: OutputBytes, written: 0, limit: 0, at: Some(0) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde-java --lib`

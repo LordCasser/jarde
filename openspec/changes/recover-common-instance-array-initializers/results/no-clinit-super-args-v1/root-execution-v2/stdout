@@ -1,0 +1,20 @@
+{
+  "status": "baseline-with-failures",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 1,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "original_cross_jdk_raw_equal": true,
+  "jarde_cli_render_count": 8,
+  "failures": [
+    "javac8-original"
+  ],
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/manifest.json",
+  "inventory": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/file-inventory.json"
+}

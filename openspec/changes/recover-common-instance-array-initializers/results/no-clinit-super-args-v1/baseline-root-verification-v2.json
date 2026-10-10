@@ -1,0 +1,6945 @@
+{
+  "checks": [
+    {
+      "check": "manifest-schema",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "manifest-status-records-jdk8-preparation-check-failure",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "manifest-path",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:unique-paths",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:closed-file-set",
+      "ok": true,
+      "detail": {
+        "unlisted": [],
+        "missing": []
+      }
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/classes/defpackage/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/generated-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/generated-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-default/sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/generated-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/generated-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jadx-none/sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/ArrayFieldInitBase/all/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/ArrayFieldInitBase/all/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/ArrayFieldInitBase/default/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/ArrayFieldInitBase/default/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/CommonNoClinitArrayInit/all/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/CommonNoClinitArrayInit/all/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/CommonNoClinitArrayInit/default/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/class-source/CommonNoClinitArrayInit/default/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-jarde/sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-original/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-original/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-original/input-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-original/input-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac23-original/input-sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/classes/defpackage/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/generated-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/generated-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-default/sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/generated-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/generated-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jadx-none/sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/ArrayFieldInitBase/all/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/ArrayFieldInitBase/all/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/ArrayFieldInitBase/default/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/ArrayFieldInitBase/default/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/CommonNoClinitArrayInit/all/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/CommonNoClinitArrayInit/all/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/CommonNoClinitArrayInit/default/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/class-source/CommonNoClinitArrayInit/default/class-source.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-jarde/sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-original/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-original/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-original/input-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-original/input-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:cases/javac8-original/input-sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:jadx-input/NoClinitSuperArgumentTargets.jar",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:jadx/default/sources/defpackage/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:jadx/default/sources/defpackage/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:jadx/none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:jadx/none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:manifest.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:original-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:original-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:original-sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/jadx-default-decompile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/jadx-default-decompile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/jadx-none-decompile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/jadx-none-decompile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/jadx-version.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/jadx-version.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-default-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-default-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-default-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-default-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-none-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-none-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-none-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jadx-none-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-ArrayFieldInitBase-all.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-ArrayFieldInitBase-all.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-ArrayFieldInitBase-default.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-ArrayFieldInitBase-default.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-CommonNoClinitArrayInit-all.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-CommonNoClinitArrayInit-all.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-CommonNoClinitArrayInit-default.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-render-CommonNoClinitArrayInit-default.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-jarde-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-javap-ArrayFieldInitBase.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-javap-ArrayFieldInitBase.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-javap-CommonNoClinitArrayInit.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-javap-CommonNoClinitArrayInit.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-javap-Runner.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-javap-Runner.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac23-original-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-default-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-default-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-default-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-default-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-none-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-none-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-none-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jadx-none-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-ArrayFieldInitBase-all.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-ArrayFieldInitBase-all.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-ArrayFieldInitBase-default.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-ArrayFieldInitBase-default.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-CommonNoClinitArrayInit-all.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-CommonNoClinitArrayInit-all.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-CommonNoClinitArrayInit-default.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-render-CommonNoClinitArrayInit-default.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-jarde-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-compile.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-compile.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-javap-ArrayFieldInitBase.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-javap-ArrayFieldInitBase.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-javap-CommonNoClinitArrayInit.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-javap-CommonNoClinitArrayInit.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-javap-Runner.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-javap-Runner.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-run.stderr",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:hash:streams/javac8-original-run.stdout",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:includes-manifest",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:excludes-itself",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "inventory:manifest-policy",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "root-launch:actual-command",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "root-launch:cwd-and-preserved-failure",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "root-launch:script-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "root-launch:stdout",
+      "ok": true,
+      "detail": {
+        "path": "stdout",
+        "bytes": 677,
+        "sha256": "71c226474fdff039baf9e7e2b89c5cbaf038e63e07b712b54a1c99ca28bea635"
+      }
+    },
+    {
+      "check": "root-launch:stderr",
+      "ok": true,
+      "detail": {
+        "path": "stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "commands:unique-labels",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "commands:complete-set",
+      "ok": true,
+      "detail": {
+        "expected": [
+          "jadx-default-decompile",
+          "jadx-none-decompile",
+          "jadx-version",
+          "javac23-jadx-default-compile",
+          "javac23-jadx-default-run",
+          "javac23-jadx-none-compile",
+          "javac23-jadx-none-run",
+          "javac23-jarde-compile",
+          "javac23-jarde-render-ArrayFieldInitBase-all",
+          "javac23-jarde-render-ArrayFieldInitBase-default",
+          "javac23-jarde-render-CommonNoClinitArrayInit-all",
+          "javac23-jarde-render-CommonNoClinitArrayInit-default",
+          "javac23-jarde-run",
+          "javac23-original-compile",
+          "javac23-original-javap-ArrayFieldInitBase",
+          "javac23-original-javap-CommonNoClinitArrayInit",
+          "javac23-original-javap-Runner",
+          "javac23-original-run",
+          "javac8-jadx-default-compile",
+          "javac8-jadx-default-run",
+          "javac8-jadx-none-compile",
+          "javac8-jadx-none-run",
+          "javac8-jarde-compile",
+          "javac8-jarde-render-ArrayFieldInitBase-all",
+          "javac8-jarde-render-ArrayFieldInitBase-default",
+          "javac8-jarde-render-CommonNoClinitArrayInit-all",
+          "javac8-jarde-render-CommonNoClinitArrayInit-default",
+          "javac8-jarde-run",
+          "javac8-original-compile",
+          "javac8-original-javap-ArrayFieldInitBase",
+          "javac8-original-javap-CommonNoClinitArrayInit",
+          "javac8-original-javap-Runner",
+          "javac8-original-run"
+        ],
+        "actual": [
+          "jadx-default-decompile",
+          "jadx-none-decompile",
+          "jadx-version",
+          "javac23-jadx-default-compile",
+          "javac23-jadx-default-run",
+          "javac23-jadx-none-compile",
+          "javac23-jadx-none-run",
+          "javac23-jarde-compile",
+          "javac23-jarde-render-ArrayFieldInitBase-all",
+          "javac23-jarde-render-ArrayFieldInitBase-default",
+          "javac23-jarde-render-CommonNoClinitArrayInit-all",
+          "javac23-jarde-render-CommonNoClinitArrayInit-default",
+          "javac23-jarde-run",
+          "javac23-original-compile",
+          "javac23-original-javap-ArrayFieldInitBase",
+          "javac23-original-javap-CommonNoClinitArrayInit",
+          "javac23-original-javap-Runner",
+          "javac23-original-run",
+          "javac8-jadx-default-compile",
+          "javac8-jadx-default-run",
+          "javac8-jadx-none-compile",
+          "javac8-jadx-none-run",
+          "javac8-jarde-compile",
+          "javac8-jarde-render-ArrayFieldInitBase-all",
+          "javac8-jarde-render-ArrayFieldInitBase-default",
+          "javac8-jarde-render-CommonNoClinitArrayInit-all",
+          "javac8-jarde-render-CommonNoClinitArrayInit-default",
+          "javac8-jarde-run",
+          "javac8-original-compile",
+          "javac8-original-javap-ArrayFieldInitBase",
+          "javac8-original-javap-CommonNoClinitArrayInit",
+          "javac8-original-javap-Runner",
+          "javac8-original-run"
+        ]
+      }
+    },
+    {
+      "check": "command:jadx-version:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:jadx-version:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:jadx-version:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      }
+    },
+    {
+      "check": "command:jadx-version:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-original-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-original-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-original-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac8-original-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-original-javap-ArrayFieldInitBase:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-javap-ArrayFieldInitBase:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-javap-ArrayFieldInitBase:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-ArrayFieldInitBase.stdout",
+        "bytes": 1483,
+        "sha256": "e2c63560f4cc8360869f5bdf640c30ebb86db6d76ecec9b500711db582f71a27"
+      }
+    },
+    {
+      "check": "command:javac8-original-javap-ArrayFieldInitBase:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-ArrayFieldInitBase.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-original-javap-CommonNoClinitArrayInit:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-javap-CommonNoClinitArrayInit:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-javap-CommonNoClinitArrayInit:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-CommonNoClinitArrayInit.stdout",
+        "bytes": 5114,
+        "sha256": "e3a425cc0cbddc67fac7d19f1faac74ae7101a7bbc4c1541af61aaf992af01d5"
+      }
+    },
+    {
+      "check": "command:javac8-original-javap-CommonNoClinitArrayInit:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-CommonNoClinitArrayInit.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-original-javap-Runner:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-javap-Runner:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-original-javap-Runner:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-Runner.stdout",
+        "bytes": 15614,
+        "sha256": "5247fbea49e1df6b1973886dcc342197ebe719416e597e54f53fef3b9613c737"
+      }
+    },
+    {
+      "check": "command:javac8-original-javap-Runner:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-Runner.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-original-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-original-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-original-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac23-original-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-original-javap-ArrayFieldInitBase:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-javap-ArrayFieldInitBase:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-javap-ArrayFieldInitBase:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-ArrayFieldInitBase.stdout",
+        "bytes": 1734,
+        "sha256": "5926b7c949b551378c94143fb84ba627be9bf79cb9a3aab3c3ba01e02a895b8e"
+      }
+    },
+    {
+      "check": "command:javac23-original-javap-ArrayFieldInitBase:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-ArrayFieldInitBase.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-original-javap-CommonNoClinitArrayInit:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-javap-CommonNoClinitArrayInit:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-javap-CommonNoClinitArrayInit:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-CommonNoClinitArrayInit.stdout",
+        "bytes": 5417,
+        "sha256": "b183238b3c8a71516037f7e5440d5c86184bce394047c99413dc541e878c3f81"
+      }
+    },
+    {
+      "check": "command:javac23-original-javap-CommonNoClinitArrayInit:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-CommonNoClinitArrayInit.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-original-javap-Runner:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-javap-Runner:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-original-javap-Runner:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-Runner.stdout",
+        "bytes": 15650,
+        "sha256": "c4362de0d9396a9b1f683f97e4d37413c6247fb01bfc886e7378f9a4e3db1d5d"
+      }
+    },
+    {
+      "check": "command:javac23-original-javap-Runner:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-Runner.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:jadx-default-decompile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:jadx-default-decompile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:jadx-default-decompile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5"
+      }
+    },
+    {
+      "check": "command:jadx-default-decompile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:jadx-none-decompile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:jadx-none-decompile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:jadx-none-decompile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "6c98674d5819aff5b0ce8c68cf3ece4cbebd831816c7f8632c268444656056d5"
+      }
+    },
+    {
+      "check": "command:jadx-none-decompile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-default-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-default-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-default-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-default-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-default-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-default-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-default-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-default-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-default-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-default-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-default-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-default-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-default-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-default-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-default-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-default-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-default-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-default-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-none-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-none-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-none-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-none-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-none-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-none-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jadx-none-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-none-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac8-jadx-none-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-none-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-none-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-none-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-none-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-none-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-none-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jadx-none-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-none-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac23-jadx-none-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-default:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-default:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-default:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-ArrayFieldInitBase-default.stdout",
+        "bytes": 12962,
+        "sha256": "e62adef71318fc1bac918afb3a9d488d6e927c9e8c98e02c72b537aff8c871f6"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-default:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-ArrayFieldInitBase-default.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-all:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-all:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-all:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-ArrayFieldInitBase-all.stdout",
+        "bytes": 13642,
+        "sha256": "5974a1ee769b63add2f712a4008819f6db1bd6f50e9962043c01e76ad58ae9c8"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-ArrayFieldInitBase-all:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-ArrayFieldInitBase-all.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-default:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-default:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-default:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-CommonNoClinitArrayInit-default.stdout",
+        "bytes": 63942,
+        "sha256": "6ae78c4b992ca357f75fff67bce15822337f940c6086723b20ef927dedeb7b92"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-default:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-CommonNoClinitArrayInit-default.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-all:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-all:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-all:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-CommonNoClinitArrayInit-all.stdout",
+        "bytes": 67249,
+        "sha256": "bbeef81672ad2568176c82c8f6020242b0cab74ad782305daca9b7d67af9116e"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-render-CommonNoClinitArrayInit-all:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-CommonNoClinitArrayInit-all.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac8-jarde-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac8-jarde-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-default:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-default:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-default:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-ArrayFieldInitBase-default.stdout",
+        "bytes": 12962,
+        "sha256": "e331bcb65187a4f315c164b08a7787977b62980dd2406277593e106dd0f35022"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-default:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-ArrayFieldInitBase-default.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-all:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-all:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-all:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-ArrayFieldInitBase-all.stdout",
+        "bytes": 13642,
+        "sha256": "f0b3e401534a010157beb2a60bdad217ed210cef73c080c9568a58208f9a52ff"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-ArrayFieldInitBase-all:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-ArrayFieldInitBase-all.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-default:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-default:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-default:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-CommonNoClinitArrayInit-default.stdout",
+        "bytes": 63942,
+        "sha256": "278527fbf3f3a98c3ee97199ccb6a0f2f0f9efd78bf49e162036f4e47d28a221"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-default:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-CommonNoClinitArrayInit-default.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-all:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-all:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-all:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-CommonNoClinitArrayInit-all.stdout",
+        "bytes": 67249,
+        "sha256": "841d66217c56b863c988d6f7e5f3c65e1b7e8b6a1f2eb9f2f62d98cb20cc9f03"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-render-CommonNoClinitArrayInit-all:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-CommonNoClinitArrayInit-all.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-compile:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-compile:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-compile:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-compile:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-run:exit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-run:cwd",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command:javac23-jarde-run:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "command:javac23-jarde-run:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "verifier:blake3-version",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "prepared-source:immutable:ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "prepared-source:immutable:CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "prepared-source:immutable:Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:frozen-sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:cli-pin",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:source-pin-sets",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/init.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/report.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/build.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/ast.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/emit.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/asserts.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:crates/jarde-java/src/field.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:src/facade.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:src/class_source.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:candidate_sources:Cargo.lock",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:test_sources:tests/class_static_initializer_projection.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:test_sources:tests/interface_initializer_proof.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:test_sources:crates/jarde-java/tests/p3_patterns.rs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:test_sources:.github/workflows/ci.yml",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "metadata:canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "manifest:prepared-source-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:binary-sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "manifest:cli-pins",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jadx:binary-sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:manifest-sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:legs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac8:tools",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac8:javac:sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac8:java:sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac8:javap:sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac23:tools",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac23:javac:sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac23:java:sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jdk:javac23:javap:sha",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jadx:version-command",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:jadx-version",
+      "ok": true,
+      "detail": "jadx-version"
+    },
+    {
+      "check": "jadx:version-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      }
+    },
+    {
+      "check": "jadx:version-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jadx:input-jar",
+      "ok": true,
+      "detail": {
+        "path": "jadx-input/NoClinitSuperArgumentTargets.jar",
+        "bytes": 749,
+        "sha256": "a2302d404ad7532f8da54808ae345503dd3c65a2aa4287e29cd758a9ee9cadc3"
+      }
+    },
+    {
+      "check": "jadx:jar-member-set",
+      "ok": true,
+      "detail": [
+        "ArrayFieldInitBase.class",
+        "CommonNoClinitArrayInit.class"
+      ]
+    },
+    {
+      "check": "jadx:jar-member:ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jadx:jar-member:CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cases:eight-complete",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cases:counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cases:only-recorded-preparation-flag-failure",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "jarde:eight-complete-class-renders",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-original:compile",
+      "ok": true,
+      "detail": "javac8-original-compile"
+    },
+    {
+      "check": "command-binding:javac8-original:run",
+      "ok": true,
+      "detail": "javac8-original-run"
+    },
+    {
+      "check": "runtime:javac8-original:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac8-original:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac8-original:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:source_files:cases/javac8-original/input-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/input-sources/ArrayFieldInitBase.java",
+        "bytes": 129,
+        "sha256": "16c212caacb1e4fcfb67e78670b4fdd3418cf6e3d5e3977cfd80535403b3d1a9"
+      }
+    },
+    {
+      "check": "case:javac8-original:source_files:cases/javac8-original/input-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/input-sources/CommonNoClinitArrayInit.java",
+        "bytes": 710,
+        "sha256": "617ff8efc82edec37b50b5d87a3ef43e74fe64374c10caad95ac24211b3521d1"
+      }
+    },
+    {
+      "check": "case:javac8-original:source_files:cases/javac8-original/input-sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/input-sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac8-original:classes:cases/javac8-original/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+      }
+    },
+    {
+      "check": "javac8-original:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "ArrayFieldInitBase",
+        "actual": "ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac8-original:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-original:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac8-original:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac8-original:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac8-original:classes:cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+      }
+    },
+    {
+      "check": "javac8-original:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "CommonNoClinitArrayInit",
+        "actual": "CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac8-original:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "ArrayFieldInitBase"
+    },
+    {
+      "check": "javac8-original:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac8-original:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac8-original:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac8-original:classes:cases/javac8-original/classes/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/Runner.class",
+        "bytes": 1255,
+        "sha256": "33423c358b3e08da50166394598d68f74f13cf35989c3012ad0fdf5459513de9"
+      }
+    },
+    {
+      "check": "javac8-original:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "Runner",
+        "actual": "Runner"
+      }
+    },
+    {
+      "check": "javac8-original:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-original:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac8-original/classes/ArrayFieldInitBase.class",
+          "cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+          "cases/javac8-original/classes/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac8-original/classes/ArrayFieldInitBase.class",
+          "cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+          "cases/javac8-original/classes/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac8-original:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:frozen-source:ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:frozen-source:CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-original:frozen-source:Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-row:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-original:javap:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "javac8-original-javap-ArrayFieldInitBase"
+    },
+    {
+      "check": "javac8-original:javap-raw:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-ArrayFieldInitBase.stdout",
+        "bytes": 1483,
+        "sha256": "e2c63560f4cc8360869f5bdf640c30ebb86db6d76ecec9b500711db582f71a27"
+      }
+    },
+    {
+      "check": "javac8-original:javap-class:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+      }
+    },
+    {
+      "check": "javac8-original:javap-exact-command:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-command-stdout:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-ArrayFieldInitBase.stdout",
+        "bytes": 1483,
+        "sha256": "e2c63560f4cc8360869f5bdf640c30ebb86db6d76ecec9b500711db582f71a27"
+      }
+    },
+    {
+      "check": "javac8-original:javap-stdout-is-raw:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac8-original:javap-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac8-original:javap-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-recorded-outcome:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:base-constructor",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-row:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-original:javap:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "javac8-original-javap-CommonNoClinitArrayInit"
+    },
+    {
+      "check": "javac8-original:javap-raw:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-CommonNoClinitArrayInit.stdout",
+        "bytes": 5114,
+        "sha256": "e3a425cc0cbddc67fac7d19f1faac74ae7101a7bbc4c1541af61aaf992af01d5"
+      }
+    },
+    {
+      "check": "javac8-original:javap-class:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+      }
+    },
+    {
+      "check": "javac8-original:javap-exact-command:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-command-stdout:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-CommonNoClinitArrayInit.stdout",
+        "bytes": 5114,
+        "sha256": "e3a425cc0cbddc67fac7d19f1faac74ae7101a7bbc4c1541af61aaf992af01d5"
+      }
+    },
+    {
+      "check": "javac8-original:javap-stdout-is-raw:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac8-original:javap-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac8-original:javap-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-recorded-outcome:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:noarg-super-array-suffix-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:arg-super-array-suffix-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-row:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-original:javap:Runner",
+      "ok": true,
+      "detail": "javac8-original-javap-Runner"
+    },
+    {
+      "check": "javac8-original:javap-raw:Runner",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-Runner.stdout",
+        "bytes": 15614,
+        "sha256": "5247fbea49e1df6b1973886dcc342197ebe719416e597e54f53fef3b9613c737"
+      }
+    },
+    {
+      "check": "javac8-original:javap-class:Runner",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/Runner.class",
+        "bytes": 1255,
+        "sha256": "33423c358b3e08da50166394598d68f74f13cf35989c3012ad0fdf5459513de9"
+      }
+    },
+    {
+      "check": "javac8-original:javap-exact-command:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-command-stdout:Runner",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-original-javap-Runner.stdout",
+        "bytes": 15614,
+        "sha256": "5247fbea49e1df6b1973886dcc342197ebe719416e597e54f53fef3b9613c737"
+      }
+    },
+    {
+      "check": "javac8-original:javap-stdout-is-raw:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-original:javap-recorded-outcome:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-original:compile",
+      "ok": true,
+      "detail": "javac23-original-compile"
+    },
+    {
+      "check": "command-binding:javac23-original:run",
+      "ok": true,
+      "detail": "javac23-original-run"
+    },
+    {
+      "check": "runtime:javac23-original:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac23-original:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac23-original:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:source_files:cases/javac23-original/input-sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/input-sources/ArrayFieldInitBase.java",
+        "bytes": 129,
+        "sha256": "16c212caacb1e4fcfb67e78670b4fdd3418cf6e3d5e3977cfd80535403b3d1a9"
+      }
+    },
+    {
+      "check": "case:javac23-original:source_files:cases/javac23-original/input-sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/input-sources/CommonNoClinitArrayInit.java",
+        "bytes": 710,
+        "sha256": "617ff8efc82edec37b50b5d87a3ef43e74fe64374c10caad95ac24211b3521d1"
+      }
+    },
+    {
+      "check": "case:javac23-original:source_files:cases/javac23-original/input-sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/input-sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac23-original:classes:cases/javac23-original/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+      }
+    },
+    {
+      "check": "javac23-original:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "ArrayFieldInitBase",
+        "actual": "ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac23-original:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-original:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac23-original:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac23-original:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac23-original:classes:cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+      }
+    },
+    {
+      "check": "javac23-original:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "CommonNoClinitArrayInit",
+        "actual": "CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac23-original:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "ArrayFieldInitBase"
+    },
+    {
+      "check": "javac23-original:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac23-original:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac23-original:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac23-original:classes:cases/javac23-original/classes/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/Runner.class",
+        "bytes": 1246,
+        "sha256": "cacdbb874219459f9b7c48151858f91d6023ed26a07dc5e51fb023983f0e67ae"
+      }
+    },
+    {
+      "check": "javac23-original:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "Runner",
+        "actual": "Runner"
+      }
+    },
+    {
+      "check": "javac23-original:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-original:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac23-original/classes/ArrayFieldInitBase.class",
+          "cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+          "cases/javac23-original/classes/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac23-original/classes/ArrayFieldInitBase.class",
+          "cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+          "cases/javac23-original/classes/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac23-original:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:frozen-source:ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:frozen-source:CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-original:frozen-source:Runner.java",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-row:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-original:javap:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "javac23-original-javap-ArrayFieldInitBase"
+    },
+    {
+      "check": "javac23-original:javap-raw:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-ArrayFieldInitBase.stdout",
+        "bytes": 1734,
+        "sha256": "5926b7c949b551378c94143fb84ba627be9bf79cb9a3aab3c3ba01e02a895b8e"
+      }
+    },
+    {
+      "check": "javac23-original:javap-class:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+      }
+    },
+    {
+      "check": "javac23-original:javap-exact-command:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-command-stdout:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-ArrayFieldInitBase.stdout",
+        "bytes": 1734,
+        "sha256": "5926b7c949b551378c94143fb84ba627be9bf79cb9a3aab3c3ba01e02a895b8e"
+      }
+    },
+    {
+      "check": "javac23-original:javap-stdout-is-raw:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac23-original:javap-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac23-original:javap-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-recorded-outcome:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:base-constructor",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-row:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-original:javap:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "javac23-original-javap-CommonNoClinitArrayInit"
+    },
+    {
+      "check": "javac23-original:javap-raw:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-CommonNoClinitArrayInit.stdout",
+        "bytes": 5417,
+        "sha256": "b183238b3c8a71516037f7e5440d5c86184bce394047c99413dc541e878c3f81"
+      }
+    },
+    {
+      "check": "javac23-original:javap-class:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+      }
+    },
+    {
+      "check": "javac23-original:javap-exact-command:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-command-stdout:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-CommonNoClinitArrayInit.stdout",
+        "bytes": 5417,
+        "sha256": "b183238b3c8a71516037f7e5440d5c86184bce394047c99413dc541e878c3f81"
+      }
+    },
+    {
+      "check": "javac23-original:javap-stdout-is-raw:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac23-original:javap-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac23-original:javap-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-recorded-outcome:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:noarg-super-array-suffix-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:arg-super-array-suffix-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-row:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-original:javap:Runner",
+      "ok": true,
+      "detail": "javac23-original-javap-Runner"
+    },
+    {
+      "check": "javac23-original:javap-raw:Runner",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-Runner.stdout",
+        "bytes": 15650,
+        "sha256": "c4362de0d9396a9b1f683f97e4d37413c6247fb01bfc886e7378f9a4e3db1d5d"
+      }
+    },
+    {
+      "check": "javac23-original:javap-class:Runner",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/Runner.class",
+        "bytes": 1246,
+        "sha256": "cacdbb874219459f9b7c48151858f91d6023ed26a07dc5e51fb023983f0e67ae"
+      }
+    },
+    {
+      "check": "javac23-original:javap-exact-command:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-command-stdout:Runner",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-original-javap-Runner.stdout",
+        "bytes": 15650,
+        "sha256": "c4362de0d9396a9b1f683f97e4d37413c6247fb01bfc886e7378f9a4e3db1d5d"
+      }
+    },
+    {
+      "check": "javac23-original:javap-stdout-is-raw:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-original:javap-recorded-outcome:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jadx-default:compile",
+      "ok": true,
+      "detail": "javac8-jadx-default-compile"
+    },
+    {
+      "check": "command-binding:javac8-jadx-default:run",
+      "ok": true,
+      "detail": "javac8-jadx-default-run"
+    },
+    {
+      "check": "runtime:javac8-jadx-default:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-default-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac8-jadx-default:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:same-jdk-raw",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:source_files:cases/javac8-jadx-default/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/sources/ArrayFieldInitBase.java",
+        "bytes": 228,
+        "sha256": "d235f851680eb0551573feb1d2ff57b67d2985173c4b66b617edf7269e9ba613"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:source_files:cases/javac8-jadx-default/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/sources/CommonNoClinitArrayInit.java",
+        "bytes": 803,
+        "sha256": "2d3b666052774e27f72f0418fd5632acacd8d3132503ed064b48e6a44be7d511"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:source_files:cases/javac8-jadx-default/sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/sources/Runner.java",
+        "bytes": 1049,
+        "sha256": "fb71fe4472bbfbd208e3b83f8d86a93600f528d694dfc8263433549d468fcdde"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:classes:cases/javac8-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+        "bytes": 189,
+        "sha256": "2c291c8527de491b8b226f15295c89d4476d64f582e116afb1d6794db4a9f7e0"
+      }
+    },
+    {
+      "check": "javac8-jadx-default:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "defpackage/ArrayFieldInitBase",
+        "actual": "defpackage/ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac8-jadx-default:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac8-jadx-default:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac8-jadx-default:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:classes:cases/javac8-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+        "bytes": 501,
+        "sha256": "4d5ac5b850817c3aa96ebd0c7fb66ab7b249113a8512f68785b6010669946548"
+      }
+    },
+    {
+      "check": "javac8-jadx-default:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "defpackage/CommonNoClinitArrayInit",
+        "actual": "defpackage/CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac8-jadx-default:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "defpackage/ArrayFieldInitBase"
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac8-jadx-default:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac8-jadx-default:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:classes:cases/javac8-jadx-default/classes/defpackage/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/classes/defpackage/Runner.class",
+        "bytes": 1277,
+        "sha256": "976be5582504a905070c06591a37426643504296fe352cca23105756b507d513"
+      }
+    },
+    {
+      "check": "javac8-jadx-default:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "defpackage/Runner",
+        "actual": "defpackage/Runner"
+      }
+    },
+    {
+      "check": "javac8-jadx-default:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-default:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac8-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+          "cases/javac8-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+          "cases/javac8-jadx-default/classes/defpackage/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac8-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+          "cases/javac8-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+          "cases/javac8-jadx-default/classes/defpackage/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jadx-default:jadx",
+      "ok": true,
+      "detail": "jadx-default-decompile"
+    },
+    {
+      "check": "case:javac8-jadx-default:jadx-all-sources",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:jadx-exact-command",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:jadx-same-frozen-jar",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:jadx-source:jadx/default/sources/defpackage/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/default/sources/defpackage/ArrayFieldInitBase.java",
+        "bytes": 228,
+        "sha256": "d235f851680eb0551573feb1d2ff57b67d2985173c4b66b617edf7269e9ba613"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:jadx-source:jadx/default/sources/defpackage/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/default/sources/defpackage/CommonNoClinitArrayInit.java",
+        "bytes": 803,
+        "sha256": "2d3b666052774e27f72f0418fd5632acacd8d3132503ed064b48e6a44be7d511"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:jadx-source-copy-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:runner-adaptation",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-default/sources/Runner.java",
+        "bytes": 1049,
+        "sha256": "fb71fe4472bbfbd208e3b83f8d86a93600f528d694dfc8263433549d468fcdde"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-default:runner-source",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-default:runner-package",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jadx-default:compile",
+      "ok": true,
+      "detail": "javac23-jadx-default-compile"
+    },
+    {
+      "check": "command-binding:javac23-jadx-default:run",
+      "ok": true,
+      "detail": "javac23-jadx-default-run"
+    },
+    {
+      "check": "runtime:javac23-jadx-default:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-default-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac23-jadx-default:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:same-jdk-raw",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:source_files:cases/javac23-jadx-default/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/sources/ArrayFieldInitBase.java",
+        "bytes": 228,
+        "sha256": "d235f851680eb0551573feb1d2ff57b67d2985173c4b66b617edf7269e9ba613"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:source_files:cases/javac23-jadx-default/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/sources/CommonNoClinitArrayInit.java",
+        "bytes": 803,
+        "sha256": "2d3b666052774e27f72f0418fd5632acacd8d3132503ed064b48e6a44be7d511"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:source_files:cases/javac23-jadx-default/sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/sources/Runner.java",
+        "bytes": 1049,
+        "sha256": "fb71fe4472bbfbd208e3b83f8d86a93600f528d694dfc8263433549d468fcdde"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:classes:cases/javac23-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+        "bytes": 189,
+        "sha256": "e1c28561a5dcd9ebeb2f65b06f8ffb98d37a900483b3bd842355b714e469bdd5"
+      }
+    },
+    {
+      "check": "javac23-jadx-default:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "defpackage/ArrayFieldInitBase",
+        "actual": "defpackage/ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac23-jadx-default:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac23-jadx-default:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac23-jadx-default:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:classes:cases/javac23-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+        "bytes": 501,
+        "sha256": "1ec73735192cb29ca653366d1a9c11d484ed79d25e293154dd9ad5cc44dde647"
+      }
+    },
+    {
+      "check": "javac23-jadx-default:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "defpackage/CommonNoClinitArrayInit",
+        "actual": "defpackage/CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac23-jadx-default:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "defpackage/ArrayFieldInitBase"
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac23-jadx-default:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac23-jadx-default:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:classes:cases/javac23-jadx-default/classes/defpackage/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/classes/defpackage/Runner.class",
+        "bytes": 1268,
+        "sha256": "759a9ad2ae51aae1ad12c29f4644bca7fb20f4b2185edb31fbe773a224dc2ec7"
+      }
+    },
+    {
+      "check": "javac23-jadx-default:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "defpackage/Runner",
+        "actual": "defpackage/Runner"
+      }
+    },
+    {
+      "check": "javac23-jadx-default:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-default:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac23-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+          "cases/javac23-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+          "cases/javac23-jadx-default/classes/defpackage/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac23-jadx-default/classes/defpackage/ArrayFieldInitBase.class",
+          "cases/javac23-jadx-default/classes/defpackage/CommonNoClinitArrayInit.class",
+          "cases/javac23-jadx-default/classes/defpackage/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jadx-default:jadx",
+      "ok": true,
+      "detail": "jadx-default-decompile"
+    },
+    {
+      "check": "case:javac23-jadx-default:jadx-all-sources",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:jadx-exact-command",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:jadx-same-frozen-jar",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:jadx-source:jadx/default/sources/defpackage/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/default/sources/defpackage/ArrayFieldInitBase.java",
+        "bytes": 228,
+        "sha256": "d235f851680eb0551573feb1d2ff57b67d2985173c4b66b617edf7269e9ba613"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:jadx-source:jadx/default/sources/defpackage/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/default/sources/defpackage/CommonNoClinitArrayInit.java",
+        "bytes": 803,
+        "sha256": "2d3b666052774e27f72f0418fd5632acacd8d3132503ed064b48e6a44be7d511"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:jadx-source-copy-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:runner-adaptation",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-default/sources/Runner.java",
+        "bytes": 1049,
+        "sha256": "fb71fe4472bbfbd208e3b83f8d86a93600f528d694dfc8263433549d468fcdde"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-default:runner-source",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-default:runner-package",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jadx-none:compile",
+      "ok": true,
+      "detail": "javac8-jadx-none-compile"
+    },
+    {
+      "check": "command-binding:javac8-jadx-none:run",
+      "ok": true,
+      "detail": "javac8-jadx-none-run"
+    },
+    {
+      "check": "runtime:javac8-jadx-none:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-none-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac8-jadx-none:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:same-jdk-raw",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:source_files:cases/javac8-jadx-none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/sources/ArrayFieldInitBase.java",
+        "bytes": 227,
+        "sha256": "c4011de76fb9fd5171139c4f730b4fc55123d0a6eb6e534c7223edbdcd33c529"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:source_files:cases/javac8-jadx-none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/sources/CommonNoClinitArrayInit.java",
+        "bytes": 802,
+        "sha256": "ab50afb50c3adbc5f3cdc89b519ef4f3be0d3dc07d628f33643474d10e7a10b8"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:source_files:cases/javac8-jadx-none/sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:classes:cases/javac8-jadx-none/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+      }
+    },
+    {
+      "check": "javac8-jadx-none:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "ArrayFieldInitBase",
+        "actual": "ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac8-jadx-none:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac8-jadx-none:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac8-jadx-none:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:classes:cases/javac8-jadx-none/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+      }
+    },
+    {
+      "check": "javac8-jadx-none:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "CommonNoClinitArrayInit",
+        "actual": "CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac8-jadx-none:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "ArrayFieldInitBase"
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac8-jadx-none:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac8-jadx-none:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:classes:cases/javac8-jadx-none/classes/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/classes/Runner.class",
+        "bytes": 1255,
+        "sha256": "33423c358b3e08da50166394598d68f74f13cf35989c3012ad0fdf5459513de9"
+      }
+    },
+    {
+      "check": "javac8-jadx-none:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "Runner",
+        "actual": "Runner"
+      }
+    },
+    {
+      "check": "javac8-jadx-none:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jadx-none:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac8-jadx-none/classes/ArrayFieldInitBase.class",
+          "cases/javac8-jadx-none/classes/CommonNoClinitArrayInit.class",
+          "cases/javac8-jadx-none/classes/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac8-jadx-none/classes/ArrayFieldInitBase.class",
+          "cases/javac8-jadx-none/classes/CommonNoClinitArrayInit.class",
+          "cases/javac8-jadx-none/classes/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jadx-none:jadx",
+      "ok": true,
+      "detail": "jadx-none-decompile"
+    },
+    {
+      "check": "case:javac8-jadx-none:jadx-all-sources",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:jadx-exact-command",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:jadx-same-frozen-jar",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:jadx-source:jadx/none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/none/sources/ArrayFieldInitBase.java",
+        "bytes": 227,
+        "sha256": "c4011de76fb9fd5171139c4f730b4fc55123d0a6eb6e534c7223edbdcd33c529"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:jadx-source:jadx/none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/none/sources/CommonNoClinitArrayInit.java",
+        "bytes": 802,
+        "sha256": "ab50afb50c3adbc5f3cdc89b519ef4f3be0d3dc07d628f33643474d10e7a10b8"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:jadx-source-copy-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:runner-adaptation",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jadx-none/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac8-jadx-none:runner-source",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jadx-none:runner-package",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jadx-none:compile",
+      "ok": true,
+      "detail": "javac23-jadx-none-compile"
+    },
+    {
+      "check": "command-binding:javac23-jadx-none:run",
+      "ok": true,
+      "detail": "javac23-jadx-none-run"
+    },
+    {
+      "check": "runtime:javac23-jadx-none:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-none-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac23-jadx-none:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:same-jdk-raw",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:source_files:cases/javac23-jadx-none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/sources/ArrayFieldInitBase.java",
+        "bytes": 227,
+        "sha256": "c4011de76fb9fd5171139c4f730b4fc55123d0a6eb6e534c7223edbdcd33c529"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:source_files:cases/javac23-jadx-none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/sources/CommonNoClinitArrayInit.java",
+        "bytes": 802,
+        "sha256": "ab50afb50c3adbc5f3cdc89b519ef4f3be0d3dc07d628f33643474d10e7a10b8"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:source_files:cases/javac23-jadx-none/sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:classes:cases/javac23-jadx-none/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+      }
+    },
+    {
+      "check": "javac23-jadx-none:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "ArrayFieldInitBase",
+        "actual": "ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac23-jadx-none:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac23-jadx-none:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac23-jadx-none:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:classes:cases/javac23-jadx-none/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+      }
+    },
+    {
+      "check": "javac23-jadx-none:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "CommonNoClinitArrayInit",
+        "actual": "CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac23-jadx-none:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "ArrayFieldInitBase"
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac23-jadx-none:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac23-jadx-none:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:classes:cases/javac23-jadx-none/classes/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/classes/Runner.class",
+        "bytes": 1246,
+        "sha256": "cacdbb874219459f9b7c48151858f91d6023ed26a07dc5e51fb023983f0e67ae"
+      }
+    },
+    {
+      "check": "javac23-jadx-none:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "Runner",
+        "actual": "Runner"
+      }
+    },
+    {
+      "check": "javac23-jadx-none:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jadx-none:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac23-jadx-none/classes/ArrayFieldInitBase.class",
+          "cases/javac23-jadx-none/classes/CommonNoClinitArrayInit.class",
+          "cases/javac23-jadx-none/classes/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac23-jadx-none/classes/ArrayFieldInitBase.class",
+          "cases/javac23-jadx-none/classes/CommonNoClinitArrayInit.class",
+          "cases/javac23-jadx-none/classes/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jadx-none:jadx",
+      "ok": true,
+      "detail": "jadx-none-decompile"
+    },
+    {
+      "check": "case:javac23-jadx-none:jadx-all-sources",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:jadx-exact-command",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:jadx-same-frozen-jar",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:jadx-source:jadx/none/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/none/sources/ArrayFieldInitBase.java",
+        "bytes": 227,
+        "sha256": "c4011de76fb9fd5171139c4f730b4fc55123d0a6eb6e534c7223edbdcd33c529"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:jadx-source:jadx/none/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "jadx/none/sources/CommonNoClinitArrayInit.java",
+        "bytes": 802,
+        "sha256": "ab50afb50c3adbc5f3cdc89b519ef4f3be0d3dc07d628f33643474d10e7a10b8"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:jadx-source-copy-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:runner-adaptation",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jadx-none/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac23-jadx-none:runner-source",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jadx-none:runner-package",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jarde:compile",
+      "ok": true,
+      "detail": "javac8-jarde-compile"
+    },
+    {
+      "check": "command-binding:javac8-jarde:run",
+      "ok": true,
+      "detail": "javac8-jarde-run"
+    },
+    {
+      "check": "runtime:javac8-jarde:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac8-jarde:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:same-jdk-raw",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:source_files:cases/javac8-jarde/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/sources/ArrayFieldInitBase.java",
+        "bytes": 725,
+        "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:source_files:cases/javac8-jarde/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/sources/CommonNoClinitArrayInit.java",
+        "bytes": 2014,
+        "sha256": "ebd2cb3c6e48f3c7bbab6eb0a4bec903e32982900cb9803206a9d28832820d95"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:source_files:cases/javac8-jarde/sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:classes:cases/javac8-jarde/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+      }
+    },
+    {
+      "check": "javac8-jarde:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "ArrayFieldInitBase",
+        "actual": "ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac8-jarde:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-jarde:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac8-jarde:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac8-jarde:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac8-jarde:classes:cases/javac8-jarde/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+      }
+    },
+    {
+      "check": "javac8-jarde:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "CommonNoClinitArrayInit",
+        "actual": "CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac8-jarde:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "ArrayFieldInitBase"
+    },
+    {
+      "check": "javac8-jarde:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac8-jarde:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac8-jarde:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac8-jarde:classes:cases/javac8-jarde/classes/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/classes/Runner.class",
+        "bytes": 1255,
+        "sha256": "33423c358b3e08da50166394598d68f74f13cf35989c3012ad0fdf5459513de9"
+      }
+    },
+    {
+      "check": "javac8-jarde:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "Runner",
+        "actual": "Runner"
+      }
+    },
+    {
+      "check": "javac8-jarde:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac8-jarde:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac8-jarde:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac8-jarde/classes/ArrayFieldInitBase.class",
+          "cases/javac8-jarde/classes/CommonNoClinitArrayInit.class",
+          "cases/javac8-jarde/classes/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac8-jarde/classes/ArrayFieldInitBase.class",
+          "cases/javac8-jarde/classes/CommonNoClinitArrayInit.class",
+          "cases/javac8-jarde/classes/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac8-jarde:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:render-count",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:render-targets",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:original-class:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "acba215776e503c914eb3e4c2e73f4db418576e191a16ed318209899bb11615a"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:profiles",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jarde:ArrayFieldInitBase:default",
+      "ok": true,
+      "detail": "javac8-jarde-render-ArrayFieldInitBase-default"
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/ArrayFieldInitBase/default/class-source.json",
+        "bytes": 12962,
+        "sha256": "e62adef71318fc1bac918afb3a9d488d6e927c9e8c98e02c72b537aff8c871f6"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/ArrayFieldInitBase/default/ArrayFieldInitBase.java",
+        "bytes": 725,
+        "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-ArrayFieldInitBase-default.stdout",
+        "bytes": 12962,
+        "sha256": "e62adef71318fc1bac918afb3a9d488d6e927c9e8c98e02c72b537aff8c871f6"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:fields",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:methods",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jarde:ArrayFieldInitBase:all",
+      "ok": true,
+      "detail": "javac8-jarde-render-ArrayFieldInitBase-all"
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/ArrayFieldInitBase/all/class-source.json",
+        "bytes": 13642,
+        "sha256": "5974a1ee769b63add2f712a4008819f6db1bd6f50e9962043c01e76ad58ae9c8"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/ArrayFieldInitBase/all/ArrayFieldInitBase.java",
+        "bytes": 725,
+        "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-ArrayFieldInitBase-all.stdout",
+        "bytes": 13642,
+        "sha256": "5974a1ee769b63add2f712a4008819f6db1bd6f50e9962043c01e76ad58ae9c8"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:all:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:fields",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:methods",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map-owner-and-method:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map-physical-text-spans:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map-bci-set:0",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          4,
+          5,
+          6,
+          9
+        ],
+        "bytecode": [
+          0,
+          1,
+          4,
+          5,
+          6,
+          9
+        ]
+      }
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:manifest-map-equality",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:default-all-equal",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:physical-inventory",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:source-write-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:ArrayFieldInitBase:source-has-no-static-block",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:original-class:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-original/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "0249e233851cadf92ff7f160b97c56b98521e57e327b5d430306029b89f598e4"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:profiles",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jarde:CommonNoClinitArrayInit:default",
+      "ok": true,
+      "detail": "javac8-jarde-render-CommonNoClinitArrayInit-default"
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/CommonNoClinitArrayInit/default/class-source.json",
+        "bytes": 63942,
+        "sha256": "6ae78c4b992ca357f75fff67bce15822337f940c6086723b20ef927dedeb7b92"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/CommonNoClinitArrayInit/default/CommonNoClinitArrayInit.java",
+        "bytes": 2014,
+        "sha256": "ebd2cb3c6e48f3c7bbab6eb0a4bec903e32982900cb9803206a9d28832820d95"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-CommonNoClinitArrayInit-default.stdout",
+        "bytes": 63942,
+        "sha256": "6ae78c4b992ca357f75fff67bce15822337f940c6086723b20ef927dedeb7b92"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:member-owner:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:fields",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:methods",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac8-jarde:CommonNoClinitArrayInit:all",
+      "ok": true,
+      "detail": "javac8-jarde-render-CommonNoClinitArrayInit-all"
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/CommonNoClinitArrayInit/all/class-source.json",
+        "bytes": 67249,
+        "sha256": "bbeef81672ad2568176c82c8f6020242b0cab74ad782305daca9b7d67af9116e"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/class-source/CommonNoClinitArrayInit/all/CommonNoClinitArrayInit.java",
+        "bytes": 2014,
+        "sha256": "ebd2cb3c6e48f3c7bbab6eb0a4bec903e32982900cb9803206a9d28832820d95"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac8-jarde-render-CommonNoClinitArrayInit-all.stdout",
+        "bytes": 67249,
+        "sha256": "bbeef81672ad2568176c82c8f6020242b0cab74ad782305daca9b7d67af9116e"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:member-owner:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:all:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:fields",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:methods",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:0",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          3,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          13
+        ],
+        "bytecode": [
+          0,
+          3,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          13
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:1",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          4
+        ],
+        "bytecode": [
+          0,
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:2",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          3,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          14,
+          17,
+          18,
+          19,
+          20,
+          22,
+          25,
+          26,
+          29,
+          30,
+          31,
+          33,
+          34,
+          35,
+          37,
+          40,
+          41,
+          44,
+          47,
+          49,
+          50,
+          52,
+          53,
+          56
+        ],
+        "bytecode": [
+          0,
+          1,
+          3,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          14,
+          17,
+          18,
+          19,
+          20,
+          22,
+          25,
+          26,
+          29,
+          30,
+          31,
+          33,
+          34,
+          35,
+          37,
+          40,
+          41,
+          44,
+          47,
+          49,
+          50,
+          52,
+          53,
+          56
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:3",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          7,
+          9,
+          10,
+          11,
+          13,
+          16,
+          17,
+          18,
+          19,
+          21,
+          24,
+          25,
+          28,
+          29,
+          30,
+          32,
+          33,
+          34,
+          36,
+          39,
+          40,
+          43,
+          46,
+          48,
+          49,
+          50,
+          51,
+          54
+        ],
+        "bytecode": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          7,
+          9,
+          10,
+          11,
+          13,
+          16,
+          17,
+          18,
+          19,
+          21,
+          24,
+          25,
+          28,
+          29,
+          30,
+          32,
+          33,
+          34,
+          36,
+          39,
+          40,
+          43,
+          46,
+          48,
+          49,
+          50,
+          51,
+          54
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:manifest-map-equality",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:default-all-equal",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:physical-inventory",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:source-write-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:CommonNoClinitArrayInit:source-has-no-static-block",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:all-rendered-sources-compiled",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac8-jarde:runner-adaptation",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac8-jarde/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac8-jarde:runner-source",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:compile-run",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:success-boundary",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jarde:compile",
+      "ok": true,
+      "detail": "javac23-jarde-compile"
+    },
+    {
+      "check": "command-binding:javac23-jarde:run",
+      "ok": true,
+      "detail": "javac23-jarde-run"
+    },
+    {
+      "check": "runtime:javac23-jarde:stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-run.stdout",
+        "bytes": 129,
+        "sha256": "56902e38aecb59bd4d7a92689abde128085858c45704cbdb69477de7aacfeabf"
+      }
+    },
+    {
+      "check": "runtime:javac23-jarde:stderr",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:same-jdk-raw",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:complete-source-class-lists",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:source_files:cases/javac23-jarde/sources/ArrayFieldInitBase.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/sources/ArrayFieldInitBase.java",
+        "bytes": 725,
+        "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:source_files:cases/javac23-jarde/sources/CommonNoClinitArrayInit.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/sources/CommonNoClinitArrayInit.java",
+        "bytes": 2014,
+        "sha256": "ebd2cb3c6e48f3c7bbab6eb0a4bec903e32982900cb9803206a9d28832820d95"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:source_files:cases/javac23-jarde/sources/Runner.java",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:classes:cases/javac23-jarde/classes/ArrayFieldInitBase.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+      }
+    },
+    {
+      "check": "javac23-jarde:classfile-internal-name:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "expected": "ArrayFieldInitBase",
+        "actual": "ArrayFieldInitBase"
+      }
+    },
+    {
+      "check": "javac23-jarde:classfile-super:ArrayFieldInitBase",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-jarde:classfile-no-interfaces:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-no-clinit:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-fields:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "javac23-jarde:classfile-methods:ArrayFieldInitBase",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "javac23-jarde:classfile-member-counts:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-no-constantvalue:ArrayFieldInitBase",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-access-flags:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "received:I": 16,
+        "<init>(I)V": 0
+      }
+    },
+    {
+      "check": "case:javac23-jarde:classes:cases/javac23-jarde/classes/CommonNoClinitArrayInit.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+      }
+    },
+    {
+      "check": "javac23-jarde:classfile-internal-name:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "expected": "CommonNoClinitArrayInit",
+        "actual": "CommonNoClinitArrayInit"
+      }
+    },
+    {
+      "check": "javac23-jarde:classfile-super:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": "ArrayFieldInitBase"
+    },
+    {
+      "check": "javac23-jarde:classfile-no-interfaces:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-no-clinit:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-fields:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "javac23-jarde:classfile-methods:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "javac23-jarde:classfile-member-counts:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-no-constantvalue:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-access-flags:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "trace:I": 8,
+        "first:[B": 16,
+        "second:[B": 16,
+        "mark(I)B": 8,
+        "run(I)B": 8,
+        "<init>()V": 1,
+        "<init>(I)V": 1
+      }
+    },
+    {
+      "check": "case:javac23-jarde:classes:cases/javac23-jarde/classes/Runner.class",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/classes/Runner.class",
+        "bytes": 1246,
+        "sha256": "cacdbb874219459f9b7c48151858f91d6023ed26a07dc5e51fb023983f0e67ae"
+      }
+    },
+    {
+      "check": "javac23-jarde:classfile-internal-name:Runner",
+      "ok": true,
+      "detail": {
+        "expected": "Runner",
+        "actual": "Runner"
+      }
+    },
+    {
+      "check": "javac23-jarde:classfile-super:Runner",
+      "ok": true,
+      "detail": "java/lang/Object"
+    },
+    {
+      "check": "javac23-jarde:classfile-no-interfaces:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "javac23-jarde:classfile-no-clinit:Runner",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:disk-class-census",
+      "ok": true,
+      "detail": {
+        "actual": [
+          "cases/javac23-jarde/classes/ArrayFieldInitBase.class",
+          "cases/javac23-jarde/classes/CommonNoClinitArrayInit.class",
+          "cases/javac23-jarde/classes/Runner.class"
+        ],
+        "recorded": [
+          "cases/javac23-jarde/classes/ArrayFieldInitBase.class",
+          "cases/javac23-jarde/classes/CommonNoClinitArrayInit.class",
+          "cases/javac23-jarde/classes/Runner.class"
+        ]
+      }
+    },
+    {
+      "check": "case:javac23-jarde:class-output-census",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:empty-cp-sp",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:javac-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:jvm-exact-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:java-home-binding",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:render-count",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:render-targets",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:original-class:ArrayFieldInitBase",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/ArrayFieldInitBase.class",
+        "bytes": 178,
+        "sha256": "ebab7055ddae7b50939237a6b02f28a5ee53d75629c926567adb23ed0dce04c2"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:profiles",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jarde:ArrayFieldInitBase:default",
+      "ok": true,
+      "detail": "javac23-jarde-render-ArrayFieldInitBase-default"
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/ArrayFieldInitBase/default/class-source.json",
+        "bytes": 12962,
+        "sha256": "e331bcb65187a4f315c164b08a7787977b62980dd2406277593e106dd0f35022"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/ArrayFieldInitBase/default/ArrayFieldInitBase.java",
+        "bytes": 725,
+        "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-ArrayFieldInitBase-default.stdout",
+        "bytes": 12962,
+        "sha256": "e331bcb65187a4f315c164b08a7787977b62980dd2406277593e106dd0f35022"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:fields",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:methods",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:default:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jarde:ArrayFieldInitBase:all",
+      "ok": true,
+      "detail": "javac23-jarde-render-ArrayFieldInitBase-all"
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/ArrayFieldInitBase/all/class-source.json",
+        "bytes": 13642,
+        "sha256": "f0b3e401534a010157beb2a60bdad217ed210cef73c080c9568a58208f9a52ff"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/ArrayFieldInitBase/all/ArrayFieldInitBase.java",
+        "bytes": 725,
+        "sha256": "d28151b6c064153a87b143a37f2d3fc5e0d95e392c863c8c17f93743ad3e2e39"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-ArrayFieldInitBase-all.stdout",
+        "bytes": 13642,
+        "sha256": "f0b3e401534a010157beb2a60bdad217ed210cef73c080c9568a58208f9a52ff"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:all:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:fields",
+      "ok": true,
+      "detail": [
+        "received:I"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:methods",
+      "ok": true,
+      "detail": [
+        "<init>(I)V"
+      ]
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map-owner-and-method:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map-physical-text-spans:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:map-bci-set:0",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          4,
+          5,
+          6,
+          9
+        ],
+        "bytecode": [
+          0,
+          1,
+          4,
+          5,
+          6,
+          9
+        ]
+      }
+    },
+    {
+      "check": "cli:ArrayFieldInitBase:all:manifest-map-equality",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:default-all-equal",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:physical-inventory",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:source-write-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:ArrayFieldInitBase:source-has-no-static-block",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:original-class:CommonNoClinitArrayInit",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-original/classes/CommonNoClinitArrayInit.class",
+        "bytes": 479,
+        "sha256": "bd4a8b1eecbe2b005ba540ea2af6d9d76a1035e3af789a720e324fe148405618"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:profiles",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jarde:CommonNoClinitArrayInit:default",
+      "ok": true,
+      "detail": "javac23-jarde-render-CommonNoClinitArrayInit-default"
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/CommonNoClinitArrayInit/default/class-source.json",
+        "bytes": 63942,
+        "sha256": "278527fbf3f3a98c3ee97199ccb6a0f2f0f9efd78bf49e162036f4e47d28a221"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/CommonNoClinitArrayInit/default/CommonNoClinitArrayInit.java",
+        "bytes": 2014,
+        "sha256": "ebd2cb3c6e48f3c7bbab6eb0a4bec903e32982900cb9803206a9d28832820d95"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-CommonNoClinitArrayInit-default.stdout",
+        "bytes": 63942,
+        "sha256": "278527fbf3f3a98c3ee97199ccb6a0f2f0f9efd78bf49e162036f4e47d28a221"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:member-owner:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:fields",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:methods",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:default:method-quality:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "command-binding:javac23-jarde:CommonNoClinitArrayInit:all",
+      "ok": true,
+      "detail": "javac23-jarde-render-CommonNoClinitArrayInit-all"
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:cli-mode",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:json",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/CommonNoClinitArrayInit/all/class-source.json",
+        "bytes": 67249,
+        "sha256": "841d66217c56b863c988d6f7e5f3c65e1b7e8b6a1f2eb9f2f62d98cb20cc9f03"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:source",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/class-source/CommonNoClinitArrayInit/all/CommonNoClinitArrayInit.java",
+        "bytes": 2014,
+        "sha256": "ebd2cb3c6e48f3c7bbab6eb0a4bec903e32982900cb9803206a9d28832820d95"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:cli-stdout",
+      "ok": true,
+      "detail": {
+        "path": "streams/javac23-jarde-render-CommonNoClinitArrayInit-all.stdout",
+        "bytes": 67249,
+        "sha256": "841d66217c56b863c988d6f7e5f3c65e1b7e8b6a1f2eb9f2f62d98cb20cc9f03"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:raw-json-is-command-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:physical-class-byte-identity",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:member-owner:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:all:json-source-match",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:fields",
+      "ok": true,
+      "detail": [
+        "first:[B",
+        "second:[B",
+        "trace:I"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:methods",
+      "ok": true,
+      "detail": [
+        "<init>()V",
+        "<init>(I)V",
+        "mark(I)B",
+        "run(I)B"
+      ]
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:complete-member-counts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:no-clinit",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:class-execution",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:class-outcome",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:0",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:0",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          3,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          13
+        ],
+        "bytecode": [
+          0,
+          3,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          13
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:1",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:1",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          4
+        ],
+        "bytecode": [
+          0,
+          1,
+          4
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:2",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:2",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          3,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          14,
+          17,
+          18,
+          19,
+          20,
+          22,
+          25,
+          26,
+          29,
+          30,
+          31,
+          33,
+          34,
+          35,
+          37,
+          40,
+          41,
+          44,
+          47,
+          49,
+          50,
+          52,
+          53,
+          56
+        ],
+        "bytecode": [
+          0,
+          1,
+          3,
+          6,
+          7,
+          8,
+          10,
+          11,
+          12,
+          14,
+          17,
+          18,
+          19,
+          20,
+          22,
+          25,
+          26,
+          29,
+          30,
+          31,
+          33,
+          34,
+          35,
+          37,
+          40,
+          41,
+          44,
+          47,
+          49,
+          50,
+          52,
+          53,
+          56
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:method-quality:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-owner-and-method:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-physical-text-spans:3",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:map-bci-set:3",
+      "ok": true,
+      "detail": {
+        "mapped": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          7,
+          9,
+          10,
+          11,
+          13,
+          16,
+          17,
+          18,
+          19,
+          21,
+          24,
+          25,
+          28,
+          29,
+          30,
+          32,
+          33,
+          34,
+          36,
+          39,
+          40,
+          43,
+          46,
+          48,
+          49,
+          50,
+          51,
+          54
+        ],
+        "bytecode": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          7,
+          9,
+          10,
+          11,
+          13,
+          16,
+          17,
+          18,
+          19,
+          21,
+          24,
+          25,
+          28,
+          29,
+          30,
+          32,
+          33,
+          34,
+          36,
+          39,
+          40,
+          43,
+          46,
+          48,
+          49,
+          50,
+          51,
+          54
+        ]
+      }
+    },
+    {
+      "check": "cli:CommonNoClinitArrayInit:all:manifest-map-equality",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:default-all-equal",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:physical-inventory",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:source-write-order",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:CommonNoClinitArrayInit:source-has-no-static-block",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:all-rendered-sources-compiled",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "case:javac23-jarde:runner-adaptation",
+      "ok": true,
+      "detail": {
+        "path": "cases/javac23-jarde/sources/Runner.java",
+        "bytes": 1028,
+        "sha256": "51336925efdb1ef4abd6270bc63bbb9c752e8a7ea2b98e96b6c2c93bc33fad4d"
+      }
+    },
+    {
+      "check": "case:javac23-jarde:runner-source",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "oracle:original-runner-output",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "check": "oracle:two-jdk-raw-equality",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "passed": 1053,
+  "failed": 0,
+  "success": true,
+  "schema": "no-clinit-super-args-independent-verification-v2",
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/manifest.json",
+  "diagnosis": "javac8-original was marked unsuccessful because Corretto/JDK 8 javap omits the `interfaces: N, fields: N, methods: N` class-header line required by the preparation script. Its javap processes exited 0. Parsing each declaration with its following descriptor independently recovers the expected physical fields and methods; the raw code and runtime legs are preserved for verification.",
+  "claim_boundary": "Offline independent verification of captured baseline evidence; no candidate instance projection or new compiler execution."
+}

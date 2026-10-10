@@ -1,0 +1,11 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v11.py", line 1145, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v11.py", line 1106, in main
+    unicode_failure = verify_unicode_test_failure()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v11.py", line 499, in verify_unicode_test_failure
+    api_path = folder / api_capture["output"]
+                        ~~~~~~~~~~~^^^^^^^^^^
+KeyError: 'output'

@@ -1,0 +1,13 @@
+{
+  "status": "candidate-with-failures",
+  "failures": [
+    "literal-javac8-default",
+    "literal-javac8-all",
+    "literal-javac23-default",
+    "literal-javac23-all",
+    "ordered-javac8-default",
+    "ordered-javac8-all",
+    "ordered-javac23-default",
+    "ordered-javac23-all"
+  ]
+}

@@ -1,0 +1,239 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/Runner.class
+  Last modified 2026-10-10; size 1255 bytes
+  MD5 checksum 599d27547fb017e217e6c35d764a8946
+public class Runner
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #27.#38        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #3.#39         // CommonNoClinitArrayInit.trace:I
+   #3 = Class              #40            // CommonNoClinitArrayInit
+   #4 = Methodref          #3.#38         // CommonNoClinitArrayInit."<init>":()V
+   #5 = Fieldref           #41.#42        // java/lang/System.out:Ljava/io/PrintStream;
+   #6 = Class              #43            // java/lang/StringBuilder
+   #7 = Methodref          #6.#38         // java/lang/StringBuilder."<init>":()V
+   #8 = String             #44            // noargs-super=
+   #9 = Methodref          #6.#45         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #10 = Fieldref           #3.#46         // CommonNoClinitArrayInit.received:I
+  #11 = Methodref          #6.#47         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #12 = Methodref          #6.#48         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #13 = Methodref          #49.#50        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #14 = String             #51            // noargs-arrays=
+  #15 = Fieldref           #3.#52         // CommonNoClinitArrayInit.first:[B
+  #16 = Methodref          #53.#54        // java/util/Arrays.toString:([B)Ljava/lang/String;
+  #17 = String             #55            // /
+  #18 = Fieldref           #3.#56         // CommonNoClinitArrayInit.second:[B
+  #19 = String             #57            // noargs-trace=
+  #20 = Methodref          #3.#58         // CommonNoClinitArrayInit."<init>":(I)V
+  #21 = String             #59            // arg-super=
+  #22 = String             #60            // arg-arrays=
+  #23 = String             #61            // arg-trace=
+  #24 = String             #62            // fresh=
+  #25 = Methodref          #6.#63         // java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+  #26 = Class              #64            // Runner
+  #27 = Class              #65            // java/lang/Object
+  #28 = Utf8               <init>
+  #29 = Utf8               ()V
+  #30 = Utf8               Code
+  #31 = Utf8               main
+  #32 = Utf8               ([Ljava/lang/String;)V
+  #33 = Utf8               StackMapTable
+  #34 = Class              #66            // "[Ljava/lang/String;"
+  #35 = Class              #40            // CommonNoClinitArrayInit
+  #36 = Class              #67            // java/io/PrintStream
+  #37 = Class              #43            // java/lang/StringBuilder
+  #38 = NameAndType        #28:#29        // "<init>":()V
+  #39 = NameAndType        #68:#69        // trace:I
+  #40 = Utf8               CommonNoClinitArrayInit
+  #41 = Class              #70            // java/lang/System
+  #42 = NameAndType        #71:#72        // out:Ljava/io/PrintStream;
+  #43 = Utf8               java/lang/StringBuilder
+  #44 = Utf8               noargs-super=
+  #45 = NameAndType        #73:#74        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #46 = NameAndType        #75:#69        // received:I
+  #47 = NameAndType        #73:#76        // append:(I)Ljava/lang/StringBuilder;
+  #48 = NameAndType        #77:#78        // toString:()Ljava/lang/String;
+  #49 = Class              #67            // java/io/PrintStream
+  #50 = NameAndType        #79:#80        // println:(Ljava/lang/String;)V
+  #51 = Utf8               noargs-arrays=
+  #52 = NameAndType        #81:#82        // first:[B
+  #53 = Class              #83            // java/util/Arrays
+  #54 = NameAndType        #77:#84        // toString:([B)Ljava/lang/String;
+  #55 = Utf8               /
+  #56 = NameAndType        #85:#82        // second:[B
+  #57 = Utf8               noargs-trace=
+  #58 = NameAndType        #28:#86        // "<init>":(I)V
+  #59 = Utf8               arg-super=
+  #60 = Utf8               arg-arrays=
+  #61 = Utf8               arg-trace=
+  #62 = Utf8               fresh=
+  #63 = NameAndType        #73:#87        // append:(Z)Ljava/lang/StringBuilder;
+  #64 = Utf8               Runner
+  #65 = Utf8               java/lang/Object
+  #66 = Utf8               [Ljava/lang/String;
+  #67 = Utf8               java/io/PrintStream
+  #68 = Utf8               trace
+  #69 = Utf8               I
+  #70 = Utf8               java/lang/System
+  #71 = Utf8               out
+  #72 = Utf8               Ljava/io/PrintStream;
+  #73 = Utf8               append
+  #74 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #75 = Utf8               received
+  #76 = Utf8               (I)Ljava/lang/StringBuilder;
+  #77 = Utf8               toString
+  #78 = Utf8               ()Ljava/lang/String;
+  #79 = Utf8               println
+  #80 = Utf8               (Ljava/lang/String;)V
+  #81 = Utf8               first
+  #82 = Utf8               [B
+  #83 = Utf8               java/util/Arrays
+  #84 = Utf8               ([B)Ljava/lang/String;
+  #85 = Utf8               second
+  #86 = Utf8               (I)V
+  #87 = Utf8               (Z)Ljava/lang/StringBuilder;
+{
+  public Runner();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=1
+         0: iconst_0
+         1: putstatic     #2                  // Field CommonNoClinitArrayInit.trace:I
+         4: new           #3                  // class CommonNoClinitArrayInit
+         7: dup
+         8: invokespecial #4                  // Method CommonNoClinitArrayInit."<init>":()V
+        11: astore_1
+        12: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        15: new           #6                  // class java/lang/StringBuilder
+        18: dup
+        19: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        22: ldc           #8                  // String noargs-super=
+        24: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: aload_1
+        28: getfield      #10                 // Field CommonNoClinitArrayInit.received:I
+        31: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        34: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        37: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        40: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        43: new           #6                  // class java/lang/StringBuilder
+        46: dup
+        47: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        50: ldc           #14                 // String noargs-arrays=
+        52: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        55: aload_1
+        56: getfield      #15                 // Field CommonNoClinitArrayInit.first:[B
+        59: invokestatic  #16                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+        62: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        65: ldc           #17                 // String /
+        67: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        70: aload_1
+        71: getfield      #18                 // Field CommonNoClinitArrayInit.second:[B
+        74: invokestatic  #16                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+        77: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        80: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        83: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        86: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        89: new           #6                  // class java/lang/StringBuilder
+        92: dup
+        93: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        96: ldc           #19                 // String noargs-trace=
+        98: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       101: getstatic     #2                  // Field CommonNoClinitArrayInit.trace:I
+       104: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       107: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       110: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       113: iconst_0
+       114: putstatic     #2                  // Field CommonNoClinitArrayInit.trace:I
+       117: new           #3                  // class CommonNoClinitArrayInit
+       120: dup
+       121: bipush        40
+       123: invokespecial #20                 // Method CommonNoClinitArrayInit."<init>":(I)V
+       126: astore_2
+       127: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       130: new           #6                  // class java/lang/StringBuilder
+       133: dup
+       134: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       137: ldc           #21                 // String arg-super=
+       139: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       142: aload_2
+       143: getfield      #10                 // Field CommonNoClinitArrayInit.received:I
+       146: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       149: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       152: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       155: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       158: new           #6                  // class java/lang/StringBuilder
+       161: dup
+       162: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       165: ldc           #22                 // String arg-arrays=
+       167: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       170: aload_2
+       171: getfield      #15                 // Field CommonNoClinitArrayInit.first:[B
+       174: invokestatic  #16                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       177: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       180: ldc           #17                 // String /
+       182: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       185: aload_2
+       186: getfield      #18                 // Field CommonNoClinitArrayInit.second:[B
+       189: invokestatic  #16                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       192: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       195: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       198: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       201: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       204: new           #6                  // class java/lang/StringBuilder
+       207: dup
+       208: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       211: ldc           #23                 // String arg-trace=
+       213: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       216: getstatic     #2                  // Field CommonNoClinitArrayInit.trace:I
+       219: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       222: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       225: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       228: new           #3                  // class CommonNoClinitArrayInit
+       231: dup
+       232: bipush        40
+       234: invokespecial #20                 // Method CommonNoClinitArrayInit."<init>":(I)V
+       237: astore_3
+       238: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       241: new           #6                  // class java/lang/StringBuilder
+       244: dup
+       245: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       248: ldc           #24                 // String fresh=
+       250: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       253: aload_2
+       254: getfield      #15                 // Field CommonNoClinitArrayInit.first:[B
+       257: aload_3
+       258: getfield      #15                 // Field CommonNoClinitArrayInit.first:[B
+       261: if_acmpeq     279
+       264: aload_2
+       265: getfield      #18                 // Field CommonNoClinitArrayInit.second:[B
+       268: aload_3
+       269: getfield      #18                 // Field CommonNoClinitArrayInit.second:[B
+       272: if_acmpeq     279
+       275: iconst_1
+       276: goto          280
+       279: iconst_0
+       280: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       283: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       286: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       289: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 255 /* full_frame */
+          offset_delta = 279
+          locals = [ class "[Ljava/lang/String;", class CommonNoClinitArrayInit, class CommonNoClinitArrayInit, class CommonNoClinitArrayInit ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 0
+          locals = [ class "[Ljava/lang/String;", class CommonNoClinitArrayInit, class CommonNoClinitArrayInit, class CommonNoClinitArrayInit ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder, int ]
+}

@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/verify-baseline-root-v2.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "captured_at": "2026-10-10T03:19:07.112440+00:00",
+  "elapsed_seconds": 0.40677112499543,
+  "exit": 0,
+  "verifier_sha256": "011fa642f8033ad258e503cc56fa63d7de17ea3967b8150f333257f0274fb1ad",
+  "stdout": {
+    "path": "stdout",
+    "bytes": 628,
+    "sha256": "504c69d7585f8ca7c66d2f28ed7a975f63b1e7c1f3eddc5ef4d029321c0dfbbf"
+  },
+  "stderr": {
+    "path": "stderr",
+    "bytes": 59,
+    "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+  }
+}
