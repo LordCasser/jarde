@@ -1,0 +1,996 @@
+{
+  "baseline_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/manifest.json",
+    "sha256": "10a6ea368ba5304594909d0318d650b7ad7c580904d0897c2cf7ba13232db4a3"
+  },
+  "boundary_interpretation": "record the exact report; do not assume depth 33 reaches recursion_bound or any particular early-refusal path",
+  "classes": [
+    {
+      "class_file": {
+        "bytes": 346,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/DeepFinally.class",
+        "sha256": "c4f179060a8701d6662dc3d9c8ffc8bc124cf9b2c95d560cd813eb4670361f04"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 1923,
+          "path": "javac8/depth-02/cli/class-source.txt",
+          "sha256": "3870102f7ad25490d504ed282c7544741b9445cbefef97b59beb4c678422b7dd"
+        },
+        "cli_text_executed_or_compiled": false,
+        "document_json": {
+          "bytes": 36594,
+          "path": "javac8/depth-02/cli/document.json",
+          "sha256": "5df8b1ff89c4a0adad61d36df872f9e7145613c9bb6abae2097d1b6d051d40dd"
+        },
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 724,
+            "archive_entries": 0,
+            "attribute_bytes": 369,
+            "class_bytes": 692,
+            "class_headers": 1,
+            "code_bytes": 46,
+            "dependency_depth": 0,
+            "elapsed_millis": 10,
+            "entry_bytes": 0,
+            "input_bytes": 346,
+            "ir_edges": 73,
+            "ir_items": 750,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 1482,
+            "read_bytes": 346,
+            "result_items": 11
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_region_loop_shape",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-02-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "raw_stdout": {
+          "bytes": 36594,
+          "path": "raw/javac8-depth-02-class-source-all-json.stdout",
+          "sha256": "5df8b1ff89c4a0adad61d36df872f9e7145613c9bb6abae2097d1b6d051d40dd"
+        },
+        "regions": [
+          {
+            "bci": 5,
+            "blocks": [
+              5
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 26: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 0,
+            "blocks": [
+              0
+            ],
+            "code": "jre_region_loop_shape",
+            "message": "the loop whose header is the block at BCI 0 has a test, an exit or a latch this subset does not prove",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 19,
+            "blocks": [
+              19,
+              26,
+              8,
+              13
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "4 live block(s) are reachable only through edges the normal-flow view leaves out: [19, 26, 8, 13]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "rules": [
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 729,
+          "path": "javac8/depth-02/cli/run-body.txt",
+          "sha256": "d67550b25f8274ca44871a7df5d80d3867fb5b9deefb477bdc721753ab59baf0"
+        }
+      },
+      "depth": 2,
+      "leg": "javac8",
+      "oracle_stdout": {
+        "bytes": 35,
+        "path": "raw/javac8-depth-02-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      },
+      "runner_class": {
+        "bytes": 985,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/Runner.class",
+        "sha256": "4627b9678c75facf7a579939294944ec7daf4df8da6cf6816d59e1b5c02a7832"
+      }
+    },
+    {
+      "class_file": {
+        "bytes": 653,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/classes/DeepFinally.class",
+        "sha256": "679b449ced8cc1a620b1b7d702de7b2f99a1c750045977cd190f94bc76cf4e73"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 2688,
+          "path": "javac8/depth-33/cli/class-source.txt",
+          "sha256": "51fedca639a1804fdc7adc47a18d7c35807601da0c69345d8646b002c1d8c337"
+        },
+        "cli_text_executed_or_compiled": false,
+        "document_json": {
+          "bytes": 84484,
+          "path": "javac8/depth-33/cli/document.json",
+          "sha256": "f3cc402baf88ac0b85dda36118badc692f101a5720221ee66103534098fd1fcb"
+        },
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 6087,
+            "archive_entries": 0,
+            "attribute_bytes": 1290,
+            "class_bytes": 1306,
+            "class_headers": 1,
+            "code_bytes": 322,
+            "dependency_depth": 0,
+            "elapsed_millis": 10,
+            "entry_bytes": 0,
+            "input_bytes": 653,
+            "ir_edges": 941,
+            "ir_items": 6020,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 2554,
+            "read_bytes": 653,
+            "result_items": 11
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_region_loop_shape",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-33-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "raw_stdout": {
+          "bytes": 84484,
+          "path": "raw/javac8-depth-33-class-source-all-json.stdout",
+          "sha256": "f3cc402baf88ac0b85dda36118badc692f101a5720221ee66103534098fd1fcb"
+        },
+        "regions": [
+          {
+            "bci": 6,
+            "blocks": [
+              6
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 302: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 0,
+            "blocks": [
+              0
+            ],
+            "code": "jre_region_loop_shape",
+            "message": "the loop whose header is the block at BCI 0 has a test, an exit or a latch this subset does not prove",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 295,
+            "blocks": [
+              295,
+              302,
+              9,
+              15,
+              18,
+              24,
+              27,
+              33,
+              36,
+              42,
+              45,
+              51,
+              54,
+              60,
+              63,
+              69,
+              72,
+              78,
+              81,
+              87,
+              90,
+              96,
+              99,
+              105,
+              108,
+              114,
+              117,
+              123,
+              126,
+              132,
+              135,
+              141,
+              144,
+              150,
+              153,
+              159,
+              162,
+              168,
+              171,
+              177,
+              180,
+              186,
+              189,
+              195,
+              198,
+              204,
+              207,
+              213,
+              216,
+              222,
+              225,
+              231,
+              234,
+              240,
+              243,
+              249,
+              252,
+              257,
+              260,
+              265,
+              268,
+              273,
+              276,
+              281,
+              284,
+              289
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "66 live block(s) are reachable only through edges the normal-flow view leaves out: [295, 302, 9, 15, 18, 24, 27, 33, 36, 42, 45, 51, 54, 60, 63, 69, 72, 78, 81, 87, 90, 96, 99, 105, 108, 114, 117, 123, 126, 132, 135, 141, 144, 150, 153, 159, 162, 168, 171, 177, 180, 186, 189, 195, 198, 204, 207, 213, 216, 222, 225, 231, 234, 240, 243, 249, 252, 257, 260, 265, 268, 273, 276, 281, 284, 289]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "rules": [
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 1494,
+          "path": "javac8/depth-33/cli/run-body.txt",
+          "sha256": "7e827c9be57cdb848f497dbfee5c92ac1a4f180c57bf17d043dc3246b1e662b6"
+        }
+      },
+      "depth": 33,
+      "leg": "javac8",
+      "oracle_stdout": {
+        "bytes": 35,
+        "path": "raw/javac8-depth-33-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      },
+      "runner_class": {
+        "bytes": 985,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/classes/Runner.class",
+        "sha256": "4627b9678c75facf7a579939294944ec7daf4df8da6cf6816d59e1b5c02a7832"
+      }
+    },
+    {
+      "class_file": {
+        "bytes": 346,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/DeepFinally.class",
+        "sha256": "e5deb8e23d8d406525768ba4e05187602956956cf050984ce86eae2117f3f036"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 1923,
+          "path": "javac23/depth-02/cli/class-source.txt",
+          "sha256": "3870102f7ad25490d504ed282c7544741b9445cbefef97b59beb4c678422b7dd"
+        },
+        "cli_text_executed_or_compiled": false,
+        "document_json": {
+          "bytes": 36591,
+          "path": "javac23/depth-02/cli/document.json",
+          "sha256": "27d093de7a8b984976e687ac2fa53edaf9662c0ec7e23812cee20961e65f5ee4"
+        },
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 724,
+            "archive_entries": 0,
+            "attribute_bytes": 369,
+            "class_bytes": 692,
+            "class_headers": 1,
+            "code_bytes": 46,
+            "dependency_depth": 0,
+            "elapsed_millis": 2,
+            "entry_bytes": 0,
+            "input_bytes": 346,
+            "ir_edges": 73,
+            "ir_items": 750,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 1482,
+            "read_bytes": 346,
+            "result_items": 11
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_region_loop_shape",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-02-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "raw_stdout": {
+          "bytes": 36591,
+          "path": "raw/javac23-depth-02-class-source-all-json.stdout",
+          "sha256": "27d093de7a8b984976e687ac2fa53edaf9662c0ec7e23812cee20961e65f5ee4"
+        },
+        "regions": [
+          {
+            "bci": 5,
+            "blocks": [
+              5
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 26: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 0,
+            "blocks": [
+              0
+            ],
+            "code": "jre_region_loop_shape",
+            "message": "the loop whose header is the block at BCI 0 has a test, an exit or a latch this subset does not prove",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 19,
+            "blocks": [
+              19,
+              26,
+              8,
+              13
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "4 live block(s) are reachable only through edges the normal-flow view leaves out: [19, 26, 8, 13]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "rules": [
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 729,
+          "path": "javac23/depth-02/cli/run-body.txt",
+          "sha256": "d67550b25f8274ca44871a7df5d80d3867fb5b9deefb477bdc721753ab59baf0"
+        }
+      },
+      "depth": 2,
+      "leg": "javac23",
+      "oracle_stdout": {
+        "bytes": 35,
+        "path": "raw/javac23-depth-02-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      },
+      "runner_class": {
+        "bytes": 985,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/Runner.class",
+        "sha256": "eddbdc64f6a495bb907b105d6069541b95a79bae7526a4650f1fd06cd472c27f"
+      }
+    },
+    {
+      "class_file": {
+        "bytes": 653,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/classes/DeepFinally.class",
+        "sha256": "a5b23dd4b62c1b74b25fce23b20ed3e9739306eea00c4599830f428759e24d9b"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 2688,
+          "path": "javac23/depth-33/cli/class-source.txt",
+          "sha256": "51fedca639a1804fdc7adc47a18d7c35807601da0c69345d8646b002c1d8c337"
+        },
+        "cli_text_executed_or_compiled": false,
+        "document_json": {
+          "bytes": 84483,
+          "path": "javac23/depth-33/cli/document.json",
+          "sha256": "f3362c4bfbe73156266c5f8bc35ed168f8571f6aa2fe0678a1c9a21116801870"
+        },
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 6087,
+            "archive_entries": 0,
+            "attribute_bytes": 1290,
+            "class_bytes": 1306,
+            "class_headers": 1,
+            "code_bytes": 322,
+            "dependency_depth": 0,
+            "elapsed_millis": 9,
+            "entry_bytes": 0,
+            "input_bytes": 653,
+            "ir_edges": 941,
+            "ir_items": 6020,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 2554,
+            "read_bytes": 653,
+            "result_items": 11
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_region_loop_shape",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-33-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "raw_stdout": {
+          "bytes": 84483,
+          "path": "raw/javac23-depth-33-class-source-all-json.stdout",
+          "sha256": "f3362c4bfbe73156266c5f8bc35ed168f8571f6aa2fe0678a1c9a21116801870"
+        },
+        "regions": [
+          {
+            "bci": 6,
+            "blocks": [
+              6
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 302: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 0,
+            "blocks": [
+              0
+            ],
+            "code": "jre_region_loop_shape",
+            "message": "the loop whose header is the block at BCI 0 has a test, an exit or a latch this subset does not prove",
+            "rule": null,
+            "structured": false
+          },
+          {
+            "bci": 295,
+            "blocks": [
+              295,
+              302,
+              9,
+              15,
+              18,
+              24,
+              27,
+              33,
+              36,
+              42,
+              45,
+              51,
+              54,
+              60,
+              63,
+              69,
+              72,
+              78,
+              81,
+              87,
+              90,
+              96,
+              99,
+              105,
+              108,
+              114,
+              117,
+              123,
+              126,
+              132,
+              135,
+              141,
+              144,
+              150,
+              153,
+              159,
+              162,
+              168,
+              171,
+              177,
+              180,
+              186,
+              189,
+              195,
+              198,
+              204,
+              207,
+              213,
+              216,
+              222,
+              225,
+              231,
+              234,
+              240,
+              243,
+              249,
+              252,
+              257,
+              260,
+              265,
+              268,
+              273,
+              276,
+              281,
+              284,
+              289
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "66 live block(s) are reachable only through edges the normal-flow view leaves out: [295, 302, 9, 15, 18, 24, 27, 33, 36, 42, 45, 51, 54, 60, 63, 69, 72, 78, 81, 87, 90, 96, 99, 105, 108, 114, 117, 123, 126, 132, 135, 141, 144, 150, 153, 159, 162, 168, 171, 177, 180, 186, 189, 195, 198, 204, 207, 213, 216, 222, 225, 231, 234, 240, 243, 249, 252, 257, 260, 265, 268, 273, 276, 281, 284, 289]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "rules": [
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 1494,
+          "path": "javac23/depth-33/cli/run-body.txt",
+          "sha256": "7e827c9be57cdb848f497dbfee5c92ac1a4f180c57bf17d043dc3246b1e662b6"
+        }
+      },
+      "depth": 33,
+      "leg": "javac23",
+      "oracle_stdout": {
+        "bytes": 35,
+        "path": "raw/javac23-depth-33-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      },
+      "runner_class": {
+        "bytes": 985,
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/classes/Runner.class",
+        "sha256": "eddbdc64f6a495bb907b105d6069541b95a79bae7526a4650f1fd06cd472c27f"
+      }
+    }
+  ],
+  "cli": {
+    "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/candidate-cli-v2.json",
+    "path": "/private/tmp/jarde-returned-array-cli-v2",
+    "sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/source/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02",
+      "exit": 0,
+      "label": "javac8-depth-02-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02",
+      "exit": 0,
+      "label": "javac8-depth-02-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac8-depth-02-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/DeepFinally.class",
+        "--class",
+        "DeepFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02",
+      "exit": 0,
+      "label": "javac8-depth-02-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 36594,
+        "path": "raw/javac8-depth-02-class-source-all-json.stdout",
+        "sha256": "5df8b1ff89c4a0adad61d36df872f9e7145613c9bb6abae2097d1b6d051d40dd"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/source/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33",
+      "exit": 0,
+      "label": "javac8-depth-33-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33",
+      "exit": 0,
+      "label": "javac8-depth-33-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac8-depth-33-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33/classes/DeepFinally.class",
+        "--class",
+        "DeepFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-33",
+      "exit": 0,
+      "label": "javac8-depth-33-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 84484,
+        "path": "raw/javac8-depth-33-class-source-all-json.stdout",
+        "sha256": "f3cc402baf88ac0b85dda36118badc692f101a5720221ee66103534098fd1fcb"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/source/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02",
+      "exit": 0,
+      "label": "javac23-depth-02-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02",
+      "exit": 0,
+      "label": "javac23-depth-02-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac23-depth-02-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/DeepFinally.class",
+        "--class",
+        "DeepFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02",
+      "exit": 0,
+      "label": "javac23-depth-02-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 36591,
+        "path": "raw/javac23-depth-02-class-source-all-json.stdout",
+        "sha256": "27d093de7a8b984976e687ac2fa53edaf9662c0ec7e23812cee20961e65f5ee4"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/source/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33",
+      "exit": 0,
+      "label": "javac23-depth-33-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33",
+      "exit": 0,
+      "label": "javac23-depth-33-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac23-depth-33-original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33/classes/DeepFinally.class",
+        "--class",
+        "DeepFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-33",
+      "exit": 0,
+      "label": "javac23-depth-33-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 84483,
+        "path": "raw/javac23-depth-33-class-source-all-json.stdout",
+        "sha256": "f3362c4bfbe73156266c5f8bc35ed168f8571f6aa2fe0678a1c9a21116801870"
+      }
+    }
+  ],
+  "jdk_tools": {
+    "javac23": {
+      "java": {
+        "bytes": 69952,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "bytes": 69872,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "bytes": 69872,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    },
+    "javac8": {
+      "java": {
+        "bytes": 152096,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javac": {
+        "bytes": 152128,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "javap": {
+        "bytes": 152128,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    }
+  },
+  "note": "depth 2 is the shallow control and depth 33 is a probe of the existing bounded outcome. Review its explicit report before claiming a recursion-bound hit. Recompile the depth-2 recovered candidate independently.",
+  "schema": "cf16-depth-boundary-root-v1",
+  "scope": "original generated classes only are compiled/run; CLI source is saved, never compiled or executed",
+  "status": "prepared-observations-complete"
+}

@@ -1,0 +1,13 @@
+depth-branch preparation failed: javac8-depth-33-class-source-all-json failed with exit 4; inspect raw/javac8-depth-33-class-source-all-json.stdout and raw/javac8-depth-33-class-source-all-json.stderr
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/prepare-depth-field-branch-root-v1.py", line 343, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/prepare-depth-field-branch-root-v1.py", line 285, in main
+    require_success(cli_row)
+    ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/prepare-depth-field-branch-root-v1.py", line 157, in require_success
+    raise RuntimeError(
+    ...<2 lines>...
+    )
+RuntimeError: javac8-depth-33-class-source-all-json failed with exit 4; inspect raw/javac8-depth-33-class-source-all-json.stdout and raw/javac8-depth-33-class-source-all-json.stderr

@@ -1,0 +1,59 @@
+{
+  "product_commit": "6ddc77d5cc2a6fcf098aad40998f6d2602731c59",
+  "cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+  "product_source_identity": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "src/facade.rs": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "crates/jarde-java/src/guard.rs": "4b3d614bb003f0316088226b4f90e5c2483bacf31d300c4851718ec63bbf3e56",
+    "crates/jarde-java/src/region.rs": "8d0353eb31fb07832d0bb14953c928f1e426098f4a55bec908eb85a6bb542e77"
+  },
+  "test_source": {
+    "path": "crates/jarde-java/tests/p3_patterns.rs",
+    "sha256": "1f8df4de6456f65b11a1292dad4052f02dae8b31cdc475e4b20e076dc85087c3",
+    "exact_remote_product_ci_includes_new_test": false
+  },
+  "gates": {
+    "root-structured-finally-v1": {
+      "result_sha256": "b4234466fb15b821e843d2ccac4f60af539325d6fca8e082893b6310dd5742c4",
+      "exit": 0,
+      "min_free": 25634377728,
+      "max_target_bytes": 187129829
+    },
+    "root-patterns-all-v1": {
+      "result_sha256": "0797fd25eed9d108fd27601ba79bb74f5e490a645a91e63ed3fd31b7fe39d91b",
+      "exit": 0,
+      "min_free": 27039625216,
+      "max_target_bytes": 187129829
+    },
+    "root-late-evidence-v3": {
+      "result_sha256": "21336190bd2c18f021a2186ab696c30c10d7f2b423ae3430ebbcafcdcefb8884",
+      "exit": 0,
+      "min_free": 27038257152,
+      "max_target_bytes": 187129829
+    },
+    "root-patterns-final-v4": {
+      "result_sha256": "0572b44a4240fb3e743efc1705cde284a570d91417a39fc184121cf5c2ed2311",
+      "exit": 0,
+      "min_free": 27031109632,
+      "max_target_bytes": 187129829
+    }
+  },
+  "semantic_verification_sha256": "50027b736047e89d34c33a20f62abb22ef30c412e61cd1a4a375e6acd28062fa",
+  "complete_class_legs": 4,
+  "paths_per_leg": 4,
+  "checks": 167,
+  "public_pattern_tests": 84,
+  "new_public_stop_test_passed": true,
+  "late_evidence_produced_partial_with_complete_text": true,
+  "internal_mid_child_rollback_dynamic_test_claimed": false,
+  "failed_command_preserved": "root-late-evidence-v2: --exact was sent to Cargo instead of libtest; no compilation or test failure",
+  "remaining": "CF16 final integration/regression and exact CI for this new test checkpoint remain pending; immutable 6dd CI only accepts original product."
+}

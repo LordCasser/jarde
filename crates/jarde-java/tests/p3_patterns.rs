@@ -4930,6 +4930,187 @@ fn structured_finally_keeps_the_saved_return_inside_its_branch() {
 }
 
 #[test]
+fn structured_finally_stop_never_publishes_partial_class_source() {
+    let class = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class"
+    );
+
+    let mut baseline_budget = Budget::new(limits());
+    let baseline = recover_class_source_exact(
+        class,
+        b"run",
+        b"()I",
+        0,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut baseline_budget,
+    );
+    assert!(baseline.report.produced(), "{}", baseline.report.text);
+    let baseline_text = baseline.report.text.clone();
+    assert_eq!(
+        baseline_text.matches("finally {").count(),
+        1,
+        "{baseline_text}"
+    );
+    assert_eq!(
+        baseline_text.matches("cleanup();").count(),
+        1,
+        "{baseline_text}"
+    );
+    let assert_stopped_without_publication =
+        |recovery: &jarde_java::report::ClassSourceRecovery| {
+            let report = &recovery.report;
+            assert_eq!(
+                report.content,
+                jarde_java::report::RecoveryContent::NotProduced
+            );
+            assert!(report.text.is_empty(), "{}", report.text);
+            assert!(report.source_map.is_empty());
+            assert!(report.rules.is_empty());
+            assert!(report.regions.is_empty());
+            assert!(recovery.initializer.is_none());
+            assert!(report.init.is_none());
+        };
+
+    let mut no_ir_limits = limits();
+    no_ir_limits.ir_items = 0;
+    let mut no_output_limits = limits();
+    no_output_limits.output_bytes = 0;
+    for (limits, expected_dimension) in [
+        (
+            no_ir_limits,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+        ),
+        (
+            no_output_limits,
+            jarde_reader::budget::CountedBudgetDimension::OutputBytes,
+        ),
+    ] {
+        let mut budget = Budget::new(limits);
+        let stopped = recover_class_source_exact(
+            class,
+            b"run",
+            b"()I",
+            0,
+            jarde_java::RecoveryEvidenceRequest::all(),
+            &mut budget,
+        );
+        assert!(matches!(
+            &stopped.report.outcome,
+            jarde_java::report::RecoveryOutcome::Stopped(StopReason::Budget { dimension, .. })
+                if *dimension == expected_dimension
+        ));
+        assert_stopped_without_publication(&stopped);
+        assert!(matches!(
+            &stopped.report.execution,
+            ExecutionReport::Partial { .. }
+        ));
+    }
+
+    let cancellation = jarde_reader::budget::CancellationToken::new();
+    cancellation.cancel();
+    let mut cancelled_budget = Budget::with_cancellation_token(limits(), cancellation);
+    let cancelled = recover_class_source_exact(
+        class,
+        b"run",
+        b"()I",
+        0,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut cancelled_budget,
+    );
+    assert!(matches!(
+        &cancelled.report.outcome,
+        jarde_java::report::RecoveryOutcome::Stopped(StopReason::Cancelled { .. })
+    ));
+    assert_stopped_without_publication(&cancelled);
+    assert!(matches!(
+        &cancelled.report.execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+
+    // This is a whole-request budget one item below a successful all-evidence run. It exercises
+    // public stop/publication behavior without identifying which internal stage consumed the item.
+    let mut one_under_limits = limits();
+    one_under_limits.ir_items = baseline_budget
+        .usage()
+        .ir_items
+        .checked_sub(1)
+        .expect("the successful run charged at least one IR item");
+    let mut one_under_budget = Budget::new(one_under_limits);
+    let one_under = recover_class_source_exact(
+        class,
+        b"run",
+        b"()I",
+        0,
+        jarde_java::RecoveryEvidenceRequest::all(),
+        &mut one_under_budget,
+    );
+    assert!(matches!(
+        &one_under.report.execution,
+        ExecutionReport::Partial { .. }
+    ));
+    assert!(
+        one_under.report.produced(),
+        "{:?}",
+        one_under.report.outcome
+    );
+    let text = &one_under.report.text;
+    assert_eq!(text, &baseline_text);
+    assert_eq!(text.matches("finally {").count(), 1, "{text}");
+    assert_eq!(text.matches("cleanup();").count(), 1, "{text}");
+}
+
+#[test]
+fn cf16_region_depth_stop_never_publishes_class_source() {
+    // The CLI probe reaches the Region bound on the main thread; libtest uses a
+    // smaller default stack. Give this deep fixture an explicit test-only stack.
+    std::thread::Builder::new()
+        .stack_size(8 * 1024 * 1024)
+        .spawn(|| {
+            let classes: [&[u8]; 2] = [
+                include_bytes!("fixtures/cf16-region-depth/javac8/BranchFinally.class"),
+                include_bytes!("fixtures/cf16-region-depth/javac23/BranchFinally.class"),
+            ];
+            for class in classes {
+                let mut budget = Budget::new(limits());
+                let stopped = recover_class_source_exact(
+                    class,
+                    b"run",
+                    b"(I)I",
+                    1,
+                    jarde_java::RecoveryEvidenceRequest::all(),
+                    &mut budget,
+                );
+                let report = &stopped.report;
+                assert!(
+                    matches!(
+                        &report.outcome,
+                        jarde_java::report::RecoveryOutcome::Stopped(StopReason::Interrupted {
+                            code,
+                            at: Some(450),
+                        }) if *code == "jre_recursion_bound"
+                    ),
+                    "{:?}",
+                    report.outcome
+                );
+                assert_eq!(
+                    report.content,
+                    jarde_java::report::RecoveryContent::NotProduced
+                );
+                assert!(report.text.is_empty(), "{}", report.text);
+                assert!(report.source_map.is_empty());
+                assert!(report.rules.is_empty());
+                assert!(report.regions.is_empty());
+                assert!(stopped.initializer.is_none());
+                assert!(report.init.is_none());
+                assert!(matches!(&report.execution, ExecutionReport::Partial { .. }));
+            }
+        })
+        .expect("spawn depth fixture thread")
+        .join()
+        .expect("depth fixture thread");
+}
+
+#[test]
 fn nested_string_switch_keeps_its_final_dispatch_inside_the_outer_default() {
     let class = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class"

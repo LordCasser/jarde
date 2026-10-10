@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit": 0,
+  "free_before": 19715407872,
+  "free_after": 20200550400,
+  "stderr_sha256": "9ee4fe113d95181dc4e01b1e56c590be7f0d43e9493fcf0b85475813356598bd",
+  "scope": "own target only after local gates and immutable product push; frozen CLI and raw preserved"
+}

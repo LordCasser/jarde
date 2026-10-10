@@ -1,0 +1,203 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac8-source/classes/FinallyCompletion.class
+  Last modified 2026-10-10; size 907 bytes
+  MD5 checksum 4bcd62f36e56c7fd5949fca12bdc6630
+public class FinallyCompletion
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #13.#32        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #12.#33        // FinallyCompletion.trace:I
+   #3 = Methodref          #12.#34        // FinallyCompletion.mark:(I)I
+   #4 = Fieldref           #12.#35        // FinallyCompletion.FINALLY_FAILURE:Ljava/lang/RuntimeException;
+   #5 = Fieldref           #12.#36        // FinallyCompletion.TRY_FAILURE:Ljava/lang/RuntimeException;
+   #6 = Class              #37            // java/lang/IllegalArgumentException
+   #7 = String             #38            // try
+   #8 = Methodref          #6.#39         // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+   #9 = Class              #40            // java/lang/IllegalStateException
+  #10 = String             #41            // finally
+  #11 = Methodref          #9.#39         // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #12 = Class              #42            // FinallyCompletion
+  #13 = Class              #43            // java/lang/Object
+  #14 = Utf8               trace
+  #15 = Utf8               I
+  #16 = Utf8               TRY_FAILURE
+  #17 = Utf8               Ljava/lang/RuntimeException;
+  #18 = Utf8               FINALLY_FAILURE
+  #19 = Utf8               <init>
+  #20 = Utf8               ()V
+  #21 = Utf8               Code
+  #22 = Utf8               mark
+  #23 = Utf8               (I)I
+  #24 = Utf8               normalReturn
+  #25 = Utf8               ()I
+  #26 = Utf8               StackMapTable
+  #27 = Class              #44            // java/lang/Throwable
+  #28 = Utf8               finallyReturns
+  #29 = Utf8               finallyThrows
+  #30 = Utf8               tryThrowsFinallyRuns
+  #31 = Utf8               <clinit>
+  #32 = NameAndType        #19:#20        // "<init>":()V
+  #33 = NameAndType        #14:#15        // trace:I
+  #34 = NameAndType        #22:#23        // mark:(I)I
+  #35 = NameAndType        #18:#17        // FINALLY_FAILURE:Ljava/lang/RuntimeException;
+  #36 = NameAndType        #16:#17        // TRY_FAILURE:Ljava/lang/RuntimeException;
+  #37 = Utf8               java/lang/IllegalArgumentException
+  #38 = Utf8               try
+  #39 = NameAndType        #19:#45        // "<init>":(Ljava/lang/String;)V
+  #40 = Utf8               java/lang/IllegalStateException
+  #41 = Utf8               finally
+  #42 = Utf8               FinallyCompletion
+  #43 = Utf8               java/lang/Object
+  #44 = Utf8               java/lang/Throwable
+  #45 = Utf8               (Ljava/lang/String;)V
+{
+  public static int trace;
+    descriptor: I
+    flags: ACC_PUBLIC, ACC_STATIC
+
+  public static final java.lang.RuntimeException TRY_FAILURE;
+    descriptor: Ljava/lang/RuntimeException;
+    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public static final java.lang.RuntimeException FINALLY_FAILURE;
+    descriptor: Ljava/lang/RuntimeException;
+    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  public FinallyCompletion();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static int mark(int);
+    descriptor: (I)I
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: getstatic     #2                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iload_0
+         7: iadd
+         8: putstatic     #2                  // Field trace:I
+        11: iload_0
+        12: ireturn
+
+  public static int normalReturn();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=0
+         0: iconst_1
+         1: invokestatic  #3                  // Method mark:(I)I
+         4: istore_0
+         5: iconst_2
+         6: invokestatic  #3                  // Method mark:(I)I
+         9: pop
+        10: iload_0
+        11: ireturn
+        12: astore_1
+        13: iconst_2
+        14: invokestatic  #3                  // Method mark:(I)I
+        17: pop
+        18: aload_1
+        19: athrow
+      Exception table:
+         from    to  target type
+             0     5    12   any
+      StackMapTable: number_of_entries = 1
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  public static int finallyReturns();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=0
+         0: iconst_3
+         1: invokestatic  #3                  // Method mark:(I)I
+         4: istore_0
+         5: iconst_4
+         6: invokestatic  #3                  // Method mark:(I)I
+         9: ireturn
+        10: astore_1
+        11: iconst_4
+        12: invokestatic  #3                  // Method mark:(I)I
+        15: ireturn
+      Exception table:
+         from    to  target type
+             0     5    10   any
+      StackMapTable: number_of_entries = 1
+        frame_type = 74 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  public static int finallyThrows();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=2, args_size=0
+         0: iconst_5
+         1: invokestatic  #3                  // Method mark:(I)I
+         4: istore_0
+         5: bipush        6
+         7: invokestatic  #3                  // Method mark:(I)I
+        10: pop
+        11: getstatic     #4                  // Field FINALLY_FAILURE:Ljava/lang/RuntimeException;
+        14: athrow
+        15: astore_1
+        16: bipush        6
+        18: invokestatic  #3                  // Method mark:(I)I
+        21: pop
+        22: getstatic     #4                  // Field FINALLY_FAILURE:Ljava/lang/RuntimeException;
+        25: athrow
+      Exception table:
+         from    to  target type
+             0     5    15   any
+      StackMapTable: number_of_entries = 1
+        frame_type = 79 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  public static int tryThrowsFinallyRuns();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=0
+         0: bipush        7
+         2: invokestatic  #3                  // Method mark:(I)I
+         5: pop
+         6: getstatic     #5                  // Field TRY_FAILURE:Ljava/lang/RuntimeException;
+         9: athrow
+        10: astore_0
+        11: bipush        8
+        13: invokestatic  #3                  // Method mark:(I)I
+        16: pop
+        17: aload_0
+        18: athrow
+      Exception table:
+         from    to  target type
+             0    11    10   any
+      StackMapTable: number_of_entries = 1
+        frame_type = 74 /* same_locals_1_stack_item */
+          stack = [ class java/lang/Throwable ]
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: new           #6                  // class java/lang/IllegalArgumentException
+         3: dup
+         4: ldc           #7                  // String try
+         6: invokespecial #8                  // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+         9: putstatic     #5                  // Field TRY_FAILURE:Ljava/lang/RuntimeException;
+        12: new           #9                  // class java/lang/IllegalStateException
+        15: dup
+        16: ldc           #10                 // String finally
+        18: invokespecial #11                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        21: putstatic     #4                  // Field FINALLY_FAILURE:Ljava/lang/RuntimeException;
+        24: return
+}

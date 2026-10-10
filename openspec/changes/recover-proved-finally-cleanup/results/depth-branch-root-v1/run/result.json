@@ -1,0 +1,3008 @@
+{
+  "baseline_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/returned-next-baseline-v1/manifest.json",
+    "sha256": "10a6ea368ba5304594909d0318d650b7ad7c580904d0897c2cf7ba13232db4a3"
+  },
+  "cli": {
+    "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/candidate-cli-v2.json",
+    "manifest_sha256": "ddfbe127890d95ced5c4ed2a89d67d42deb7eba19e6c1e4ce12707221bd8f769",
+    "path": "/private/tmp/jarde-returned-array-cli-v2",
+    "sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/source/BranchFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02",
+      "exit": 0,
+      "label": "javac8-depth-02-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02",
+      "exit": 0,
+      "label": "javac8-depth-02-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 36,
+        "path": "raw/javac8-depth-02-original-verify-run.stdout",
+        "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02/classes/BranchFinally.class",
+        "--class",
+        "BranchFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-02",
+      "exit": 0,
+      "label": "javac8-depth-02-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-02-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 49739,
+        "path": "raw/javac8-depth-02-class-source-all-json.stdout",
+        "sha256": "54a922b1f4ae634f882c90a87f857d7f4a691afb285e017cb5ac4efb52562849"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/source/BranchFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33",
+      "exit": 0,
+      "label": "javac8-depth-33-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33",
+      "exit": 0,
+      "label": "javac8-depth-33-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 38,
+        "path": "raw/javac8-depth-33-original-verify-run.stdout",
+        "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33/classes/BranchFinally.class",
+        "--class",
+        "BranchFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac8/depth-33",
+      "exit": 0,
+      "label": "javac8-depth-33-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-depth-33-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 260554,
+        "path": "raw/javac8-depth-33-class-source-all-json.stdout",
+        "sha256": "e6f731c30ce8942c8725a1b31835a3f8c4397c36d3f6e49475b63c78319f120c"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/source/BranchFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02",
+      "exit": 0,
+      "label": "javac23-depth-02-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02",
+      "exit": 0,
+      "label": "javac23-depth-02-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 36,
+        "path": "raw/javac23-depth-02-original-verify-run.stdout",
+        "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02/classes/BranchFinally.class",
+        "--class",
+        "BranchFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-02",
+      "exit": 0,
+      "label": "javac23-depth-02-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-02-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 49739,
+        "path": "raw/javac23-depth-02-class-source-all-json.stdout",
+        "sha256": "16bca25bdf7fd28fcf2622c0d46684b91df8227135dfbf99162539f376770ca4"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/source/BranchFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/source/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33",
+      "exit": 0,
+      "label": "javac23-depth-33-original-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-original-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-original-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33",
+      "exit": 0,
+      "label": "javac23-depth-33-original-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 38,
+        "path": "raw/javac23-depth-33-original-verify-run.stdout",
+        "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33/classes/BranchFinally.class",
+        "--class",
+        "BranchFinally",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--evidence",
+        "all",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-branch-root-v1/run/javac23/depth-33",
+      "exit": 0,
+      "label": "javac23-depth-33-class-source-all-json",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-depth-33-class-source-all-json.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 260554,
+        "path": "raw/javac23-depth-33-class-source-all-json.stdout",
+        "sha256": "59fae1e0c08decf16b7a74642839cedc4a0a5ec68e59b23c7e4765c7ab81ebbc"
+      }
+    }
+  ],
+  "depths": [
+    {
+      "class_file": {
+        "bytes": 422,
+        "path": "javac8/depth-02/classes/BranchFinally.class",
+        "sha256": "c1aee965e5262de7d43ab65ac5084cfba2aac5f8fa4c97e4683bce18b5127706"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 2127,
+          "path": "javac8/depth-02/cli/class-source.txt",
+          "sha256": "b26c4bd622b5a83d191e23147d1862d65e885eba675762852b818b2cd22b8286"
+        },
+        "cli_raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-02-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "cli_raw_stdout": {
+          "bytes": 49739,
+          "path": "raw/javac8-depth-02-class-source-all-json.stdout",
+          "sha256": "54a922b1f4ae634f882c90a87f857d7f4a691afb285e017cb5ac4efb52562849"
+        },
+        "cli_text_executed_or_compiled": false,
+        "diagnostics": [
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 55: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 55: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_region_uncovered_blocks",
+            "message": "3 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 29, 55]",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_recovery_produced",
+            "message": "3 region(s), 7 statement(s), 13 segment(s), 1011 byte(s) written from 7 canonical block(s)",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 5 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 10 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 18 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 23 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 29 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 34 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 40 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 45 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_accesses",
+            "message": "8 field instruction(s) read under field@1: 0 presented, 8 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_declaration",
+            "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            "provenance": null,
+            "severity": "info"
+          }
+        ],
+        "document_diagnostics": [],
+        "document_json": {
+          "bytes": 49739,
+          "path": "javac8/depth-02/cli/document.json",
+          "sha256": "54a922b1f4ae634f882c90a87f857d7f4a691afb285e017cb5ac4efb52562849"
+        },
+        "document_outcome": "performed",
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 883,
+            "archive_entries": 0,
+            "attribute_bytes": 480,
+            "class_bytes": 844,
+            "class_headers": 1,
+            "code_bytes": 75,
+            "dependency_depth": 0,
+            "elapsed_millis": 9,
+            "entry_bytes": 0,
+            "input_bytes": 422,
+            "ir_edges": 90,
+            "ir_items": 1168,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 1848,
+            "read_bytes": 422,
+            "result_items": 15
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_guard_finally_copy",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "regions": [
+          {
+            "bci": 0,
+            "blocks": [
+              0,
+              5,
+              40
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 55: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": {
+              "rule": "if",
+              "version": "1"
+            },
+            "structured": false
+          },
+          {
+            "bci": 48,
+            "blocks": [
+              48
+            ],
+            "code": null,
+            "message": null,
+            "rule": {
+              "rule": "straight",
+              "version": "1"
+            },
+            "structured": true
+          },
+          {
+            "bci": 18,
+            "blocks": [
+              18,
+              29,
+              55
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "3 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 29, 55]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "report_stop": null,
+        "rules": [
+          {
+            "rule": "if",
+            "version": "1"
+          },
+          {
+            "rule": "straight",
+            "version": "1"
+          },
+          {
+            "rule": "field",
+            "version": "1"
+          },
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 1011,
+          "path": "javac8/depth-02/cli/run-body.txt",
+          "sha256": "2a6f6d7ff3af839e02ea88f2ffe9e06c3581f60611904f46977ab4779d07cb66"
+        }
+      },
+      "depth": 2,
+      "expected_stdout": {
+        "bytes": 36,
+        "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290",
+        "text": "run(0)=0 trace=0\nrun(40)=40 trace=4\n"
+      },
+      "leg": "javac8",
+      "oracle": {
+        "exit": 0,
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-02-original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 36,
+          "path": "raw/javac8-depth-02-original-verify-run.stdout",
+          "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290"
+        }
+      },
+      "runner": {
+        "bytes": 1039,
+        "path": "javac8/depth-02/source/Runner.java",
+        "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+      },
+      "runner_class": {
+        "bytes": 1049,
+        "path": "javac8/depth-02/classes/Runner.class",
+        "sha256": "77c13d607738ebdb09e886d6cb085e7b00e69f2d804a70419ba86c8dbc264ae0"
+      },
+      "source": {
+        "bytes": 521,
+        "path": "javac8/depth-02/source/BranchFinally.java",
+        "sha256": "4d80f46ce05f60455a558740714c7d2e801942d3ec153ee435b52e625eec5b6d"
+      }
+    },
+    {
+      "class_file": {
+        "bytes": 1283,
+        "path": "javac8/depth-33/classes/BranchFinally.class",
+        "sha256": "f0cdadc3c2b6e5ba0c15e0397d6698db7c2dfd218ceeb24026c01246f09c4597"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 3902,
+          "path": "javac8/depth-33/cli/class-source.txt",
+          "sha256": "46deea5263e78f69f4871ccef84d02ecbe9b9e3c5628b074b8d77675c89be036"
+        },
+        "cli_raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-33-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "cli_raw_stdout": {
+          "bytes": 260554,
+          "path": "raw/javac8-depth-33-class-source-all-json.stdout",
+          "sha256": "e6f731c30ce8942c8725a1b31835a3f8c4397c36d3f6e49475b63c78319f120c"
+        },
+        "cli_text_executed_or_compiled": false,
+        "diagnostics": [
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 883: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 883: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_region_uncovered_blocks",
+            "message": "65 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 857, 883, 31, 846, 44, 835, 57, 824, 71, 812, 86, 800, 101, 788, 116, 776, 131, 764, 146, 752, 161, 740, 176, 728, 191, 716, 206, 704, 221, 692, 236, 680, 251, 668, 266, 656, 281, 644, 296, 632, 311, 620, 326, 608, 341, 596, 356, 584, 371, 572, 386, 560, 401, 548, 416, 536, 431, 524, 446, 512, 461, 500, 476, 488]",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_recovery_produced",
+            "message": "3 region(s), 7 statement(s), 13 segment(s), 2785 byte(s) written from 69 canonical block(s)",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 5 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 10 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 18 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 23 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 31 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 36 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 44 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 49 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 57 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 62 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 71 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 77 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 86 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 92 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 101 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 107 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 116 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 122 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 131 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 137 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 146 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 152 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 161 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 167 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 176 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 182 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 191 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 197 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 206 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 212 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 221 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 227 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 236 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 242 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 251 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 257 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 266 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 272 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 281 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 287 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 296 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 302 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 311 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 317 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 326 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 332 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 341 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 347 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 356 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 362 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 371 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 377 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 386 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 392 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 401 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 407 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 416 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 422 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 431 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 437 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 446 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 452 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 461 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 467 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 476 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 482 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 488 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 494 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 500 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 506 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 512 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 518 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 524 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 530 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 536 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 542 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 548 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 554 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 560 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 566 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 572 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 578 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 584 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 590 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 596 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 602 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 608 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 614 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 620 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 626 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 632 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 638 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 644 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 650 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 656 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 662 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 668 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 674 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 680 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 686 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 692 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 698 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 704 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 710 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 716 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 722 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 728 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 734 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 740 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 746 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 752 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 758 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 764 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 770 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 776 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 782 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 788 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 794 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 800 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 806 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 812 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 818 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 824 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 829 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 835 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 840 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 846 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 851 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 857 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 862 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 868 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 873 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_accesses",
+            "message": "132 field instruction(s) read under field@1: 0 presented, 132 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_declaration",
+            "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            "provenance": null,
+            "severity": "info"
+          }
+        ],
+        "document_diagnostics": [],
+        "document_json": {
+          "bytes": 260554,
+          "path": "javac8/depth-33/cli/document.json",
+          "sha256": "e6f731c30ce8942c8725a1b31835a3f8c4397c36d3f6e49475b63c78319f120c"
+        },
+        "document_outcome": "performed",
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 8726,
+            "archive_entries": 0,
+            "attribute_bytes": 3063,
+            "class_bytes": 2566,
+            "class_headers": 1,
+            "code_bytes": 903,
+            "dependency_depth": 0,
+            "elapsed_millis": 14,
+            "entry_bytes": 0,
+            "input_bytes": 1283,
+            "ir_edges": 1206,
+            "ir_items": 12359,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 4483,
+            "read_bytes": 1283,
+            "result_items": 15
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_guard_finally_copy",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "regions": [
+          {
+            "bci": 0,
+            "blocks": [
+              0,
+              5,
+              868
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 883: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": {
+              "rule": "if",
+              "version": "1"
+            },
+            "structured": false
+          },
+          {
+            "bci": 876,
+            "blocks": [
+              876
+            ],
+            "code": null,
+            "message": null,
+            "rule": {
+              "rule": "straight",
+              "version": "1"
+            },
+            "structured": true
+          },
+          {
+            "bci": 18,
+            "blocks": [
+              18,
+              857,
+              883,
+              31,
+              846,
+              44,
+              835,
+              57,
+              824,
+              71,
+              812,
+              86,
+              800,
+              101,
+              788,
+              116,
+              776,
+              131,
+              764,
+              146,
+              752,
+              161,
+              740,
+              176,
+              728,
+              191,
+              716,
+              206,
+              704,
+              221,
+              692,
+              236,
+              680,
+              251,
+              668,
+              266,
+              656,
+              281,
+              644,
+              296,
+              632,
+              311,
+              620,
+              326,
+              608,
+              341,
+              596,
+              356,
+              584,
+              371,
+              572,
+              386,
+              560,
+              401,
+              548,
+              416,
+              536,
+              431,
+              524,
+              446,
+              512,
+              461,
+              500,
+              476,
+              488
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "65 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 857, 883, 31, 846, 44, 835, 57, 824, 71, 812, 86, 800, 101, 788, 116, 776, 131, 764, 146, 752, 161, 740, 176, 728, 191, 716, 206, 704, 221, 692, 236, 680, 251, 668, 266, 656, 281, 644, 296, 632, 311, 620, 326, 608, 341, 596, 356, 584, 371, 572, 386, 560, 401, 548, 416, 536, 431, 524, 446, 512, 461, 500, 476, 488]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "report_stop": null,
+        "rules": [
+          {
+            "rule": "if",
+            "version": "1"
+          },
+          {
+            "rule": "straight",
+            "version": "1"
+          },
+          {
+            "rule": "field",
+            "version": "1"
+          },
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 2785,
+          "path": "javac8/depth-33/cli/run-body.txt",
+          "sha256": "faa91687cd333fd1ba949c91fd6f6b5c538c739bf5f77978afbe461635562301"
+        }
+      },
+      "depth": 33,
+      "expected_stdout": {
+        "bytes": 38,
+        "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc",
+        "text": "run(0)=0 trace=0\nrun(40)=40 trace=562\n"
+      },
+      "leg": "javac8",
+      "oracle": {
+        "exit": 0,
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-33-original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 38,
+          "path": "raw/javac8-depth-33-original-verify-run.stdout",
+          "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc"
+        }
+      },
+      "runner": {
+        "bytes": 1039,
+        "path": "javac8/depth-33/source/Runner.java",
+        "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+      },
+      "runner_class": {
+        "bytes": 1050,
+        "path": "javac8/depth-33/classes/Runner.class",
+        "sha256": "dce57b12df0fc7e4dbbc168f46864a4a8ebae8bb71973e8d8d789ec78f68eaf2"
+      },
+      "source": {
+        "bytes": 14730,
+        "path": "javac8/depth-33/source/BranchFinally.java",
+        "sha256": "0f95f02e57e69af86f65926a3dd1022adb6b01860757c796e3b44463f8105211"
+      }
+    },
+    {
+      "class_file": {
+        "bytes": 422,
+        "path": "javac23/depth-02/classes/BranchFinally.class",
+        "sha256": "fa6d52f9f5506ac602d804c66de65b4e16beb28943be479055880c131d17a3c4"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 2127,
+          "path": "javac23/depth-02/cli/class-source.txt",
+          "sha256": "b26c4bd622b5a83d191e23147d1862d65e885eba675762852b818b2cd22b8286"
+        },
+        "cli_raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-02-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "cli_raw_stdout": {
+          "bytes": 49739,
+          "path": "raw/javac23-depth-02-class-source-all-json.stdout",
+          "sha256": "16bca25bdf7fd28fcf2622c0d46684b91df8227135dfbf99162539f376770ca4"
+        },
+        "cli_text_executed_or_compiled": false,
+        "diagnostics": [
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 55: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 55: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_region_uncovered_blocks",
+            "message": "3 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 29, 55]",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_recovery_produced",
+            "message": "3 region(s), 7 statement(s), 13 segment(s), 1011 byte(s) written from 7 canonical block(s)",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 5 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 10 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 18 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 23 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 29 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 34 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 40 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 45 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_accesses",
+            "message": "8 field instruction(s) read under field@1: 0 presented, 8 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_declaration",
+            "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            "provenance": null,
+            "severity": "info"
+          }
+        ],
+        "document_diagnostics": [],
+        "document_json": {
+          "bytes": 49739,
+          "path": "javac23/depth-02/cli/document.json",
+          "sha256": "16bca25bdf7fd28fcf2622c0d46684b91df8227135dfbf99162539f376770ca4"
+        },
+        "document_outcome": "performed",
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 883,
+            "archive_entries": 0,
+            "attribute_bytes": 480,
+            "class_bytes": 844,
+            "class_headers": 1,
+            "code_bytes": 75,
+            "dependency_depth": 0,
+            "elapsed_millis": 3,
+            "entry_bytes": 0,
+            "input_bytes": 422,
+            "ir_edges": 90,
+            "ir_items": 1168,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 1848,
+            "read_bytes": 422,
+            "result_items": 15
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_guard_finally_copy",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "regions": [
+          {
+            "bci": 0,
+            "blocks": [
+              0,
+              5,
+              40
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 55: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": {
+              "rule": "if",
+              "version": "1"
+            },
+            "structured": false
+          },
+          {
+            "bci": 48,
+            "blocks": [
+              48
+            ],
+            "code": null,
+            "message": null,
+            "rule": {
+              "rule": "straight",
+              "version": "1"
+            },
+            "structured": true
+          },
+          {
+            "bci": 18,
+            "blocks": [
+              18,
+              29,
+              55
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "3 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 29, 55]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "report_stop": null,
+        "rules": [
+          {
+            "rule": "if",
+            "version": "1"
+          },
+          {
+            "rule": "straight",
+            "version": "1"
+          },
+          {
+            "rule": "field",
+            "version": "1"
+          },
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 1011,
+          "path": "javac23/depth-02/cli/run-body.txt",
+          "sha256": "2a6f6d7ff3af839e02ea88f2ffe9e06c3581f60611904f46977ab4779d07cb66"
+        }
+      },
+      "depth": 2,
+      "expected_stdout": {
+        "bytes": 36,
+        "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290",
+        "text": "run(0)=0 trace=0\nrun(40)=40 trace=4\n"
+      },
+      "leg": "javac23",
+      "oracle": {
+        "exit": 0,
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-02-original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 36,
+          "path": "raw/javac23-depth-02-original-verify-run.stdout",
+          "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290"
+        }
+      },
+      "runner": {
+        "bytes": 1039,
+        "path": "javac23/depth-02/source/Runner.java",
+        "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+      },
+      "runner_class": {
+        "bytes": 1049,
+        "path": "javac23/depth-02/classes/Runner.class",
+        "sha256": "40c67c8337a9088c0a6091f5aadae88535e42d0db050352a5ebdc84ed9fd027e"
+      },
+      "source": {
+        "bytes": 521,
+        "path": "javac23/depth-02/source/BranchFinally.java",
+        "sha256": "4d80f46ce05f60455a558740714c7d2e801942d3ec153ee435b52e625eec5b6d"
+      }
+    },
+    {
+      "class_file": {
+        "bytes": 1283,
+        "path": "javac23/depth-33/classes/BranchFinally.class",
+        "sha256": "d88b2eae3ef5effe9def24663ddf3eb1f5d8b4f9bbeed4641418e539e9a215c4"
+      },
+      "cli": {
+        "class_source_text": {
+          "bytes": 3902,
+          "path": "javac23/depth-33/cli/class-source.txt",
+          "sha256": "46deea5263e78f69f4871ccef84d02ecbe9b9e3c5628b074b8d77675c89be036"
+        },
+        "cli_raw_stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-33-class-source-all-json.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "cli_raw_stdout": {
+          "bytes": 260554,
+          "path": "raw/javac23-depth-33-class-source-all-json.stdout",
+          "sha256": "59fae1e0c08decf16b7a74642839cedc4a0a5ec68e59b23c7e4765c7ab81ebbc"
+        },
+        "cli_text_executed_or_compiled": false,
+        "diagnostics": [
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 883: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 883: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_region_uncovered_blocks",
+            "message": "65 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 857, 883, 31, 846, 44, 835, 57, 824, 71, 812, 86, 800, 101, 788, 116, 776, 131, 764, 146, 752, 161, 740, 176, 728, 191, 716, 206, 704, 221, 692, 236, 680, 251, 668, 266, 656, 281, 644, 296, 632, 311, 620, 326, 608, 341, 596, 356, 584, 371, 572, 386, 560, 401, 548, 416, 536, 431, 524, 446, 512, 461, 500, 476, 488]",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_recovery_produced",
+            "message": "3 region(s), 7 statement(s), 13 segment(s), 2785 byte(s) written from 69 canonical block(s)",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 5 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 10 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 18 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 23 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 31 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 36 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 44 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 49 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 57 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 62 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 71 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 77 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 86 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 92 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 101 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 107 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 116 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 122 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 131 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 137 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 146 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 152 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 161 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 167 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 176 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 182 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 191 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 197 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 206 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 212 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 221 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 227 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 236 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 242 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 251 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 257 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 266 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 272 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 281 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 287 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 296 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 302 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 311 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 317 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 326 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 332 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 341 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 347 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 356 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 362 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 371 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 377 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 386 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 392 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 401 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 407 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 416 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 422 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 431 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 437 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 446 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 452 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 461 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 467 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 476 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 482 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 488 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 494 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 500 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 506 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 512 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 518 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 524 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 530 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 536 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 542 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 548 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 554 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 560 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 566 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 572 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 578 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 584 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 590 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 596 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 602 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 608 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 614 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 620 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 626 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 632 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 638 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 644 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 650 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 656 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 662 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 668 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 674 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 680 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 686 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 692 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 698 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 704 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 710 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 716 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 722 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 728 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 734 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 740 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 746 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 752 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 758 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 764 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 770 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 776 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 782 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 788 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 794 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 800 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 806 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 812 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 818 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 824 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 829 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 835 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 840 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 846 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 851 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 857 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 862 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 868 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_not_emitted",
+            "message": "the field access at BCI 873 passed field identity proof, but no matching Java field operation was emitted by the final body",
+            "provenance": null,
+            "severity": "warning"
+          },
+          {
+            "code": "jre_field_accesses",
+            "message": "132 field instruction(s) read under field@1: 0 presented, 132 refused",
+            "provenance": null,
+            "severity": "info"
+          },
+          {
+            "code": "jre_declaration",
+            "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            "provenance": null,
+            "severity": "info"
+          }
+        ],
+        "document_diagnostics": [],
+        "document_json": {
+          "bytes": 260554,
+          "path": "javac23/depth-33/cli/document.json",
+          "sha256": "59fae1e0c08decf16b7a74642839cedc4a0a5ec68e59b23c7e4765c7ab81ebbc"
+        },
+        "document_outcome": "performed",
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 8726,
+            "archive_entries": 0,
+            "attribute_bytes": 3063,
+            "class_bytes": 2566,
+            "class_headers": 1,
+            "code_bytes": 903,
+            "dependency_depth": 0,
+            "elapsed_millis": 14,
+            "entry_bytes": 0,
+            "input_bytes": 1283,
+            "ir_edges": 1206,
+            "ir_items": 12359,
+            "method_bodies": 3,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 4483,
+            "read_bytes": 1283,
+            "result_items": 15
+          }
+        },
+        "fallbacks": [
+          "jre_guard_finally_copy",
+          "jre_guard_finally_copy",
+          "jre_region_uncovered_blocks"
+        ],
+        "method_outcome_kind": "recovered",
+        "quality": "fallback",
+        "regions": [
+          {
+            "bci": 0,
+            "blocks": [
+              0,
+              5,
+              868
+            ],
+            "code": "jre_guard_finally_copy",
+            "message": "BCI 883: the exceptional path repeats code the normal path also runs \u2014 the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`",
+            "rule": {
+              "rule": "if",
+              "version": "1"
+            },
+            "structured": false
+          },
+          {
+            "bci": 876,
+            "blocks": [
+              876
+            ],
+            "code": null,
+            "message": null,
+            "rule": {
+              "rule": "straight",
+              "version": "1"
+            },
+            "structured": true
+          },
+          {
+            "bci": 18,
+            "blocks": [
+              18,
+              857,
+              883,
+              31,
+              846,
+              44,
+              835,
+              57,
+              824,
+              71,
+              812,
+              86,
+              800,
+              101,
+              788,
+              116,
+              776,
+              131,
+              764,
+              146,
+              752,
+              161,
+              740,
+              176,
+              728,
+              191,
+              716,
+              206,
+              704,
+              221,
+              692,
+              236,
+              680,
+              251,
+              668,
+              266,
+              656,
+              281,
+              644,
+              296,
+              632,
+              311,
+              620,
+              326,
+              608,
+              341,
+              596,
+              356,
+              584,
+              371,
+              572,
+              386,
+              560,
+              401,
+              548,
+              416,
+              536,
+              431,
+              524,
+              446,
+              512,
+              461,
+              500,
+              476,
+              488
+            ],
+            "code": "jre_region_uncovered_blocks",
+            "message": "65 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 857, 883, 31, 846, 44, 835, 57, 824, 71, 812, 86, 800, 101, 788, 116, 776, 131, 764, 146, 752, 161, 740, 176, 728, 191, 716, 206, 704, 221, 692, 236, 680, 251, 668, 266, 656, 281, 644, 296, 632, 311, 620, 326, 608, 341, 596, 356, 584, 371, 572, 386, 560, 401, 548, 416, 536, 431, 524, 446, 512, 461, 500, 476, 488]",
+            "rule": null,
+            "structured": false
+          }
+        ],
+        "report_outcome": "produced",
+        "report_stop": null,
+        "rules": [
+          {
+            "rule": "if",
+            "version": "1"
+          },
+          {
+            "rule": "straight",
+            "version": "1"
+          },
+          {
+            "rule": "field",
+            "version": "1"
+          },
+          {
+            "rule": "declaration",
+            "version": "1"
+          }
+        ],
+        "run_body_text": {
+          "bytes": 2785,
+          "path": "javac23/depth-33/cli/run-body.txt",
+          "sha256": "faa91687cd333fd1ba949c91fd6f6b5c538c739bf5f77978afbe461635562301"
+        }
+      },
+      "depth": 33,
+      "expected_stdout": {
+        "bytes": 38,
+        "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc",
+        "text": "run(0)=0 trace=0\nrun(40)=40 trace=562\n"
+      },
+      "leg": "javac23",
+      "oracle": {
+        "exit": 0,
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-33-original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 38,
+          "path": "raw/javac23-depth-33-original-verify-run.stdout",
+          "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc"
+        }
+      },
+      "runner": {
+        "bytes": 1039,
+        "path": "javac23/depth-33/source/Runner.java",
+        "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+      },
+      "runner_class": {
+        "bytes": 1050,
+        "path": "javac23/depth-33/classes/Runner.class",
+        "sha256": "a5f84f84ed459e5ba4e363d46008b681e8b2daf97628a97de22281c3f16da6e5"
+      },
+      "source": {
+        "bytes": 14730,
+        "path": "javac23/depth-33/source/BranchFinally.java",
+        "sha256": "0f95f02e57e69af86f65926a3dd1022adb6b01860757c796e3b44463f8105211"
+      }
+    }
+  ],
+  "jdk_tools": {
+    "javac23": {
+      "java": {
+        "bytes": 69952,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "bytes": 69872,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "bytes": 69872,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    },
+    "javac8": {
+      "java": {
+        "bytes": 152096,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javac": {
+        "bytes": 152128,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "javap": {
+        "bytes": 152128,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    }
+  },
+  "note": "depth-02 is the shallow branch control and depth-33 is the deeper nested-branch probe. Use the recorded method outcome, stop, produced report, and diagnostics as observed; do not infer a hard depth-bound hit without its explicit diagnostic.",
+  "schema": "cf16-depth-branch-root-v1",
+  "scope": "complete original BranchFinally plus Runner only; two branch depths, no recovered source compiled",
+  "status": "prepared-observations-complete"
+}

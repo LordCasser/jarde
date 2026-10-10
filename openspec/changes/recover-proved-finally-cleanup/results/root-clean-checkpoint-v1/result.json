@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "cargo",
+    "clean",
+    "--manifest-path",
+    "/Users/lordcasser/workspace/projects/jarde/Cargo.toml",
+    "--target-dir",
+    "/Users/lordcasser/workspace/projects/jarde/target"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "free_before": 20574072832,
+  "free_after": 20758491136,
+  "scope": "only this repository target; frozen CLI and source/class/raw evidence retained",
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 39,
+    "sha256": "7dec7208488beac5ccd8d6685a1696e85507e351d1180b2246f92328b3b47f5b"
+  }
+}

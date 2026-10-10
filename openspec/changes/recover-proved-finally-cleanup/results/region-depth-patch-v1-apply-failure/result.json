@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "apply",
+    "--check",
+    "openspec/changes/recover-proved-finally-cleanup/results/region-depth-test-luna-v1.patch"
+  ],
+  "exit": 128,
+  "cause": "malformed unified hunk count; no test source mutation",
+  "stderr_sha256": "3da646601eddb3e7998be51c2616b4bf33ad9117f954ea8f760d86a18084b926"
+}

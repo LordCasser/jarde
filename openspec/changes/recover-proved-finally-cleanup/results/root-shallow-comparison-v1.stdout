@@ -1,0 +1,13 @@
+{
+  "status": "comparison-complete-with-candidate-failures",
+  "counts": {
+    "jarde": 2,
+    "jadx-default": 2,
+    "jadx-none": 2
+  },
+  "candidate_success_counts": {
+    "jarde": 0,
+    "jadx-default": 2,
+    "jadx-none": 2
+  }
+}

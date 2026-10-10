@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/public-stop-tests-luna-v1.patch",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/public-stop-tests-luna-v2.patch",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/region-depth-test-luna-v1.patch",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/region-depth-test-luna-v2.patch",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-late-evidence-v3/stdout",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-patterns-all-v1/stdout",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-patterns-depth-final-v5/stdout",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-patterns-depth-final-v6/stdout",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-patterns-depth-final-v7/stdout",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-patterns-final-v4/stdout",
+    ":(exclude)openspec/changes/recover-proved-finally-cleanup/results/root-structured-finally-v1/stdout"
+  ],
+  "exit": 0,
+  "reason": "exclude only fixed original patch and process stdout whitespace; keep raw byte/hash identity, check all source/docs/scripts and other artifacts",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

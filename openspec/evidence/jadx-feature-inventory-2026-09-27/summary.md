@@ -274,3 +274,15 @@ CF16 ImplicitCleanup现有实现经当前CLI完整双JDK/all和essential四腿16
 2026-10-10 确切561组合产品验收完成：CI37994276707四job/51steps全success，两个fresh workspace seed各354test-result记录、3348passed/0failed/96ignored；真Temurin25.0.4+7.0.LTS的nested ignored1pass、BigDecimal ignored2pass及其它必要门禁成功。root保存完整JSON/stable原始gzip，核对冻结product/test/CLI/canonical身份；nested与BigDecimal均7/7，后者以561组合身份和新24/24/1226checks继承验收，旧6997/8cd真实失败仍保留。下一returned片2/7、Luna完整patch-only准备；boolean/char描述符only双JDK10加载控制root87checks，未调用目标方法，不计语义恢复。71/DT26/EM18整单元分类不变。
 
 2026-10-10 returned片局部验收推进到5/7：准确新值返回AST和dup_x2/store/return闭合；ordinary8pass/2ignored，双真实JDK当前test各2ignored pass。冻结v2新完整类2/2/425checks，旧nested4/4/479checks与旧24/24/1231checks均fresh重编运行，无裁剪成员；原程序/JADX历史hash复用。bool/char、额外consumer、非int返回、未知merged及错误复制/公开Stop控制保留，非法复制JVM VerifyError不能计合法Java语义腿。reader实测1087/4830/463/2715/8，官方fingerprint/P5各5pass/1ignored。全仓冷构建因20GiB磁盘守卫中止，MSRV预检未启动，最终完整门禁等待本产品确切新CI，不借561绿灯；71/DT26/EM18整单元分类不变。历史拒绝Arithmetic producer来源缺失单列债务，本片失败拒绝与561逐字不回退。
+
+2026-10-10 EM-18 按 JADX `TestArrayInit.test2` 补方法内 fresh byte[] 字段写入的完整类基线，见 [array-field-store](../java-syntax-2026-10-10/array-field-store/README.md)。原双 JDK 2/2、fresh JADX default/none 4/4、当前 Jarde 2/2，root 294 checks/0 errors，完整七方法/两字段、真实 allocation/element/call/putfield/return 来源与四条 raw 路径核对通过。新数组身份、失败时旧数组身份、null RHS 顺序/异常优先级正确；已有 ArrayInitializers+FieldWrite 组合有效，无新实现缺口，不新增机制或实施 spec。静态/构造器数组初始化不由此推定；71/EM-18 整单元分类不变。
+
+2026-10-10 returned 确切产品验收完成：6ddc77d5cc2a6fcf098aad40998f6d2602731c59 已推 main，CI 38001720578 四 job/52 steps 全部成功；两个 fresh workspace seed 各 354 records/3353 passed/0 failed/97 ignored。真 Temurin25.0.4+7.0.LTS returned ignored1pass、nested ignored1pass、BigDecimal ignored2pass，MSRV/Clippy/fuzz/supply 与严格门禁通过；完整日志和冻结产品/测试/canonical/CLI 身份经 root verifier v2 实际接受，returned 7/7。v1 日志颜色格式失败及本机磁盘停止均保留，不冒称本机全仓成功。71/DT26/EM18 整单元分类不变。
+
+2026-10-10 CF16 旧任务状态纠正为 8/11：当前 ImplicitCleanup 主体双 JDK × all/essential 四完整腿/16路径、root167checks，新增公共停止测试最终 p3_patterns84/84；内部中途 rollback 不由总预算/预取消推断。N=2/N=33 深度探针原四份程序有效，Jarde四份均 explanation_only/fallback、execution complete，未命中深度限制；2.4/3.1/3.2仍 pending。浅层单保护段 nested-loop+saved-int-return+cleanup 组合接缝单独补完整 JADX/Jarde 对照，不加推测性机制。新公共测试不能借6dd旧CI，CF16整单元分类不变。
+
+### 2026-10-10 CF16 真实深度停止检查点
+
+field/branch N=33 双 JDK 在 BCI450 命中既有 jre_recursion_bound，NotProduced且零正文/来源，root独立204checks/0errors。永久双版本fixture与公共exact测试新增；v6 libtest默认小栈溢出保留，v7明确8 MiB测试线程栈后完整p3_patterns85/85。CF16现9/11（2.4完成）；浅层组合仍fallback，不能计整单元追平，生产小栈安全也未证明。最终整类/新检查点CI仍待验收。
+
+CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde完整编译执行2/2与原raw相同，Completion覆盖型完整类继续编译拒绝，固定历史JADX源码重编的566/8错误保留。-p完整物理Code计数为4/7（旧3/6漏private mark）。当前10/11，3.2等待本检查点自己的CI；71单元分母/整单元状态不变。

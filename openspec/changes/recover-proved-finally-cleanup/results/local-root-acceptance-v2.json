@@ -1,0 +1,27 @@
+{
+  "status": "local_public_stop_tests_accepted_new_head_ci_pending",
+  "test_source": {
+    "path": "crates/jarde-java/tests/p3_patterns.rs",
+    "sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e"
+  },
+  "gate": "root-patterns-depth-final-v7/result.json",
+  "passed": 85,
+  "failed": 0,
+  "depth_stop": {
+    "code": "jre_recursion_bound",
+    "at": 450,
+    "jdk_fixtures": 2,
+    "root_verification": "depth-field-branch-root-v1/root-depth-verification-v2.json",
+    "checks": 204
+  },
+  "test_thread_stack_bytes": 8388608,
+  "known_failure": "v6 default libtest stack overflow; not production small-stack acceptance",
+  "production_changed": false,
+  "previous_v1_scope": "old 84 tests only",
+  "final_full_class_verifier": {
+    "path": "finally-final-root-verification-v3.json",
+    "checks": 536,
+    "errors": 0,
+    "cf16_tasks": "10/11"
+  }
+}

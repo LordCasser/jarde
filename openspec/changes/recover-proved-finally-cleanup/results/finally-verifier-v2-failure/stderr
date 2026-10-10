@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/verify-finally-final-root-v2.py", line 503, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/verify-finally-final-root-v2.py", line 454, in main
+    physical = parse_javap_members(javap_text, family)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/verify-finally-final-root-v2.py", line 157, in parse_javap_members
+    raise ValueError(f'javap member lacks descriptor/flags: {name}')
+ValueError: javap member lacks descriptor/flags: FAILURE

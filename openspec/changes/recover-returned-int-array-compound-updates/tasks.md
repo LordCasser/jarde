@@ -11,5 +11,5 @@
 ## 3. Root完整验收
 
 - [x] 3.1 root冻结所有实际相关产品源的新CLI，新完整双JDK2腿全source空CP/SP编译、仅新classes-Xverify/runtime与原raw一致；旧nested4与旧24腿不回退，独立来源/消费/返回值核验，原JADX/原程序历史hash复用与fresh执行分开声明。
-- [ ] 3.2 root实测reader/指纹/P5计费，完成fmt/MSRV/CI-exact Clippy/OpenSpec/diff与必要Java及最终完整双seed门禁；全workspace20GiB停线；实测局部目标采用1GiB target/2GiB机器余量双守卫，原失败不覆盖，阈值变化仅凭实际计费解释。
-- [ ] 3.3 root对抗复审、更新71账本/handoff、产品提交推送并验收确切CI四job/全部必要steps/新returned ignored真JDK执行，清本仓编译残留保留冻结CLI，不把窄片计为整个单元完成。
+- [x] 3.2 root实测reader/指纹/P5计费，完成fmt/MSRV/CI-exact Clippy/OpenSpec/diff与必要Java；确切产品 CI 38001720578 两个 fresh workspace seed 各 354 records/3353 passed/0 failed/97 ignored。全workspace20GiB停线；实测局部目标采用1GiB target/2GiB机器余量双守卫，原失败不覆盖。
+- [x] 3.3 root对抗复审、更新71账本/handoff；产品6ddc77d5cc2a6fcf098aad40998f6d2602731c59已提交推送，确切CI四job/52steps全部成功，新returned ignored真Temurin25.0.4+7.0.LTS执行1pass。完整日志/源码身份经root verifier v2接受，本仓提交构建残留已清，冻结CLI保留；不把窄片计为整个单元完成。

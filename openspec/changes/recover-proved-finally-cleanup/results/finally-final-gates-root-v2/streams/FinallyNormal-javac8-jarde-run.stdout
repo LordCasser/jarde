@@ -1,0 +1,2 @@
+normal:return:1:12
+throw:java.lang.IllegalArgumentException:same=true:12

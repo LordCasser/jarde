@@ -1,0 +1,10 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac23-jarde/FinallyCompletion.java:47: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac23-jarde/FinallyCompletion.java:58: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac23-jarde/FinallyCompletion.java:69: 错误: 缺少返回语句
+    }
+    ^
+3 个错误

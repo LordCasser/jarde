@@ -1,0 +1,10 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 1.52s
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-a83fd95a6ba2fb00)
+
+thread 'cf16_region_depth_stop_never_publishes_class_source' (15736117) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+error: test failed, to rerun pass `-p jarde-java --test p3_patterns`
+
+Caused by:
+  process didn't exit successfully: `/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_patterns-a83fd95a6ba2fb00` (signal: 6, SIGABRT: process abort signal)

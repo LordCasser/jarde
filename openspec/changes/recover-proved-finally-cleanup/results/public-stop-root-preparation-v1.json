@@ -1,0 +1,7 @@
+{
+  "patch_sha256": "283cfdbc9fb6317153f778bb7b4a114633ccd0e8bbd0e39d8cbe92518daee28f",
+  "runner": "openspec/changes/recover-proved-finally-cleanup/results/run-root-public-stop-gate-v1.py",
+  "reserve_bytes": 2147483648,
+  "target_cap_bytes": 1073741824,
+  "reason": "Targeted jarde-java dependency subset of the previously measured nested/returned facade target; no full-workspace command accepted. Source tests are a separate checkpoint from remote immutable 6dd product CI."
+}

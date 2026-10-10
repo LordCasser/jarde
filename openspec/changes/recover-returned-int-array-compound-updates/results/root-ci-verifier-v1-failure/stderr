@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/verify-ci-product-luna-v1.py", line 271, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/verify-ci-product-luna-v1.py", line 227, in main
+    assert f"{policy} ok" in groups[0][1], (manifest, policy)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('./Cargo.toml', 'advisories')

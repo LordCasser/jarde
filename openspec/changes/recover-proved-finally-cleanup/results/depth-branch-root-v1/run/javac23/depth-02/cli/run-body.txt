@@ -1,0 +1,17 @@
+// @method run(I)I
+// @declaration a static method of `BranchFinally`, member flags 0x0008
+// recovered from bytecode; presentation is not claimed to compile
+{
+    if (arg0 > 1) {
+        // @bytecode 5 8 9 10 13 14 15
+        // BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+    } else {
+        // @bytecode 40 43 44 45
+        // BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+    }
+    int local1 = arg0;
+    cleanup();
+    return local1;
+    // @bytecode 18 21 22 23 26 29 32 33 34 37 55 56 59 60
+    // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 29, 55]
+}

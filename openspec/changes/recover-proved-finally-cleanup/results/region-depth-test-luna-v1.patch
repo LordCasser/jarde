@@ -1,0 +1,47 @@
+--- a/crates/jarde-java/tests/p3_patterns.rs
++++ b/crates/jarde-java/tests/p3_patterns.rs
+@@ -5058,6 +5058,43 @@
+     assert_eq!(text.matches("finally {").count(), 1, "{text}");
+     assert_eq!(text.matches("cleanup();").count(), 1, "{text}");
+ }
+ 
++#[test]
++fn cf16_region_depth_stop_never_publishes_class_source() {
++    let classes: [&[u8]; 2] = [
++        include_bytes!("fixtures/cf16-region-depth/javac8/BranchFinally.class"),
++        include_bytes!("fixtures/cf16-region-depth/javac23/BranchFinally.class"),
++    ];
++    for class in classes {
++        let mut budget = Budget::new(limits());
++        let stopped = recover_class_source_exact(
++            class,
++            b"run",
++            b"(I)I",
++            1,
++            jarde_java::RecoveryEvidenceRequest::all(),
++            &mut budget,
++        );
++        let report = &stopped.report;
++        assert!(matches!(
++            &report.outcome,
++            jarde_java::report::RecoveryOutcome::Stopped(StopReason::Interrupted {
++                code,
++                at: Some(450),
++            }) if *code == "jre_recursion_bound"
++        ), "{:?}", report.outcome);
++        assert_eq!(report.content, jarde_java::report::RecoveryContent::NotProduced);
++        assert!(report.text.is_empty(), "{}", report.text);
++        assert!(report.source_map.is_empty());
++        assert!(report.rules.is_empty());
++        assert!(report.regions.is_empty());
++        assert!(stopped.initializer.is_none());
++        assert!(report.init.is_none());
++        assert!(matches!(
++            &report.execution,
++            ExecutionReport::Partial { .. }
++        ));
++    }
++}
++
+ #[test]
+ fn nested_string_switch_keeps_its_final_dispatch_inside_the_outer_default() {

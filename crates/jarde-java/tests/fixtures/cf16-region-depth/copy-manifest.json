@@ -1,0 +1,71 @@
+{
+  "schema": "cf16-region-depth-fixture-copy-v1",
+  "source_observation": {
+    "path": "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/result.json",
+    "sha256": "d176da0d339ac60a005aec82cff90ada8b46dc8015ebb6c500a059777b5388dd"
+  },
+  "files": [
+    {
+      "role": "javac8 original depth-33 class",
+      "source": "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/javac8/depth-33/classes/BranchFinally.class",
+      "path": "javac8/BranchFinally.class",
+      "bytes": 1287,
+      "sha256": "ef062a2e0a1876a804a644855519d925cc81ef20c48143e9ba079f894a90fa1d"
+    },
+    {
+      "role": "javac23 original depth-33 class",
+      "source": "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/javac23/depth-33/classes/BranchFinally.class",
+      "path": "javac23/BranchFinally.class",
+      "bytes": 1287,
+      "sha256": "59ceb398d1eecd251de372a7f7778196d400c40826a80d9758686fb540f0f248"
+    },
+    {
+      "role": "shared depth-33 Java source",
+      "source": "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/javac8/depth-33/source/BranchFinally.java",
+      "path": "source/BranchFinally.java",
+      "bytes": 14738,
+      "sha256": "d00dee9e24daf5e7a487f8b626685ed05e9aa72896fb374cb7f234b020bfcccf"
+    },
+    {
+      "role": "shared depth-33 Runner source",
+      "source": "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/javac8/depth-33/source/Runner.java",
+      "path": "source/Runner.java",
+      "bytes": 1039,
+      "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+    }
+  ],
+  "original_verification": {
+    "javac8": {
+      "compile_command": "javac8-depth-33-original-compile",
+      "compile_exit": 0,
+      "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verify_run_argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/javac8/depth-33/classes",
+        "Runner"
+      ],
+      "verify_run_exit": 0,
+      "verify_run_stdout_sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc",
+      "verify_run_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "javac23": {
+      "compile_command": "javac23-depth-33-original-compile",
+      "compile_exit": 0,
+      "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verify_run_argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "openspec/changes/recover-proved-finally-cleanup/results/depth-field-branch-root-v1/run-v2/javac23/depth-33/classes",
+        "Runner"
+      ],
+      "verify_run_exit": 0,
+      "verify_run_stdout_sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc",
+      "verify_run_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

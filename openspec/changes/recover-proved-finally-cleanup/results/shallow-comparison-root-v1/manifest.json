@@ -1,0 +1,1396 @@
+{
+  "actual_counts": {
+    "jadx-default": 2,
+    "jadx-none": 2,
+    "jarde": 2
+  },
+  "candidate_success_counts": {
+    "jadx-default": 2,
+    "jadx-none": 2,
+    "jarde": 0
+  },
+  "cases": [
+    {
+      "classes": [],
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac8/jarde/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac8/sources/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde",
+        "exit": 1,
+        "label": "javac8-jarde-compile",
+        "stderr": {
+          "bytes": 218,
+          "path": "raw/javac8-jarde-compile.stderr",
+          "sha256": "6100a7dbf53f2b05488bd71c0c6a047f42581274a9086eb9d0a8db92cb321b26"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac8-jarde-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compile_success": false,
+      "kind": "jarde",
+      "label": "javac8-jarde",
+      "leg": "javac8",
+      "runtime": null,
+      "runtime_exit": null,
+      "source_kind": "saved complete class-source.txt copied verbatim",
+      "sources": [
+        {
+          "bytes": 1923,
+          "path": "inputs/javac8/jarde/DeepFinally.java",
+          "sha256": "3870102f7ad25490d504ed282c7544741b9445cbefef97b59beb4c678422b7dd"
+        },
+        {
+          "bytes": 773,
+          "path": "inputs/javac8/sources/Runner.java",
+          "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+        }
+      ],
+      "success": false
+    },
+    {
+      "classes": [
+        {
+          "bytes": 364,
+          "path": "cases/javac8-jadx-default/classes/defpackage/DeepFinally.class",
+          "sha256": "d961a1c2b4ed651da490dfa416bd450b2c9e086db3c9f9bac1efb85707a1e638"
+        },
+        {
+          "bytes": 1007,
+          "path": "cases/javac8-jadx-default/classes/defpackage/Runner.class",
+          "sha256": "4a8debc51e01a48d22c4586de3dab89bd9b99f41766b762e9683f027b2ac8437"
+        }
+      ],
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default",
+        "exit": 0,
+        "label": "javac8-jadx-default-compile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-default-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-default-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compile_success": true,
+      "decompile": {
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/DeepFinally.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default",
+        "exit": 0,
+        "label": "javac8-jadx-default-decompile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-default-decompile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 148,
+          "path": "raw/javac8-jadx-default-decompile.stdout",
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        }
+      },
+      "generated_sources": [
+        {
+          "bytes": 525,
+          "path": "cases/javac8-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+          "sha256": "c825d6daf3833b08d4325586695e65534b9017bf1981721eadc587429cc0cf19"
+        }
+      ],
+      "kind": "jadx-default",
+      "label": "javac8-jadx-default",
+      "leg": "javac8",
+      "runner": {
+        "bytes": 794,
+        "path": "cases/javac8-jadx-default/Runner.java",
+        "sha256": "7d3e97c16ea2011772e23f8234d6da254a5b4c30108aaed759170d587e6533eb"
+      },
+      "runner_package": "defpackage",
+      "runtime": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default",
+        "exit": 0,
+        "label": "javac8-jadx-default-verify-run",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-default-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 35,
+          "path": "raw/javac8-jadx-default-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        }
+      },
+      "runtime_exit": 0,
+      "runtime_matches_original": true,
+      "sources": [
+        {
+          "bytes": 525,
+          "path": "cases/javac8-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+          "sha256": "c825d6daf3833b08d4325586695e65534b9017bf1981721eadc587429cc0cf19"
+        },
+        {
+          "bytes": 794,
+          "path": "cases/javac8-jadx-default/Runner.java",
+          "sha256": "7d3e97c16ea2011772e23f8234d6da254a5b4c30108aaed759170d587e6533eb"
+        }
+      ],
+      "success": true
+    },
+    {
+      "classes": [
+        {
+          "bytes": 353,
+          "path": "cases/javac8-jadx-none/classes/DeepFinally.class",
+          "sha256": "b2dec3e8706c0b0edfc037b7b9b1142ba4f3bf56faef6c08ae40bd109fe91016"
+        },
+        {
+          "bytes": 985,
+          "path": "cases/javac8-jadx-none/classes/Runner.class",
+          "sha256": "4627b9678c75facf7a579939294944ec7daf4df8da6cf6816d59e1b5c02a7832"
+        }
+      ],
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/jadx/sources/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none",
+        "exit": 0,
+        "label": "javac8-jadx-none-compile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-none-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-none-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compile_success": true,
+      "decompile": {
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/DeepFinally.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none",
+        "exit": 0,
+        "label": "javac8-jadx-none-decompile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-none-decompile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 148,
+          "path": "raw/javac8-jadx-none-decompile.stdout",
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        }
+      },
+      "generated_sources": [
+        {
+          "bytes": 524,
+          "path": "cases/javac8-jadx-none/jadx/sources/DeepFinally.java",
+          "sha256": "f53ed9cf7c03ea45ef164d5c1e8e8fdf79cfc7e424381a4287b6642f9e5a14ec"
+        }
+      ],
+      "kind": "jadx-none",
+      "label": "javac8-jadx-none",
+      "leg": "javac8",
+      "runner": {
+        "bytes": 773,
+        "path": "cases/javac8-jadx-none/Runner.java",
+        "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+      },
+      "runner_package": null,
+      "runtime": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none",
+        "exit": 0,
+        "label": "javac8-jadx-none-verify-run",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-jadx-none-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 35,
+          "path": "raw/javac8-jadx-none-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        }
+      },
+      "runtime_exit": 0,
+      "runtime_matches_original": true,
+      "sources": [
+        {
+          "bytes": 524,
+          "path": "cases/javac8-jadx-none/jadx/sources/DeepFinally.java",
+          "sha256": "f53ed9cf7c03ea45ef164d5c1e8e8fdf79cfc7e424381a4287b6642f9e5a14ec"
+        },
+        {
+          "bytes": 773,
+          "path": "cases/javac8-jadx-none/Runner.java",
+          "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+        }
+      ],
+      "success": true
+    },
+    {
+      "classes": [],
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac23/jarde/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac23/sources/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde",
+        "exit": 1,
+        "label": "javac23-jarde-compile",
+        "stderr": {
+          "bytes": 219,
+          "path": "raw/javac23-jarde-compile.stderr",
+          "sha256": "288d533e6da519d22f9c28091f3d0a639a6f9e7e696899e8eb9c41953a45f8c2"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac23-jarde-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compile_success": false,
+      "kind": "jarde",
+      "label": "javac23-jarde",
+      "leg": "javac23",
+      "runtime": null,
+      "runtime_exit": null,
+      "source_kind": "saved complete class-source.txt copied verbatim",
+      "sources": [
+        {
+          "bytes": 1923,
+          "path": "inputs/javac23/jarde/DeepFinally.java",
+          "sha256": "3870102f7ad25490d504ed282c7544741b9445cbefef97b59beb4c678422b7dd"
+        },
+        {
+          "bytes": 773,
+          "path": "inputs/javac23/sources/Runner.java",
+          "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+        }
+      ],
+      "success": false
+    },
+    {
+      "classes": [
+        {
+          "bytes": 361,
+          "path": "cases/javac23-jadx-default/classes/defpackage/DeepFinally.class",
+          "sha256": "8c569c5e7bcdf439cf167f51f31db76f4fdcf14907d76c8a3d88faa0409ab5a6"
+        },
+        {
+          "bytes": 1007,
+          "path": "cases/javac23-jadx-default/classes/defpackage/Runner.class",
+          "sha256": "6c546788ba18bd1cc61ce37fb6713a8f4fa64099e5990e956f341225bbff99e5"
+        }
+      ],
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default",
+        "exit": 0,
+        "label": "javac23-jadx-default-compile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-default-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-default-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compile_success": true,
+      "decompile": {
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/DeepFinally.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default",
+        "exit": 0,
+        "label": "javac23-jadx-default-decompile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-default-decompile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 148,
+          "path": "raw/javac23-jadx-default-decompile.stdout",
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        }
+      },
+      "generated_sources": [
+        {
+          "bytes": 525,
+          "path": "cases/javac23-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+          "sha256": "c825d6daf3833b08d4325586695e65534b9017bf1981721eadc587429cc0cf19"
+        }
+      ],
+      "kind": "jadx-default",
+      "label": "javac23-jadx-default",
+      "leg": "javac23",
+      "runner": {
+        "bytes": 794,
+        "path": "cases/javac23-jadx-default/Runner.java",
+        "sha256": "7d3e97c16ea2011772e23f8234d6da254a5b4c30108aaed759170d587e6533eb"
+      },
+      "runner_package": "defpackage",
+      "runtime": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default",
+        "exit": 0,
+        "label": "javac23-jadx-default-verify-run",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-default-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 35,
+          "path": "raw/javac23-jadx-default-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        }
+      },
+      "runtime_exit": 0,
+      "runtime_matches_original": true,
+      "sources": [
+        {
+          "bytes": 525,
+          "path": "cases/javac23-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+          "sha256": "c825d6daf3833b08d4325586695e65534b9017bf1981721eadc587429cc0cf19"
+        },
+        {
+          "bytes": 794,
+          "path": "cases/javac23-jadx-default/Runner.java",
+          "sha256": "7d3e97c16ea2011772e23f8234d6da254a5b4c30108aaed759170d587e6533eb"
+        }
+      ],
+      "success": true
+    },
+    {
+      "classes": [
+        {
+          "bytes": 350,
+          "path": "cases/javac23-jadx-none/classes/DeepFinally.class",
+          "sha256": "71218ba936bdaad566e35dd2b8ac2c62539d80b2d32e295004c4395dad6179bd"
+        },
+        {
+          "bytes": 985,
+          "path": "cases/javac23-jadx-none/classes/Runner.class",
+          "sha256": "eddbdc64f6a495bb907b105d6069541b95a79bae7526a4650f1fd06cd472c27f"
+        }
+      ],
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/jadx/sources/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none",
+        "exit": 0,
+        "label": "javac23-jadx-none-compile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-none-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-none-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compile_success": true,
+      "decompile": {
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/DeepFinally.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none",
+        "exit": 0,
+        "label": "javac23-jadx-none-decompile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-none-decompile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 148,
+          "path": "raw/javac23-jadx-none-decompile.stdout",
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        }
+      },
+      "generated_sources": [
+        {
+          "bytes": 524,
+          "path": "cases/javac23-jadx-none/jadx/sources/DeepFinally.java",
+          "sha256": "f53ed9cf7c03ea45ef164d5c1e8e8fdf79cfc7e424381a4287b6642f9e5a14ec"
+        }
+      ],
+      "kind": "jadx-none",
+      "label": "javac23-jadx-none",
+      "leg": "javac23",
+      "runner": {
+        "bytes": 773,
+        "path": "cases/javac23-jadx-none/Runner.java",
+        "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+      },
+      "runner_package": null,
+      "runtime": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none",
+        "exit": 0,
+        "label": "javac23-jadx-none-verify-run",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-jadx-none-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 35,
+          "path": "raw/javac23-jadx-none-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        }
+      },
+      "runtime_exit": 0,
+      "runtime_matches_original": true,
+      "sources": [
+        {
+          "bytes": 524,
+          "path": "cases/javac23-jadx-none/jadx/sources/DeepFinally.java",
+          "sha256": "f53ed9cf7c03ea45ef164d5c1e8e8fdf79cfc7e424381a4287b6642f9e5a14ec"
+        },
+        {
+          "bytes": 773,
+          "path": "cases/javac23-jadx-none/Runner.java",
+          "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+        }
+      ],
+      "success": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1",
+      "exit": 0,
+      "label": "jadx-version",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/jadx-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "path": "raw/jadx-version.stdout",
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac8/jarde/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac8/sources/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jarde",
+      "exit": 1,
+      "label": "javac8-jarde-compile",
+      "stderr": {
+        "bytes": 218,
+        "path": "raw/javac8-jarde-compile.stderr",
+        "sha256": "6100a7dbf53f2b05488bd71c0c6a047f42581274a9086eb9d0a8db92cb321b26"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-jarde-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/DeepFinally.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default",
+      "exit": 0,
+      "label": "javac8-jadx-default-decompile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-default-decompile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 148,
+        "path": "raw/javac8-jadx-default-decompile.stdout",
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default",
+      "exit": 0,
+      "label": "javac8-jadx-default-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-default-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-default-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-default",
+      "exit": 0,
+      "label": "javac8-jadx-default-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-default-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac8-jadx-default-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes/DeepFinally.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none",
+      "exit": 0,
+      "label": "javac8-jadx-none-decompile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-none-decompile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 148,
+        "path": "raw/javac8-jadx-none-decompile.stdout",
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/jadx/sources/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none",
+      "exit": 0,
+      "label": "javac8-jadx-none-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-none-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-none-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac8-jadx-none",
+      "exit": 0,
+      "label": "javac8-jadx-none-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac8-jadx-none-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac8-jadx-none-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac23/jarde/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/inputs/javac23/sources/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jarde",
+      "exit": 1,
+      "label": "javac23-jarde-compile",
+      "stderr": {
+        "bytes": 219,
+        "path": "raw/javac23-jarde-compile.stderr",
+        "sha256": "288d533e6da519d22f9c28091f3d0a639a6f9e7e696899e8eb9c41953a45f8c2"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-jarde-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/DeepFinally.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default",
+      "exit": 0,
+      "label": "javac23-jadx-default-decompile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-default-decompile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 148,
+        "path": "raw/javac23-jadx-default-decompile.stdout",
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/jadx/sources/defpackage/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default",
+      "exit": 0,
+      "label": "javac23-jadx-default-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-default-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-default-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-default",
+      "exit": 0,
+      "label": "javac23-jadx-default-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-default-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac23-jadx-default-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes/DeepFinally.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none",
+      "exit": 0,
+      "label": "javac23-jadx-none-decompile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-none-decompile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 148,
+        "path": "raw/javac23-jadx-none-decompile.stdout",
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/jadx/sources/DeepFinally.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none",
+      "exit": 0,
+      "label": "javac23-jadx-none-compile",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-none-compile.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-none-compile.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1/cases/javac23-jadx-none",
+      "exit": 0,
+      "label": "javac23-jadx-none-verify-run",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/javac23-jadx-none-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/javac23-jadx-none-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    }
+  ],
+  "expected_counts": {
+    "jadx-default": 2,
+    "jadx-none": 2,
+    "jarde": 2
+  },
+  "frozen_cli": {
+    "candidate_sources": {
+      "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "src/facade.rs": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01"
+    },
+    "metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/candidate-cli-v2.json",
+    "metadata_sha256": "ddfbe127890d95ced5c4ed2a89d67d42deb7eba19e6c1e4ce12707221bd8f769",
+    "path": "/private/tmp/jarde-returned-array-cli-v2",
+    "sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110"
+  },
+  "input_inventory": {
+    "javac23": {
+      "class": {
+        "bytes": 346,
+        "path": "inputs/javac23/classes/DeepFinally.class",
+        "sha256": "e5deb8e23d8d406525768ba4e05187602956956cf050984ce86eae2117f3f036"
+      },
+      "jarde_document_json": {
+        "bytes": 36591,
+        "path": "inputs/javac23/jarde/document.json",
+        "sha256": "27d093de7a8b984976e687ac2fa53edaf9662c0ec7e23812cee20961e65f5ee4"
+      },
+      "jarde_source": {
+        "bytes": 1923,
+        "path": "inputs/javac23/jarde/DeepFinally.java",
+        "sha256": "3870102f7ad25490d504ed282c7544741b9445cbefef97b59beb4c678422b7dd"
+      },
+      "runner": {
+        "bytes": 773,
+        "path": "inputs/javac23/sources/Runner.java",
+        "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+      },
+      "runner_class": {
+        "bytes": 985,
+        "path": "inputs/javac23/classes/Runner.class",
+        "sha256": "eddbdc64f6a495bb907b105d6069541b95a79bae7526a4650f1fd06cd472c27f"
+      },
+      "source": {
+        "bytes": 373,
+        "path": "inputs/javac23/sources/DeepFinally.java",
+        "sha256": "da229c6bc912141e0de22606c5e3425ab2ece3e93848ac0d74b2d89e2fdc417e"
+      }
+    },
+    "javac8": {
+      "class": {
+        "bytes": 346,
+        "path": "inputs/javac8/classes/DeepFinally.class",
+        "sha256": "c4f179060a8701d6662dc3d9c8ffc8bc124cf9b2c95d560cd813eb4670361f04"
+      },
+      "jarde_document_json": {
+        "bytes": 36594,
+        "path": "inputs/javac8/jarde/document.json",
+        "sha256": "5df8b1ff89c4a0adad61d36df872f9e7145613c9bb6abae2097d1b6d051d40dd"
+      },
+      "jarde_source": {
+        "bytes": 1923,
+        "path": "inputs/javac8/jarde/DeepFinally.java",
+        "sha256": "3870102f7ad25490d504ed282c7544741b9445cbefef97b59beb4c678422b7dd"
+      },
+      "runner": {
+        "bytes": 773,
+        "path": "inputs/javac8/sources/Runner.java",
+        "sha256": "e6e8faa21f6cb8fdfa9e978e20521f1e3a06978b8f813b78da62d611420c6021"
+      },
+      "runner_class": {
+        "bytes": 985,
+        "path": "inputs/javac8/classes/Runner.class",
+        "sha256": "4627b9678c75facf7a579939294944ec7daf4df8da6cf6816d59e1b5c02a7832"
+      },
+      "source": {
+        "bytes": 373,
+        "path": "inputs/javac8/sources/DeepFinally.java",
+        "sha256": "da229c6bc912141e0de22606c5e3425ab2ece3e93848ac0d74b2d89e2fdc417e"
+      }
+    }
+  },
+  "input_result": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/result.json",
+    "sha256": "bb7c73bf82a51d4a31f3ebf70005db2c991f27e7fc7e38b8e1fef707c1d359cc"
+  },
+  "inventory": {
+    "excludes": [
+      "file-inventory.json"
+    ],
+    "includes": [
+      "manifest.json"
+    ],
+    "path": "file-inventory.json"
+  },
+  "jadx": "/opt/homebrew/bin/jadx",
+  "jadx_version": {
+    "command": {
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/shallow-comparison-root-v1",
+      "exit": 0,
+      "label": "jadx-version",
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/jadx-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "path": "raw/jadx-version.stdout",
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      }
+    },
+    "reported": "1.5.6"
+  },
+  "jdk_tools": {
+    "javac23": {
+      "java": {
+        "bytes": 69952,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "bytes": 69872,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "bytes": 69872,
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    },
+    "javac8": {
+      "java": {
+        "bytes": 152096,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javac": {
+        "bytes": 152128,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "javap": {
+        "bytes": 152128,
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    }
+  },
+  "original_commands_and_raw": {
+    "javac23": {
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/source/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/source/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02",
+        "exit": 0,
+        "label": "javac23-depth-02-original-compile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-02-original-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-02-original-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "copied_raw": [
+        {
+          "bytes": 0,
+          "path": "raw/oracle/javac23/original-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 0,
+          "path": "raw/oracle/javac23/original-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 35,
+          "path": "raw/oracle/javac23/original-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        },
+        {
+          "bytes": 0,
+          "path": "raw/oracle/javac23/original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "run": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac23/depth-02",
+        "exit": 0,
+        "label": "javac23-depth-02-original-verify-run",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac23-depth-02-original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 35,
+          "path": "raw/javac23-depth-02-original-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        }
+      }
+    },
+    "javac8": {
+      "compile": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/source/DeepFinally.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/source/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02",
+        "exit": 0,
+        "label": "javac8-depth-02-original-compile",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-02-original-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-02-original-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "copied_raw": [
+        {
+          "bytes": 0,
+          "path": "raw/oracle/javac8/original-compile.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 0,
+          "path": "raw/oracle/javac8/original-compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 35,
+          "path": "raw/oracle/javac8/original-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        },
+        {
+          "bytes": 0,
+          "path": "raw/oracle/javac8/original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "run": {
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/depth-boundary-root-v1/run/javac8/depth-02",
+        "exit": 0,
+        "label": "javac8-depth-02-original-verify-run",
+        "stderr": {
+          "bytes": 0,
+          "path": "raw/javac8-depth-02-original-verify-run.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 35,
+          "path": "raw/javac8-depth-02-original-verify-run.stdout",
+          "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+        }
+      }
+    }
+  },
+  "original_oracles": {
+    "javac23": {
+      "exit": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/oracle/javac23/original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/oracle/javac23/original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    },
+    "javac8": {
+      "exit": 0,
+      "stderr": {
+        "bytes": 0,
+        "path": "raw/oracle/javac8/original-verify-run.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 35,
+        "path": "raw/oracle/javac8/original-verify-run.stdout",
+        "sha256": "1258e7775af6157810f812a5fcd4611868948d545c7c1257b72b34a32a55f194"
+      }
+    }
+  },
+  "schema": "cf16-shallow-comparison-root-v1",
+  "scope": "depth-02 only; original, saved Jarde source, and fresh JADX default/none source; no method is deleted",
+  "script": {
+    "bytes": 19718,
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/prepare-shallow-comparison-root-v1.py",
+    "sha256": "bf401cd402ecc72eab39f02c54ed8b2850616ddd6cb3d7fc42d626ca41436d61"
+  },
+  "status": "comparison-complete-with-candidate-failures"
+}

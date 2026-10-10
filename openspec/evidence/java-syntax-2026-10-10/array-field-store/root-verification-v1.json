@@ -1,0 +1,14 @@
+{
+  "status": "accepted",
+  "checks": 294,
+  "errors": [],
+  "commands": 31,
+  "original_legs": 2,
+  "fresh_jadx_legs": 4,
+  "jarde_legs": 2,
+  "paths_per_leg": 4,
+  "manifest_sha256": "b8a783f59e59bc8308913fa4bb391045b1851b7cf428c4ed8f64bd1f28cf62b8",
+  "inventory_sha256": "5ac2153916e9ae33eadfcfe3074a5ec2c71ee6132b635578a6f5edbb3f1ec058",
+  "cli_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+  "scope": "method fresh byte array initializer consumed by field store; complete class, physical seven methods/two fields and real array origins; no implementation gap demonstrated"
+}

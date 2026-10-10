@@ -1,0 +1,18 @@
+{
+  "schema": "finally-final-root-verification-v3",
+  "status": "passed",
+  "checks": 536,
+  "errors": [],
+  "replay_manifest_sha256": "25fba3ab8ea834202cd0cca8e3881ca50fbf57f6753b1f79c331bee7f7811ebe",
+  "javap_inspection_sha256": "e3f1644221e639c1d07195b92255e1287f802839a63d4b83234ad5b4d9b62a64",
+  "case_count": 12,
+  "command_count": 26,
+  "javap_count": 4,
+  "physical_code_methods": {
+    "FinallyNormal": 4,
+    "FinallyCompletion": 7
+  },
+  "normal_jarde_and_jadx_raw_matches": true,
+  "completion_jadx_negative_566_8": true,
+  "completion_jarde_compile_negative": true
+}

@@ -1,0 +1,321 @@
+{
+  "schema": "returned-int-array-ci-product-root-acceptance-v1",
+  "product_commit": "6ddc77d5cc2a6fcf098aad40998f6d2602731c59",
+  "run_id": 38001720578,
+  "url": "https://github.com/LordCasser/jarde/actions/runs/38001720578",
+  "status": "accepted",
+  "raw_ci_json_sha256": "0bdce2593997b371f1bbeaedc89eaca4ccbf197f7f0cac4315c3ece90ae1c54d",
+  "stable_raw_log_sha256": "03753ac873dafb833ab9e4addad7a86d69ba259d41ddd391d11d3d2d809db068",
+  "stable_gzip_log_sha256": "604bd00eb9b3e6201a72e83eb650fa527b634e95875fee73fb609c8bc55b0d60",
+  "jobs": 4,
+  "steps": 52,
+  "all_jobs_and_steps_success": true,
+  "workspace_seed_runs": [
+    {
+      "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+      "seed": "5350648285461741569",
+      "test_result_records": 354,
+      "passed": 3353,
+      "failed": 0,
+      "ignored": 97
+    },
+    {
+      "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+      "seed": "5350648285461741570",
+      "test_result_records": 354,
+      "passed": 3353,
+      "failed": 0,
+      "ignored": 97
+    }
+  ],
+  "bigdecimal_ignored_test": {
+    "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+    "test_result_records": 1,
+    "passed": 2,
+    "failed": 0,
+    "ignored": 0
+  },
+  "installed_jdk": {
+    "distribution": "Temurin",
+    "version": "25.0.4+7.0.LTS",
+    "confirmed_from_stable_log": true
+  },
+  "source_identity": {
+    "crates/jarde-java/src/init.rs": {
+      "category": "product",
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "current_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/report.rs": {
+      "category": "product",
+      "sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "current_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/build.rs": {
+      "category": "product",
+      "sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "current_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/ast.rs": {
+      "category": "product",
+      "sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "current_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/emit.rs": {
+      "category": "product",
+      "sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "current_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/asserts.rs": {
+      "category": "product",
+      "sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "current_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "current_matches_ci_product": true
+    },
+    "crates/jarde-java/src/field.rs": {
+      "category": "product",
+      "sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "current_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "current_matches_ci_product": true
+    },
+    "src/facade.rs": {
+      "category": "product",
+      "sha256": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+      "current_sha256": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+      "current_matches_ci_product": true
+    },
+    "src/class_source.rs": {
+      "category": "product",
+      "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "current_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "current_matches_ci_product": true
+    },
+    "Cargo.lock": {
+      "category": "product",
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "current_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "current_matches_ci_product": true
+    },
+    "tests/p3_nested_int_array_compound_updates.rs": {
+      "category": "test",
+      "sha256": "6d8ac87aa8497c054a968203ca25c283125face5367cdfe4e1e88f84c6389d31",
+      "current_sha256": "6d8ac87aa8497c054a968203ca25c283125face5367cdfe4e1e88f84c6389d31",
+      "current_matches_ci_product": true
+    },
+    ".github/workflows/ci.yml": {
+      "category": "test",
+      "sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+      "current_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+      "current_matches_ci_product": true
+    },
+    "tests/recover_lambda_primitive_array_capture.rs": {
+      "category": "test",
+      "sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+      "current_sha256": "0e0135f8fecb6530db36ad26aff4a5b72b08ae83f9dd4b18fe0a7250c600cec5",
+      "current_matches_ci_product": true
+    },
+    "tests/p3_constructed_reference_array_elements.rs": {
+      "category": "test",
+      "sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+      "current_sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2",
+      "current_matches_ci_product": true
+    },
+    "tests/recover_boxed_number_widening.rs": {
+      "category": "test",
+      "sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824",
+      "current_sha256": "c039697f51e675aba23520a3a58669423b8d773b9cd6c53165ef28ab57124824",
+      "current_matches_ci_product": true
+    }
+  },
+  "immutable_current_sources": {
+    "crates/jarde-reader/src/classfile.rs": {
+      "bytes": 530115,
+      "sha256": "dc6d3f9beec881922fdedbcc1a131bde14827aceb702d9445107c27d586bbe17",
+      "git_matches_current": true
+    },
+    "Cargo.lock": {
+      "bytes": 19977,
+      "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "git_matches_current": true
+    },
+    "tests/fixtures/corpus-fingerprint.json": {
+      "bytes": 453919,
+      "sha256": "b7c86f74349da1ee12f13fa0d2c1b9e89765e1deef9343eec51d2fa457542f14",
+      "git_matches_current": true
+    },
+    "tests/p3_bigdecimal_number_widening.rs": {
+      "bytes": 12544,
+      "sha256": "781ecf4410e8933e5df029d6ce3d9c146e6a7daeaa402fbd6c042884b34fd1a1",
+      "git_matches_current": true
+    }
+  },
+  "canonical_input_files": [
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/README.md",
+      "bytes": 956,
+      "sha256": "fc629f21c6f907c24730a94cfe839eff812c8ee94e3caf9ed43766ec98252c21",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/ReturnedIntArrayUpdates.java",
+      "bytes": 1041,
+      "sha256": "073fb19298a16fadd84b3c5cdea58c768013312b9da4105f92b69d62f13f8951",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/Runner.java",
+      "bytes": 3643,
+      "sha256": "bd598bd9703ef3d9c5d2eca699d73d38642f2bd39198ffc0dbd4cb30c2e1ec97",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/long-return.class",
+      "bytes": 753,
+      "sha256": "9491a463cb76c2736d43bfef1dd13c71aa6163c1de429d9653eb956971d1ee1e",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/returned-copy-extra-consumer.class",
+      "bytes": 754,
+      "sha256": "16cc15b51fec54305cabb781da718a4763b2daa4e8e389fb8f60e0fb70c544d8",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v23/sum-extra-consumer.class",
+      "bytes": 754,
+      "sha256": "dd17c24b682ceb6526f2598ccfb1b67afc1a2e4c503247938de14686141c6289",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/long-return.class",
+      "bytes": 753,
+      "sha256": "67c412323f6cc015841cbfc6148086160322ab3d702671cd050f9a1b29ad200f",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/returned-copy-extra-consumer.class",
+      "bytes": 754,
+      "sha256": "b03f0cc602ff78999c324caf9ce44c423fa7ccbd055bac1ddc1a44e2a9acd82d",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/consumer-controls/v8/sum-extra-consumer.class",
+      "bytes": 754,
+      "sha256": "678fe9b867e33e1b5c4552671b30d5dfd0ef5dcf425f51856199f5054e253289",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-index.class",
+      "bytes": 752,
+      "sha256": "a68cd715adc67b38fb1041b56cb9f3205dbf13eb1927ce71c55dd2c97be6340c",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/boolean-rhs.class",
+      "bytes": 752,
+      "sha256": "e935551506c087f1acde1a7d66a4febcec3064fce64d3ab617f20df2555835fc",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-index.class",
+      "bytes": 752,
+      "sha256": "3379771d904476a632c59f5c952d4542fcc225354e3cbe186c35d7826b6d8da7",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v23/char-rhs.class",
+      "bytes": 752,
+      "sha256": "25b22c283da8ed8936c81f90029291b2ec50d204ca8c18abeff46eaace80988a",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-index.class",
+      "bytes": 752,
+      "sha256": "ced7e278f244d76d7864468f98efc6f04048a11472d617d766fbc0ddcd2691fd",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/boolean-rhs.class",
+      "bytes": 752,
+      "sha256": "b61f284aaa4e48b7eb6cd025a4b3750a7398634ee62cae68a4221cf02e5eb58d",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-index.class",
+      "bytes": 752,
+      "sha256": "7028ba14c0f5b33657d377dbf5afc9a962fd2cc3461d61d31556abc33f12cc9e",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/controls/v8/char-rhs.class",
+      "bytes": 752,
+      "sha256": "7c0b8a0ef2b693b16e61924e0109c41eab2da9215093b16e8d003955927b94fc",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/copy-manifest-v1.json",
+      "bytes": 7956,
+      "sha256": "8954dd94d11cad16025110e6aee05fec0fc494436e4f6f9a615c2462fbf9365c",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/expected.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/expected.stdout",
+      "bytes": 159,
+      "sha256": "615dba6a91cfc08ee20e974187c677121639d84a1ebce5a2dd736a876122f616",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/v23/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "5a7814b10195117112967f3db8eea0b322e70152544d0c32a5723ed9a59ca793",
+      "current_matches_ci_product": true
+    },
+    {
+      "path": "tests/fixtures/returned-int-array-compound-updates/v8/ReturnedIntArrayUpdates.class",
+      "bytes": 752,
+      "sha256": "0165fd2120ceee93e7cce4ccf77324ca2e20157d3f2c2b2ce18691cc3e52cf88",
+      "current_matches_ci_product": true
+    }
+  ],
+  "nested_ignored_test": {
+    "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle",
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "returned_ignored_test": {
+    "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class",
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "supply_cli": {
+    "version": "0.20.2",
+    "commands": [
+      "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+      "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+    ],
+    "raw_log_sha256": "bc917842cd2e684b327c9837370e99130085c339e1518f3ddd0b9f579c4014b8",
+    "gzip_log_sha256": "a9fdf5aa7b019aa5c954e88df25b982b4dc3e9f5ef557372232e6e6198fb36ce"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-returned-array-cli-v2",
+    "sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+    "metadata_sha256": "ddfbe127890d95ced5c4ed2a89d67d42deb7eba19e6c1e4ce12707221bd8f769"
+  },
+  "workflow_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+  "verifier": "verify-ci-product-root-v2.py",
+  "scope": "Only the immutable product commit and matching frozen CLI are accepted. Current-source hashes are recorded separately.",
+  "log_partition": "two exact workspace command groups with distinct declared seeds, one BigDecimal ignored-test group, and exact nested/returned ignored-test groups; API step names/status checked separately"
+}

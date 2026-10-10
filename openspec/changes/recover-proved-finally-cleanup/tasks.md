@@ -10,10 +10,10 @@
 
 - [x] 2.1 在现有 `guard`/pass 机制中证明一个 straight 非覆盖 cleanup 的正常/异常副本等价、操作数与成员身份及每条出口恰好一次；须在比较副本前检查 catch-all 半开保护范围均不包含正常或 handler 清理指令，否则其自身抛错可能重入。以不同 cleanup 目标/参数、竞争 handler、范围缺口、1.5 的范围扩围、重复或额外消费者为拒绝测试，预算/取消沿既有停止契约。
 - [x] 2.2 用现有 `Plan`/`Region::Guard` 半开指令范围认领 body、两份 cleanup、handler 与返回，给现有 `Try` AST/emitter 加最小可选 finally 正文；先对直线型正文设无分支/转移门槛，检查融合块中无独立重复语句、无遗漏物理指令，资源/monitor/typed-catch 回归不变。不得让平坦 `body_range` 静默吞掉分支。
-- [ ] 2.3 证明 try 返回值在 cleanup 前保存、正常路径返回该旧值，handler 重抛捕获的同一异常；cleanup 自身抛错时按 Java 完成优先级覆盖。`FinallyLeadSnapshot` 的同块前置赋值与返回快照已由[verification-2.3-lead.md](verification-2.3-lead.md)验收；直线 `cleanup()` 抛错四路径已由[verification-2.2.md](verification-2.2.md)验收。剩余实现门槛仅为 `ImplicitCleanup.run()` 受保护正文中分支/`throw` 的 Region 子结构、完成语义和拒绝边界：须完整表达或继续引用，不能以平坦范围冒充正文。对于覆盖型 return/throw、未知值稳定性或不能呈现的生产者，保守引用完整候选而非生成错义 finally；本任务仍未完成。
-- [ ] 2.4 核对默认/完整来源正文相同且涵盖 try、正常和异常 cleanup、保存返回、异常表及 rethrow 的真实 BCI/成员；正文/来源预算、取消和深度界限得到既有有界结果，不留下半个 finally。
+- [x] 2.3 证明 try 返回值在 cleanup 前保存、正常路径返回该旧值、handler 重抛同一异常，cleanup 调用抛错覆盖待完成路径。straight/lead 验收仍保留；`ImplicitCleanup.run()` 的分支/throw 子 Region 已在当前 CLI 双 JDK × all/essential 四份完整类、16 路径复验，root 167 checks/0 errors，范围扩围继续拒绝，见 `results/current-finally-root-verification-v2.json`。不重复实现正文，不将该语义证据计作内部停止回滚测试。
+- [x] 2.4 核对 all/essential 正文相同和真实 BCI/成员来源；用现有 ImplicitCleanup exact harness 验证提交前正文/来源预算、取消与既有深度限界不发布半个 finally，提交后证据受限保留完整正文。审查现有 checkpoint 恢复分支，明确公共测试与内部动态阶段证据的区别；不使用总 IrItems 减一或预取消冒称内部回滚，不为测试新增生产 hook。真实 33 层 field/branch 双 JDK 在 BCI450 命中 jre_recursion_bound；root 204 checks/0 errors，永久 fixture 双版本通过完整 p3_patterns 85/85。测试线程显式 8 MiB 栈，默认小栈溢出失败 v6 保留，未声称生产小栈安全。
 
 ## 3. 整类对照与主代理验收
 
-- [ ] 3.1 用重建 Engine/CLI 不修改生成文本地编译/运行非覆盖型完整类，与原 class/JADX 的正常返回、try 抛错与 cleanup 抛错逐行比较；重放 1.2 覆盖型拒绝、资源/monitor/typed-catch 与现有 guard 回归。
+- [x] 3.1 用重建 Engine/CLI 不修改生成文本地编译/运行非覆盖型完整类，与原 class/JADX 的正常返回、try 抛错与 cleanup 抛错逐行比较；重放 1.2 覆盖型拒绝、资源/monitor/typed-catch 与现有 guard 回归。冻结当前CLI fresh完整类双JDK正例2/2、覆盖型整类编译拒绝2/2；历史JADX source重编的566/8负例保持，root独立536checks/0errors。资源/monitor/typed-catch等回归由相同产品6dd确切CI继承，新公共测试自己的CI另验。
 - [ ] 3.2 root 独立审查副本等价、完成优先级、区域归属与失败来源，冻结重建 CLI 复跑整类/负例；运行受影响 Rust/Java 测试、reader census、fingerprint、fmt、Clippy、OpenSpec strict 与磁盘核查，分开登记既存债务。

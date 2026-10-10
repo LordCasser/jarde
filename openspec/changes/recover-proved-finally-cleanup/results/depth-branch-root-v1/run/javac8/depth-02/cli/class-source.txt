@@ -1,0 +1,41 @@
+// jarde: presentation of `BranchFinally` from the class file's own declaration and one recovery run per member.
+// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
+public class BranchFinally extends java.lang.Object {
+    static final int DEPTH = 2;
+
+    static int trace;
+
+    public BranchFinally() {
+        // @method <init>()V
+        // @declaration a constructor of `BranchFinally`, member flags 0x0001
+        // recovered from bytecode; presentation is not claimed to compile
+        super();
+        return;
+    }
+
+    private static void cleanup() {
+        // @method cleanup()V
+        // @declaration a static method of `BranchFinally`, member flags 0x000a
+        // recovered from bytecode; presentation is not claimed to compile
+        BranchFinally.trace = BranchFinally.trace + 1;
+        return;
+    }
+
+    static int run(int arg0) {
+        // @method run(I)I
+        // @declaration a static method of `BranchFinally`, member flags 0x0008
+        // recovered from bytecode; presentation is not claimed to compile
+        if (arg0 > 1) {
+            // @bytecode 5 8 9 10 13 14 15
+            // BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        } else {
+            // @bytecode 40 43 44 45
+            // BCI 55: the exceptional path repeats code the normal path also runs — the `finally` copy javac emits for a `finally` clause; this candidate lacks the complete straight-body, copy, range, and ownership proof needed to merge them into one `finally`
+        }
+        int local1 = arg0;
+        cleanup();
+        return local1;
+        // @bytecode 18 21 22 23 26 29 32 33 34 37 55 56 59 60
+        // 3 live block(s) are reachable only through edges the normal-flow view leaves out: [18, 29, 55]
+    }
+}

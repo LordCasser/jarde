@@ -1,0 +1,1930 @@
+{
+  "schema": "array-field-store-baseline-root-v1",
+  "scope": "complete Java 8 class; instance constant store and static helper PUTFIELD of a fresh effectful byte[]",
+  "status": "completed",
+  "oracle": "Fresh original output, stderr, and exit from each JDK leg; draft expectations are not used for acceptance.",
+  "review_only_expected_values": [
+    "success=[11, 22, 33]:fresh=true:trace=123",
+    "failure=IllegalStateException:element-2:same=true:values=[10, 20, 30]:trace=12",
+    "null=NullPointerException:trace=123",
+    "null-failure=IllegalStateException:element-2:trace=12"
+  ],
+  "source": {
+    "path": "original-sources/ArrayFieldStore.java",
+    "bytes": 919,
+    "sha256": "af2d90d404e4345f16c5d255d7afaa4c2c429c79c27e5adaa3ad0febdf6d12df"
+  },
+  "runner": {
+    "path": "original-sources/ArrayFieldStoreRunner.java",
+    "bytes": 1917,
+    "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+  },
+  "script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/prepare-baseline-luna-v1.py",
+    "bytes": 13975,
+    "sha256": "a2ba40c18cb7c2c5704cd4e051a730da8611b822f7b7c29e6299aca13c1de370"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "cli_metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-returned-int-array-compound-updates/results/candidate-cli-v2.json",
+    "sha256": "ddfbe127890d95ced5c4ed2a89d67d42deb7eba19e6c1e4ce12707221bd8f769"
+  },
+  "frozen_cli": {
+    "path": "/private/tmp/jarde-returned-array-cli-v2",
+    "sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110"
+  },
+  "jadx": "/opt/homebrew/bin/jadx",
+  "preflight": [
+    {
+      "label": "frozen-cli-v2",
+      "path": "/private/tmp/jarde-returned-array-cli-v2",
+      "expected_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+      "actual_sha256": "71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/init.rs",
+      "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/report.rs",
+      "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/build.rs",
+      "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/ast.rs",
+      "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/emit.rs",
+      "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/asserts.rs",
+      "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:crates/jarde-java/src/field.rs",
+      "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:src/facade.rs",
+      "expected_sha256": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+      "actual_sha256": "965785f6cb3a04587f09bdb7caa48d3bd1c664c744ead0047e331fc1888b7f01",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:src/class_source.rs",
+      "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "ok": true
+    },
+    {
+      "label": "candidate-source:Cargo.lock",
+      "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "jadx-version-1.5.6",
+      "exit": 0,
+      "stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+      "ok": true
+    }
+  ],
+  "inputs": [
+    {
+      "leg": "javac8",
+      "path": "cases/javac8-original/classes/ArrayFieldStore.class",
+      "bytes": 893,
+      "sha256": "747349edcf10575d441d877001387fd1b58167c2d741274f4385da4887080afb"
+    },
+    {
+      "leg": "javac23",
+      "path": "cases/javac23-original/classes/ArrayFieldStore.class",
+      "bytes": 893,
+      "sha256": "074a5e284c9e9ff7434559d8254ab546f03f930de53250959f3a4d1f7049f1ac"
+    }
+  ],
+  "original_cross_jdk_equal": true,
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "commands": [
+    {
+      "label": "javac8-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-java-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-java-version.stderr",
+        "bytes": 174,
+        "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+      }
+    },
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javac-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-javac-version.stderr",
+        "bytes": 16,
+        "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+      }
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javap-version.stdout",
+        "bytes": 10,
+        "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+      },
+      "stderr": {
+        "path": "streams/javac8-javap-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes",
+        "ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javap.stdout",
+        "bytes": 7211,
+        "sha256": "aa393391c7afd079583a1d7e9a8fb8321a906a581adc7f24a66dc687605e1d7d"
+      },
+      "stderr": {
+        "path": "streams/javac8-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-java-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-java-version.stderr",
+        "bytes": 152,
+        "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+      }
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javac-version.stdout",
+        "bytes": 13,
+        "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+      },
+      "stderr": {
+        "path": "streams/javac23-javac-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javap-version.stdout",
+        "bytes": 7,
+        "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+      },
+      "stderr": {
+        "path": "streams/javac23-javap-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes",
+        "ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javap.stdout",
+        "bytes": 7522,
+        "sha256": "deed90c94132866c8ee574f9057c949e772eea892dca3f37e0feb88ffc85c31d"
+      },
+      "stderr": {
+        "path": "streams/javac23-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "defpackage.ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/jadx/sources/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "defpackage.ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/jadx",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/jadx/sources/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class",
+        "--class",
+        "ArrayFieldStore",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-render.stdout",
+        "bytes": 90471,
+        "sha256": "194976f91baec20f1e038806dbf7cdb07dac798493913b090c7b8e266770830f"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/classes",
+        "ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-returned-array-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class",
+        "--class",
+        "ArrayFieldStore",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-render.stdout",
+        "bytes": 90462,
+        "sha256": "47d21f56fbf8e055b7e6cf90dc6e2e8b24516b9095e42cb7d1ec550b9b07cea9"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/ArrayFieldStore.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/ArrayFieldStoreRunner.java"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/classes",
+        "ArrayFieldStoreRunner"
+      ],
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-run.stdout",
+        "bytes": 211,
+        "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes",
+          "ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/ArrayFieldStore.java",
+          "bytes": 919,
+          "sha256": "af2d90d404e4345f16c5d255d7afaa4c2c429c79c27e5adaa3ad0febdf6d12df"
+        },
+        {
+          "path": "original-sources/ArrayFieldStoreRunner.java",
+          "bytes": 1917,
+          "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/ArrayFieldStore.class",
+          "bytes": 893,
+          "sha256": "747349edcf10575d441d877001387fd1b58167c2d741274f4385da4887080afb"
+        },
+        {
+          "path": "cases/javac8-original/classes/ArrayFieldStoreRunner.class",
+          "bytes": 1778,
+          "sha256": "7823e3c9e5f72342c9d5f762adab64f28f03dd28cfad0fb962fbe4c7ef724060"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "success": true,
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "javap": {
+        "label": "javac8-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-javap.stdout",
+          "bytes": 7211,
+          "sha256": "aa393391c7afd079583a1d7e9a8fb8321a906a581adc7f24a66dc687605e1d7d"
+        },
+        "stderr": {
+          "path": "streams/javac8-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/original-sources/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes",
+          "ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/ArrayFieldStore.java",
+          "bytes": 919,
+          "sha256": "af2d90d404e4345f16c5d255d7afaa4c2c429c79c27e5adaa3ad0febdf6d12df"
+        },
+        {
+          "path": "original-sources/ArrayFieldStoreRunner.java",
+          "bytes": 1917,
+          "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/ArrayFieldStore.class",
+          "bytes": 893,
+          "sha256": "074a5e284c9e9ff7434559d8254ab546f03f930de53250959f3a4d1f7049f1ac"
+        },
+        {
+          "path": "cases/javac23-original/classes/ArrayFieldStoreRunner.class",
+          "bytes": 1760,
+          "sha256": "ccc4955668fbb0c8e905cd9f09b2998f4a8157b33a74da558c9bb9e6bc756e70"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "success": true,
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "javap": {
+        "label": "javac23-javap",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-javap.stdout",
+          "bytes": 7522,
+          "sha256": "deed90c94132866c8ee574f9057c949e772eea892dca3f37e0feb88ffc85c31d"
+        },
+        "stderr": {
+          "path": "streams/javac23-javap.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-default",
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "success": true,
+      "decompile": {
+        "label": "javac8-jadx-default-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac8-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+          "bytes": 865,
+          "sha256": "6264121817f50900e10258f0d6473da7e28dea79e220a936c5440c9d19eb5a9e"
+        }
+      ],
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "defpackage.ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+          "bytes": 865,
+          "sha256": "6264121817f50900e10258f0d6473da7e28dea79e220a936c5440c9d19eb5a9e"
+        },
+        {
+          "path": "cases/javac8-jadx-default/ArrayFieldStoreRunner.java",
+          "bytes": 1938,
+          "sha256": "ab44e1596512d062591a8b531725d270ab61afb739c0b330a7c77c7cfcc59526"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/ArrayFieldStore.class",
+          "bytes": 915,
+          "sha256": "13ebd90691446c9be09cc960d0c934c5a5f1e4d937e3c1c6fa0b561a3e9548e7"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/ArrayFieldStoreRunner.class",
+          "bytes": 1811,
+          "sha256": "f06fd38ec654ba644e7fff59bb9e87d581068ae7c73585058957f45fa60c6830"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runner_package": "defpackage"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac8",
+      "success": true,
+      "decompile": {
+        "label": "javac8-jadx-none-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac8-jadx-none/jadx/sources/ArrayFieldStore.java",
+          "bytes": 864,
+          "sha256": "c558f02f6383dd796328c6e724b2667741822b0c18365a4b9777f9249164ec1c"
+        }
+      ],
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/jadx/sources/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-none/jadx/sources/ArrayFieldStore.java",
+          "bytes": 864,
+          "sha256": "c558f02f6383dd796328c6e724b2667741822b0c18365a4b9777f9249164ec1c"
+        },
+        {
+          "path": "cases/javac8-jadx-none/ArrayFieldStoreRunner.java",
+          "bytes": 1917,
+          "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-none/classes/ArrayFieldStore.class",
+          "bytes": 893,
+          "sha256": "747349edcf10575d441d877001387fd1b58167c2d741274f4385da4887080afb"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/ArrayFieldStoreRunner.class",
+          "bytes": 1778,
+          "sha256": "7823e3c9e5f72342c9d5f762adab64f28f03dd28cfad0fb962fbe4c7ef724060"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runner_package": null
+    },
+    {
+      "label": "javac23-jadx-default",
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "success": true,
+      "decompile": {
+        "label": "javac23-jadx-default-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac23-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+          "bytes": 865,
+          "sha256": "6264121817f50900e10258f0d6473da7e28dea79e220a936c5440c9d19eb5a9e"
+        }
+      ],
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "defpackage.ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-default/jadx/sources/defpackage/ArrayFieldStore.java",
+          "bytes": 865,
+          "sha256": "6264121817f50900e10258f0d6473da7e28dea79e220a936c5440c9d19eb5a9e"
+        },
+        {
+          "path": "cases/javac23-jadx-default/ArrayFieldStoreRunner.java",
+          "bytes": 1938,
+          "sha256": "ab44e1596512d062591a8b531725d270ab61afb739c0b330a7c77c7cfcc59526"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/ArrayFieldStore.class",
+          "bytes": 915,
+          "sha256": "687ca4a067b1bbff085093e7991f7476ccabdef2231a36f9568009ddc2fed528"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/ArrayFieldStoreRunner.class",
+          "bytes": 1793,
+          "sha256": "71a9fc9df9d69919b29e816b8a9140c6feee9f1dd7d5d8a226f69d8eb188ef78"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runner_package": "defpackage"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac23",
+      "success": true,
+      "decompile": {
+        "label": "javac23-jadx-none-decompile",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--no-res",
+          "--config",
+          "none",
+          "--threads-count",
+          "1",
+          "--rename-flags",
+          "none",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/jadx",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-decompile.stdout",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-decompile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac23-jadx-none/jadx/sources/ArrayFieldStore.java",
+          "bytes": 864,
+          "sha256": "c558f02f6383dd796328c6e724b2667741822b0c18365a4b9777f9249164ec1c"
+        }
+      ],
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/jadx/sources/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-none/jadx/sources/ArrayFieldStore.java",
+          "bytes": 864,
+          "sha256": "c558f02f6383dd796328c6e724b2667741822b0c18365a4b9777f9249164ec1c"
+        },
+        {
+          "path": "cases/javac23-jadx-none/ArrayFieldStoreRunner.java",
+          "bytes": 1917,
+          "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-none/classes/ArrayFieldStore.class",
+          "bytes": 893,
+          "sha256": "074a5e284c9e9ff7434559d8254ab546f03f930de53250959f3a4d1f7049f1ac"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/ArrayFieldStoreRunner.class",
+          "bytes": 1760,
+          "sha256": "ccc4955668fbb0c8e905cd9f09b2998f4a8157b33a74da558c9bb9e6bc756e70"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "runner_package": null
+    },
+    {
+      "label": "javac8-jarde",
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "success": true,
+      "render": {
+        "label": "javac8-jarde-render",
+        "argv": [
+          "/private/tmp/jarde-returned-array-cli-v2",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class",
+          "--class",
+          "ArrayFieldStore",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-render.stdout",
+          "bytes": 90471,
+          "sha256": "194976f91baec20f1e038806dbf7cdb07dac798493913b090c7b8e266770830f"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "document": {
+        "path": "cases/javac8-jarde/class-source.json",
+        "bytes": 90471,
+        "sha256": "194976f91baec20f1e038806dbf7cdb07dac798493913b090c7b8e266770830f"
+      },
+      "member_count": 7,
+      "compile": {
+        "label": "javac8-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-jarde/classes",
+          "ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde/ArrayFieldStore.java",
+          "bytes": 2740,
+          "sha256": "94f189e901b6795eba46469f6b0a7600dcb5680ca30c01036a79afae751911a1"
+        },
+        {
+          "path": "cases/javac8-jarde/ArrayFieldStoreRunner.java",
+          "bytes": 1917,
+          "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jarde/classes/ArrayFieldStore.class",
+          "bytes": 893,
+          "sha256": "747349edcf10575d441d877001387fd1b58167c2d741274f4385da4887080afb"
+        },
+        {
+          "path": "cases/javac8-jarde/classes/ArrayFieldStoreRunner.class",
+          "bytes": 1778,
+          "sha256": "7823e3c9e5f72342c9d5f762adab64f28f03dd28cfad0fb962fbe4c7ef724060"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "field_count": 2
+    },
+    {
+      "label": "javac23-jarde",
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "success": true,
+      "render": {
+        "label": "javac23-jarde-render",
+        "argv": [
+          "/private/tmp/jarde-returned-array-cli-v2",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-original/classes/ArrayFieldStore.class",
+          "--class",
+          "ArrayFieldStore",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-render.stdout",
+          "bytes": 90462,
+          "sha256": "47d21f56fbf8e055b7e6cf90dc6e2e8b24516b9095e42cb7d1ec550b9b07cea9"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "document": {
+        "path": "cases/javac23-jarde/class-source.json",
+        "bytes": 90462,
+        "sha256": "47d21f56fbf8e055b7e6cf90dc6e2e8b24516b9095e42cb7d1ec550b9b07cea9"
+      },
+      "member_count": 7,
+      "compile": {
+        "label": "javac23-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/ArrayFieldStore.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/ArrayFieldStoreRunner.java"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac23-jarde/classes",
+          "ArrayFieldStoreRunner"
+        ],
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-run.stdout",
+          "bytes": 211,
+          "sha256": "18c4ef26eceb410e4b69b60c17e806c142598204a8e62aa7db4da8adc4853eab"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde/ArrayFieldStore.java",
+          "bytes": 2740,
+          "sha256": "94f189e901b6795eba46469f6b0a7600dcb5680ca30c01036a79afae751911a1"
+        },
+        {
+          "path": "cases/javac23-jarde/ArrayFieldStoreRunner.java",
+          "bytes": 1917,
+          "sha256": "6c60be8ce9619ba65fe331a4a2b47acdce0a1099810dfb7605fa9e61c67ab276"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jarde/classes/ArrayFieldStore.class",
+          "bytes": 893,
+          "sha256": "074a5e284c9e9ff7434559d8254ab546f03f930de53250959f3a4d1f7049f1ac"
+        },
+        {
+          "path": "cases/javac23-jarde/classes/ArrayFieldStoreRunner.class",
+          "bytes": 1760,
+          "sha256": "ccc4955668fbb0c8e905cd9f09b2998f4a8157b33a74da558c9bb9e6bc756e70"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "field_count": 2
+    }
+  ],
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

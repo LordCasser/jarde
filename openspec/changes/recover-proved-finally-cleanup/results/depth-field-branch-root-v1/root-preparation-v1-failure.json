@@ -1,0 +1,7 @@
+{
+  "exit": 1,
+  "cause": "valid Interrupted jre_recursion_bound at BCI450 gives CLI exit4; v1 wrapper required CLI exit0 and aborted, original JVM commands passed",
+  "stderr_sha256": "7d3152cd4ce13256bef306faf6ed482f7588a076c9e7d1f52dd673588dcfeb7c",
+  "raw_partial_probe": "run/",
+  "subsequent_complete_probe": "run-v2/"
+}

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/recover-proved-finally-cleanup/results/verify-shallow-comparison-root-v1.py"
+  ],
+  "exit": 1,
+  "cause": "root verifier assumed English javac diagnostic; actual pinned JDK locale reports 缺少返回语句",
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 823,
+    "sha256": "8d4c7cbdc423d0743a31c33beefcfb715601122ff514ac376c576e4df8c777ac"
+  }
+}

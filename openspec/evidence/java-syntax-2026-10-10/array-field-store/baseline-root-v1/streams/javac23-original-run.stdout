@@ -1,0 +1,4 @@
+success=[11, 22, 33]:fresh=true:trace=123
+failure=IllegalStateException:element-2:same=true:values=[10, 20, 30]:trace=12
+null=NullPointerException:trace=123
+null-failure=IllegalStateException:element-2:trace=12

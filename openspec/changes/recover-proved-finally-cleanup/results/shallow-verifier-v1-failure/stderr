@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/verify-shallow-comparison-root-v1.py", line 121, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/verify-shallow-comparison-root-v1.py", line 86, in main
+    check(b"missing return statement" in read(compile_command["stderr"]), "missing return failure")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/verify-shallow-comparison-root-v1.py", line 17, in check
+    raise AssertionError(label)
+AssertionError: missing return failure

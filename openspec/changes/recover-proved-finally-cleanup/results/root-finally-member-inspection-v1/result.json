@@ -1,0 +1,94 @@
+[
+  {
+    "label": "FinallyNormal-javac8-source",
+    "argv": [
+      "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "-p",
+      "-s",
+      "-v",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyNormal-javac8-source/classes/FinallyNormal.class"
+    ],
+    "exit": 0,
+    "class_bytes": 593,
+    "class_sha256": "15b2dea35fb9d70f32a92c5120d34182892a85ecd8555b0cfe214ba932911bcc",
+    "stdout": {
+      "path": "FinallyNormal-javac8-source.stdout",
+      "bytes": 4970,
+      "sha256": "f267353715c78558f9a0688debceb7bd23f3391217101476b2df21c0e0c18352"
+    },
+    "stderr": {
+      "path": "FinallyNormal-javac8-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "label": "FinallyNormal-javac23-source",
+    "argv": [
+      "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "-p",
+      "-s",
+      "-v",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyNormal-javac23-source/classes/FinallyNormal.class"
+    ],
+    "exit": 0,
+    "class_bytes": 593,
+    "class_sha256": "6c1e6ee18ca8370ffc5ad44f8ad911a000ed34f6c258d95d603004d4aeab701a",
+    "stdout": {
+      "path": "FinallyNormal-javac23-source.stdout",
+      "bytes": 5261,
+      "sha256": "79e66b6f32a6d38f477236acf9c5d8a82815319e5874695d7230e249debcdad4"
+    },
+    "stderr": {
+      "path": "FinallyNormal-javac23-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "label": "FinallyCompletion-javac8-source",
+    "argv": [
+      "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "-p",
+      "-s",
+      "-v",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac8-source/classes/FinallyCompletion.class"
+    ],
+    "exit": 0,
+    "class_bytes": 907,
+    "class_sha256": "49e649478c3d45ba6486029778a8415239caafdd93234a1d5956f5ccf3031393",
+    "stdout": {
+      "path": "FinallyCompletion-javac8-source.stdout",
+      "bytes": 8100,
+      "sha256": "506f4f245a00a39fd3a31c31318b2d82e6ed9fe7797f752a4472969f8a296321"
+    },
+    "stderr": {
+      "path": "FinallyCompletion-javac8-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "label": "FinallyCompletion-javac23-source",
+    "argv": [
+      "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "-p",
+      "-s",
+      "-v",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-finally-cleanup/results/finally-final-gates-root-v2/cases/FinallyCompletion-javac23-source/classes/FinallyCompletion.class"
+    ],
+    "exit": 0,
+    "class_bytes": 907,
+    "class_sha256": "2b8902d998065d2d1747abaeba386e006cdf5ff7f1311abb28506e8d8dc0cc94",
+    "stdout": {
+      "path": "FinallyCompletion-javac23-source.stdout",
+      "bytes": 8422,
+      "sha256": "8c5d4a27184b815368a6f201b4d49ca173e585a27f8742ceeabe210b5b5d05ea"
+    },
+    "stderr": {
+      "path": "FinallyCompletion-javac23-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+]

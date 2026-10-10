@@ -1,0 +1,189 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-field-store/baseline-root-v1/cases/javac8-original/classes/ArrayFieldStore.class
+  Last modified 2026-10-10; size 893 bytes
+  MD5 checksum 6a958800728b62049ae7766c50389467
+public final class ArrayFieldStore
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #14.#33        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #13.#34        // ArrayFieldStore.values:[B
+   #3 = Methodref          #13.#35        // ArrayFieldStore.element:(IBI)B
+   #4 = Fieldref           #13.#36        // ArrayFieldStore.trace:I
+   #5 = Class              #37            // java/lang/IllegalStateException
+   #6 = Class              #38            // java/lang/StringBuilder
+   #7 = Methodref          #6.#33         // java/lang/StringBuilder."<init>":()V
+   #8 = String             #39            // element-
+   #9 = Methodref          #6.#40         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #10 = Methodref          #6.#41         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #11 = Methodref          #6.#42         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #12 = Methodref          #5.#43         // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #13 = Class              #44            // ArrayFieldStore
+  #14 = Class              #45            // java/lang/Object
+  #15 = Utf8               values
+  #16 = Utf8               [B
+  #17 = Utf8               trace
+  #18 = Utf8               I
+  #19 = Utf8               <init>
+  #20 = Utf8               ()V
+  #21 = Utf8               Code
+  #22 = Utf8               storeLiteral
+  #23 = Utf8               replace
+  #24 = Utf8               (LArrayFieldStore;I)V
+  #25 = Utf8               element
+  #26 = Utf8               (IBI)B
+  #27 = Utf8               StackMapTable
+  #28 = Utf8               readValues
+  #29 = Utf8               ()[B
+  #30 = Utf8               resetTrace
+  #31 = Utf8               readTrace
+  #32 = Utf8               ()I
+  #33 = NameAndType        #19:#20        // "<init>":()V
+  #34 = NameAndType        #15:#16        // values:[B
+  #35 = NameAndType        #25:#26        // element:(IBI)B
+  #36 = NameAndType        #17:#18        // trace:I
+  #37 = Utf8               java/lang/IllegalStateException
+  #38 = Utf8               java/lang/StringBuilder
+  #39 = Utf8               element-
+  #40 = NameAndType        #46:#47        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #41 = NameAndType        #46:#48        // append:(I)Ljava/lang/StringBuilder;
+  #42 = NameAndType        #49:#50        // toString:()Ljava/lang/String;
+  #43 = NameAndType        #19:#51        // "<init>":(Ljava/lang/String;)V
+  #44 = Utf8               ArrayFieldStore
+  #45 = Utf8               java/lang/Object
+  #46 = Utf8               append
+  #47 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #48 = Utf8               (I)Ljava/lang/StringBuilder;
+  #49 = Utf8               toString
+  #50 = Utf8               ()Ljava/lang/String;
+  #51 = Utf8               (Ljava/lang/String;)V
+{
+  private byte[] values;
+    descriptor: [B
+    flags: ACC_PRIVATE
+
+  private static int trace;
+    descriptor: I
+    flags: ACC_PRIVATE, ACC_STATIC
+
+  public ArrayFieldStore();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public void storeLiteral();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: iconst_3
+         2: newarray       byte
+         4: dup
+         5: iconst_0
+         6: bipush        10
+         8: bastore
+         9: dup
+        10: iconst_1
+        11: bipush        20
+        13: bastore
+        14: dup
+        15: iconst_2
+        16: bipush        30
+        18: bastore
+        19: putfield      #2                  // Field values:[B
+        22: return
+
+  public static void replace(ArrayFieldStore, int);
+    descriptor: (LArrayFieldStore;I)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=7, locals=2, args_size=2
+         0: aload_0
+         1: iconst_3
+         2: newarray       byte
+         4: dup
+         5: iconst_0
+         6: iconst_1
+         7: bipush        11
+         9: iload_1
+        10: invokestatic  #3                  // Method element:(IBI)B
+        13: bastore
+        14: dup
+        15: iconst_1
+        16: iconst_2
+        17: bipush        22
+        19: iload_1
+        20: invokestatic  #3                  // Method element:(IBI)B
+        23: bastore
+        24: dup
+        25: iconst_2
+        26: iconst_3
+        27: bipush        33
+        29: iload_1
+        30: invokestatic  #3                  // Method element:(IBI)B
+        33: bastore
+        34: putfield      #2                  // Field values:[B
+        37: return
+
+  private static byte element(int, byte, int);
+    descriptor: (IBI)B
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=3
+         0: getstatic     #4                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iload_0
+         7: iadd
+         8: putstatic     #4                  // Field trace:I
+        11: iload_0
+        12: iload_2
+        13: if_icmpne     43
+        16: new           #5                  // class java/lang/IllegalStateException
+        19: dup
+        20: new           #6                  // class java/lang/StringBuilder
+        23: dup
+        24: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        27: ldc           #8                  // String element-
+        29: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: iload_0
+        33: invokevirtual #10                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        36: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        39: invokespecial #12                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        42: athrow
+        43: iload_1
+        44: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 43 /* same */
+
+  public byte[] readValues();
+    descriptor: ()[B
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #2                  // Field values:[B
+         4: areturn
+
+  public static void resetTrace();
+    descriptor: ()V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #4                  // Field trace:I
+         4: return
+
+  public static int readTrace();
+    descriptor: ()I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #4                  // Field trace:I
+         3: ireturn
+}

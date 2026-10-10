@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "python3",
+    "openspec/changes/recover-proved-finally-cleanup/results/verify-finally-final-root-v2.py"
+  ],
+  "exit": 1,
+  "note": "captured reproduction of initial v2 javap header parsing failure; no evidence mutation",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "998bc86a3e03c660e780ec3a9abb02fef7bd80774379b7f584e3f46e8ea3fd3c"
+}

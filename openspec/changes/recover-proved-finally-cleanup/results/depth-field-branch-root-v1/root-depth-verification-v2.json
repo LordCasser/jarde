@@ -1,0 +1,16 @@
+{
+  "checks": 204,
+  "errors": 0,
+  "original_complete_class_runs": 4,
+  "original_paths_per_run": 2,
+  "actual_region_depth_stops": 2,
+  "stop_code": "jre_recursion_bound",
+  "stop_bci": 450,
+  "not_produced_empty_text_map_rules_regions_init": true,
+  "shallow_recovery_success_claimed": false,
+  "shallow_fallback_cases": 2,
+  "internal_builder_mid_child_rollback_claimed": false,
+  "manifest_sha256": "d176da0d339ac60a005aec82cff90ada8b46dc8015ebb6c500a059777b5388dd",
+  "inventory_sha256": "d4312959fd72e2c033cec8fb6bdfc47c0c36ef750ce16d702170f3b82e9f95a8",
+  "scope": "Region hard-depth publication contract; no general branch/finally recovery acceptance"
+}

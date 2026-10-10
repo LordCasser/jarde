@@ -1,0 +1,7 @@
+{
+  "checks": 5,
+  "errors": 0,
+  "manifest_sha256": "22fcb0571a82cea051ade00a504bdb4528a40ef39914a562ec40615b25df6781",
+  "source_original_runtime_accepted_by": "depth-field-branch-root-v1/root-depth-verification-v2.json",
+  "scope": "only exact byte-copy identity, no new recovery success"
+}

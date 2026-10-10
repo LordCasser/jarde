@@ -1,0 +1,3 @@
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+    Finished `test` profile [unoptimized] target(s) in 1.56s
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-a83fd95a6ba2fb00)

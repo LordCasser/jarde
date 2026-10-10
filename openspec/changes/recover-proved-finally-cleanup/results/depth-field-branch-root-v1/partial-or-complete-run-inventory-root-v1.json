@@ -1,0 +1,125 @@
+{
+  "files": [
+    {
+      "path": "javac8/depth-02/classes/BranchFinally.class",
+      "bytes": 426,
+      "sha256": "b7b7d1938a7c902b2297d8e97d1bfa5d00b6db185f2a4ae6a3d43bb7d9d964ac"
+    },
+    {
+      "path": "javac8/depth-02/classes/Runner.class",
+      "bytes": 1049,
+      "sha256": "77c13d607738ebdb09e886d6cb085e7b00e69f2d804a70419ba86c8dbc264ae0"
+    },
+    {
+      "path": "javac8/depth-02/cli/class-source.txt",
+      "bytes": 1568,
+      "sha256": "14d86e8f2bb0bb64c2a65feeec3a122e25b13d980103b0fb34c131e92a645bf5"
+    },
+    {
+      "path": "javac8/depth-02/cli/document.json",
+      "bytes": 46233,
+      "sha256": "5d9835bb1cd7b6af12d8425dd152b1c2add0bc287afdfb7fd91c39e12dc013d4"
+    },
+    {
+      "path": "javac8/depth-02/cli/run-body.txt",
+      "bytes": 343,
+      "sha256": "7b13260cbb041d3129e357a94c16ecffcffc415a442ef1ae9349f900928d4338"
+    },
+    {
+      "path": "javac8/depth-02/source/BranchFinally.java",
+      "bytes": 529,
+      "sha256": "8293d12ac9eadac391aeb8c0b3178bcab819cd3307993aa54538f3f4870b71ce"
+    },
+    {
+      "path": "javac8/depth-02/source/Runner.java",
+      "bytes": 1039,
+      "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+    },
+    {
+      "path": "javac8/depth-33/classes/BranchFinally.class",
+      "bytes": 1287,
+      "sha256": "ef062a2e0a1876a804a644855519d925cc81ef20c48143e9ba079f894a90fa1d"
+    },
+    {
+      "path": "javac8/depth-33/classes/Runner.class",
+      "bytes": 1050,
+      "sha256": "dce57b12df0fc7e4dbbc168f46864a4a8ebae8bb71973e8d8d789ec78f68eaf2"
+    },
+    {
+      "path": "javac8/depth-33/source/BranchFinally.java",
+      "bytes": 14738,
+      "sha256": "d00dee9e24daf5e7a487f8b626685ed05e9aa72896fb374cb7f234b020bfcccf"
+    },
+    {
+      "path": "javac8/depth-33/source/Runner.java",
+      "bytes": 1039,
+      "sha256": "c5d4d65789335ba47231fdc1fcf662489afa64a8073c2891436031a6bf123f8a"
+    },
+    {
+      "path": "raw/javac8-depth-02-class-source-all-json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-02-class-source-all-json.stdout",
+      "bytes": 46233,
+      "sha256": "5d9835bb1cd7b6af12d8425dd152b1c2add0bc287afdfb7fd91c39e12dc013d4"
+    },
+    {
+      "path": "raw/javac8-depth-02-original-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-02-original-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-02-original-verify-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-02-original-verify-run.stdout",
+      "bytes": 36,
+      "sha256": "40afdc35fbd5485702e5198380fc526c89f49dcc673567f21767881fdecde290"
+    },
+    {
+      "path": "raw/javac8-depth-33-class-source-all-json.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-33-class-source-all-json.stdout",
+      "bytes": 25309,
+      "sha256": "a94eac1d186aad789fcf163d6798407becbba4709d17bbb4292a888c6a7624a3"
+    },
+    {
+      "path": "raw/javac8-depth-33-original-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-33-original-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-33-original-verify-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/javac8-depth-33-original-verify-run.stdout",
+      "bytes": 38,
+      "sha256": "e3a5afb90a69cef3c04667496250ee5f4d5f218df4cad1d5ab7cc2d5fd45ccfc"
+    },
+    {
+      "path": "start.json",
+      "bytes": 17956,
+      "sha256": "b33fb1bc7e7ed6237f82614de6bb689fad050884ed8e491e262abbe31c8c6031"
+    }
+  ],
+  "scope": "unmodified root executed run, including initial wrapper failure when applicable"
+}

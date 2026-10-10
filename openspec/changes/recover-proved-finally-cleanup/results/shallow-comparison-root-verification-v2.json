@@ -1,0 +1,16 @@
+{
+  "schema": "cf16-shallow-comparison-root-verification-v2",
+  "checks": 232,
+  "errors": 0,
+  "manifest_sha256": "307ef6165bd5fb4d5564042f5ffe1729ed14f763e7757dd3bbfa0d1dc3d7d68a",
+  "inventory_sha256": "5d6448de852014775ab9f981164c416c27904a69d8858de92de23ef5203b69da",
+  "commands": 15,
+  "original_legs_reused_from_hash_bound_root_probe": 2,
+  "fresh_jadx_complete_legs": 4,
+  "jadx_compile_runtime_matches": 4,
+  "jarde_complete_legs": 2,
+  "jarde_compile_failures": 2,
+  "depth_limit_pass_claimed": false,
+  "production_change_tested": false,
+  "scope": "saved frozen CLI source unchanged, fresh JADX extraction; no recovery implementation acceptance"
+}

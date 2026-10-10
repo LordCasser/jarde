@@ -1,0 +1,4 @@
+normal:return:1:12
+return-overrides:return:4:34
+throw-overrides:throw:java.lang.IllegalStateException:try=false:finally=true:566
+try-throw-preserved:throw:java.lang.IllegalArgumentException:try=true:finally=false:8
