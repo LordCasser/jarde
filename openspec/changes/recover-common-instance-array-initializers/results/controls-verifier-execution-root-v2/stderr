@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v2.py", line 606, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v2.py", line 570, in main
+    command_summary = verify_all_commands(manifest, jdk_tools)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v2.py", line 175, in verify_all_commands
+    assert tool_name is not None, (label, argv)
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('javac8-CommonDirectSuperByteArray-default-render', ['/private/tmp/jarde-nonfinal-static-cli-v1', 'class-source', '--input', '/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class', '--class', 'CommonDirectSuperByteArray', '--policy', 'single-class', '--release', '8', '--format', 'json'])

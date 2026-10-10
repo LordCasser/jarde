@@ -1,0 +1,46 @@
+[
+  {
+    "jdk": "javac8",
+    "class": "HandlerArrayByteArray",
+    "method": [
+      "<init>",
+      "()V"
+    ],
+    "missing": [
+      19
+    ]
+  },
+  {
+    "jdk": "javac8",
+    "class": "HandlerArrayByteArray",
+    "method": [
+      "<init>",
+      "(I)V"
+    ],
+    "missing": [
+      19
+    ]
+  },
+  {
+    "jdk": "javac23",
+    "class": "HandlerArrayByteArray",
+    "method": [
+      "<init>",
+      "()V"
+    ],
+    "missing": [
+      19
+    ]
+  },
+  {
+    "jdk": "javac23",
+    "class": "HandlerArrayByteArray",
+    "method": [
+      "<init>",
+      "(I)V"
+    ],
+    "missing": [
+      19
+    ]
+  }
+]

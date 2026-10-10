@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/register-a1-fingerprint-luna-v1.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "elapsed_seconds": 0.48280906677246094,
+  "script_sha256": "e6480a9dbc0bae6a3ba9d267e566a3422f067d6d02a41138f43c08849aa86b12",
+  "streams": {
+    "stdout": {
+      "bytes": 1579,
+      "sha256": "44474df4f4a73809e4f0152745708c0d504b4fd60addbb70923ffa366d79eb4c"
+    },
+    "stderr": {
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

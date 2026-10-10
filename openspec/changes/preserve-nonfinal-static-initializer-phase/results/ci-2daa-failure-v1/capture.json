@@ -1,0 +1,39 @@
+[
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "38014660202",
+      "--json",
+      "headSha,status,conclusion,url,jobs"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 8.971670150756836,
+    "output": "ci-run.json",
+    "stored_sha256": "ef9f582799f57c55eda9410b370fdd85fc91e98ab69d516d1ae255ff3931cab8",
+    "raw_stdout_bytes": 10113,
+    "raw_stdout_sha256": "ef9f582799f57c55eda9410b370fdd85fc91e98ab69d516d1ae255ff3931cab8",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "38014660202",
+      "--job",
+      "114102160125",
+      "--log"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 14.591868877410889,
+    "output": "stable.log.gz",
+    "stored_sha256": "7f0612a254d2f7328d28412c0b150f5891845b30e733001990cac4d5fd51e3f7",
+    "raw_stdout_bytes": 572529,
+    "raw_stdout_sha256": "419b737ddfe392fdca70e73a2d65e03e0a36b6e2a5c0840c01eb6612b6a04dfd",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

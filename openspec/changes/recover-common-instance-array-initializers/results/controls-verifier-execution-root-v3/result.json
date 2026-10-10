@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v3.py"
+  ],
+  "exit": 1,
+  "verifier_sha256": "4aa7448f859473fabdea95c805b5b46f7938818562a453283a45baf005f4dbbc"
+}

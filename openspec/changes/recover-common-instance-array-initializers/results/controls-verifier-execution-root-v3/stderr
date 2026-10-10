@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v3.py", line 606, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v3.py", line 575, in main
+    render_summary, texts = verify_render_cases(manifest, originals, command_records, javap_members)
+                            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v3.py", line 462, in verify_render_cases
+    census = verify_source_maps_and_reports(
+        document, class_name, profile, javap_members[(leg, class_name)])
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v3.py", line 332, in verify_source_maps_and_reports
+    assert mapped_bcis == javap_members["bci_by_method"][(name, descriptor)], (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('HandlerArrayByteArray', '<init>', '()V', [19], [])

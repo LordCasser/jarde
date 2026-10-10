@@ -1,0 +1,525 @@
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -3176,6 +3176,7 @@
+             .anonymous_constructor_initializer_bci
+             .clone(),
+         generic_call_init: ast.projection.generic_call_init.clone(),
++        instance_field_write_evidence: ast.projection.instance_field_write_evidence.clone(),
+     };
+     Ok(Some(ClassSourceMethodAst {
+         projection: Arc::new(projection),
+@@ -3385,7 +3386,18 @@
+         .first()
+         .map(|stmt| stmt.origin.primary().bci());
+     crate::stop::poll(budget, first_bci)?;
+-    let node_count = program_node_count(&source.program);
++    let node_count = program_node_count(&source.program).saturating_add(
++        source.instance_field_write_evidence.as_ref().map_or(0, |items| {
++            u64::try_from(items.len()).unwrap_or(u64::MAX).saturating_add(
++                items.iter().fold(0u64, |total, item| {
++                    total.saturating_add(
++                        u64::try_from(item.owner.len() + item.name.len() + item.descriptor.len())
++                            .unwrap_or(u64::MAX),
++                    )
++                }),
++            )
++        }),
++    );
+     crate::stop::charge(
+         budget,
+         jarde_reader::budget::CountedBudgetDimension::IrItems,
+@@ -3713,8 +3725,220 @@
+         indentation,
+         budget,
+     )
++}
++
++/// One direct-super constructor's same-run contiguous primitive-array write prefix.
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayConstructorProjection {
++    pub member: PhysicalMethodId,
++    pub writes: Vec<ClassSourceInstanceArrayFieldWrite>,
++}
++
++/// Field identity and BCI only; its RHS remains in the retained physical AST.
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayFieldWrite {
++    pub bci: u32,
++    pub owner: String,
++    pub name: String,
++    pub descriptor: String,
++    pub element: Type,
++}
++
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayCall {
++    pub target: crate::facts::CallTarget,
++    pub presented: Option<Type>,
++    pub arguments: Vec<Option<Type>>,
++}
++
++#[doc(hidden)]
++pub fn class_source_instance_array_constructor_projection(
++    ast: &ClassSourceMethodAst,
++    budget: &mut Budget,
++) -> Result<Option<ClassSourceInstanceArrayConstructorProjection>, crate::stop::StopReason> {
++    let source = &ast.projection;
++    let Some(init) = source.generic_call_init.as_ref() else { return Ok(None) };
++    let first_is_super = source.program.stmts.first().is_some_and(|stmt| {
++        matches!(&stmt.kind, StmtKind::ConstructorCall { target: ConstructorTarget::Super, .. })
++            && Some(stmt.origin.primary().bci()) == init.bci
++    });
++    if !source.complete_code || source.has_exception_handlers || !init.presented
++        || init.target != Some(ConstructorTarget::Super) || !first_is_super { return Ok(None) }
++    let Some(inventory) = source.instance_field_write_evidence.as_ref() else { return Ok(None) };
++    let mut by_bci = std::collections::HashMap::new();
++    let mut by_field = std::collections::HashMap::<(String,String,String),Vec<u32>>::new();
++    for write in inventory {
++        crate::stop::poll(budget,Some(write.bci))?;
++        crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(write.bci))?;
++        by_bci.insert(write.bci,write);
++        by_field.entry((write.owner.clone(),write.name.clone(),write.descriptor.clone())).or_default().push(write.bci);
++    }
++    let mut writes=Vec::new();
++    for stmt in source.program.stmts.iter().skip(1) {
++        let bci=stmt.origin.primary().bci();
++        crate::stop::poll(budget,Some(bci))?;
++        crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(bci))?;
++        let StmtKind::FieldAssign { receiver:Some(receiver),name,op:AssignOp::Assign,value }=&stmt.kind else { break };
++        if !matches!(&receiver.kind,ExprKind::Local(name) if name=="this") || !primitive_array_initializer(value,budget)? { break }
++        let ExprKind::NewArray { element, .. }=&value.kind else { break };
++        let Some(evidence)=by_bci.get(&bci).copied() else { break };
++        if evidence.is_static || evidence.name!=*name { break }
++        let key=(evidence.owner.clone(),evidence.name.clone(),evidence.descriptor.clone());
++        let Some(all)=by_field.get(&key) else { return Ok(None) };
++        if all.len()!=1 || all[0]!=bci { return Ok(None) }
++        writes.push(ClassSourceInstanceArrayFieldWrite { bci,owner:evidence.owner.clone(),name:evidence.name.clone(),descriptor:evidence.descriptor.clone(),element:element.clone() });
++    }
++    Ok((!writes.is_empty()).then_some(ClassSourceInstanceArrayConstructorProjection { member:source.member.clone(),writes }))
++}
++
++fn primitive_array_initializer(expr:&Expr,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(expr.origin.primary().bci()))?;
++    crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(expr.origin.primary().bci()))?;
++    let ExprKind::NewArray{element,lengths,initializers:Some(values),total_dimensions:1}=&expr.kind else{return Ok(false)};
++    if !lengths.is_empty()||!matches!(element,Type::Boolean|Type::Byte|Type::Char|Type::Short|Type::Int|Type::Long|Type::Float|Type::Double)
++        || expr.presented.as_ref()!=Some(&Type::Reference(format!("{}[]",element.spell()))){return Ok(false)}
++    for value in values{if !primitive_array_value(value,budget)?{return Ok(false)}}Ok(true)
++}
++fn primitive_array_value(expr:&Expr,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(expr.origin.primary().bci()))?;
++    crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(expr.origin.primary().bci()))?;
++    match &expr.kind {
++        ExprKind::Integer(_)|ExprKind::Boolean(_)|ExprKind::Long(_)|ExprKind::Float(_)|ExprKind::Double(_)=>Ok(true),
++        ExprKind::Cast{ty,value} if matches!(ty,Type::Boolean|Type::Byte|Type::Char|Type::Short|Type::Int|Type::Long|Type::Float|Type::Double)=>primitive_array_value(value,budget),
++        ExprKind::Call{receiver:None,args,..}=>{for arg in args{if !primitive_array_literal(arg,budget)?{return Ok(false)}}Ok(true)},
++        _=>Ok(false),
++    }
++}
++fn primitive_array_literal(expr:&Expr,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(expr.origin.primary().bci()))?;
++    crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(expr.origin.primary().bci()))?;
++    match &expr.kind{ExprKind::Integer(_)|ExprKind::Boolean(_)|ExprKind::Long(_)|ExprKind::Float(_)|ExprKind::Double(_)=>Ok(true),ExprKind::Cast{ty,value} if matches!(ty,Type::Boolean|Type::Byte|Type::Char|Type::Short|Type::Int|Type::Long|Type::Float|Type::Double)=>primitive_array_literal(value,budget),_=>Ok(false)}
++}
++
++fn field_write_value<'a>(ast:&'a ClassSourceMethodAst,bci:u32,budget:&mut Budget)->Result<Option<&'a Expr>,crate::stop::StopReason>{
++    for stmt in &ast.projection.program.stmts { crate::stop::poll(budget,Some(stmt.origin.primary().bci()))?; crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(stmt.origin.primary().bci()))?; if stmt.origin.primary().bci()==bci { return Ok(match &stmt.kind { StmtKind::FieldAssign{value,..}=>Some(value),_=>None }); } }
++    Ok(None)
++}
++
++#[doc(hidden)]
++pub fn class_source_instance_array_rhs_equal(a:&ClassSourceMethodAst,ab:u32,b:&ClassSourceMethodAst,bb:u32,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    let (Some(left),Some(right))=(field_write_value(a,ab,budget)?,field_write_value(b,bb,budget)?) else{return Ok(false)};
++    compare_array_expr(left,&a.projection,right,&b.projection,budget)
++}
++
++fn compare_array_expr(a:&Expr,asrc:&ClassSourceMethodAstSource,b:&Expr,bsrc:&ClassSourceMethodAstSource,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(a.origin.primary().bci()))?; crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(a.origin.primary().bci()))?;
++    if a.presented!=b.presented{return Ok(false)}
++    let (ExprKind::NewArray{element:ae,lengths:al,initializers:Some(av),total_dimensions:ad},ExprKind::NewArray{element:be,lengths:bl,initializers:Some(bv),total_dimensions:bd})=(&a.kind,&b.kind) else{return Ok(false)};
++    if ae!=be||ad!=bd||!al.is_empty()||!bl.is_empty()||av.len()!=bv.len(){return Ok(false)}
++    for (x,y) in av.iter().zip(bv){if !compare_array_value(x,asrc,y,bsrc,budget)?{return Ok(false)}}
++    Ok(true)
++}
++fn compare_array_value(a:&Expr,asrc:&ClassSourceMethodAstSource,b:&Expr,bsrc:&ClassSourceMethodAstSource,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(a.origin.primary().bci()))?; crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(a.origin.primary().bci()))?;
++    if a.presented!=b.presented{return Ok(false)}
++    Ok(match (&a.kind,&b.kind){
++        (ExprKind::Integer(x),ExprKind::Integer(y))=>x==y,(ExprKind::Boolean(x),ExprKind::Boolean(y))=>x==y,
++        (ExprKind::Long(x),ExprKind::Long(y))=>x==y,(ExprKind::Float(x),ExprKind::Float(y))=>x==y,(ExprKind::Double(x),ExprKind::Double(y))=>x==y,
++        (ExprKind::Cast{ty:x,value: xv},ExprKind::Cast{ty:y,value:yv})=>x==y&&compare_array_value(xv,asrc,yv,bsrc,budget)?,
++        (ExprKind::Call{receiver:None,name:x,args:xa},ExprKind::Call{receiver:None,name:y,args:ya})=>{
++            let xt=array_call_target(asrc,a.origin.primary().bci(),x,budget)?; let yt=array_call_target(bsrc,b.origin.primary().bci(),y,budget)?;
++            if x!=y||xt.is_none()||xt!=yt||xa.len()!=ya.len(){false}else{let mut same=true;for (u,v) in xa.iter().zip(ya){if !compare_literal(u,v,budget)?{same=false;break}}same}
++        },_=>false,
++    })
+ }
++fn compare_literal(a:&Expr,b:&Expr,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++    crate::stop::poll(budget,Some(a.origin.primary().bci()))?; crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(a.origin.primary().bci()))?;
++    if a.presented!=b.presented{return Ok(false)}
++    Ok(match (&a.kind,&b.kind){(ExprKind::Integer(x),ExprKind::Integer(y))=>x==y,(ExprKind::Boolean(x),ExprKind::Boolean(y))=>x==y,(ExprKind::Long(x),ExprKind::Long(y))=>x==y,(ExprKind::Float(x),ExprKind::Float(y))=>x==y,(ExprKind::Double(x),ExprKind::Double(y))=>x==y,(ExprKind::Cast{ty:x,value:xv},ExprKind::Cast{ty:y,value:yv})=>x==y&&compare_literal(xv,yv,budget)?,_=>false})
++}
++fn array_call_target(source:&ClassSourceMethodAstSource,bci:u32,name:&str,budget:&mut Budget)->Result<Option<crate::facts::CallTarget>,crate::stop::StopReason>{
++    let mut found=Vec::new();for (site,opcode,target) in &source.call_targets{crate::stop::poll(budget,Some(*site))?;crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(*site))?;if *site==bci&&*opcode==0xb8&&target.name()==name{found.push(target.clone())}}Ok(if found.len()==1{found.pop()}else{None})
++}
+ 
++#[doc(hidden)]
++pub fn class_source_instance_array_calls(ast:&ClassSourceMethodAst,bci:u32,budget:&mut Budget)->Result<Option<Vec<ClassSourceInstanceArrayCall>>,crate::stop::StopReason>{
++    fn visit(expr:&Expr,source:&ClassSourceMethodAstSource,calls:&mut Vec<ClassSourceInstanceArrayCall>,budget:&mut Budget)->Result<bool,crate::stop::StopReason>{
++        crate::stop::poll(budget,Some(expr.origin.primary().bci()))?;crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(expr.origin.primary().bci()))?;
++        match &expr.kind{ExprKind::Call{receiver:None,name,args}=>{let Some(target)=array_call_target(source,expr.origin.primary().bci(),name,budget)? else{return Ok(false)};calls.push(ClassSourceInstanceArrayCall{target,presented:expr.presented.clone(),arguments:args.iter().map(|arg|arg.presented.clone()).collect()});Ok(true)},ExprKind::Cast{value,..}=>visit(value,source,calls,budget),ExprKind::NewArray{initializers:Some(values),..}=>{for value in values{if !visit(value,source,calls,budget)?{return Ok(false)}}Ok(true)},_=>Ok(true)}
++    }
++    let Some(value)=field_write_value(ast,bci,budget)? else{return Ok(None)};let mut calls=Vec::new();if !visit(value,&ast.projection,&mut calls,budget)?{return Ok(None)}Ok(Some(calls))
++}
++
++#[doc(hidden)]
++pub fn emit_class_source_instance_array_initializer(ast:&ClassSourceMethodAst,bci:u32,budget:&mut Budget)->Result<Option<String>,crate::stop::StopReason>{
++    let Some(value)=field_write_value(ast,bci,budget)? else{return Ok(None)};Ok(Some(emit_initializer_value(value,&ast.projection.member,ast.projection.current_class.as_deref(),&ast.projection.nested_class_members,0,budget)?))
++}
++
++#[doc(hidden)]
++pub fn emit_class_source_instance_array_constructor_body(ast:&ClassSourceMethodAst,removed_bcis:&[u32],budget:&mut Budget)->Result<String,crate::stop::StopReason>{
++    let mut removed=std::collections::BTreeSet::new();for bci in removed_bcis{crate::stop::poll(budget,Some(*bci))?;crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(*bci))?;removed.insert(*bci)}
++    let mut stmts=Vec::new();for stmt in &ast.projection.program.stmts{let bci=stmt.origin.primary().bci();crate::stop::poll(budget,Some(bci))?;crate::stop::charge(budget,jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,1,Some(bci))?;if !removed.contains(&bci){stmts.push(stmt.clone())}}
++    crate::emit::emit_class_source_statements(&stmts,&ast.projection.member,ast.projection.current_class.as_deref(),&ast.projection.nested_class_members,4,budget)
++}
++
++#[cfg(test)]
++mod instance_array_prefix_tests {
++    use super::*;
++    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
++    use jarde_reader::{budget::{Budget, Limits}, model::{ClassBytesId,Digest,JvmBytes,PhysicalClassLocation,PhysicalDefinitionId,PhysicalVariant,SnapshotId}};
++    use std::collections::BTreeMap;
++
++    fn ast(value: Expr, target: ConstructorTarget, handlers: bool, evidence: Option<Vec<crate::field::Evidence>>) -> ClassSourceMethodAst {
++        let owner=PhysicalDefinitionId{location:PhysicalClassLocation::StandaloneRoot{snapshot:SnapshotId("instance-array-test".into())},class_bytes:ClassBytesId{digest:Digest("instance-array-test".into()),length:1},variant:PhysicalVariant::Base};
++        let member=PhysicalMethodId{owner,name:JvmBytes(b"<init>".to_vec()),descriptor:JvmBytes(b"()V".to_vec())};
++        let call_origin=OriginSet::new(crate::source_map::Origin::direct(0));
++        let assign_origin=OriginSet::new(crate::source_map::Origin::direct(2));
++        let receiver=Expr::direct(ExprKind::Local("this".into()),2).presenting(Type::Reference("sample.ArrayFieldStore".into()));
++        let mut stmts=vec![Stmt::new(StmtKind::ConstructorCall{target,args:vec![Expr::direct(ExprKind::Integer(7),0)]},call_origin),Stmt::new(StmtKind::FieldAssign{receiver:Some(receiver),name:"bytes".into(),op:AssignOp::Assign,value},assign_origin)];
++        stmts.push(Stmt::new(StmtKind::Return{value:None},OriginSet::new(crate::source_map::Origin::direct(7))));
++        let source=ClassSourceMethodAstSource{program:build::Program{stmts,field_increments:BTreeMap::new(),statements:3,ragged:false,lambdas:Vec::new(),accessors:Vec::new(),array_constructor_sites:Vec::new(),lambda_refusals:Vec::new(),accessor_refusals:Vec::new(),lambdas_presented:0,accessors_presented:0},member,current_class:Some("sample.ArrayFieldStore".into()),nested_class_members:Vec::new(),parameter_names:Vec::new(),parameter_slots:Vec::new(),complete_code:true,has_exception_handlers:handlers,instruction_count:8,instruction_bcis:(0..8).collect(),call_targets:Vec::new(),anonymous_constructor_initializer_bci:None,generic_call_init:Some(crate::init::InitRecord{bci:Some(0),target:Some(target),class:Some("java/lang/Object".into()),declared:Some("sample/ArrayFieldStore".into()),presented:true,refusal:None}),instance_field_write_evidence:evidence};
++        ClassSourceMethodAst{projection:std::sync::Arc::new(source)}
++    }
++
++    fn byte_array(value:i64)->Expr { Expr::direct(ExprKind::NewArray{element:Type::Byte,lengths:Vec::new(),initializers:Some(vec![Expr::direct(ExprKind::Integer(value),3).presenting(Type::Byte)]),total_dimensions:1},2).presenting(Type::Reference("byte[]".into())) }
++    fn evidence()->Vec<crate::field::Evidence>{vec![crate::field::Evidence{bci:2,access:crate::facts::FieldAccess::Write,is_static:false,owner:"sample/ArrayFieldStore".into(),name:"bytes".into(),descriptor:"[B".into()}]}
++    fn budget()->Budget{Budget::new(Limits{ir_items:1000,analysis_steps:1000,elapsed_millis:u64::MAX,..Limits::default()})}
++    fn call_array(argument:i64,descriptor:&str)->ClassSourceMethodAst{let mut ast=ast(byte_array(0),ConstructorTarget::Super,false,Some(evidence()));let source=std::sync::Arc::get_mut(&mut ast.projection).unwrap();let target=crate::facts::CallTarget::new(crate::facts::InvokeKind::Static,"sample/ArrayFieldStore","mark",descriptor,false);let arg=Expr::direct(ExprKind::Integer(argument),4).presenting(Type::Int);let call=Expr::direct(ExprKind::Call{receiver:None,name:"mark".into(),args:vec![arg]},3).presenting(Type::Byte);let value=Expr::direct(ExprKind::NewArray{element:Type::Byte,lengths:Vec::new(),initializers:Some(vec![call]),total_dimensions:1},2).presenting(Type::Reference("byte[]".into()));let StmtKind::FieldAssign{value:old,..}=&mut source.program.stmts[1].kind else{unreachable!()};*old=value;source.call_targets=vec![(3,0xb8,target)];ast}
++
++    #[test]
++    fn prefix_emission_keeps_super_arguments_and_final_return() {
++        let ast=ast(byte_array(10),ConstructorTarget::Super,false,Some(evidence()));
++        let mut b=budget();let projection=class_source_instance_array_constructor_projection(&ast,&mut b).unwrap().unwrap();
++        let body=emit_class_source_instance_array_constructor_body(&ast,&projection.writes.iter().map(|w|w.bci).collect::<Vec<_>>(),&mut b).unwrap();
++        assert!(body.contains("super(7);"));assert!(body.contains("return;"));assert!(!body.contains("this.bytes"));
++    }
++
++    #[test]
++    fn non_super_handlers_unclaimed_duplicate_and_rhs_mismatch_refuse() {
++        for ast in [ast(byte_array(10),ConstructorTarget::This,false,Some(evidence())),ast(byte_array(10),ConstructorTarget::Super,true,Some(evidence())),ast(byte_array(10),ConstructorTarget::Super,false,None)] {let mut b=budget();assert!(class_source_instance_array_constructor_projection(&ast,&mut b).unwrap().is_none());}
++        let mut duplicate=evidence();duplicate.extend(evidence());let duplicate_ast=ast(byte_array(10),ConstructorTarget::Super,false,Some(duplicate));let mut b=budget();assert!(class_source_instance_array_constructor_projection(&duplicate_ast,&mut b).unwrap().is_none());
++        let a=ast(byte_array(10),ConstructorTarget::Super,false,Some(evidence()));let b_ast=ast(byte_array(11),ConstructorTarget::Super,false,Some(evidence()));let mut b=budget();assert!(!class_source_instance_array_rhs_equal(&a,2,&b_ast,2,&mut b).unwrap());
++    }
++
++    #[test]
++    fn static_rhs_call_arguments_and_overload_descriptor_are_exact() {
++        let left=call_array(31,"(I)B");let other_argument=call_array(32,"(I)B");let other_overload=call_array(31,"(J)B");let mut b=budget();
++        assert!(!class_source_instance_array_rhs_equal(&left,2,&other_argument,2,&mut b).unwrap());
++        assert!(!class_source_instance_array_rhs_equal(&left,2,&other_overload,2,&mut b).unwrap());
++    }
++
++    #[test]
++    fn rhs_comparison_preserves_long_and_float_double_raw_bits() {
++        let source=ast(byte_array(0),ConstructorTarget::Super,false,Some(evidence()));let mut b=budget();
++        for (left,right) in [(Expr::direct(ExprKind::Long(1),1),Expr::direct(ExprKind::Long(2),9)),(Expr::direct(ExprKind::Float(0x7fc00001),1),Expr::direct(ExprKind::Float(0x7fc00002),9)),(Expr::direct(ExprKind::Double(0x7ff8000000000001),1),Expr::direct(ExprKind::Double(0x7ff8000000000002),9))] { assert!(!compare_array_value(&left,&source.projection,&right,&source.projection,&mut b).unwrap()); }
++    }
++
++    #[test]
++    fn budget_stop_returns_no_candidate() {
++        let ast=ast(byte_array(10),ConstructorTarget::Super,false,Some(evidence()));let mut b=Budget::new(Limits{analysis_steps:0,..Limits::default()});
++        assert!(matches!(class_source_instance_array_constructor_projection(&ast,&mut b),Err(crate::stop::StopReason::Budget{..})));
++    }
++}
++
+ /// The javac assert-switch field name, for the class-source projection that census-checks it.
+ #[doc(hidden)]
+ pub const ASSERT_SWITCH_FIELD_NAME: &str = crate::asserts::SWITCH_FIELD_NAME;
+@@ -4955,6 +5179,9 @@
+     /// Same-run verified constructor prologue, retained only for generic-call proofs. The public
+     /// `RuleDetails` selection may omit this record even though the body and SSA were recovered.
+     pub(crate) generic_call_init: Option<crate::init::InitRecord>,
++    /// Complete same-run instance-field write inventory, present only when every physical write
++    /// was claimed. `None` means unavailable or incomplete.
++    pub(crate) instance_field_write_evidence: Option<Vec<crate::field::Evidence>>,
+ }
+ 
+ #[doc(hidden)]
+@@ -10280,7 +10507,7 @@
+         } else {
+             None
+         };
+-        let generic_call_init = if retain_generic_call_asts
++        let generic_call_init = if (retain_generic_call_asts || retain_all_method_asts)
+             && request.facts.method().name() == "<init>"
+             && let Some(prologue) = prologues.prologue()
+         {
+@@ -10303,6 +10530,26 @@
+         } else {
+             None
+         };
++        let instance_field_write_evidence = if retain_all_method_asts
++            && request.facts.method().name() == "<init>"
++        {
++            let mut evidence = Vec::new();
++            let mut complete = true;
++            for (bci, operation) in operations.iter() {
++                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
++                    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, 1, Some(*bci))
++                }) { return stopped(method, profile.clone(), &selection, stop, budget); }
++                let crate::facts::Operation::Field { access: crate::facts::FieldAccess::Write, is_static: false, .. } = operation else { continue; };
++                let Some((field, shape)) = fields.claim(*bci) else { complete = false; continue; };
++                if !shape.writes() || field.is_static { complete = false; continue; }
++                let item_cost = field.owner.len().saturating_add(field.name.len()).saturating_add(field.descriptor.len()).saturating_add(1);
++                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
++                    crate::stop::charge(budget, jarde_reader::budget::CountedBudgetDimension::AnalysisSteps, u64::try_from(item_cost).unwrap_or(u64::MAX), Some(*bci))
++                }) { return stopped(method, profile.clone(), &selection, stop, budget); }
++                evidence.push(field.clone());
++            }
++            complete.then_some(evidence)
++        } else { None };
+         *slot = Some(ClassSourceMethodAst {
+             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+                 program: program.clone(),
+@@ -10332,6 +10579,7 @@
+                 call_targets,
+                 anonymous_constructor_initializer_bci,
+                 generic_call_init,
++                instance_field_write_evidence,
+             }),
+         });
+     }
+@@ -12153,6 +12401,7 @@
+             call_targets: vec![(3, 0xb6, target)],
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: None,
+         };
+         (
+             ClassSourceMethodAst {
+@@ -12326,6 +12575,7 @@
+             call_targets,
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: None,
+         };
+         (
+             ClassSourceMethodAst {
+@@ -13742,6 +13992,7 @@
+             call_targets: Vec::new(),
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: None,
+         }
+     }
+ 
+@@ -13834,6 +14085,7 @@
+                 call_targets: Vec::new(),
+                 anonymous_constructor_initializer_bci: None,
+                 generic_call_init: None,
++                instance_field_write_evidence: None,
+             }),
+         }
+     }
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -7158,6 +7158,22 @@
+                 field.name.raw().0 == jarde_java::report::ASSERT_SWITCH_FIELD_NAME.as_bytes()
+                     && field.access_flags & (0x0008 | 0x0010 | 0x1000) == (0x0008 | 0x0010 | 0x1000)
+             });
++        let mut constructor_count = 0usize;
++        let mut has_primitive_array_field = false;
++        if !ended && read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) == 0 {
++            for method in &read.facts.methods {
++                if let Err(error)=budget.poll().and_then(|()|budget.charge(CountedBudgetDimension::AnalysisSteps,1)) { merge_execution(&mut execution,stop_execution(&error,budget));diagnostics.push(stop_diagnostic(&error,class_provenance.clone()));ended=true;break }
++                if method.name.raw().0==b"<init>" { constructor_count+=1; }
++            }
++            if !ended {
++                for field in &read.facts.fields {
++                    if let Err(error)=budget.poll().and_then(|()|budget.charge(CountedBudgetDimension::AnalysisSteps,1)) { merge_execution(&mut execution,stop_execution(&error,budget));diagnostics.push(stop_diagnostic(&error,class_provenance.clone()));ended=true;break }
++                    let descriptor=field.descriptor.raw().0.as_slice();
++                    if descriptor==b"[Z"||descriptor==b"[B"||descriptor==b"[C"||descriptor==b"[S"||descriptor==b"[I"||descriptor==b"[J"||descriptor==b"[F"||descriptor==b"[D" { has_primitive_array_field=true; }
++                }
++            }
++        }
++        let capture_instance_array_ctor_asts = !ended && read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) == 0 && constructor_count>=2 && has_primitive_array_field;
+         for (index, field) in read.facts.fields.iter().enumerate() {
+             if ended {
+                 break;
+@@ -7558,6 +7574,7 @@
+                                 capture_array_helper_use_table: array_helper_use_runs.is_empty(),
+                                 capture_anonymous_child_asts,
+                                 capture_assert_asts,
++                                capture_instance_array_ctor_asts,
+                                 capture_integer_constant_asts: !integer_constant_candidates
+                                     .is_empty(),
+                                 // Generic call publication needs a closed same-run inventory even
+@@ -9599,7 +9616,28 @@
+                 diagnostics.push(diagnostic);
+                 None
+             }
++            Err(InitializerProjectionFailure::Error(error)) => {
++                merge_execution(&mut execution, stop_execution(&error, budget));
++                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
++                None
++            }
+         };
++        if capture_instance_array_ctor_asts && matches!(&execution, ExecutionReport::Complete { .. }) {
++            match project_instance_array_initializer_group(
++                &declaration, &read.facts.methods, &fields, &mut methods, &method_asts,
++                &read.facts.fields, initializer_field_order.as_deref(), &mut array_projection_method_texts,
++                &staged_member_emissions, budget,
++            ) {
++                Ok(staged_fields) => for (index, fragment) in staged_fields {
++                    if let Some(declaration) = fields.get_mut(index).and_then(|field| field.declaration.as_mut()) { declaration.push_str(&fragment); }
++                },
++                Err(InitializerProjectionFailure::Refused(_)) => {},
++                Err(InitializerProjectionFailure::Stopped(stop)) => {
++                    let (stop, diagnostic)=initializer_projection_stop(&stop,budget,class_provenance.clone()); merge_execution(&mut execution,stop); diagnostics.push(diagnostic);
++                },
++                Err(InitializerProjectionFailure::Error(error)) => { merge_execution(&mut execution,stop_execution(&error,budget)); diagnostics.push(stop_diagnostic(&error,class_provenance.clone())); },
++            }
++        }
+         let mut enum_constant_proof = if read.facts.stopped_at.is_some()
+             || !matches!(&execution, ExecutionReport::Complete { .. })
+         {
+@@ -11106,7 +11144,109 @@
+ enum InitializerProjectionFailure {
+     Refused(String),
+     Stopped(StopReason),
++    Error(Error),
++}
++
++fn project_instance_array_initializer_group(
++    declaration: &ClassSourceDeclaration,
++    headers: &[MemberHeader],
++    fields: &[ClassSourceField],
++    methods: &[ClassSourceMethod],
++    asts: &[(PhysicalMethodId, jarde_java::report::ClassSourceMethodAst, Option<jarde_java::report::GenericConstructorCandidate>, Option<jarde_java::report::AnonymousAllocationScan>)],
++    field_headers: &[MemberHeader],
++    field_order: Option<&[usize]>,
++    member_texts: &mut Vec<(u64,String)>,
++    staged: &[(u64,String,Vec<String>,Vec<class_source::ClassSourceBodySegment>)],
++    budget: &mut Budget,
++) -> std::result::Result<Vec<(usize,String)>,InitializerProjectionFailure> {
++    let ordinary=declaration.item.declaration.access_flags & (ACC_INTERFACE|ACC_ANNOTATION|0x4000|0x8000)==0;
++    if !ordinary { return Ok(Vec::new()) }
++    let mut ctors=Vec::new();for h in headers{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if h.name.raw().0==b"<init>"{ctors.push(h)}}
++    if ctors.len()<2 || ctors.len()!=methods.len() { return Ok(Vec::new()) }
++    for header in &ctors{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if !class_source_runs_body(header){return Ok(Vec::new())}}
++    let Some(field_order)=field_order else { return Ok(Vec::new()) };
++    let mut selected=Vec::new();
++    for header in ctors {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;
++        budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;
++        let mut matches=Vec::new();for candidate in asts{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if candidate.0.name.0==header.name.raw().0&&candidate.0.descriptor.0==header.descriptor.raw().0{matches.push(candidate)}}
++        let [(identity,ast,_,_)]=matches.as_slice() else { return Ok(Vec::new()) };
++        let mut method_match=None;for method in methods{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if method.item.identity==**identity{if method_match.is_some(){return Ok(Vec::new())}method_match=Some(method)}}
++        let Some(method)=method_match else { return Ok(Vec::new()) };
++        let class_source::ClassSourceOutcome::Recovered{report,analysis}=&method.outcome else {return Ok(Vec::new())};
++        if !matches!(&report.execution,ExecutionReport::Complete{..})||!matches!(&analysis.execution,ExecutionReport::Complete{..})||report.quality!=Quality::Structured||report.representation!=crate::ir::Representation::Java||report.content!=RecoveryContent::ContainsStatements||!report.fallbacks.is_empty(){return Ok(Vec::new())}
++        let Some(projection)=jarde_java::report::class_source_instance_array_constructor_projection(ast,budget).map_err(InitializerProjectionFailure::Stopped)? else{return Ok(Vec::new())};
++        if &projection.member!=*identity {return Ok(Vec::new())}
++        selected.push((method.item.index,method,*ast,projection));
++    }
++    let Some((_,_,first_ast,first))=selected.first() else{return Ok(Vec::new())};
++    for (_,_,ast,projection) in selected.iter().skip(1) {
++        budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;
++        if projection.writes.len()!=first.writes.len(){return Ok(Vec::new())}
++        for (left,right) in first.writes.iter().zip(&projection.writes) {
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;
++            budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;
++            if left.owner!=right.owner||left.name!=right.name||left.descriptor!=right.descriptor||!jarde_java::report::class_source_instance_array_rhs_equal(first_ast,left.bci,ast,right.bci,budget).map_err(InitializerProjectionFailure::Stopped)? {return Ok(Vec::new())}
++        }
++    }
++    let class_name=declaration.item.declaration.this_class.raw().0.as_slice();
++    let mut staged_fields=Vec::new();let mut field_indices=Vec::new();
++    for write in &first.writes {
++        if write.owner.as_bytes()!=class_name||!primitive_array_descriptor(&write.element,&write.descriptor){return Ok(Vec::new())}
++        let mut found=Vec::new();for (index,field) in fields.iter().enumerate(){budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if field.item.name.raw().0==write.name.as_bytes()&&field.item.descriptor.raw().0==write.descriptor.as_bytes(){found.push((index,field))}}
++        let [(index,field)]=found.as_slice() else{return Ok(Vec::new())};
++        if field.item.access_flags&0x0008!=0||field.declaration.as_ref().is_none_or(|d|d.contains('=')){return Ok(Vec::new())}
++        let mut attrs=Vec::new();for header in field_headers{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if header.name.raw().0==write.name.as_bytes()&&header.descriptor.raw().0==write.descriptor.as_bytes(){attrs.push(header)}}
++        let [header]=attrs.as_slice() else{return Ok(Vec::new())};
++        if class_source::declares_constant_value(header)||class_source::declares_signature(header){return Ok(Vec::new())}
++        let Some(expression)=jarde_java::report::emit_class_source_instance_array_initializer(first_ast,write.bci,budget).map_err(InitializerProjectionFailure::Stopped)? else{return Ok(Vec::new())};
++        staged_fields.push(expression);field_indices.push(*index);
++        let calls=jarde_java::report::class_source_instance_array_calls(first_ast,write.bci,budget).map_err(InitializerProjectionFailure::Stopped)?;
++        let Some(calls)=calls else{return Ok(Vec::new())};
++        for call in calls {
++            let target=&call.target;
++            budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;
++            if target.kind()!=jarde_java::facts::InvokeKind::Static||target.owner().as_bytes()!=class_name||target.is_interface_reference(){return Ok(Vec::new())}
++            let mut matches=Vec::new();for header in headers{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if header.name.raw().0==target.name().as_bytes()&&header.descriptor.raw().0==target.descriptor().as_bytes(){matches.push(header)}}
++            let [header]=matches.as_slice() else{return Ok(Vec::new())};
++            if header.access_flags&0x0008==0||class_source::declares_exceptions(header){return Ok(Vec::new())}
++            let Ok(desc)=descriptor_facts(target.descriptor().as_bytes(),DescriptorKind::Method) else{return Ok(Vec::new())};
++            let Some(result_type)=desc.result().and_then(primitive_descriptor_type) else{return Ok(Vec::new())};
++            if desc.parameters().len()!=call.arguments.len()||Some(result_type)!=call.presented{return Ok(Vec::new())}
++            for (arg,param) in call.arguments.iter().zip(desc.parameters()) {budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if param.dimensions()!=0||primitive_descriptor_type(param)!=*arg{return Ok(Vec::new())}}
++        }
++    }
++    let mut positions=std::collections::HashMap::new();for (pos,index) in field_order.iter().enumerate(){budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;positions.insert(*index,pos)}
++    let mut prior=None;for index in &field_indices{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;let Some(pos)=positions.get(index).copied() else{return Ok(Vec::new())};if prior.is_some_and(|p|p>=pos){return Ok(Vec::new())};prior=Some(pos)}
++    let mut staged_methods=Vec::new();
++    for (member_index,method,ast,projection) in &selected {
++        let mut conflict=false;
++        for (i,_) in member_texts.iter(){budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if i==member_index{conflict=true;break}}
++        for (i,_,_,_) in staged{budget.poll().map_err(InitializerProjectionFailure::Error)?;budget.charge(CountedBudgetDimension::AnalysisSteps,1).map_err(InitializerProjectionFailure::Error)?;if i==member_index{conflict=true;break}}
++        if conflict{return Ok(Vec::new())}
++        let original=jarde_java::report::emit_class_source_method_ast(ast,4,budget).map_err(InitializerProjectionFailure::Stopped)?;
++        let Some(original_text)=replace_recovery_body(class_source_method_text(&method.outcome),&original,budget).map_err(InitializerProjectionFailure::Stopped)? else{return Ok(Vec::new())};
++        if !method.matches_current_text(&original_text){return Ok(Vec::new())}
++        let removed:Vec<_>=projection.writes.iter().map(|w|w.bci).collect();
++        let body=jarde_java::report::emit_class_source_instance_array_constructor_body(ast,&removed,budget).map_err(InitializerProjectionFailure::Stopped)?;
++        let Some(artifact)=replace_recovery_body(class_source_method_text(&method.outcome),&body,budget).map_err(InitializerProjectionFailure::Stopped)? else{return Ok(Vec::new())};
++        let Some(text)=method.projected_body_method_text(&artifact,None,&[]) else{return Ok(Vec::new())};
++        budget.charge(CountedBudgetDimension::OutputBytes,u64::try_from(text.len()).unwrap_or(u64::MAX)).map_err(InitializerProjectionFailure::Stopped)?;
++        staged_methods.push((*member_index,text));
++    }
++    member_texts.extend(staged_methods);
++    Ok(field_indices.into_iter().zip(staged_fields).collect())
++}
++
++fn class_source_method_text(outcome:&class_source::ClassSourceOutcome)->&str{match outcome{class_source::ClassSourceOutcome::Recovered{report,..}=>&report.text,_=>""}}
++fn replace_recovery_body(original:&str,statements:&str,budget:&mut Budget)->Result<Option<String>,StopReason>{let mut offset=0;for line in original.split_inclusive('\n'){budget.poll()?;budget.charge(CountedBudgetDimension::AnalysisSteps,1)?;if line.trim_end_matches('\n')=="{"{return Ok(Some(format!("{}{{\n{}}}\n",&original[..offset],statements)))}offset+=line.len()}Ok(None)}
++fn primitive_descriptor_type(component:&jarde_reader::classfile::DescriptorComponent)->Option<JavaType>{
++    if component.dimensions()!=0{return None}let jarde_reader::classfile::Base::Primitive(base)=component.base() else{return None};Some(match base{jarde_reader::classfile::BaseType::Boolean=>JavaType::Boolean,jarde_reader::classfile::BaseType::Byte=>JavaType::Byte,jarde_reader::classfile::BaseType::Char=>JavaType::Char,jarde_reader::classfile::BaseType::Short=>JavaType::Short,jarde_reader::classfile::BaseType::Int=>JavaType::Int,jarde_reader::classfile::BaseType::Long=>JavaType::Long,jarde_reader::classfile::BaseType::Float=>JavaType::Float,jarde_reader::classfile::BaseType::Double=>JavaType::Double})
+ }
++fn primitive_array_descriptor(element:&JavaType,descriptor:&str)->bool{
++    let suffix=match element{JavaType::Boolean=>"Z",JavaType::Byte=>"B",JavaType::Char=>"C",JavaType::Short=>"S",JavaType::Int=>"I",JavaType::Long=>"J",JavaType::Float=>"F",JavaType::Double=>"D",JavaType::Reference(_)=>return false};
++    descriptor==format!("[{suffix}")
++}
+ 
+ /// Commits an admitted runtime initializer group only after every RHS fragment has been emitted.
+ /// The returned indices are source order; the `fields` vector itself stays in classfile order.
+@@ -19321,6 +19461,7 @@
+     capture_array_helper_use_table: bool,
+     capture_anonymous_child_asts: bool,
+     capture_assert_asts: bool,
++    capture_instance_array_ctor_asts: bool,
+     capture_integer_constant_asts: bool,
+     capture_member_uses: bool,
+     capture_member_use_bootstrap: bool,
+@@ -19440,6 +19581,7 @@
+         options.capture_anonymous_child_asts
+             || options.array_helper_census_needed
+             || options.capture_assert_asts
++            || (options.capture_instance_array_ctor_asts && request.method.name.0 == b"<init>")
+             || integer_switch_ast,
+         options.retain_generic_call_asts,
+         budget,

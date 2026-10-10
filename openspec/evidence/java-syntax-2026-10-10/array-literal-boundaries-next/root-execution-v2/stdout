@@ -1,0 +1,17 @@
+{
+  "status": "completed",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "original_cross_jdk_raw_equal": true,
+  "failures": [],
+  "manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/baseline-root-v2/manifest.json",
+  "inventory": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/baseline-root-v2/file-inventory.json"
+}

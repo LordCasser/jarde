@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/prepare-baseline-luna-v2.py",
+    "--cli",
+    "/private/tmp/jarde-nonfinal-static-cli-v1"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "elapsed_seconds": 6.410239934921265,
+  "script_sha256": "81ab55384513416c311af46ffc56d8587ce8933cb1849824bfcf992f117c72c9",
+  "streams": {
+    "stdout": {
+      "bytes": 566,
+      "sha256": "c7ad279a17af7bc5d2465ee69ad509c113c64a4c321f05929168495fc805d13c"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

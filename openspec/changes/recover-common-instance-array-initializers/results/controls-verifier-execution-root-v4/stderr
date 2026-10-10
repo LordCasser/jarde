@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v4.py", line 615, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v4.py", line 582, in main
+    originals, original_summary, javap_members = verify_javap_and_original(
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        manifest, command_records, jdk_tools)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v4.py", line 423, in verify_javap_and_original
+    javap_members[(leg, class_name)] = parse_javap_members(stdout, class_name)
+                                       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/verify-controls-baseline-root-v4.py", line 277, in parse_javap_members
+    opcodes_by_method[(name, descriptor)] = {int(m.group(1)): m.group(2) for line in segment if (m := re.match(r"\s*(\d+):\s+([a-z][a-z0-9_]*)", line))}
+    ^^^^^^^^^^^^^^^^^
+NameError: name 'opcodes_by_method' is not defined

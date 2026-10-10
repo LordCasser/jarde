@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict",
+        "--no-interactive"
+      ],
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 15252,
+          "sha256": "14e68860da51f81b28a70c17e65acef9957f662eaecc43a13d15132118335482",
+          "path": "openspec.stdout"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "path": "openspec.stderr"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":(exclude)openspec/changes/recover-common-instance-array-initializers/results/instance-array-prefix-luna-v2.patch",
+        ":(exclude)openspec/changes/recover-common-instance-array-initializers/results/instance-array-prefix-luna-v3.patch"
+      ],
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "path": "staged-diff.stdout"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "path": "staged-diff.stderr"
+        }
+      }
+    }
+  ],
+  "patch_exclusion_reason": "Immutable review artifacts contain required unified-diff blank context markers; product source and all other staged text checked."
+}

@@ -1,0 +1,16 @@
+{
+  "status": "verified-baseline-with-recorded-outcome",
+  "output": "openspec/evidence/java-syntax-2026-10-10/array-literal-boundaries-next/results/baseline-verification-luna-v2.json",
+  "command_count": 39,
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "recorded_failures": []
+}

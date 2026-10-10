@@ -1,0 +1,267 @@
+{
+  "schema": "recover-common-instance-array-controls-baseline-root-acceptance-v5",
+  "status": "verified-baseline-only",
+  "evidence_path": "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/manifest.json",
+  "evidence_manifest_sha256": "8f1796a86bcf0c10d64b7a6b16f761e212cc25c9eeca7453317965fdc6419bbe",
+  "closed_inventory": {
+    "path": "openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/file-inventory.json",
+    "sha256": "ce2a49c82f6022d0ca1789459e9eda5d9be0d0c214e8157519fad97cb6e55e21",
+    "file_count": 286,
+    "closed": true
+  },
+  "frozen_inputs": {
+    "cli": {
+      "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "bytes": 36470032
+    },
+    "metadata": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+      "sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+    },
+    "product_source_count": 10,
+    "product_sources": {
+      "crates/jarde-java/src/init.rs": {
+        "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+        "current_matches_pin": true
+      },
+      "crates/jarde-java/src/report.rs": {
+        "sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+        "current_matches_pin": true
+      },
+      "crates/jarde-java/src/build.rs": {
+        "sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+        "current_matches_pin": true
+      },
+      "crates/jarde-java/src/ast.rs": {
+        "sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+        "current_matches_pin": true
+      },
+      "crates/jarde-java/src/emit.rs": {
+        "sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+        "current_matches_pin": true
+      },
+      "crates/jarde-java/src/asserts.rs": {
+        "sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+        "current_matches_pin": true
+      },
+      "crates/jarde-java/src/field.rs": {
+        "sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+        "current_matches_pin": true
+      },
+      "src/facade.rs": {
+        "sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+        "current_matches_pin": true
+      },
+      "src/class_source.rs": {
+        "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+        "current_matches_pin": true
+      },
+      "Cargo.lock": {
+        "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "current_matches_pin": true
+      }
+    },
+    "jdk_manifest": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    "jdk_tools_verified": 6,
+    "preparation_script": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/prepare-controls-baseline-root-v3.py",
+      "sha256": "cc6a64af52570c7f51a1eed626d612185c59dc3e0e17b77e9604ef92ed44711a",
+      "bytes": 21467
+    }
+  },
+  "command_evidence": {
+    "command_count": 80,
+    "unique_labels": 80,
+    "raw_stream_count": 160,
+    "unique_stream_paths": true,
+    "all_stream_hashes_verified": true,
+    "fixed_tool_argv_verified": true,
+    "case_records_match_command_table": true
+  },
+  "archived_original_sources": {
+    "CommonDirectSuperByteArray.java": {
+      "bytes": 461,
+      "sha256": "3603615dca19077f68a74e720c344978a1a94526638454452566f88b8fc59ae6",
+      "role": "reused-existing",
+      "canonical_matches": true
+    },
+    "ThisDelegatingByteArray.java": {
+      "bytes": 408,
+      "sha256": "4e480f0496061dc9ec42048ee4da780cdad587a69f9dc9b7d86baec8e43d7a6d",
+      "role": "reused-existing",
+      "canonical_matches": true
+    },
+    "DifferentRhsByteArray.java": {
+      "bytes": 426,
+      "sha256": "4e170b0816fa6db04838ddacca2d1f78a3dd00c1667f9a32426811909957d6fe",
+      "role": "reused-existing",
+      "canonical_matches": true
+    },
+    "InstanceFieldInitRunner.java": {
+      "bytes": 2891,
+      "sha256": "e369c37740e46a2bab4e22a076c063447bc5c3d6ceafb3df355c74a2fc2455a5",
+      "role": "reused-existing",
+      "canonical_matches": true
+    },
+    "FinalLiteralTwoArrays.java": {
+      "bytes": 428,
+      "sha256": "3f195d39b724c4862b4bbd7d47464c824dae4331d987a9f2d4c726339deeb2a5",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "MissingWriteByteArray.java": {
+      "bytes": 387,
+      "sha256": "c8847a066fa0ea24568b9238eeb8919bda44854b7d6f41d5a81a3cb547b4dc78",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "DuplicateWriteByteArray.java": {
+      "bytes": 472,
+      "sha256": "19dc4f1c745c581982b4145a348da9cd6b63d83cf8c8193c686fd4194013ee6f",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "InterveningEffectByteArray.java": {
+      "bytes": 460,
+      "sha256": "70f4067c276b5cc2fd0ee3538fe382dc1734295ae94d408c19a43f65fc9d63fe",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "ParameterRhsByteArray.java": {
+      "bytes": 430,
+      "sha256": "92ceb1a44f29ff23383a65ec2cd9b9b63b956f75e196d6946645aec0d047710a",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "ReverseFieldOrderByteArray.java": {
+      "bytes": 539,
+      "sha256": "f88edc7b84ae72ae3b9282ca2aa14538d34cc36245e39654be03529fe675a91e",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "HandlerArrayByteArray.java": {
+      "bytes": 673,
+      "sha256": "ecf2979abf9b07fa9d1bab5d0c28a8e04edc00d40284a8377cc58d09d41bb24b",
+      "role": "new-control",
+      "canonical_matches": true
+    },
+    "ControlsRunner.java": {
+      "bytes": 14173,
+      "sha256": "1c30b5367246f6106b7a8098c940624bb2f2a474fd1d79ae38ca5ea23c335cba",
+      "role": "new-runner",
+      "canonical_matches": true
+    }
+  },
+  "original_classes_and_javap": {
+    "javac8": {
+      "class_count": 12,
+      "javap_count": 12,
+      "runners": [
+        "ControlsRunner",
+        "InstanceFieldInitRunner"
+      ],
+      "original_compile_and_runners_passed": true
+    },
+    "javac23": {
+      "class_count": 12,
+      "javap_count": 12,
+      "runners": [
+        "ControlsRunner",
+        "InstanceFieldInitRunner"
+      ],
+      "original_compile_and_runners_passed": true
+    }
+  },
+  "cli_render_replay": {
+    "render_count": 40,
+    "classes_per_leg": 10,
+    "default_all_text_equal": true,
+    "cross_jdk_text_equal": true,
+    "full_method_census_count": 156,
+    "source_map_segment_count": 1202,
+    "initializer_proof_reports": 40,
+    "unmapped_handler_gotos": [
+      {
+        "jdk": "javac8",
+        "class": "HandlerArrayByteArray",
+        "profile": "all",
+        "method": "<init>",
+        "descriptor": "()V",
+        "bcis": [
+          19
+        ],
+        "opcode": "goto"
+      },
+      {
+        "jdk": "javac8",
+        "class": "HandlerArrayByteArray",
+        "profile": "all",
+        "method": "<init>",
+        "descriptor": "(I)V",
+        "bcis": [
+          19
+        ],
+        "opcode": "goto"
+      },
+      {
+        "jdk": "javac23",
+        "class": "HandlerArrayByteArray",
+        "profile": "all",
+        "method": "<init>",
+        "descriptor": "()V",
+        "bcis": [
+          19
+        ],
+        "opcode": "goto"
+      },
+      {
+        "jdk": "javac23",
+        "class": "HandlerArrayByteArray",
+        "profile": "all",
+        "method": "<init>",
+        "descriptor": "(I)V",
+        "bcis": [
+          19
+        ],
+        "opcode": "goto"
+      }
+    ],
+    "source_map_claim_boundary": "All reported origins are physical; four handler constructor goto@19 anchors are absent. No full physical BCI coverage claim.",
+    "negative_array_fields_not_promoted": [
+      "DifferentRhsByteArray",
+      "DuplicateWriteByteArray",
+      "HandlerArrayByteArray",
+      "InterveningEffectByteArray",
+      "MissingWriteByteArray",
+      "ParameterRhsByteArray",
+      "ReverseFieldOrderByteArray"
+    ]
+  },
+  "candidate_full_source_runs": {
+    "javac8": {
+      "class_count": 12,
+      "class_set_complete": true,
+      "runner_sources_byte_equal_to_original": true,
+      "empty_classpath_sourcepath": true,
+      "verified_runner_count": 2,
+      "raw_runtimes_match_original": true
+    },
+    "javac23": {
+      "class_count": 12,
+      "class_set_complete": true,
+      "runner_sources_byte_equal_to_original": true,
+      "empty_classpath_sourcepath": true,
+      "verified_runner_count": 2,
+      "raw_runtimes_match_original": true
+    }
+  },
+  "cli_invocations": 40,
+  "original_javap_invocations": 24,
+  "case_count": 44,
+  "instance_initializer_implementation_claim": "not_claimed",
+  "scope_note": "This accepts only the frozen static-initializer CLI baseline replay and its public source/runtime evidence; it does not claim instance initializer recovery is implemented or complete."
+}
