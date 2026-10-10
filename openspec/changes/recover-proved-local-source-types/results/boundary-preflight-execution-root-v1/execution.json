@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T18:19:40.541546+00:00",
+  "duration_seconds": 2.409180250018835,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/changes/recover-proved-local-source-types/results/run-boundary-preflight-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 102,
+      "sha256": "ea20d114cc6496744bf6d378ae3c0dbef97acddeb74004d79cfc9cce44734fd8"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

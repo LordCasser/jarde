@@ -1,0 +1,580 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-no-debug/classes/LocalSourceTypesBoundaries.class
+  Last modified 2026-10-11; size 2562 bytes
+  MD5 checksum b5ddf1b1975b949a09c1502886470f62
+public final class LocalSourceTypesBoundaries
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+    #1 = Methodref          #37.#76       // java/lang/Object."<init>":()V
+    #2 = Class              #77           // LocalSourceTypesBoundaries
+    #3 = String             #78           // ./?A
+    #4 = Methodref          #22.#79       // java/lang/String.charAt:(I)C
+    #5 = Integer            65535
+    #6 = Class              #80           // java/lang/StringBuilder
+    #7 = Methodref          #6.#76        // java/lang/StringBuilder."<init>":()V
+    #8 = Methodref          #6.#81        // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+    #9 = String             #82           // dot
+   #10 = String             #83           // slash
+   #11 = String             #84           // question
+   #12 = String             #85           // zero
+   #13 = String             #86           // other
+   #14 = Methodref          #6.#87        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #15 = String             #88           // :
+   #16 = Methodref          #6.#89        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #17 = Methodref          #6.#90        // java/lang/StringBuilder.length:()I
+   #18 = Methodref          #6.#91        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #19 = Fieldref           #2.#92        // LocalSourceTypesBoundaries.MUTABLE_CHAR_FIELD:C
+   #20 = Integer            65536
+   #21 = String             #93           // one
+   #22 = Class              #94           // java/lang/String
+   #23 = String             #95           // two
+   #24 = Methodref          #22.#96       // java/lang/String."<init>":(Ljava/lang/String;)V
+   #25 = String             #97           // three
+   #26 = Fieldref           #98.#99       // java/lang/System.out:Ljava/io/PrintStream;
+   #27 = Methodref          #100.#101     // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #28 = String             #102          // text
+   #29 = String             #103          // builder
+   #30 = Methodref          #6.#96        // java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+   #31 = Methodref          #100.#104     // java/io/PrintStream.println:(Ljava/lang/Object;)V
+   #32 = Methodref          #2.#105       // LocalSourceTypesBoundaries.opaqueCopy:(Ljava/lang/Object;)Ljava/lang/Object;
+   #33 = String             #106          // known
+   #34 = Methodref          #107.#108     // java/lang/Integer.toString:(I)Ljava/lang/String;
+   #35 = String             #109          // reused-string
+   #36 = String             #110          // other-string
+   #37 = Class              #111          // java/lang/Object
+   #38 = Utf8               CHAR_INPUT
+   #39 = Utf8               Ljava/lang/String;
+   #40 = Utf8               ConstantValue
+   #41 = Utf8               MUTABLE_CHAR_FIELD
+   #42 = Utf8               C
+   #43 = Utf8               <init>
+   #44 = Utf8               ()V
+   #45 = Utf8               Code
+   #46 = Utf8               charCallAndLiteralWrites
+   #47 = Utf8               (IZZ)Ljava/lang/String;
+   #48 = Utf8               StackMapTable
+   #49 = Class              #80           // java/lang/StringBuilder
+   #50 = Class              #94           // java/lang/String
+   #51 = Utf8               charFieldSeed
+   #52 = Utf8               ()Ljava/lang/String;
+   #53 = Utf8               charI2cSeed
+   #54 = Utf8               (I)I
+   #55 = Utf8               charEntryParameterSeed
+   #56 = Utf8               (CZ)Ljava/lang/String;
+   #57 = Utf8               intWithOutOfRangeWrites
+   #58 = Utf8               (II)I
+   #59 = Utf8               intWithArithmeticWrite
+   #60 = Utf8               (Z)I
+   #61 = Utf8               intWithUnknownCopyMerge
+   #62 = Utf8               (ZI)I
+   #63 = Utf8               exactStringWritesAfterNull
+   #64 = Utf8               (I)V
+   #65 = Utf8               mixedReferenceWrites
+   #66 = Utf8               (Z)V
+   #67 = Class              #111          // java/lang/Object
+   #68 = Utf8               allNullWrites
+   #69 = Utf8               opaqueCopy
+   #70 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+   #71 = Utf8               unknownReferenceCopy
+   #72 = Utf8               (ZLjava/lang/Object;)V
+   #73 = Utf8               possibleSlotReuse
+   #74 = Utf8               (Z)Ljava/lang/String;
+   #75 = Utf8               <clinit>
+   #76 = NameAndType        #43:#44       // "<init>":()V
+   #77 = Utf8               LocalSourceTypesBoundaries
+   #78 = Utf8               ./?A
+   #79 = NameAndType        #112:#113     // charAt:(I)C
+   #80 = Utf8               java/lang/StringBuilder
+   #81 = NameAndType        #114:#115     // append:(C)Ljava/lang/StringBuilder;
+   #82 = Utf8               dot
+   #83 = Utf8               slash
+   #84 = Utf8               question
+   #85 = Utf8               zero
+   #86 = Utf8               other
+   #87 = NameAndType        #114:#116     // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #88 = Utf8               :
+   #89 = NameAndType        #114:#117     // append:(I)Ljava/lang/StringBuilder;
+   #90 = NameAndType        #118:#119     // length:()I
+   #91 = NameAndType        #120:#52      // toString:()Ljava/lang/String;
+   #92 = NameAndType        #41:#42       // MUTABLE_CHAR_FIELD:C
+   #93 = Utf8               one
+   #94 = Utf8               java/lang/String
+   #95 = Utf8               two
+   #96 = NameAndType        #43:#121      // "<init>":(Ljava/lang/String;)V
+   #97 = Utf8               three
+   #98 = Class              #122          // java/lang/System
+   #99 = NameAndType        #123:#124     // out:Ljava/io/PrintStream;
+  #100 = Class              #125          // java/io/PrintStream
+  #101 = NameAndType        #126:#121     // println:(Ljava/lang/String;)V
+  #102 = Utf8               text
+  #103 = Utf8               builder
+  #104 = NameAndType        #126:#127     // println:(Ljava/lang/Object;)V
+  #105 = NameAndType        #69:#70       // opaqueCopy:(Ljava/lang/Object;)Ljava/lang/Object;
+  #106 = Utf8               known
+  #107 = Class              #128          // java/lang/Integer
+  #108 = NameAndType        #120:#129     // toString:(I)Ljava/lang/String;
+  #109 = Utf8               reused-string
+  #110 = Utf8               other-string
+  #111 = Utf8               java/lang/Object
+  #112 = Utf8               charAt
+  #113 = Utf8               (I)C
+  #114 = Utf8               append
+  #115 = Utf8               (C)Ljava/lang/StringBuilder;
+  #116 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #117 = Utf8               (I)Ljava/lang/StringBuilder;
+  #118 = Utf8               length
+  #119 = Utf8               ()I
+  #120 = Utf8               toString
+  #121 = Utf8               (Ljava/lang/String;)V
+  #122 = Utf8               java/lang/System
+  #123 = Utf8               out
+  #124 = Utf8               Ljava/io/PrintStream;
+  #125 = Utf8               java/io/PrintStream
+  #126 = Utf8               println
+  #127 = Utf8               (Ljava/lang/Object;)V
+  #128 = Utf8               java/lang/Integer
+  #129 = Utf8               (I)Ljava/lang/String;
+{
+  private static final java.lang.String CHAR_INPUT;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PRIVATE, ACC_STATIC, ACC_FINAL
+    ConstantValue: String ./?A
+
+  private static char MUTABLE_CHAR_FIELD;
+    descriptor: C
+    flags: ACC_PRIVATE, ACC_STATIC
+
+  private LocalSourceTypesBoundaries();
+    descriptor: ()V
+    flags: ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String charCallAndLiteralWrites(int, boolean, boolean);
+    descriptor: (IZZ)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=6, args_size=3
+         0: ldc           #3                  // String ./?A
+         2: iload_0
+         3: invokevirtual #4                  // Method java/lang/String.charAt:(I)C
+         6: istore_3
+         7: iload_1
+         8: ifeq          13
+        11: iconst_0
+        12: istore_3
+        13: iload_2
+        14: ifeq          20
+        17: ldc           #5                  // int 65535
+        19: istore_3
+        20: new           #6                  // class java/lang/StringBuilder
+        23: dup
+        24: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        27: astore        4
+        29: aload         4
+        31: iload_3
+        32: invokevirtual #8                  // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        35: pop
+        36: iload_3
+        37: lookupswitch  { // 4
+                       0: 101
+                      46: 80
+                      47: 87
+                      63: 94
+                 default: 108
+            }
+        80: ldc           #9                  // String dot
+        82: astore        5
+        84: goto          112
+        87: ldc           #10                 // String slash
+        89: astore        5
+        91: goto          112
+        94: ldc           #11                 // String question
+        96: astore        5
+        98: goto          112
+       101: ldc           #12                 // String zero
+       103: astore        5
+       105: goto          112
+       108: ldc           #13                 // String other
+       110: astore        5
+       112: new           #6                  // class java/lang/StringBuilder
+       115: dup
+       116: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       119: aload         5
+       121: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       124: ldc           #15                 // String :
+       126: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       129: iload_3
+       130: invokevirtual #16                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       133: ldc           #15                 // String :
+       135: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       138: aload         4
+       140: invokevirtual #17                 // Method java/lang/StringBuilder.length:()I
+       143: invokevirtual #16                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       146: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       149: areturn
+      StackMapTable: number_of_entries = 8
+        frame_type = 252 /* append */
+          offset_delta = 13
+          locals = [ int ]
+        frame_type = 6 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 59
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 6 /* same */
+        frame_type = 6 /* same */
+        frame_type = 6 /* same */
+        frame_type = 6 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 3
+          locals = [ class java/lang/String ]
+
+  public static java.lang.String charFieldSeed();
+    descriptor: ()Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=0
+         0: getstatic     #19                 // Field MUTABLE_CHAR_FIELD:C
+         3: istore_0
+         4: new           #6                  // class java/lang/StringBuilder
+         7: dup
+         8: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        11: astore_1
+        12: aload_1
+        13: iload_0
+        14: invokevirtual #8                  // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        17: pop
+        18: new           #6                  // class java/lang/StringBuilder
+        21: dup
+        22: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        25: iload_0
+        26: invokevirtual #16                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        29: ldc           #15                 // String :
+        31: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        34: aload_1
+        35: invokevirtual #17                 // Method java/lang/StringBuilder.length:()I
+        38: invokevirtual #16                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        41: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        44: areturn
+
+  public static int charI2cSeed(int);
+    descriptor: (I)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: iload_0
+         1: i2c
+         2: istore_1
+         3: new           #6                  // class java/lang/StringBuilder
+         6: dup
+         7: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        10: astore_2
+        11: aload_2
+        12: iload_1
+        13: invokevirtual #8                  // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        16: pop
+        17: iload_1
+        18: aload_2
+        19: invokevirtual #17                 // Method java/lang/StringBuilder.length:()I
+        22: iadd
+        23: ireturn
+
+  public static java.lang.String charEntryParameterSeed(char, boolean);
+    descriptor: (CZ)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iload_0
+         1: istore_2
+         2: iload_1
+         3: ifeq          9
+         6: ldc           #5                  // int 65535
+         8: istore_2
+         9: new           #6                  // class java/lang/StringBuilder
+        12: dup
+        13: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        16: astore_3
+        17: aload_3
+        18: iload_2
+        19: invokevirtual #8                  // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        22: pop
+        23: new           #6                  // class java/lang/StringBuilder
+        26: dup
+        27: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        30: iload_2
+        31: invokevirtual #16                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        34: ldc           #15                 // String :
+        36: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        39: aload_3
+        40: invokevirtual #17                 // Method java/lang/StringBuilder.length:()I
+        43: invokevirtual #16                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        46: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        49: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 9
+          locals = [ int ]
+
+  public static int intWithOutOfRangeWrites(int, int);
+    descriptor: (II)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: ldc           #3                  // String ./?A
+         2: iconst_0
+         3: invokevirtual #4                  // Method java/lang/String.charAt:(I)C
+         6: istore_2
+         7: iload_0
+         8: ifne          16
+        11: iconst_m1
+        12: istore_2
+        13: goto          29
+        16: iload_0
+        17: iconst_1
+        18: if_icmpne     27
+        21: ldc           #20                 // int 65536
+        23: istore_2
+        24: goto          29
+        27: iload_1
+        28: istore_2
+        29: iload_2
+        30: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 16
+          locals = [ int ]
+        frame_type = 10 /* same */
+        frame_type = 1 /* same */
+
+  public static int intWithArithmeticWrite(boolean);
+    descriptor: (Z)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: ldc           #3                  // String ./?A
+         2: iconst_0
+         3: invokevirtual #4                  // Method java/lang/String.charAt:(I)C
+         6: istore_1
+         7: iload_0
+         8: ifeq          18
+        11: iload_1
+        12: iconst_1
+        13: iadd
+        14: istore_1
+        15: goto          21
+        18: ldc           #5                  // int 65535
+        20: istore_1
+        21: iload_1
+        22: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 18
+          locals = [ int ]
+        frame_type = 2 /* same */
+
+  public static int intWithUnknownCopyMerge(boolean, int);
+    descriptor: (ZI)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iload_1
+         1: istore_2
+         2: ldc           #3                  // String ./?A
+         4: iconst_0
+         5: invokevirtual #4                  // Method java/lang/String.charAt:(I)C
+         8: istore_3
+         9: iload_0
+        10: ifeq          18
+        13: iload_2
+        14: istore_3
+        15: goto          21
+        18: bipush        65
+        20: istore_3
+        21: iload_3
+        22: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 18
+          locals = [ int, int ]
+        frame_type = 2 /* same */
+
+  public static void exactStringWritesAfterNull(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: aconst_null
+         1: astore_1
+         2: iload_0
+         3: tableswitch   { // 1 to 3
+                       1: 28
+                       2: 34
+                       3: 47
+                 default: 50
+            }
+        28: ldc           #21                 // String one
+        30: astore_1
+        31: goto          50
+        34: new           #22                 // class java/lang/String
+        37: dup
+        38: ldc           #23                 // String two
+        40: invokespecial #24                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        43: astore_1
+        44: goto          50
+        47: ldc           #25                 // String three
+        49: astore_1
+        50: getstatic     #26                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        53: aload_1
+        54: invokevirtual #27                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        57: return
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 28
+          locals = [ class java/lang/String ]
+        frame_type = 5 /* same */
+        frame_type = 12 /* same */
+        frame_type = 2 /* same */
+
+  public static void mixedReferenceWrites(boolean);
+    descriptor: (Z)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: aconst_null
+         1: astore_1
+         2: iload_0
+         3: ifeq          12
+         6: ldc           #28                 // String text
+         8: astore_1
+         9: goto          22
+        12: new           #6                  // class java/lang/StringBuilder
+        15: dup
+        16: ldc           #29                 // String builder
+        18: invokespecial #30                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+        21: astore_1
+        22: getstatic     #26                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        25: aload_1
+        26: invokevirtual #31                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        29: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 12
+          locals = [ class java/lang/Object ]
+        frame_type = 9 /* same */
+
+  public static void allNullWrites(boolean);
+    descriptor: (Z)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: aconst_null
+         1: astore_1
+         2: iload_0
+         3: ifeq          11
+         6: aconst_null
+         7: astore_1
+         8: goto          13
+        11: aconst_null
+        12: astore_1
+        13: getstatic     #26                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        16: aload_1
+        17: invokevirtual #31                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        20: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 11
+          locals = [ class java/lang/Object ]
+        frame_type = 1 /* same */
+
+  private static java.lang.Object opaqueCopy(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: areturn
+
+  public static void unknownReferenceCopy(boolean, java.lang.Object);
+    descriptor: (ZLjava/lang/Object;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aconst_null
+         1: astore_2
+         2: iload_0
+         3: ifeq          14
+         6: aload_1
+         7: invokestatic  #32                 // Method opaqueCopy:(Ljava/lang/Object;)Ljava/lang/Object;
+        10: astore_2
+        11: goto          17
+        14: ldc           #33                 // String known
+        16: astore_2
+        17: getstatic     #26                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        20: aload_2
+        21: invokevirtual #31                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        24: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 14
+          locals = [ class java/lang/Object ]
+        frame_type = 2 /* same */
+
+  public static java.lang.String possibleSlotReuse(boolean);
+    descriptor: (Z)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=1
+         0: iload_0
+         1: ifeq          9
+         4: ldc           #20                 // int 65536
+         6: goto          10
+         9: iconst_m1
+        10: istore_2
+        11: iload_2
+        12: invokestatic  #34                 // Method java/lang/Integer.toString:(I)Ljava/lang/String;
+        15: astore_1
+        16: aconst_null
+        17: astore_2
+        18: iload_0
+        19: ifeq          28
+        22: ldc           #35                 // String reused-string
+        24: astore_2
+        25: goto          38
+        28: new           #22                 // class java/lang/String
+        31: dup
+        32: ldc           #36                 // String other-string
+        34: invokespecial #24                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        37: astore_2
+        38: new           #6                  // class java/lang/StringBuilder
+        41: dup
+        42: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+        45: aload_1
+        46: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        49: ldc           #15                 // String :
+        51: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        54: aload_2
+        55: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        58: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        61: areturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 9 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 17
+          locals = [ class java/lang/String, class java/lang/String ]
+        frame_type = 9 /* same */
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: bipush        70
+         2: putstatic     #19                 // Field MUTABLE_CHAR_FIELD:C
+         5: return
+}

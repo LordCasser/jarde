@@ -1,7 +1,7 @@
 ## 1. Frozen actual evidence
 
 - [x] 1.1 root独立核CF12真实Java-input基线六JUnit/八class/16render/18生成源码腿及完整原/JADX/Jarde运行raw，核CLI/source/SDK/tool pins与失败分类，保存接受观察记录而不接受整CF12。
-- [ ] 1.2 root同次真实IR诊断确认两个局部的SlotUse/SSA stored producer、全部写与reuse身份；读完类型决策/声明/调用/selector周边，Luna私有补丁通过架构与对抗审查后才能应用，实际shape和失败raw保留。
+- [x] 1.2 root同次真实IR诊断确认两个局部的SlotUse/SSA stored producer、全部写与reuse身份；读完类型决策/声明/调用/selector周边，Luna私有补丁通过架构与对抗审查后才能应用，实际shape和失败raw保留。
 
 ## 2. Existing local type decision
 

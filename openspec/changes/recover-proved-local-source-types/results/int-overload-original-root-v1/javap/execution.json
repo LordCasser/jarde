@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-10T18:31:00.851496+00:00",
+  "duration_seconds": 0.1587226250267122,
+  "argv": [
+    "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+    "-p",
+    "-c",
+    "-s",
+    "-v",
+    "openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 4977,
+      "sha256": "ee0085f552239ef8540b4878127995e9cb26fd646b0b0dd3bd5b389648cde410"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

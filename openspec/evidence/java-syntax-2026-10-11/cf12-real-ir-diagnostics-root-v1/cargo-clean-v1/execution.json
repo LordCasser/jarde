@@ -1,0 +1,50 @@
+{
+  "schema": "cf12-diagnostic-cargo-clean-root-v1",
+  "status": "cleaned",
+  "command": {
+    "index": 0,
+    "argv": [
+      "cargo",
+      "clean"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T18:12:56.309919+00:00",
+    "duration_seconds": 1.0272061670257244,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 152046229,
+    "free_bytes_after": 60042145792,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": {
+      "expected": null,
+      "actual": [],
+      "required": false,
+      "required_gateway_tests": [],
+      "required_gateway_tests_present": null,
+      "required_boolean_loop_tests": [],
+      "required_boolean_loop_tests_present": null,
+      "ok": true,
+      "failure_reason": null
+    },
+    "streams": {
+      "stdout": {
+        "path": "/private/tmp/jarde-cf12-diagnostic-clean-root-v1/0.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-cf12-diagnostic-clean-root-v1/0.stderr.raw",
+        "bytes": 52,
+        "sha256": "b1d79e9456030ee925b040ec1b4f2d02b57037398a0544f2b2b5ca81f6294139"
+      }
+    }
+  },
+  "target_absent": true
+}

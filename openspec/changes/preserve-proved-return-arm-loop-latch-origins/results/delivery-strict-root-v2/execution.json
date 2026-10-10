@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-10T18:32:34.373506+00:00",
+  "duration_seconds": 0.503140374989016,
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--json"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 54652,
+      "sha256": "2748479d1b16e1d4da2fbed885043f8e6d251eed20c30856a121954dda91d41a"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

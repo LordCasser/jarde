@@ -1,0 +1,18 @@
+{
+  "status": "observed-original-only",
+  "command_records": {
+    "compile": "217997709a308704b2827ef50d9f69f1a34f42c80a9fd2cd262b03b8a9bfa5e7",
+    "runtime": "c685eaf072a05051b01259457cfd7d38cd4d46009992aed574c9d23463be3e47",
+    "javap": "45f4e85b79106248d596e4fcccc5e47e120764c3c4ebc76bff025cf085bd5f60"
+  },
+  "class_sha256": "18098c9d7257fabb8497107e42e86695be956dba666598ebd82daa2512722cd8",
+  "class_bytes": 632,
+  "char_call_bci": 2,
+  "stores": [
+    5,
+    8
+  ],
+  "int_append_bci": 17,
+  "stdout": "46\n",
+  "scope": "Original fixture only; candidate/SSA/recompile acceptance pending"
+}

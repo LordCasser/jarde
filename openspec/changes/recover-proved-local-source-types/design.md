@@ -14,7 +14,7 @@ build.rs 的 decide_types 从每个 LocalVariable 的第一写建立既有 Decid
 
 1. **使用既有源变量身份。** 依赖 LocalVariable/reuse 与 SlotUse 的完整物理写集合，精确消费 stored operand；仅非参数普通局部候选，保留现有 descriptor/boolean/guard 优先级。先核真实两锚的同次 SSA/operations，所有写可检查且无未知生命周期才准入。LVT用于核对，不是证明种子。
 2. **char 的 producer 类型与全写一致。** 直接准确 C 调用返回、C 字段、i2c 或已证 C 参数可提供种子；有限同次操作数读取复用已有工具。每个写均须同为准确 char producer 或可按现有规则赋给 char 的范围内整数 literal，并至少有准确 C 种子。不能把一般 int/arithmetic/未知 phi 或混合写认作 char。未证候选沿旧类型路线，不加任意 cast；已有转换和 switch emitter读取准确 Char 后输出。byte/short 和任意跨局部 fixpoint 不在本片。
-3. **null 不决定非空写的类型。** null 首写候选仅当每个非 null 写都具有相同准确 Reference 类型，且至少有一个非 null 写，才把该类型放入原 map。Unknown/Object fallback不是准确类型证据；混合类型、未解 phi/copy/循环及全部 null 保留原结果。本片无需寻找共同父类或下载依赖。以全部写为条件，避免专用 finally 旧先例只取一条写的范围被无证泛化。
+3. **null 不决定非空写的类型。** null 首写候选仅当每个非 null 写都具有相同准确 Reference 类型，且至少有一个非 null 写，才把该类型放入原 map。Unknown/Object fallback不是准确类型证据；混合类型、未解 phi/copy/循环及全部 null 保留原结果。本片无需寻找共同父类或下载依赖。以全部写为条件，避免专用 finally 旧先例只取一条写的范围被无证泛化。 直接来源限同次Instruction的String/Class常量、引用返回/字段描述符、allocation/array creation；不复用可追copy/phi的lifetime helper。构造完成的alias仅在准确Special/<init>/void且同BCI SSA Ref(Named)与owner相同才准入，依据既有frame token转换事实，统一复用reference spelling。
 4. **一次有限证明与原子停止。** 使用标准库和现有读工具；对每个检查的写/实际遍历节点计费并poll，不无界递归、不复用未经计费的全图扫描。Stop传播出原声明阶段；Builder/Report不发布部分结果，来源仍由原物理 store/producer/call/switch提供。
 5. **完整源码验收。** 新 CLI/meta源 pins 独立冻结；真实五测试六 Java 输入保持全部 class、check()、Inner 和 SDK。两锚 default/all完整源码原样重编，以相同Runner和SDK比较exit/stdout/stderr，验证源/JADX矩阵及物理BCI覆盖。三个其他fixture保持基线正文/map与实际失败分类；Labels数值投影和条件fallthrough不能被本片统计为修复。加入无debug、混合写、范围边界、槽复用/未知合流、预算和取消反例。
 6. **依赖选择。** 现有 Runtime、IR 和标准库已提供全部事实，不引入库或新的许可维护负担。AssertJ/JUnit等仅为原上游测试SDK，任务私有按官方坐标/hash获取，不加入产品依赖。

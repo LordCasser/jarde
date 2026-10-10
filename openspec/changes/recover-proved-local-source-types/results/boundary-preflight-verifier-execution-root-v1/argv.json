@@ -1,0 +1,5 @@
+[
+  "python",
+  "-B",
+  "openspec/changes/recover-proved-local-source-types/results/verify-boundary-preflight-root-v1.py"
+]

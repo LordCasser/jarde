@@ -1,0 +1,17 @@
+[
+  "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+  "-source",
+  "8",
+  "-target",
+  "8",
+  "-g:none",
+  "-proc:none",
+  "-Xlint:-options",
+  "-classpath",
+  "openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+  "-sourcepath",
+  "openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+  "-d",
+  "openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes",
+  "openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/CharProducerIntOverload.java"
+]

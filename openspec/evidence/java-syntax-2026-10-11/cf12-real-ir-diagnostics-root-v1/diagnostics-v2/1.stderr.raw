@@ -1,0 +1,887 @@
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.02s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+CF12_REAL_IR class_bytes=1563 blake3=92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd
+CF12_REAL_IR canonical_blocks=[CanonicalBlockId { bci: 0, path: [] }, CanonicalBlockId { bci: 32, path: [] }, CanonicalBlockId { bci: 117, path: [] }, CanonicalBlockId { bci: 146, path: [] }, CanonicalBlockId { bci: 149, path: [] }, CanonicalBlockId { bci: 59, path: [] }, CanonicalBlockId { bci: 121, path: [] }, CanonicalBlockId { bci: 171, path: [] }, CanonicalBlockId { bci: 63, path: [] }, CanonicalBlockId { bci: 67, path: [] }, CanonicalBlockId { bci: 92, path: [] }]
+CF12_REAL_IR canonical_edges=[
+    (
+        (
+            0,
+            [],
+        ),
+        Normal,
+        (
+            32,
+            [],
+        ),
+    ),
+    (
+        (
+            0,
+            [],
+        ),
+        Normal,
+        (
+            117,
+            [],
+        ),
+    ),
+    (
+        (
+            0,
+            [],
+        ),
+        Normal,
+        (
+            146,
+            [],
+        ),
+    ),
+    (
+        (
+            0,
+            [],
+        ),
+        Normal,
+        (
+            149,
+            [],
+        ),
+    ),
+    (
+        (
+            32,
+            [],
+        ),
+        Normal,
+        (
+            59,
+            [],
+        ),
+    ),
+    (
+        (
+            32,
+            [],
+        ),
+        Normal,
+        (
+            117,
+            [],
+        ),
+    ),
+    (
+        (
+            59,
+            [],
+        ),
+        Normal,
+        (
+            63,
+            [],
+        ),
+    ),
+    (
+        (
+            59,
+            [],
+        ),
+        Normal,
+        (
+            117,
+            [],
+        ),
+    ),
+    (
+        (
+            63,
+            [],
+        ),
+        Normal,
+        (
+            67,
+            [],
+        ),
+    ),
+    (
+        (
+            63,
+            [],
+        ),
+        Normal,
+        (
+            92,
+            [],
+        ),
+    ),
+    (
+        (
+            67,
+            [],
+        ),
+        Normal,
+        (
+            171,
+            [],
+        ),
+    ),
+    (
+        (
+            92,
+            [],
+        ),
+        Normal,
+        (
+            171,
+            [],
+        ),
+    ),
+    (
+        (
+            117,
+            [],
+        ),
+        Normal,
+        (
+            121,
+            [],
+        ),
+    ),
+    (
+        (
+            117,
+            [],
+        ),
+        Normal,
+        (
+            171,
+            [],
+        ),
+    ),
+    (
+        (
+            121,
+            [],
+        ),
+        Normal,
+        (
+            171,
+            [],
+        ),
+    ),
+    (
+        (
+            146,
+            [],
+        ),
+        Normal,
+        (
+            171,
+            [],
+        ),
+    ),
+    (
+        (
+            149,
+            [],
+        ),
+        Normal,
+        (
+            171,
+            [],
+        ),
+    ),
+]
+CF12_REAL_IR canonical_unreachable=[]
+CF12_REAL_IR projection kept_edges=17 return_edges=0 excluded=ExcludedEdges { exception: 0, call: 0 }
+CF12_REAL_IR node=CanonicalBlockId { bci: 0, path: [] } view_successors=[CanonicalBlockId { bci: 149, path: [] }, CanonicalBlockId { bci: 146, path: [] }, CanonicalBlockId { bci: 117, path: [] }, CanonicalBlockId { bci: 32, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 32, path: [] }), (Normal, CanonicalBlockId { bci: 117, path: [] }), (Normal, CanonicalBlockId { bci: 146, path: [] }), (Normal, CanonicalBlockId { bci: 149, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 32, path: [] } view_successors=[CanonicalBlockId { bci: 117, path: [] }, CanonicalBlockId { bci: 59, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 59, path: [] }), (Normal, CanonicalBlockId { bci: 117, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 117, path: [] } view_successors=[CanonicalBlockId { bci: 171, path: [] }, CanonicalBlockId { bci: 121, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 121, path: [] }), (Normal, CanonicalBlockId { bci: 171, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 146, path: [] } view_successors=[CanonicalBlockId { bci: 171, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 171, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 149, path: [] } view_successors=[CanonicalBlockId { bci: 171, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 171, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 59, path: [] } view_successors=[CanonicalBlockId { bci: 117, path: [] }, CanonicalBlockId { bci: 63, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 63, path: [] }), (Normal, CanonicalBlockId { bci: 117, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 121, path: [] } view_successors=[CanonicalBlockId { bci: 171, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 171, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 171, path: [] } view_successors=[] canonical_out=[]
+CF12_REAL_IR node=CanonicalBlockId { bci: 63, path: [] } view_successors=[CanonicalBlockId { bci: 92, path: [] }, CanonicalBlockId { bci: 67, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 67, path: [] }), (Normal, CanonicalBlockId { bci: 92, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 67, path: [] } view_successors=[CanonicalBlockId { bci: 171, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 171, path: [] })]
+CF12_REAL_IR node=CanonicalBlockId { bci: 92, path: [] } view_successors=[CanonicalBlockId { bci: 171, path: [] }] canonical_out=[(Normal, CanonicalBlockId { bci: 171, path: [] })]
+CF12_REAL_IR decoded_operations=[
+    (
+        0,
+        Push(
+            String(
+                "",
+            ),
+        ),
+    ),
+    (
+        2,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        4,
+        Load {
+            slot: 1,
+        },
+    ),
+    (
+        5,
+        Push(
+            Int(
+                4,
+            ),
+        ),
+    ),
+    (
+        6,
+        Arithmetic {
+            op: Remainder,
+        },
+    ),
+    (
+        7,
+        Switch {
+            cases: [
+                (
+                    1,
+                    32,
+                ),
+                (
+                    2,
+                    117,
+                ),
+                (
+                    3,
+                    146,
+                ),
+            ],
+            default: 149,
+        },
+    ),
+    (
+        32,
+        Allocate {
+            ty: "java/lang/StringBuilder",
+        },
+    ),
+    (
+        35,
+        Duplicate,
+    ),
+    (
+        36,
+        Invoke(
+            CallTarget {
+                kind: Special,
+                owner: "java/lang/StringBuilder",
+                name: "<init>",
+                descriptor: "()V",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        39,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        41,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        44,
+        Push(
+            String(
+                ">",
+            ),
+        ),
+    ),
+    (
+        46,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        49,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "toString",
+                descriptor: "()Ljava/lang/String;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        52,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        54,
+        Load {
+            slot: 1,
+        },
+    ),
+    (
+        55,
+        Push(
+            Int(
+                5,
+            ),
+        ),
+    ),
+    (
+        56,
+        Comparison {
+            op: JumpIfDifferent,
+            target: 117,
+        },
+    ),
+    (
+        59,
+        Load {
+            slot: 2,
+        },
+    ),
+    (
+        60,
+        Comparison {
+            op: JumpIfZero,
+            target: 117,
+        },
+    ),
+    (
+        63,
+        Load {
+            slot: 3,
+        },
+    ),
+    (
+        64,
+        Comparison {
+            op: JumpIfZero,
+            target: 92,
+        },
+    ),
+    (
+        67,
+        Allocate {
+            ty: "java/lang/StringBuilder",
+        },
+    ),
+    (
+        70,
+        Duplicate,
+    ),
+    (
+        71,
+        Invoke(
+            CallTarget {
+                kind: Special,
+                owner: "java/lang/StringBuilder",
+                name: "<init>",
+                descriptor: "()V",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        74,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        76,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        79,
+        Push(
+            String(
+                "1",
+            ),
+        ),
+    ),
+    (
+        81,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        84,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "toString",
+                descriptor: "()Ljava/lang/String;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        87,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        89,
+        Transfer,
+    ),
+    (
+        92,
+        Allocate {
+            ty: "java/lang/StringBuilder",
+        },
+    ),
+    (
+        95,
+        Duplicate,
+    ),
+    (
+        96,
+        Invoke(
+            CallTarget {
+                kind: Special,
+                owner: "java/lang/StringBuilder",
+                name: "<init>",
+                descriptor: "()V",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        99,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        101,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        104,
+        Push(
+            String(
+                "!c",
+            ),
+        ),
+    ),
+    (
+        106,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        109,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "toString",
+                descriptor: "()Ljava/lang/String;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        112,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        114,
+        Transfer,
+    ),
+    (
+        117,
+        Load {
+            slot: 2,
+        },
+    ),
+    (
+        118,
+        Comparison {
+            op: JumpIfZero,
+            target: 171,
+        },
+    ),
+    (
+        121,
+        Allocate {
+            ty: "java/lang/StringBuilder",
+        },
+    ),
+    (
+        124,
+        Duplicate,
+    ),
+    (
+        125,
+        Invoke(
+            CallTarget {
+                kind: Special,
+                owner: "java/lang/StringBuilder",
+                name: "<init>",
+                descriptor: "()V",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        128,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        130,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        133,
+        Push(
+            String(
+                "2",
+            ),
+        ),
+    ),
+    (
+        135,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        138,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "toString",
+                descriptor: "()Ljava/lang/String;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        141,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        143,
+        Transfer,
+    ),
+    (
+        146,
+        Transfer,
+    ),
+    (
+        149,
+        Allocate {
+            ty: "java/lang/StringBuilder",
+        },
+    ),
+    (
+        152,
+        Duplicate,
+    ),
+    (
+        153,
+        Invoke(
+            CallTarget {
+                kind: Special,
+                owner: "java/lang/StringBuilder",
+                name: "<init>",
+                descriptor: "()V",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        156,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        158,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        161,
+        Push(
+            String(
+                "default",
+            ),
+        ),
+    ),
+    (
+        163,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        166,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "toString",
+                descriptor: "()Ljava/lang/String;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        169,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        171,
+        Allocate {
+            ty: "java/lang/StringBuilder",
+        },
+    ),
+    (
+        174,
+        Duplicate,
+    ),
+    (
+        175,
+        Invoke(
+            CallTarget {
+                kind: Special,
+                owner: "java/lang/StringBuilder",
+                name: "<init>",
+                descriptor: "()V",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        178,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        180,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        183,
+        Push(
+            String(
+                ";",
+            ),
+        ),
+    ),
+    (
+        185,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "append",
+                descriptor: "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        188,
+        Invoke(
+            CallTarget {
+                kind: Virtual,
+                owner: "java/lang/StringBuilder",
+                name: "toString",
+                descriptor: "()Ljava/lang/String;",
+                interface_reference: false,
+            },
+        ),
+    ),
+    (
+        191,
+        Store {
+            slot: 4,
+        },
+    ),
+    (
+        193,
+        Load {
+            slot: 4,
+        },
+    ),
+    (
+        195,
+        Return,
+    ),
+]
+CF12_REAL_IR recovered_regions=[
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 117,
+                path: [],
+            },
+        ],
+        reason: Loop {
+            block_bci: 117,
+        },
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 32,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 59,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 63,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 67,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 92,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 121,
+                path: [],
+            },
+        ],
+        reason: SwitchArmsOverlap {
+            block_bci: 0,
+        },
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 146,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 149,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 171,
+                path: [],
+            },
+        ],
+        reason: UncoveredBlocks {
+            blocks: [
+                146,
+                149,
+                171,
+            ],
+        },
+    },
+]

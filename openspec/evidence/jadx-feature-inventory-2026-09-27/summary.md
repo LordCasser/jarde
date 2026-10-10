@@ -342,3 +342,9 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 2026-10-11：CF07 非空If汇合来源产品1f386686c自身CI38068627541已root独立v4接受4jobs/52steps、双seed3389/0/97、52pins。counted@20完整If来源闭合；lastIndexOf@25与computed-init for独立债务仍保留，下一来源片尚未实施。71/612不变。
 
 2026-10-11：preserve-proved-return-arm-loop-latch-origins已root实际实施，12命令566/0/1、52pins、5GiB/1GiB守卫通过；新CLI完整CF0729命令/10类腿/16方法profile全部物理BCI独立v3接受，唯一新增四profile lastIndexOf@25 derived完整while，正文与旧If/loop来源恒同。旧For/Postfix57命令/20类腿/28方法profile独立接受8生成类正文与全map精确不变。真实边界拒绝和Stop层级保留，cargo clean669.3MiB。当前5/7，自身精确产品CI与最终clean交付待完成；computed-init for仍是独立真实呈现门，71/612与整CF07计数不变。见[本片root验收](../../changes/preserve-proved-return-arm-loop-latch-origins/verification-root.md)。
+
+2026-10-10 18:23 UTC：等待return-arm自身CI期间，root临时真实CF12诊断两单测2/0/0并独立接受：char局部slot5唯一store29←charAt26(C)，null-first slot2全五写为Null及四直接String；条件fallthrough真实11块/17Normal，case1结果{117,171}，图无回边但旧恢复报Loop/overlap。全部52pins立即还原、cargo clean341files/145.0MiB；原始Java边界JDK8/23×debug/no-debug12命令/8class/4runtime腿同，非产品验收。类型private候选按直接producer收窄copy/phi证据；条件fallthrough新OpenSpec1/7、strict全342/0，消费审查发现group-level标志不能独自保留条件break，先补足最小控制流契约再实现。71/612和整单元计数不变。
+
+### 2026-10-11 return-arm 精确产品 CI 验收
+
+产品0ae30a7c8d217522f2e5f5b954aa86c9b59356dd自身CI38073837512已root独立接受，4jobs/52steps、双seed3393/0/97与354记录、新增3gateway/1region及52live/Git pins全部通过。verifier plain Python缺blake3失败原raw保留，同脚本离线uv缓存重跑exit0。当前片6/7，最终clean交付尚待实际核对；71单元/612测试及整CF07/CF12完成数不增加。

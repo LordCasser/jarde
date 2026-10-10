@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-10T18:32:22.519788+00:00",
+  "duration_seconds": 12.940863291005371,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/capture-ci-product-root-v1.py",
+    "--product-commit",
+    "0ae30a7c8d217522f2e5f5b954aa86c9b59356dd",
+    "--run-id",
+    "38073837512",
+    "--expected-lib-count",
+    "337",
+    "--expected-gateway-count",
+    "15",
+    "--expected-total-passed",
+    "3393",
+    "--new-gateway-test",
+    "cf07_return_arm_loop_latch_is_derived_from_complete_while",
+    "--new-gateway-test",
+    "cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn",
+    "--new-gateway-test",
+    "cf07_return_arm_latch_budget_and_cancellation_publish_no_partial_source",
+    "--new-lib-test",
+    "region::tests::cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 149,
+      "sha256": "9cd2d3648d5801930a6a3c05db025a7ac83637cef46594c882dedfdf1ce0762a"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

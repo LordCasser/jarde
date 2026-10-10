@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/verify-ci-product-root-v1.py", line 683, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/verify-ci-product-root-v1.py", line 630, in main
+    helper, integer_verifier = load_fixed_helpers()
+                               ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/verify-ci-product-root-v1.py", line 103, in load_fixed_helpers
+    helper = load_module("fixed_static_ci_verifier_v12_if_join", STATIC_HELPER)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/verify-ci-product-root-v1.py", line 96, in load_module
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py", line 18, in <module>
+    import blake3
+ModuleNotFoundError: No module named 'blake3'

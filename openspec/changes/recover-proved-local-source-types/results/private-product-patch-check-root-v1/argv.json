@@ -1,0 +1,6 @@
+[
+  "git",
+  "apply",
+  "--check",
+  "/private/tmp/jarde-proved-local-types-impl-v3/implementation.patch"
+]

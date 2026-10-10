@@ -1,0 +1,132 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.42s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+READER_DEBUG_LOCAL_FACTS owner=jadx/tests/integration/switches/TestSwitch$TestCls method=test(Ljava/lang/String;)Ljava/lang/String; records=[
+    DebugLocal {
+        slot: 5,
+        name: "c",
+        range: Some(
+            (
+                31,
+                106,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 4,
+        name: "i",
+        range: Some(
+            (
+                17,
+                112,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 0,
+        name: "this",
+        range: Some(
+            (
+                0,
+                117,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 1,
+        name: "str",
+        range: Some(
+            (
+                0,
+                117,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 2,
+        name: "len",
+        range: Some(
+            (
+                5,
+                117,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 3,
+        name: "sb",
+        range: Some(
+            (
+                14,
+                117,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+]
+CF12 TestSwitch: Produced
+LOCAL slot=2 index=0 var=LocalVariable { slot: 2, index: 0 } reuse_at_first=Some(LocalVariable { slot: 2, index: 0 }) writes=1 old_decided=Type(Int) first_at=Some(4) first_stored=Some(ValueId(14)) first_frame=Some(Int) first_def=Some(Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 1 }) first_operation=Some(Invoke(CallTarget { kind: Virtual, owner: "java/lang/String", name: "length", descriptor: "()I", interface_reference: false }))
+WRITE slot=2 index=0 bci=4 path=Some([0]) reuse_at=Some(LocalVariable { slot: 2, index: 0 }) written=ValueId(15) written_frame=Int written_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 4 } stored=ValueId(14) stored_frame=Int stored_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 1 } producer_bci=Some(1) producer=Some(Invoke(CallTarget { kind: Virtual, owner: "java/lang/String", name: "length", descriptor: "()I", interface_reference: false }))
+LOCAL slot=3 index=0 var=LocalVariable { slot: 3, index: 0 } reuse_at_first=Some(LocalVariable { slot: 3, index: 0 }) writes=1 old_decided=Type(Reference("java.lang.StringBuilder")) first_at=Some(13) first_stored=Some(ValueId(20)) first_frame=Some(Ref(Named { name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 66, 117, 105, 108, 100, 101, 114], loader: LoaderId("app") })) first_def=Some(Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 10 }) first_operation=Some(Invoke(CallTarget { kind: Special, owner: "java/lang/StringBuilder", name: "<init>", descriptor: "(I)V", interface_reference: false }))
+WRITE slot=3 index=0 bci=13 path=Some([0]) reuse_at=Some(LocalVariable { slot: 3, index: 0 }) written=ValueId(21) written_frame=Ref(Named { name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 66, 117, 105, 108, 100, 101, 114], loader: LoaderId("app") }) written_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 13 } stored=ValueId(20) stored_frame=Ref(Named { name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 66, 117, 105, 108, 100, 101, 114], loader: LoaderId("app") }) stored_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 10 } producer_bci=Some(10) producer=Some(Invoke(CallTarget { kind: Special, owner: "java/lang/StringBuilder", name: "<init>", descriptor: "(I)V", interface_reference: false }))
+LOCAL slot=4 index=0 var=LocalVariable { slot: 4, index: 0 } reuse_at_first=Some(LocalVariable { slot: 4, index: 0 }) writes=2 old_decided=Type(Int) first_at=Some(15) first_stored=Some(ValueId(22)) first_frame=Some(Int) first_def=Some(Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 14 }) first_operation=Some(Push(Int(0)))
+WRITE slot=4 index=0 bci=15 path=Some([0]) reuse_at=Some(LocalVariable { slot: 4, index: 0 }) written=ValueId(23) written_frame=Int written_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 15 } stored=ValueId(22) stored_frame=Int stored_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 14 } producer_bci=Some(14) producer=Some(Push(Int(0)))
+WRITE slot=4 index=0 bci=106 path=Some([1, 1]) reuse_at=Some(LocalVariable { slot: 4, index: 0 }) written=ValueId(26) written_frame=Int written_def=Instruction { block: CanonicalBlockId { bci: 106, path: [] }, bci: 106 } stored=ValueId(26) stored_frame=Int stored_def=Instruction { block: CanonicalBlockId { bci: 106, path: [] }, bci: 106 } producer_bci=Some(106) producer=Some(Increment { slot: 4, amount: 1 })
+LOCAL slot=5 index=0 var=LocalVariable { slot: 5, index: 0 } reuse_at_first=Some(LocalVariable { slot: 5, index: 0 }) writes=1 old_decided=Type(Int) first_at=Some(29) first_stored=Some(ValueId(29)) first_frame=Some(Int) first_def=Some(Instruction { block: CanonicalBlockId { bci: 23, path: [] }, bci: 26 }) first_operation=Some(Invoke(CallTarget { kind: Virtual, owner: "java/lang/String", name: "charAt", descriptor: "(I)C", interface_reference: false }))
+WRITE slot=5 index=0 bci=29 path=Some([1, 0]) reuse_at=Some(LocalVariable { slot: 5, index: 0 }) written=ValueId(30) written_frame=Int written_def=Instruction { block: CanonicalBlockId { bci: 23, path: [] }, bci: 29 } stored=ValueId(29) stored_frame=Int stored_def=Instruction { block: CanonicalBlockId { bci: 23, path: [] }, bci: 26 } producer_bci=Some(26) producer=Some(Invoke(CallTarget { kind: Virtual, owner: "java/lang/String", name: "charAt", descriptor: "(I)C", interface_reference: false }))
+READER_DEBUG_LOCAL_FACTS owner=jadx/tests/integration/switches/TestSwitchNoDefault$TestCls method=test(I)V records=[
+    DebugLocal {
+        slot: 0,
+        name: "this",
+        range: Some(
+            (
+                0,
+                61,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 1,
+        name: "a",
+        range: Some(
+            (
+                0,
+                61,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+    DebugLocal {
+        slot: 2,
+        name: "s",
+        range: Some(
+            (
+                2,
+                61,
+            ),
+        ),
+        descriptor: None,
+        generic_signature: None,
+    },
+]
+CF12 TestSwitchNoDefault: Produced
+LOCAL slot=2 index=0 var=LocalVariable { slot: 2, index: 0 } reuse_at_first=Some(LocalVariable { slot: 2, index: 0 }) writes=5 old_decided=Type(Reference("Object")) first_at=Some(1) first_stored=Some(ValueId(5)) first_frame=Some(Null) first_def=Some(Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 }) first_operation=Some(Push(Null))
+WRITE slot=2 index=0 bci=1 path=Some([0]) reuse_at=Some(LocalVariable { slot: 2, index: 0 }) written=ValueId(6) written_frame=Null written_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 1 } stored=ValueId(5) stored_frame=Null stored_def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } producer_bci=Some(0) producer=Some(Push(Null))
+WRITE slot=2 index=0 bci=34 path=Some([0, 0]) reuse_at=Some(LocalVariable { slot: 2, index: 0 }) written=ValueId(11) written_frame=Ref(Unknown) written_def=Instruction { block: CanonicalBlockId { bci: 32, path: [] }, bci: 34 } stored=ValueId(10) stored_frame=Ref(Unknown) stored_def=Instruction { block: CanonicalBlockId { bci: 32, path: [] }, bci: 32 } producer_bci=Some(32) producer=Some(Push(String("1")))
+WRITE slot=2 index=0 bci=40 path=Some([0, 1]) reuse_at=Some(LocalVariable { slot: 2, index: 0 }) written=ValueId(13) written_frame=Ref(Unknown) written_def=Instruction { block: CanonicalBlockId { bci: 38, path: [] }, bci: 40 } stored=ValueId(12) stored_frame=Ref(Unknown) stored_def=Instruction { block: CanonicalBlockId { bci: 38, path: [] }, bci: 38 } producer_bci=Some(38) producer=Some(Push(String("2")))
+WRITE slot=2 index=0 bci=46 path=Some([0, 2]) reuse_at=Some(LocalVariable { slot: 2, index: 0 }) written=ValueId(15) written_frame=Ref(Unknown) written_def=Instruction { block: CanonicalBlockId { bci: 44, path: [] }, bci: 46 } stored=ValueId(14) stored_frame=Ref(Unknown) stored_def=Instruction { block: CanonicalBlockId { bci: 44, path: [] }, bci: 44 } producer_bci=Some(44) producer=Some(Push(String("3")))
+WRITE slot=2 index=0 bci=52 path=Some([0, 3]) reuse_at=Some(LocalVariable { slot: 2, index: 0 }) written=ValueId(17) written_frame=Ref(Unknown) written_def=Instruction { block: CanonicalBlockId { bci: 50, path: [] }, bci: 52 } stored=ValueId(16) stored_frame=Ref(Unknown) stored_def=Instruction { block: CanonicalBlockId { bci: 50, path: [] }, bci: 50 } producer_bci=Some(50) producer=Some(Push(String("4")))

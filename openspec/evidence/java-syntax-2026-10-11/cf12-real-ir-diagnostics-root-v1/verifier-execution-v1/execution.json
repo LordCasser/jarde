@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T18:14:36.490798+00:00",
+  "duration_seconds": 0.4936565420066472,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/evidence/java-syntax-2026-10-11/cf12-real-ir-diagnostics-root-v1/verify-diagnostics-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 110,
+      "sha256": "d571b39db26bf47d03af8a97aa8a1aa99d66b6bbd120015a4d36d413be1b8528"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

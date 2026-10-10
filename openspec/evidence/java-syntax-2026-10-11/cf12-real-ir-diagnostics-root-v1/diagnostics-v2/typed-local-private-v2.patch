@@ -1,0 +1,371 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -2384,6 +2384,95 @@
+     /// The value the writing instruction **reads** as the one it stores, when the two differ: it is
+     /// this value — not the slot's own — whose evidence states what the variable holds.
+     stored: ValueId,
++}
++
++#[cfg(test)]
++std::thread_local! {
++    static LOCAL_SOURCE_TYPE_DIAGNOSTICS: std::cell::RefCell<Option<Vec<String>>> = const {
++        std::cell::RefCell::new(None)
++    };
++}
++
++#[cfg(test)]
++fn start_local_source_type_diagnostics() {
++    LOCAL_SOURCE_TYPE_DIAGNOSTICS.with(|capture| *capture.borrow_mut() = Some(Vec::new()));
++}
++
++#[cfg(test)]
++fn take_local_source_type_diagnostics() -> Vec<String> {
++    LOCAL_SOURCE_TYPE_DIAGNOSTICS.with(|capture| capture.borrow_mut().take().unwrap_or_default())
++}
++
++#[cfg(test)]
++fn capture_local_source_type_diagnostics(
++    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
++    first: &BTreeMap<LocalVariable, FirstWrite>,
++    decided: &BTreeMap<LocalVariable, Decided>,
++    ssa: &SsaTable,
++    operations: &Operations,
++    reuse: &reuse::Plan,
++) {
++    LOCAL_SOURCE_TYPE_DIAGNOSTICS.with(|capture| {
++        let mut capture = capture.borrow_mut();
++        let Some(lines) = capture.as_mut() else {
++            return;
++        };
++        for (variable, accesses) in uses {
++            let Some(decision) = decided.get(variable) else {
++                continue;
++            };
++            let writes: Vec<_> = accesses.iter().filter(|access| access.written.is_some()).collect();
++            let first_write = first.get(variable);
++            let reuse_at_first = first_write
++                .and_then(|write| reuse.variable_at(variable.slot(), write.at));
++            let (first_frame, first_def, first_operation) = first_write.map_or(
++                (None, None, None),
++                |write| {
++                    let value = ssa.value(write.stored);
++                    let bci = match value.def() {
++                        Definition::Instruction { bci, .. } => Some(*bci),
++                        _ => None,
++                    };
++                    (
++                        Some(value.ty()),
++                        Some(value.def()),
++                        bci.and_then(|bci| operations.get(bci)),
++                    )
++                },
++            );
++            lines.push(format!(
++                "LOCAL slot={} index={} var={variable:?} reuse_at_first={reuse_at_first:?} writes={} old_decided={decision:?} first_at={:?} first_stored={:?} first_frame={first_frame:?} first_def={first_def:?} first_operation={first_operation:?}",
++                variable.slot(),
++                variable.index(),
++                writes.len(),
++                first_write.map(|write| write.at),
++                first_write.map(|write| write.stored),
++            ));
++            for access in writes {
++                let written = access.written.expect("filtered to writes");
++                let stored = access.stored.unwrap_or(written);
++                let written_value = ssa.value(written);
++                let stored_value = ssa.value(stored);
++                let producer_bci = match stored_value.def() {
++                    Definition::Instruction { bci, .. } => Some(*bci),
++                    _ => None,
++                };
++                let producer = producer_bci.and_then(|bci| operations.get(bci));
++                lines.push(format!(
++                    "WRITE slot={} index={} bci={} path={:?} reuse_at={:?} written={written:?} written_frame={:?} written_def={:?} stored={stored:?} stored_frame={:?} stored_def={:?} producer_bci={producer_bci:?} producer={producer:?}",
++                    variable.slot(),
++                    variable.index(),
++                    access.bci,
++                    access.path,
++                    reuse.variable_at(variable.slot(), access.bci),
++                    written_value.ty(),
++                    written_value.def(),
++                    stored_value.ty(),
++                    stored_value.def(),
++                ));
++            }
++        }
++    });
+ }
+ 
+ /// Decides every variable's type once, from a finite list of evidence, before a statement exists.
+@@ -2845,6 +2934,8 @@
+         };
+         decided.insert(*variable, decision);
+     }
++    #[cfg(test)]
++    capture_local_source_type_diagnostics(uses, &first, &decided, ssa, operations, reuse);
+     Ok(decided)
+ }
+ 
+@@ -37428,4 +37519,263 @@
+             &Type::Reference("int[]".to_owned())
+         ));
+     }
++
++    #[test]
++    fn cf12_local_type_diagnostic_uses_frozen_class_ir_and_real_slot_uses() {
++        const CHAR_CLASS: &[u8] = include_bytes!(
++            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class"
++        );
++        const NULL_CLASS: &[u8] = include_bytes!(
++            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class"
++        );
++
++        fn reader_debug_locals(
++            code: Option<&jarde_reader::classfile::MethodCodeFacts>,
++        ) -> Vec<crate::names::DebugLocal> {
++            let Some(code) = code else {
++                return Vec::new();
++            };
++            let jarde_reader::classfile::LocalDebugTable::Read(records) = code.debug() else {
++                return Vec::new();
++            };
++            let generic_records = match code.generic_debug() {
++                jarde_reader::classfile::LocalDebugTypeTable::Read(records) => records.as_slice(),
++                jarde_reader::classfile::LocalDebugTypeTable::Absent
++                | jarde_reader::classfile::LocalDebugTypeTable::Unstated => &[],
++            };
++            // Keep the CLI seam's duplicate and exact-match rules: this indexes the already-read
++            // records once; it does not query or invent a local name, range, descriptor, or slot.
++            let mut local_counts = std::collections::BTreeMap::new();
++            for record in records {
++                let key = (
++                    record.slot,
++                    record.start_bci,
++                    record.end_bci,
++                    record.name.0.as_slice(),
++                );
++                *local_counts.entry(key).or_insert(0usize) += 1;
++            }
++            let mut generic_by_local = std::collections::BTreeMap::new();
++            for generic in generic_records {
++                let key = (
++                    generic.slot,
++                    generic.start_bci,
++                    generic.end_bci,
++                    generic.name.0.as_slice(),
++                );
++                generic_by_local
++                    .entry(key)
++                    .or_insert_with(Vec::new)
++                    .push(generic);
++            }
++            records
++                .iter()
++                .map(|record| {
++                    let key = (
++                        record.slot,
++                        record.start_bci,
++                        record.end_bci,
++                        record.name.0.as_slice(),
++                    );
++                    let local = crate::names::DebugLocal::over(
++                        record.slot,
++                        record.name_lossy(),
++                        record.start_bci,
++                        record.end_bci,
++                    );
++                    if local_counts.get(&key) == Some(&1)
++                        && let Some([generic]) = generic_by_local.get(&key).map(Vec::as_slice)
++                    {
++                        local.with_type_metadata(
++                            record.descriptor.0.clone(),
++                            generic.signature.0.clone(),
++                        )
++                    } else {
++                        local
++                    }
++                })
++                .collect()
++        }
++
++        fn run(
++            class: &[u8],
++            owner: &str,
++            name: &str,
++            descriptor: &str,
++        ) -> (crate::report::RecoveryReport, Vec<String>) {
++            use jarde_jvm::engine::analyze_method_ir;
++            use jarde_jvm::environment::ResolutionEnvironment;
++            use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++            use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++            use jarde_reader::model::{
++                ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++                PhysicalMethodId, PhysicalVariant,
++            };
++            use jarde_reader::view::{
++                DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++                MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile,
++                RuntimeUncertainty, RuntimeView,
++            };
++
++            let mut budget = child_array_test_budget();
++            let snapshot = ArtifactSnapshot::open(
++                ArtifactInput::bytes(class.to_vec()),
++                &mut budget,
++            )
++            .expect("frozen class bytes open");
++            let definition = PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot {
++                    snapshot: snapshot.id().clone(),
++                },
++                class_bytes: ClassBytesId {
++                    digest: Digest(blake3::hash(class).to_hex().to_string()),
++                    length: u64::try_from(class.len()).expect("frozen class length fits"),
++                },
++                variant: PhysicalVariant::Base,
++            };
++            let domain = LoadDomain {
++                loader: LoaderId("app".to_owned()),
++                parent_loader: None,
++                delegation: DelegationPolicy::ParentFirst,
++                roots: vec![LoadRoot::StandaloneClass {
++                    snapshot: snapshot.id().clone(),
++                }],
++                module_mode: ModuleMode::ClassPath,
++                external_override: RuntimeUncertainty::None,
++                runtime_transformation: RuntimeUncertainty::None,
++            };
++            let method = PhysicalMethodId {
++                owner: definition,
++                name: JvmBytes(name.as_bytes().to_vec()),
++                descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
++            };
++            let analysis = analyze_method_ir(
++                &[snapshot.clone()],
++                &MethodAnalysisRequest {
++                    environment: ResolutionEnvironment {
++                        runtime: RuntimeView {
++                            physical: PhysicalView {
++                                snapshot: snapshot.id().clone(),
++                                scope: PhysicalScope::SnapshotAll,
++                            },
++                            profile: RuntimeProfile {
++                                java_release: 8,
++                                multi_release: MultiReleasePolicy::Disabled,
++                                layout: LayoutMode::Generic,
++                            },
++                            load_domain: domain.clone(),
++                        },
++                        domains: vec![domain],
++                        providers: Vec::new(),
++                    },
++                    method,
++                    stages: AnalysisStage::ALL.to_vec(),
++                },
++                &mut budget,
++            )
++            .expect("frozen method completes the real JVM IR pipeline");
++            let ir = analysis.ir();
++            let declaration = ir.declaration().expect("same read publishes declaration");
++            assert_eq!(
++                String::from_utf8_lossy(&declaration.class_name().0),
++                owner,
++                "physical owner must match the frozen class header"
++            );
++            let debug_locals = reader_debug_locals(ir.code());
++            eprintln!(
++                "READER_DEBUG_LOCAL_FACTS owner={owner} method={name}{descriptor} records={debug_locals:#?}"
++            );
++            let facts = crate::facts::RecoveryFacts::new(
++                crate::facts::MethodFacts::new(
++                    String::from_utf8_lossy(&declaration.name().0).into_owned(),
++                    String::from_utf8_lossy(&declaration.descriptor().0).into_owned(),
++                    declaration.parameter_slots(),
++                )
++                .with_access_flags(declaration.access_flags())
++                .with_declaring_class(
++                    crate::facts::DeclaringClass::new(
++                        String::from_utf8_lossy(&declaration.class_name().0).into_owned(),
++                        declaration.class_access_flags(),
++                    )
++                    .with_inner_class_members(declaration.inner_class_members().iter().map(
++                        |member| String::from_utf8_lossy(&member.0).replace('/', "."),
++                    )),
++                ),
++            )
++            .with_debug_locals(debug_locals);
++            start_local_source_type_diagnostics();
++            let report = crate::report::recover(
++                &crate::report::RecoveryRequest::new(ir, &facts, crate::pass::JAVA_8)
++                    .with_evidence(crate::evidence::RecoveryEvidenceRequest::all()),
++                &mut budget,
++            );
++            let lines = take_local_source_type_diagnostics();
++            (report, lines)
++        }
++
++        let (char_report, char_lines) = run(
++            CHAR_CLASS,
++            "jadx/tests/integration/switches/TestSwitch$TestCls",
++            "test",
++            "(Ljava/lang/String;)Ljava/lang/String;",
++        );
++        eprintln!("CF12 TestSwitch: {:?}", char_report.outcome);
++        for line in &char_lines {
++            eprintln!("{line}");
++        }
++        assert!(!char_lines.is_empty(), "decision hook saw the real method");
++        assert!(
++            char_lines.iter().any(|line| {
++                line.starts_with("LOCAL slot=5 index=0 ")
++                    && line.contains("old_decided=Type(Int)")
++            }),
++            "the pre-change decision for local slot 5 is recorded: {char_lines:#?}"
++        );
++        assert!(
++            char_lines.iter().any(|line| {
++                line.starts_with("WRITE slot=5 index=0 bci=29 ")
++                    && line.contains("stored_def=Instruction")
++                    && line.contains("producer_bci=Some(26)")
++                    && line.contains("producer=Some(Invoke")
++            }),
++            "charAt's actual result reaches the real local write: {char_lines:#?}"
++        );
++
++        let (null_report, null_lines) = run(
++            NULL_CLASS,
++            "jadx/tests/integration/switches/TestSwitchNoDefault$TestCls",
++            "test",
++            "(I)V",
++        );
++        eprintln!("CF12 TestSwitchNoDefault: {:?}", null_report.outcome);
++        for line in &null_lines {
++            eprintln!("{line}");
++        }
++        let null_first = null_lines
++            .iter()
++            .find(|line| {
++                line.starts_with("LOCAL ")
++                    && line.contains("first_frame=Some(Null)")
++            })
++            .expect("real null-leading local appears in the decision map");
++        assert!(
++            null_first.contains("old_decided=Type(Reference(\"Object\"))"),
++            "the baseline null frame takes the ordinary Object route: {null_first}"
++        );
++        let identity = null_first
++            .split_whitespace()
++            .skip(1)
++            .take(2)
++            .collect::<Vec<_>>()
++            .join(" ");
++        let writes = null_lines
++            .iter()
++            .filter(|line| line.starts_with("WRITE ") && line.contains(&identity))
++            .count();
++        assert!(
++            writes >= 5,
++            "the null-first local's actual null plus switch-arm stores are all present; identity={identity}, lines={null_lines:#?}"
++        );
++    }
++
+ }

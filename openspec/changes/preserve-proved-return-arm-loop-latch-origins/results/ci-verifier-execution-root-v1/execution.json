@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-10T18:32:45.864775+00:00",
+  "duration_seconds": 0.08203233400126919,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/verify-ci-product-root-v1.py",
+    "--product-commit",
+    "0ae30a7c8d217522f2e5f5b954aa86c9b59356dd",
+    "--run-id",
+    "38073837512",
+    "--source-base",
+    "41fe336462448eae3547cafa2a141d52e85a08e0",
+    "--metadata-sha256",
+    "9913bb51cfa4acc91ed10708f94acdcedb6b4eb85dd4ea31d827febbd05ad6ef",
+    "--cli-sha256",
+    "9ae5817d25749add0709b4f156c71ce23ac0e5ad41d66ee0136742024461a28f",
+    "--build-sha256",
+    "d81a2918b1a55e7d910ebd59d82956c14155b6968f4bfb602e85c99d88ab70de",
+    "--runner-sha256",
+    "8c1b90733cf1f3baa6f62467b4c2536f465997b4b2c23c6256de358152e3e84f",
+    "--expected-lib-count",
+    "337",
+    "--expected-total-passed",
+    "3393",
+    "--new-gateway-test",
+    "cf07_return_arm_loop_latch_is_derived_from_complete_while",
+    "--new-gateway-test",
+    "cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn",
+    "--new-gateway-test",
+    "cf07_return_arm_latch_budget_and_cancellation_publish_no_partial_source",
+    "--new-lib-test",
+    "region::tests::cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 1443,
+      "sha256": "74f28b69139c058b6533bced4a392675a834bde82830ff87fdbb95aa144c55ba"
+    }
+  }
+}

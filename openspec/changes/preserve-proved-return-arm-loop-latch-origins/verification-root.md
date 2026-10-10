@@ -1,6 +1,6 @@
 # 直接 return/latch If 的循环来源：root 验收
 
-当前 **5/7**。最小生产改动、永久边界回归、本地验证及新CLI完整源码独立对照均已接受；自身精确产品CI和最终主线交付待完成。71单元/612测试文件和整CF07计数不变。
+当前 **6/7**。最小生产改动、永久边界回归、本地验证、新CLI完整源码独立对照及自身精确产品CI均已接受；最终主线交付待实际核对。71单元/612测试文件和整CF07计数不变。
 
 ## 实际证明和产品
 
@@ -26,6 +26,8 @@ results/old-controls-exact-acceptance-root-v1.json：新CLI **57命令/20完整�
 
 ## CI、交付和独立债务
 
-本片自身精确产品CI待独立接受；前片If自身CI38068627541/root v4接受已经冻结，不能替代本片。OpenSpec strict本轮实际exit0，见results/delivery-strict-root-v1完整raw。results/clean-target-root-v1/execution.json实际cargo clean3022files/669.3MiB，target不存在，free67077578752bytes；提交后仍须实核main/origin同、全worktrees clean且无待合入分支占用。
+本片产品 `0ae30a7c8d217522f2e5f5b954aa86c9b59356dd` 自身CI [38073837512](https://github.com/LordCasser/jarde/actions/runs/38073837512) 已root独立接受：4jobs/52steps成功，双seed各3393/0/97、354结果记录，lib337/gateway15及新增3个gateway与1个region测试全通过。验收绑定52份live/Git产品pins、冻结CLI/build/runner和前片If v4前提，见results/ci-product-v1/acceptance-proved-return-arm-loop-latch-ci-root-v1.json。capture实际exit0；verifier第一次plain Python缺blake3在验证前失败，ci-verifier-execution-root-v1原raw保留；未改脚本，使用既有离线uv缓存第二次实际exit0，见ci-verifier-execution-root-v2。不能用后续文档CI替代此产品验收。OpenSpec strict最新实际342/342通过，见results/delivery-strict-root-v2完整raw。results/clean-target-root-v1/execution.json实际cargo clean3022files/669.3MiB，target不存在，free67077578752bytes；提交后仍须实核main/origin同、全worktrees clean且无待合入分支占用。
 
 computed-init for债务见results/computed-init-for-debt-root-v1.md：preheader Push(Int)+Store门不支持end-1的load/sub初值。本片物理来源补全不修改while为for，不代表整CF07追平。下一项从已冻结CF12真实原上游差距推进局部类型完整写集合证明，须先完成本片自身CI和clean交付。
+
+CF12前置诊断在等待CI时临时运行：两个真实IR测试各1/0/0；全部52pins恢复后实际cargo clean341files/145.0MiB，target不存在。wrapper v1真实失败与v2成功、独立诊断验收都保留在openspec/evidence/java-syntax-2026-10-11/cf12-real-ir-diagnostics-root-v1；观察不算下一片产品实现。

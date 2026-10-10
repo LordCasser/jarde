@@ -1,0 +1,8 @@
+[
+  "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+  "-p",
+  "-c",
+  "-s",
+  "-v",
+  "openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class"
+]

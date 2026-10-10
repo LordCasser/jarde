@@ -1,0 +1,27 @@
+# Conditional switch fallthrough: implementation boundary
+
+Status: no implementation patch is proposed. A helper-only patch would not preserve observed control flow, so the prior private draft has been removed. No repository files or tools were changed or run.
+
+## Source and evidence checked
+
+Read the four OpenSpec artifacts for `recover-proved-conditional-switch-fallthrough`, plus frozen CF12 real-IR diagnostic evidence under `openspec/evidence/java-syntax-2026-10-11/cf12-real-ir-diagnostics-root-v1`. The concrete switch has dispatch BCI 0, entries 32/117/146/149, and join 171. Entry 32 has paths to both 117 and 171; entry 117 reaches 171. Evidence reports 11 canonical blocks and 17 Normal edges, with no canonical Return/Exception/Call edges in this fixture.
+
+## Consumer boundary
+
+`Frame::switch_arm` carries case-entry boundaries and `switch_join`. `region_at_inner` checks `stops_at_switch_boundary` before claiming a node, so a nonempty fallthrough map can keep entry 117 out of the preceding arm. For this fixture, existing `If` recovery can represent conditional paths while respecting that stop.
+
+However, `SwitchGroup.fall_through` is one boolean. In `switch_region`, any source in the map makes the whole group fall-through. The emitter uses that boolean to suppress the automatic `break;` for a completing arm. The observed entry-32 paths need both behaviors: some continue at adjacent entry 117, while paths reaching join 171 leave the switch. Current Region/Builder has no switch-break leaf for an `If` branch reaching the join. A helper that returns only a source-to-adjacent-entry map would make the group fall through on join paths too. Do not treat that helper-only patch as correct.
+
+The existing `ArmsDoNotMeet` gate does not itself stop this fixture's `If`. At `region.rs` around 3823, `then_meets` and `else_meets` ask whether each initial successor reaches `join_node`. `local_switch_join` is true only when `frame.switch_join == join_node`; its exception still requires one arm to end in `LoopBreak`. Entry 117 is a case-entry stop, not join 171, and its stop produces no `LoopBreak`. When the `If` join is 171, both its 117 route and its join route can reach 171, so the ordinary both-meet condition admits the `If`; the lost fact is which route must leave the switch. If a candidate `If` join were 117 instead, the route to 171 would not reach 117, `local_switch_join` would be false, and the ordinary gate would refuse it. Probing the outer fallthrough map changes neither outcome. Also, `then_next`/`else_next` are `None` at switch stops, so they do not identify whether the stop was case 117 or switch join 171.
+
+This is a representation limit, not a failure of Frame boundaries. A minimal product design needs to retain path-specific switch exit versus adjacent-case continuation, or prove an existing consumer already encodes that distinction. The current boolean consumer/emitter does not. Root should choose the narrow representation before implementation scope expands.
+
+Two narrow options were compared. Passing switch context into Builder and inserting existing `StmtKind::Break` could avoid a new Region variant, but `Region::If` carries only its common join and two arm regions, not an arm's exact terminal target. Builder would have to repeat canonical path analysis or consume a new per-arm exit certificate and then mutate the matching AST branch. The latter moves the same proof payload into SwitchGroup/Builder; the former duplicates recovery proof and risks nested-scope misclassification. A distinct `Region::SwitchBreak { source_bci, switch_bci, join }` leaf follows the existing `LoopBreak` pattern while preserving switch identity and the exact terminal transfer. The region walker can place it in the proved If branch, and Builder translates it to the existing AST break. This requires the ordinary Region exhaustive consumers to recognize the zero-block structured leaf and Builder to verify the target is the active breakable scope. Until labeled switch support exists, conservatively refuse a switch break that crosses an inner loop or switch. This leaf is justified only if the OpenSpec requires that exact mixed-exit case; it is not a general control-flow node.
+
+## Test draft (not executed)
+
+Permanent real-class test should use frozen `TestSwitchWithFallThroughCase$TestCls.class`; assert the recovered switch retains all four physical entries, case 32's conditional route to case 117, and its other route to join 171. Assert source shape preserves the first arm's conditional and does not claim BCI 117 in that arm. Compile and run the complete generated class through the established harness and compare raw runtime output with the oracle. No replacement method, stripped class, or helper stub.
+
+Focused graph tests should cover: (1) a finite conditional DAG with exits only to the proved join and one unique adjacent case; (2) paths all ending at the join (no fallthrough); (3) ambiguous adjacent entries, cycle/backedge, outside predecessor, duplicate canonical edge, or unmodeled node; and (4) canonical Return, Throw/Exception, or Call edges hidden by a view projection. Cases (3) and (4) must reject without changing Frame/Region ownership. Add a consumer-level test proving mixed adjacent-case/join exits render distinct control flow; this test is blocked until the representation is selected.
+
+No execution or acceptance is claimed.

@@ -1,0 +1,454 @@
+{
+  "schema": "typed-local-java-boundary-preflight-root-v1",
+  "commands": [
+    {
+      "label": "javac8-debug-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-debug/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-debug/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-debug/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/LocalSourceTypesBoundaries.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/BoundaryRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T18:19:38.163582+00:00",
+      "duration_seconds": 0.32658433401957154,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac8-debug-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "javac8-debug-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-debug-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-debug/classes",
+        "BoundaryRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T18:19:38.490736+00:00",
+      "duration_seconds": 0.092558000003919,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac8-debug-runtime.stdout.raw",
+          "bytes": 639,
+          "sha256": "d5204f78194f1202468894cf53fe0c50e8417463f8602c0f6a15e6aa29a4e425"
+        },
+        "stderr": {
+          "path": "javac8-debug-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-debug-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-debug/classes/LocalSourceTypesBoundaries.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T18:19:38.583772+00:00",
+      "duration_seconds": 0.21082395801204257,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac8-debug-javap.stdout.raw",
+          "bytes": 31117,
+          "sha256": "9e65264edbf3c67fa550f6b3f52f1ee56756c2a6d0c9b4ca6e60049ec8b9c54e"
+        },
+        "stderr": {
+          "path": "javac8-debug-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-no-debug-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-no-debug/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-no-debug/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-no-debug/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/LocalSourceTypesBoundaries.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/BoundaryRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T18:19:38.795284+00:00",
+      "duration_seconds": 0.24996920800185762,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac8-no-debug-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "javac8-no-debug-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-no-debug-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-no-debug/classes",
+        "BoundaryRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T18:19:39.045843+00:00",
+      "duration_seconds": 0.08573945899843238,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac8-no-debug-runtime.stdout.raw",
+          "bytes": 639,
+          "sha256": "d5204f78194f1202468894cf53fe0c50e8417463f8602c0f6a15e6aa29a4e425"
+        },
+        "stderr": {
+          "path": "javac8-no-debug-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-no-debug-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac8-no-debug/classes/LocalSourceTypesBoundaries.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T18:19:39.132294+00:00",
+      "duration_seconds": 0.20431916700908914,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac8-no-debug-javap.stdout.raw",
+          "bytes": 24968,
+          "sha256": "0cc9c1636ec56c1e0d5eabd61b266cbacc15c5cf57c14fa83b213dacb2301b4f"
+        },
+        "stderr": {
+          "path": "javac8-no-debug-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-debug-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/LocalSourceTypesBoundaries.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/BoundaryRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T18:19:39.339185+00:00",
+      "duration_seconds": 0.3717389999947045,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac23-debug-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "javac23-debug-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-debug-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes",
+        "BoundaryRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T18:19:39.711733+00:00",
+      "duration_seconds": 0.09121070799301378,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac23-debug-runtime.stdout.raw",
+          "bytes": 639,
+          "sha256": "d5204f78194f1202468894cf53fe0c50e8417463f8602c0f6a15e6aa29a4e425"
+        },
+        "stderr": {
+          "path": "javac23-debug-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-debug-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T18:19:39.803572+00:00",
+      "duration_seconds": 0.20004795800196007,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac23-debug-javap.stdout.raw",
+          "bytes": 31319,
+          "sha256": "d8a7adde5398ff2ac22f05243084a0d0b1c1ef0e85b82d1370cb94dd2895a11f"
+        },
+        "stderr": {
+          "path": "javac23-debug-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-no-debug-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/LocalSourceTypesBoundaries.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/BoundaryRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T18:19:40.004353+00:00",
+      "duration_seconds": 0.25030479099950753,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac23-no-debug-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "javac23-no-debug-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-no-debug-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes",
+        "BoundaryRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T18:19:40.255303+00:00",
+      "duration_seconds": 0.08170495799276978,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac23-no-debug-runtime.stdout.raw",
+          "bytes": 639,
+          "sha256": "d5204f78194f1202468894cf53fe0c50e8417463f8602c0f6a15e6aa29a4e425"
+        },
+        "stderr": {
+          "path": "javac23-no-debug-runtime.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-no-debug-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T18:19:40.337740+00:00",
+      "duration_seconds": 0.19757650000974536,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "javac23-no-debug-javap.stdout.raw",
+          "bytes": 25170,
+          "sha256": "5fc9dc5e86b9e4a85ac04640ece2eb9979f7f17eeeaf90e09d5d3a9b67512d38"
+        },
+        "stderr": {
+          "path": "javac23-no-debug-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "source_files": {
+    "LocalSourceTypesBoundaries.java": "1a8b1da7495f6436c37029a4c7b355455ef71d456b0afefea945bc09657883a4",
+    "private-LocalSourceTypesBoundaries.java": "1a8b1da7495f6436c37029a4c7b355455ef71d456b0afefea945bc09657883a4",
+    "private-BoundaryRunner.java": "760101b0920094a01acfa7211d3c196a7e748af404b61f3f38dccc37953995b1",
+    "BoundaryRunner.java": "180dbfc77c2c6e03249337f285af73ca3eab3a5b38599976256651c1c9a931a3"
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/run-boundary-preflight-root-v1.py",
+    "sha256": "9962eb65e1ad799c38efe84688931fe752698e96ca92ad35fc4ebb020dfa0ae1"
+  },
+  "jdk_tools": {
+    "javac8": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    },
+    "javac23": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "status": "observed-original-boundary-runtime",
+  "original_four_legs_raw_equal": true,
+  "class_files": {
+    "javac23-debug/classes/BoundaryRunner.class": {
+      "bytes": 2710,
+      "sha256": "c7d74b25eacea9db9fbfa06a49c2122619a4a22d8bf17ef7907f3c66ac10c763"
+    },
+    "javac23-debug/classes/LocalSourceTypesBoundaries.class": {
+      "bytes": 3883,
+      "sha256": "0cfe997bfb5cf5660536928cdd672fdce0af36c6e539ab03bca9141897cee0c8"
+    },
+    "javac23-no-debug/classes/BoundaryRunner.class": {
+      "bytes": 2361,
+      "sha256": "20d343d599483359da15b5347fac3ae0e7d78b69dfcce36825d2efd1dbf74e43"
+    },
+    "javac23-no-debug/classes/LocalSourceTypesBoundaries.class": {
+      "bytes": 2553,
+      "sha256": "b650e498695a06c5098b38970eafdf4167ad623c93754a1c1ce602c05dca32d3"
+    },
+    "javac8-debug/classes/BoundaryRunner.class": {
+      "bytes": 2710,
+      "sha256": "f919f8ef65d325eb41c8ade4f94295bd55df201dfc88bcd7bb4cd581d553b89c"
+    },
+    "javac8-debug/classes/LocalSourceTypesBoundaries.class": {
+      "bytes": 3892,
+      "sha256": "89edc67d62db13c225a398724b5ef024303066d9dc2cc7146cb2a321af36d3a5"
+    },
+    "javac8-no-debug/classes/BoundaryRunner.class": {
+      "bytes": 2361,
+      "sha256": "cfda1f1490debfca6eacb85b824571fbd7cb2ccb255e0a6443d5e8d8852ad9aa"
+    },
+    "javac8-no-debug/classes/LocalSourceTypesBoundaries.class": {
+      "bytes": 2562,
+      "sha256": "e3c547e3707697b866bf405dbb0cfbc748aec5913ecd6a84404c545fe8b0d6e8"
+    }
+  },
+  "free_bytes_after": 57150279680
+}
