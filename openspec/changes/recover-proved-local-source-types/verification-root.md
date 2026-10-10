@@ -81,3 +81,7 @@ CI adapter v4的source/local预验收真实退出0，核77分类条目/28构建r
 ## 精确产品 CI 最终接受
 
 [typed-ci-product-root-v7](results/typed-ci-product-root-v7/README.md) 保存精确43dffc9b产品run38087978610：4jobs/52steps全部成功，两seed各356摘要、3408/0/97；root实际v7独立verifier退出0，准确typed9名及全部86Git/live pins通过。v6只因combined Cargo header空白边界误吞后续摘要而失败，原失败与原capture保留，v7复用严格单binary解析，不改变产品或测试。任务3.2在本次strict实际通过后关闭，3.3待新增全部归档提交推送及全worktree clean实核。
+
+## 干净主线交付
+
+全部授权证据随9d6d51570af0f71e55ffb6fd502aee062e035a2e提交推送后，root实际audit v4接受main/origin相同、15 worktrees全clean、14辅助detached main祖先、本地及真实远端仅main、无target/fuzz target、CLI原SHA/0555及5GiB余量。v3因检查发生于尚未提交的staging而失败，原记录保留。验收记录在results/clean-delivery-checkpoint-root-v3。任务8/8；关闭文档提交推送后再实际private audit确认最终HEAD，不借文档CI。
