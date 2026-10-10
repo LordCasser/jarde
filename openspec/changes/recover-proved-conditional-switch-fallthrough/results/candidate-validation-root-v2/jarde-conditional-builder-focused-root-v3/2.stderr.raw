@@ -1,0 +1,240 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.94s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-ca515811f23778e1)
+
+thread 'build::tests::cf12_switch_break_builder_consumes_only_the_reader_leaf_it_proves' (23687650) panicked at crates/jarde-java/src/build.rs:38352:32:
+expected fallback at 89: [
+    Stmt {
+        kind: Fallback {
+            reason: "local 4 has an access outside the recovered region tree, so its lexical owner and complete definition-use slice cannot be proved",
+            bcis: [
+                0,
+                32,
+                59,
+                63,
+                67,
+                92,
+                117,
+                121,
+                146,
+                149,
+                171,
+            ],
+        },
+        origin: OriginSet {
+            primary: Origin {
+                bci: 0,
+                method: None,
+                cp: None,
+                provenance: Direct,
+            },
+            derived: [
+                Origin {
+                    bci: 32,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 59,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 63,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 67,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 92,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 117,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 121,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 146,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 149,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 171,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+            ],
+        },
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+ExceptionIfJoin recovered tree: [
+    Try {
+        prefix: [
+            CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+        ],
+        lead: (
+            4,
+            4,
+        ),
+        body: Loop {
+            header: CanonicalBlockId {
+                bci: 4,
+                path: [],
+            },
+            tests: [
+                (
+                    CanonicalBlockId {
+                        bci: 4,
+                        path: [],
+                    },
+                    6,
+                    FallThrough,
+                ),
+            ],
+            test_operator: None,
+            form: While,
+            for_header: Some(
+                ForHeader {
+                    init_bci: 3,
+                    update_bci: 27,
+                    update_block: CanonicalBlockId {
+                        bci: 27,
+                        path: [],
+                    },
+                    slot: 2,
+                },
+            ),
+            body: [
+                If {
+                    prefix: [],
+                    branch: CanonicalBlockId {
+                        bci: 9,
+                        path: [],
+                    },
+                    branch_bci: 12,
+                    then_arm: Fallback {
+                        blocks: [
+                            CanonicalBlockId {
+                                bci: 15,
+                                path: [],
+                            },
+                        ],
+                        reason: ExceptionEdge {
+                            block_bci: 15,
+                            handler_ordinal: 0,
+                        },
+                    },
+                    else_arm: Straight {
+                        blocks: [
+                            CanonicalBlockId {
+                                bci: 24,
+                                path: [],
+                            },
+                        ],
+                    },
+                    join: Some(
+                        CanonicalBlockId {
+                            bci: 27,
+                            path: [],
+                        },
+                    ),
+                },
+                Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 27,
+                            path: [],
+                        },
+                    ],
+                },
+            ],
+            exit: Some(
+                CanonicalBlockId {
+                    bci: 33,
+                    path: [],
+                },
+            ),
+            gateway_origins: [
+                30,
+            ],
+        },
+        normal_exit_bci: None,
+        catches: [
+            CatchClause {
+                types: Named(
+                    [
+                        12,
+                    ],
+                ),
+                handler: CanonicalBlockId {
+                    bci: 36,
+                    path: [],
+                },
+                parameter: 3,
+                body: Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 36,
+                            path: [],
+                        },
+                    ],
+                },
+            },
+        ],
+        transparent: None,
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 33,
+                path: [],
+            },
+        ],
+        reason: UncoveredBlocks {
+            blocks: [
+                33,
+            ],
+        },
+    },
+]
+ExceptionIfJoin recovery: // @method withException(I)I
+// recovered from bytecode; presentation is not claimed to compile
+{
+    // @bytecode 0 4 9 15 24 27 33 36 39
+    // local 1 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice
+}
+
+
+thread 'refusal::tests::a_requirement_a_rule_never_declared_cannot_be_refused_under' (23687901) panicked at crates/jarde-java/src/refusal.rs:41:9:
+concat@1 states no Replayable precondition
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --lib`

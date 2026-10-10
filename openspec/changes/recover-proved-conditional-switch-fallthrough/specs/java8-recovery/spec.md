@@ -40,6 +40,6 @@
 - **THEN** 返回准确 Stop，不发布部分正文或 map
 
 #### Scenario: Break 目标属于准确当前 switch
-+- **WHEN** 条件路径跳出 switch 且能证明它是当前最近的可 break 作用域
-+- **THEN** 在准确条件分支呈现 break，来源属于该真实 transfer 或 branch
-+- **AND** 若退出需要跨更内层 loop/switch 的 label 而当前呈现未证明它，保持明确拒绝，不把无label break绑定到错误作用域
+- **WHEN** 条件路径跳出 switch 且能证明它是当前最近的可 break 作用域
+- **THEN** 在准确条件分支呈现 break，来源属于该真实 transfer 或 branch
+- **AND** 若退出需要跨更内层 loop/switch 的 label 而当前呈现未证明它，保持明确拒绝，不把无label break绑定到错误作用域

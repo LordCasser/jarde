@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.44s
+[1m[92m     Running[0m tests/p3_boolean_short_circuit_return.rs (target/debug/deps/p3_boolean_short_circuit_return-71ea40cb479d9dd6)
+[1m[92m     Running[0m tests/p3_catch_after_field_assignment.rs (target/debug/deps/p3_catch_after_field_assignment-60ef7a4cc8e6cce0)
+[1m[92m     Running[0m tests/p3_caught_value_argument_typing.rs (target/debug/deps/p3_caught_value_argument_typing-5d4e4ae1ec9ccf62)
+[1m[92m     Running[0m tests/p3_chained_store.rs (target/debug/deps/p3_chained_store-305d7af3ac670ff8)

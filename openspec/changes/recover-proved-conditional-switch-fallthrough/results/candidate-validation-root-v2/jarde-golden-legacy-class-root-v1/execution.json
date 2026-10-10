@@ -1,0 +1,10 @@
+{
+  "status": "byte-identical-existing-p2-golden-fixture-only",
+  "bytes": 114,
+  "blake3": "dac91477a63e8c8e43acbf4e56916bab8a7415f862314f47eb5e904ef1adc019",
+  "sha256": "5ef72ab6afa95cd945cb53123155ca99f86f4c99c9ad7fa78c2d58e044e04fa5",
+  "fixture": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class",
+  "builder": "tests/p2_golden.rs::jsr_class(50) / jsr_body / simple_class",
+  "golden_sha256": "b64b4b91b8c18374d9ce64d13c2a6bfa3ad8f329773b9b14b3eb1e48654c3763",
+  "runtime_executed": false
+}

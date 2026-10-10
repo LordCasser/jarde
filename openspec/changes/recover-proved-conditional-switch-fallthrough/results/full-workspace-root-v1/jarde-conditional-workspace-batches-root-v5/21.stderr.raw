@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 3.37s
+[1m[92m     Running[0m tests/p2_cfg.rs (target/debug/deps/p2_cfg-d1ae5a2c18047e4a)
+[1m[92m     Running[0m tests/p2_closure.rs (target/debug/deps/p2_closure-d7f8280a6c228324)
+[1m[92m     Running[0m tests/p2_contracts.rs (target/debug/deps/p2_contracts-7ccb3eea66636e77)
+[1m[92m     Running[0m tests/p2_declaration_refs.rs (target/debug/deps/p2_declaration_refs-4edad9de3c06ef61)

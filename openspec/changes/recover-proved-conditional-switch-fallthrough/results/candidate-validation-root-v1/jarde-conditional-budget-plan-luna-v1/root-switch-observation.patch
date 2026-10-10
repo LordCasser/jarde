@@ -1,0 +1,32 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@
+     let mut incoming: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+         BTreeMap::new();
+     let mut outgoing: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+         BTreeMap::new();
++    eprintln!(
++        "ROOT_SWITCH_PROOF phase=edge_collection switch_bci={} analysis_steps={}",
++        switch_bci,
++        budget.usage().analysis_steps
++    );
+     for (from, kind, to) in edges {
+@@
+     let mut closures: BTreeMap<u32, BTreeSet<usize>> = BTreeMap::new();
+     let mut case_exits: BTreeMap<u32, BTreeSet<u32>> = BTreeMap::new();
+     let mut fallthroughs = BTreeMap::new();
++    eprintln!(
++        "ROOT_SWITCH_PROOF phase=dag switch_bci={} analysis_steps={}",
++        switch_bci,
++        budget.usage().analysis_steps
++    );
+     for (from_bci, start) in targets {
+@@
+     };
+     let post_scan_nodes = closures.values().map(BTreeSet::len).sum::<usize>();
++    eprintln!(
++        "ROOT_SWITCH_PROOF phase=incoming switch_bci={} analysis_steps={}",
++        switch_bci,
++        budget.usage().analysis_steps
++    );
+     charge(

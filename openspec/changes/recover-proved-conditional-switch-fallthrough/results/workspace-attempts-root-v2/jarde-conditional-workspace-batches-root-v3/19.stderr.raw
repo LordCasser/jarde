@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.45s
+[1m[92m     Running[0m tests/p1_reader_facts.rs (target/debug/deps/p1_reader_facts-e3ff51874810da2d)
+[1m[92m     Running[0m tests/p1_scope_cursor.rs (target/debug/deps/p1_scope_cursor-d46e5edf80ea6106)
+[1m[92m     Running[0m tests/p1_xref_bootstrap.rs (target/debug/deps/p1_xref_bootstrap-a164eb02655acd59)
+[1m[92m     Running[0m tests/p1_xref_code.rs (target/debug/deps/p1_xref_code-b3ca273ffc837fca)

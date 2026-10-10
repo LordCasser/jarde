@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.59s
+[1m[92m     Running[0m tests/bulk_recovery_retention.rs (target/debug/deps/bulk_recovery_retention-6eec38de588dbf93)
+[1m[92m     Running[0m tests/bulk_recovery_serial.rs (target/debug/deps/bulk_recovery_serial-5530e53c35a7c11b)
+[1m[92m     Running[0m tests/bulk_recovery_workers.rs (target/debug/deps/bulk_recovery_workers-462365d9615c87fb)
+[1m[92m     Running[0m tests/bulk_support.rs (target/debug/deps/bulk_support-64f4cb199c5ed6e1)

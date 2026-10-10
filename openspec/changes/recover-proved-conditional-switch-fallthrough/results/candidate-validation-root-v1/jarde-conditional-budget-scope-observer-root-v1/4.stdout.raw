@@ -1,0 +1,181 @@
+
+running 1 test
+test real_conditional_switch_scope_boundaries_keep_reader_identity_and_ir ... BOUNDARY name=innerLoopBreak descriptor=(II)Ljava/lang/String; method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7") }, class_bytes: ClassBytesId { digest: Digest("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"), length: 1494 }, variant: Base }, name: JvmBytes([105, 110, 110, 101, 114, 76, 111, 111, 112, 66, 114, 101, 97, 107]), descriptor: JvmBytes([40, 73, 73, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59]) } ordinal=MethodOrdinal(2) outcome=Produced regions=[
+    RegionRecord {
+        bci: 0,
+        structured: true,
+        blocks: [
+            0,
+            36,
+            70,
+            80,
+        ],
+        code: None,
+        message: None,
+        rule: Some(
+            RuleVersion {
+                rule: "switch",
+                version: "1",
+            },
+        ),
+    },
+    RegionRecord {
+        bci: 87,
+        structured: true,
+        blocks: [
+            87,
+        ],
+        code: None,
+        message: None,
+        rule: Some(
+            RuleVersion {
+                rule: "straight",
+                version: "1",
+            },
+        ),
+    },
+    RegionRecord {
+        bci: 38,
+        structured: false,
+        blocks: [
+            38,
+            43,
+            63,
+            54,
+            57,
+        ],
+        code: Some(
+            "jre_region_uncovered_blocks",
+        ),
+        message: Some(
+            "5 live block(s) are reachable only through edges the normal-flow view leaves out: [38, 43, 63, 54, 57]",
+        ),
+        rule: None,
+    },
+] text="// @method innerLoopBreak(II)Ljava/lang/String;\n// @declaration a static method of `ConditionalSwitchBoundaries`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 36 38 43 54 57 63 70 80 87\n    // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n"
+BOUNDARY_IR name=innerLoopBreak blocks={0, 36, 38, 43, 54, 57, 63, 70, 80, 87} edges=[(0, "Normal", 36), (0, "Normal", 70), (0, "Normal", 80), (36, "Normal", 38), (38, "Normal", 43), (38, "Normal", 63), (43, "Normal", 54), (43, "Normal", 57), (54, "Normal", 63), (57, "Normal", 38), (63, "Normal", 70), (70, "Normal", 87), (80, "Normal", 87)] opcodes=[(0, 187), (3, 89), (4, 183), (7, 77), (8, 26), (9, 171), (36, 3), (37, 62), (38, 29), (39, 5), (40, 162), (43, 44), (44, 18), (46, 182), (49, 87), (50, 27), (51, 153), (54, 167), (57, 132), (60, 167), (63, 44), (64, 18), (66, 182), (69, 87), (70, 44), (71, 18), (73, 182), (76, 87), (77, 167), (80, 44), (81, 18), (83, 182), (86, 87), (87, 44), (88, 182), (91, 176)]
+BOUNDARY name=innerSwitchBreak descriptor=(II)Ljava/lang/String; method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7") }, class_bytes: ClassBytesId { digest: Digest("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"), length: 1494 }, variant: Base }, name: JvmBytes([105, 110, 110, 101, 114, 83, 119, 105, 116, 99, 104, 66, 114, 101, 97, 107]), descriptor: JvmBytes([40, 73, 73, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59]) } ordinal=MethodOrdinal(3) outcome=Produced regions=[
+    RegionRecord {
+        bci: 0,
+        structured: false,
+        blocks: [
+            0,
+            36,
+            80,
+            90,
+            56,
+            66,
+            97,
+            73,
+        ],
+        code: Some(
+            "jre_region_arms_do_not_meet",
+        ),
+        message: Some(
+            "the arms of the branch in block 0 do not meet at one join",
+        ),
+        rule: None,
+    },
+] text="// @method innerSwitchBreak(II)Ljava/lang/String;\n// @declaration a static method of `ConditionalSwitchBoundaries`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 3 4 7 8 9 36 37 56 57 59 62 63 66 67 69 72 73 74 76 79 80 81 83 86 87 90 91 93 96 97 98 101\n    // the arms of the branch in block 0 do not meet at one join\n}\n"
+BOUNDARY_IR name=innerSwitchBreak blocks={0, 36, 56, 66, 73, 80, 90, 97} edges=[(0, "Normal", 36), (0, "Normal", 80), (0, "Normal", 90), (36, "Normal", 56), (36, "Normal", 66), (56, "Normal", 73), (66, "Normal", 73), (73, "Normal", 80), (80, "Normal", 97), (90, "Normal", 97)] opcodes=[(0, 187), (3, 89), (4, 183), (7, 77), (8, 26), (9, 171), (36, 27), (37, 171), (56, 44), (57, 18), (59, 182), (62, 87), (63, 167), (66, 44), (67, 18), (69, 182), (72, 87), (73, 44), (74, 18), (76, 182), (79, 87), (80, 44), (81, 18), (83, 182), (86, 87), (87, 167), (90, 44), (91, 18), (93, 182), (96, 87), (97, 44), (98, 182), (101, 176)]
+BOUNDARY name=terminalCase descriptor=(I)Ljava/lang/String; method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7") }, class_bytes: ClassBytesId { digest: Digest("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"), length: 1494 }, variant: Base }, name: JvmBytes([116, 101, 114, 109, 105, 110, 97, 108, 67, 97, 115, 101]), descriptor: JvmBytes([40, 73, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59]) } ordinal=MethodOrdinal(4) outcome=Produced regions=[
+    RegionRecord {
+        bci: 0,
+        structured: true,
+        blocks: [
+            0,
+            36,
+            48,
+            67,
+            77,
+        ],
+        code: None,
+        message: None,
+        rule: Some(
+            RuleVersion {
+                rule: "switch",
+                version: "1",
+            },
+        ),
+    },
+    RegionRecord {
+        bci: 84,
+        structured: true,
+        blocks: [
+            84,
+        ],
+        code: None,
+        message: None,
+        rule: Some(
+            RuleVersion {
+                rule: "straight",
+                version: "1",
+            },
+        ),
+    },
+] text="// @method terminalCase(I)Ljava/lang/String;\n// @declaration a static method of `ConditionalSwitchBoundaries`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    java.lang.StringBuilder local1;\n    local1 = new java.lang.StringBuilder();\n    switch (arg0) {\n        case 0:\n            local1.append(\"R\");\n            return local1.toString();\n        case 1:\n            local1.append(\"T\");\n            throw new java.lang.IllegalArgumentException((java.lang.String) local1.toString());\n        case 2:\n            local1.append(\"C\");\n            break;\n        default:\n            local1.append(\"D\");\n            break;\n    }\n    return local1.toString();\n}\n"
+BOUNDARY_IR name=terminalCase blocks={0, 36, 48, 67, 77, 84} edges=[(0, "Normal", 36), (0, "Normal", 48), (0, "Normal", 67), (0, "Normal", 77), (67, "Normal", 84), (77, "Normal", 84)] opcodes=[(0, 187), (3, 89), (4, 183), (7, 76), (8, 26), (9, 170), (36, 43), (37, 18), (39, 182), (42, 87), (43, 43), (44, 182), (47, 176), (48, 43), (49, 18), (51, 182), (54, 87), (55, 187), (58, 89), (59, 43), (60, 182), (63, 183), (66, 191), (67, 43), (68, 18), (70, 182), (73, 87), (74, 167), (77, 43), (78, 18), (80, 182), (83, 87), (84, 43), (85, 182), (88, 176)]
+BOUNDARY name=caughtExceptionThenFallthrough descriptor=(II)Ljava/lang/String; method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7") }, class_bytes: ClassBytesId { digest: Digest("49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"), length: 1494 }, variant: Base }, name: JvmBytes([99, 97, 117, 103, 104, 116, 69, 120, 99, 101, 112, 116, 105, 111, 110, 84, 104, 101, 110, 70, 97, 108, 108, 116, 104, 114, 111, 117, 103, 104]), descriptor: JvmBytes([40, 73, 73, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103, 59]) } ordinal=MethodOrdinal(5) outcome=Produced regions=[
+    RegionRecord {
+        bci: 0,
+        structured: true,
+        blocks: [
+            0,
+            36,
+            40,
+            45,
+            60,
+            68,
+            78,
+        ],
+        code: None,
+        message: None,
+        rule: Some(
+            RuleVersion {
+                rule: "switch",
+                version: "1",
+            },
+        ),
+    },
+    RegionRecord {
+        bci: 85,
+        structured: true,
+        blocks: [
+            85,
+        ],
+        code: None,
+        message: None,
+        rule: Some(
+            RuleVersion {
+                rule: "straight",
+                version: "1",
+            },
+        ),
+    },
+    RegionRecord {
+        bci: 47,
+        structured: false,
+        blocks: [
+            47,
+        ],
+        code: Some(
+            "jre_region_uncovered_blocks",
+        ),
+        message: Some(
+            "1 live block(s) are reachable only through edges the normal-flow view leaves out: [47]",
+        ),
+        rule: None,
+    },
+] text="// @method caughtExceptionThenFallthrough(II)Ljava/lang/String;\n// @declaration a static method of `ConditionalSwitchBoundaries`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 36 40 45 47 60 68 78 85\n    // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n"
+BOUNDARY_IR name=caughtExceptionThenFallthrough blocks={0, 36, 40, 45, 47, 60, 68, 78, 85} edges=[(0, "Normal", 36), (0, "Normal", 68), (0, "Normal", 78), (36, "Normal", 40), (36, "Normal", 45), (40, "Normal", 47), (40, "Exception { handler_ordinal: 0 }", 60), (45, "Normal", 47), (45, "Exception { handler_ordinal: 0 }", 60), (47, "Normal", 68), (47, "Exception { handler_ordinal: 0 }", 60), (60, "Normal", 68), (68, "Normal", 85), (78, "Normal", 85)] opcodes=[(0, 187), (3, 89), (4, 183), (7, 77), (8, 26), (9, 171), (36, 27), (37, 154), (40, 18), (42, 167), (45, 18), (47, 184), (50, 62), (51, 44), (52, 29), (53, 182), (56, 87), (57, 167), (60, 78), (61, 44), (62, 18), (64, 182), (67, 87), (68, 44), (69, 18), (71, 182), (74, 87), (75, 167), (78, 44), (79, 18), (81, 182), (84, 87), (85, 44), (86, 182), (89, 176)]
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test nonadjacent_conditional_switch_is_refused_by_the_public_caller ... ok
+test pre_cancelled_public_recovery_publishes_no_partial_artifact ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

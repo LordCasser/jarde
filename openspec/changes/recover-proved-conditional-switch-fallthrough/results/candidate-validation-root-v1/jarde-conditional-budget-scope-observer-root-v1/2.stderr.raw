@@ -1,0 +1,10 @@
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.02s
+[1m[92m     Running[0m tests/p3_conditional_switch_fallthrough.rs (target/debug/deps/p3_conditional_switch_fallthrough-c30a8f36787c576f)
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=137
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=154
+ROOT_SWITCH_PROOF public limit=154 usage=Some(UsageSnapshot { input_bytes: 0, archive_entries: 0, entry_bytes: 0, read_bytes: 0, class_bytes: 0, attribute_bytes: 0, code_bytes: 0, result_items: 0, output_bytes: 0, class_headers: 0, method_bodies: 0, ir_items: 136, ir_edges: 17, analysis_steps: 154, normalization_clones: 0, nested_depth: 0, dependency_depth: 0, elapsed_millis: 2 }) stop=Some(Budget { dimension: AnalysisSteps, written: 0, limit: 154, at: Some(0) }) produced=false outcome=Stopped(Budget { dimension: AnalysisSteps, written: 0, limit: 154, at: Some(0) })
+text:
+
+source_map=SourceMap {
+    segments: [],
+}

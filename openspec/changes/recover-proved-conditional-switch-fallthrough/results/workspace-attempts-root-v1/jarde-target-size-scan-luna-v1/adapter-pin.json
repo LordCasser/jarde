@@ -1,0 +1,17 @@
+{
+  "schema": "target-size-scan-adapter-v1",
+  "adapter": "/private/tmp/jarde-target-size-scan-luna-v1/target_size_scan.py",
+  "adapter_sha256": "f3e6d8a596ff1c645921c9bdbd26c604ef3d3553f72edb6adbd9179a3014a325",
+  "adapter_bytes": 931,
+  "historical_guard": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "modified": false
+  },
+  "limits_and_guard_preserved": {
+    "free_bytes": 5368709120,
+    "target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "new_process_session": true
+  }
+}

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.03s
+[1m[92m     Running[0m tests/anonymous_parameterized_root.rs (target/debug/deps/anonymous_parameterized_root-ff1399649f00d201)
+[1m[92m     Running[0m tests/anonymous_supertype_return.rs (target/debug/deps/anonymous_supertype_return-ae8da61719c7338a)
+[1m[92m     Running[0m tests/assert_statement_sugar.rs (target/debug/deps/assert_statement_sugar-16a6fd1ae2fabf94)
+[1m[92m     Running[0m tests/bulk_recovery_backpressure.rs (target/debug/deps/bulk_recovery_backpressure-3455f2e8274aa898)

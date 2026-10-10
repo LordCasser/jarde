@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-run-conditional-workspace-batches-root-v1.py", line 21, in <module>
+    assert include.is_relative_to(root) and include.is_file(),str(include)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: /Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/tests/fixtures/…

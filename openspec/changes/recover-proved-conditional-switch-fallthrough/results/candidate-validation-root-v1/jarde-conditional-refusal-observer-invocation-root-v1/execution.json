@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T22:22:44.108534+00:00",
+  "duration_seconds": 15.284868416987592,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-run-conditional-refusal-observer-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 48,
+      "sha256": "525ce54ef97f7f79f477f04fbf9841f55455d4684f6b8d66d7476781b132acd0"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.71s
+[1m[92m     Running[0m tests/p3_scv_concat_consumers.rs (target/debug/deps/p3_scv_concat_consumers-c58dc591a2b13c00)
+[1m[92m     Running[0m tests/p3_shared_catchall_finally.rs (target/debug/deps/p3_shared_catchall_finally-844cf9cfc1e27063)
+[1m[92m     Running[0m tests/p3_shared_latch_nested_loops.rs (target/debug/deps/p3_shared_latch_nested_loops-9c3e4bdd3bd8ddab)
+[1m[92m     Running[0m tests/p3_shift_expressions.rs (target/debug/deps/p3_shift_expressions-c7bc51ee299c8df6)

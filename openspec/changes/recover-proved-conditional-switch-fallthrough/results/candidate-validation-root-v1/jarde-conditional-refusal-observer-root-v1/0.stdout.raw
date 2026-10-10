@@ -1,0 +1,11 @@
+
+running 1 test
+test region::tests::cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants ... FAILED
+
+failures:
+
+failures:
+    region::tests::cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 339 filtered out; finished in 0.01s
+

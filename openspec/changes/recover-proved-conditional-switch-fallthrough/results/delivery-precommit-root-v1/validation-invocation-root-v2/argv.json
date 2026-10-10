@@ -1,0 +1,9 @@
+[
+  "python",
+  "-B",
+  "openspec/changes/recover-proved-conditional-switch-fallthrough/results/run-validation-build-root-v2.py",
+  "--source-base",
+  "2d70da515896c25ce022b8c28f4935ff2e105026",
+  "--expected-lib-count",
+  "344"
+]

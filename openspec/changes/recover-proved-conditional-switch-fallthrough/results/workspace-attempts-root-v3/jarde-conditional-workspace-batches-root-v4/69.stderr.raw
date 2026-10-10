@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.89s
+[1m[92m     Running[0m tests/recover_conditional_rhs_field_compound.rs (target/debug/deps/recover_conditional_rhs_field_compound-4c4d421e03b1d625)
+[1m[92m     Running[0m tests/recover_covariant_array_store_receiver.rs (target/debug/deps/recover_covariant_array_store_receiver-1077bd34b2d97606)
+[1m[92m     Running[0m tests/recover_double_brace_allocation_site.rs (target/debug/deps/recover_double_brace_allocation_site-6aef1274db8d15e8)
+[1m[92m     Running[0m tests/recover_dup_store_conditional.rs (target/debug/deps/recover_dup_store_conditional-11760daf3df76a94)

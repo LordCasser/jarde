@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.43s
+[1m[92m     Running[0m tests/parameterized_interface_headers.rs (target/debug/deps/parameterized_interface_headers-4de2b11ca2667928)
+[1m[92m     Running[0m tests/preserve_local_scope_plan.rs (target/debug/deps/preserve_local_scope_plan-b6e3ee7f6701009c)
+[1m[92m     Running[0m tests/preserve_local_scope_refusals.rs (target/debug/deps/preserve_local_scope_refusals-667387af0a3f085f)
+[1m[92m     Running[0m tests/preserve_monitor_exit_evaluation_order.rs (target/debug/deps/preserve_monitor_exit_evaluation_order-1071f15716664ef8)

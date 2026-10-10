@@ -1,0 +1,373 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class
+  Last modified 2026年10月11日; size 1494 bytes
+  SHA-256 checksum 94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350
+public final class ConditionalSwitchBoundaries
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #25                         // ConditionalSwitchBoundaries
+  super_class: #26                        // java/lang/Object
+  interfaces: 0, fields: 0, methods: 6, attributes: 0
+Constant pool:
+   #1 = Methodref          #26.#41        // java/lang/Object."<init>":()V
+   #2 = Class              #42            // java/lang/StringBuilder
+   #3 = Methodref          #2.#41         // java/lang/StringBuilder."<init>":()V
+   #4 = String             #43            // A
+   #5 = Methodref          #2.#44         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #6 = String             #45            // F
+   #7 = String             #46            // B
+   #8 = String             #47            // D
+   #9 = Methodref          #2.#48         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #10 = String             #49            // L
+  #11 = String             #50            // O
+  #12 = String             #51            // N
+  #13 = String             #52            // I
+  #14 = String             #53            // J
+  #15 = String             #54            // R
+  #16 = String             #55            // T
+  #17 = Class              #56            // java/lang/IllegalArgumentException
+  #18 = Methodref          #17.#57        // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #19 = String             #58            // C
+  #20 = String             #59            // 7
+  #21 = String             #60            // x
+  #22 = Methodref          #61.#62        // java/lang/Integer.parseInt:(Ljava/lang/String;)I
+  #23 = Methodref          #2.#63         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #24 = Class              #64            // java/lang/NumberFormatException
+  #25 = Class              #65            // ConditionalSwitchBoundaries
+  #26 = Class              #66            // java/lang/Object
+  #27 = Utf8               <init>
+  #28 = Utf8               ()V
+  #29 = Utf8               Code
+  #30 = Utf8               partialBreak
+  #31 = Utf8               (II)Ljava/lang/String;
+  #32 = Utf8               StackMapTable
+  #33 = Class              #42            // java/lang/StringBuilder
+  #34 = Utf8               innerLoopBreak
+  #35 = Utf8               innerSwitchBreak
+  #36 = Utf8               terminalCase
+  #37 = Utf8               (I)Ljava/lang/String;
+  #38 = Utf8               caughtExceptionThenFallthrough
+  #39 = Class              #67            // java/lang/String
+  #40 = Class              #64            // java/lang/NumberFormatException
+  #41 = NameAndType        #27:#28        // "<init>":()V
+  #42 = Utf8               java/lang/StringBuilder
+  #43 = Utf8               A
+  #44 = NameAndType        #68:#69        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #45 = Utf8               F
+  #46 = Utf8               B
+  #47 = Utf8               D
+  #48 = NameAndType        #70:#71        // toString:()Ljava/lang/String;
+  #49 = Utf8               L
+  #50 = Utf8               O
+  #51 = Utf8               N
+  #52 = Utf8               I
+  #53 = Utf8               J
+  #54 = Utf8               R
+  #55 = Utf8               T
+  #56 = Utf8               java/lang/IllegalArgumentException
+  #57 = NameAndType        #27:#72        // "<init>":(Ljava/lang/String;)V
+  #58 = Utf8               C
+  #59 = Utf8               7
+  #60 = Utf8               x
+  #61 = Class              #73            // java/lang/Integer
+  #62 = NameAndType        #74:#75        // parseInt:(Ljava/lang/String;)I
+  #63 = NameAndType        #68:#76        // append:(I)Ljava/lang/StringBuilder;
+  #64 = Utf8               java/lang/NumberFormatException
+  #65 = Utf8               ConditionalSwitchBoundaries
+  #66 = Utf8               java/lang/Object
+  #67 = Utf8               java/lang/String
+  #68 = Utf8               append
+  #69 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #70 = Utf8               toString
+  #71 = Utf8               ()Ljava/lang/String;
+  #72 = Utf8               (Ljava/lang/String;)V
+  #73 = Utf8               java/lang/Integer
+  #74 = Utf8               parseInt
+  #75 = Utf8               (Ljava/lang/String;)I
+  #76 = Utf8               (I)Ljava/lang/StringBuilder;
+{
+  private ConditionalSwitchBoundaries();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.String partialBreak(int, int);
+    descriptor: (II)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: new           #2                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: astore_2
+         8: iload_0
+         9: lookupswitch  { // 2
+                       0: 36
+                       1: 57
+                 default: 67
+            }
+        36: iload_1
+        37: ifeq          57
+        40: aload_2
+        41: ldc           #4                  // String A
+        43: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        46: pop
+        47: goto          67
+        50: aload_2
+        51: ldc           #6                  // String F
+        53: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: pop
+        57: aload_2
+        58: ldc           #7                  // String B
+        60: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        63: pop
+        64: goto          74
+        67: aload_2
+        68: ldc           #8                  // String D
+        70: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        73: pop
+        74: aload_2
+        75: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        78: areturn
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 13 /* same */
+        frame_type = 6 /* same */
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+
+  public static java.lang.String innerLoopBreak(int, int);
+    descriptor: (II)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: new           #2                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: astore_2
+         8: iload_0
+         9: lookupswitch  { // 2
+                       0: 36
+                       1: 70
+                 default: 80
+            }
+        36: iconst_0
+        37: istore_3
+        38: iload_3
+        39: iconst_2
+        40: if_icmpge     63
+        43: aload_2
+        44: ldc           #10                 // String L
+        46: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        49: pop
+        50: iload_1
+        51: ifeq          57
+        54: goto          63
+        57: iinc          3, 1
+        60: goto          38
+        63: aload_2
+        64: ldc           #11                 // String O
+        66: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        69: pop
+        70: aload_2
+        71: ldc           #12                 // String N
+        73: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        76: pop
+        77: goto          87
+        80: aload_2
+        81: ldc           #8                  // String D
+        83: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        86: pop
+        87: aload_2
+        88: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        91: areturn
+      StackMapTable: number_of_entries = 7
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 252 /* append */
+          offset_delta = 1
+          locals = [ int ]
+        frame_type = 18 /* same */
+        frame_type = 5 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 6
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+
+  public static java.lang.String innerSwitchBreak(int, int);
+    descriptor: (II)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: new           #2                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: astore_2
+         8: iload_0
+         9: lookupswitch  { // 2
+                       0: 36
+                       1: 80
+                 default: 90
+            }
+        36: iload_1
+        37: lookupswitch  { // 1
+                       0: 56
+                 default: 66
+            }
+        56: aload_2
+        57: ldc           #13                 // String I
+        59: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        62: pop
+        63: goto          73
+        66: aload_2
+        67: ldc           #14                 // String J
+        69: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        72: pop
+        73: aload_2
+        74: ldc           #11                 // String O
+        76: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        79: pop
+        80: aload_2
+        81: ldc           #12                 // String N
+        83: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        86: pop
+        87: goto          97
+        90: aload_2
+        91: ldc           #8                  // String D
+        93: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        96: pop
+        97: aload_2
+        98: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       101: areturn
+      StackMapTable: number_of_entries = 7
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 19 /* same */
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+        frame_type = 6 /* same */
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+
+  public static java.lang.String terminalCase(int);
+    descriptor: (I)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: new           #2                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: astore_1
+         8: iload_0
+         9: tableswitch   { // 0 to 2
+                       0: 36
+                       1: 48
+                       2: 67
+                 default: 77
+            }
+        36: aload_1
+        37: ldc           #15                 // String R
+        39: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: pop
+        43: aload_1
+        44: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        47: areturn
+        48: aload_1
+        49: ldc           #16                 // String T
+        51: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        54: pop
+        55: new           #17                 // class java/lang/IllegalArgumentException
+        58: dup
+        59: aload_1
+        60: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        63: invokespecial #18                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        66: athrow
+        67: aload_1
+        68: ldc           #19                 // String C
+        70: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        73: pop
+        74: goto          84
+        77: aload_1
+        78: ldc           #8                  // String D
+        80: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        83: pop
+        84: aload_1
+        85: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        88: areturn
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 11 /* same */
+        frame_type = 18 /* same */
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+
+  public static java.lang.String caughtExceptionThenFallthrough(int, int);
+    descriptor: (II)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: new           #2                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: astore_2
+         8: iload_0
+         9: lookupswitch  { // 2
+                       0: 36
+                       1: 68
+                 default: 78
+            }
+        36: iload_1
+        37: ifne          45
+        40: ldc           #20                 // String 7
+        42: goto          47
+        45: ldc           #21                 // String x
+        47: invokestatic  #22                 // Method java/lang/Integer.parseInt:(Ljava/lang/String;)I
+        50: istore_3
+        51: aload_2
+        52: iload_3
+        53: invokevirtual #23                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        56: pop
+        57: goto          68
+        60: astore_3
+        61: aload_2
+        62: ldc           #19                 // String C
+        64: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        67: pop
+        68: aload_2
+        69: ldc           #12                 // String N
+        71: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        74: pop
+        75: goto          85
+        78: aload_2
+        79: ldc           #8                  // String D
+        81: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        84: pop
+        85: aload_2
+        86: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        89: areturn
+      Exception table:
+         from    to  target type
+            36    57    60   Class java/lang/NumberFormatException
+      StackMapTable: number_of_entries = 7
+        frame_type = 252 /* append */
+          offset_delta = 36
+          locals = [ class java/lang/StringBuilder ]
+        frame_type = 8 /* same */
+        frame_type = 65 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/NumberFormatException ]
+        frame_type = 7 /* same */
+        frame_type = 9 /* same */
+        frame_type = 6 /* same */
+}

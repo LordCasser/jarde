@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.71s
+[1m[92m     Running[0m tests/p3_snapshot_hierarchy_widening.rs (target/debug/deps/p3_snapshot_hierarchy_widening-fd30e426c070dda2)
+[1m[92m     Running[0m tests/p3_special_dispatch.rs (target/debug/deps/p3_special_dispatch-afdbb41cdeb20a62)
+[1m[92m     Running[0m tests/p3_special_refusal.rs (target/debug/deps/p3_special_refusal-0888a406121f6f21)
+[1m[92m     Running[0m tests/p3_stated_rows.rs (target/debug/deps/p3_stated_rows-afc038beef41ed42)

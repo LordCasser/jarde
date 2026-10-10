@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.47s
+[1m[92m     Running[0m tests/p3_integer_boolean_return_contract.rs (target/debug/deps/p3_integer_boolean_return_contract-e8f3951319619e41)
+[1m[92m     Running[0m tests/p3_integer_boolean_returns.rs (target/debug/deps/p3_integer_boolean_returns-7d6f852ba7535524)
+[1m[92m     Running[0m tests/p3_invocation_arguments.rs (target/debug/deps/p3_invocation_arguments-b74f29fb25753ad7)
+[1m[92m     Running[0m tests/p3_isolation.rs (target/debug/deps/p3_isolation-d8ca5e31ac07f6ec)

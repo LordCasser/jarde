@@ -1,0 +1,37 @@
+
+running 6 tests
+test all_evidence_maps_each_folded_dispatch_instruction_and_selector_producer ... ok
+test cancellation_before_string_projection_is_reported_without_a_committed_switch ... ok
+test essential_and_all_evidence_emit_identical_string_switch_text ... ok
+test low_ir_and_output_budgets_stop_without_committing_a_partial_switch ... ok
+test proved_dispatches_use_one_string_switch_and_original_arm_order ... ok
+test refused_certificates_preserve_both_executable_dispatches ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 4 tests
+test a_still_refused_switch_names_its_own_failure_first ... ok
+test join_equal_to_the_latch_recovers_and_the_control_stays_verbatim ... ok
+test switch_arm_continue_and_the_switch_join_present_together ... ok
+test the_variant_family_recovers_and_runs_like_the_original ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+
+
+running 2 tests
+test default_in_the_middle_keeps_both_proven_fallthrough_edges ... ok
+test lookup_and_table_switches_order_only_proven_fallthrough_and_keep_breaks ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test budget_and_cancellation_do_not_publish_a_partial_switch ... ok
+test local_continue_certificate_respects_switch_and_loop_boundaries ... ok
+test nested_switch_and_continue_without_a_unique_local_join_stay_quoted ... ok
+test switch_local_join_precedes_current_loop_continue_without_duplicate_ownership ... ok
+test switch_loop_exit_and_local_join_keep_their_own_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

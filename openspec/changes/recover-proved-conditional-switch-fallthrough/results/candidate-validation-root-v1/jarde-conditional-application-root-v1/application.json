@@ -1,0 +1,25 @@
+{
+  "predecessor_clean_head": "2d70da515896c25ce022b8c28f4935ff2e105026",
+  "production": [
+    {
+      "file": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "before": "9c0f180587dce4630b9fe931d6a4f4be2ff31f9571b91644ce2926898ee0bbb2",
+      "applied": "b576be0b3d497a3c07ca37d9e24b75d021a9b0e194dc146419b9ab00090f981b"
+    },
+    {
+      "file": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "before": "d0d9b57d07df2430c973932467d1f33be581787f544eea2655c5319cde1e5e00",
+      "applied": "187249a3132d11583b552638925ef3d58217832aafab13564423ef530f72033c"
+    },
+    {
+      "file": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "before": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+      "applied": "b964e799cb18ca49f87ba50c730adcec8764ffee45b5d5a8518ea93bc23fe0aa"
+    }
+  ],
+  "test_fragments": [
+    "/private/tmp/jarde-conditional-switch-integrated-luna-v2/tests/conditional_switch_proof_tests.rs",
+    "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/conditional_switch_proof_tests.rs"
+  ],
+  "status": "applied-not-tested"
+}

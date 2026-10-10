@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.88s
+[1m[92m     Running[0m tests/recover_loop_test_copy_store.rs (target/debug/deps/recover_loop_test_copy_store-fd77d99afcb25519)
+[1m[92m     Running[0m tests/recover_nested_lock_finally_bodies.rs (target/debug/deps/recover_nested_lock_finally_bodies-6f2440dee81f7b5d)
+[1m[92m     Running[0m tests/recover_platform_implementer_argument_widening.rs (target/debug/deps/recover_platform_implementer_argument_widening-392adb640c35d4fc)
+[1m[92m     Running[0m tests/recover_platform_interface_argument_widening.rs (target/debug/deps/recover_platform_interface_argument_widening-2fe45d89288d9e5a)

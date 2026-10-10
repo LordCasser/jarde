@@ -1,0 +1,62 @@
+--- a/tests/p3_conditional_switch_fallthrough.rs
++++ b/tests/p3_conditional_switch_fallthrough.rs
+@@
+ struct Run {
+     report: jarde_java::RecoveryReport,
+     method: PhysicalMethodId,
+     ordinal: jarde_reader::prepared::MethodOrdinal,
++    recovery_usage: Option<jarde_reader::budget::UsageSnapshot>,
+ }
+@@
+-    let report = match recovery_budget {
+-        Some(mut recovery_budget) => recover(&request, &mut recovery_budget),
+-        None => recover(&request, &mut budget),
++    let (report, recovery_usage) = match recovery_budget {
++        Some(mut recovery_budget) => {
++            let report = recover(&request, &mut recovery_budget);
++            (report, Some(recovery_budget.usage()))
++        }
++        None => (recover(&request, &mut budget), None),
+     };
+@@
+     Run {
+         report,
+         method,
+         ordinal,
++        recovery_usage,
+     }
+ }
+@@
+ fn cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact() {
+@@
+     assert!(!stopped.produced());
+     assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+ }
++
++#[test]
++fn root_switch_budget_observation() {
++    let Ok(raw_limit) = std::env::var("ROOT_SWITCH_ANALYSIS_STEPS") else {
++        return;
++    };
++    let analysis_steps = raw_limit
++        .parse::<u64>()
++        .expect("ROOT_SWITCH_ANALYSIS_STEPS is a u64");
++    let recovery_budget = Budget::new(Limits {
++        analysis_steps,
++        ..limits()
++    });
++    let run = recover_target_with_recovery_budget(
++        RecoveryEvidenceRequest::all(),
++        Some(recovery_budget),
++    );
++    eprintln!(
++        "ROOT_SWITCH_PROOF public limit={} usage={:?} stop={:?} produced={} outcome={:?}\ntext:\n{}\nsource_map={:#?}",
++        analysis_steps,
++        run.recovery_usage,
++        run.report.stop(),
++        run.report.produced(),
++        run.report.outcome,
++        run.report.text,
++        run.report.source_map
++    );
++}

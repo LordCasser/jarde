@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.53s
+[1m[92m     Running[0m tests/p3_region_fallback_origins.rs (target/debug/deps/p3_region_fallback_origins-16409d2b919706ad)
+[1m[92m     Running[0m tests/p3_region_owner_overlap.rs (target/debug/deps/p3_region_owner_overlap-374cf34bfc21bec9)
+[1m[92m     Running[0m tests/p3_required_conversions.rs (target/debug/deps/p3_required_conversions-154a839206a5e6ff)
+[1m[92m     Running[0m tests/p3_scope.rs (target/debug/deps/p3_scope-8b6b645587ac0978)

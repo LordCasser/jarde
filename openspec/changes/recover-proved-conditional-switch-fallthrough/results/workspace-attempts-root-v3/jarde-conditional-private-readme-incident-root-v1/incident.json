@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-10T23:18:45.561882+00:00",
+  "initial_readme_clean": true,
+  "wrong_sha256": "b9a878cbe947bc4c3ea7e8f29029e745892b1e5fa662e866b89cdbc56a34cd5a",
+  "restored_sha256": "2c0d30f8618aa58de253d31152816317bdc236c6c09dbfae0504b1e7f2fc27ca",
+  "action": "preserved accidental private README bytes then restored previously clean root README from HEAD"
+}

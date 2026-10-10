@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.68s
+[1m[92m     Running[0m tests/p3_edge_settlement.rs (target/debug/deps/p3_edge_settlement-35931958be7a723a)
+[1m[92m     Running[0m tests/p3_eval_context.rs (target/debug/deps/p3_eval_context-6b0ab511c14b45ad)
+[1m[92m     Running[0m tests/p3_exception_scope.rs (target/debug/deps/p3_exception_scope-eb6fb0d3aace8ba3)
+[1m[92m     Running[0m tests/p3_execution_comparison.rs (target/debug/deps/p3_execution_comparison-f262adb7f6e97740)

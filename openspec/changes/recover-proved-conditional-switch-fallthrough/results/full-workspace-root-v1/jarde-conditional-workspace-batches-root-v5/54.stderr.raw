@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.58s
+[1m[92m     Running[0m tests/p3_shift_negative_boundaries.rs (target/debug/deps/p3_shift_negative_boundaries-40fcd749fa1150f6)
+[1m[92m     Running[0m tests/p3_short_circuit_exception_chain.rs (target/debug/deps/p3_short_circuit_exception_chain-5f076ea100a7475b)
+[1m[92m     Running[0m tests/p3_short_circuit_exception_edge.rs (target/debug/deps/p3_short_circuit_exception_edge-8eb6e73b9c0948b0)
+[1m[92m     Running[0m tests/p3_short_circuit_transfer_gateway.rs (target/debug/deps/p3_short_circuit_transfer_gateway-348b78973802223d)

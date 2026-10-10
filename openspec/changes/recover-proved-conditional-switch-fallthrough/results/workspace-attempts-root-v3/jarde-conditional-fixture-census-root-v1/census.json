@@ -1,0 +1,153 @@
+{
+  "schema": "conditional-six-fixture-independent-javap-census-root-v1",
+  "tool_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+  "rows": [
+    {
+      "class": "tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "class_sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class"
+      ],
+      "exit_code": 0,
+      "metrics": [
+        1,
+        6,
+        1,
+        33,
+        0
+      ],
+      "stdout_sha256": "5886d536311c64eca65f7b14506d5cb7351ed84ba5a6fb932ea7c43f731059b3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "class_sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class"
+      ],
+      "exit_code": 0,
+      "metrics": [
+        1,
+        6,
+        1,
+        33,
+        0
+      ],
+      "stdout_sha256": "b330b75666870c8b3157c5e9bc3dc40f606553b07d43f12ee27578219a129a20",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "class_sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class"
+      ],
+      "exit_code": 0,
+      "metrics": [
+        1,
+        6,
+        1,
+        33,
+        0
+      ],
+      "stdout_sha256": "e9be3befa5c05e315bf62c64d6f03a191ee4738ac805cb32e0083b5d11cfc94a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "class_sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class"
+      ],
+      "exit_code": 0,
+      "metrics": [
+        1,
+        6,
+        1,
+        33,
+        0
+      ],
+      "stdout_sha256": "dc4c23929f2fd39a05a49b87f9f3b791d76129aa1a0d2787ca589c8157545c27",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class",
+      "class_sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class"
+      ],
+      "exit_code": 0,
+      "metrics": [
+        1,
+        6,
+        1,
+        33,
+        0
+      ],
+      "stdout_sha256": "d0d26a906aad08ec88549204146bfde993a92d7ce11e2074e801227850e50634",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class",
+      "class_sha256": "5ef72ab6afa95cd945cb53123155ca99f86f4c99c9ad7fa78c2d58e044e04fa5",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class"
+      ],
+      "exit_code": 0,
+      "metrics": [
+        1,
+        1,
+        0,
+        2,
+        2
+      ],
+      "stdout_sha256": "a313b591b14501ed41bb5bb7c768404483f93d6a8f62178a2afbaebc2cef7b5b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "total_delta": [
+    6,
+    31,
+    5,
+    167,
+    2
+  ],
+  "old_reader_census": [
+    1087,
+    4830,
+    463,
+    2715,
+    8
+  ],
+  "expected_new_census": [
+    1093,
+    4861,
+    468,
+    2882,
+    10
+  ]
+}

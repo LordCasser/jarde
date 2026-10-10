@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.37s
+[1m[92m     Running[0m tests/interface_initializer_proof.rs (target/debug/deps/interface_initializer_proof-9930647327959c71)
+[1m[92m     Running[0m tests/jvm_bytecode_oracle.rs (target/debug/deps/jvm_bytecode_oracle-b68aad13a222fac3)
+[1m[92m     Running[0m tests/lambda_companion_bodies.rs (target/debug/deps/lambda_companion_bodies-8c9fcacf18e6780a)
+[1m[92m     Running[0m tests/lambda_root_member_folding.rs (target/debug/deps/lambda_root_member_folding-8dfe8afcb331420e)

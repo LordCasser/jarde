@@ -546,6 +546,13 @@ pub enum Region {
         source_bci: u32,
         loop_header: CanonicalBlockId,
     },
+    /// An edge out of a switch arm to that switch's proved join. It is not a loop edge and does
+    /// not own the join block; the identity keeps a nested switch from consuming its parent.
+    SwitchBreak {
+        source_bci: u32,
+        switch_bci: u32,
+        join: CanonicalBlockId,
+    },
     /// A run of blocks that could not be shown to be a Java structure; the text quotes it.
     Fallback {
         blocks: Vec<CanonicalBlockId>,
@@ -700,6 +707,7 @@ impl Region {
             | Self::SharedTailEarlyReturn { .. }
             | Self::LoopBreak { .. }
             | Self::LoopContinue { .. }
+            | Self::SwitchBreak { .. }
             | Self::Fallback { .. } => {}
             Self::ShortCircuitValue { tail, .. } => {
                 for region in tail {
@@ -847,6 +855,7 @@ impl Region {
             Self::Fallback { blocks, .. } => blocks.iter().collect(),
             Self::LoopBreak { .. } => Vec::new(),
             Self::LoopContinue { .. } => Vec::new(),
+            Self::SwitchBreak { .. } => Vec::new(),
             Self::Guard { prefix, plan, .. } => {
                 let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
                 blocks.extend(plan.owned());
@@ -902,6 +911,7 @@ impl Region {
             Self::Fallback { .. } => false,
             Self::LoopBreak { .. } => true,
             Self::LoopContinue { .. } => true,
+            Self::SwitchBreak { .. } => true,
         }
     }
 
@@ -939,6 +949,7 @@ impl Region {
             Self::Fallback { reason, .. } => vec![reason.clone()],
             Self::LoopBreak { .. } => Vec::new(),
             Self::LoopContinue { .. } => Vec::new(),
+            Self::SwitchBreak { .. } => Vec::new(),
         }
     }
 
@@ -960,6 +971,7 @@ impl Region {
             Self::Loop { .. } => Some(crate::pass::LOOP.rule()),
             Self::LoopBreak { .. } => Some(crate::pass::LOOP.rule()),
             Self::LoopContinue { .. } => Some(crate::pass::LOOP.rule()),
+            Self::SwitchBreak { .. } => Some(crate::pass::SWITCH.rule()),
             Self::Guard { plan, .. } => Some(plan.pass().rule()),
             // No pass of this build claims a `try`/`catch`: the statement is the exception table's
             // own structure, read here and written by the builder, and naming a rule for it would
@@ -1071,7 +1083,8 @@ pub(crate) fn project_string_switches(
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
-            | Region::LoopContinue { .. } => {}
+            | Region::LoopContinue { .. }
+            | Region::SwitchBreak { .. } => {}
         }
         Ok(())
     }
@@ -1981,6 +1994,10 @@ struct Frame {
     transfer_source_bci: Option<u32>,
     /// A switch's own join must remain a switch break instead of becoming a loop break.
     switch_join: Option<usize>,
+    /// The switch whose conditional fallthrough proof owns `switch_join`.
+    switch_branch_bci: Option<u32>,
+    /// The adjacent case target reached by at least one path from this arm, when proved.
+    switch_fallthrough_target: Option<u32>,
     /// Only a proved switch arm may treat the current loop's update as a continue transfer.
     switch_continue: Option<usize>,
 }
@@ -2077,6 +2094,8 @@ impl Frame {
             },
             transfer_source_bci: None,
             switch_join: self.switch_join,
+            switch_branch_bci: self.switch_branch_bci,
+            switch_fallthrough_target: self.switch_fallthrough_target,
             switch_continue: None,
         }
     }
@@ -2110,6 +2129,8 @@ impl Frame {
             loop_targets: self.loop_targets.clone(),
             transfer_source_bci: source_bci.or(self.transfer_source_bci),
             switch_join: self.switch_join,
+            switch_branch_bci: self.switch_branch_bci,
+            switch_fallthrough_target: self.switch_fallthrough_target,
             switch_continue: self.switch_continue,
         }
     }
@@ -2121,6 +2142,7 @@ impl Frame {
         entries: &BTreeSet<usize>,
         source_bci: u32,
         continue_target: Option<usize>,
+        fallthrough_target: Option<u32>,
     ) -> Self {
         let mut case_entries = self.case_entries.clone().unwrap_or_default();
         case_entries.extend(entries.iter().copied());
@@ -2143,6 +2165,12 @@ impl Frame {
             loop_targets: self.loop_targets.clone(),
             transfer_source_bci: Some(source_bci),
             switch_join: join.or(self.switch_join),
+            switch_branch_bci: join.map(|_| source_bci).or(self.switch_branch_bci),
+            switch_fallthrough_target: if join.is_some() {
+                fallthrough_target
+            } else {
+                self.switch_fallthrough_target
+            },
             switch_continue: continue_target,
         }
     }
@@ -2173,6 +2201,8 @@ impl Frame {
             loop_targets: self.loop_targets.clone(),
             transfer_source_bci: self.transfer_source_bci,
             switch_join: self.switch_join,
+            switch_branch_bci: self.switch_branch_bci,
+            switch_fallthrough_target: self.switch_fallthrough_target,
             switch_continue: self.switch_continue,
         }
     }
@@ -2510,6 +2540,30 @@ impl Walker<'_> {
                 return Ok(gap(prefix, vec![current.clone()], reason, None));
             };
             if frame.stops_at_switch_boundary(node) {
+                if frame.switch_join == Some(node) && frame.switch_fallthrough_target.is_some() {
+                    let leaf = match prefix.last() {
+                        Some(source) => self.switch_break_transfer(source, &current, frame)?,
+                        None => None,
+                    };
+                    let Some(leaf) = leaf else {
+                        let switch_bci = frame.switch_branch_bci.unwrap_or(current.bci());
+                        self.unclosed_tail_at.get_or_insert(switch_bci);
+                        return Ok(gap(
+                            prefix,
+                            Vec::new(),
+                            FallbackReason::SwitchShape {
+                                block_bci: switch_bci,
+                            },
+                            Some(current),
+                        ));
+                    };
+                    let mut run = Vec::with_capacity(2);
+                    if !prefix.is_empty() {
+                        run.push(Region::Straight { blocks: prefix });
+                    }
+                    run.push(leaf);
+                    return Ok((run, None));
+                }
                 return Ok(one(Region::Straight { blocks: prefix }, None));
             }
             let successors_here = self.view.successors(node);
@@ -3475,20 +3529,43 @@ impl Walker<'_> {
                         // an enclosing loop. In that case an empty arm drops a real exit edge and
                         // can turn a terminating loop into an infinite one; retain the transfer as
                         // the existing `LoopBreak` leaf.
-                        let join_arm = frame
-                            .loop_targets
-                            .iter()
-                            .rev()
-                            .find(|target| target.break_target == Some(join_node))
-                            .and_then(|target| {
-                                self.view.id_of(target.header).cloned().map(|loop_header| {
-                                    Region::LoopBreak {
-                                        source_bci: branch_bci,
-                                        loop_header,
-                                    }
+                        let switch_join_arm = if frame.switch_fallthrough_target.is_some()
+                            && frame.switch_join == Some(join_node)
+                        {
+                            match self.switch_break_branch(&branch, branch_bci, join_node, frame)? {
+                                Some(leaf) => Some(leaf),
+                                None => {
+                                    let switch_bci = frame.switch_branch_bci.unwrap_or(branch_bci);
+                                    self.unclosed_tail_at.get_or_insert(switch_bci);
+                                    return Ok(gap(
+                                        prefix,
+                                        vec![branch.clone()],
+                                        FallbackReason::SwitchShape {
+                                            block_bci: switch_bci,
+                                        },
+                                        join.clone(),
+                                    ));
+                                }
+                            }
+                        } else {
+                            None
+                        };
+                        let join_arm = switch_join_arm.unwrap_or_else(|| {
+                            frame
+                                .loop_targets
+                                .iter()
+                                .rev()
+                                .find(|target| target.break_target == Some(join_node))
+                                .and_then(|target| {
+                                    self.view.id_of(target.header).cloned().map(|loop_header| {
+                                        Region::LoopBreak {
+                                            source_bci: branch_bci,
+                                            loop_header,
+                                        }
+                                    })
                                 })
-                            })
-                            .unwrap_or(Region::Straight { blocks: Vec::new() });
+                                .unwrap_or(Region::Straight { blocks: Vec::new() })
+                        });
                         let empty = Box::new(join_arm);
                         let (then_arm, else_arm) = if then_node == Some(join_node) {
                             (empty, Box::new(arm))
@@ -3856,6 +3933,17 @@ impl Walker<'_> {
                             && matches!(then_run.last(), Some(Region::LoopBreak { .. }));
                         let else_breaks = else_next.is_none()
                             && matches!(else_run.last(), Some(Region::LoopBreak { .. }));
+                        let switch_breaks = |run: &[Region]| {
+                            frame.switch_fallthrough_target.is_some()
+                                && matches!(run.last(), Some(Region::SwitchBreak {
+                                    switch_bci,
+                                    join,
+                                    ..
+                                }) if frame.switch_branch_bci == Some(*switch_bci)
+                                    && self.view.index_of(join) == Some(join_node))
+                        };
+                        let then_switch_breaks = then_next.is_none() && switch_breaks(&then_run);
+                        let else_switch_breaks = else_next.is_none() && switch_breaks(&else_run);
                         // A proved `continue` transfer ends its arm the same way a `break` does:
                         // the edge left for its target loop's destination and never comes back to
                         // this join. It is the loop-side jump of a two-edge body whose other arm
@@ -3895,7 +3983,8 @@ impl Walker<'_> {
                                         || (else_edge && then_at_join))
                             }))
                             && !(local_switch_join
-                                && ((then_meets && else_breaks) || (else_meets && then_breaks)))
+                                && ((then_meets && (else_breaks || else_switch_breaks))
+                                    || (else_meets && (then_breaks || then_switch_breaks))))
                             // The shared-latch re-election proved both arms' edges from the graph
                             // already — the continue bridge by exclusive ownership, the nested
                             // loop by containment and its exit set — and the one arm ends at
@@ -12767,7 +12856,7 @@ impl Walker<'_> {
             })
             .collect();
         let fall_throughs =
-            self.switch_fallthroughs(&groups, &targets, join_node, join_bci, branch.bci())?;
+            self.switch_fallthroughs(&groups, &targets, join_node, join_bci, node, branch.bci())?;
         let mut ordered_groups = groups.clone();
         let case_entries: BTreeSet<usize> = targets.values().copied().collect();
         if let Some(fall_throughs) = &fall_throughs
@@ -12838,14 +12927,30 @@ impl Walker<'_> {
                 if let Some(current) = current {
                     other_entries.remove(&current);
                 }
-                frame.switch_arm(join_node, &other_entries, branch_bci, switch_continue)
+                frame.switch_arm(
+                    join_node,
+                    &other_entries,
+                    branch_bci,
+                    switch_continue,
+                    fall_throughs
+                        .as_ref()
+                        .and_then(|fallthroughs| fallthroughs.get(&target).copied()),
+                )
             } else if join_node.is_some() {
                 // The switch's shared join belongs to the continuation after the switch. The
                 // ordinary branch boundary is checked only after `visited` is changed, so two arms
                 // reaching it would be mistaken for a loop re-entry. Keep other case entries
                 // unbounded unless fallthrough was proved: otherwise a cross-case route could be
                 // silently emitted as an independent arm with an inserted `break`.
-                frame.switch_arm(join_node, &BTreeSet::new(), branch_bci, None)
+                frame.switch_arm(
+                    join_node,
+                    &BTreeSet::new(),
+                    branch_bci,
+                    None,
+                    fall_throughs
+                        .as_ref()
+                        .and_then(|fallthroughs| fallthroughs.get(&target).copied()),
+                )
             } else {
                 // With no proven join, preserve the ordinary frame's transfer and ownership rules.
                 frame.arm(join_node, Some(branch_bci))
@@ -12917,6 +13022,129 @@ impl Walker<'_> {
         }];
         run.extend(tails);
         Ok((run, join))
+    }
+
+    /// The terminal goto from one arm path to the switch's proved join. The path probe has
+    /// already certified the complete DAG; this rechecks the exact source/target edge before
+    /// placing the zero-block control leaf in the Region tree.
+    fn switch_break_transfer(
+        &mut self,
+        source: &CanonicalBlockId,
+        join: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let (Some(switch_bci), Some(_)) =
+            (frame.switch_branch_bci, frame.switch_fallthrough_target)
+        else {
+            return Ok(None);
+        };
+        let Some(join_node) = self.view.index_of(join) else {
+            return Ok(None);
+        };
+        if frame.switch_join != Some(join_node) || source.path() != join.path() {
+            return Ok(None);
+        }
+        let Some(source_bci) = self.terminal_bci(source) else {
+            return Ok(None);
+        };
+        if !matches!(self.operations.get(source_bci), Some(Operation::Transfer)) {
+            return Ok(None);
+        }
+        let Some(source_node) = self.view.index_of(source) else {
+            return Ok(None);
+        };
+        if self.view.successors(source_node) != [join_node] {
+            return Ok(None);
+        }
+        let mut actual = Vec::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(source_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(source_bci),
+            )?;
+            if edge.from() == source {
+                actual.push((edge.kind(), edge.to().clone()));
+            }
+        }
+        if actual.as_slice() != [(CanonicalEdgeKind::Normal, join.clone())] {
+            return Ok(None);
+        }
+        Ok(Some(Region::SwitchBreak {
+            source_bci,
+            switch_bci,
+            join: join.clone(),
+        }))
+    }
+
+    /// A conditional's direct edge to the switch join. Unlike a transfer leaf, the branch block
+    /// has two canonical Normal successors; the other branch is kept in the sibling arm.
+    fn switch_break_branch(
+        &mut self,
+        branch: &CanonicalBlockId,
+        branch_bci: u32,
+        join_node: usize,
+        frame: &Frame,
+    ) -> Result<Option<Region>, StopReason> {
+        let (Some(switch_bci), Some(_)) =
+            (frame.switch_branch_bci, frame.switch_fallthrough_target)
+        else {
+            return Ok(None);
+        };
+        if frame.switch_join != Some(join_node)
+            || self.terminal_bci(branch) != Some(branch_bci)
+            || !self
+                .operations
+                .get(branch_bci)
+                .is_some_and(|operation| operation.comparison().is_some())
+        {
+            return Ok(None);
+        }
+        let Some(join) = self.view.id_of(join_node).cloned() else {
+            return Ok(None);
+        };
+        if branch.path() != join.path() {
+            return Ok(None);
+        }
+        let Some(branch_node) = self.view.index_of(branch) else {
+            return Ok(None);
+        };
+        let expected: BTreeSet<_> = self
+            .view
+            .successors(branch_node)
+            .iter()
+            .filter_map(|successor| self.view.id_of(*successor).cloned())
+            .collect();
+        if expected.len() != 2 || !expected.contains(&join) {
+            return Ok(None);
+        }
+        let mut actual = Vec::new();
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(branch_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(branch_bci),
+            )?;
+            if edge.from() == branch {
+                if edge.kind() != CanonicalEdgeKind::Normal {
+                    return Ok(None);
+                }
+                actual.push(edge.to().clone());
+            }
+        }
+        actual.sort();
+        if actual != expected.into_iter().collect::<Vec<_>>() {
+            return Ok(None);
+        }
+        Ok(Some(Region::SwitchBreak {
+            source_bci: branch_bci,
+            switch_bci,
+            join,
+        }))
     }
 
     /// Keep one child switch's proved join inside its enclosing case. This is the single
@@ -13185,69 +13413,421 @@ impl Walker<'_> {
             .is_some_and(|operation| matches!(operation, Operation::Return | Operation::Throw))
     }
 
-    /// Prove the ordinary fallthrough edges that can be represented by ordering case labels.
-    ///
-    /// This intentionally handles only a straight, single-successor route from one case entry to
-    /// another. A branch, cycle, or any other ambiguous route returns `None`; the caller then uses
-    /// the ordinary arm walk, which will preserve its existing overlap refusal. `Some(empty)` is a
-    /// complete proof that no case entry flows directly into another case entry.
+    /// Prove the case-entry outcomes that can be represented by ordering labels and explicit
+    /// switch-break leaves. The probe is read-only: it walks a finite DAG with an explicit stack,
+    /// validates full canonical incident edges, and publishes no partial map on refusal.
+    /// `Some(empty)` is a complete proof that no case entry flows into another case entry.
     fn switch_fallthroughs(
         &mut self,
         groups: &[(Vec<i64>, bool, u32)],
         targets: &BTreeMap<u32, usize>,
         join: Option<usize>,
         join_bci: Option<u32>,
+        dispatch_node: usize,
         switch_bci: u32,
     ) -> Result<Option<BTreeMap<u32, u32>>, StopReason> {
-        let entries: BTreeMap<usize, u32> =
-            targets.iter().map(|(bci, node)| (*node, *bci)).collect();
-        if entries.len() != targets.len()
-            || groups
-                .iter()
-                .filter(|group| Some(group.2) != join_bci)
-                .count()
-                != targets.len()
-        {
+        let edges = self
+            .canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.from(), edge.kind(), edge.to()));
+        prove_switch_fallthroughs(
+            edges,
+            self.view,
+            self.ssa,
+            self.operations,
+            groups,
+            targets,
+            join,
+            join_bci,
+            dispatch_node,
+            switch_bci,
+            self.budget,
+        )
+    }
+}
+
+/// Prove the case-entry outcomes using the complete canonical edge rows and their normal-flow
+/// projection. The caller must pass every canonical edge row exactly once. Kept separate from
+/// `Walker` so tests can perturb rows between existing canonical identities and exercise this
+/// same full certificate without fabricating a CFG.
+fn prove_switch_fallthroughs<'edge, E>(
+    edges: E,
+    view: &NormalFlowView,
+    ssa: &SsaTable,
+    operations: &Operations,
+    groups: &[(Vec<i64>, bool, u32)],
+    targets: &BTreeMap<u32, usize>,
+    join: Option<usize>,
+    join_bci: Option<u32>,
+    dispatch_node: usize,
+    switch_bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<BTreeMap<u32, u32>>, StopReason>
+where
+    E: IntoIterator<
+        Item = (
+            &'edge CanonicalBlockId,
+            CanonicalEdgeKind,
+            &'edge CanonicalBlockId,
+        ),
+    >,
+{
+    let entries: BTreeMap<usize, u32> = targets.iter().map(|(bci, node)| (*node, *bci)).collect();
+    if entries.len() != targets.len()
+        || groups
+            .iter()
+            .filter(|group| Some(group.2) != join_bci)
+            .count()
+            != targets.len()
+    {
+        return Ok(None);
+    }
+    let Some(dispatch) = view.id_of(dispatch_node) else {
+        return Ok(None);
+    };
+    let dispatch = dispatch.clone();
+
+    // Preserve parallel rows here: a duplicate canonical edge is not a unique route even if
+    // the normal-flow projection collapses it to one successor.
+    let mut incoming: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+        BTreeMap::new();
+    let mut outgoing: BTreeMap<CanonicalBlockId, Vec<(CanonicalEdgeKind, CanonicalBlockId)>> =
+        BTreeMap::new();
+    for (from, kind, to) in edges {
+        poll(budget, Some(switch_bci))?;
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(switch_bci),
+        )?;
+        incoming
+            .entry(to.clone())
+            .or_default()
+            .push((kind, from.clone()));
+        outgoing
+            .entry(from.clone())
+            .or_default()
+            .push((kind, to.clone()));
+    }
+    let dispatch_rows = outgoing.get(&dispatch).cloned().unwrap_or_default();
+    if dispatch_rows
+        .iter()
+        .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+    {
+        return Ok(None);
+    }
+    let mut canonical_dispatch: Vec<_> = dispatch_rows
+        .iter()
+        .map(|(_, target)| target.clone())
+        .collect();
+    let Some(mut view_dispatch): Option<Vec<_>> = view
+        .successors(dispatch_node)
+        .iter()
+        .map(|successor| view.id_of(*successor).cloned())
+        .collect()
+    else {
+        return Ok(None);
+    };
+    canonical_dispatch.sort();
+    view_dispatch.sort();
+    if canonical_dispatch != view_dispatch
+        || canonical_dispatch.iter().collect::<BTreeSet<_>>().len() != canonical_dispatch.len()
+    {
+        return Ok(None);
+    }
+
+    let mut closures: BTreeMap<u32, BTreeSet<usize>> = BTreeMap::new();
+    let mut case_exits: BTreeMap<u32, BTreeSet<u32>> = BTreeMap::new();
+    let mut fallthroughs = BTreeMap::new();
+    for (from_bci, start) in targets {
+        let Some(start_id) = view.id_of(*start).cloned() else {
+            return Ok(None);
+        };
+        if start_id.path() != dispatch.path() {
             return Ok(None);
         }
-
-        let mut fallthroughs = BTreeMap::new();
-        for (from_bci, start) in targets {
-            let mut current = *start;
-            let mut seen = BTreeSet::new();
-            loop {
-                poll(self.budget, Some(switch_bci))?;
-                charge(
-                    self.budget,
-                    CountedBudgetDimension::AnalysisSteps,
-                    1,
-                    Some(switch_bci),
-                )?;
-                if !seen.insert(current) {
+        let mut color: BTreeMap<usize, u8> = BTreeMap::new();
+        let mut owned = BTreeSet::new();
+        let mut exits = BTreeSet::new();
+        let mut unpresentable_join_exit = false;
+        let mut work = vec![(*start, false)];
+        while let Some((node, finishing)) = work.pop() {
+            poll(budget, Some(switch_bci))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(switch_bci),
+            )?;
+            let Some(id) = view.id_of(node).cloned() else {
+                return Ok(None);
+            };
+            if id.path() != start_id.path() || id == dispatch {
+                return Ok(None);
+            }
+            if Some(node) == join {
+                continue;
+            }
+            if let Some(target_bci) = entries.get(&node).copied()
+                && node != *start
+            {
+                if target_bci <= *from_bci {
                     return Ok(None);
                 }
-                let successors = self.view.successors(current);
-                match successors.as_slice() {
-                    [] => break,
-                    [next] => {
-                        if Some(*next) == join {
-                            break;
-                        }
-                        if let Some(to_bci) = entries.get(next) {
-                            if to_bci <= from_bci {
-                                return Ok(None);
-                            }
-                            fallthroughs.insert(*from_bci, *to_bci);
-                            break;
-                        }
-                        current = *next;
+                exits.insert(target_bci);
+                continue;
+            }
+            if finishing {
+                color.insert(node, 2);
+                continue;
+            }
+            match color.get(&node).copied() {
+                Some(1) => return Ok(None),
+                Some(2) => continue,
+                _ => {}
+            }
+            color.insert(node, 1);
+            owned.insert(node);
+
+            let canonical_rows = outgoing.get(&id).cloned().unwrap_or_default();
+            if canonical_rows
+                .iter()
+                .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+            {
+                return Ok(None);
+            }
+            let mut canonical_successors: Vec<_> = canonical_rows
+                .iter()
+                .map(|(_, target)| target.clone())
+                .collect();
+            let Some(mut view_successors): Option<Vec<_>> = view
+                .successors(node)
+                .iter()
+                .map(|successor| view.id_of(*successor).cloned())
+                .collect()
+            else {
+                return Ok(None);
+            };
+            canonical_successors.sort();
+            view_successors.sort();
+            if canonical_successors != view_successors
+                || canonical_successors.iter().collect::<BTreeSet<_>>().len()
+                    != canonical_successors.len()
+            {
+                return Ok(None);
+            }
+            let terminal_bci = ssa.block(&id).and_then(|block| {
+                block
+                    .instructions()
+                    .last()
+                    .map(|instruction| instruction.bci())
+            });
+            match canonical_successors.as_slice() {
+                [] => {
+                    if !terminal_bci
+                        .and_then(|bci| operations.get(bci))
+                        .is_some_and(|operation| {
+                            matches!(operation, Operation::Return | Operation::Throw)
+                        })
+                    {
+                        return Ok(None);
                     }
-                    _ => return Ok(None),
+                    color.insert(node, 2);
+                }
+                successors => {
+                    if let Some(join_node) = join
+                        && successors
+                            .iter()
+                            .any(|successor| view.index_of(successor) == Some(join_node))
+                    {
+                        let source_is_presentable = terminal_bci
+                            .and_then(|bci| operations.get(bci))
+                            .is_some_and(|operation| {
+                                matches!(operation, Operation::Transfer)
+                                    || operation.comparison().is_some()
+                            });
+                        if !source_is_presentable {
+                            unpresentable_join_exit = true;
+                        }
+                    }
+                    if successors.len() > 1
+                        && !terminal_bci
+                            .and_then(|bci| operations.get(bci))
+                            .is_some_and(|operation| operation.comparison().is_some())
+                    {
+                        return Ok(None);
+                    }
+                    work.push((node, true));
+                    for successor in successors.iter().rev() {
+                        poll(budget, Some(switch_bci))?;
+                        charge(
+                            budget,
+                            CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(switch_bci),
+                        )?;
+                        let Some(next) = view.index_of(successor) else {
+                            return Ok(None);
+                        };
+                        if color.get(&next) == Some(&1) {
+                            return Ok(None);
+                        }
+                        if color.get(&next) != Some(&2)
+                            && Some(next) != join
+                            && !entries.contains_key(&next)
+                        {
+                            work.push((next, false));
+                        } else if Some(next) == join || entries.contains_key(&next) {
+                            work.push((next, false));
+                        }
+                    }
                 }
             }
         }
-        Ok(Some(fallthroughs))
+        if exits.len() > 1 || (!exits.is_empty() && unpresentable_join_exit) {
+            return Ok(None);
+        }
+        if let Some(to_bci) = exits.first().copied() {
+            fallthroughs.insert(*from_bci, to_bci);
+        }
+        case_exits.insert(*from_bci, exits);
+        closures.insert(*from_bci, owned);
     }
+
+    // Case entries are boundaries, not arm owners. Their incoming rows may be the switch
+    // dispatch plus only the earlier arms whose complete probe ended at this entry.
+    let positions: BTreeMap<u32, usize> = {
+        let mut ordered: Vec<_> = groups.iter().map(|group| group.2).collect();
+        ordered.sort_unstable();
+        ordered
+            .into_iter()
+            .enumerate()
+            .map(|(index, bci)| (bci, index))
+            .collect()
+    };
+    let post_scan_nodes = closures.values().map(BTreeSet::len).sum::<usize>();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(
+            post_scan_nodes
+                .saturating_mul(2)
+                .saturating_add(entries.len()),
+        )
+        .unwrap_or(u64::MAX),
+        Some(switch_bci),
+    )?;
+    let mut owner_by_node = BTreeMap::new();
+    for (from_bci, nodes) in &closures {
+        for node in nodes {
+            poll(budget, Some(switch_bci))?;
+            if owner_by_node.insert(*node, *from_bci).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+    for (entry_node, entry_bci) in &entries {
+        poll(budget, Some(switch_bci))?;
+        let Some(entry_id) = view.id_of(*entry_node) else {
+            return Ok(None);
+        };
+        let rows = incoming.get(entry_id).cloned().unwrap_or_default();
+        charge(
+            budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(rows.len()).unwrap_or(u64::MAX),
+            Some(switch_bci),
+        )?;
+        for _ in &rows {
+            poll(budget, Some(switch_bci))?;
+        }
+        if rows.len() != rows.iter().collect::<BTreeSet<_>>().len()
+            || rows
+                .iter()
+                .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+        {
+            return Ok(None);
+        }
+        if !rows.iter().any(|(_, from)| from == &dispatch) {
+            return Ok(None);
+        }
+        for (_, from) in &rows {
+            if from == &dispatch {
+                continue;
+            }
+            let Some(source_node) = view.index_of(from) else {
+                return Ok(None);
+            };
+            let Some(owner) = owner_by_node.get(&source_node) else {
+                return Ok(None);
+            };
+            if positions.get(owner) >= positions.get(entry_bci)
+                || !case_exits
+                    .get(owner)
+                    .is_some_and(|exits| exits.contains(entry_bci))
+            {
+                return Ok(None);
+            }
+        }
+    }
+    for (from_bci, nodes) in &closures {
+        let Some(start) = targets.get(from_bci) else {
+            return Ok(None);
+        };
+        for node in nodes {
+            poll(budget, Some(switch_bci))?;
+            let Some(id) = view.id_of(*node) else {
+                return Ok(None);
+            };
+            let rows = incoming.get(id).cloned().unwrap_or_default();
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(rows.len()).unwrap_or(u64::MAX),
+                Some(switch_bci),
+            )?;
+            for _ in &rows {
+                poll(budget, Some(switch_bci))?;
+            }
+            if rows.len() != rows.iter().collect::<BTreeSet<_>>().len()
+                || rows
+                    .iter()
+                    .any(|(kind, _)| *kind != CanonicalEdgeKind::Normal)
+            {
+                return Ok(None);
+            }
+            for (_, source) in &rows {
+                if node != start {
+                    let Some(source_node) = view.index_of(source) else {
+                        return Ok(None);
+                    };
+                    if !nodes.contains(&source_node) {
+                        return Ok(None);
+                    }
+                    continue;
+                }
+                if source == &dispatch {
+                    continue;
+                }
+                let Some(source_node) = view.index_of(source) else {
+                    return Ok(None);
+                };
+                let Some(owner) = owner_by_node.get(&source_node) else {
+                    return Ok(None);
+                };
+                if positions.get(owner) >= positions.get(&id.bci())
+                    || !case_exits
+                        .get(owner)
+                        .is_some_and(|exits| exits.contains(&id.bci()))
+                {
+                    return Ok(None);
+                }
+            }
+        }
+    }
+    Ok(Some(fallthroughs))
 }
 
 /// The postfix position of one condition chain that this slice's bound refuses, when the chain
@@ -13966,6 +14546,1046 @@ mod tests {
                 .implicit_tail_latch_origin(header_node, body, None)
                 .expect("complete direct proof"),
             Some(25)
+        );
+    }
+    // Append inside region.rs's existing #[cfg(test)] mod tests after applying the private extraction.
+    // This is a draft only; it has not been compiled or run.
+    #[test]
+    fn cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::{Budget, Limits};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
+        );
+        assert_eq!(CLASS.len(), 1563, "frozen whole-class input changed");
+
+        let mut analysis_budget = Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut analysis_budget)
+                .expect("frozen whole CF12 class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                length: u64::try_from(CLASS.len()).expect("fixture length fits"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 23,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method: PhysicalMethodId {
+                    owner: definition,
+                    name: JvmBytes(b"test".to_vec()),
+                    descriptor: JvmBytes(b"(IZZ)Ljava/lang/String;".to_vec()),
+                },
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut analysis_budget,
+        )
+        .expect("the frozen test method has one complete JVM analysis");
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("same analysis has canonical CFG");
+        let ssa = ir.ssa().expect("same analysis has SSA");
+        let code = ir.code().expect("same analysis has decoded instructions");
+        let operations = Operations::of(code, ir.constant_pool());
+        let view = NormalFlowView::build(canonical, &mut analysis_budget)
+            .expect("projection is built from this exact canonical graph");
+
+        let block = |bci| {
+            canonical
+                .blocks()
+                .iter()
+                .map(|block| block.id())
+                .find(|id| id.bci() == bci && id.path().is_empty())
+                .expect("observer-established CF12 block exists")
+        };
+        let dispatch = block(0);
+        let dispatch_node = view.index_of(dispatch).expect("switch dispatch node");
+        let switch_bci = 7;
+        let (cases, default) = operations
+            .get(switch_bci)
+            .and_then(Operation::switch)
+            .expect("decoded switch at BCI 7 from the frozen class");
+        let join_node = view
+            .immediate_post_dominator(dispatch_node)
+            .expect("CF12 switch join node");
+        let join_bci = view.id_of(join_node).map(CanonicalBlockId::bci);
+        assert_eq!(
+            join_bci,
+            Some(171),
+            "actual canonical join from the frozen IR"
+        );
+
+        // Match switch_region's existing grouping rule exactly: merge labels at the same target,
+        // and add default to its target unless that target is the join.
+        let mut groups: Vec<(Vec<i64>, bool, u32)> = Vec::new();
+        for (key, target) in cases {
+            match groups.iter_mut().find(|group| group.2 == *target) {
+                Some(group) => {
+                    if !group.0.contains(key) {
+                        group.0.push(*key);
+                    }
+                }
+                None => groups.push((vec![*key], false, *target)),
+            }
+        }
+        if Some(default) != join_bci {
+            match groups.iter_mut().find(|group| group.2 == default) {
+                Some(group) => group.1 = true,
+                None => groups.push((Vec::new(), true, default)),
+            }
+        }
+        let targets: BTreeMap<u32, usize> = groups
+            .iter()
+            .filter(|group| Some(group.2) != join_bci)
+            .map(|group| {
+                let id = block(group.2);
+                (group.2, view.index_of(id).expect("case entry node"))
+            })
+            .collect();
+        assert_eq!(
+            targets.keys().copied().collect::<Vec<_>>(),
+            vec![32, 117, 146, 149],
+            "decoded case/default entries from the real method",
+        );
+        assert_eq!(canonical.blocks().len(), 11);
+        assert_eq!(canonical.edges().len(), 17);
+        assert_eq!(view.kept_edges(), 17);
+
+        let base_rows: Vec<_> = canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.from(), edge.kind(), edge.to()))
+            .collect();
+        let prove = |rows: &[(&CanonicalBlockId, CanonicalEdgeKind, &CanonicalBlockId)]| {
+            let mut proof_budget = Budget::new(Limits {
+                analysis_steps: 1 << 20,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            });
+            prove_switch_fallthroughs(
+                rows.iter().copied(),
+                &view,
+                ssa,
+                &operations,
+                &groups,
+                &targets,
+                Some(join_node),
+                join_bci,
+                dispatch_node,
+                switch_bci,
+                &mut proof_budget,
+            )
+        };
+        assert_eq!(
+            prove(&base_rows).expect("actual full canonical proof completes"),
+            Some(BTreeMap::from([(32, 117)])),
+            "the observed CF12 path from case 1 to adjacent case 2 is the one proved exit",
+        );
+
+        let id32 = block(32);
+        let id59 = block(59);
+        let id117 = block(117);
+        let id171 = block(171);
+
+        // Duplicate the real dispatch row. First refusal is canonical-dispatch rows versus the
+        // unchanged projection (or, if the projection preserves parallels, its uniqueness check).
+        let mut duplicate_dispatch = base_rows.clone();
+        duplicate_dispatch.push((dispatch, CanonicalEdgeKind::Normal, id32));
+        assert_eq!(
+            prove(&duplicate_dispatch).expect("proof returns a refusal"),
+            None
+        );
+
+        // Duplicate an actual closure row. The first refusal is this node's canonical successors
+        // no longer matching the real view, before owner/incoming closure validation.
+        let mut duplicate_closure = base_rows.clone();
+        duplicate_closure.push((id32, CanonicalEdgeKind::Normal, id59));
+        assert_eq!(
+            prove(&duplicate_closure).expect("proof returns a refusal"),
+            None
+        );
+
+        // Each injected kind uses actual CF12 block identities and is rejected immediately when the
+        // case-DAG walk reads node 59's complete canonical outgoing rows, before view reconciliation.
+        for kind in [
+            CanonicalEdgeKind::Exception { handler_ordinal: 0 },
+            CanonicalEdgeKind::Call {
+                call_site: id59.bci(),
+            },
+            CanonicalEdgeKind::Return {
+                call_site: id59.bci(),
+            },
+        ] {
+            let mut rows = base_rows.clone();
+            rows.push((id59, kind, id117));
+            assert_eq!(
+                prove(&rows).expect("proof returns a refusal"),
+                None,
+                "non-Normal incident edge must refuse: {kind:?}",
+            );
+        }
+
+        // The switch join is outside every case closure and is skipped as a traversal boundary. Its
+        // injected row reaches an interior node; closed-incoming validation refuses because the join
+        // is not among the nodes owned by the BCI 32 case closure.
+        let mut external_interior = base_rows.clone();
+        external_interior.push((id171, CanonicalEdgeKind::Normal, id59));
+        assert_eq!(
+            prove(&external_interior).expect("proof returns a refusal"),
+            None
+        );
+
+        // The real switch join is not owned by any case closure. Its injected edge into entry 32 is
+        // rejected during case-entry incoming validation because it has no earlier-case owner.
+        let mut external_entry = base_rows.clone();
+        external_entry.push((id171, CanonicalEdgeKind::Normal, id32));
+        assert_eq!(
+            prove(&external_entry).expect("proof returns a refusal"),
+            None
+        );
+
+        // Ensure the terminal join identity used above remains a real canonical block.
+        assert_eq!(view.id_of(join_node), Some(id171));
+    }
+
+    // Complete private-test draft for crates/jarde-java/src/region.rs's existing `tests` module.
+    // Replace the old `prove_real_conditional_switch` helper with the parameterized helper below,
+    // update its two existing callers as shown, then append the two targeted tests.
+
+    struct RealSwitchInputs<'a> {
+        canonical: &'a CanonicalCfg,
+        ssa: &'a SsaTable,
+        code: &'a MethodCodeFacts,
+        pool: &'a [CpEntryFacts],
+        view: &'a NormalFlowView,
+        operations: &'a Operations,
+        groups: Vec<(Vec<i64>, bool, u32)>,
+        targets: BTreeMap<u32, usize>,
+        join_node: usize,
+        join_bci: u32,
+        dispatch_node: usize,
+        switch_bci: u32,
+        full_rows: Vec<(
+            &'a CanonicalBlockId,
+            CanonicalEdgeKind,
+            &'a CanonicalBlockId,
+        )>,
+    }
+
+    impl RealSwitchInputs<'_> {
+        fn prove_with(&self, operations: &Operations) -> Option<BTreeMap<u32, u32>> {
+            use jarde_reader::budget::Limits;
+            let mut proof_budget = Budget::new(Limits {
+                analysis_steps: 1 << 20,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            });
+            prove_switch_fallthroughs(
+                self.full_rows.iter().copied(),
+                self.view,
+                self.ssa,
+                operations,
+                &self.groups,
+                &self.targets,
+                Some(self.join_node),
+                Some(self.join_bci),
+                self.dispatch_node,
+                self.switch_bci,
+                &mut proof_budget,
+            )
+            .expect("ample proof budget completes")
+        }
+
+        fn prove(&self) -> Option<BTreeMap<u32, u32>> {
+            self.prove_with(self.operations)
+        }
+
+        fn block(&self, bci: u32) -> &CanonicalBlockId {
+            self.canonical
+                .blocks()
+                .iter()
+                .map(|block| block.id())
+                .find(|id| id.bci() == bci && id.path().is_empty())
+                .expect("expected pathless canonical block from the frozen reader input")
+        }
+
+        fn view_has_edge(&self, from_bci: u32, to_bci: u32) -> bool {
+            let from = self
+                .view
+                .index_of(self.block(from_bci))
+                .expect("real source block is in the normal-flow view");
+            let to = self
+                .view
+                .index_of(self.block(to_bci))
+                .expect("real target block is in the normal-flow view");
+            self.view.successors(from).contains(&to)
+        }
+
+        fn last_ssa_instruction_bci(&self, block_bci: u32) -> Option<u32> {
+            self.ssa
+                .block(self.block(block_bci))?
+                .instructions()
+                .last()
+                .map(|instruction| instruction.bci())
+        }
+    }
+
+    fn with_real_conditional_switch<R>(
+        class: &[u8],
+        method_name: &str,
+        method_descriptor: &str,
+        switch_bci: u32,
+        join_bci: u32,
+        expected_blocks: &[u32],
+        expected_edges: &[(u32, u32)],
+        expected_case_targets: &[u32],
+        f: impl FnOnce(&RealSwitchInputs<'_>) -> R,
+    ) -> R {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::{Budget, Limits};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        let mut analysis_budget = Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut analysis_budget)
+                .expect("frozen whole class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(class).to_hex().to_string()),
+                length: u64::try_from(class.len()).expect("fixture length fits"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(method_name.as_bytes().to_vec()),
+            descriptor: JvmBytes(method_descriptor.as_bytes().to_vec()),
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method,
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut analysis_budget,
+        )
+        .expect("reader analyzes the exact method from the frozen class");
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("same analysis has canonical CFG");
+        let ssa = ir.ssa().expect("same analysis has SSA");
+        let code = ir.code().expect("same analysis has decoded instructions");
+        let pool = ir.constant_pool();
+        let declaration = ir
+            .declaration()
+            .expect("reader supplies method declaration");
+        assert_eq!(declaration.name().0.as_slice(), method_name.as_bytes());
+        assert_eq!(
+            declaration.descriptor().0.as_slice(),
+            method_descriptor.as_bytes()
+        );
+        assert!(canonical.unreachable().is_empty());
+        assert_eq!(canonical.blocks().len(), expected_blocks.len());
+        assert_eq!(canonical.edges().len(), expected_edges.len());
+
+        let block = |bci| {
+            canonical
+                .blocks()
+                .iter()
+                .map(|block| block.id())
+                .find(|id| id.bci() == bci && id.path().is_empty())
+                .expect("expected pathless canonical block exists")
+        };
+        let observed_blocks = canonical
+            .blocks()
+            .iter()
+            .map(|block| {
+                assert!(block.id().path().is_empty(), "fixture has no clone paths");
+                block.id().bci()
+            })
+            .collect::<BTreeSet<_>>();
+        assert_eq!(
+            observed_blocks,
+            expected_blocks.iter().copied().collect::<BTreeSet<_>>()
+        );
+
+        let mut observed_edges = canonical
+            .edges()
+            .iter()
+            .map(|edge| {
+                assert_eq!(edge.kind(), CanonicalEdgeKind::Normal);
+                assert!(edge.from().path().is_empty() && edge.to().path().is_empty());
+                (edge.from().bci(), edge.to().bci())
+            })
+            .collect::<Vec<_>>();
+        observed_edges.sort_unstable();
+        let mut expected_edges = expected_edges.to_vec();
+        expected_edges.sort_unstable();
+        assert_eq!(
+            observed_edges, expected_edges,
+            "the full reader-produced canonical edge multiset is pinned"
+        );
+
+        let view = NormalFlowView::build(canonical, &mut analysis_budget)
+            .expect("normal-flow view projects this exact canonical graph");
+        assert_eq!(view.kept_edges(), canonical.edges().len());
+        let dispatch = block(0);
+        let dispatch_node = view.index_of(dispatch).expect("switch dispatch node");
+        let operations = Operations::of(code, pool);
+        let (cases, default) = operations
+            .get(switch_bci)
+            .and_then(Operation::switch)
+            .expect("decoded switch from the reader's exact method facts");
+
+        let mut groups: Vec<(Vec<i64>, bool, u32)> = Vec::new();
+        for (key, target) in cases {
+            match groups.iter_mut().find(|group| group.2 == *target) {
+                Some(group) => {
+                    if !group.0.contains(key) {
+                        group.0.push(*key);
+                    }
+                }
+                None => groups.push((vec![*key], false, *target)),
+            }
+        }
+        if default != join_bci {
+            match groups.iter_mut().find(|group| group.2 == default) {
+                Some(group) => group.1 = true,
+                None => groups.push((Vec::new(), true, default)),
+            }
+        }
+        let join_node = view
+            .index_of(block(join_bci))
+            .expect("physical forward join is a real canonical block");
+        let targets = groups
+            .iter()
+            .filter(|group| group.2 != join_bci)
+            .map(|group| {
+                let node = view
+                    .index_of(block(group.2))
+                    .expect("decoded case target is in the same graph");
+                (group.2, node)
+            })
+            .collect::<BTreeMap<_, _>>();
+        assert_eq!(
+            targets.keys().copied().collect::<Vec<_>>(),
+            expected_case_targets.to_vec()
+        );
+        let full_rows = canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.from(), edge.kind(), edge.to()))
+            .collect::<Vec<_>>();
+
+        let input = RealSwitchInputs {
+            canonical,
+            ssa,
+            code,
+            pool,
+            view: &view,
+            operations: &operations,
+            groups,
+            targets,
+            join_node,
+            join_bci,
+            dispatch_node,
+            switch_bci,
+            full_rows,
+        };
+        f(&input)
+    }
+
+    #[test]
+    fn real_multiple_exit_class_refuses_conditional_switch_certificate() {
+        const CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class"
+        );
+        assert_eq!(CLASS.len(), 1494);
+        assert_eq!(
+            blake3::hash(CLASS).to_hex().to_string(),
+            "d185c867cc368dd8ff7a662b2351b8a18390a6c95e510046fe65d22b39798406"
+        );
+        with_real_conditional_switch(
+            CLASS,
+            "partialBreak",
+            "(II)Ljava/lang/String;",
+            9,
+            74,
+            &[0, 36, 40, 57, 67, 74],
+            &[
+                (0, 36),
+                (0, 57),
+                (0, 67),
+                (36, 40),
+                (36, 57),
+                (40, 67),
+                (57, 74),
+                (67, 74),
+            ],
+            &[36, 57, 67],
+            |input| {
+                assert_eq!(input.prove(), None);
+            },
+        );
+    }
+
+    #[test]
+    fn real_nonadjacent_class_proves_one_map_entry() {
+        const CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class"
+        );
+        assert_eq!(CLASS.len(), 1494);
+        assert_eq!(
+            blake3::hash(CLASS).to_hex().to_string(),
+            "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707"
+        );
+        with_real_conditional_switch(
+            CLASS,
+            "partialBreak",
+            "(II)Ljava/lang/String;",
+            9,
+            74,
+            &[0, 36, 40, 57, 67, 74],
+            &[
+                (0, 36),
+                (0, 57),
+                (0, 67),
+                (36, 40),
+                (36, 67),
+                (40, 67),
+                (57, 74),
+                (67, 74),
+            ],
+            &[36, 57, 67],
+            |input| {
+                assert_eq!(input.prove(), Some(BTreeMap::from([(36, 67)])));
+            },
+        );
+    }
+
+    #[test]
+    fn real_inner_loop_cycle_refuses_switch_certificate() {
+        const CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class"
+        );
+        assert_eq!(CLASS.len(), 1494);
+        assert_eq!(
+            blake3::hash(CLASS).to_hex().to_string(),
+            "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"
+        );
+        with_real_conditional_switch(
+            CLASS,
+            "innerLoopBreak",
+            "(II)Ljava/lang/String;",
+            9,
+            87,
+            &[0, 36, 38, 43, 54, 57, 63, 70, 80, 87],
+            &[
+                (0, 36),
+                (0, 70),
+                (0, 80),
+                (36, 38),
+                (38, 43),
+                (38, 63),
+                (43, 54),
+                (43, 57),
+                (54, 63),
+                (57, 38),
+                (63, 70),
+                (70, 87),
+                (80, 87),
+            ],
+            &[36, 70, 80],
+            |input| {
+                assert!(input.view_has_edge(36, 38));
+                assert!(input.view_has_edge(38, 43));
+                assert!(input.view_has_edge(43, 57));
+                assert!(input.view_has_edge(57, 38));
+                assert_eq!(
+                    input.prove(),
+                    None,
+                    "36 -> 38 -> 43 -> 57 -> active 38 reaches the grey-node cycle guard"
+                );
+            },
+        );
+    }
+
+    #[test]
+    fn terminal_case_unknown_terminal_fact_refuses_certificate() {
+        use crate::facts::Operation;
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class"
+        );
+        assert_eq!(CLASS.len(), 1494);
+        assert_eq!(
+            blake3::hash(CLASS).to_hex().to_string(),
+            "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7"
+        );
+        with_real_conditional_switch(
+            CLASS,
+            "terminalCase",
+            "(I)Ljava/lang/String;",
+            9,
+            84,
+            &[0, 36, 48, 67, 77, 84],
+            &[(0, 36), (0, 48), (0, 67), (0, 77), (67, 84), (77, 84)],
+            &[36, 48, 67, 77],
+            |input| {
+                assert_eq!(input.last_ssa_instruction_bci(36), Some(47));
+                assert!(matches!(input.operations.get(47), Some(Operation::Return)));
+                assert!(matches!(input.operations.get(66), Some(Operation::Throw)));
+                assert!(matches!(input.operations.get(88), Some(Operation::Return)));
+                assert_eq!(input.prove(), Some(BTreeMap::new()));
+
+                // Invalid decoded-fact BCI alias metamorphism, not valid bytecode and not a complete
+                // IR proof: move the physical instruction fact at 47 onto the existing areturn at 88.
+                // MethodCodeFacts keeps operands indexed with instructions, and Operations::of reads
+                // each instruction with that same-index operand, so no operand row is moved or changed.
+                // The duplicate Return at 88 overwrites an equal value; exactly the BCI 47 map entry
+                // disappears while canonical CFG, SSA, groups, targets and view stay reader-original.
+                let mut aliased_code = input.code.clone();
+                let instruction = aliased_code
+                    .instructions
+                    .iter_mut()
+                    .find(|instruction| instruction.bci == 47 && instruction.opcode == 0xb0)
+                    .expect("real areturn instruction at BCI 47");
+                instruction.bci = 88;
+                let aliased_operations = Operations::of(&aliased_code, input.pool);
+
+                let original_operations = input
+                    .operations
+                    .iter()
+                    .map(|(bci, operation)| (*bci, operation.clone()))
+                    .collect::<BTreeMap<_, _>>();
+                let aliased_operation_map = aliased_operations
+                    .iter()
+                    .map(|(bci, operation)| (*bci, operation.clone()))
+                    .collect::<BTreeMap<_, _>>();
+                assert_eq!(original_operations.len(), aliased_operation_map.len() + 1);
+                assert_eq!(original_operations.get(&47), Some(&Operation::Return));
+                assert!(!aliased_operation_map.contains_key(&47));
+                assert_eq!(aliased_operation_map.get(&88), Some(&Operation::Return));
+                for (bci, operation) in &aliased_operation_map {
+                    assert_eq!(original_operations.get(bci), Some(operation));
+                }
+                assert_eq!(
+                    input.prove_with(&aliased_operations),
+                    None,
+                    "empty-successor block 36 has no operation at its last SSA BCI 47"
+                );
+            },
+        );
+    }
+    // It uses only the public Reader and its real jsr clone identities. This is deliberately an invalid
+    // decoded-switch-certificate input: caller-supplied groups/targets pair the pathless return dispatch
+    // with a real cloned BCI 7 target. No CanonicalBlockId, CFG node, edge, SSA row, or IR is fabricated.
+
+    #[test]
+    fn real_legacy_clone_target_with_different_path_refuses_switch_certificate() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::{Budget, Limits};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class"
+        );
+        assert_eq!(CLASS.len(), 114);
+        assert_eq!(
+            blake3::hash(CLASS).to_hex().to_string(),
+            "dac91477a63e8c8e43acbf4e56916bab8a7415f862314f47eb5e904ef1adc019"
+        );
+
+        let mut analysis_budget = Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot =
+            ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut analysis_budget)
+                .expect("the frozen whole legacy-clone class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                length: u64::try_from(CLASS.len()).expect("class length fits"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method: PhysicalMethodId {
+                    owner: definition,
+                    name: JvmBytes(b"method".to_vec()),
+                    descriptor: JvmBytes(b"()V".to_vec()),
+                },
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut analysis_budget,
+        )
+        .expect("Reader analyzes the exact static legacy method");
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("same analysis has canonical CFG");
+        let ssa = ir.ssa().expect("same analysis has SSA");
+        let code = ir.code().expect("same analysis has decoded instructions");
+        let declaration = ir
+            .declaration()
+            .expect("Reader supplies method declaration");
+        assert_eq!(declaration.name().0.as_slice(), b"method");
+        assert_eq!(declaration.descriptor().0.as_slice(), b"()V");
+        assert_eq!(
+            declaration.access_flags() & 0x0008,
+            0x0008,
+            "method is static"
+        );
+        assert_eq!(
+            code.instructions
+                .iter()
+                .map(|instruction| (instruction.bci, instruction.opcode))
+                .collect::<Vec<_>>(),
+            vec![(0, 0xa8), (3, 0xa8), (6, 0xb1), (7, 0x4b), (8, 0xa9)]
+        );
+
+        let view = NormalFlowView::build(canonical, &mut analysis_budget)
+            .expect("normal-flow view projects this exact canonical graph");
+        let mut canonical_identities = canonical
+            .blocks()
+            .iter()
+            .map(|block| (block.id().bci(), block.id().path().to_vec()))
+            .collect::<Vec<_>>();
+        canonical_identities.sort_unstable();
+        assert_eq!(
+            canonical_identities,
+            vec![
+                (0, vec![]),
+                (3, vec![]),
+                (6, vec![]),
+                (7, vec![0]),
+                (7, vec![3]),
+            ]
+        );
+        let pathless_block = |bci| {
+            canonical
+                .blocks()
+                .iter()
+                .map(|block| block.id())
+                .find(|id| id.bci() == bci && id.path().is_empty())
+                .expect("reader-produced pathless canonical block exists")
+        };
+        let dispatch = pathless_block(6);
+        let dispatch_node = view
+            .index_of(dispatch)
+            .expect("pathless physical return is in the view");
+        assert_eq!(ssa.block(dispatch).unwrap().instructions().len(), 1);
+        assert_eq!(ssa.block(dispatch).unwrap().instructions()[0].bci(), 6);
+        assert_eq!(
+            ssa.block(dispatch).unwrap().instructions()[0].opcode(),
+            0xb1
+        );
+
+        let mut clones = canonical
+            .blocks()
+            .iter()
+            .map(|block| block.id())
+            .filter(|id| id.bci() == 7 && id.is_clone())
+            .collect::<Vec<_>>();
+        clones.sort_by(|left, right| left.path().cmp(right.path()));
+        assert_eq!(
+            clones.len(),
+            2,
+            "both real jsr call sites clone physical BCI 7"
+        );
+        assert_eq!(clones[0].path(), &[0]);
+        assert_eq!(clones[1].path(), &[3]);
+        for clone in &clones {
+            let ssa_block = ssa.block(clone).expect("SSA preserves each real clone ID");
+            assert_eq!(ssa_block.block(), *clone);
+            assert_eq!(
+                ssa_block
+                    .instructions()
+                    .iter()
+                    .map(|instruction| (instruction.bci(), instruction.opcode()))
+                    .collect::<Vec<_>>(),
+                vec![(7, 0x4b), (8, 0xa9)],
+                "both clone paths retain the same physical astore_0 / ret instructions"
+            );
+        }
+
+        // Pin the complete canonical edge rows, including the non-Normal call and return labels.
+        let mut full_rows = canonical
+            .edges()
+            .iter()
+            .map(|edge| {
+                (
+                    edge.from().bci(),
+                    edge.from().path().to_vec(),
+                    edge.kind(),
+                    edge.to().bci(),
+                    edge.to().path().to_vec(),
+                )
+            })
+            .collect::<Vec<_>>();
+        full_rows.sort_unstable();
+        assert_eq!(
+            full_rows,
+            vec![
+                (
+                    0,
+                    vec![],
+                    CanonicalEdgeKind::Call { call_site: 0 },
+                    7,
+                    vec![0]
+                ),
+                (
+                    3,
+                    vec![],
+                    CanonicalEdgeKind::Call { call_site: 3 },
+                    7,
+                    vec![3]
+                ),
+                (
+                    7,
+                    vec![0],
+                    CanonicalEdgeKind::Return { call_site: 0 },
+                    3,
+                    vec![]
+                ),
+                (
+                    7,
+                    vec![3],
+                    CanonicalEdgeKind::Return { call_site: 3 },
+                    6,
+                    vec![]
+                ),
+            ]
+        );
+        assert_eq!(
+            view.kept_edges(),
+            2,
+            "the two real Return rows are retained"
+        );
+        assert!(
+            canonical
+                .edges()
+                .iter()
+                .filter(|edge| edge.from() == dispatch)
+                .collect::<Vec<_>>()
+                .is_empty(),
+            "the real pathless return dispatch has no canonical outgoing rows"
+        );
+        assert!(view.successors(dispatch_node).is_empty());
+
+        // Explicit caller-side metamorphism: this is not a decoded switch and does not claim that
+        // production recovery would select BCI 6 as a switch dispatch. The full canonical graph and
+        // matching view stay untouched; the chosen target is one of the real Reader clone IDs.
+        let groups = vec![(vec![0_i64], false, 7_u32)];
+        let targets = BTreeMap::from([(
+            7_u32,
+            view.index_of(clones[0]).expect("real clone target node"),
+        )]);
+        let mut proof_budget = Budget::new(Limits {
+            analysis_steps: 1 << 20,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        assert_eq!(
+            prove_switch_fallthroughs(
+                canonical
+                    .edges()
+                    .iter()
+                    .map(|edge| (edge.from(), edge.kind(), edge.to())),
+                &view,
+                ssa,
+                &Operations::of(code, ir.constant_pool()),
+                &groups,
+                &targets,
+                None,
+                None,
+                dispatch_node,
+                6,
+                &mut proof_budget,
+            )
+            .expect("ample budget completes the private certificate probe"),
+            None,
+            "the real clone target's non-empty path differs from pathless dispatch before any successor traversal"
         );
     }
 }

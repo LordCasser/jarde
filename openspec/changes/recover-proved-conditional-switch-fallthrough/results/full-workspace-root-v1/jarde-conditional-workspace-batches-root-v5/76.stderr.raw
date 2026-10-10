@@ -1,0 +1,4 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.38s
+[1m[92m     Running[0m tests/static_method_local_generic_throws.rs (target/debug/deps/static_method_local_generic_throws-357d13e1e395af02)
+[1m[92m     Running[0m tests/task_operations.rs (target/debug/deps/task_operations-733fa7b96595bbd9)

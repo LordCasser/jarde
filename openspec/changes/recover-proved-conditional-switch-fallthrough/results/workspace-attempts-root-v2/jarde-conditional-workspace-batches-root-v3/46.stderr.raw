@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.66s
+[1m[92m     Running[0m tests/p3_nested_annotation_source.rs (target/debug/deps/p3_nested_annotation_source-1277d8279b54f9fc)
+[1m[92m     Running[0m tests/p3_nested_array_initializers.rs (target/debug/deps/p3_nested_array_initializers-9ee77bcb736387a1)
+[1m[92m     Running[0m tests/p3_nested_int_array_compound_updates.rs (target/debug/deps/p3_nested_int_array_compound_updates-4f522d4ad9dbbd8b)
+[1m[92m     Running[0m tests/p3_nested_try.rs (target/debug/deps/p3_nested_try-6461919911340d90)

@@ -1,0 +1,52 @@
+[1m[92m   Compiling[0m libc v0.2.189
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m rustix v1.1.4
+[1m[92m   Compiling[0m zerocopy v0.8.57
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m fastrand v2.5.0
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m quick-error v1.2.3
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m rusty-fork v0.3.1
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m rand_xorshift v0.4.0
+[1m[92m   Compiling[0m rand v0.9.5
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m unarray v0.1.4
+[1m[92m   Compiling[0m proptest v1.11.0
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[91merror[0m[1m: couldn't read `tests/../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class`: No such file or directory (os error 2)[0m
+  [1m[94m--> [0mtests/p3_conditional_switch_fallthrough.rs:27:22
+   [1m[94m|[0m
+[1m[94m27[0m [1m[94m|[0m   const CLASS: &[u8] = include_bytes!(
+   [1m[94m|[0m [1m[91m ______________________^[0m
+[1m[94m28[0m [1m[94m|[0m [1m[91m|[0m     "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroug[1m[94m...[0m
+[1m[94m29[0m [1m[94m|[0m [1m[91m|[0m );
+   [1m[94m|[0m [1m[91m|_^[0m
+   [1m[94m|[0m
+[1m[96mhelp[0m: there is a file with the same name in a different directory
+   [1m[94m|[0m
+[1m[94m28[0m [91m- [0m    [91m"../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"[0m
+[1m[94m28[0m [92m+ [0m    [92m"../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"[0m
+   [1m[94m|[0m
+
+[1m[91merror[0m: could not compile `jarde` (test "p3_conditional_switch_fallthrough") due to 1 previous error

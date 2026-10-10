@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.80s
+[1m[92m     Running[0m tests/p3_boolean_array_store_contract.rs (target/debug/deps/p3_boolean_array_store_contract-ff8c78bda7d6a6a9)
+[1m[92m     Running[0m tests/p3_boolean_array_stores.rs (target/debug/deps/p3_boolean_array_stores-d05044b5477cc772)
+[1m[92m     Running[0m tests/p3_boolean_contexts.rs (target/debug/deps/p3_boolean_contexts-29eb991156092fcf)
+[1m[92m     Running[0m tests/p3_boolean_field_stores.rs (target/debug/deps/p3_boolean_field_stores-15513a0aaa153884)

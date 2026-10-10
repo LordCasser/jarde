@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T23:10:52.904643+00:00",
+  "duration_seconds": 1.5546559590147808,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-run-conditional-corpus-manifest-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 1360,
+      "sha256": "bba9e31a54f2fee68291382e997a9a2134d43c8c7cfce16c6be6d916c264ac7e"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

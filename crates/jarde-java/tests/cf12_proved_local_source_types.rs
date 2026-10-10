@@ -739,12 +739,14 @@ fn assert_typed_boundary_budget_stop(
 
 #[test]
 fn typed_boundary_proof_budget_stops_before_publication_at_observed_sites() {
+    // Root re-observed the same type-proof write@29 and null proof@1 after the switch
+    // certificate's real work was added; keep these stops inside the type proof.
     assert_typed_boundary_budget_stop(
         CHAR_CLASS,
         "jadx/tests/integration/switches/TestSwitch$TestCls",
         "test",
         "(Ljava/lang/String;)Ljava/lang/String;",
-        321,
+        365,
         29,
     );
     assert_typed_boundary_budget_stop(
@@ -752,7 +754,7 @@ fn typed_boundary_proof_budget_stops_before_publication_at_observed_sites() {
         "jadx/tests/integration/switches/TestSwitchNoDefault$TestCls",
         "test",
         "(I)V",
-        94,
+        130,
         1,
     );
 }

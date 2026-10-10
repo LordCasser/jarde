@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 3.03s
+[1m[92m     Running[0m tests/d0_demand_counts.rs (target/debug/deps/d0_demand_counts-456deb73df823c1c)
+[1m[92m     Running[0m tests/d1_evidence_selection.rs (target/debug/deps/d1_evidence_selection-c373e2712054b6dc)
+[1m[92m     Running[0m tests/d2_prepared_handoff.rs (target/debug/deps/d2_prepared_handoff-d758e55a2640f314)
+[1m[92m     Running[0m tests/d3_artifact_binding.rs (target/debug/deps/d3_artifact_binding-eb3e09d50a7047fe)

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.59s
+[1m[92m     Running[0m tests/member_class_static_folding.rs (target/debug/deps/member_class_static_folding-641c7397f54c7408)
+[1m[92m     Running[0m tests/member_family_external_use.rs (target/debug/deps/member_family_external_use-370826260731f848)
+[1m[92m     Running[0m tests/member_family_identity.rs (target/debug/deps/member_family_identity-95b1e3ba3995d0d0)
+[1m[92m     Running[0m tests/member_local_type_source_names.rs (target/debug/deps/member_local_type_source_names-2214756c3b462d1f)

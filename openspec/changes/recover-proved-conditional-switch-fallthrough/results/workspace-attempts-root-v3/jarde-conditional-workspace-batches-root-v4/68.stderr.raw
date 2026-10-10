@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.05s
+[1m[92m     Running[0m tests/recover_boolean_int_bitwise_operands.rs (target/debug/deps/recover_boolean_int_bitwise_operands-f6fc5f9b4a791bbe)
+[1m[92m     Running[0m tests/recover_boxed_number_widening.rs (target/debug/deps/recover_boxed_number_widening-0f9b39d06185614f)
+[1m[92m     Running[0m tests/recover_branching_guard_body.rs (target/debug/deps/recover_branching_guard_body-42f756ca06d90789)
+[1m[92m     Running[0m tests/recover_chained_field_assignment.rs (target/debug/deps/recover_chained_field_assignment-f20ef10c13045716)

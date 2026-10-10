@@ -1,5 +1,7 @@
 # HANDOFF — jarde 主线接续入口
 
+当前断点：conditional switch 已完成本地 **5/7**，fresh全workspace3422/0/97、fmt/Clippy/专项563/0/0及五fixture六方法完整对照已接受；冻结CLI保留，target已清理。正在提交产品并等待该提交自身CI，下一项同类常量名门仅private准备，未应用。详见文末本轮记录。
+
 用户明确继续在当前聊天推进。以本地JADX **71验收单元/612测试文件**为清单，逐片追平后再探索；root负责架构、OpenSpec、真实源码/JADX/Jarde整类对照及对抗验收，确定性私有稿交Luna。窄片成功不增加整单元完成数。
 
 ## 刚关闭：调用结果 pop 来源
@@ -14,7 +16,7 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 
 完整源码实际99cmd、两锚8条双JDK/profile runtime与原/JADX一致，8其他控制profile保持独立post-pop基线，全部class/check/Inner/SDK保持；9cmd准确append(I)重载完整类对照通过。组合边界类仍slot-conflict缺return，不计运行通过；JADX全null println重载歧义已在仅改Runner package的实际双JDK编译中独立确认。收集器schema/globals及root并行清理错误、verifier路径/日期表示失败均保留，最终接受在complete-source-root-v4和int-overload-root-v1。cargo clean3042files/669.3MiB，target不存在。产品8b8997781自身CI38084415019在旧p3_meeting int局部断言失败，第二seed跳过；现断言改核已证char局部与int返回，追加focused6/0/0、完整Meet双JDK×原/JADX/default/all八腿逐值65536通过，生产无修订。后续还定位RequiredConversions旧int局部断言与NullThenBuilder旧Object拒绝分类；两项准确改核char/StringBuilder，保留七其他拒绝边界和历史baseline。最终focused v7三组22/0/0；完整Required13成员/Null3成员双JDK×原/JADX/default/all运行实际通过，root独立复核已接受（Null原源码不可得，oracle是canonical class）。生产冻结CLI/pins未改；全workspace又实测P5旧成本，六行AnalysisSteps增加16/22/14/43/14/3、两187成员arm各+112，其余维度恒同；只更新准确计费pins，常规P5五测试/一ignored已通过。94批全量已独立接受：356目标、3408/0/97、86Git/live pins，target峰值799452287bytes且已清理。产品43dffc9b806dc2b69102e50f52ee78a50850c6d0已提交推送，自身CI38087978610已root v7独立接受4jobs/52steps、两seed各3408/0/97与356摘要；全部证据随9d6d51570提交推送，实际audit v4确认15worktrees全clean/仅main/main=origin/无target，任务8/8，整CF12未接受。[详细验收](openspec/changes/recover-proved-local-source-types/verification-root.md)。
 
-`recover-proved-conditional-switch-fallthrough` **1/7**：实际11canonical块/17Normal edge诊断已独立接受，group fall_through不能表达case局部分支break；需要有限Region::SwitchBreak证据叶及最近switch作用域准确消费现有AST Break，不重扫CFG修AST。root已全文读private实现v2及真实positive永久测试草稿v4，但未应用或工具链/API接受；scope/预算/完整canonical边及所有权反例待实测。五个边界完整基线已实跑21命令：JADX双JDK各五行行为差异，Jarde整类四个missing-return而未进入runtime。公开真实IR十profiles已独立接受：partial为7块9Normal无环，innerLoop真实57→38回边，innerSwitch嵌套多路，terminal准确返回/抛出，caught含三条Exception；仍非新产品验收。完整证书私有函数抽取尚未编译/应用。另两个offset-only完整物理负例已真实双JDK -Xverify:all/36行运行通过，并root独立核四public reader profiles：6 canonical块/8 Normal，A两个case出口57/67，B唯一67跳过57，全部BLAKE3/owner/identity闭合；物理50区间未在canonical，原unreachable报告[]，不伪造全指令coverage。永久测试私稿v2已按实际API修正，仍未编译/应用。证据在本片results/physical-boundaries-root-v1；后续同类常量名只需复用既有投影caller门，Inner外类常量绑定另列，不新增解析机制。常量名门与computed-init for等保持独立债务，不扩大当前片。
+`recover-proved-conditional-switch-fallthrough` **4/7**：类型片干净关闭的2d70da515主线后已应用三源最小补丁，复用既有结构，必要Region::SwitchBreak叶消费为已有AST Break。实际CF12正例helper32→117、case2一次/join171外置/两goto准确break/全physical来源通过；A双出口拒绝、B helper唯一非相邻map但公开caller准确overlap@0拒绝。真实预算phase137/154/193均AnalysisSteps@0原子Stop，预取消通过；新计费后的类型内部Stop已实测365@29/130@1，九类型tests通过。完整库340/0/0、七旧switch/string/loop-switch目标28/0/0、四新/类型边界目标16/0/0通过；失败variable-name、过严default自然join检查、旧预算断言和Clippy最小问题均保留。terminal完整return/throw/full-map通过；innerLoop/innerSwitch/caught仍准确ExplanationOnly，不冒称已触发Builder最近scope guard或整个组合class运行成功。真实cycle/unknown-terminal与legacy clone拒绝已实跑，Builder完整真实Region树的正例/错误目标/无目标/跨loop-switch消费扰动已在v6通过；作用域扰动明确不冒称物理早期拒绝达到Builder。当前最新完整库344/0/0已经实跑，2.2全部边界/回归已验收；CI同范围Clippy待验收。全workspace第一次21批通过后遭守卫文件扫描竞态，失败raw/pins保留；一次stat的小适配保留5/1GiB一秒限值。v3在新增六class未进manifest停下，准确补六条后v4实跑90批又在reader旧人口断言停下；独立javap确认六class增31Code/5handler/167target/2jsr，只更新准确tuple，新v5从头重跑95批，不借旧执行。CLI/原五fixture六方法整类双JDK对照、自身CI及clean交付待完成。证据 [conditional验收](openspec/changes/recover-proved-conditional-switch-fallthrough/verification-root.md)，原private/boundary观察和新candidate-validation-root-v1均保留。下一项CF12同类常量名门只读准备，Inner跨类绑定仍独立债务，不扩大当前片。
 
 ## 已闭合的前片
 
@@ -24,6 +26,11 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 
 ## 资源、分支与账本
 
-用户已明确批准 **5GiB最低机器余量/本仓target1GiB上限**，一秒进程组中止及完成cargo clean。root独占Git/Cargo/rustfmt/JDK/JADX/CLI；Luna private准备或只读审计，不占用分支。最新35cdf3cb8提交推送后实际审计15worktrees clean，仅main，14辅助detached main祖先，main=origin、本地及真实远端heads只有main、全部无target/fuzz target；证据在pop片results/clean-delivery-checkpoint-root-v2。关闭文档的最终HEAD仍用private实际audit确认。
+用户已明确批准 **5GiB最低机器余量/本仓target1GiB上限**，一秒进程组中止及完成cargo clean。root独占Git/Cargo/rustfmt/JDK/JADX/CLI；Luna private准备或只读审计，不占用分支。最近完整clean checkpoint为类型片关闭文档2d70da515896c25ce022b8c28f4935ff2e105026，root最终实际audit确认15worktrees clean/14辅助detached main祖先、main=origin、本地及真实远端仅main、全部无target/fuzz target；原证据已随当前conditional results/candidate-validation-root-v1保留。当前仅root主线有正在验证的conditional候选修改，尚未提交验收产品；辅助worktrees不占用功能分支。最新中途cargo clean1094files/781.5MiB，继续在5/1GiB守卫下构建。
 
 长期入口：[71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。CF12五份原上游Java/六方法完整基线已实际确认JADX六腿同原，旧Jarde六同/两异/四编译失败；整CF12尚未接受。另有named Try→Loop丢own_try、fallback physical21缺span、iadd@5来源、flat Signature generic arity、receiver-tail预算、CF16浅层组合、handler ctor goto19/else-if缩进等独立债务。持续目标active，未暂停或宣称完成。
+
+
+2026-10-11 root本轮conditional本地验收 **5/7**。fresh v5全workspace95批/359个实际Cargo目标，3422/0/97，2210源输入Git/live待产品CI绑定，target峰值914810494bytes；完整原始证据和独立观察在results/full-workspace-root-v1。随后fmt、CI同范围Clippy和专项13命令563/0/0通过，冻结CLI SHA39d5699c1665b16e0c4a46934f0e773aeedf392f5bc60869a7b2762680dd10f1，17product/21test/162fixture pins。守卫5GiB free/target1GiB一直满足，峰值1067909023bytes；cargo clean5445files/1018.4MiB，target不存在。
+
+完整五上游fixture/六方法actual95命令，在双JDK条件锚/两个类型锚及其余JDK23控制分别编译运行原/JADX/default/all；新conditional verifier实际接受4conditional matches、14control profiles、11default/all maps，各完整生成class集合与原一致，目标(IZZ)Ljava/lang/String;按owner/name/descriptor/ordinal和javap全physicalBCI绑定。结果results/complete-source-root-v1/acceptance.json；独立invocation及清理记录在results/delivery-precommit-root-v1。首次verifier误把累计budget当独立方法计费的失败原稿/raw在results/replay-verifier-attempts-root-v1；root查prepare_physical_class_source同一Budget，固定目标delta AnalysisSteps311/IrEdges17/IrItems default212-all211/OutputBytes469，要求后续check和类总snapshot恰为同一delta，其他字段不变，所有无关正文/map/质量/诊断仍严格一致；没有改生产或CLI。OpenSpec strict实际343/0/0通过。自身产品commit/CI和最终clean交付尚待，不接受整CF12。

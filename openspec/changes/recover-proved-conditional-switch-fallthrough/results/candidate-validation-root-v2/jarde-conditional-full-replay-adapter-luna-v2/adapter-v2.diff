@@ -1,0 +1,887 @@
+--- a/typed-run-validation-build-root-v2.py
++++ b/run-validation-build-root-v2.py
+@@ -1,25 +1,26 @@
+ #!/usr/bin/env python3
+-"""Guarded local-source-types validation and private CLI freeze draft.
+-
+-Root-reviewed adapter. Execution evidence is written separately.
+-"""
++"""Guarded validation and private CLI freeze for conditional switch fallthrough."""
+ from __future__ import annotations
+ import argparse, datetime, hashlib, importlib.util, json, os, re, shutil, stat, subprocess, sys
+ from pathlib import Path
+ 
+ ROOT=Path('/Users/lordcasser/workspace/projects/jarde')
+ TASK=Path(__file__).resolve().parent
+-RESULTS=ROOT/'openspec/changes/recover-proved-local-source-types/results'
++RESULTS=ROOT/'openspec/changes/recover-proved-conditional-switch-fallthrough/results'
+ OUT=RESULTS/'validation-build-root-v2'
+-CLI_PATH=Path('/private/tmp/jarde-proved-local-source-types-cli-v1')
+-METADATA_PATH=RESULTS/'candidate-cli-typed-root-v1.json'
++CLI_PATH=Path('/private/tmp/jarde-proved-conditional-switch-cli-v1')
++METADATA_PATH=RESULTS/'candidate-cli-root-v1.json'
+ TEMPLATE=ROOT/'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+ TEMPLATE_SHA256='51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'
+-SOURCE_COMMIT_BASE: str|None=None
+-EXPECTED_LIB_COUNT=337
+-EXPECTED_ORIGIN_COUNT=0
+-REQUIRED_ORIGIN_TESTS: tuple[str,...]=()
+-
++SOURCE_COMMIT_BASE='2d70da515896c25ce022b8c28f4935ff2e105026'
++EXPECTED_LIB_COUNT:int|None=None
++CI_CLIPPY_ALLOW_LINTS=(
++ 'too_many_arguments','cloned_ref_to_slice_refs','collapsible_if','type_complexity','len_zero',
++ 'needless_option_as_deref','needless_borrow','useless_conversion','large_enum_variant','question_mark',
++ 'comparison_to_empty','op_ref','manual_range_patterns','if_same_then_else','filter_map_bool_then',
++ 'filter_next','unneeded_struct_pattern','redundant_guards','map_identity','redundant_slicing',
++ 'unnecessary_get_then_check','unnecessary_unwrap','redundant_locals','replace_box','map_clone',
++ 'unnecessary_mut_passed','single_element_loop','unnecessary_to_owned','needless_lifetimes')
+ PRODUCT_PATHS={
+  'Cargo.toml','Cargo.lock','crates/jarde-jvm/Cargo.toml','crates/jarde-reader/Cargo.toml',
+  'crates/jarde-query/Cargo.toml','crates/jarde-java/Cargo.toml','crates/jarde-cli/Cargo.toml',
+@@ -27,33 +28,52 @@
+  'crates/jarde-java/src/report.rs','crates/jarde-java/src/lib.rs','src/class_source.rs','src/facade.rs',
+  'src/lib.rs','crates/jarde-cli/src/main.rs','crates/jarde-cli/src/task.rs',
+ }
+-# These targets cover the changed declaration proof and its nearest consumers: descriptor-based
+-# parameters, boolean/guard precedence, call overload selection, qualifier semantics, and slot reuse.
+ TEST_PATHS={
+  '.github/workflows/ci.yml',
+  'crates/jarde-java/tests/cf12_proved_local_source_types.rs',
++ 'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs',
++ 'crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs',
++ 'crates/jarde-java/tests/p3_conditional_switch_scope_boundaries.rs',
+  'crates/jarde-java/tests/p3_proved_boolean_conditional_returns.rs',
+  'crates/jarde-java/tests/p3_patterns.rs',
+  'tests/p3_declarations.rs','tests/p3_parameter_slots.rs','tests/p3_guard.rs',
+  'tests/p3_popped_static_qualifier.rs','tests/p3_invocation_arguments.rs',
+  'tests/p3_array_slot_retype_locals.rs',
++ 'tests/p3_switch_fallthrough.rs','tests/p3_string_switch_projection.rs',
++ 'tests/p3_switch_loop_exits.rs','tests/p3_switch_arm_loop_exits.rs',
++ 'tests/p3_switch_forward_join.rs','tests/p3_switch_value.rs','tests/p3_char_switch.rs',
+ }
+ INCLUDE_RE=re.compile(r'(?:include_bytes|include_str)!\s*\(\s*"([^"]+)"')
+ TEST_RE=re.compile(r'(?ms)^\s*#\[test\]\s*((?:#\[[^\]]+\]\s*)*)fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(')
+ SUMMARY_RE=re.compile(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored')
+-CI_CLIPPY_ALLOW_LINTS=(
+- 'too_many_arguments','cloned_ref_to_slice_refs','collapsible_if','type_complexity','len_zero',
+- 'needless_option_as_deref','needless_borrow','useless_conversion','large_enum_variant','question_mark',
+- 'comparison_to_empty','op_ref','manual_range_patterns','if_same_then_else','filter_map_bool_then',
+- 'filter_next','unneeded_struct_pattern','redundant_guards','map_identity','redundant_slicing',
+- 'unnecessary_get_then_check','unnecessary_unwrap','redundant_locals','replace_box','map_clone',
+- 'unnecessary_mut_passed','single_element_loop','unnecessary_to_owned','needless_lifetimes')
+-
+-# Source inclusion closure is recomputed after the test list is checked. These are the staged targets.
++REQUIRED_TESTS={
++ 'crates/jarde-java/src/region.rs':('cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants',),
++ 'crates/jarde-java/src/build.rs':('cf12_switch_break_builder_requires_the_active_nearest_switch',),
++ 'crates/jarde-java/tests/cf12_proved_local_source_types.rs':(
++  'cf12_charat_stored_value_drives_char_source_type_and_full_origins',
++  'cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins',
++  'cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source',
++  'typed_boundary_four_char_seeds_have_specific_types_and_full_origins_in_both_debug_profiles',
++  'typed_boundary_range_arithmetic_and_input_copy_remain_int_in_both_debug_profiles',
++  'typed_boundary_null_first_exact_string_stays_string_in_both_debug_profiles',
++  'typed_boundary_mixed_all_null_and_unknown_reference_stay_object_in_both_debug_profiles',
++  'typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all',
++  'typed_boundary_proof_budget_stops_before_publication_at_observed_sites',),
++ 'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs':(
++  'cf12_conditional_switch_keeps_exact_case_and_exit_sources',
++  'cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact',
++  'cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact',),
++ 'crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs':(
++  'nonadjacent_conditional_switch_is_refused_by_the_public_caller',
++  'pre_cancelled_public_recovery_publishes_no_partial_artifact',),
++ 'crates/jarde-java/tests/p3_conditional_switch_scope_boundaries.rs':(
++  'loop_nested_switch_and_caught_edges_remain_conservative',
++  'terminal_return_and_throw_keep_exact_text_and_physical_origins',),
++}
+ COMMANDS=[]
+-TEST_COMMANDS={2,3,4,5,6,7,8,9,10,11,12}
++TEST_COMMANDS=set()
+ EXPECTED_SUMMARIES={}
+-
++EXPECTED_TEST_NAMES={}
+ 
+ def sha_file(p:Path)->str:
+  h=hashlib.sha256()
+@@ -63,7 +83,7 @@
+ 
+ def load_guard():
+  if sha_file(TEMPLATE)!=TEMPLATE_SHA256:raise RuntimeError('pinned v9 command guard SHA mismatch')
+- spec=importlib.util.spec_from_file_location('typed_validation_guard_v9',TEMPLATE)
++ spec=importlib.util.spec_from_file_location('conditional_validation_guard_v9',TEMPLATE)
+  if spec is None or spec.loader is None:raise RuntimeError('cannot load v9 command guard')
+  module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)
+  return module
+@@ -73,97 +93,119 @@
+ 
+ def discovered_literal_paths()->set[str]:
+  found=set()
+- for rel in sorted(TEST_PATHS):
++ for rel in sorted(PRODUCT_PATHS|TEST_PATHS):
+   if rel.endswith('.rs'):
+    src=(ROOT/rel).read_text(encoding='utf-8')
+    for value in INCLUDE_RE.findall(src):
+     p=(ROOT/rel).parent.joinpath(value).resolve()
++    if not p.is_file() or not p.is_relative_to(ROOT.resolve()):
++     raise RuntimeError('literal Rust include is missing or outside repository: '+rel+' -> '+value)
+     found.add(p.relative_to(ROOT).as_posix())
+  return found
++
++def selected_regression_groups():
++ return [
++  ('switch-string-loop', 'jarde', ('p3_switch_fallthrough','p3_string_switch_projection','p3_switch_loop_exits','p3_switch_arm_loop_exits')),
++  ('switch-join-value-selector', 'jarde', ('p3_switch_forward_join','p3_switch_value','p3_char_switch')),
++ ]
++
++def test_argv(package:str,target:str,filter_name:str|None=None):
++ argv=['cargo','test','-p',package,'--locked']
++ if target=='--lib': argv.append('--lib')
++ else: argv += ['--test',target]
++ if filter_name is not None: argv.append(filter_name)
++ return argv+['--','--nocapture']
++
++def expected_for_target(pkg:str,target:str):
++ source=ROOT/(('crates/jarde-java/tests/' if pkg=='jarde-java' else 'tests/')+target+'.rs')
++ found=test_functions(source)
++ if not found:raise RuntimeError('selected test target has no discoverable tests: '+str(source))
++ return (sum(not ignored for _,ignored in found),0,sum(ignored for _,ignored in found))
+ 
+ def summary_check(index:int,stdout:bytes)->dict:
+  text=stdout.decode('utf-8',errors='replace')
+  actual=[tuple(map(int,m)) for m in SUMMARY_RE.findall(text)]
+  expected=EXPECTED_SUMMARIES.get(index)
++ names=EXPECTED_TEST_NAMES.get(index,())
++ names_ok=all(re.search(r'(?m)^test [^\n]*'+re.escape(name)+r' \.\.\. ok$',text) for name in names)
+  nonempty=bool(actual) and all(failed==0 for _,failed,_ in actual) and any(p+i+f>0 for p,f,i in actual)
+- names=[];names_ok=True
+- if index==3:
+-  names=list(REQUIRED_ORIGIN_TESTS)
+-  names_ok=all(re.search(r'(?m)^test '+re.escape(n)+r' \.\.\. ok$',text) for n in names)
+  ok=(expected is None or actual==expected) and (index not in TEST_COMMANDS or nonempty) and names_ok
+  reason=None
+  if expected is not None and actual!=expected:reason=f'expected summaries {expected}, got {actual}'
+  elif index in TEST_COMMANDS and not nonempty:reason='required test summary absent, empty, or failed'
+- elif not names_ok:reason='caller-supplied exact typed-test name absent or not passed'
++ elif not names_ok:reason='caller-selected exact test name absent or not passed'
+  return {'expected':expected,'actual':actual,'required':index in TEST_COMMANDS,
+-         'required_test_names':names,'required_test_names_present':names_ok,'ok':ok,'failure_reason':reason}
++         'required_test_names':list(names),'required_test_names_present':names_ok,'ok':ok,'failure_reason':reason}
+ 
+ def write_execution(guard,rows,preflight,status,freeze=None):
+  guard.write_json(OUT/'execution.json',{
+-  'schema':'recover-proved-local-source-types-validation-build-root-v1',
++  'schema':'recover-proved-conditional-switch-fallthrough-validation-build-root-v2',
+   'validation_runner':{'path':str(Path(__file__).resolve()),'sha256':sha_file(Path(__file__).resolve())},
+   'guarded_runner_template':{'path':str(TEMPLATE),'sha256':TEMPLATE_SHA256},
+   'status':status,'source_commit_base_expected':SOURCE_COMMIT_BASE,
+-  'uncommitted_local_source_types_product':True,
++  'uncommitted_local_conditional_switch_product':True,
+   'environment_overrides':guard.ENV_VALUES,
+-  'required_origin_tests':list(REQUIRED_ORIGIN_TESTS),
+-  'expected_origin_test_count':EXPECTED_ORIGIN_COUNT,'expected_library_test_count':EXPECTED_LIB_COUNT,
++  'required_tests':{path:list(names) for path,names in REQUIRED_TESTS.items()},
++  'expected_library_test_count':EXPECTED_LIB_COUNT,
+   'guards':{'minimum_free_bytes':guard.FREE_LIMIT,'maximum_target_bytes':guard.TARGET_LIMIT},
+   'preflight':preflight,'commands':rows,'freeze':freeze})
+ 
+ def main()->int:
+- global SOURCE_COMMIT_BASE,EXPECTED_LIB_COUNT,EXPECTED_ORIGIN_COUNT,REQUIRED_ORIGIN_TESTS,COMMANDS,EXPECTED_SUMMARIES
++ global EXPECTED_LIB_COUNT,COMMANDS,TEST_COMMANDS,EXPECTED_SUMMARIES,EXPECTED_TEST_NAMES
+  ap=argparse.ArgumentParser(description=__doc__)
+- ap.add_argument('--source-base',required=True,help='expected clean base; source-types product remains an uncommitted local change')
+- ap.add_argument('--expected-lib-count',required=True,type=int)
+- ap.add_argument('--expected-origin-test-count',required=True,type=int)
+- ap.add_argument('--new-test-name',action='append',required=True,help='exact names from cf12_proved_local_source_types.rs')
++ ap.add_argument('--source-base',required=True)
++ ap.add_argument('--expected-lib-count',required=True,type=int,
++                 help='exact library test count observed by root for this candidate; not mirrored in this runner')
+  a=ap.parse_args()
+- if not re.fullmatch(r'[0-9a-f]{40}',a.source_base):raise SystemExit('--source-base must be lowercase 40-hex')
+- if a.expected_lib_count!=337:raise SystemExit('expected library count must match currently accepted 337 baseline; update only with reviewed evidence')
+- if a.expected_origin_test_count<=0 or len(a.new_test_name)!=a.expected_origin_test_count or len(set(a.new_test_name))!=len(a.new_test_name):raise SystemExit('new origin names must be distinct and match explicit positive count')
+- if any(not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*',x) for x in a.new_test_name):raise SystemExit('invalid Rust test identifier')
+- SOURCE_COMMIT_BASE=a.source_base;EXPECTED_LIB_COUNT=a.expected_lib_count;EXPECTED_ORIGIN_COUNT=a.expected_origin_test_count;REQUIRED_ORIGIN_TESTS=tuple(sorted(a.new_test_name))
++ if a.source_base!=SOURCE_COMMIT_BASE:raise SystemExit('--source-base must be 2d70da515896c25ce022b8c28f4935ff2e105026')
++ if a.expected_lib_count<=0:raise SystemExit('--expected-lib-count must be positive')
++ EXPECTED_LIB_COUNT=a.expected_lib_count
+  guard=load_guard();guard.ROOT=ROOT;guard.HERE=TASK;guard.RESULTS=RESULTS;guard.OUT=OUT;guard.CLI_PATH=CLI_PATH;guard.METADATA_PATH=METADATA_PATH;guard.SOURCE_COMMIT_BASE=SOURCE_COMMIT_BASE
+  guard.PRODUCT_PATHS=set(PRODUCT_PATHS);guard.TEST_PATHS=set(TEST_PATHS)
+- typed_path=ROOT/'crates/jarde-java/tests/cf12_proved_local_source_types.rs'
+- if {n for n,_ in test_functions(typed_path)}!=set(REQUIRED_ORIGIN_TESTS):raise RuntimeError('explicit typed test names do not exactly match typed integration source')
++ for rel,names in REQUIRED_TESTS.items():
++  found={name for name,_ in test_functions(ROOT/rel)}
++  exact=not rel.endswith(('/src/region.rs','/src/build.rs'))
++  drift=(found!=set(names)) if exact else (not set(names)<=found)
++  if drift:
++   raise RuntimeError('selected test inventory drifted: '+rel+' expected '+repr(sorted(names))+' got '+repr(sorted(found)))
+  literal_paths=discovered_literal_paths();guard.CANONICAL_PATHS=literal_paths
+- targets=[
+-  ('typed-origin','jarde-java','cf12_proved_local_source_types'),
+-  ('declaration','jarde','p3_declarations'),
+-  ('parameter-slots','jarde','p3_parameter_slots'),
+-  ('boolean-proof','jarde-java','p3_proved_boolean_conditional_returns'),
+-  ('guard-precedence','jarde','p3_guard'),
+-  ('qualifier','jarde','p3_popped_static_qualifier'),
+-  ('invocation-overload','jarde','p3_invocation_arguments'),
+-  ('array-slot-reuse','jarde','p3_array_slot_retype_locals'),
+-  ('pattern-literals','jarde-java','p3_patterns'),
+- ]
++ if len(PRODUCT_PATHS)!=17 or len(TEST_PATHS)!=20:raise RuntimeError('reviewed product/test source path count changed')
+  COMMANDS=[['cargo','fmt','--all','--','--check'],
+   ['cargo','clippy','--workspace','--all-targets','--all-features','--locked','--',*sum((['-A',f'clippy::{x}'] for x in CI_CLIPPY_ALLOW_LINTS),[]),'-D','warnings'],
+   ['cargo','test','-p','jarde-java','--lib','--locked']]
+- for label,package,target in targets:
+-  COMMANDS.append(['cargo','test','-p',package,'--test',target,'--locked','--','--nocapture'])
++ COMMANDS.append(test_argv('jarde-java','--lib','cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants'))
++ COMMANDS.append(test_argv('jarde-java','--lib','cf12_switch_break_builder_requires_the_active_nearest_switch'))
++ suites=[('jarde-java','cf12_proved_local_source_types'),
++         ('jarde-java','p3_conditional_switch_fallthrough'),
++         ('jarde-java','p3_conditional_switch_boundary_rejection'),
++         ('jarde-java','p3_conditional_switch_scope_boundaries')]
++ for package,target in suites: COMMANDS.append(test_argv(package,target))
++ for _,package,targets in selected_regression_groups():
++  argv=['cargo','test','-p',package]
++  for target in targets:argv+=['--test',target]
++  COMMANDS.append(argv+['--locked','--','--nocapture'])
+  COMMANDS += [['cargo','test','-p','jarde-reader','--lib','--locked'],['cargo','build','-p','jarde-cli','--locked']]
+- # Parse source annotations to establish each pre-existing binary's exact expected totals; do not
+- # guess future typed test counts. The typed count/name list stays an explicit caller input.
+- for i,(_,pkg,target) in enumerate(targets,start=3):
+-  src=ROOT/(('crates/jarde-java/tests/' if pkg=='jarde-java' else 'tests/')+target+'.rs')
+-  found=test_functions(src)
+-  if not found:raise RuntimeError('selected regression target has no statically discoverable tests: '+str(src))
+-  EXPECTED_SUMMARIES[i]=[(sum(not ignored for _,ignored in found),0,sum(ignored for _,ignored in found))]
++ TEST_COMMANDS=set(range(2,12))
+  EXPECTED_SUMMARIES[2]=[(EXPECTED_LIB_COUNT,0,0)]
+- EXPECTED_SUMMARIES[12]=[(178,0,0)]
++ EXPECTED_SUMMARIES[3]=[(1,0,0)];EXPECTED_TEST_NAMES[3]=REQUIRED_TESTS['crates/jarde-java/src/region.rs']
++ EXPECTED_SUMMARIES[4]=[(1,0,0)];EXPECTED_TEST_NAMES[4]=REQUIRED_TESTS['crates/jarde-java/src/build.rs']
++ for index,(package,target) in enumerate(suites,start=5):
++  EXPECTED_SUMMARIES[index]=[expected_for_target(package,target)]
++  EXPECTED_TEST_NAMES[index]=REQUIRED_TESTS['crates/jarde-java/tests/'+target+'.rs']
++ for index,(_,package,targets) in enumerate(selected_regression_groups(),start=9):
++  EXPECTED_SUMMARIES[index]=[expected_for_target(package,target) for target in targets]
++ EXPECTED_SUMMARIES[11]=[(178,0,0)]
+  guard.COMMANDS=COMMANDS;guard.TEST_COMMANDS=TEST_COMMANDS;guard.EXPECTED_SUMMARIES=EXPECTED_SUMMARIES;guard.expected_test_summaries=summary_check
+  guard.command_stream=lambda p:{'path':str(p.resolve()),'bytes':p.stat().st_size,'sha256':sha_file(p)}
+- if len(PRODUCT_PATHS)!=17 or len(TEST_PATHS)!=10:raise RuntimeError('reviewed source pin path counts changed')
+- if OUT.exists() or CLI_PATH.exists() or METADATA_PATH.exists():raise FileExistsError('refusing to overwrite typed CLI/output/metadata')
++ if OUT.exists() or CLI_PATH.exists() or METADATA_PATH.exists():raise FileExistsError('refusing to overwrite conditional CLI/output/metadata')
+  if shutil.disk_usage(ROOT).free<guard.FREE_LIMIT or guard.target_bytes()>guard.TARGET_LIMIT:raise RuntimeError('initial v9 disk guard failed')
+  preflight={'source_pins_before':None,'source_pins_after':None,'source_commit_base_expected':SOURCE_COMMIT_BASE,
+-  'uncommitted_local_source_types_product':True,'typed_test_count':len(REQUIRED_ORIGIN_TESTS),
+-  'selected_regression_targets':[{'label':x,'package':p,'target':t,'source_test_count':len(test_functions(ROOT/(('crates/jarde-java/tests/' if p=='jarde-java' else 'tests/')+t+'.rs')))} for x,p,t in targets],
+-  'canonical_closure':{'test_source_paths':len(TEST_PATHS),'literal_includes':len(literal_paths),'unique_canonical_files':len(literal_paths)},'jdk23':None}
++  'uncommitted_local_conditional_switch_product':True,'expected_library_test_count':EXPECTED_LIB_COUNT,'java_environment':preflight['java_environment'],
++  'selected_test_suites':[{'package':p,'target':t,'test_count':len(test_functions(ROOT/(('crates/jarde-java/tests/' if p=='jarde-java' else 'tests/')+t+'.rs')))} for p,t in suites],
++  'selected_unit_tests':{path:list(names) for path,names in REQUIRED_TESTS.items() if path.endswith('/src/region.rs') or path.endswith('/src/build.rs')},
++  'regression_groups':[{'label':label,'package':package,'targets':list(targets)} for label,package,targets in selected_regression_groups()],
++  'canonical_closure':{'product_source_paths':len(PRODUCT_PATHS),'test_source_paths':len(TEST_PATHS),
++                       'rust_source_literal_includes':len(literal_paths),'unique_canonical_files':len(literal_paths)},'jdk23':None}
+  OUT.mkdir(parents=True);rows=[]
+  try:
+   before={'candidate_sources':guard.source_pins(PRODUCT_PATHS),'test_sources':guard.source_pins(TEST_PATHS),'canonical_files':guard.source_pins(literal_paths)}
+@@ -173,6 +215,11 @@
+    if k in env:stripped.append(k);env.pop(k)
+   env.update(guard.ENV_VALUES);preflight['stripped_environment_keys']=stripped
+   preflight['jdk23']=guard.configure_jdk23(env)
++  jdk23_home=Path(preflight['jdk23']['java_home']).resolve()
++  env['JAVA_HOME']=str(jdk23_home)
++  env['PATH']=str(jdk23_home/'bin')+os.pathsep+env.get('PATH','')
++  env['LC_ALL']='C';env['TZ']='UTC'
++  preflight['java_environment']={'JAVA_HOME':env['JAVA_HOME'],'PATH':env['PATH'],'LC_ALL':env['LC_ALL'],'TZ':env['TZ']}
+   head=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,check=False)
+   (OUT/'git-head.stdout.raw').write_bytes(head.stdout);(OUT/'git-head.stderr.raw').write_bytes(head.stderr)
+   actual=head.stdout.decode('ascii',errors='replace').strip()
+@@ -197,13 +244,13 @@
+   CLI_PATH.parent.mkdir(parents=True,exist_ok=True);tmp=CLI_PATH.with_name('.'+CLI_PATH.name+f'.tmp-{os.getpid()}')
+   shutil.copyfile(binary,tmp);os.chmod(tmp,0o555);os.replace(tmp,CLI_PATH)
+   freeze={'cli_path':str(CLI_PATH),'cli_sha256':sha_file(CLI_PATH),'cli_mode':oct(stat.S_IMODE(CLI_PATH.stat().st_mode)),
+-   'metadata_path':str(METADATA_PATH),'source_commit_base':SOURCE_COMMIT_BASE,'uncommitted_local_source_types_product':True,
++   'metadata_path':str(METADATA_PATH),'source_commit_base':SOURCE_COMMIT_BASE,'uncommitted_local_conditional_switch_product':True,
+    'validation_runner':{'path':str(Path(__file__).resolve()),'sha256':sha_file(Path(__file__).resolve())},
+    'guarded_runner_template':{'path':str(TEMPLATE),'sha256':TEMPLATE_SHA256},
+    'product_paths':sorted(PRODUCT_PATHS),'test_paths':sorted(TEST_PATHS),'canonical_paths':sorted(literal_paths),
+-   'required_origin_tests':list(REQUIRED_ORIGIN_TESTS),'expected_origin_test_count':EXPECTED_ORIGIN_COUNT,'expected_library_test_count':EXPECTED_LIB_COUNT}
++   'required_tests':{path:list(names) for path,names in REQUIRED_TESTS.items()},'expected_library_test_count':EXPECTED_LIB_COUNT}
+   write_execution(guard,rows,preflight,'validation-passed-cli-frozen',freeze)
+-  metadata={'schema':'recover-proved-local-source-types-candidate-cli-root-v1',**freeze,
++  metadata={'schema':'recover-proved-conditional-switch-fallthrough-candidate-cli-root-v1',**freeze,
+    'candidate_sources':after['candidate_sources'],'test_sources':after['test_sources'],'canonical_files':after['canonical_files'],
+    'build_result_sha256':sha_file(OUT/'execution.json')}
+   with METADATA_PATH.open('x',encoding='utf-8') as f:f.write(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n')
+--- a/typed-replay-collector-v2.py
++++ b/prepare-conditional-replay.py
+@@ -1,23 +1,21 @@
+ #!/usr/bin/env python3
+-"""Private v5 draft: collect fresh CF12 complete-class and local-type boundary replays."""
++"""Private adapter draft: replay CF12 complete classes for conditional switch fallthrough."""
+ import argparse, hashlib, json, os, runpy, shutil
+ from pathlib import Path
+ import zipfile
+ 
+ ROOT = Path('/Users/lordcasser/workspace/projects/jarde')
+ BASE = ROOT / 'openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1'
+-CHANGE = ROOT / 'openspec/changes/recover-proved-local-source-types'
++CHANGE = ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough'
+ RESULTS = CHANGE / 'results'
+-BOUNDARY = ROOT / 'openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1'
+-BOUNDARY_PREFLIGHT = BOUNDARY / 'execution.json'
+ PROBE = BASE / 'Cf12RuntimeProbe.java'
+ JDK_MANIFEST = ROOT / 'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
+ JDK_MANIFEST_SHA = 'ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
+-SCHEMA = 'recover-proved-local-source-types-complete-class-replay-root-v1'
+-PREPOP_EXECUTION = Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json')
+-PREPOP_EXECUTION_SHA256 = '93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08'
+-PREPOP_ACCEPTANCE = Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json')
+-PREPOP_ACCEPTANCE_SHA256 = 'bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06'
++SCHEMA = 'recover-proved-conditional-switch-fallthrough-complete-class-replay-root-v1'
++TYPED_EXECUTION = ROOT / 'openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/execution.json'
++TYPED_EXECUTION_SHA256 = '27afad91dc4e5c426d90f6ff4253b4244541490161752b759d1f5ada19847ed5'
++TYPED_ACCEPTANCE = ROOT / 'openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/acceptance.json'
++TYPED_ACCEPTANCE_SHA256 = 'd9e336b8b6eb33b76c0d866eb83040540586eba9df5ba629311f2371f577812f'
+ GUARD_PATH = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+ GUARD_SHA256 = '51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'
+ BASELINE_ACCEPTANCE_SHA = '1e8c457a5edea2bab276ba9c5f394a8a994e06853208c8abe8e5f0cb8de2b214'
+@@ -134,55 +132,20 @@
+             raise SystemExit('CF12 original closed input changed/missing: '+rec['path'])
+     return accepted,acceptance,inv
+ 
+-def verify_postpop(execution_path, execution_sha, acceptance_path, acceptance_sha):
+-    if execution_path.resolve()!=PREPOP_EXECUTION or execution_sha!=PREPOP_EXECUTION_SHA256 or acceptance_path.resolve()!=PREPOP_ACCEPTANCE or acceptance_sha!=PREPOP_ACCEPTANCE_SHA256:
+-        raise SystemExit('post-pop input must be the exact independently accepted root-v4 baseline')
++def verify_typed_baseline(execution_path, execution_sha, acceptance_path, acceptance_sha):
++    if execution_path.resolve()!=TYPED_EXECUTION.resolve() or execution_sha!=TYPED_EXECUTION_SHA256 or acceptance_path.resolve()!=TYPED_ACCEPTANCE.resolve() or acceptance_sha!=TYPED_ACCEPTANCE_SHA256:
++        raise SystemExit('typed comparison must be the exact complete-source-root-v4 execution/acceptance pair')
+     for p,h in ((execution_path,execution_sha),(acceptance_path,acceptance_sha)):
+-        if not p.is_file() or sha(p.read_bytes())!=h: raise SystemExit('explicit accepted post-pop baseline path/SHA mismatch: '+str(p))
++        if not p.is_file() or sha(p.read_bytes())!=h: raise SystemExit('explicit typed-baseline path/SHA mismatch: '+str(p))
+     ex=json.loads(execution_path.read_bytes()); ac=json.loads(acceptance_path.read_bytes())
+-    expected='recover-proved-local-source-types-post-pop-baseline-root-v3'
+-    accepted='recover-proved-local-source-types-post-pop-baseline-acceptance-v3'
+-    if ex.get('schema')!=expected or ac.get('schema')!=accepted or ac.get('status')!='accepted-independent-control-baseline':
+-        raise SystemExit('post-pop baseline is not the independently accepted v3 baseline')
+-    if ac.get('execution_path')!=str(execution_path) or ac.get('execution_sha256')!=execution_sha:
+-        raise SystemExit('post-pop acceptance does not bind exact execution path/SHA')
+-    if ac.get('historical_cf12_acceptance_sha256')!=BASELINE_ACCEPTANCE_SHA or ac.get('historical_cf12_full_replay_sha256')!=BASELINE_FULL_SHA:
+-        raise SystemExit('post-pop acceptance does not name both pinned historical CF12 hashes')
+-    if ex.get('status')!='post-pop-baseline-observed-unaccepted':
+-        raise SystemExit('post-pop execution is not the completed observation named by the accepted record')
+-    cases=ex.get('cases',[])
+-    if len(cases)!=6 or {x.get('case') for x in cases}!=set(CASES) or sum(len(x.get('class_files',[])) for x in cases)!=8:
+-        raise SystemExit('accepted post-pop execution does not contain the exact six-method/eight-class CF12 matrix')
+-    if len(ex.get('commands',[]))!=48:
+-        raise SystemExit('accepted post-pop execution does not contain the reviewed 48-command JDK23-only replay')
+-    report_count=0; method_count=0
+-    for case_row in cases:
+-        if set(case_row.get('legs',{}))!={'javac23'}:
+-            raise SystemExit('post-pop baseline must preserve the historically verified JDK23-only control matrix: '+case_row.get('case','?'))
+-        expected={str(p.resolve()) for p in sorted((BASE/'harness-v3-java/capture'/case_row['case']/'input').glob('*.class'))}
+-        if {Path(x['path']).resolve().as_posix() for x in case_row.get('class_files',[])}!=expected:
+-            raise SystemExit('post-pop original class instance set differs from frozen CF12 capture: '+case_row['case'])
+-        for leg,leg_row in case_row['legs'].items():
+-            if set(leg_row.get('profiles',{}))!={'default','all'}:
+-                raise SystemExit('post-pop profile matrix mismatch: '+case_row['case']+'/'+leg)
+-            for profile,profile_row in leg_row['profiles'].items():
+-                reports=profile_row.get('reports',[])
+-                if {str(Path(r['input_path']).resolve()) for r in reports}!=expected or len(reports)!=len(expected):
+-                    raise SystemExit('post-pop report/input class set mismatch: '+case_row['case']+'/'+leg+'/'+profile)
+-                for r in reports:
+-                    report=Path(r['report_path']); source=Path(r['source_path'])
+-                    if not report.is_file() or sha(report.read_bytes())!=r.get('report_sha256'):
+-                        raise SystemExit('post-pop baseline report raw SHA mismatch: '+str(report))
+-                    if not source.is_file() or sha(source.read_bytes())!=r.get('source_sha256'):
+-                        raise SystemExit('post-pop baseline report source SHA mismatch: '+str(source))
+-                    doc=json.loads(report.read_bytes())
+-                    if doc.get('text')!=source.read_text(encoding='utf-8'):
+-                        raise SystemExit('post-pop report text differs from saved source: '+str(report))
+-                    report_count+=1; method_count+=len(doc.get('methods',[]))
+-    if (report_count,method_count)!=(16,38):
+-        raise SystemExit('accepted post-pop report/method inventory differs from the reviewed 16/38 matrix')
+-    if ac.get('case_count')!=6 or ac.get('class_instance_count')!=8 or ac.get('fresh_jdk_legs')!=['javac23'] or len(ac.get('new_pop_origins',[]))!=9:
+-        raise SystemExit('post-pop acceptance summary differs from the independently observed root-v4 facts')
++    if ex.get('schema')!='recover-proved-local-source-types-complete-class-replay-root-v1' or ac.get('schema')!=ex.get('schema'):
++        raise SystemExit('typed baseline schema mismatch')
++    if ex.get('status')!='candidate-replay-recorded' or ac.get('status')!='verified-typed-replay-observations-only' or ac.get('cf12_complete') is not False:
++        raise SystemExit('typed baseline is not the accepted complete-source-root-v4 observation')
++    if len(ex.get('commands',[]))!=99 or len(ex.get('case_rows',[]))!=6 or sum(len(x.get('class_files',[])) for x in ex['case_rows'])!=8:
++        raise SystemExit('typed baseline is not the exact 99-command/six-case/eight-class replay')
++    if ac.get('anchor_matches')!=8 or ac.get('control_classifications_preserved')!=8 or ac.get('default_all_map_pairs')!=10:
++        raise SystemExit('typed acceptance summary differs from accepted root-v4 observations')
+     return ex,ac
+ 
+ def main():
+@@ -190,22 +153,22 @@
+     ap.add_argument('--cli',required=True); ap.add_argument('--cli-sha256',required=True)
+     ap.add_argument('--metadata',required=True); ap.add_argument('--metadata-sha256',required=True)
+     ap.add_argument('--validation-execution',required=True); ap.add_argument('--validation-sha256',required=True)
+-    ap.add_argument('--source-base',required=True); ap.add_argument('--pretyped-execution',required=True); ap.add_argument('--pretyped-execution-sha256',required=True); ap.add_argument('--pretyped-acceptance',required=True); ap.add_argument('--pretyped-acceptance-sha256',required=True); ap.add_argument('--jdk8-home',required=True)
++    ap.add_argument('--source-base',required=True); ap.add_argument('--typed-execution',required=True); ap.add_argument('--typed-execution-sha256',required=True); ap.add_argument('--typed-acceptance',required=True); ap.add_argument('--typed-acceptance-sha256',required=True); ap.add_argument('--jdk8-home',required=True)
+     ap.add_argument('--jdk23-home',required=True)
+     ap.add_argument('--jadx',required=True); ap.add_argument('--jadx-sha256',required=True)
+     ap.add_argument('--out',required=True)
+     a=ap.parse_args(); cli=Path(a.cli).resolve(); meta=Path(a.metadata).resolve(); build=Path(a.validation_execution).resolve(); out=Path(a.out).resolve()
+     if out.exists(): raise SystemExit('refusing to overwrite replay evidence: '+str(out))
+-    if not rehex(a.source_base,40): raise SystemExit('--source-base must be lowercase 40-hex')
++    if a.source_base!='2d70da515896c25ce022b8c28f4935ff2e105026': raise SystemExit('--source-base must be 2d70da515896c25ce022b8c28f4935ff2e105026')
+     jadx=Path(a.jadx).resolve()
+     for p,expected in ((cli,a.cli_sha256),(meta,a.metadata_sha256),(build,a.validation_sha256),(jadx,a.jadx_sha256)):
+         if not p.is_file() or sha(p.read_bytes())!=expected: raise SystemExit('explicit candidate/build pin mismatch: '+str(p))
+     md=json.loads(meta.read_bytes()); execution=json.loads(build.read_bytes())
+-    if md.get('cli_path')!=str(cli) or md.get('cli_sha256')!=a.cli_sha256 or md.get('source_commit_base')!=a.source_base:
++    if md.get('schema')!='recover-proved-conditional-switch-fallthrough-candidate-cli-root-v1' or md.get('cli_path')!=str(cli) or md.get('cli_sha256')!=a.cli_sha256 or md.get('source_commit_base')!=a.source_base:
+         raise SystemExit('candidate metadata is not bound to explicit CLI/source-base')
+     if md.get('build_result_sha256')!=a.validation_sha256 or md.get('metadata_path')!=str(meta): raise SystemExit('candidate metadata does not bind exact validation result/path')
+     if not build.is_relative_to(RESULTS.resolve()) or build.name!='execution.json': raise SystemExit('validation execution must live under this change results')
+-    if execution.get('status')!='validation-passed-cli-frozen' or execution.get('freeze',{}).get('cli_path')!=str(cli) or execution.get('freeze',{}).get('cli_sha256')!=a.cli_sha256 or execution.get('freeze',{}).get('metadata_path')!=str(meta) or execution.get('freeze',{}).get('source_commit_base')!=a.source_base:
++    if execution.get('schema')!='recover-proved-conditional-switch-fallthrough-validation-build-root-v2' or execution.get('status')!='validation-passed-cli-frozen' or execution.get('freeze',{}).get('cli_path')!=str(cli) or execution.get('freeze',{}).get('cli_sha256')!=a.cli_sha256 or execution.get('freeze',{}).get('metadata_path')!=str(meta) or execution.get('freeze',{}).get('source_commit_base')!=a.source_base:
+         raise SystemExit('validation execution does not bind the explicit frozen candidate')
+     runner=execution.get('validation_runner',{}); runner_path=Path(runner.get('path','')).resolve()
+     if not runner_path.is_file() or runner_path.parent!=RESULTS.resolve() or not runner_path.name.startswith('run-validation-build-root-v') or sha(runner_path.read_bytes())!=runner.get('sha256'):
+@@ -219,14 +182,13 @@
+     if preflight_pins!=after_pins or any(preflight_pins.get(k)!=v for k,v in pins_before.items()):
+         raise SystemExit('validation build pins differ from live candidate sources')
+     v6_acceptance,v6_doc,v6_inventory=verify_v6_bundle()
+-    pretyped_path=Path(a.pretyped_execution).resolve(); pretyped_acceptance_path=Path(a.pretyped_acceptance).resolve()
+-    pretyped_doc,pretyped_acceptance=verify_postpop(pretyped_path,a.pretyped_execution_sha256,pretyped_acceptance_path,a.pretyped_acceptance_sha256)
++    typed_path=Path(a.typed_execution).resolve(); typed_acceptance_path=Path(a.typed_acceptance).resolve()
++    typed_doc,typed_acceptance=verify_typed_baseline(typed_path,a.typed_execution_sha256,typed_acceptance_path,a.typed_acceptance_sha256)
+     out.mkdir(parents=True); (out/'raw').mkdir(); (out/'reports').mkdir(); (out/'sources').mkdir(); (out/'classes').mkdir()
+     load_guard(out/'raw')
+     env=os.environ.copy(); stripped=[]
+     for key in STRIP:
+         if key in env: stripped.append(key); env.pop(key)
+-    env['LC_ALL']='C'
+     acceptance=v6_acceptance
+     if sha(JDK_MANIFEST.read_bytes())!=JDK_MANIFEST_SHA: raise SystemExit('pinned dual-JDK manifest mismatch')
+     jdkdoc=json.loads(JDK_MANIFEST.read_bytes()); jdkpins={x['leg']:x for x in jdkdoc['legs']}
+@@ -237,18 +199,17 @@
+             rec=jdkpins[leg]['jdk_tools'][tool]; actual=home/'bin'/tool
+             if Path(rec['path']).resolve()!=actual.resolve() or actual.stat().st_size!=rec['bytes'] or sha(actual.read_bytes())!=rec['sha256']:
+                 raise SystemExit('pinned JDK tool mismatch: '+leg+'/'+tool)
+-    preflight=json.loads(BOUNDARY_PREFLIGHT.read_bytes())
+-    if set(preflight)!={'schema','commands','source_files','runner','jdk_tools','status','original_four_legs_raw_equal','class_files','free_bytes_after'} or preflight.get('schema')!='typed-local-java-boundary-preflight-root-v1' or preflight.get('status')!='observed-original-boundary-runtime' or preflight.get('original_four_legs_raw_equal') is not True or set(preflight.get('source_files',{}))!={'LocalSourceTypesBoundaries.java','private-LocalSourceTypesBoundaries.java','private-BoundaryRunner.java','BoundaryRunner.java'} or set(preflight.get('runner',{}))!={'path','sha256'} or set(preflight.get('jdk_tools',{}))!={'javac8','javac23'}: raise SystemExit('root boundary original preflight does not match exact v1 contract')
+-    for name in ('LocalSourceTypesBoundaries.java','BoundaryRunner.java'):
+-        p=BOUNDARY/name
+-        if sha(p.read_bytes())!=preflight.get('source_files',{}).get(name): raise SystemExit('root-corrected boundary source pin mismatch: '+name)
++    homes23=homes['javac23']
++    env['JAVA_HOME']=str(homes23)
++    env['PATH']=str(homes23/'bin')+os.pathsep+env.get('PATH','')
++    env['LC_ALL']='C'; env['TZ']='UTC'
+     runtime_cp,runtime_inventory=pinned_runtime_classpath()
+-    record={'schema':SCHEMA,'status':'collecting','candidate':{'cli':str(cli),'cli_sha256':a.cli_sha256,'metadata':str(meta),'validation_execution':str(build),'validation_sha256':a.validation_sha256,'source_base':a.source_base,'source_pins_before':pins_before},'jadx':{'path':str(jadx),'sha256':a.jadx_sha256,'version_command':None},'jdk_manifest':{'path':str(JDK_MANIFEST),'sha256':JDK_MANIFEST_SHA,'legs':{k:v['jdk_tools'] for k,v in jdkpins.items()}},'baseline_acceptance':str(acceptance),'baseline_acceptance_sha256':sha(acceptance.read_bytes()),'baseline_full_replay_sha256':BASELINE_FULL_SHA,'baseline_render_sha256':BASELINE_RENDER_SHA,'pretyped_baseline':{'execution_path':str(pretyped_path),'execution_sha256':a.pretyped_execution_sha256,'acceptance_path':str(pretyped_acceptance_path),'acceptance_sha256':a.pretyped_acceptance_sha256},'guard':{'path':str(GUARD_PATH),'sha256':GUARD_SHA256,'minimum_free_bytes':5*1024**3,'maximum_target_bytes':1024**3},'boundary_preflight':{'path':str(BOUNDARY_PREFLIGHT),'sha256':sha(BOUNDARY_PREFLIGHT.read_bytes()),'source_files':preflight['source_files']},'environment':{'stripped':stripped,'overrides':{'LC_ALL':'C'},'runtime_classpath':runtime_cp},'runtime_inventory':runtime_inventory,'commands':[],'case_rows':[],'boundary_rows':[]}
++    record={'schema':SCHEMA,'status':'collecting','candidate':{'cli':str(cli),'cli_sha256':a.cli_sha256,'metadata':str(meta),'validation_execution':str(build),'validation_sha256':a.validation_sha256,'source_base':a.source_base,'source_pins_before':pins_before},'jadx':{'path':str(jadx),'sha256':a.jadx_sha256,'version_command':None},'jdk_manifest':{'path':str(JDK_MANIFEST),'sha256':JDK_MANIFEST_SHA,'legs':{k:v['jdk_tools'] for k,v in jdkpins.items()}},'baseline_acceptance':str(acceptance),'baseline_acceptance_sha256':sha(acceptance.read_bytes()),'baseline_full_replay_sha256':BASELINE_FULL_SHA,'baseline_render_sha256':BASELINE_RENDER_SHA,'typed_baseline':{'execution_path':str(typed_path),'execution_sha256':a.typed_execution_sha256,'acceptance_path':str(typed_acceptance_path),'acceptance_sha256':a.typed_acceptance_sha256},'guard':{'path':str(GUARD_PATH),'sha256':GUARD_SHA256,'minimum_free_bytes':5*1024**3,'maximum_target_bytes':1024**3},'environment':{'stripped':stripped,'overrides':{'JAVA_HOME':env['JAVA_HOME'],'PATH':env['PATH'],'LC_ALL':'C','TZ':'UTC'},'runtime_classpath':runtime_cp},'runtime_inventory':runtime_inventory,'commands':[],'case_rows':[]}
+     global ACTIVE_RECORD, ACTIVE_OUTPUT
+     ACTIVE_RECORD=record; ACTIVE_OUTPUT=out; write_json(out/'execution.json',record)
+     jadx_version=run([jadx,'--version'],ROOT,env,out/'raw'/'tool-versions'/'jadx','jadx-version')
+     record['jadx']['version_command']=jadx_version
+-    if jadx_version['exit_code']!=0: raise SystemExit('pinned JADX version command failed')
++    if jadx_version['exit_code']!=0 or Path(jadx_version['streams']['stdout']['path']).read_text().strip()!='1.5.6': raise SystemExit('pinned JADX version command failed or did not report 1.5.6')
+     legs={'jdk8':homes['javac8'],'jdk23':homes['javac23']}
+     for case in CASES:
+         cap=BASE/'harness-v3-java/capture'/case/'input'
+@@ -257,7 +218,7 @@
+         target=next((p for p in files if '$Inner' not in p.name),files[0])
+         fqcn='jadx.tests.integration.switches.'+target.stem
+         row={'case':case,'class_files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in files],'legs':{}}
+-        case_legs=legs.items() if case in ('TestSwitch.test','TestSwitchNoDefault.test') else (('jdk23',homes['javac23']),)
++        case_legs=legs.items() if case in ('TestSwitch.test','TestSwitchNoDefault.test','TestSwitchWithFallThroughCase.test') else (('jdk23',homes['javac23']),)
+         for leg,home in case_legs:
+             java=home/'bin/java'; javac=home/'bin/javac'
+             # Keep every JDK/profile output under a new deterministic directory.
+@@ -313,43 +274,6 @@
+                 legrow['profiles'][profile]=runrow
+             row['legs'][leg]=legrow
+         record['case_rows'].append(row); write_json(out/'execution.json',record)
+-    source=BOUNDARY/'LocalSourceTypesBoundaries.java'; runner=BOUNDARY/'BoundaryRunner.java'
+-    if not source.is_file() or not runner.is_file(): raise SystemExit('private boundary sources are missing')
+-    row={'source':{'path':str(source),'bytes':source.stat().st_size,'sha256':sha(source.read_bytes())},'runner':{'path':str(runner),'bytes':runner.stat().st_size,'sha256':sha(runner.read_bytes())},'legs':{}}
+-    for leg,home in legs.items():
+-        javac=home/'bin/javac'; java=home/'bin/java'; bdir=out/'classes'/'boundary'/leg; bdir.mkdir(parents=True)
+-        original=bdir/'original'; original.mkdir()
+-        shutil.copyfile(source,original/source.name); shutil.copyfile(runner,original/runner.name)
+-        co=original/'classes'; co.mkdir()
+-        c=run([javac,'-encoding','UTF-8','-g:none','-source','8','-target','8','-proc:none','-d',co,original/source.name,original/runner.name],ROOT,env,out/'raw'/'boundary'/leg/'original-compile','compile')
+-        classfile=co/'LocalSourceTypesBoundaries.class'
+-        raw_orig=None
+-        if c['exit_code']==0:
+-            r=run([java,'-Xverify:all','-cp',co,'BoundaryRunner'],ROOT,env,out/'raw'/'boundary'/leg/'original-run','runtime'); raw_orig=r
+-        row['legs'][leg]={'original_compile':c,'original_class':{'path':str(classfile),'bytes':classfile.stat().st_size,'sha256':sha(classfile.read_bytes())} if classfile.is_file() else None,'original_runtime':raw_orig,'jadx':None,'candidate':{}}
+-        if c['exit_code']!=0 or not classfile.is_file(): continue
+-        for profile in ('jadx','default','all'):
+-            srcdir=bdir/profile/'src'; srcdir.mkdir(parents=True)
+-            if profile=='jadx':
+-                jd=run([jadx,'--no-res','--config','none','--threads-count','1','-d',srcdir,classfile],ROOT,env,out/'raw'/'boundary'/leg/'jadx-decompile','decompile')
+-                gen=next(iter(srcdir.rglob('LocalSourceTypesBoundaries.java')),None)
+-                if not gen: row['legs'][leg]['jadx']={'decompile':jd,'compile':None,'runtime':None}; continue
+-            else:
+-                render=[cli,'class-source','--input',classfile,'--class','LocalSourceTypesBoundaries','--policy','single-class','--release','8','--format','json']
+-                if profile=='all': render += ['--evidence','all']
+-                rr=run(render,ROOT,env,out/'raw'/'boundary'/leg/profile/'render','render-'+profile)
+-                if rr['exit_code']!=0: row['legs'][leg]['candidate'][profile]={'render':rr,'report_path':None,'compile':None,'runtime':None}; continue
+-                report=json.loads(Path(rr['streams']['stdout']['path']).read_bytes()); rp=out/'reports'/'boundary'/leg/profile/'class.json'; rp.parent.mkdir(parents=True,exist_ok=True); rp.write_bytes(Path(rr['streams']['stdout']['path']).read_bytes())
+-                gen=srcdir/'LocalSourceTypesBoundaries.java'; gen.write_text(report['text'],encoding='utf-8')
+-            shutil.copyfile(runner,srcdir/'BoundaryRunner.java'); classes=srcdir.parent/'classes'; classes.mkdir()
+-            cr=run([javac,'-encoding','UTF-8','-g:none','-source','8','-target','8','-proc:none','-classpath',runtime_cp,'-d',classes,gen,srcdir/'BoundaryRunner.java'],ROOT,env,out/'raw'/'boundary'/leg/profile/'compile','compile')
+-            rt=None
+-            if cr['exit_code']==0:
+-                rt=run([java,'-Xverify:all','-cp',classes,'BoundaryRunner'],ROOT,env,out/'raw'/'boundary'/leg/profile/'runtime','runtime')
+-            value={'decompile':jd if profile=='jadx' else None,'render':None if profile=='jadx' else rr,'report_path':None if profile=='jadx' else str(rp),'sources':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in [gen,srcdir/'BoundaryRunner.java']],'compile':cr,'runtime':rt}
+-            if profile=='jadx': row['legs'][leg]['jadx']=value
+-            else: row['legs'][leg]['candidate'][profile]=value
+-    record['boundary_rows'].append(row); write_json(out/'execution.json',record)
+     pins_after=live_pins(md)
+     if pins_after!=pins_before: raise SystemExit('source pins changed during complete-class replay; raw evidence retained')
+     record['candidate']['source_pins_after']=pins_after
+--- a/typed-replay-verifier-v2.py
++++ b/verify-conditional-replay.py
+@@ -1,24 +1,24 @@
+ #!/usr/bin/env python3
+-"""Independent, read-only v5 verifier draft for the local-type full-class replay."""
++"""Independent, read-only verifier draft for the conditional switch fallthrough replay."""
+ import argparse, hashlib, json, os, re, sys, zipfile
+ from pathlib import Path
+ from blake3 import blake3
+ 
+ ROOT=Path('/Users/lordcasser/workspace/projects/jarde')
+ BASE=ROOT/'openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1'
+-RESULTS=ROOT/'openspec/changes/recover-proved-local-source-types/results'
+-SCHEMA='recover-proved-local-source-types-complete-class-replay-root-v1'
+-ANCHORS={'TestSwitch.test','TestSwitchNoDefault.test'}
++RESULTS=ROOT/'openspec/changes/recover-proved-conditional-switch-fallthrough/results'
++SCHEMA='recover-proved-conditional-switch-fallthrough-complete-class-replay-root-v1'
++ANCHORS={'TestSwitchWithFallThroughCase.test'}
++TYPED_ANCHORS={'TestSwitch.test','TestSwitchNoDefault.test'}
+ CONTROLS={'TestSwitchFallThrough.test':'match','TestSwitchLabels.test':'match',
+-          'TestSwitchLabels.testWithDisabledConstReplace':'match',
+-          'TestSwitchWithFallThroughCase.test':'compile-fail'}
++          'TestSwitchLabels.testWithDisabledConstReplace':'match'}
+ BASELINE_ACCEPTANCE_SHA='1e8c457a5edea2bab276ba9c5f394a8a994e06853208c8abe8e5f0cb8de2b214'
+ BASELINE_FULL_SHA='04ee982bad32e216dc1908fddeec588016b5c209f1d0b1f64e0683689501f16c'
+ BASELINE_RENDER_SHA='5c5b06683abb0141d157e97a31c9d6299355ba8cc9803e52f2b7808a64ecce3b'
+-PREPOP_EXECUTION=Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json')
+-PREPOP_EXECUTION_SHA='93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08'
+-PREPOP_ACCEPTANCE=Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json')
+-PREPOP_ACCEPTANCE_SHA='bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06'
++TYPED_EXECUTION=ROOT/'openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/execution.json'
++TYPED_EXECUTION_SHA='27afad91dc4e5c426d90f6ff4253b4244541490161752b759d1f5ada19847ed5'
++TYPED_ACCEPTANCE=ROOT/'openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/acceptance.json'
++TYPED_ACCEPTANCE_SHA='d9e336b8b6eb33b76c0d866eb83040540586eba9df5ba629311f2371f577812f'
+ 
+ def sha(b): return hashlib.sha256(b).hexdigest()
+ def need(ok,msg):
+@@ -118,37 +118,44 @@
+         found.append(bcis)
+     need(len(found)==1,'javap exact method name+descriptor must resolve once: '+method_name+descriptor)
+     return found[0]
+-def postpop_report(execution, case, leg_name, profile, input_path):
+-    rows=[x for x in execution.get('cases',[]) if x.get('case')==case]
+-    need(len(rows)==1,'post-pop baseline case missing/duplicated: '+case)
+-    leg=rows[0].get('legs',{}).get(leg_name); need(leg is not None,'post-pop baseline JDK leg missing: '+case+'/'+leg_name)
+-    reports=leg.get('profiles',{}).get(profile,{}).get('reports',[])
+-    matches=[r for r in reports if Path(r.get('input_path','')).resolve()==Path(input_path).resolve()]
+-    need(len(matches)==1,'post-pop baseline report missing/duplicated: '+case+'/'+profile+'/'+Path(input_path).name)
++def typed_report(execution, case, profile, input_path):
++    rows=[x for x in execution.get('case_rows',[]) if x.get('case')==case]
++    need(len(rows)==1,'complete typed baseline case missing/duplicated: '+case)
++    leg=rows[0].get('legs',{}).get('jdk23'); need(leg is not None,'typed baseline JDK23 row missing: '+case)
++    pr=leg.get('profiles',{}).get(profile); need(pr is not None,'typed baseline profile missing: '+case+'/'+profile)
++    matches=[x for x in pr.get('report_bindings',[]) if Path(x.get('input_path','')).resolve()==Path(input_path).resolve()]
++    need(len(matches)==1,'typed baseline report binding missing/duplicated: '+case+'/'+profile+'/'+Path(input_path).name)
+     rec=matches[0]; p=Path(rec['report_path']); raw=p.read_bytes()
+-    need(sha(raw)==rec['report_sha256'],'post-pop baseline report raw SHA mismatch')
++    need(stream(rec['render_command']['streams']['stdout'])==raw,'typed report differs from its original render stdout')
+     doc=json.loads(raw)
+-    need(doc.get('text')==Path(rec['source_path']).read_text(encoding='utf-8') and sha(Path(rec['source_path']).read_bytes())==rec['source_sha256'],'post-pop baseline source/report binding mismatch')
++    source=next((x for x in pr['sources'] if Path(x['path']).stem==p.stem),None)
++    need(source is not None,'typed full source missing for report '+str(p))
++    source_path=Path(source['path']); source_bytes=source_path.read_bytes()
++    need(len(source_bytes)==source['bytes'] and sha(source_bytes)==source['sha256'],'typed full source pin mismatch '+str(source_path))
++    need(doc.get('text')==source_bytes.decode('utf-8'),'typed report text differs from saved full source')
+     return doc
+ 
+ def main():
+-    ap=argparse.ArgumentParser(); ap.add_argument('--execution',required=True); ap.add_argument('--pretyped-execution',required=True); ap.add_argument('--pretyped-execution-sha256',required=True); ap.add_argument('--pretyped-acceptance',required=True); ap.add_argument('--pretyped-acceptance-sha256',required=True)
++    ap=argparse.ArgumentParser(); ap.add_argument('--execution',required=True); ap.add_argument('--typed-execution',required=True); ap.add_argument('--typed-execution-sha256',required=True); ap.add_argument('--typed-acceptance',required=True); ap.add_argument('--typed-acceptance-sha256',required=True)
+     ap.add_argument('--cli',required=True); ap.add_argument('--cli-sha256',required=True)
+     ap.add_argument('--metadata',required=True); ap.add_argument('--metadata-sha256',required=True)
+     ap.add_argument('--validation-execution',required=True); ap.add_argument('--validation-sha256',required=True)
+     ap.add_argument('--source-base',required=True); ap.add_argument('--jdk8-home',required=True); ap.add_argument('--jdk23-home',required=True)
+     a=ap.parse_args(); ex=Path(a.execution).resolve(); d=load(ex)
+     need(d.get('schema')==SCHEMA and d.get('status')=='candidate-replay-recorded','execution schema/status mismatch')
+-    need(len(a.source_base)==40 and all(c in '0123456789abcdef' for c in a.source_base),'source-base must be lowercase 40-hex')
++    need(a.source_base=='2d70da515896c25ce022b8c28f4935ff2e105026','source-base must be 2d70da515896c25ce022b8c28f4935ff2e105026')
+     cli=Path(a.cli).resolve(); meta=Path(a.metadata).resolve(); build=Path(a.validation_execution).resolve()
+     for p,h in ((cli,a.cli_sha256),(meta,a.metadata_sha256),(build,a.validation_sha256)):
+         need(p.is_file() and sha(p.read_bytes())==h,'explicit candidate/build SHA mismatch: '+str(p))
++    java23=Path(a.jdk23_home).resolve()
++    overrides=d.get('environment',{}).get('overrides',{})
++    need(overrides.get('JAVA_HOME')==str(java23) and overrides.get('PATH','').split(os.pathsep)[0]==str(java23/'bin') and overrides.get('LC_ALL')=='C' and overrides.get('TZ')=='UTC','replay Java environment overrides mismatch')
+     jadx_path=Path(d.get('jadx',{}).get('path','')).resolve()
+     need(jadx_path.is_file() and sha(jadx_path.read_bytes())==d['jadx'].get('sha256'),'live JADX executable SHA mismatch')
+     md=load(meta); val=load(build)
+-    need(md.get('metadata_path')==str(meta) and md.get('build_result_sha256')==a.validation_sha256 and md.get('schema','').startswith('recover-proved-local-source-types-candidate-cli-') and md.get('cli_path')==str(cli) and md.get('cli_sha256')==a.cli_sha256 and md.get('source_commit_base')==a.source_base,'candidate metadata binding mismatch')
++    need(md.get('metadata_path')==str(meta) and md.get('build_result_sha256')==a.validation_sha256 and md.get('schema')=='recover-proved-conditional-switch-fallthrough-candidate-cli-root-v1' and md.get('cli_path')==str(cli) and md.get('cli_sha256')==a.cli_sha256 and md.get('source_commit_base')==a.source_base,'candidate metadata binding mismatch')
+     need(build.is_relative_to(RESULTS.resolve()) and build.name=='execution.json','validation execution is outside this change results')
+-    need(val.get('schema','').startswith('recover-proved-local-source-types-validation-build-root-v') and val.get('status')=='validation-passed-cli-frozen' and val.get('freeze',{}).get('cli_path')==str(cli) and val.get('freeze',{}).get('cli_sha256')==a.cli_sha256 and val.get('freeze',{}).get('metadata_path')==str(meta) and val.get('freeze',{}).get('source_commit_base')==a.source_base,'validation freeze binding mismatch')
++    need(val.get('schema')=='recover-proved-conditional-switch-fallthrough-validation-build-root-v2' and val.get('status')=='validation-passed-cli-frozen' and val.get('freeze',{}).get('cli_path')==str(cli) and val.get('freeze',{}).get('cli_sha256')==a.cli_sha256 and val.get('freeze',{}).get('metadata_path')==str(meta) and val.get('freeze',{}).get('source_commit_base')==a.source_base,'validation freeze binding mismatch')
+     build_runner=val.get('validation_runner',{}); build_runner_path=Path(build_runner.get('path','')).resolve()
+     need(build_runner_path.is_file() and build_runner_path.parent==RESULTS.resolve() and build_runner_path.name.startswith('run-validation-build-root-v') and sha(build_runner_path.read_bytes())==build_runner.get('sha256'),'live change validation-runner pin mismatch')
+     need(val.get('guarded_runner_template',{}).get('path')==str(ROOT/'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py') and val.get('guarded_runner_template',{}).get('sha256')=='51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33','frozen validation guard template mismatch')
+@@ -170,30 +177,16 @@
+     need(d.get('baseline_render_sha256')==BASELINE_RENDER_SHA and sha((BASE/'render-root-v1/execution.json').read_bytes())==BASELINE_RENDER_SHA,'root-v6 render baseline SHA mismatch')
+     acceptance=load(accepted)
+     need(acceptance.get('status')=='observations-verified-unit-not-accepted' and acceptance.get('cf12_complete') is False,'historical CF12 evidence is not an observations-only accepted baseline')
+-    pretyped_path=Path(a.pretyped_execution).resolve(); pretyped_acceptance_path=Path(a.pretyped_acceptance).resolve()
+-    need(pretyped_path==PREPOP_EXECUTION and a.pretyped_execution_sha256==PREPOP_EXECUTION_SHA and pretyped_acceptance_path==PREPOP_ACCEPTANCE and a.pretyped_acceptance_sha256==PREPOP_ACCEPTANCE_SHA,'post-pop comparator must be the exact accepted root-v4 artifact')
+-    need(pretyped_path.is_file() and sha(pretyped_path.read_bytes())==a.pretyped_execution_sha256,'explicit post-pop execution path/SHA mismatch')
+-    need(pretyped_acceptance_path.is_file() and sha(pretyped_acceptance_path.read_bytes())==a.pretyped_acceptance_sha256,'explicit post-pop acceptance path/SHA mismatch')
+-    pretyped=load(pretyped_path); preaccept=load(pretyped_acceptance_path)
+-    need(pretyped.get('schema')=='recover-proved-local-source-types-post-pop-baseline-root-v3','post-pop execution schema mismatch')
+-    need(preaccept.get('schema')=='recover-proved-local-source-types-post-pop-baseline-acceptance-v3' and preaccept.get('status')=='accepted-independent-control-baseline','post-pop baseline is not independently accepted')
+-    need(preaccept.get('execution_path')==str(pretyped_path) and preaccept.get('execution_sha256')==a.pretyped_execution_sha256,'post-pop acceptance does not bind exact execution')
+-    need(preaccept.get('historical_cf12_acceptance_sha256')==BASELINE_ACCEPTANCE_SHA and preaccept.get('historical_cf12_full_replay_sha256')==BASELINE_FULL_SHA,'post-pop acceptance historical CF12 hash bindings mismatch')
+-    need(pretyped.get('status')=='post-pop-baseline-observed-unaccepted','post-pop execution is not the accepted completed observation')
+-    need({x.get('case') for x in pretyped.get('cases',[])}==ANCHORS|set(CONTROLS) and len(pretyped.get('cases',[]))==6,'accepted post-pop CF12 case inventory mismatch')
+-    need(sum(len(x.get('class_files',[])) for x in pretyped['cases'])==8,'accepted post-pop class inventory mismatch')
+-    need(all(set(x.get('legs',{}))=={'javac23'} for x in pretyped['cases']),'accepted post-pop baseline must be JDK23-only')
+-    need(len(pretyped.get('commands',[]))==48,'accepted post-pop command count is not the reviewed JDK23-only replay')
+-    pretyped_report_count=0; pretyped_method_count=0
+-    for case_row in pretyped['cases']:
+-        for leg_row in case_row['legs'].values():
+-            for profile_row in leg_row['profiles'].values():
+-                for report_row in profile_row['reports']:
+-                    report_doc=load(report_row['report_path'])
+-                    pretyped_report_count+=1; pretyped_method_count+=len(report_doc.get('methods',[]))
+-    need((pretyped_report_count,pretyped_method_count)==(16,38),'accepted post-pop report/method inventory is not the reviewed 16/38 matrix')
+-    need(preaccept.get('case_count')==6 and preaccept.get('class_instance_count')==8 and preaccept.get('fresh_jdk_legs')==['javac23'] and len(preaccept.get('new_pop_origins',[]))==9,'post-pop acceptance summary differs from actual root-v4 facts')
+-    need(d.get('pretyped_baseline',{}).get('execution_path')==str(pretyped_path) and d['pretyped_baseline'].get('execution_sha256')==a.pretyped_execution_sha256 and d['pretyped_baseline'].get('acceptance_path')==str(pretyped_acceptance_path) and d['pretyped_baseline'].get('acceptance_sha256')==a.pretyped_acceptance_sha256,'replay does not bind exact accepted post-pop baseline')
++    typed_path=Path(a.typed_execution).resolve(); typed_acceptance_path=Path(a.typed_acceptance).resolve()
++    need(typed_path==TYPED_EXECUTION.resolve() and a.typed_execution_sha256==TYPED_EXECUTION_SHA and typed_acceptance_path==TYPED_ACCEPTANCE.resolve() and a.typed_acceptance_sha256==TYPED_ACCEPTANCE_SHA,'typed comparator must be exact complete-source-root-v4 pair')
++    need(typed_path.is_file() and sha(typed_path.read_bytes())==a.typed_execution_sha256,'typed execution path/SHA mismatch')
++    need(typed_acceptance_path.is_file() and sha(typed_acceptance_path.read_bytes())==a.typed_acceptance_sha256,'typed acceptance path/SHA mismatch')
++    typed=load(typed_path); typed_accept=load(typed_acceptance_path)
++    need(typed.get('schema')=='recover-proved-local-source-types-complete-class-replay-root-v1' and typed.get('status')=='candidate-replay-recorded','typed execution schema/status mismatch')
++    need(typed_accept.get('schema')==typed.get('schema') and typed_accept.get('status')=='verified-typed-replay-observations-only' and typed_accept.get('cf12_complete') is False,'typed execution acceptance mismatch')
++    need(len(typed.get('commands',[]))==99 and len(typed.get('case_rows',[]))==6 and sum(len(r.get('class_files',[])) for r in typed['case_rows'])==8,'typed baseline is not the complete-source-root-v4 99-command six-case/eight-class record')
++    need(typed_accept.get('anchor_matches')==8 and typed_accept.get('control_classifications_preserved')==8 and typed_accept.get('default_all_map_pairs')==10,'typed acceptance observation counts mismatch')
++    need(d.get('typed_baseline',{}).get('execution_path')==str(typed_path) and d['typed_baseline'].get('execution_sha256')==a.typed_execution_sha256 and d['typed_baseline'].get('acceptance_path')==str(typed_acceptance_path) and d['typed_baseline'].get('acceptance_sha256')==a.typed_acceptance_sha256,'replay does not bind exact accepted complete typed baseline')
+     inventory={x['path']:x for x in acceptance['copied_evidence_inventory']}
+     need(len(inventory)==451,'root-v6 copied-evidence closure count mismatch')
+     closed_path=BASE/'observation-input-inventory-root-v1.json'; closed=load(closed_path)
+@@ -203,9 +196,6 @@
+         need(len(b)==rec['bytes'] and sha(b)==rec['sha256'],'CF12 closed input changed: '+rec['path'])
+     for historical in (BASE/'harness-v3-java/execution.json',BASE/'render-root-v1/execution.json',BASE/'full-replay-root-v1/execution.json'):
+         verify_baseline_inventory(historical,inventory)
+-    preflight=ROOT/'openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/execution.json'
+-    need(d.get('boundary_preflight',{}).get('path')==str(preflight) and sha(preflight.read_bytes())==d['boundary_preflight']['sha256'],'root boundary source preflight binding mismatch')
+-    pre=load(preflight); need(set(pre)=={'schema','commands','source_files','runner','jdk_tools','status','original_four_legs_raw_equal','class_files','free_bytes_after'} and pre.get('schema')=='typed-local-java-boundary-preflight-root-v1' and pre.get('status')=='observed-original-boundary-runtime' and pre.get('original_four_legs_raw_equal') is True and set(pre.get('source_files',{}))=={'LocalSourceTypesBoundaries.java','private-LocalSourceTypesBoundaries.java','private-BoundaryRunner.java','BoundaryRunner.java'} and set(pre.get('runner',{}))=={'path','sha256'} and set(pre.get('jdk_tools',{}))=={'javac8','javac23'},'root boundary source preflight exact schema/status mismatch')
+     direct_path=BASE/'harness-v3-java/execution.json'; direct=load(direct_path)
+     helper=BASE/'full-replay-root-v1/helpers'; fresh=BASE/'harness-v3-java/fresh-classes'
+     need(direct.get('schema')=='cf12-fresh-official-upstream-harness-root-v3' and direct.get('source_unchanged') is True,'direct harness baseline identity mismatch')
+@@ -234,7 +224,7 @@
+             need(actual.is_file() and actual.resolve()==Path(toolrec['path']).resolve() and actual.stat().st_size==toolrec['bytes'] and sha(actual.read_bytes())==toolrec['sha256'],'live JDK tool SHA mismatch '+leg+'/'+tool)
+     old=load(BASE/'full-replay-root-v1/execution.json'); old_rows={}
+     for row in old['cases']: old_rows.setdefault(row['case'],{})[row['kind']]=row
+-    need(set(old_rows)==ANCHORS|set(CONTROLS),'historical full-replay case set mismatch')
++    need(set(old_rows)==ANCHORS|TYPED_ANCHORS|set(CONTROLS),'historical full-replay case set mismatch')
+     old_commands=old['commands']; historical_original_raw={}
+     def old_raw(cmd):
+         pair=[]
+@@ -246,7 +236,7 @@
+         jadx_cmds=[c for c in old_commands if c['label']=='runtime' and c['exit_code']==0 and len(c['argv'])>4 and '/'+case+'/jadx/classes' in c['argv'][c['argv'].index('-cp')+1]]
+         need(len(original_cmds)==1 and len(jadx_cmds)==1 and old_raw(original_cmds[0])==old_raw(jadx_cmds[0]),'historical original/JADX raw relationship does not close '+case)
+         historical_original_raw[case]=old_raw(original_cmds[0])
+-    for case,expected in {**CONTROLS,'TestSwitch.test':'mismatch','TestSwitchNoDefault.test':'compile-fail'}.items():
++    for case,expected in {**CONTROLS,'TestSwitch.test':'mismatch','TestSwitchNoDefault.test':'compile-fail','TestSwitchWithFallThroughCase.test':'compile-fail'}.items():
+         need(set(old_rows[case])=={'jadx','jarde-default','jarde-all'},'historical source/profile matrix mismatch '+case)
+         for profile in ('jarde-default','jarde-all'):
+             prior=old_rows[case][profile]
+@@ -267,6 +257,7 @@
+     need(d.get('guard')=={'path':str(guard_source),'sha256':'51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33','minimum_free_bytes':5*1024**3,'maximum_target_bytes':1024**3} and sha(guard_source.read_bytes())==d['guard']['sha256'],'command guard provenance mismatch')
+     version_rows=[c for c in commands if c.get('label')=='jadx-version']
+     need(len(version_rows)==1 and version_rows[0]['argv']==[str(jadx_path),'--version'] and version_rows[0]['exit_code']==0,'pinned JADX version raw command missing/failed')
++    need(raw(version_rows[0])[0].decode('utf-8',errors='replace').strip()=='1.5.6','JADX version stdout is not exactly 1.5.6')
+     indices=[]
+     for c in commands:
+         need(c.get('exit_code') is not None and c.get('guard_stop') is None,'timeout/guard-stopped command in replay')
+@@ -279,15 +270,16 @@
+             stream(rec)
+     need(len(indices)==len(set(indices)),'duplicate guarded command index')
+     need(len(d['case_rows'])==6 and sum(len(r['class_files']) for r in d['case_rows'])==8,'six upstream fixtures/eight class instances not replayed')
+-    rows={r['case']:r for r in d['case_rows']}; need(set(rows)==ANCHORS|set(CONTROLS),'fixture case inventory mismatch')
++    need('boundary_rows' not in d,'standalone typed boundary replay is outside this conditional slice')
++    rows={r['case']:r for r in d['case_rows']}; need(set(rows)==ANCHORS|TYPED_ANCHORS|set(CONTROLS),'fixture case inventory mismatch')
+     for case,row in rows.items():
+         need(len(row['class_files']) in (1,2),'captured class-set size mismatch '+case)
+         for item in row['class_files']:
+             p=Path(item['path']); b=p.read_bytes(); need(len(b)==item['bytes'] and sha(b)==item['sha256'],'captured class pin mismatch '+case)
+             verify_baseline_inventory(p,inventory)
+-    results={'anchor_matches':0,'control_classifications_preserved':0,'default_all_map_pairs':0,'boundary_observed_outputs':{}}
++    results={'conditional_anchor_matches':0,'control_classifications_preserved':0,'default_all_map_pairs':0}
+     for case,row in rows.items():
+-        expected_legs={'jdk8','jdk23'} if case in ANCHORS else {'jdk23'}
++        expected_legs={'jdk8','jdk23'} if case in ANCHORS|TYPED_ANCHORS else {'jdk23'}
+         need(set(row['legs'])==expected_legs,case+' JDK replay matrix differs from the accepted class/runtime boundary')
+         for leg,lr in row['legs'].items():
+             jdkhome=Path(a.jdk8_home if leg=='jdk8' else a.jdk23_home).resolve()
+@@ -349,7 +341,7 @@
+                     actual_classes={x.relative_to(Path(av[av.index('-d')+1])).as_posix() for x in Path(av[av.index('-d')+1]).rglob('*.class')}
+                     need(actual_classes==expected_classes,case+'/'+leg+'/'+profile+' generated complete class-file set differs from frozen original class set')
+                 else:
+-                    need(case=='TestSwitchWithFallThroughCase.test' and CONTROLS[case]=='compile-fail' and pr['runtime'] is None,case+'/'+leg+'/'+profile+' unexpected generated-source compilation refusal')
++                    need(False,case+'/'+leg+'/'+profile+' generated-source compilation failed; replay requires every full source set to compile')
+                 for rp in pr['render_reports']:
+                     input_path=next(x['path'] for x in row['class_files'] if Path(x['path']).stem==Path(rp).stem)
+                     render_rec=next((x['render_command'] for x in pr['report_bindings'] if x['report_path']==rp),None)
+@@ -357,6 +349,12 @@
+                     expected_argv=[str(cli),'class-source','--input',input_path,'--class','jadx.tests.integration.switches.'+Path(input_path).stem,'--policy','single-class','--release','8','--format','json']
+                     if profile=='all': expected_argv += ['--evidence','all']
+                     need(render_rec['argv']==expected_argv,case+'/'+leg+'/'+profile+' CLI argv mismatch')
++                if comp['exit_code']==0:
++                    need(pr['runtime'] is not None,case+'/'+leg+'/'+profile+' successful compile has no runtime')
++                    rr=pr['runtime']
++                    need(rr['argv'][0]==str(jdkhome/'bin/java') and rr['argv'][1]=='-Xverify:all' and rr['argv'][-2:]==['jadx.tests.integration.switches.'+Path(next(x['path'] for x in rows[case]['class_files'] if '$Inner' not in x['path'])).stem,case.split('.')[0]],case+'/'+leg+'/'+profile+' candidate runtime argv mismatch')
++                    cp=rr['argv'][rr['argv'].index('-cp')+1].split(os.pathsep); compile_out=comp['argv'][comp['argv'].index('-d')+1]
++                    need(cp[0]==oldcp[0] and cp[1]==compile_out and cp[2:]==oldcp[2:],case+'/'+leg+'/'+profile+' candidate runtime classpath mismatch')
+                 if case in ANCHORS:
+                     need(comp['exit_code']==0 and pr['runtime'] is not None,case+'/'+leg+'/'+profile+' anchor did not compile/run')
+                     rr=pr['runtime']; need(rr['argv'][0]==str(jdkhome/'bin/java') and rr['argv'][1]=='-Xverify:all' and rr['argv'][-2:]==['jadx.tests.integration.switches.'+Path(next(x['path'] for x in rows[case]['class_files'] if '$Inner' not in x['path'])).stem,case.split('.')[0]],case+'/'+leg+'/'+profile+' candidate runtime argv mismatch')
+@@ -364,7 +362,10 @@
+                     rcp=rr['argv'][rr['argv'].index('-cp')+1].split(os.pathsep); compile_out=av[av.index('-d')+1]
+                     need(rcp[0]==oldcp[0] and rcp[1]==compile_out and rcp[2:]==oldcp[2:],'candidate runtime classpath target binding mismatch')
+                     need(raw(pr['runtime'])==oracle,case+'/'+leg+'/'+profile+' anchor stdout/stderr differs from original')
+-                    results['anchor_matches']+=1
++                    results['conditional_anchor_matches']+=1
++                elif case in TYPED_ANCHORS:
++                    need(comp['exit_code']==0 and pr['runtime'] is not None and pr['runtime']['exit_code']==0 and raw(pr['runtime'])==oracle,case+'/'+leg+'/'+profile+' existing typed anchor behavior changed')
++                    results['control_classifications_preserved']+=1
+                 else:
+                     expected=CONTROLS[case]
+                     if expected=='compile-fail':
+@@ -381,22 +382,22 @@
+                 need(dm.get('text')==am.get('text') and method_maps(dm)==method_maps(am),case+'/'+leg+'/'+stem+' default/all body/map mismatch')
+                 results['default_all_map_pairs']+=1
+                 for profile,doc in (('default',dm),('all',am)):
+-                    base=postpop_report(pretyped,case,'javac23',profile,next(x['path'] for x in row['class_files'] if Path(x['path']).stem==stem))
+-                    if case in CONTROLS or stem.endswith('$Inner') or case not in ANCHORS:
+-                        need(doc.get('text')==base.get('text') and method_maps(doc)==method_maps(base),case+'/'+leg+'/'+stem+' changed independently accepted post-pop body/map')
++                    base=typed_report(typed,case,profile,next(x['path'] for x in row['class_files'] if Path(x['path']).stem==stem))
++                    if case not in ANCHORS:
++                        need(doc.get('text')==base.get('text') and method_maps(doc)==method_maps(base),case+'/'+leg+'/'+stem+' changed typed-baseline body/map')
+                         verify_report_preserved(base,doc,case+'/'+leg+'/'+stem+'/'+profile)
+                     else:
+                         # Anchor changes are limited to the named test method; all other member bodies/maps remain frozen.
+                         old_methods={method_key(m):m for m in base.get('methods',[])}; new_methods={method_key(m):m for m in doc.get('methods',[])}
+                         need(set(old_methods)==set(new_methods),case+'/'+leg+'/'+stem+' method identity set changed')
+-                        target_desc='(Ljava/lang/String;)Ljava/lang/String;' if case=='TestSwitch.test' else '(I)V'
++                        target_desc='(IZZ)Ljava/lang/String;'
+                         for mk,bm in old_methods.items():
+                             nm=new_methods[mk]
+                             if mk[0]=='test' and mk[1]==target_desc: continue
+-                            need(method_source_text(bm)==method_source_text(nm) and method_maps({'methods':[bm]})==method_maps({'methods':[nm]}),case+'/'+leg+'/'+stem+' unrelated method changed against post-pop baseline')
++                            need(method_source_text(bm)==method_source_text(nm) and method_maps({'methods':[bm]})==method_maps({'methods':[nm]}),case+'/'+leg+'/'+stem+' unrelated method changed against complete typed baseline')
+                             verify_report_preserved({'methods':[bm]},{'methods':[nm]},case+'/'+leg+'/'+stem+'/'+repr(mk))
+                 if case in ANCHORS and stem.endswith('$TestCls'):
+-                    affected_name='test'; affected_descriptor='(Ljava/lang/String;)Ljava/lang/String;' if case=='TestSwitch.test' else '(I)V'
++                    affected_name='test'; affected_descriptor='(IZZ)Ljava/lang/String;'
+                     for doc in (dm,am):
+                         matches=[m for m in doc.get('methods',[]) if m.get('item',{}).get('name',{}).get('escaped')==affected_name and m.get('item',{}).get('descriptor',{}).get('escaped')==affected_descriptor]
+                         need(len(matches)==1 and matches[0].get('outcome',{}).get('report',{}).get('source_map'),case+'/'+leg+'/'+stem+' exact affected name+descriptor method/source map missing')
+@@ -407,86 +408,15 @@
+                         verify_baseline_inventory(jp,inventory)
+                         physical=javap_method_bcis(jp,affected_name,affected_descriptor)
+                         need(physical and physical==owned,case+'/'+leg+'/'+stem+' source-map BCI set differs from exact physical method instructions')
+-    b=d['boundary_rows']; need(len(b)==1,'standalone neighboring boundary fixture missing')
+-    br=b[0]; src=Path(br['source']['path']); runner=Path(br['runner']['path'])
+-    for p,key in ((src,'source'),(runner,'runner')): need(p.is_file() and len(p.read_bytes())==br[key]['bytes'] and sha(p.read_bytes())==br[key]['sha256'],'boundary source pin mismatch '+key)
+-    need(src==preflight.parent/'LocalSourceTypesBoundaries.java' and runner==preflight.parent/'BoundaryRunner.java' and br['source']['sha256']==pre['source_files']['LocalSourceTypesBoundaries.java'] and br['runner']['sha256']==pre['source_files']['BoundaryRunner.java'],'boundary sources differ from root-corrected preflight source')
+-    need(set(br['legs'])=={'jdk8','jdk23'},'boundary Java legs incomplete')
+-    boundary_classifications={}
+-    for leg,lr in br['legs'].items():
+-        jdk=Path(a.jdk8_home if leg=='jdk8' else a.jdk23_home).resolve()
+-        oc=lr['original_compile']; need(oc['exit_code']==0 and oc['argv'][0]==str(jdk/'bin/javac'),'boundary original Java8 compile failed')
+-        need(oc['argv'][oc['argv'].index('-source')+1]=='8' and oc['argv'][oc['argv'].index('-target')+1]=='8' and '-g:none' in oc['argv'],'boundary compile profile mismatch')
+-        original_class=lr['original_class']; need(original_class is not None,'boundary original class missing after successful compile')
+-        op=Path(original_class['path']); ob=op.read_bytes()
+-        need(len(ob)==original_class['bytes'] and sha(ob)==original_class['sha256'],'boundary compiled class pin mismatch')
+-        original=lr['original_runtime']; need(original and original['exit_code']==0,'boundary original runtime absent/failed')
+-        oracle=raw(original); need(original['argv'][0]==str(jdk/'bin/java') and original['argv'][1]=='-Xverify:all' and original['argv'][-1]=='BoundaryRunner','boundary original runtime argv mismatch')
+-        jax=lr['jadx']; need(isinstance(jax,dict) and isinstance(jax.get('decompile'),dict),'boundary JADX decompile command missing')
+-        need(jax['decompile']['argv'][0]==str(Path(d['jadx']['path']).resolve()) and jax['decompile']['argv'][-1]==str(op),'boundary JADX input/tool mismatch')
+-        if jax.get('compile') is not None:
+-            jc=jax['compile']; need(jc['argv'][0]==str(jdk/'bin/javac'),'boundary JADX compiler mismatch')
+-            if jc['exit_code']==0:
+-                need(jax.get('runtime') is not None,'boundary JADX compile succeeded without attempted runtime')
+-                jr=jax['runtime']; need(jr['argv'][0]==str(jdk/'bin/java') and jr['argv'][1]=='-Xverify:all' and jr['argv'][-1]=='BoundaryRunner','boundary JADX runtime argv mismatch')
+-                if jr['exit_code']==0: need(raw(jr)==oracle,'successful boundary JADX runtime differs from original')
+-            else:
+-                need(jax.get('runtime') is None,'failed boundary JADX compile has runtime')
+-        elif jax.get('runtime') is not None:
+-            raise ValueError('boundary JADX runtime exists without a compile attempt')
+-        boundary_classifications[leg]={'original':'passed','jadx':{'decompile_exit':jax['decompile']['exit_code'],'compile_exit':None if jax.get('compile') is None else jax['compile']['exit_code'],'runtime_exit':None if jax.get('runtime') is None else jax['runtime']['exit_code']},'candidate':{}}
+-        for profile in ('default','all'):
+-            cr=lr['candidate'].get(profile); need(isinstance(cr,dict),'boundary candidate profile missing '+leg+'/'+profile)
+-            render=cr.get('render'); report_path=cr.get('report_path')
+-            if render is None:
+-                need(report_path is None and cr.get('compile') is None and cr.get('runtime') is None,'boundary report/compile exists without a render command')
+-                boundary_classifications[leg]['candidate'][profile]={'render':'not-attempted','compile':'not-attempted','runtime':'not-attempted'}
+-                continue
+-            need(render['argv'][0]==str(cli) and render['argv'][render['argv'].index('--input')+1]==str(op),'boundary CLI input binding mismatch')
+-            expected_render=[str(cli),'class-source','--input',str(op),'--class','LocalSourceTypesBoundaries','--policy','single-class','--release','8','--format','json']
+-            if profile=='all': expected_render += ['--evidence','all']
+-            need(render['argv']==expected_render,'boundary CLI argv/profile mismatch')
+-            if render['exit_code']!=0:
+-                need(report_path is None and cr.get('compile') is None and cr.get('runtime') is None,'failed boundary render has downstream artifacts')
+-                boundary_classifications[leg]['candidate'][profile]={'render':'failed','compile':'not-attempted','runtime':'not-attempted'}
+-                continue
+-            need(report_path is not None,'successful boundary render has no report')
+-            need(stream(render['streams']['stdout'])==Path(report_path).read_bytes(),'boundary report is not exact render-command stdout')
+-            doc=load(report_path); need(doc['class']['class_bytes']['length']==len(ob) and doc['class']['class_bytes']['digest']==blake3(ob).hexdigest(),'boundary report class bytes mismatch')
+-            source_paths=[x['path'] for x in cr.get('sources',[])]
+-            need(source_paths and doc.get('text')==Path(source_paths[0]).read_text(encoding='utf-8'),'boundary candidate source differs from CLI report')
+-            for item in cr['sources']:
+-                sb=Path(item['path']).read_bytes(); need(len(sb)==item['bytes'] and sha(sb)==item['sha256'],'boundary candidate source pin mismatch '+profile)
+-            runner_copy=next((x for x in cr['sources'] if Path(x['path']).name=='BoundaryRunner.java'),None)
+-            need(runner_copy is not None and runner_copy['sha256']==br['runner']['sha256'],'boundary Runner was edited or omitted '+profile)
+-            comp=cr.get('compile'); need(comp is not None,'successful boundary render lacks full-source compile attempt')
+-            need(comp['argv'][0]==str(jdk/'bin/javac') and comp['argv'][-len(source_paths):]==source_paths and comp['argv'][comp['argv'].index('-source')+1]=='8' and comp['argv'][comp['argv'].index('-target')+1]=='8' and '-g:none' in comp['argv'],'boundary candidate javac argv mismatch')
+-            if comp['exit_code']!=0:
+-                need(cr.get('runtime') is None,'failed boundary compile has runtime')
+-                boundary_classifications[leg]['candidate'][profile]={'render':'passed','compile':'failed','runtime':'not-attempted'}
+-                continue
+-            runtime=cr.get('runtime'); need(runtime is not None,'successful boundary compile lacks runtime attempt')
+-            need(runtime['argv'][0]==str(jdk/'bin/java') and runtime['argv'][1]=='-Xverify:all' and runtime['argv'][-1]=='BoundaryRunner','boundary candidate runtime argv mismatch')
+-            classification='failed'
+-            if runtime['exit_code']==0:
+-                out=raw(runtime); need(out==oracle,leg+'/'+profile+' successful candidate boundary runtime differs from original')
+-                labels=('char-call-','char-field=','char-i2c-','char-entry=','string-no-default-','int-','reference-','slot-reuse-')
+-                stdout=out[0].decode('utf-8',errors='replace'); expected=oracle[0].decode('utf-8',errors='replace')
+-                for label in labels:
+-                    def lines(text): return [x for x in text.splitlines() if x.startswith(label)]
+-                    observed=lines(stdout)
+-                    results['boundary_observed_outputs'][leg+'/'+profile+'/'+label]=observed
+-                    need(observed==lines(expected),leg+'/'+profile+' changed boundary output '+label)
+-                classification='passed'
+-            boundary_classifications[leg]['candidate'][profile]={'render':'passed','compile':'passed','runtime':classification}
+-        dmrow=lr['candidate'].get('default',{}); amrow=lr['candidate'].get('all',{})
+-        if dmrow.get('report_path') is not None and amrow.get('report_path') is not None:
+-            dm=load(dmrow['report_path']); am=load(amrow['report_path'])
+-            need(dm.get('text')==am.get('text') and method_maps(dm)==method_maps(am),'boundary default/all complete body/map differs')
+-    results['boundary_classifications']=boundary_classifications
+-    need(sum(c['label'] in ('render-default','render-all') for c in commands)==24,'expected 20 CF12 and 4 boundary CLI render commands for the JDK23-only controls matrix')
++    expected_render_commands=sum(len(row['class_files'])*len(row['legs']) for row in rows.values())
++    expected_jdk_legs=sum(len(row['legs']) for row in rows.values())
++    labels={label:sum(c.get('label')==label for c in commands) for label in {c.get('label') for c in commands}}
++    need(labels.get('jadx-version')==1 and labels.get('compile')==4*expected_jdk_legs and labels.get('runtime')==4*expected_jdk_legs,'complete per-leg compile/runtime command inventory differs')
++    need(labels.get('render-default')==expected_render_commands and labels.get('render-all')==expected_render_commands,'default/all complete-class render inventory differs')
++    need(set(labels)<= {'jadx-version','compile','runtime','render-default','render-all'},'unexpected standalone or unscoped replay command was recorded')
++    need(sum(c['label']=='render-default' for c in commands)==sum(c['label']=='render-all' for c in commands),'default/all candidate render command totals differ')
+     need(all(c.get('guard_stop') is None and c.get('exit_code') is not None for c in commands),'a guarded command failed, stopped, or timed out')
+-    print(json.dumps({'schema':SCHEMA,'status':'verified-typed-replay-observations-only','cf12_complete':False,**results},indent=2))
++    print(json.dumps({'schema':SCHEMA,'status':'verified-conditional-switch-replay-observations','cf12_complete':False,**results},indent=2))
+ if __name__=='__main__':
+     try: main()
+     except Exception as e:

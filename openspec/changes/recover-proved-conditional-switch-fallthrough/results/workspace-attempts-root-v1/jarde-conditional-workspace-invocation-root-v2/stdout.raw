@@ -1,0 +1,22 @@
+{"completed_batch": 1, "total_batches": 95, "test_totals": [223, 0, 0]}
+{"completed_batch": 2, "total_batches": 95, "test_totals": [24, 0, 0]}
+{"completed_batch": 3, "total_batches": 95, "test_totals": [16, 0, 0]}
+{"completed_batch": 4, "total_batches": 95, "test_totals": [15, 0, 0]}
+{"completed_batch": 5, "total_batches": 95, "test_totals": [117, 0, 0]}
+{"completed_batch": 6, "total_batches": 95, "test_totals": [35, 0, 0]}
+{"completed_batch": 7, "total_batches": 95, "test_totals": [9, 0, 6]}
+{"completed_batch": 8, "total_batches": 95, "test_totals": [17, 0, 0]}
+{"completed_batch": 9, "total_batches": 95, "test_totals": [17, 0, 6]}
+{"completed_batch": 10, "total_batches": 95, "test_totals": [31, 0, 0]}
+{"completed_batch": 11, "total_batches": 95, "test_totals": [24, 0, 0]}
+{"completed_batch": 12, "total_batches": 95, "test_totals": [14, 0, 1]}
+{"completed_batch": 13, "total_batches": 95, "test_totals": [35, 0, 0]}
+{"completed_batch": 14, "total_batches": 95, "test_totals": [42, 0, 0]}
+{"completed_batch": 15, "total_batches": 95, "test_totals": [53, 0, 0]}
+{"completed_batch": 16, "total_batches": 95, "test_totals": [69, 0, 0]}
+{"completed_batch": 17, "total_batches": 95, "test_totals": [22, 0, 0]}
+{"completed_batch": 18, "total_batches": 95, "test_totals": [71, 0, 0]}
+{"completed_batch": 19, "total_batches": 95, "test_totals": [52, 0, 0]}
+{"completed_batch": 20, "total_batches": 95, "test_totals": [86, 0, 0]}
+{"completed_batch": 21, "total_batches": 95, "test_totals": [63, 0, 0]}
+{"status": "failed", "error": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/lordcasser/workspace/projects/jarde/target/debug/build/thiserror-d15cb5490518d646/build-script-build'", "workspace_summary_count": null, "workspace_totals": null}

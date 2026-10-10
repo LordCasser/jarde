@@ -1,0 +1,662 @@
+[
+  {
+    "source": "/private/tmp/jarde-conditional-builder-application-root-v1/execution.json",
+    "copy": "jarde-conditional-builder-application-root-v1/execution.json",
+    "bytes": 553,
+    "sha256": "97128bb40e4e391426b75411f0aed67b3504b257ae2d9aaaebdbe485b4439412"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-application-root-v2/execution.json",
+    "copy": "jarde-conditional-builder-application-root-v2/execution.json",
+    "bytes": 402,
+    "sha256": "c19540a8950e1a7acb3d76d94d44b1fa0ffa499b0476b6a3411c373593978dc1"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-proof-test-application-root-v1/execution.json",
+    "copy": "jarde-conditional-proof-test-application-root-v1/execution.json",
+    "bytes": 251,
+    "sha256": "e75b28936da5912a1dd733c17ec58969ff591178c7e76dd323788329a2c0b824"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clone-test-application-root-v1/execution.json",
+    "copy": "jarde-conditional-clone-test-application-root-v1/execution.json",
+    "bytes": 251,
+    "sha256": "452894959777d5b2f8798f3502b9f9a8c0a121e03875bac88be2c2d4959a456e"
+  },
+  {
+    "source": "/private/tmp/jarde-golden-legacy-class-root-v1/execution.json",
+    "copy": "jarde-golden-legacy-class-root-v1/execution.json",
+    "bytes": 564,
+    "sha256": "9d3b0cf539f1830ad39e7f4191b3b880d8121ee54724c283f0b299acd3a279ab"
+  },
+  {
+    "source": "/private/tmp/jarde-golden-legacy-class-invocation-root-v1/argv.json",
+    "copy": "jarde-golden-legacy-class-invocation-root-v1/argv.json",
+    "bytes": 141,
+    "sha256": "4d2dd979fc1fd042e5b5ae898a49bff9b8e1daa1d579105dbef73d8d799e26b9"
+  },
+  {
+    "source": "/private/tmp/jarde-golden-legacy-class-invocation-root-v1/execution.json",
+    "copy": "jarde-golden-legacy-class-invocation-root-v1/execution.json",
+    "bytes": 604,
+    "sha256": "da8c681510e233278327f11a5b83077023c7d0e371c592f12f00cb9753e6bab0"
+  },
+  {
+    "source": "/private/tmp/jarde-golden-legacy-class-invocation-root-v1/stderr.raw",
+    "copy": "jarde-golden-legacy-class-invocation-root-v1/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-golden-legacy-class-invocation-root-v1/stdout.raw",
+    "copy": "jarde-golden-legacy-class-invocation-root-v1/stdout.raw",
+    "bytes": 546,
+    "sha256": "629d003ac8023d17ffdf6b9031a3c7183a70b524de062305894df693dea15eef"
+  },
+  {
+    "source": "/private/tmp/jarde-freeze-golden-legacy-class-root-v1.py",
+    "copy": "jarde-freeze-golden-legacy-class-root-v1.py",
+    "bytes": 1607,
+    "sha256": "853e902c3402cefd3805889bbef7eddbada50a091a17e943db306c814e12c036"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-intermediate-clean-root-v1/argv.json",
+    "copy": "jarde-conditional-intermediate-clean-root-v1/argv.json",
+    "bytes": 25,
+    "sha256": "2aa0ec7108900b253b9b80ba5d66975e50fe0889843ce14e18565d333473c611"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-intermediate-clean-root-v1/execution.json",
+    "copy": "jarde-conditional-intermediate-clean-root-v1/execution.json",
+    "bytes": 474,
+    "sha256": "8f22ba24a873b04cfd7f9ff520b82c4138f91590f7221f3e61795faeb7a97df3"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-intermediate-clean-root-v1/stderr.raw",
+    "copy": "jarde-conditional-intermediate-clean-root-v1/stderr.raw",
+    "bytes": 40,
+    "sha256": "e6fca6ac72f3144e474217952c53f55a31ddea972a1f5ead6907bd0cde439df1"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-intermediate-clean-root-v1/stdout.raw",
+    "copy": "jarde-conditional-intermediate-clean-root-v1/stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-root-v1/0.stderr.raw",
+    "copy": "jarde-conditional-clippy-root-v1/0.stderr.raw",
+    "bytes": 3432,
+    "sha256": "78518c932b244ee71e1a21bf2290493e2ad0f456ba49b6b1b48dee241220b118"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-root-v1/0.stdout.raw",
+    "copy": "jarde-conditional-clippy-root-v1/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-root-v1/execution.json",
+    "copy": "jarde-conditional-clippy-root-v1/execution.json",
+    "bytes": 3210,
+    "sha256": "b30be8e14f02a4a950d39867f3dd5f752e01a82b91d71d3dae21316c74d58019"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v1/argv.json",
+    "copy": "jarde-conditional-clippy-invocation-root-v1/argv.json",
+    "bytes": 81,
+    "sha256": "2d8ef109612ebf29df3a53ed388272e35f1dae004a8ef6e6f09d9fb7420471a8"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v1/execution.json",
+    "copy": "jarde-conditional-clippy-invocation-root-v1/execution.json",
+    "bytes": 531,
+    "sha256": "18db6ee8dc11c4bdd79a4c4543df3ef5d750eba852e45ef63b30e96622c79ec4"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v1/stderr.raw",
+    "copy": "jarde-conditional-clippy-invocation-root-v1/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v1/stdout.raw",
+    "copy": "jarde-conditional-clippy-invocation-root-v1/stdout.raw",
+    "bytes": 43,
+    "sha256": "1ec8c4197ea70f9abc6413e2532dc5d7f30004c3161bba126381190ba0ade6dd"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-clippy-root-v1.py",
+    "copy": "jarde-run-conditional-clippy-root-v1.py",
+    "bytes": 1856,
+    "sha256": "f27807b563551cd3875575dcef1d033e4ca92e598c023791512857978242f620"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-root-v2/0.stderr.raw",
+    "copy": "jarde-conditional-clippy-root-v2/0.stderr.raw",
+    "bytes": 5969,
+    "sha256": "71fbf6e1fd794e1cf0beeb506dd93921d8e2ee69c0ae9a7a6001c3c9c4af2f2e"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-root-v2/0.stdout.raw",
+    "copy": "jarde-conditional-clippy-root-v2/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-root-v2/execution.json",
+    "copy": "jarde-conditional-clippy-root-v2/execution.json",
+    "bytes": 3210,
+    "sha256": "f1c7f854aa9400940c129f9006930db9c46fdbdb1c8e34ccbd0bffcca3051953"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v2/argv.json",
+    "copy": "jarde-conditional-clippy-invocation-root-v2/argv.json",
+    "bytes": 73,
+    "sha256": "e15397403a952e2e20bd87430966c7295888f692265897034dc92878f4a433df"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v2/execution.json",
+    "copy": "jarde-conditional-clippy-invocation-root-v2/execution.json",
+    "bytes": 521,
+    "sha256": "27c15c13dc25a8831192021fdfb82d76dad65ddc4b6cec49c3298791376e3787"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v2/stderr.raw",
+    "copy": "jarde-conditional-clippy-invocation-root-v2/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-clippy-invocation-root-v2/stdout.raw",
+    "copy": "jarde-conditional-clippy-invocation-root-v2/stdout.raw",
+    "bytes": 43,
+    "sha256": "1ec8c4197ea70f9abc6413e2532dc5d7f30004c3161bba126381190ba0ade6dd"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-clippy-root-v2.py",
+    "copy": "jarde-run-conditional-clippy-root-v2.py",
+    "bytes": 1856,
+    "sha256": "37b50c68bbb597c9b420ca1c5148105ba5d8819baa0b9ad78b8f7a57a475d19d"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-full-replay-adapter-luna-v2/README.md",
+    "copy": "jarde-conditional-full-replay-adapter-luna-v2/README.md",
+    "bytes": 4404,
+    "sha256": "e4a426f5a8addad847e73a841377983fd707e777c9262b6a50b14a08c7bff2ab"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-full-replay-adapter-luna-v2/adapter-v2.diff",
+    "copy": "jarde-conditional-full-replay-adapter-luna-v2/adapter-v2.diff",
+    "bytes": 84884,
+    "sha256": "3841b47402919dd7240c674ccb21441b5aecc8127784f91f0e1b651f136ef2a5"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-full-replay-adapter-luna-v2/prepare-conditional-replay.py",
+    "copy": "jarde-conditional-full-replay-adapter-luna-v2/prepare-conditional-replay.py",
+    "bytes": 23453,
+    "sha256": "b3c26cec2286777036bc93f97df17837c563e0181abd7bff519291ba2d02497e"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-full-replay-adapter-luna-v2/root-frozen-draft-inventory.json",
+    "copy": "jarde-conditional-full-replay-adapter-luna-v2/root-frozen-draft-inventory.json",
+    "bytes": 744,
+    "sha256": "0b4b6ba21922ec9027d9a9b81fcdbd1e4cd34128827495b9fad1477a3964dc6f"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-full-replay-adapter-luna-v2/run-validation-build-root-v2.py",
+    "copy": "jarde-conditional-full-replay-adapter-luna-v2/run-validation-build-root-v2.py",
+    "bytes": 18195,
+    "sha256": "5477c0ec806240269d7c1fabec4f5dc6b33b163f84a0ffd88506d43ff3b56a69"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-full-replay-adapter-luna-v2/verify-conditional-replay.py",
+    "copy": "jarde-conditional-full-replay-adapter-luna-v2/verify-conditional-replay.py",
+    "bytes": 42974,
+    "sha256": "dddd19917b1249c332c8ba91d18448e9b608aae97dafdee42465d097195d6c92"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/0.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v1/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/0.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v1/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/1.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v1/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/1.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v1/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/2.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v1/2.stderr.raw",
+    "bytes": 4728,
+    "sha256": "6ed128d1c9ed25744552cfc01d5de4f8d4e3de7d62004b595de9e3ebe3812e94"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/2.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v1/2.stdout.raw",
+    "bytes": 310,
+    "sha256": "794fb92da019b001a8615d349d70f938a9c81a4250fd12277418e47c8ff8fcdb"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v1/execution.json",
+    "copy": "jarde-conditional-builder-focused-root-v1/execution.json",
+    "bytes": 4138,
+    "sha256": "809673686a542e88c4cf641505fb75263a2f8ea08287f9fb7b0c9a99ab5c1cf4"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v1/argv.json",
+    "copy": "jarde-conditional-builder-invocation-root-v1/argv.json",
+    "bytes": 82,
+    "sha256": "85b8234997af2a0e513325f9615099c0edaf3ca53ca060a4b9fbd2983f22a79c"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v1/execution.json",
+    "copy": "jarde-conditional-builder-invocation-root-v1/execution.json",
+    "bytes": 531,
+    "sha256": "7337b51608091541d4e6fed863d37b05a27a5c6ae0743178dba03402a6eac625"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v1/stderr.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v1/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v1/stdout.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v1/stdout.raw",
+    "bytes": 125,
+    "sha256": "9fce77c87afbae9dce6908445afde0a49cf35a3adac6b310113c9134d05afa13"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-builder-focused-root-v1.py",
+    "copy": "jarde-run-conditional-builder-focused-root-v1.py",
+    "bytes": 1913,
+    "sha256": "9db271f13ed2e7f8a6f51ba4376f0b5c72ffe8b99cfa7e4c6aae3943646a1b5a"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/0.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v2/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/0.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v2/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/1.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v2/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/1.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v2/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/2.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v2/2.stderr.raw",
+    "bytes": 2745,
+    "sha256": "9aec8f94df8f4bfe90440916d8276b07e6992ecca8afef9d5e541ea55cff1830"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/2.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v2/2.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v2/execution.json",
+    "copy": "jarde-conditional-builder-focused-root-v2/execution.json",
+    "bytes": 4078,
+    "sha256": "ae60dc70b7f23aa87d89f5f6da6f2c2a9f4c27b866eea4b532a1da01389db8ab"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v2/argv.json",
+    "copy": "jarde-conditional-builder-invocation-root-v2/argv.json",
+    "bytes": 82,
+    "sha256": "33f2b427c65b1680871c34fb78381211ef64f1b54d61e757d58450b7499ee326"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v2/execution.json",
+    "copy": "jarde-conditional-builder-invocation-root-v2/execution.json",
+    "bytes": 532,
+    "sha256": "deaace3ac82b559c6dd8b73de0f82186300e26db875b5f9665b6470df01d29cb"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v2/stderr.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v2/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v2/stdout.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v2/stdout.raw",
+    "bytes": 125,
+    "sha256": "9fce77c87afbae9dce6908445afde0a49cf35a3adac6b310113c9134d05afa13"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-builder-focused-root-v2.py",
+    "copy": "jarde-run-conditional-builder-focused-root-v2.py",
+    "bytes": 1993,
+    "sha256": "18fd6299eb9a19e6d6883a99f55371cb0caa97ab5eacf851cd8bfc88931f5dd0"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/0.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v3/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/0.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v3/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/1.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v3/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/1.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v3/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/2.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v3/2.stderr.raw",
+    "bytes": 7198,
+    "sha256": "96e87cc2ec24248a7a076f85629f216f2c5d2d7a6c51d1b72932af8931505770"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/2.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v3/2.stdout.raw",
+    "bytes": 31963,
+    "sha256": "dfce3202707d04b4f09a74f3a01f6e5069199b8c3c1599f25be42cb19e893c6f"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v3/execution.json",
+    "copy": "jarde-conditional-builder-focused-root-v3/execution.json",
+    "bytes": 4083,
+    "sha256": "9175cbd54bc915ed3c5569b4bcf66de3c229a398e40696df865ee27820eee7fc"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v3/argv.json",
+    "copy": "jarde-conditional-builder-invocation-root-v3/argv.json",
+    "bytes": 82,
+    "sha256": "91303f571b617e6ca7330877d9be83f4feb6f2d35c4fbf75f58b5ac8b65f0305"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v3/execution.json",
+    "copy": "jarde-conditional-builder-invocation-root-v3/execution.json",
+    "bytes": 531,
+    "sha256": "a9860bc9307e8d4f2c1af3376444d38716f575c6794adff092410f78ef4b8f90"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v3/stderr.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v3/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v3/stdout.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v3/stdout.raw",
+    "bytes": 125,
+    "sha256": "9fce77c87afbae9dce6908445afde0a49cf35a3adac6b310113c9134d05afa13"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-builder-focused-root-v3.py",
+    "copy": "jarde-run-conditional-builder-focused-root-v3.py",
+    "bytes": 1993,
+    "sha256": "c13d077936da1749bec831d219579d43fc77483e6d3ad2706dd671e7367c1de1"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/0.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v4/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/0.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v4/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/1.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v4/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/1.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v4/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/2.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v4/2.stderr.raw",
+    "bytes": 3095,
+    "sha256": "42256dfb5addd7d3b5cc1b6864511264133a7ad56ae0a61a6340bcf7a82f9d1d"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/2.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v4/2.stdout.raw",
+    "bytes": 320,
+    "sha256": "c86e9c667d3376247c9b3f69b82880782c5556e8ba0d0931d6b7d4aadcdb1e22"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v4/execution.json",
+    "copy": "jarde-conditional-builder-focused-root-v4/execution.json",
+    "bytes": 4158,
+    "sha256": "0c41765e9e1f48c1bae791279bb28fac95ec91c941d12e09cbe0d6b13cf36558"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v4/argv.json",
+    "copy": "jarde-conditional-builder-invocation-root-v4/argv.json",
+    "bytes": 82,
+    "sha256": "c778c58f36abf0e5179532e1dafa34d6de9ae9dad9b5f31a10b29c5277dc7ff7"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v4/execution.json",
+    "copy": "jarde-conditional-builder-invocation-root-v4/execution.json",
+    "bytes": 532,
+    "sha256": "35b5651cf88b11486f53c8b8d4d723e7b1b2e4f5a5a0d6f05ada50976d0898d4"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v4/stderr.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v4/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v4/stdout.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v4/stdout.raw",
+    "bytes": 125,
+    "sha256": "9fce77c87afbae9dce6908445afde0a49cf35a3adac6b310113c9134d05afa13"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-builder-focused-root-v4.py",
+    "copy": "jarde-run-conditional-builder-focused-root-v4.py",
+    "bytes": 1918,
+    "sha256": "a22ba8a1623bef9abad6505900d6bda0c53587a2b1c2b25afa7ae01a82ceee60"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/0.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v5/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/0.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v5/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/1.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v5/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/1.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v5/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/2.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v5/2.stderr.raw",
+    "bytes": 3094,
+    "sha256": "c549da7935d73b4cc798f03a56f05de3b6fe84d13900ec8416be65b1eb7448f8"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/2.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v5/2.stdout.raw",
+    "bytes": 320,
+    "sha256": "c86e9c667d3376247c9b3f69b82880782c5556e8ba0d0931d6b7d4aadcdb1e22"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v5/execution.json",
+    "copy": "jarde-conditional-builder-focused-root-v5/execution.json",
+    "bytes": 4159,
+    "sha256": "65889a334ff17e58615cc1187270e37cd610ae95ee499eb69b7b28433d5d9667"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v5/argv.json",
+    "copy": "jarde-conditional-builder-invocation-root-v5/argv.json",
+    "bytes": 82,
+    "sha256": "60421933eb9ffbd7deb4e8bcf63c1cb8b9af36ffce1f3a48d674a87b2ff8e6ce"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v5/execution.json",
+    "copy": "jarde-conditional-builder-invocation-root-v5/execution.json",
+    "bytes": 532,
+    "sha256": "af8aff3bd2778dff8277578da81f575a88a3f1170eafe1528da20a1983022811"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v5/stderr.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v5/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v5/stdout.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v5/stdout.raw",
+    "bytes": 125,
+    "sha256": "9fce77c87afbae9dce6908445afde0a49cf35a3adac6b310113c9134d05afa13"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-builder-focused-root-v5.py",
+    "copy": "jarde-run-conditional-builder-focused-root-v5.py",
+    "bytes": 1918,
+    "sha256": "2f9416dd41cd7b7afc1f4032065833ab073a1faf8df372a3d378937a612ab31e"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/0.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/0.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/1.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/1.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/2.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/2.stderr.raw",
+    "bytes": 277,
+    "sha256": "5b89ba49285958fae195ebfba547a68d970d8da1e424c9fb9c5d5e977db58b62"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/2.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/2.stdout.raw",
+    "bytes": 213,
+    "sha256": "9b9c769aa946b45a8c289b6b912a8f812958eb99ac1044695bcb7aa3f84aa372"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/3.stderr.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/3.stderr.raw",
+    "bytes": 169,
+    "sha256": "61ed75fce584320d16db9df1824a823aa2bde2640867aec5a3e7c9018ef83888"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/3.stdout.raw",
+    "copy": "jarde-conditional-builder-focused-root-v6/3.stdout.raw",
+    "bytes": 206,
+    "sha256": "119d75fc77c078249b97e4318e1ea38e9e706d48fe2e7531e3ca91426b41a520"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-focused-root-v6/execution.json",
+    "copy": "jarde-conditional-builder-focused-root-v6/execution.json",
+    "bytes": 5478,
+    "sha256": "7a0d6369d4ee385e41e63bda0c51a84240e4b88304edb596cbfaa4d0b2faa457"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v6/argv.json",
+    "copy": "jarde-conditional-builder-invocation-root-v6/argv.json",
+    "bytes": 82,
+    "sha256": "b0e309cec19512131535912e507cce3b81a1b05349298679666477b609198d03"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v6/execution.json",
+    "copy": "jarde-conditional-builder-invocation-root-v6/execution.json",
+    "bytes": 532,
+    "sha256": "3197a3059d87cc8a58126f32a1b2f05300934533478e9f1d70dcbc8259aefbb7"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v6/stderr.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v6/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-builder-invocation-root-v6/stdout.raw",
+    "copy": "jarde-conditional-builder-invocation-root-v6/stdout.raw",
+    "bytes": 164,
+    "sha256": "bd44961b7d0f6e48dc903ab4e9d91ee59470e1d1721f6695f4c14e1cfc32942f"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-builder-focused-root-v6.py",
+    "copy": "jarde-run-conditional-builder-focused-root-v6.py",
+    "bytes": 2067,
+    "sha256": "9370609ce864b1460d5ce029f7c5873cbef770928bbedee4f5df6db16f5d079e"
+  }
+]

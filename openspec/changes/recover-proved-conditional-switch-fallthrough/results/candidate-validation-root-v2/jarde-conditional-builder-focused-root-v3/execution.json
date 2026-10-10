@@ -1,0 +1,127 @@
+{
+  "schema": "conditional-boundaries-root-v1",
+  "status": "failed",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:49:44.772987+00:00",
+      "duration_seconds": 3.152100250008516,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 244915977,
+      "free_bytes_after": 62988857344,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v3/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v3/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:49:47.955992+00:00",
+      "duration_seconds": 3.1692654590005986,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 244915977,
+      "free_bytes_after": 62988656640,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v3/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v3/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:49:51.156191+00:00",
+      "duration_seconds": 12.497561625001254,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 283172680,
+      "free_bytes_after": 62989537280,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v3/2.stdout.raw",
+          "bytes": 31963,
+          "sha256": "dfce3202707d04b4f09a74f3a01f6e5069199b8c3c1599f25be42cb19e893c6f"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v3/2.stderr.raw",
+          "bytes": 7198,
+          "sha256": "96e87cc2ec24248a7a076f85629f216f2c5d2d7a6c51d1b72932af8931505770"
+        }
+      }
+    }
+  ],
+  "source_pins": {
+    "crates/jarde-java/src/region.rs": "7c797d4e274f77e0565194ac73c9de2fc9d3ba9801605c8b314e3e6a754e6d50",
+    "crates/jarde-java/src/build.rs": "a1b1c7d2c664057537e901f57245c4d6f5bb5517ef7f7dbde92e59d8a8508dde",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e"
+  },
+  "error": "AssertionError: "
+}

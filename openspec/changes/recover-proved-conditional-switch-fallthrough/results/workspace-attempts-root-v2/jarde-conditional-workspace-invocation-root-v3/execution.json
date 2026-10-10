@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T23:09:37.237298+00:00",
+  "duration_seconds": 407.4762701250147,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-run-conditional-workspace-batches-root-v3.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 4573,
+      "sha256": "52560b3d5b7a2f5acf648e9b37ac4877bda2136db7e57f7d1d14649b4019bb11"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

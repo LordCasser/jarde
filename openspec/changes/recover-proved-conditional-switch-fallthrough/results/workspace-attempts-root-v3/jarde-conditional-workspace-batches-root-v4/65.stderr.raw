@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 3.09s
+[1m[92m     Running[0m tests/p5_definition_read_reuse.rs (target/debug/deps/p5_definition_read_reuse-a31b02f39e89cf23)
+[1m[92m     Running[0m tests/p5_facts_cache.rs (target/debug/deps/p5_facts_cache-7d0f19e5b4fb8e82)
+[1m[92m     Running[0m tests/p5_optimize_workloads.rs (target/debug/deps/p5_optimize_workloads-0ad07c1837855d53)
+[1m[92m     Running[0m tests/p5_shared_payload.rs (target/debug/deps/p5_shared_payload-01c1fe182b2440a4)

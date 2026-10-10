@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.40s
+[1m[92m     Running[0m tests/p3_popped_static_qualifier.rs (target/debug/deps/p3_popped_static_qualifier-3761f43457224b83)
+[1m[92m     Running[0m tests/p3_postfix_handler_boundary.rs (target/debug/deps/p3_postfix_handler_boundary-e5f0e805ee344658)
+[1m[92m     Running[0m tests/p3_postfix_lvalue_values.rs (target/debug/deps/p3_postfix_lvalue_values-c66d58f058b92e5d)
+[1m[92m     Running[0m tests/p3_precise_rethrow.rs (target/debug/deps/p3_precise_rethrow-45780090f81910f1)

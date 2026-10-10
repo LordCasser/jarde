@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.60s
+[1m[92m     Running[0m tests/p3_throw.rs (target/debug/deps/p3_throw-388299c6db33f075)
+[1m[92m     Running[0m tests/p3_throwable_wrap_arguments.rs (target/debug/deps/p3_throwable_wrap_arguments-863caf378ab582fc)
+[1m[92m     Running[0m tests/p3_try_local.rs (target/debug/deps/p3_try_local-37cae84c8b1fd452)
+[1m[92m     Running[0m tests/p3_two_exit_return.rs (target/debug/deps/p3_two_exit_return-37eaed767f9527da)

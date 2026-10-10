@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.65s
+[1m[92m     Running[0m tests/p2_members.rs (target/debug/deps/p2_members-79d622b6145a4d87)
+[1m[92m     Running[0m tests/p2_passes.rs (target/debug/deps/p2_passes-84efd69af4ef0764)
+[1m[92m     Running[0m tests/p2_prefixed_roots.rs (target/debug/deps/p2_prefixed_roots-bb00a000225a908d)
+[1m[92m     Running[0m tests/p2_properties.rs (target/debug/deps/p2_properties-1e970e1862e073c9)

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.06s
+[1m[92m     Running[0m tests/generic_throws_projection.rs (target/debug/deps/generic_throws_projection-a310da332b61d0fa)
+[1m[92m     Running[0m tests/historical_classfile_corpus.rs (target/debug/deps/historical_classfile_corpus-e96f651e6ce0a987)
+[1m[92m     Running[0m tests/inner_class_static_mixed_folding.rs (target/debug/deps/inner_class_static_mixed_folding-6a416ce552c13eee)
+[1m[92m     Running[0m tests/interface_initializer_projection.rs (target/debug/deps/interface_initializer_projection-f8c13ba99b0e3f41)

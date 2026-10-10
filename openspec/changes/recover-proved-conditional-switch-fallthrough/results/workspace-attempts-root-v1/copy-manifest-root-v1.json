@@ -1,0 +1,404 @@
+[
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v1/argv.json",
+    "copy": "jarde-conditional-workspace-invocation-root-v1/argv.json",
+    "bytes": 84,
+    "sha256": "5d6cf751ae733b997c693a28b63465f09384b68062b65d1c1c751dd91f4daeb7"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v1/execution.json",
+    "copy": "jarde-conditional-workspace-invocation-root-v1/execution.json",
+    "bytes": 534,
+    "sha256": "2522e160e263342afb306bda4f76c6193caa45524ce7466ba1e15b0ae72f3e49"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v1/stderr.raw",
+    "copy": "jarde-conditional-workspace-invocation-root-v1/stderr.raw",
+    "bytes": 362,
+    "sha256": "851116aa1a49520fce357d80fd4965adb4faeffc7ed6dc5f706468a27222af7f"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v1/stdout.raw",
+    "copy": "jarde-conditional-workspace-invocation-root-v1/stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-workspace-batches-root-v1.py",
+    "copy": "jarde-run-conditional-workspace-batches-root-v1.py",
+    "bytes": 5960,
+    "sha256": "62e5b1c8658a91fc5918d56f69809bf4f17defe78d6826a40c108e219a451497"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/0.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/0.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/1.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/1.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/1.stdout.raw",
+    "bytes": 93120,
+    "sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/10.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/10.stderr.raw",
+    "bytes": 668,
+    "sha256": "2136713970ad5e6a75717610b0ce74b935fb83da5c56073a95fbaf1c1a4b447f"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/10.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/10.stdout.raw",
+    "bytes": 76880,
+    "sha256": "a39ca8bab51f2eecbad00c3a37a9f2181eea7171839da481ac88805e7a53ffdc"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/11.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/11.stderr.raw",
+    "bytes": 656,
+    "sha256": "fe35924ccd3e291506ff7ba9f7e2477682a60d430a32f33dc54e43720ef708e1"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/11.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/11.stdout.raw",
+    "bytes": 76446,
+    "sha256": "63631138fff4742ccbed2ca1cc8e8c5a46b32d2fe25035cbd9e0044670390252"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/12.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/12.stderr.raw",
+    "bytes": 686,
+    "sha256": "735618cdd2561619e824957f5cfa4727e3e884bc073042c41bad6caeafa4a1fc"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/12.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/12.stdout.raw",
+    "bytes": 75905,
+    "sha256": "cc80858a89d3fe714b8ce23b89483e78a31373306939cf2ccadcd996f56d03e1"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/13.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/13.stderr.raw",
+    "bytes": 644,
+    "sha256": "87096e33db0526df62381266b36e8e772559951d375fcee4c806829737557ab7"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/13.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/13.stdout.raw",
+    "bytes": 75111,
+    "sha256": "60b4390955c30788b7e67416275c19555b15c2c964b4102b644394e56b459204"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/14.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/14.stderr.raw",
+    "bytes": 664,
+    "sha256": "add81985ea521cbd2c36cb8f359d79d8483b17c20e17c9d9d73b3a361d665ae5"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/14.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/14.stdout.raw",
+    "bytes": 76696,
+    "sha256": "9f6649e3e44e15b4cef161d28cc15e411a63b4da8b10bafcf50dc7d7837e6168"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/15.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/15.stderr.raw",
+    "bytes": 646,
+    "sha256": "a8b7105637584eb7cdd0027e1b852c7c1376968608bfb8ef38feefe623a4e5ef"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/15.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/15.stdout.raw",
+    "bytes": 76921,
+    "sha256": "398e44841a08b243868b932164c840e75b86bad289f2dfdcbad44acab0d0c097"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/16.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/16.stderr.raw",
+    "bytes": 602,
+    "sha256": "ef287c49efd23eb5ca6269e83984203a5568a8b5375b1e33009a18d8f35331f3"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/16.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/16.stdout.raw",
+    "bytes": 77851,
+    "sha256": "e8244818ecd3167bb48a967fe85a213516100fb18c4dd984849fdb32aaaa601e"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/17.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/17.stderr.raw",
+    "bytes": 574,
+    "sha256": "02bb84bea83d5da253f40a908f9310f07212962a906d72a55d3cbe2802993665"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/17.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/17.stdout.raw",
+    "bytes": 78667,
+    "sha256": "13e2d870e096e4af3b963479fb9f3841b424bc538da539a1a6b84a5daea65914"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/18.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/18.stderr.raw",
+    "bytes": 578,
+    "sha256": "bd30129e48554f802df1e5a77ecb394079c5dffe8f2ef65bb9f568df66f26b55"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/18.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/18.stdout.raw",
+    "bytes": 75430,
+    "sha256": "76a2c1c96a0cd25551fec0d2451215ca657bd9aed9023767e6ef5616814c2329"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/19.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/19.stderr.raw",
+    "bytes": 572,
+    "sha256": "f85ea10d1e6473323c535cc089f94d3dbcc51641a5386183c2050e82d558f052"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/19.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/19.stdout.raw",
+    "bytes": 78864,
+    "sha256": "b05360d2ea7992234754a6db82dcbd54b2db3ea9629171c2b091a285d5d46b73"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/2.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/2.stderr.raw",
+    "bytes": 2870,
+    "sha256": "7bb195bf1efedc92213b9dd1c29b4e2e6bcc0f8f9f18f660596d0d4d0d0aa31d"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/2.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/2.stdout.raw",
+    "bytes": 101586,
+    "sha256": "1a5f9af3298afd0c972779c7169f5a7168dfe1d67c27b4f7318ed7597300c46b"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/20.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/20.stderr.raw",
+    "bytes": 574,
+    "sha256": "aab056463a7f29902b49aa27228749c2f3f7fc751a1da868bfec50d7a26fbdd4"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/20.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/20.stdout.raw",
+    "bytes": 77281,
+    "sha256": "013a76a502fe8872e68659092398cc1a8fb578c6c5ea3f2d16ed7cfa0a3613b4"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/21.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/21.stderr.raw",
+    "bytes": 548,
+    "sha256": "3b0f679b7c0ec4c0e17013c3fbfcee8db996f12afb5d1a31791aa7cd749d41be"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/21.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/21.stdout.raw",
+    "bytes": 79641,
+    "sha256": "370875bfeae6c517b578f4387b9c316c1e9ebba7a4aad785eb81b60801695385"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/22.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/22.stderr.raw",
+    "bytes": 540,
+    "sha256": "d41c5ede103da4ba28f48cd321a034c24d919458755dc7c875cb247ad0491363"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/22.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/22.stdout.raw",
+    "bytes": 78104,
+    "sha256": "90a4d11c4e679c9cfccc26dbf8f7c1be7ea2dd466bcfe1727c4508daa4734987"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/23.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/23.stderr.raw",
+    "bytes": 552,
+    "sha256": "be4e7a36ff9f418b2541e63fda60b67a02f7cde49ece956013b8fe6c85969a64"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/23.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/23.stdout.raw",
+    "bytes": 79145,
+    "sha256": "829ade00efa95b016cdec5d6456eae923d4ce7bb04a0c81e9e466ea01f3edeaa"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/3.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/3.stderr.raw",
+    "bytes": 658,
+    "sha256": "294d7eefa2022cb731181e4c601dc54dbcd396a09951e009fe7c892b666d34d3"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/3.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/3.stdout.raw",
+    "bytes": 75709,
+    "sha256": "f2d5c1a9dc65f683aa0ddc8669c33be32aa71ce79c2e7df6cacf674b1002836b"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/4.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/4.stderr.raw",
+    "bytes": 628,
+    "sha256": "fb45511a9ec972b9ba3864b651d691c880673f6ef314500964b3f6ca02273613"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/4.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/4.stdout.raw",
+    "bytes": 75103,
+    "sha256": "beb2420f35a0d587b951c35bddf6482acaa622bab2e9071fe004a9f4a3fddedd"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/5.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/5.stderr.raw",
+    "bytes": 606,
+    "sha256": "2f05a5d8372d16bd2f840452595e2486ae35ed036979f17952d7cf568e458592"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/5.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/5.stdout.raw",
+    "bytes": 75016,
+    "sha256": "e995e451efe3b5407568b775312d780b60d3cad9e2117f3d28630537a563e6b5"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/6.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/6.stderr.raw",
+    "bytes": 670,
+    "sha256": "c2fdc3aa1ac8f5e03b3628b69dfae7e6a39b3edc3201effa6c51289caaa80510"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/6.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/6.stdout.raw",
+    "bytes": 83242,
+    "sha256": "f8fdb372049b98b93971fa0db0c708ac57045f39943d6886163743e47321520d"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/7.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/7.stderr.raw",
+    "bytes": 604,
+    "sha256": "673a913a7276a3a95c2b5e205b29b410072be92d4eb2bd14a8a66abff5cb4ff2"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/7.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/7.stdout.raw",
+    "bytes": 76253,
+    "sha256": "9512dc31fd025ba7f68599911d031051cfa77888f690abc2cffd38c1f2caaf16"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/8.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/8.stderr.raw",
+    "bytes": 614,
+    "sha256": "38b62b3fc7fe9e0ebf8fffb453dda5c31497b2ee3b1f5b99685afe35fe3b82b8"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/8.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/8.stdout.raw",
+    "bytes": 75555,
+    "sha256": "b12a92154d19c71e820f02fe5d97d8d0840660a858fc974c85b28f8f50d5b1db"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/9.stderr.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/9.stderr.raw",
+    "bytes": 588,
+    "sha256": "cdc479c6fd7e4dbb128816a6ac503aeffc77c2a719a182f7768f524b4d94b23f"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/9.stdout.raw",
+    "copy": "jarde-conditional-workspace-batches-root-v2/9.stdout.raw",
+    "bytes": 75105,
+    "sha256": "933f38001aaf5b816eb507d7a53cc16dcd719fa4a5fff57e13ef38fa3c951b67"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/execution.json",
+    "copy": "jarde-conditional-workspace-batches-root-v2/execution.json",
+    "bytes": 753068,
+    "sha256": "d38b910c6aed167b4065686e8aa3e308258d567f2a0230057e73096fe94fca74"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-batches-root-v2/metadata.json",
+    "copy": "jarde-conditional-workspace-batches-root-v2/metadata.json",
+    "bytes": 93120,
+    "sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v2/argv.json",
+    "copy": "jarde-conditional-workspace-invocation-root-v2/argv.json",
+    "bytes": 84,
+    "sha256": "a75bd763f623cc98ea9a566336ffe97ca7798b17cacaf88fc020a4f162c811bf"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v2/execution.json",
+    "copy": "jarde-conditional-workspace-invocation-root-v2/execution.json",
+    "bytes": 533,
+    "sha256": "193e79675bd3c4f11bbcfeca06cc665ee539ae30cce99756d8b0c9c71edc31bf"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v2/stderr.raw",
+    "copy": "jarde-conditional-workspace-invocation-root-v2/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-workspace-invocation-root-v2/stdout.raw",
+    "copy": "jarde-conditional-workspace-invocation-root-v2/stdout.raw",
+    "bytes": 1762,
+    "sha256": "21c78ffd91e2c108de3ccb58cc6f6f39028bd1b9b11bf47d414c17df5651dcd2"
+  },
+  {
+    "source": "/private/tmp/jarde-run-conditional-workspace-batches-root-v2.py",
+    "copy": "jarde-run-conditional-workspace-batches-root-v2.py",
+    "bytes": 6100,
+    "sha256": "40609d68afc3c88631f3b62b153d185398ab65f7abddde99228c81f6ff36b387"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-strict-invocation-root-v1/argv.json",
+    "copy": "jarde-conditional-strict-invocation-root-v1/argv.json",
+    "bytes": 78,
+    "sha256": "1c88571f74bb4d3c6c558d067d1b4a95b9dc03cfa5de03460ea97739a7b39a97"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-strict-invocation-root-v1/execution.json",
+    "copy": "jarde-conditional-strict-invocation-root-v1/execution.json",
+    "bytes": 535,
+    "sha256": "2f956e3c7bb2ef69618629024403c208bf91810841cf7ff69f7d7c5924824779"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-strict-invocation-root-v1/stderr.raw",
+    "copy": "jarde-conditional-strict-invocation-root-v1/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-conditional-strict-invocation-root-v1/stdout.raw",
+    "copy": "jarde-conditional-strict-invocation-root-v1/stdout.raw",
+    "bytes": 15731,
+    "sha256": "1160fa9dd6e2d302b3f622a2d76d74ccdbe997d6db535bc3dc788549a2228a82"
+  },
+  {
+    "source": "/private/tmp/jarde-target-size-scan-luna-v1/README.md",
+    "copy": "jarde-target-size-scan-luna-v1/README.md",
+    "bytes": 1882,
+    "sha256": "c1b7ee5ec926dfb15c1474dd02f425eefc583cf8c6b525afc287ebf9c4c8c837"
+  },
+  {
+    "source": "/private/tmp/jarde-target-size-scan-luna-v1/adapter-pin.json",
+    "copy": "jarde-target-size-scan-luna-v1/adapter-pin.json",
+    "bytes": 677,
+    "sha256": "8a24aa7cd7e4efd2fb1bb1beaaabb25947dd000c8abcf38e3a555079b3c41713"
+  },
+  {
+    "source": "/private/tmp/jarde-target-size-scan-luna-v1/target_size_scan.py",
+    "copy": "jarde-target-size-scan-luna-v1/target_size_scan.py",
+    "bytes": 931,
+    "sha256": "f3e6d8a596ff1c645921c9bdbd26c604ef3d3553f72edb6adbd9179a3014a325"
+  }
+]

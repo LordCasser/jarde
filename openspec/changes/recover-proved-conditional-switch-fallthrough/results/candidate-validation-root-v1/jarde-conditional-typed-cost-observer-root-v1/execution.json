@@ -1,0 +1,59 @@
+{
+  "schema": "conditional-typed-cost-observation-root-v1",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "cf12_proved_local_source_types",
+        "--locked",
+        "root_typed_budget_observation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:32:48.002499+00:00",
+      "duration_seconds": 11.20339216699358,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 744033092,
+      "free_bytes_after": 53573615616,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-typed-cost-observer-root-v1/0.stdout.raw",
+          "bytes": 154,
+          "sha256": "aaf252b5379bfd1926d6df0562837de707edcbf5bb6e74b968f5260b471b6f33"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-typed-cost-observer-root-v1/0.stderr.raw",
+          "bytes": 2235,
+          "sha256": "d5883b95263f6a1881bfa8a3857368760b343a3e80dc71113a982b4780c37847"
+        }
+      }
+    }
+  ],
+  "source_pins_before": {
+    "crates/jarde-java/src/build.rs": "57568985c8f7a227bdefee94a5a1354944cad7c0a7648c3ceba329634fcb49f9",
+    "crates/jarde-java/tests/cf12_proved_local_source_types.rs": "e0471ee1078b6b81bd47fe6e97a2691d6d3d791ce780526f5006b33d5282978f"
+  },
+  "status": "observations-collected",
+  "source_pins_after": {
+    "crates/jarde-java/src/build.rs": "57568985c8f7a227bdefee94a5a1354944cad7c0a7648c3ceba329634fcb49f9",
+    "crates/jarde-java/tests/cf12_proved_local_source_types.rs": "e0471ee1078b6b81bd47fe6e97a2691d6d3d791ce780526f5006b33d5282978f"
+  },
+  "sources_restored": true
+}

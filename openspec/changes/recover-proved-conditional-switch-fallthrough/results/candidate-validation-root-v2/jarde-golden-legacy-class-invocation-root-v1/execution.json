@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-10T22:50:19.059714+00:00",
+  "duration_seconds": 0.12991408401285298,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/private/tmp/jarde-freeze-golden-legacy-class-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 546,
+      "sha256": "629d003ac8023d17ffdf6b9031a3c7183a70b524de062305894df693dea15eef"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

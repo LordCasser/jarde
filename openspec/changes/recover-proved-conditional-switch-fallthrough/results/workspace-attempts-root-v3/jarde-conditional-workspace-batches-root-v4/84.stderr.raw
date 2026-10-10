@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.95s
+[1m[92m     Running[0m tests/p3_loop_exit_gateways.rs (target/debug/deps/p3_loop_exit_gateways-af3aa43d88ccbb46)
+[1m[92m     Running[0m tests/p3_loop_terminal_return.rs (target/debug/deps/p3_loop_terminal_return-a91be5357b519edc)
+[1m[92m     Running[0m tests/p3_null_lead_straight_finally.rs (target/debug/deps/p3_null_lead_straight_finally-77941604b1e1a529)
+[1m[92m     Running[0m tests/p3_patterns.rs (target/debug/deps/p3_patterns-a83fd95a6ba2fb00)

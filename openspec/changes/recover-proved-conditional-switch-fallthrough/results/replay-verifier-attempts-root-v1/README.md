@@ -1,0 +1,1 @@
+首次独立 verifier 因把累积 UsageSnapshot 当成方法独立计费而拒绝，原脚本和实际失败原样保留。目标 test 的实际差为 AnalysisSteps311/IrEdges17/IrItems(default212,all211)/OutputBytes469；check 自身计费增量未变。修正版将目标、后续每方法以及类总快照都绑定同一固定 delta，其他字段仍严格不变；其他方法正文、map、质量、诊断不放宽。生产与 CLI 未改。

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.80s
+[1m[92m     Running[0m tests/p3_immediate_functional_receivers.rs (target/debug/deps/p3_immediate_functional_receivers-1d39b95e75545fef)
+[1m[92m     Running[0m tests/p3_instance_receiver.rs (target/debug/deps/p3_instance_receiver-5121b7139ed5b546)
+[1m[92m     Running[0m tests/p3_instanceof.rs (target/debug/deps/p3_instanceof-fadee819e51297bf)
+[1m[92m     Running[0m tests/p3_integer_boolean_return_boundaries.rs (target/debug/deps/p3_integer_boolean_return_boundaries-d046db52832a0f9b)

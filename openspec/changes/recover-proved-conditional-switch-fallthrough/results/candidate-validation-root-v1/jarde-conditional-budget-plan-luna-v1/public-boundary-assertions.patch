@@ -1,0 +1,30 @@
+--- a/crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs
++++ b/crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs
+@@
+     assert!(
+         default.report.source_map.is_empty(),
+         "default evidence selects no source map"
+     );
++    assert!(
++        !all.report.source_map.is_empty(),
++        "all evidence retains the real method's source map"
++    );
+     for segment in all.report.source_map.segments() {
+@@
+-    // The actual Walker caller is exercised here; the helper test does not duplicate its label
+-    // order gate. RegionRecord describes top-level regions, so the absence of an admitted switch
+-    // owning block 0 is the public structural check that prevents this arm from consuming a
+-    // SwitchBreak. Do not pin the refusal code before a root run.
++    // The real public caller refuses the non-adjacent shape at the switch leader.
++    assert!(
++        all.report.regions.iter().any(|region| {
++            !region.structured
++                && region.bci == 0
++                && region.blocks.contains(&0)
++                && region.code == Some("jre_region_switch_arms_overlap")
++        }),
++        "the switch leader is quoted for the observed overlap refusal: {:?}",
++        all.report.regions
++    );
+     assert!(
+*** End Patch

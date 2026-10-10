@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.88s
+[1m[92m     Running[0m tests/p3_meeting.rs (target/debug/deps/p3_meeting-9657de943389eb6b)
+[1m[92m     Running[0m tests/p3_method_ir.rs (target/debug/deps/p3_method_ir-9989d6b1b37776a5)
+[1m[92m     Running[0m tests/p3_mixed_short_circuit_argument.rs (target/debug/deps/p3_mixed_short_circuit_argument-d623b1ee9052cdd3)
+[1m[92m     Running[0m tests/p3_mixed_short_circuit_array.rs (target/debug/deps/p3_mixed_short_circuit_array-e113ea2885402cd4)

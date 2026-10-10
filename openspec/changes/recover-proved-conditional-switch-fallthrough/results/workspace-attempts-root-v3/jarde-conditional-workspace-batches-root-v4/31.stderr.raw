@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.00s
+[1m[92m     Running[0m tests/p3_concat_conversion.rs (target/debug/deps/p3_concat_conversion-5387401ca41375b3)
+[1m[92m     Running[0m tests/p3_constructed_reference_array_elements.rs (target/debug/deps/p3_constructed_reference_array_elements-ceebdbfa01dddb38)
+[1m[92m     Running[0m tests/p3_constructor_primitive_conversion_arguments.rs (target/debug/deps/p3_constructor_primitive_conversion_arguments-4033c34e47d545e6)
+[1m[92m     Running[0m tests/p3_content.rs (target/debug/deps/p3_content-654564a25f53e799)

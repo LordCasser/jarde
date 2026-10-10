@@ -1,0 +1,54 @@
+{
+  "utc": "2026-10-10T23:38:24.670999+00:00",
+  "duration_seconds": 96.76191720800125,
+  "argv": [
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/prepare-conditional-replay.py",
+    "--cli",
+    "/private/tmp/jarde-proved-conditional-switch-cli-v1",
+    "--cli-sha256",
+    "39d5699c1665b16e0c4a46934f0e773aeedf392f5bc60869a7b2762680dd10f1",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/candidate-cli-root-v1.json",
+    "--metadata-sha256",
+    "8267656d7d6b510df9e2788f19f8616b8f2bf06931d9b92dade4e27a46ad1c9a",
+    "--validation-execution",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/validation-build-root-v2/execution.json",
+    "--validation-sha256",
+    "c3168e3b4ed8651b3300dbbabc67ebed759b95a01d9261131dade3278c1b1bd1",
+    "--source-base",
+    "2d70da515896c25ce022b8c28f4935ff2e105026",
+    "--typed-execution",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/execution.json",
+    "--typed-execution-sha256",
+    "27afad91dc4e5c426d90f6ff4253b4244541490161752b759d1f5ada19847ed5",
+    "--typed-acceptance",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/acceptance.json",
+    "--typed-acceptance-sha256",
+    "d9e336b8b6eb33b76c0d866eb83040540586eba9df5ba629311f2371f577812f",
+    "--jdk8-home",
+    "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+    "--jdk23-home",
+    "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "--jadx",
+    "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "--jadx-sha256",
+    "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "--out",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/complete-source-root-v1"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.64s
+[1m[92m     Running[0m tests/p3_typed_catch.rs (target/debug/deps/p3_typed_catch-f468f050b985dd40)
+[1m[92m     Running[0m tests/p3_typed_catch_boundary_return.rs (target/debug/deps/p3_typed_catch_boundary_return-ce0ef49050942d7d)
+[1m[92m     Running[0m tests/p3_unary_negation.rs (target/debug/deps/p3_unary_negation-ca7ea4a2250c0e90)
+[1m[92m     Running[0m tests/p3_varargs.rs (target/debug/deps/p3_varargs-2ef0c5554c1de9aa)

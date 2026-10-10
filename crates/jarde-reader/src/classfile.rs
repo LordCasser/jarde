@@ -12229,7 +12229,9 @@ mod tests {
             // Returned int updates add 16 complete 11-member classes: two originals, eight
             // Java-typed controls and six consumer/return controls. The measured addition is
             // 176 Code bodies, with no handlers, branches or subroutines.
-            (1087, 4830, 463, 2715, 8),
+            // The conditional-switch boundary fixtures add six classes, 31 Code bodies, five
+            // handlers, 167 branch/switch targets, and the legacy control's two jsr calls.
+            (1093, 4861, 468, 2882, 10),
             "fixture population changed: re-measure these counts"
         );
     }

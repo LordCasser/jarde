@@ -1,0 +1,10 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 10.33s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde-9f9c0a3d938ca139)
+[1m[92m     Running[0m unittests examples/bulk_scope_sweep.rs (target/debug/examples/bulk_scope_sweep-202941e05804a334)
+[1m[92m     Running[0m unittests examples/class_source_file.rs (target/debug/examples/class_source_file-bde0255c5372266d)
+[1m[92m     Running[0m unittests examples/demand_workloads.rs (target/debug/examples/demand_workloads-a5e7d6ad14cbd6d3)
+[1m[92m     Running[0m unittests examples/inspect_class_header.rs (target/debug/examples/inspect_class_header-16b51cb24541d12c)
+[1m[92m     Running[0m unittests examples/navigate_artifact.rs (target/debug/examples/navigate_artifact-e1c98b5ab163a06e)
+[1m[92m     Running[0m unittests examples/resolve_and_analyze.rs (target/debug/examples/resolve_and_analyze-f0b263f3431c81ce)
+[1m[92m     Running[0m unittests examples/task_operations.rs (target/debug/examples/task_operations-66901b3f4f4a6b3c)

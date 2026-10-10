@@ -1,0 +1,42 @@
+{
+  "status": "verified",
+  "old_entries_unchanged": 2062,
+  "new_entries": [
+    {
+      "path": "tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d",
+      "blake3": "3928133f5269fa3c71dd51b6a502553299e8f23e37f8a85775357609cb53100d",
+      "bytes": 1488
+    },
+    {
+      "path": "tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5",
+      "blake3": "8d4e04945a9603d7b4ceb051b0710e63690993678419c0ad8b5c0113d5e59470",
+      "bytes": 1488
+    },
+    {
+      "path": "tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+      "blake3": "d185c867cc368dd8ff7a662b2351b8a18390a6c95e510046fe65d22b39798406",
+      "bytes": 1494
+    },
+    {
+      "path": "tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+      "blake3": "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+      "bytes": 1494
+    },
+    {
+      "path": "tests/fixtures/p3-conditional-switch-boundaries/javac8/original/ConditionalSwitchBoundaries.class",
+      "sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "blake3": "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+      "bytes": 1494
+    },
+    {
+      "path": "tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class",
+      "sha256": "5ef72ab6afa95cd945cb53123155ca99f86f4c99c9ad7fa78c2d58e044e04fa5",
+      "blake3": "dac91477a63e8c8e43acbf4e56916bab8a7415f862314f47eb5e904ef1adc019",
+      "bytes": 114
+    }
+  ]
+}

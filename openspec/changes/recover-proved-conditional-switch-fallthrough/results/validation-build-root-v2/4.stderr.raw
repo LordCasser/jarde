@@ -1,0 +1,3 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.65s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-ca515811f23778e1)

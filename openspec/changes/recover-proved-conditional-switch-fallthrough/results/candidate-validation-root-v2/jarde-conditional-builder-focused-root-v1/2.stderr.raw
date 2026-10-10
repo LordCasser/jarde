@@ -1,0 +1,131 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 29.40s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-ca515811f23778e1)
+
+thread 'build::tests::cf12_switch_break_builder_requires_the_active_nearest_switch' (23648241) panicked at crates/jarde-java/src/build.rs:38087:13:
+[
+    Stmt {
+        kind: Fallback {
+            reason: "local 4 has an access outside the recovered region tree, so its lexical owner and complete definition-use slice cannot be proved",
+            bcis: [
+                0,
+                32,
+                59,
+                63,
+                67,
+                92,
+                117,
+                121,
+                146,
+                149,
+                171,
+            ],
+        },
+        origin: OriginSet {
+            primary: Origin {
+                bci: 0,
+                method: None,
+                cp: None,
+                provenance: Direct,
+            },
+            derived: [
+                Origin {
+                    bci: 32,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 59,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 63,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 67,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 92,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 117,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 121,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 146,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 149,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 171,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+            ],
+        },
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --lib`

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 4.26s
+[1m[92m     Running[0m tests/class_annotation_facts.rs (target/debug/deps/class_annotation_facts-70a82016136befb9)
+[1m[92m     Running[0m tests/member_annotation_facts.rs (target/debug/deps/member_annotation_facts-81f584b473fc0067)
+[1m[92m     Running[0m tests/method_signature_proof.rs (target/debug/deps/method_signature_proof-d4c6c304b2c342c2)
+[1m[92m     Running[0m tests/type_annotation_facts.rs (target/debug/deps/type_annotation_facts-b5796d6e3a918528)

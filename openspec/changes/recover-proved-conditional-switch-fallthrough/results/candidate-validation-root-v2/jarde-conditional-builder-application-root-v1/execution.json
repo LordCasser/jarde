@@ -1,0 +1,11 @@
+{
+  "before": {
+    "crates/jarde-java/src/build.rs": "57568985c8f7a227bdefee94a5a1354944cad7c0a7648c3ceba329634fcb49f9",
+    "crates/jarde-java/src/report.rs": "b964e799cb18ca49f87ba50c730adcec8764ffee45b5d5a8518ea93bc23fe0aa"
+  },
+  "fragment_sha256": "e8e0b0aba1c41a37e23c53d24d9cda51876c1ef254e1d049e4b39ff9dbe1f109",
+  "after": {
+    "crates/jarde-java/src/build.rs": "249a25cb641224e316f47fae7929bb519b8f45552dc8b1220e4be5c81a4ba949",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e"
+  }
+}

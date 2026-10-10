@@ -1,0 +1,11 @@
+
+running 1 test
+test build::tests::cf12_switch_break_builder_consumes_only_the_reader_leaf_it_proves ... FAILED
+
+failures:
+
+failures:
+    build::tests::cf12_switch_break_builder_consumes_only_the_reader_leaf_it_proves
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 342 filtered out; finished in 0.02s
+

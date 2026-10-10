@@ -1,0 +1,10 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 13.19s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-ca515811f23778e1)
+
+thread 'region::tests::cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants' (23442118) panicked at crates/jarde-java/src/region.rs:14741:9:
+assertion `left == right` failed: the observed CF12 path from case 1 to adjacent case 2 is the one proved exit
+  left: None
+ right: Some({32: 117})
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --lib`

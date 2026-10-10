@@ -1,0 +1,92 @@
+{
+  "schema": "conditional-focused-root-v2",
+  "status": "failed",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:21:40.586263+00:00",
+      "duration_seconds": 3.0293243750056718,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 113258206,
+      "free_bytes_after": 63065853952,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v2/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v2/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "switch_certificate",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:21:43.619442+00:00",
+      "duration_seconds": 14.15110495800036,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 187198202,
+      "free_bytes_after": 63050412032,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v2/1.stdout.raw",
+          "bytes": 428,
+          "sha256": "d936847da802454b62a82a225445d10465f486d07f1ebae92516e8bd47163832"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v2/1.stderr.raw",
+          "bytes": 734,
+          "sha256": "33c0fd6f5338d04be99bbb4d2f6ab2894edd4ef80b56efcb5b41c1fe0ce71203"
+        }
+      }
+    }
+  ],
+  "source_pins": {
+    "crates/jarde-java/src/region.rs": "483cf776c52aae8a1db41dda8f10a87d3a8fa71c76c0e106324bf2e883997d38",
+    "crates/jarde-java/src/build.rs": "57568985c8f7a227bdefee94a5a1354944cad7c0a7648c3ceba329634fcb49f9",
+    "crates/jarde-java/src/report.rs": "b964e799cb18ca49f87ba50c730adcec8764ffee45b5d5a8518ea93bc23fe0aa"
+  },
+  "error": "AssertionError: "
+}

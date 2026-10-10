@@ -1,0 +1,21 @@
+
+running 1 test
+test a_char_selector_writes_character_keys_and_an_int_selector_stays_decimal ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 3 tests
+test analysis_budget_during_switch_join_proof_does_not_publish_a_complete_class ... ok
+test cross_case_goto_and_looping_arm_do_not_gain_a_forward_join ... ok
+test switch_arms_stop_before_the_shared_forward_join ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test a_switch_expressions_join_return_is_written_into_every_arm ... ok
+test a_yielding_arm_keeps_the_store_it_already_wrote ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

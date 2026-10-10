@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.61s
+[1m[92m     Running[0m tests/p3_field_increment.rs (target/debug/deps/p3_field_increment-f10eb1f405be04d0)
+[1m[92m     Running[0m tests/p3_field_presentations.rs (target/debug/deps/p3_field_presentations-195c977a7697dce2)
+[1m[92m     Running[0m tests/p3_final_static.rs (target/debug/deps/p3_final_static-e803194bc67a5fe8)
+[1m[92m     Running[0m tests/p3_finally_straight.rs (target/debug/deps/p3_finally_straight-58659ce28eca9bf3)

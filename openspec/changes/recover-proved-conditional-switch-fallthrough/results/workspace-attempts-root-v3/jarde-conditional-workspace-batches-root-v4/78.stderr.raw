@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.51s
+[1m[92m     Running[0m tests/anonymous_allocation_candidates.rs (target/debug/deps/anonymous_allocation_candidates-ff0c20e3a2a56cf5)
+[1m[92m     Running[0m tests/array_invocation_widening.rs (target/debug/deps/array_invocation_widening-cb8fa51276451f71)
+[1m[92m     Running[0m tests/cf12_proved_local_source_types.rs (target/debug/deps/cf12_proved_local_source_types-6309b2c066e9ac43)
+[1m[92m     Running[0m tests/class_initializer_candidates.rs (target/debug/deps/class_initializer_candidates-52c449a20e4f067a)

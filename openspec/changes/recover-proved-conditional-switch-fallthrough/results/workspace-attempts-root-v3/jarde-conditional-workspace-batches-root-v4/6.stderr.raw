@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.71s
+[1m[92m     Running[0m tests/class_scope_constructor_projection.rs (target/debug/deps/class_scope_constructor_projection-2744e6c6c3f0f5ba)
+[1m[92m     Running[0m tests/class_source.rs (target/debug/deps/class_source-a9782f4805c496fd)
+[1m[92m     Running[0m tests/class_static_initializer_projection.rs (target/debug/deps/class_static_initializer_projection-68781716834ce1c1)
+[1m[92m     Running[0m tests/ctor_reorder_dispatch_guard.rs (target/debug/deps/ctor_reorder_dispatch_guard-1bb261056d750714)

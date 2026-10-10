@@ -1,0 +1,44 @@
+--- a/crates/jarde-java/tests/cf12_proved_local_source_types.rs
++++ b/crates/jarde-java/tests/cf12_proved_local_source_types.rs
+@@
+ fn typed_boundary_proof_budget_stops_before_publication_at_observed_sites() {
+@@
+     );
+ }
++
++#[test]
++fn root_typed_budget_observation() {
++    let (char_report, _) = recover_class_method_with_budget(
++        CHAR_CLASS,
++        "jadx/tests/integration/switches/TestSwitch$TestCls",
++        "test",
++        "(Ljava/lang/String;)Ljava/lang/String;",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::new(Limits {
++            analysis_steps: u64::MAX,
++            ..limits()
++        })),
++    );
++    eprintln!(
++        "ROOT_TYPED_OBSERVER class=char outcome={:?}\ntext:\n{}",
++        char_report.outcome,
++        char_report.text
++    );
++
++    let (null_report, _) = recover_class_method_with_budget(
++        NULL_CLASS,
++        "jadx/tests/integration/switches/TestSwitchNoDefault$TestCls",
++        "test",
++        "(I)V",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::new(Limits {
++            analysis_steps: u64::MAX,
++            ..limits()
++        })),
++    );
++    eprintln!(
++        "ROOT_TYPED_OBSERVER class=null outcome={:?}\ntext:\n{}",
++        null_report.outcome,
++        null_report.text
++    );
++}

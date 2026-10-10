@@ -1,0 +1,127 @@
+{
+  "schema": "conditional-boundaries-root-v1",
+  "status": "failed",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:49:09.359258+00:00",
+      "duration_seconds": 3.1706323329999577,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 244906284,
+      "free_bytes_after": 62992261120,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v2/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v2/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:49:12.561049+00:00",
+      "duration_seconds": 3.162444332992891,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 244906284,
+      "free_bytes_after": 62991167488,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v2/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v2/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:49:15.754752+00:00",
+      "duration_seconds": 5.240325917024165,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 244915977,
+      "free_bytes_after": 62991187968,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v2/2.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-builder-focused-root-v2/2.stderr.raw",
+          "bytes": 2745,
+          "sha256": "9aec8f94df8f4bfe90440916d8276b07e6992ecca8afef9d5e541ea55cff1830"
+        }
+      }
+    }
+  ],
+  "source_pins": {
+    "crates/jarde-java/src/region.rs": "cb10ced7404c4962b99214ecfa9cd3e8173ae436d1b4809a225095c1d90a2efe",
+    "crates/jarde-java/src/build.rs": "d65cde8a6614722ab8e7a365b456b466ba22566209d8df61bf8d4b1642d8e9f0",
+    "crates/jarde-java/src/report.rs": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e"
+  },
+  "error": "AssertionError: "
+}

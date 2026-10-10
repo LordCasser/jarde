@@ -1,0 +1,177 @@
+{
+  "schema": "conditional-focused-root-v4",
+  "status": "passed-focused-only",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:26:10.784647+00:00",
+      "duration_seconds": 3.0597508329956327,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 388258171,
+      "free_bytes_after": 62659080192,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "switch_certificate",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:26:13.855317+00:00",
+      "duration_seconds": 1.0302257500006817,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 388258171,
+      "free_bytes_after": 62658940928,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/1.stdout.raw",
+          "bytes": 306,
+          "sha256": "147cdf1830a9d5156170bef30f93a28008c0873ce37a8c6ab865ba57a6139723"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/1.stderr.raw",
+          "bytes": 169,
+          "sha256": "27840d2d8e8ef3ec4b4bea2721c3c12c8ecb46161ad63fa22f5ecb6f5add008a"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked",
+        "real_nonadjacent_class_proves_one_map_entry",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:26:14.893067+00:00",
+      "duration_seconds": 1.0243619160028175,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 388258171,
+      "free_bytes_after": 62792306688,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/2.stdout.raw",
+          "bytes": 185,
+          "sha256": "216364e2454aad28f24827cc1a6596940ad2e2e2712c0edbccf02501dce95f1a"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/2.stderr.raw",
+          "bytes": 169,
+          "sha256": "123ab22af0dc2d1d8507dd1d29acef62ece160b4f83ed62dea66921311e08276"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_conditional_switch_fallthrough",
+        "--test",
+        "p3_conditional_switch_boundary_rejection",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:26:15.925807+00:00",
+      "duration_seconds": 11.217032290995121,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 483500330,
+      "free_bytes_after": 62565085184,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/3.stdout.raw",
+          "bytes": 532,
+          "sha256": "f364bde64633314525fc3a60b49f0edb1a4745f1f0c6eab569964a808f78c034"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-focused-root-v4/3.stderr.raw",
+          "bytes": 476,
+          "sha256": "25c7ff8e5efe936156e64652bfc0145de0a89609cc3c2eb5275ab1499d019497"
+        }
+      }
+    }
+  ],
+  "source_pins": {
+    "crates/jarde-java/src/region.rs": "bd556de4071459a57c00ef49f95ebd8d47d9a97bd2dc0b880602240babd8eb29",
+    "crates/jarde-java/src/build.rs": "57568985c8f7a227bdefee94a5a1354944cad7c0a7648c3ceba329634fcb49f9",
+    "crates/jarde-java/src/report.rs": "b964e799cb18ca49f87ba50c730adcec8764ffee45b5d5a8518ea93bc23fe0aa"
+  }
+}

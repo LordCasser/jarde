@@ -1,0 +1,7 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 17.58s
+[1m[92m     Running[0m tests/p3_string_switch_projection.rs (target/debug/deps/p3_string_switch_projection-de6fc55719f8c31f)
+[1m[92m     Running[0m tests/p3_switch_arm_loop_exits.rs (target/debug/deps/p3_switch_arm_loop_exits-f3b8d593b3ad4a24)
+[1m[92m     Running[0m tests/p3_switch_fallthrough.rs (target/debug/deps/p3_switch_fallthrough-25bbc02065f14bba)
+[1m[92m     Running[0m tests/p3_switch_loop_exits.rs (target/debug/deps/p3_switch_loop_exits-9539a14af9bbcea8)

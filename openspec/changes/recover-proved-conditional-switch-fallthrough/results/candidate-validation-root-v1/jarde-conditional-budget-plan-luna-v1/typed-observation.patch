@@ -1,0 +1,21 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@
+             // A local proof examines every physical write of this variable, including its
+             // placement path and the value actually stored. Bill the write before reading it.
++            eprintln!(
++                "ROOT_TYPED_WRITE bci={} analysis_steps={}",
++                use_.bci,
++                budget.usage().analysis_steps
++            );
+             charge(
+@@
+     if !matches!(ssa.value(first.stored).ty(), Value::Null) {
+         return Ok(None);
+     }
++    eprintln!(
++        "ROOT_TYPED_NULL first_at={} analysis_steps={}",
++        first.at,
++        budget.usage().analysis_steps
++    );
+     charge(

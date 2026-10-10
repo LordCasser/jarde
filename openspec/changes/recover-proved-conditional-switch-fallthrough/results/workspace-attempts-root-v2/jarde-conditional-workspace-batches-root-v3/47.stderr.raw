@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.38s
+[1m[92m     Running[0m tests/p3_new_value.rs (target/debug/deps/p3_new_value-b11d2fc4d4caf707)
+[1m[92m     Running[0m tests/p3_null_resource.rs (target/debug/deps/p3_null_resource-fe21bfd9f1cf4dab)
+[1m[92m     Running[0m tests/p3_numeric_comparison.rs (target/debug/deps/p3_numeric_comparison-e811abc423170399)
+[1m[92m     Running[0m tests/p3_one_armed_if.rs (target/debug/deps/p3_one_armed_if-5be0dfdd53783f33)

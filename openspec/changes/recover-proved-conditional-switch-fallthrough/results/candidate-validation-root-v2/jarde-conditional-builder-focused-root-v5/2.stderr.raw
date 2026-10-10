@@ -1,0 +1,97 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 12.48s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-ca515811f23778e1)
+
+thread 'build::tests::cf12_switch_break_builder_consumes_only_the_reader_leaf_it_proves' (23696304) panicked at crates/jarde-java/src/build.rs:38434:9:
+expected fallback at 89: [
+    Stmt {
+        kind: Fallback {
+            reason: "local 4 has an access outside the recovered region tree, so its lexical owner and complete definition-use slice cannot be proved",
+            bcis: [
+                0,
+                32,
+                59,
+                63,
+                67,
+                92,
+                117,
+                121,
+                146,
+                149,
+                171,
+            ],
+        },
+        origin: OriginSet {
+            primary: Origin {
+                bci: 0,
+                method: None,
+                cp: None,
+                provenance: Direct,
+            },
+            derived: [
+                Origin {
+                    bci: 32,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 59,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 63,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 67,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 92,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 117,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 121,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 146,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 149,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+                Origin {
+                    bci: 171,
+                    method: None,
+                    cp: None,
+                    provenance: Derived,
+                },
+            ],
+        },
+    },
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --lib`

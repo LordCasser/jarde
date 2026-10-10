@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.64s
+[1m[92m     Running[0m tests/p3_intermediate_join.rs (target/debug/deps/p3_intermediate_join-f293046f81bd32a5)
+[1m[92m     Running[0m tests/p3_java_recovery.rs (target/debug/deps/p3_java_recovery-108782e72559d308)
+[1m[92m     Running[0m tests/p3_local_null_conditional_finally.rs (target/debug/deps/p3_local_null_conditional_finally-08ed456e941912f1)
+[1m[92m     Running[0m tests/p3_loop_body_double_jumps.rs (target/debug/deps/p3_loop_body_double_jumps-613c125c1ab38428)

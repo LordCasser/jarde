@@ -381,3 +381,12 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-11：typed精确产品43dffc9b8自身CI38087978610已root v7独立接受，4jobs/52steps全部成功、双seed各356摘要和3408/0/97，86Git/live pins闭合。任务7/8待新增证据clean交付；仅局部类型窄片，不增加CF12/71整单元完成数。v6日志解析失败及v7成功原样保留。
 
 2026-10-11：typed证据已随9d6d51570提交推送，实际audit v4确认15worktrees全clean/14辅助detached祖先/仅main与origin同/无target/冻结CLI完整，任务8/8。关闭文档后仍实核最终HEAD；整CF12与71单元状态不变。
+
+2026-10-11：conditional已应用最小三源补丁并到3/7；真实正例完整方法case/退出/source来源闭合、A/B边界与public预算三phase原子Stop通过。完整lib340/0/0、旧switch回归28/0/0、边界与类型16/0/0；类型内部预算Stop按实际新计费365@29/130@1保持。Builder guard/全workspace/整类CLI/自身CI/clean仍待完成，原失败保留。仅候选局部通过，71/612和整CF12不变。
+
+2026-10-11 conditional窄片4/7：最新库344/0/0与物理/metamorphic scope边界完成；两项新增fixture登记及reader人口pin已各自实际定位、独立核验并修正，v5全workspace从头运行，CLI整类/自身CI仍待验收，不增加整CF12完成数。
+
+
+2026-10-11 root本轮实际接受 **5/7**。fresh v5全workspace95批/359个实际Cargo目标，3422/0/97，2210源输入Git/live待产品CI绑定，target峰值914810494bytes；完整原始证据和独立观察在results/full-workspace-root-v1。随后fmt、CI同范围Clippy和专项13命令563/0/0通过，冻结CLI SHA39d5699c1665b16e0c4a46934f0e773aeedf392f5bc60869a7b2762680dd10f1，17product/21test/162fixture pins。守卫5GiB free/target1GiB一直满足，峰值1067909023bytes；cargo clean5445files/1018.4MiB，target不存在。
+
+完整五上游fixture/六方法actual95命令，在双JDK条件锚/两个类型锚及其余JDK23控制分别编译运行原/JADX/default/all；新conditional verifier实际接受4conditional matches、14control profiles、11default/all maps，各完整生成class集合与原一致，目标(IZZ)Ljava/lang/String;按owner/name/descriptor/ordinal和javap全physicalBCI绑定。结果results/complete-source-root-v1/acceptance.json；独立invocation及清理记录在results/delivery-precommit-root-v1。首次verifier误把累计budget当独立方法计费的失败原稿/raw在results/replay-verifier-attempts-root-v1；root查prepare_physical_class_source同一Budget，固定目标delta AnalysisSteps311/IrEdges17/IrItems default212-all211/OutputBytes469，要求后续check和类总snapshot恰为同一delta，其他字段不变，所有无关正文/map/质量/诊断仍严格一致；没有改生产或CLI。OpenSpec strict实际343/0/0通过。自身产品commit/CI和最终clean交付尚待，不接受整CF12。

@@ -1,0 +1,10 @@
+{
+  "before": "c8a657ca5e5edd4b86471243ae99cd43602eb265ae422681066413d9b625708f",
+  "draft_sha256": "cf8d3ffe3951bfd42bd2c973c48e8ce8f3a51081453909d2fbe67a2f9bc2311a",
+  "root_mechanical_corrections": [
+    "Vec remove signature",
+    "missing slice lookup helper",
+    "unused dispatch and leaf constructor removed"
+  ],
+  "after": "d65cde8a6614722ab8e7a365b456b466ba22566209d8df61bf8d4b1642d8e9f0"
+}

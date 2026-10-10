@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T22:34:08.490014+00:00",
+  "duration_seconds": 17.423907834017882,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-run-conditional-boundaries-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 82,
+      "sha256": "6fa1e4e873584e61c75c26087698c6df4f8c0f31366091c7d7f352c01911faaf"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

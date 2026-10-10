@@ -1,0 +1,71 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.02s
+[1m[92m     Running[0m tests/cf12_proved_local_source_types.rs (target/debug/deps/cf12_proved_local_source_types-6309b2c066e9ac43)
+ROOT_TYPED_WRITE bci=4 analysis_steps=361
+ROOT_TYPED_WRITE bci=13 analysis_steps=362
+ROOT_TYPED_WRITE bci=15 analysis_steps=363
+ROOT_TYPED_WRITE bci=106 analysis_steps=364
+ROOT_TYPED_WRITE bci=29 analysis_steps=365
+ROOT_TYPED_OBSERVER class=char outcome=Produced
+text:
+// @method test(Ljava/lang/String;)Ljava/lang/String;
+// @declaration an instance method of `jadx.tests.integration.switches.TestSwitch$TestCls`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    int len;
+    java.lang.StringBuilder sb;
+    int i;
+    len = str.length();
+    sb = new java.lang.StringBuilder(len);
+    for (i = 0; i < len; i = i + 1) {
+        char c = str.charAt(i);
+        switch (c) {
+            case '.':
+            case '/':
+                sb.append('_');
+                break;
+            case '?':
+                break;
+            case ']':
+                sb.append('A');
+                break;
+            default:
+                sb.append(c);
+                break;
+        }
+    }
+    return sb.toString();
+}
+
+ROOT_TYPED_WRITE bci=1 analysis_steps=125
+ROOT_TYPED_WRITE bci=34 analysis_steps=126
+ROOT_TYPED_WRITE bci=40 analysis_steps=127
+ROOT_TYPED_WRITE bci=46 analysis_steps=128
+ROOT_TYPED_WRITE bci=52 analysis_steps=129
+ROOT_TYPED_NULL first_at=1 analysis_steps=130
+ROOT_TYPED_OBSERVER class=null outcome=Produced
+text:
+// @method test(I)V
+// @declaration an instance method of `jadx.tests.integration.switches.TestSwitchNoDefault$TestCls`, member flags 0x0001
+// recovered from bytecode; presentation is not claimed to compile
+{
+    java.lang.String s;
+    s = null;
+    switch (a) {
+        case 1:
+            s = "1";
+            break;
+        case 2:
+            s = "2";
+            break;
+        case 3:
+            s = "3";
+            break;
+        case 4:
+            s = "4";
+            break;
+    }
+    java.lang.System.out.println(s);
+    return;
+}
+

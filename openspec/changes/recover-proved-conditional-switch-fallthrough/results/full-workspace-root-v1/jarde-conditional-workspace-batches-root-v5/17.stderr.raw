@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 3.18s
+[1m[92m     Running[0m tests/p1_multi_release.rs (target/debug/deps/p1_multi_release-1cbecdb7b41badf9)
+[1m[92m     Running[0m tests/p1_prepared_class.rs (target/debug/deps/p1_prepared_class-78aa636523e294e2)
+[1m[92m     Running[0m tests/p1_query_api.rs (target/debug/deps/p1_query_api-82e7ccf59430d128)
+[1m[92m     Running[0m tests/p1_query_bounds.rs (target/debug/deps/p1_query_bounds-580fd47dfcb82a63)

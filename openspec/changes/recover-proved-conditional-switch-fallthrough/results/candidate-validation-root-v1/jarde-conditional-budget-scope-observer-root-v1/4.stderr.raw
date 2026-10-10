@@ -1,0 +1,1083 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.72s
+[1m[92m     Running[0m tests/__root_conditional_scope_observer.rs (target/debug/deps/__root_conditional_scope_observer-d978abce41e5f42e)
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=409
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=422
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=10197
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=10207
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=36 analysis_steps=10209
+ROOT_SWITCH_PROOF phase=dag switch_bci=36 analysis_steps=10219
+ROOT_SWITCH_PROOF phase=incoming switch_bci=36 analysis_steps=10227
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=386
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=392
+ROOT_SWITCH_PROOF phase=incoming switch_bci=0 analysis_steps=402
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=406
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=420
+[1m[92m     Running[0m tests/p3_conditional_switch_boundary_rejection.rs (target/debug/deps/p3_conditional_switch_boundary_rejection-16b7a73680bd6bd4)
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=280
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=288
+ROOT_SWITCH_PROOF phase=incoming switch_bci=0 analysis_steps=305
+ROOT_SWITCH_PROOF phase=edge_collection switch_bci=0 analysis_steps=280
+ROOT_SWITCH_PROOF phase=dag switch_bci=0 analysis_steps=288
+ROOT_SWITCH_PROOF phase=incoming switch_bci=0 analysis_steps=305
+ROOT_NONADJACENT_REPORT RecoveryReport {
+    method: "partialBreak(II)Ljava/lang/String;",
+    profile: RuntimeProfile {
+        java_release: 8,
+        multi_release: Disabled,
+        layout: Generic,
+    },
+    rules: [
+        RuleVersion {
+            rule: "concat",
+            version: "1",
+        },
+        RuleVersion {
+            rule: "new",
+            version: "1",
+        },
+        RuleVersion {
+            rule: "declaration",
+            version: "1",
+        },
+    ],
+    representation: Mixed,
+    quality: Fallback,
+    syntax_status: NotJava,
+    compile_status: NotAttempted,
+    semantic_validation: Unproven,
+    verification: NotPerformed,
+    execution: Complete {
+        usage: UsageSnapshot {
+            input_bytes: 1494,
+            archive_entries: 0,
+            entry_bytes: 1494,
+            read_bytes: 2988,
+            class_bytes: 2988,
+            attribute_bytes: 1475,
+            code_bytes: 79,
+            result_items: 0,
+            output_bytes: 1886,
+            class_headers: 1,
+            method_bodies: 1,
+            ir_items: 752,
+            ir_edges: 76,
+            analysis_steps: 365,
+            normalization_clones: 0,
+            nested_depth: 0,
+            dependency_depth: 0,
+            elapsed_millis: 1,
+        },
+    },
+    outcome: Produced,
+    content: ExplanationOnly,
+    text: "// @method partialBreak(II)Ljava/lang/String;\n// @declaration a static method of `ConditionalSwitchBoundaries`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    // @bytecode 0 36 40 50 51 53 56 57 67 74\n    // local 2 crosses a quoted fallback region; its assignments and consumers cannot be presented as one lexically bound definition-use slice\n}\n",
+    source_map: SourceMap {
+        segments: [
+            Segment {
+                start: 201,
+                end: 390,
+                origin: OriginSet {
+                    primary: Origin {
+                        bci: 0,
+                        method: Some(
+                            PhysicalMethodId {
+                                owner: PhysicalDefinitionId {
+                                    location: StandaloneRoot {
+                                        snapshot: SnapshotId(
+                                            "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                        ),
+                                    },
+                                    class_bytes: ClassBytesId {
+                                        digest: Digest(
+                                            "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                        ),
+                                        length: 1494,
+                                    },
+                                    variant: Base,
+                                },
+                                name: JvmBytes(
+                                    [
+                                        112,
+                                        97,
+                                        114,
+                                        116,
+                                        105,
+                                        97,
+                                        108,
+                                        66,
+                                        114,
+                                        101,
+                                        97,
+                                        107,
+                                    ],
+                                ),
+                                descriptor: JvmBytes(
+                                    [
+                                        40,
+                                        73,
+                                        73,
+                                        41,
+                                        76,
+                                        106,
+                                        97,
+                                        118,
+                                        97,
+                                        47,
+                                        108,
+                                        97,
+                                        110,
+                                        103,
+                                        47,
+                                        83,
+                                        116,
+                                        114,
+                                        105,
+                                        110,
+                                        103,
+                                        59,
+                                    ],
+                                ),
+                            },
+                        ),
+                        cp: None,
+                        provenance: Direct,
+                    },
+                    derived: [
+                        Origin {
+                            bci: 36,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 40,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 50,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 51,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 53,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 56,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 57,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 67,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                        Origin {
+                            bci: 74,
+                            method: Some(
+                                PhysicalMethodId {
+                                    owner: PhysicalDefinitionId {
+                                        location: StandaloneRoot {
+                                            snapshot: SnapshotId(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                        },
+                                        class_bytes: ClassBytesId {
+                                            digest: Digest(
+                                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                            ),
+                                            length: 1494,
+                                        },
+                                        variant: Base,
+                                    },
+                                    name: JvmBytes(
+                                        [
+                                            112,
+                                            97,
+                                            114,
+                                            116,
+                                            105,
+                                            97,
+                                            108,
+                                            66,
+                                            114,
+                                            101,
+                                            97,
+                                            107,
+                                        ],
+                                    ),
+                                    descriptor: JvmBytes(
+                                        [
+                                            40,
+                                            73,
+                                            73,
+                                            41,
+                                            76,
+                                            106,
+                                            97,
+                                            118,
+                                            97,
+                                            47,
+                                            108,
+                                            97,
+                                            110,
+                                            103,
+                                            47,
+                                            83,
+                                            116,
+                                            114,
+                                            105,
+                                            110,
+                                            103,
+                                            59,
+                                        ],
+                                    ),
+                                },
+                            ),
+                            cp: None,
+                            provenance: Derived,
+                        },
+                    ],
+                },
+            },
+        ],
+    },
+    regions: [
+        RegionRecord {
+            bci: 0,
+            structured: false,
+            blocks: [
+                0,
+            ],
+            code: Some(
+                "jre_region_switch_arms_overlap",
+            ),
+            message: Some(
+                "two switch arms of the block at BCI 0 claim the same block, so one case falls through into another case's code",
+            ),
+            rule: None,
+        },
+        RegionRecord {
+            bci: 36,
+            structured: false,
+            blocks: [
+                36,
+                57,
+                67,
+                40,
+                74,
+            ],
+            code: Some(
+                "jre_region_uncovered_blocks",
+            ),
+            message: Some(
+                "5 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 57, 67, 40, 74]",
+            ),
+            rule: None,
+        },
+        RegionRecord {
+            bci: 0,
+            structured: false,
+            blocks: [],
+            code: Some(
+                "jre_region_unaccounted_instruction",
+            ),
+            message: Some(
+                "the decoded body states 4 instruction(s) at BCI [50, 51, 53, 56] that no canonical block covers and that the graph does not list as unreachable: the graph is not an account of these bytes, so no region of it may be presented as the body",
+            ),
+            rule: None,
+        },
+    ],
+    lambdas: [],
+    concats: [
+        ConcatRecord {
+            head: 0,
+            tail: None,
+            class: "java/lang/StringBuilder",
+            appends: [],
+            presented: false,
+            refusal: Some(
+                ConcatRefusal {
+                    code: "jre_concat_split",
+                    rule: RuleVersion {
+                        rule: "concat",
+                        version: "1",
+                    },
+                    requirement: None,
+                    message: "the concatenation at BCI 0 was not presented: the concatenation that starts at BCI 0 ends in the `toString` at BCI 75, which is in another block: a branch cuts the chain in two, and the value it builds is not the value of one expression",
+                },
+            ),
+        },
+    ],
+    accessors: [],
+    bridges: [],
+    news: [
+        NewRecord {
+            head: 0,
+            dup: Some(
+                3,
+            ),
+            constructor: Some(
+                4,
+            ),
+            class: "java/lang/StringBuilder",
+            arguments: [],
+            presented: true,
+            refusal: None,
+        },
+    ],
+    fields: [],
+    enum_switches: [],
+    init: None,
+    declaration: Some(
+        DeclarationRecord {
+            method: "partialBreak(II)Ljava/lang/String;",
+            member_flags: Some(
+                9,
+            ),
+            declaring_class: Some(
+                "ConditionalSwitchBoundaries",
+            ),
+            interface: Some(
+                false,
+            ),
+            form: Some(
+                StaticMethod,
+            ),
+            presented: true,
+            refusal: None,
+        },
+    ),
+    fallbacks: [
+        "jre_region_switch_arms_overlap",
+        "jre_region_uncovered_blocks",
+        "jre_region_unaccounted_instruction",
+    ],
+    evidence: RecoveryEvidence {
+        requested: RecoveryEvidenceRequest {
+            kinds: {
+                SourceMap,
+                RegionDetails,
+                RuleDetails,
+                NameDetails,
+                ReadDetails,
+            },
+            driver_bci_range: None,
+            expected_artifact: None,
+        },
+        categories: [
+            EvidenceCategory {
+                kind: SourceMap,
+                state: Complete,
+            },
+            EvidenceCategory {
+                kind: RegionDetails,
+                state: Complete,
+            },
+            EvidenceCategory {
+                kind: RuleDetails,
+                state: Complete,
+            },
+            EvidenceCategory {
+                kind: NameDetails,
+                state: Complete,
+            },
+            EvidenceCategory {
+                kind: ReadDetails,
+                state: NotPerformed,
+            },
+        ],
+    },
+    artifact: RecoveryArtifact {
+        binding: Some(
+            ArtifactBinding {
+                schema: 1,
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                            ),
+                            length: 1494,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            112,
+                            97,
+                            114,
+                            116,
+                            105,
+                            97,
+                            108,
+                            66,
+                            114,
+                            101,
+                            97,
+                            107,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            73,
+                            73,
+                            41,
+                            76,
+                            106,
+                            97,
+                            118,
+                            97,
+                            47,
+                            108,
+                            97,
+                            110,
+                            103,
+                            47,
+                            83,
+                            116,
+                            114,
+                            105,
+                            110,
+                            103,
+                            59,
+                        ],
+                    ),
+                },
+                member_ordinal: Some(
+                    MethodOrdinal(
+                        1,
+                    ),
+                ),
+                environment: EnvironmentIdentity {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: SnapshotId(
+                                "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                            ),
+                            scope: SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: Disabled,
+                            layout: Generic,
+                        },
+                        load_domain: LoadDomain {
+                            loader: LoaderId(
+                                "app",
+                            ),
+                            parent_loader: None,
+                            delegation: ParentFirst,
+                            roots: [
+                                StandaloneClass {
+                                    snapshot: SnapshotId(
+                                        "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                                    ),
+                                },
+                            ],
+                            module_mode: ClassPath,
+                            external_override: None,
+                            runtime_transformation: None,
+                        },
+                    },
+                    domain_loaders: [
+                        LoaderId(
+                            "app",
+                        ),
+                    ],
+                    providers: [],
+                    content: [
+                        SnapshotId(
+                            "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+                        ),
+                    ],
+                },
+                engine: "0.1.0",
+                registry: 71,
+                profile: RuntimeProfile {
+                    java_release: 8,
+                    multi_release: Disabled,
+                    layout: Generic,
+                },
+                rules: [
+                    "straight@1",
+                    "if@1",
+                    "loop@1",
+                    "switch@1",
+                    "lambda@1",
+                    "concat@1",
+                    "bridge@1",
+                    "accessor@1",
+                    "new@1",
+                    "field@1",
+                    "enumswitch@1",
+                    "init@1",
+                    "declaration@1",
+                    "twr@1",
+                    "monitor@1",
+                    "finally@1",
+                ],
+                text_digest: "44e4b6942dceca9b8d54c896a38170f8",
+                text_bytes: 392,
+            },
+        ),
+        agreement: NotStated,
+    },
+    aliased_names: [],
+    parameter_names: [
+        Some(
+            "arg0",
+        ),
+        Some(
+            "arg1",
+        ),
+    ],
+    diagnostics: [
+        Diagnostic {
+            code: "jre_region_switch_arms_overlap",
+            severity: Warning,
+            message: "two switch arms of the block at BCI 0 claim the same block, so one case falls through into another case's code",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_region_uncovered_blocks",
+            severity: Warning,
+            message: "5 live block(s) are reachable only through edges the normal-flow view leaves out: [36, 57, 67, 40, 74]",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_region_unaccounted_instruction",
+            severity: Warning,
+            message: "the decoded body states 4 instruction(s) at BCI [50, 51, 53, 56] that no canonical block covers and that the graph does not list as unreachable: the graph is not an account of these bytes, so no region of it may be presented as the body",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_recovery_produced",
+            severity: Info,
+            message: "3 region(s), 1 statement(s), 1 segment(s), 392 byte(s) written from 6 canonical block(s)",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_concat_split",
+            severity: Warning,
+            message: "the concatenation at BCI 0 was not presented: the concatenation that starts at BCI 0 ends in the `toString` at BCI 75, which is in another block: a branch cuts the chain in two, and the value it builds is not the value of one expression",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_concat_chains",
+            severity: Info,
+            message: "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_new_sites",
+            severity: Info,
+            message: "1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused",
+            provenance: None,
+        },
+        Diagnostic {
+            code: "jre_declaration",
+            severity: Info,
+            message: "the artifact's envelope states the member's declaration under declaration@1: a static method",
+            provenance: None,
+        },
+    ],
+}

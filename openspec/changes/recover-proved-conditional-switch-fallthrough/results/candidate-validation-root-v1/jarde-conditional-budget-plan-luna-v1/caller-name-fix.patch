@@ -1,0 +1,12 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@
+-                    fallthroughs
++                    fall_throughs
+                         .as_ref()
+                         .and_then(|fallthroughs| fallthroughs.get(&target).copied()),
+@@
+-                    fallthroughs
++                    fall_throughs
+                         .as_ref()
+                         .and_then(|fallthroughs| fallthroughs.get(&target).copied()),

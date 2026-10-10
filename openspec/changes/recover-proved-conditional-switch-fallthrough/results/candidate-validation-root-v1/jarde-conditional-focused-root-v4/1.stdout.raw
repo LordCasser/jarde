@@ -1,0 +1,7 @@
+
+running 2 tests
+test region::tests::cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants ... ok
+test region::tests::real_multiple_exit_class_refuses_conditional_switch_certificate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 338 filtered out; finished in 0.02s
+

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.20s
+[1m[92m     Running[0m tests/p3_effectful_exits.rs (target/debug/deps/p3_effectful_exits-8fe3c7a1ba3d89ef)
+[1m[92m     Running[0m tests/p3_exception_only_catchall.rs (target/debug/deps/p3_exception_only_catchall-8fbeb3832e7aec13)
+[1m[92m     Running[0m tests/p3_flag_conditional_finally.rs (target/debug/deps/p3_flag_conditional_finally-a004a4bef034bf5a)
+[1m[92m     Running[0m tests/p3_inner_assignment.rs (target/debug/deps/p3_inner_assignment-a80d54bddd134ac7)

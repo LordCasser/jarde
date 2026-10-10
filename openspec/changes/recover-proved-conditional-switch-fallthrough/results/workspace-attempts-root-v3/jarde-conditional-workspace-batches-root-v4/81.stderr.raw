@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.40s
+[1m[92m     Running[0m tests/p3_conditional_switch_fallthrough.rs (target/debug/deps/p3_conditional_switch_fallthrough-c30a8f36787c576f)
+[1m[92m     Running[0m tests/p3_conditional_switch_scope_boundaries.rs (target/debug/deps/p3_conditional_switch_scope_boundaries-7b3d85348be03d43)
+[1m[92m     Running[0m tests/p3_conditional_values.rs (target/debug/deps/p3_conditional_values-234bcbb8cce152ff)
+[1m[92m     Running[0m tests/p3_do_while_return.rs (target/debug/deps/p3_do_while_return-ddb5e60769728d5e)

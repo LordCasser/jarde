@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.63s
+[1m[92m     Running[0m tests/p3_prefix_survival.rs (target/debug/deps/p3_prefix_survival-dddbce870d48396a)
+[1m[92m     Running[0m tests/p3_prepared_input.rs (target/debug/deps/p3_prepared_input-d23729487a84e93e)
+[1m[92m     Running[0m tests/p3_primitive_conversions.rs (target/debug/deps/p3_primitive_conversions-bc8dee08ceac2060)
+[1m[92m     Running[0m tests/p3_product_vocabulary.rs (target/debug/deps/p3_product_vocabulary-8f69460b9342b36d)

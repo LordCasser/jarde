@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.48s
+[1m[92m     Running[0m tests/navigation.rs (target/debug/deps/navigation-d719b7d336828d85)
+[1m[92m     Running[0m tests/nested_class_literal_values.rs (target/debug/deps/nested_class_literal_values-da19bf2723befc64)
+[1m[92m     Running[0m tests/nested_generic_header_projection.rs (target/debug/deps/nested_generic_header_projection-41e9fe05c7a268f7)
+[1m[92m     Running[0m tests/nested_type_source_spelling.rs (target/debug/deps/nested_type_source_spelling-1601183b0571cc7e)

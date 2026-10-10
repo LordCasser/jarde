@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-10T22:52:04.981591+00:00",
+  "duration_seconds": 20.073734374978812,
+  "argv": [
+    "python",
+    "/private/tmp/jarde-run-conditional-builder-focused-root-v5.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 125,
+      "sha256": "9fce77c87afbae9dce6908445afde0a49cf35a3adac6b310113c9134d05afa13"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+--- a/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
++++ b/crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs
+@@
+ fn cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact() {
+@@
+     assert!(!stopped.produced());
+     assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+ }
++
++#[test]
++fn cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact() {
++    use jarde_java::{RecoveryContent, StopReason};
++    use jarde_reader::budget::CountedBudgetDimension;
++
++    // The original root public-caller trace observed the proof phases at switch BCI 0 with
++    // AnalysisSteps usage 137 (edge collection), 154 (DAG walk), and 193 (incoming checks).
++    // These are observed boundary limits, not a recomputation of the helper's charge formula.
++    for limit in [137, 154, 193] {
++        let recovery_budget = Budget::new(Limits {
++            analysis_steps: limit,
++            ..limits()
++        });
++        let report = recover_target_with_recovery_budget(
++            RecoveryEvidenceRequest::all(),
++            Some(recovery_budget),
++        )
++        .report;
++
++        assert_eq!(
++            report.stop(),
++            Some(&StopReason::Budget {
++                dimension: CountedBudgetDimension::AnalysisSteps,
++                written: 0,
++                limit,
++                at: Some(0),
++            }),
++            "observed limit {limit}: {:?}",
++            report.stop()
++        );
++        assert_eq!(report.content, RecoveryContent::NotProduced);
++        assert!(report.artifact.binding().is_none());
++        assert!(report.text.is_empty());
++        assert!(report.source_map.is_empty());
++    }
++}

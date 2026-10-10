@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.52s
+[1m[92m     Running[0m tests/p5_benchmark.rs (target/debug/deps/p5_benchmark-4d76c34d1aec9c25)
+[1m[92m     Running[0m tests/p5_bulk_corpus.rs (target/debug/deps/p5_bulk_corpus-7bfe2fa691963b62)
+[1m[92m     Running[0m tests/p5_container_lookup.rs (target/debug/deps/p5_container_lookup-5320d65677cd97a9)
+[1m[92m     Running[0m tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-d5d05cdea2a81e84)

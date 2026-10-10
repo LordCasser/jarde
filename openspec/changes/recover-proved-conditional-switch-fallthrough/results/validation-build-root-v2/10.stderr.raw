@@ -1,0 +1,5 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.30s
+[1m[92m     Running[0m tests/p3_char_switch.rs (target/debug/deps/p3_char_switch-8e07771678a24bb5)
+[1m[92m     Running[0m tests/p3_switch_forward_join.rs (target/debug/deps/p3_switch_forward_join-9f300ea0e707f9a0)
+[1m[92m     Running[0m tests/p3_switch_value.rs (target/debug/deps/p3_switch_value-d832b23c94e7141f)

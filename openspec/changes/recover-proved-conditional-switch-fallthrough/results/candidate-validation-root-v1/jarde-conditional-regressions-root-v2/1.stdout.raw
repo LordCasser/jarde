@@ -1,0 +1,15 @@
+
+running 2 tests
+test nonadjacent_conditional_switch_is_refused_by_the_public_caller ... ok
+test pre_cancelled_public_recovery_publishes_no_partial_artifact ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 3 tests
+test cf12_conditional_switch_keeps_exact_case_and_exit_sources ... ok
+test cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact ... ok
+test cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

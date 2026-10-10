@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T22:27:22.140763+00:00",
+  "duration_seconds": 15.476171082991641,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-run-conditional-budget-scope-observer-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 214,
+      "sha256": "5de4dcfb6cbadc6a8592822ef16dd5730be8068028f0f9be53eb85b535b7d5be"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

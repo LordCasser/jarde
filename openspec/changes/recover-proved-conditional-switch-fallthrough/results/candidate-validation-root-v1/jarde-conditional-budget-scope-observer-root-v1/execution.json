@@ -1,0 +1,256 @@
+{
+  "schema": "conditional-budget-scope-observations-root-v1",
+  "status": "observations-collected",
+  "product_accepted": false,
+  "source_pins_before": {
+    "crates/jarde-java/src/region.rs": "bd556de4071459a57c00ef49f95ebd8d47d9a97bd2dc0b880602240babd8eb29",
+    "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": "3bf1af10aaae3485d0b459e68f83465620e28204324c9106f29e1c92e5d3091c",
+    "crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs": "c7ef32d2cb9f482a057e3e636df4033ee16e008e67f9b664f3d4564537ec79cf"
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_conditional_switch_fallthrough",
+        "--locked",
+        "root_switch_budget_observation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:27:06.711716+00:00",
+      "duration_seconds": 11.25554004200967,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 483500330,
+      "free_bytes_after": 62110130176,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/0.stdout.raw",
+          "bytes": 155,
+          "sha256": "16c6a985c7b7ea8d3df8eda17bb984d62734dae066659b7f93d83614088c1c3e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/0.stderr.raw",
+          "bytes": 282119,
+          "sha256": "0acafb53cc841a0b3c79fc183eff8d6bfa496ade3a55683d702c00ac3a20ab19"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_conditional_switch_fallthrough",
+        "--locked",
+        "root_switch_budget_observation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:27:17.975245+00:00",
+      "duration_seconds": 1.0495924589922652,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 483499533,
+      "free_bytes_after": 62110035968,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/1.stdout.raw",
+          "bytes": 155,
+          "sha256": "84506853761087e51cd45c5596f0cd5c3773e473e6b1d83be43459cccff3633b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/1.stderr.raw",
+          "bytes": 909,
+          "sha256": "a6c9f4dd58285447ed2288dbb0f10767b09999484bddb9f625790799d43f2a5f"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_conditional_switch_fallthrough",
+        "--locked",
+        "root_switch_budget_observation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:27:19.032995+00:00",
+      "duration_seconds": 1.0263261660002172,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 483499533,
+      "free_bytes_after": 62109859840,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/2.stdout.raw",
+          "bytes": 155,
+          "sha256": "84506853761087e51cd45c5596f0cd5c3773e473e6b1d83be43459cccff3633b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/2.stderr.raw",
+          "bytes": 969,
+          "sha256": "ae109df6eb2e685ae0f5c5880768b7bc740d6190c1e7d8808a0964e8da74bb56"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_conditional_switch_fallthrough",
+        "--locked",
+        "root_switch_budget_observation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:27:20.067392+00:00",
+      "duration_seconds": 1.0299259579915088,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 483499533,
+      "free_bytes_after": 62110044160,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/3.stdout.raw",
+          "bytes": 155,
+          "sha256": "84506853761087e51cd45c5596f0cd5c3773e473e6b1d83be43459cccff3633b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/3.stderr.raw",
+          "bytes": 1034,
+          "sha256": "2939f26cf9b41fc3923ce932f9f5a10c845eb6f20b1454d633dfa026cbda5a48"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "__root_conditional_scope_observer",
+        "--test",
+        "p3_conditional_switch_boundary_rejection",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T22:27:21.105395+00:00",
+      "duration_seconds": 1.0290447080042213,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 503953534,
+      "free_bytes_after": 62089314304,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/4.stdout.raw",
+          "bytes": 10955,
+          "sha256": "548d6915e1ff99b150e8fe4f60660b3acd5c5d7a85f501787b1c5b075f5136c0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-budget-scope-observer-root-v1/4.stderr.raw",
+          "bytes": 47780,
+          "sha256": "7cacc603becfeb6db2b315bf96af36ce967a2161e773b6e6e2e1f85f3d38ef9e"
+        }
+      }
+    }
+  ],
+  "phase_observations": [
+    [
+      "edge_collection",
+      "0",
+      "137"
+    ],
+    [
+      "dag",
+      "0",
+      "154"
+    ],
+    [
+      "incoming",
+      "0",
+      "193"
+    ]
+  ],
+  "source_pins_after": {
+    "crates/jarde-java/src/region.rs": "bd556de4071459a57c00ef49f95ebd8d47d9a97bd2dc0b880602240babd8eb29",
+    "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": "3bf1af10aaae3485d0b459e68f83465620e28204324c9106f29e1c92e5d3091c",
+    "crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs": "c7ef32d2cb9f482a057e3e636df4033ee16e008e67f9b664f3d4564537ec79cf"
+  },
+  "sources_restored": true,
+  "temporary_test_removed": true
+}

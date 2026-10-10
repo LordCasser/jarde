@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-10T23:36:16.757750+00:00",
+  "duration_seconds": 151.47576283299713,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/changes/recover-proved-conditional-switch-fallthrough/results/run-validation-build-root-v2.py",
+    "--source-base",
+    "2d70da515896c25ce022b8c28f4935ff2e105026",
+    "--expected-lib-count",
+    "344"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 20380,
+      "sha256": "48fd19dc42ed4d15cc7c49c9c0285737f28099d1037075f2ab747e5287139ec5"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[91merror[E0428][0m[1m: the name `cf12_switch_break_in_regions` is defined multiple times[0m
+     [1m[94m--> [0mcrates/jarde-java/src/build.rs:37853:5
+      [1m[94m|[0m
+[1m[94m37844[0m [1m[94m|[0m [1m[94m/[0m     fn cf12_switch_break_in_regions<'a>(
+[1m[94m37845[0m [1m[94m|[0m [1m[94m|[0m         regions: &'a mut [Region],
+[1m[94m37846[0m [1m[94m|[0m [1m[94m|[0m         source_bci: u32,
+[1m[94m37847[0m [1m[94m|[0m [1m[94m|[0m     ) -> Option<&'a mut Region> {
+[1m[94m...[0m     [1m[94m|[0m
+[1m[94m37850[0m [1m[94m|[0m [1m[94m|[0m             .find_map(|region| cf12_switch_break_mut(region, source_bci))
+[1m[94m37851[0m [1m[94m|[0m [1m[94m|[0m     }
+      [1m[94m|[0m [1m[94m|_____-[0m [1m[94mprevious definition of the value `cf12_switch_break_in_regions` here[0m
+[1m[94m37852[0m [1m[94m|[0m
+[1m[94m37853[0m [1m[94m|[0m [1m[91m/[0m     fn cf12_switch_break_in_regions(
+[1m[94m37854[0m [1m[94m|[0m [1m[91m|[0m         regions: &mut [Region],
+[1m[94m37855[0m [1m[94m|[0m [1m[91m|[0m         source_bci: u32,
+[1m[94m37856[0m [1m[94m|[0m [1m[91m|[0m     ) -> Option<&mut Region> {
+[1m[94m...[0m     [1m[91m|[0m
+[1m[94m37859[0m [1m[94m|[0m [1m[91m|[0m             .find_map(|region| cf12_switch_break_mut(region, source_bci))
+[1m[94m37860[0m [1m[94m|[0m [1m[91m|[0m     }
+      [1m[94m|[0m [1m[91m|_____^[0m [1m[91m`cf12_switch_break_in_regions` redefined here[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: `cf12_switch_break_in_regions` must be defined only once in the value namespace of this module
+
+[1m[91merror[E0422][0m[1m: cannot find struct, variant or union type `Limits` in this scope[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:14841:48
+      [1m[94m|[0m
+[1m[94m14841[0m [1m[94m|[0m             let mut proof_budget = Budget::new(Limits {
+      [1m[94m|[0m                                                [1m[91m^^^^^^[0m [1m[91mnot found in this scope[0m
+
+[1m[91merror[E0433][0m[1m: cannot find type `Limits` in this scope[0m
+     [1m[94m--> [0mcrates/jarde-java/src/region.rs:14844:19
+      [1m[94m|[0m
+[1m[94m14844[0m [1m[94m|[0m                 ..Limits::default()
+      [1m[94m|[0m                   [1m[91m^^^^^^[0m [1m[91muse of undeclared type `Limits`[0m
+
+[1mSome errors have detailed explanations: E0422, E0428, E0433.[0m
+[1mFor more information about an error, try `rustc --explain E0422`.[0m
+[1m[91merror[0m: could not compile `jarde-java` (lib test) due to 3 previous errors

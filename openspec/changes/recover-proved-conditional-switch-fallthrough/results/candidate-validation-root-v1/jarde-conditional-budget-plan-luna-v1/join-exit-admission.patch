@@ -1,0 +1,27 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@
+         let mut color: BTreeMap<usize, u8> = BTreeMap::new();
+         let mut owned = BTreeSet::new();
+         let mut exits = BTreeSet::new();
++        let mut has_unpresentable_join_exit = false;
+         let mut work = vec![(*start, false)];
+@@
+                         let source_is_presentable = terminal_bci
+                             .and_then(|bci| operations.get(bci))
+                             .is_some_and(|operation| {
+                                 matches!(operation, Operation::Transfer)
+                                     || operation.comparison().is_some()
+                             });
+                         if !source_is_presentable {
+-                            return Ok(None);
++                            has_unpresentable_join_exit = true;
+                         }
+@@
+         if exits.len() > 1 {
+             return Ok(None);
+         }
++        if !exits.is_empty() && has_unpresentable_join_exit {
++            return Ok(None);
++        }
+         if let Some(to_bci) = exits.first().copied() {

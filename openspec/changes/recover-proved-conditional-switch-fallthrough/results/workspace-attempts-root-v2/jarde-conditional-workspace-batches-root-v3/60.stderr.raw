@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.72s
+[1m[92m     Running[0m tests/p3_twr_lead_sequence.rs (target/debug/deps/p3_twr_lead_sequence-bb42e450ccb5182c)
+[1m[92m     Running[0m tests/p3_twr_return_tail.rs (target/debug/deps/p3_twr_return_tail-1e95836320a7e915)
+[1m[92m     Running[0m tests/p3_twr_saved_return_typing.rs (target/debug/deps/p3_twr_saved_return_typing-0b1fbae8bfe6ead6)
+[1m[92m     Running[0m tests/p3_type_qualifier.rs (target/debug/deps/p3_type_qualifier-57d53f04dcaaf21a)

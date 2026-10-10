@@ -1,0 +1,14 @@
+verification failed: nonpermitted resource counter changed TestSwitchWithFallThroughCase.test/jdk8/TestSwitchWithFallThroughCase$TestCls/('check', '()V', '92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd', '92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd', 2, 'public void check()')/$.methods[0].outcome.report.execution.usage/ir_edges
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-replay.py", line 425, in <module>
+    try: main()
+         ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-replay.py", line 402, in main
+    verify_report_preserved({'methods':[bm]},{'methods':[nm]},case+'/'+leg+'/'+stem+'/'+repr(mk))
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-replay.py", line 60, in verify_report_preserved
+    else: need(new[key]==value,'nonpermitted resource counter changed '+label+'/'+path+'/'+key)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-replay.py", line 27, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: nonpermitted resource counter changed TestSwitchWithFallThroughCase.test/jdk8/TestSwitchWithFallThroughCase$TestCls/('check', '()V', '92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd', '92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd', 2, 'public void check()')/$.methods[0].outcome.report.execution.usage/ir_edges

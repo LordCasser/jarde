@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.53s
+[1m[92m     Running[0m tests/p3_proved_varargs_calls.rs (target/debug/deps/p3_proved_varargs_calls-4a66ed095ab64371)
+[1m[92m     Running[0m tests/p3_recovery_entry.rs (target/debug/deps/p3_recovery_entry-5cd5b11f565fc34f)
+[1m[92m     Running[0m tests/p3_reference_cast.rs (target/debug/deps/p3_reference_cast-22713c818bed6f5d)
+[1m[92m     Running[0m tests/p3_reference_slot_lifetimes.rs (target/debug/deps/p3_reference_slot_lifetimes-2453024f2c376383)
