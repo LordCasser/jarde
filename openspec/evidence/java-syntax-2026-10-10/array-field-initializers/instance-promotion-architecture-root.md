@@ -1,0 +1,13 @@
+# 实例字段提升：当前接缝与下一片方向
+
+当前完整类重编语义已经正确，差距是JADX将`b`写成声明初始化器，而Jarde仍在构造器中赋值。普通类静态提升已启用；不能继续用EM06历史结论推定它缺失。
+
+`ClassSourceMethodAst`保留完整同轮AST；body consumer视图有field写和构造调用的BCI/表达式/catch scope。`init@1`知道prologue为this还是super，但这些都不等于跨构造器共同初始化证明。`ClassInitializerCandidates`明确属于clinit有序静态写，不能为了复用名字把它扩义为构造器集合。
+
+下一片应消费现有AST加field@1的owner/descriptor/类型/效果与同轮字段表，证明所有direct-super构造路径的共同初始化前缀，并确认this委托链只在终端执行一次。随后一次性改字段声明和全部相关构造器派生正文，物理方法及原BCI仍保留。不能只从一个构造器删除一条赋值就声称支持实例初始化。
+
+本地JADX ExtractFieldInit的moveCommonFieldsInit先收集每个构造器IPUT并过滤，再逐条isSame比较，通过才统一删除写/加field attr。其singlePath/canReorder、多次写与依赖排除值得参考，但isSame不能替代本项目物理身份与来源证书；this委托构造器没有IPUT时它也会整组保守退出。
+
+验收至少覆盖当前单ctor数组控制、两个direct-super ctor共享、this链不重复、不同RHS/漏写/重复写拒绝，以及效果次序、前向读/异常边和预算取消。实例提升另立change，当前非final静态阶段修正不承担这些工作。
+
+root用当前文件复核了src/facade.rs的prove/project_static_initializer_group、report.rs的ClassSourceMethodAst/ClassSourceMethodBodyConsumers及init.rs的构造prologue。Atlas仅作scope内符号导航，缓存行号/source片段已旧，以当前文件为准。CF16默认小栈溢出也另列限制，不混入字段提升。

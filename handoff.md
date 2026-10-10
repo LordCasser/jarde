@@ -8,7 +8,7 @@
 
 root 已保存完整 API JSON、stable/supply 原始 gzip，实际运行独立 verifier v2 核对不可变 Git blob 的 10 产品源、5 测试源、22 canonical 文件和冻结 CLI。入口为 [returned root 验收](openspec/changes/recover-returned-int-array-compound-updates/verification-root.md) 及 results/ci-product-root-acceptance-v2.json。v1 因 gh 日志字面颜色格式匹配失败，原失败保留；v2 仅处理颜色表示，不改验收条件或 raw。
 
-冻结当前 CLI：`/private/tmp/jarde-returned-array-cli-v2`，SHA **71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110**。最新提交可能是随后验收/测试检查点，以 `git log -1` 为准；产品源仍与 6dd 相同。新增 CF16 公共测试属于后续检查点，不借 6dd CI。
+冻结当前 CLI：`/private/tmp/jarde-returned-array-cli-v2`，SHA **71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110**。随后检查点 acd55c213ac7c670c6e76609871281a341d03ad0 已推 main，其确切 CI 38007755097 正在第二个 workspace seed；3个其它job成功。新增非final静态阶段产品修正已提交推送main，等待自己的确切CI，不能借历史6dd/acd CI验收新产品。
 
 ```sh
 git status --short
@@ -45,7 +45,13 @@ N=2 fresh 补验已完成：JADX/default/none 四完整腿4/4，Jarde原样完�
 
 [array-field-store](openspec/evidence/java-syntax-2026-10-10/array-field-store/README.md) 以 JADX TestArrayInit.test2 为依据补 fresh byte[] 方法字段写：原双 JDK **2/2**、fresh JADX default/none **4/4**、当前 Jarde **2/2**，root **294 checks/0 errors**。完整七方法/两字段与 allocation/element/call/putfield/return 真实 BCI 保留；新数组身份、失败时旧数组对象身份、null RHS 顺序/异常优先级四条 raw 路径正确。现有 ArrayInitializers+FieldWrite 已闭合，不建重复实施 spec。
 
-EM18 下一片已锁定 JADX `TestArrayInitField.test()`（root核过本地测试原文），见 [基线计划](openspec/evidence/java-syntax-2026-10-10/array-field-store/next-static-constructor-plan-luna-v1.md)：先验 static/constructor 初始化顺序与完整类语义，若仅呈现差异不称机制缺失。后续有明确队列：static/constructor 数组字段呈现、TestArrays2 四种 primitive array 分支、signed byte/long 与 ConstantValue。先 fresh 完整类基线，确认缺口再立 spec；上项不证明 static promotion 已支持数组。[71 单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 的分母和整单元分类不变。
+依据 JADX `TestArrayInitField.test()` 的 literal/ordered 两组 fresh baseline 各31命令/8腿：原双JDK2/2、fresh JADX default/none4/4、冻结旧Jarde2/2，root独立 **2093 checks/0 errors**。literal static数组已提升，ordered因显式nonfinal trace=0过于保守拒绝整组；两组实例b均保留构造器，语义完整正确。入口为 [实际验收](openspec/evidence/java-syntax-2026-10-10/array-field-initializers-root-verification-v2.json)。
+
+新增 [preserve-nonfinal-static-initializer-phase](openspec/changes/preserve-nonfinal-static-initializer-phase/design.md) 只复用已核物理field flags限制final阶段拒绝，无新pass/证据实体。root已审并应用最小生产diff；静态6/6、接口4/4、scoped Clippy/格式化/全部OpenSpec strict通过。Luna patch v1因漏既有unknown-static检查上下文未应用，root v2重建准确hunk；第一次测试因private SourceMap.segments编译失败，root改公开segments()后v2成功，两份失败均保留。
+
+新冻结CLI `/private/tmp/jarde-nonfinal-static-cli-v1`，SHA **dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e**，metadata在本片results/candidate-cli-v1.json。实际fresh candidate四完整腿4/4，ordered现Proved四静态字段、顺序声明、无重复static块、物理clinit/source-map保留；root已实际独立验收候选 **2245 checks/0 errors**，原输入BCI和完整物理method owner单独核对；任务3.1完成，本产品确切新CI/3.2待验收，当前6/7。历史CLI71f仍保留。
+
+下一片为实例字段呈现，已有 [当前架构接缝](openspec/evidence/java-syntax-2026-10-10/array-field-initializers/instance-promotion-architecture-root.md) 与 [未运行的双direct-super/this链/不同RHS探针](openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/README.md)。必须先完整fresh对照，再设计跨构造器共同前缀与this链恰一次证明，不能把现有clinit静态候选扩义。后续仍有TestArrays2 primitive分支与signed byte/long/ConstantValue明确队列。[71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 分母和EM18整单元状态不变。
 
 ## 工作树、磁盘与执行纪律
 
@@ -58,3 +64,7 @@ root 串行执行 Git/Cargo/rustfmt/JDK/JADX/CLI，一次一个 Cargo；Luna 只
 全部 generated source 空 CP/SP 重编，runtime 仅新 classes 且 -Xverify:all；不借原 class/helper、不删除失败成员、不手修生成文本。原 exit/stdout/stderr 逐字比较，完整日志不裁剪。71单元完成与窄形状完成分开计数。
 
 独立债务：既有 fallback 对拒绝 Arithmetic producer 未映射 iadd@5、平坦 Signature generic arity、receiver-tail 收尾计费；有记录但不混入当前窄片。
+
+本次静态阶段片使用更保守的20 GiB机器余量/1 GiB target守卫，两个Rust测试、CLI build与scoped Clippy均未触发磁盘停止；冻结CLI后已清本仓target共658441395字节（cargo clean报告见本片results/root-clean-v1），target已不存在，source/class/raw/CLI pins均未改变。其它项目实时占用导致机器free下降，不能把全部变化归给本次构建。
+
+静态阶段片本机验收完整，源码/证据均提交推送main；确切提交与CI以git rev-parse HEAD/origin/main及gh查询为准，3.2暂不勾选。root-staged-review-v1记录仅排除四份真实raw/patch空白告警，其余staged diff检查及13脚本AST解析通过，不修改原raw hash。
