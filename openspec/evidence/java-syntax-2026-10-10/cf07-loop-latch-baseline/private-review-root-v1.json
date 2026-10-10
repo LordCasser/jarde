@@ -1,0 +1,39 @@
+{
+  "status": "root-static-review-accepted-v2-and-executed",
+  "at": "2026-10-10T08:51:03.177482+00:00",
+  "v1_static_defect": "main使用write_json/file_record/inventory_rows之前未加载helpers；root审查拒绝，没有执行v1。",
+  "v1_preserved_sha256": "2f919a1b30301df93067f3205154e7a5813da20899d62c5cc585f709e5fa0c44",
+  "v2_sha256": "87c693a53f31898374d5c963c6fbe14b550db20439e0409486b9d191a00cec8f",
+  "v2_correction": "main入口加载固定SHA的AST helper-only定义；后续仅引用，OUT=baseline-root-v2。",
+  "version_delivery_correction": "Luna起初覆写v1并误报新v2；root保存修正版为v2，并精确恢复旧v1且核SHA2f919...c44。",
+  "collector_actual_exit": 0,
+  "command_count": 29,
+  "closed_inventory_declared_count": 118,
+  "independent_acceptance_pending": false,
+  "rust_commands": 0,
+  "free_bytes": 17362362368,
+  "verifier_v2_static_rejected": true,
+  "verifier_v2_not_executed": true,
+  "verifier_v2_sha256": "8e6f6e6dbd48a1eb628db60225a4062aa9e3d61e81a3a30eb98321c1ae00dc72",
+  "verifier_v2_static_defects": [
+    "Jarde case需要解包compiled_case",
+    "jdk_leg/profile字段误读",
+    "javap8 flags无hex且constructor需转<init>",
+    "variant位于class内",
+    "span必须相对report.text且非空",
+    "必须独立BLAKE3绑定原class",
+    "必须核actualcompile/runtime隔离参数"
+  ],
+  "root_verifier_v4_actual_exit": 0,
+  "root_verifier_v4_sha256": "85b2a43a57b49188f43f52ca24ca4915eed7a7931d7a138672712e87199e2d51",
+  "acceptance_file": "independent-verification-root-v3.json",
+  "verifier_v3_static_rejected": true,
+  "verifier_v3_not_executed": true,
+  "verifier_v3_static_defects": [
+    "class引用路径相对bundle，不能直接比class-output相对路径",
+    "default渲染argv无--evidence参数",
+    "只统计primary/允许空span/未验derived BCI",
+    "未明确绑定生成源正文及固定manifest/source/Runner/JAR"
+  ],
+  "accepted_at": "2026-10-10T09:00:51.632278+00:00"
+}

@@ -1,0 +1,199 @@
+{
+  "status": "accepted-old-cli-test-planning-observation-only",
+  "at": "2026-10-10T08:41:17.678281+00:00",
+  "cli_sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+  "class_path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class",
+  "class_sha256": "cc727795087999f893efffd1f98ccafb93e25f988b62689850af51be1f25914f",
+  "class_blake3": "c2077dc2b9d8a6f8a7bd339a418606257b6120fdbf978c2b350ace9cbb5e4b0c",
+  "commands": [
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-p",
+        "-c",
+        "-s",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class"
+      ],
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "javap.stdout.raw",
+          "sha256": "0c8c2ff4b7c7786ef1d3da218c20bdb07020b53d2f474f7b80f50615f8ad5a58",
+          "bytes": 3498
+        },
+        "stderr": {
+          "path": "javap.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    },
+    {
+      "label": "default",
+      "argv": [
+        "/private/tmp/jarde-field-multiply-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class",
+        "--class",
+        "LoopBool",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "default.stdout.raw",
+          "sha256": "13478337fe1710289fc9e42f186bfd0d800ec882b0a8ad9470834bb03b439ea3",
+          "bytes": 55366
+        },
+        "stderr": {
+          "path": "default.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    },
+    {
+      "label": "all",
+      "argv": [
+        "/private/tmp/jarde-field-multiply-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class",
+        "--class",
+        "LoopBool",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "all.stdout.raw",
+          "sha256": "e9db7b55a5c73e3b77811f68fe543ad9b560c73342d5a5320e682fb62adef123",
+          "bytes": 57839
+        },
+        "stderr": {
+          "path": "all.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    }
+  ],
+  "observations": [
+    {
+      "mode": "default",
+      "method": "andWhile(II)I",
+      "quality": "structured",
+      "latch_bci": 20,
+      "latch_target": 2,
+      "latch_missing": true,
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        6,
+        7,
+        10,
+        11,
+        12,
+        13,
+        14,
+        17,
+        23,
+        24
+      ],
+      "text_sha256": "3f2bb278d746a0e295a39e5a1328255a507d7ad99e8f6ee4e52430ea5ac08005",
+      "physical_owner_valid": true
+    },
+    {
+      "mode": "all",
+      "method": "andWhile(II)I",
+      "quality": "structured",
+      "latch_bci": 20,
+      "latch_target": 2,
+      "latch_missing": true,
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        6,
+        7,
+        10,
+        11,
+        12,
+        13,
+        14,
+        17,
+        23,
+        24
+      ],
+      "text_sha256": "3f2bb278d746a0e295a39e5a1328255a507d7ad99e8f6ee4e52430ea5ac08005",
+      "physical_owner_valid": true
+    },
+    {
+      "mode": "default",
+      "method": "orWhile(II)I",
+      "quality": "structured",
+      "latch_bci": 19,
+      "latch_target": 2,
+      "latch_missing": true,
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        6,
+        7,
+        10,
+        13,
+        16,
+        22,
+        23
+      ],
+      "text_sha256": "eedcf5c2cfb19f6a9ee50cacb58b5ad6e66aa0d0f915edbfc84a0f68e577acd0",
+      "physical_owner_valid": true
+    },
+    {
+      "mode": "all",
+      "method": "orWhile(II)I",
+      "quality": "structured",
+      "latch_bci": 19,
+      "latch_target": 2,
+      "latch_missing": true,
+      "mapped_bcis": [
+        0,
+        1,
+        2,
+        3,
+        6,
+        7,
+        10,
+        13,
+        16,
+        22,
+        23
+      ],
+      "text_sha256": "eedcf5c2cfb19f6a9ee50cacb58b5ad6e66aa0d0f915edbfc84a0f68e577acd0",
+      "physical_owner_valid": true
+    }
+  ],
+  "product_patch_applied": false,
+  "cargo_commands": 0,
+  "new_cli_or_whole_class_runtime": false
+}

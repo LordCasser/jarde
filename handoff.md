@@ -14,7 +14,7 @@
 
 ## 立即接续
 
-**当前下一步：** 按两套已strict有效的OpenSpec推进普通循环。recover-prefixed-one-arm-loops当前1/7：原形与四方法控制基线独立接受，method-aware临时诊断patch已备而未应用/编译，先动态核arm分段停止点。preserve-proved-loop-latch-origins当前2/6：基线接受、root private-v4全文审查/apply-check通过，局部末尾latch来源与相邻双臂origin gate已有最小候选（含无计量重复扫描修正与两组来源对抗断言），生产源码仍与main恒同；待20GiB资源守卫满足后root应用/编译/正反例与fresh CLI接受。只有method来源修复不能冒称四份整类运行成功。
+**当前下一步（08:52 UTC更新）：** 按两套已strict有效的OpenSpec推进普通循环。recover-prefixed-one-arm-loops当前1/7：原形与四方法控制基线独立接受，method-aware临时诊断patch已备而未应用/编译，先动态核arm分段停止点。preserve-proved-loop-latch-origins当前2/6：基线接受、root private-v6全文审查/apply-check通过，局部末尾latch来源与相邻双臂origin gate已有最小候选（含无计量重复扫描修正、双臂/双跳转/短路头链准确来源断言），生产源码仍与main恒同；待20GiB资源守卫满足后root应用/编译/正反例与fresh CLI接受。只有method来源修复不能冒称四份整类运行成功。 最新入口是 preserve-proved-loop-latch-origins/verification-root.md：v6 patch SHA aedfdfbfa16d6d7c1feb8e7a9be72e242893917bbc433af1ff087a4a2b59f425，runner改为root-v3的12命令；固定JDK23工具/环境，root只读preflight接受17产品/8测试/23当前include pins。当前新CLI不存在、零Cargo。CF-07旧CLI实际29命令/118文件、原2/JADX4/Jarde4完整类成功；准确goto@15/20/30/25来源缺口保留，root实际独立verifier-v4退出0，接受文件为cf07-loop-latch-baseline/independent-verification-root-v3.json；来源缺口及新候选未接受。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 
@@ -82,3 +82,7 @@ CI下载三次TLS/代理失败及原始字节保存；官方API/direct logs成�
 08:09 UTC root核b6bbd9dad8133319b140acbda3e7a0e037ba0f9d已推送且主线clean，乘法片7/7关闭；十四辅助worktree已再次实际核detached/clean/main祖先/无target，证据results/worktree-checkpoint-audit-root-v1.json。仅本仓占用：.git181MiB、.atlas167MiB、openspec1.4GiB，均为当前历史/分析/接受证据；没有可清的Cargo残留，不删除这些受保护输入来凑构建余量。机器free约14GiB，继续守卫内只读推进循环片，持续目标保持active。
 
 08:28 UTC循环来源片仍2/6，最新应用入口preserve-proved-loop-latch-origins/verification-root.md，private-v4 SHA c42c69662cb8206f702d8d682cfd5567f1eaabc017faa2fd9bc0241d30b9d8df已root全文读审/实际apply-check，生产未应用。root旧CLI4条定向来源观察及BLAKE3/物理owner/raw核验只用于测试设计；新11命令runner仅只读preflight通过，机器free约11GiB，零Cargo/零新CLI。资源满足后应用v4→fmt→以干净检查点完整HEAD运行runner→fresh双JDK对照→独立精确产品CI；普通单臂片仍1/7，method-aware probe未执行。
+
+08:52 UTC root实际新增短路头链旧CLI观察3命令，goto20/19→2缺map，default/all正文与map恒同。永久assert被收紧到准确BCI及physical method。CF-07实际整类重放成功但不代表全BCI完整或新候选通过；只取已证末尾Straight，不扩大本片到if汇合/返回分支内部来源。机器余量约17GiB，root/fuzz target不存在，保持既有20GiB/1GiB守卫；后续先应用v6与实跑runner v3，再fresh CLI/完整控制/自身确切CI。
+
+最终资源复核（准确时间见resource JSON）：机器free约11GiB，根/fuzz target不存在，实际值见preserve-proved-loop-latch-origins/results/resource-checkpoint-root-v4.json；没有Cargo构建或新CLI，当前来源2/6、单臂1/7。CF-07独立验收已实际完成v4/118文件/10完整腿，源码补丁仍未应用。

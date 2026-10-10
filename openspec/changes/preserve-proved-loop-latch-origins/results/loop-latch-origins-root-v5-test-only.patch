@@ -1,0 +1,46 @@
+--- a/tests/p3_loop_boolean_exit.rs
++++ b/tests/p3_loop_boolean_exit.rs
+@@ -94,6 +94,21 @@
+             "BCI {bci} maps to the emitted compound loop condition"
+         );
+     }
++    let and_latch = recovery(and_while).source_map.derived_of_bci(20);
++    assert!(
++        and_latch.iter().any(|segment| {
++            segment.origin().derived().iter().any(|origin| {
++                origin.method() == Some(&and_while.item.identity)
++            }) && {
++                let span = segment.text(&recovery(and_while).text);
++                !span.is_empty()
++                    && span.trim_start().starts_with("while (arg0 > 0 && arg1 > 0)")
++                    && span.trim_end().ends_with('}')
++            }
++        }),
++        "goto@20 must derive a nonempty while-statement span from and_while(II)I: {}",
++        recovery(and_while).text
++    );
+ 
+     let or_while = method(&report, "orWhile");
+     assert!(
+@@ -117,6 +132,21 @@
+             "BCI {bci} maps to the emitted compound loop condition"
+         );
+     }
++    let or_latch = recovery(or_while).source_map.derived_of_bci(19);
++    assert!(
++        or_latch.iter().any(|segment| {
++            segment.origin().derived().iter().any(|origin| {
++                origin.method() == Some(&or_while.item.identity)
++            }) && {
++                let span = segment.text(&recovery(or_while).text);
++                !span.is_empty()
++                    && span.trim_start().starts_with("while (arg0 > 0 || arg1 > 0)")
++                    && span.trim_end().ends_with('}')
++            }
++        }),
++        "goto@19 must derive a nonempty while-statement span from or_while(II)I: {}",
++        recovery(or_while).text
++    );
+ 
+     for name in ["mixedWhile"] {
+         let refused = method(&report, name);

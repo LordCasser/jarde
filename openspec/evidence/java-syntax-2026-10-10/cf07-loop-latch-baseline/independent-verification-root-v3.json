@@ -1,0 +1,4642 @@
+{
+  "schema": "cf07-independent-verification-root-v3",
+  "verifier_sha256": "85b2a43a57b49188f43f52ca24ca4915eed7a7931d7a138672712e87199e2d51",
+  "status": "verified_from_frozen_raw_evidence",
+  "scope": {
+    "bundle": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/cf07-loop-latch-baseline/baseline-root-v2",
+    "collector_sha256": "87c693a53f31898374d5c963c6fbe14b550db20439e0409486b9d191a00cec8f",
+    "manifest_sha256": "1a374647a971b416635bc114b9c197d05c855c51eeabd274f3ee571e868a64ee",
+    "inventory_entries": 118,
+    "commands": 29,
+    "cases": 10
+  },
+  "tool_pins": {
+    "jarde_cli": {
+      "path": "/private/tmp/jarde-field-multiply-cli-v2",
+      "sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59"
+    },
+    "jarde_cli_metadata": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/candidate-cli-v2.json",
+      "sha256": "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8"
+    },
+    "jdk": {
+      "javac8.javac": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+      },
+      "javac8.java": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+      },
+      "javac8.javap": {
+        "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      },
+      "javac23.javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javac23.java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac23.javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    },
+    "jadx": {
+      "launcher": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "version": "1.5.6",
+      "input_jar_sha256": "d0915afd9cb92f3c232c73005912bce0641a5f01f9081736bd08342cd650e9a3"
+    }
+  },
+  "oracle": {
+    "original_class_bytes": {
+      "javac8": {
+        "path": "cases/javac8-original/classes/cf07/LoopCases.class",
+        "bytes": 419,
+        "sha256": "eeda5de66a2f436f077ef3fcf852fe054c01e1a86b71b5638777ce5a0b0a9708",
+        "blake3": "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc"
+      },
+      "javac23": {
+        "path": "cases/javac23-original/classes/cf07/LoopCases.class",
+        "bytes": 419,
+        "sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+        "blake3": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19"
+      }
+    },
+    "physical_javap": {
+      "javac8": {
+        "text_path": "cases/javac8-original/javap.txt",
+        "text_sha256": "44a93a3847e9bd92de82ad0fa2e69d9ae3833d3fbd3e0f547592998bfabfd4f7",
+        "physical_field_count": 0,
+        "methods": {
+          "<init>()V": {
+            "declaration": "public cf07.LoopCases()",
+            "flags": 1,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "aload_0"
+              },
+              {
+                "bci": 1,
+                "instruction": "invokespecial #1                  // Method java/lang/Object.\"<init>\":()V"
+              },
+              {
+                "bci": 4,
+                "instruction": "return"
+              }
+            ],
+            "key": "<init>()V"
+          },
+          "andWhile(Z)I": {
+            "declaration": "public static int andWhile(boolean)",
+            "flags": 9,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "iconst_0"
+              },
+              {
+                "bci": 1,
+                "instruction": "istore_1"
+              },
+              {
+                "bci": 2,
+                "instruction": "iload_0"
+              },
+              {
+                "bci": 3,
+                "instruction": "ifeq          18"
+              },
+              {
+                "bci": 6,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 7,
+                "instruction": "bipush        10"
+              },
+              {
+                "bci": 9,
+                "instruction": "if_icmpge     18"
+              },
+              {
+                "bci": 12,
+                "instruction": "iinc          1, 1"
+              },
+              {
+                "bci": 15,
+                "instruction": "goto          2"
+              },
+              {
+                "bci": 18,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 19,
+                "instruction": "ireturn"
+              }
+            ],
+            "key": "andWhile(Z)I"
+          },
+          "counted(II)I": {
+            "declaration": "public static int counted(int, int)",
+            "flags": 9,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "iload_0"
+              },
+              {
+                "bci": 1,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 2,
+                "instruction": "iadd"
+              },
+              {
+                "bci": 3,
+                "instruction": "istore_2"
+              },
+              {
+                "bci": 4,
+                "instruction": "iload_0"
+              },
+              {
+                "bci": 5,
+                "instruction": "istore_3"
+              },
+              {
+                "bci": 6,
+                "instruction": "iload_3"
+              },
+              {
+                "bci": 7,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 8,
+                "instruction": "if_icmpge     33"
+              },
+              {
+                "bci": 11,
+                "instruction": "iload_3"
+              },
+              {
+                "bci": 12,
+                "instruction": "bipush        7"
+              },
+              {
+                "bci": 14,
+                "instruction": "if_icmpne     23"
+              },
+              {
+                "bci": 17,
+                "instruction": "iinc          2, 2"
+              },
+              {
+                "bci": 20,
+                "instruction": "goto          27"
+              },
+              {
+                "bci": 23,
+                "instruction": "iload_2"
+              },
+              {
+                "bci": 24,
+                "instruction": "iconst_2"
+              },
+              {
+                "bci": 25,
+                "instruction": "imul"
+              },
+              {
+                "bci": 26,
+                "instruction": "istore_2"
+              },
+              {
+                "bci": 27,
+                "instruction": "iinc          3, 1"
+              },
+              {
+                "bci": 30,
+                "instruction": "goto          6"
+              },
+              {
+                "bci": 33,
+                "instruction": "iinc          2, -1"
+              },
+              {
+                "bci": 36,
+                "instruction": "iload_2"
+              },
+              {
+                "bci": 37,
+                "instruction": "ireturn"
+              }
+            ],
+            "key": "counted(II)I"
+          },
+          "lastIndexOf([IIII)I": {
+            "declaration": "public static int lastIndexOf(int[], int, int, int)",
+            "flags": 9,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "iload_3"
+              },
+              {
+                "bci": 1,
+                "instruction": "iconst_1"
+              },
+              {
+                "bci": 2,
+                "instruction": "isub"
+              },
+              {
+                "bci": 3,
+                "instruction": "istore        4"
+              },
+              {
+                "bci": 5,
+                "instruction": "iload         4"
+              },
+              {
+                "bci": 7,
+                "instruction": "iload_2"
+              },
+              {
+                "bci": 8,
+                "instruction": "if_icmplt     28"
+              },
+              {
+                "bci": 11,
+                "instruction": "aload_0"
+              },
+              {
+                "bci": 12,
+                "instruction": "iload         4"
+              },
+              {
+                "bci": 14,
+                "instruction": "iaload"
+              },
+              {
+                "bci": 15,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 16,
+                "instruction": "if_icmpne     22"
+              },
+              {
+                "bci": 19,
+                "instruction": "iload         4"
+              },
+              {
+                "bci": 21,
+                "instruction": "ireturn"
+              },
+              {
+                "bci": 22,
+                "instruction": "iinc          4, -1"
+              },
+              {
+                "bci": 25,
+                "instruction": "goto          5"
+              },
+              {
+                "bci": 28,
+                "instruction": "iconst_m1"
+              },
+              {
+                "bci": 29,
+                "instruction": "ireturn"
+              }
+            ],
+            "key": "lastIndexOf([IIII)I"
+          }
+        }
+      },
+      "javac23": {
+        "text_path": "cases/javac23-original/javap.txt",
+        "text_sha256": "26c331adcdc1f61edbeefa8f46b66668134951aa433e1b4ad46d34ce94b2ce2c",
+        "physical_field_count": 0,
+        "methods": {
+          "<init>()V": {
+            "declaration": "public cf07.LoopCases()",
+            "flags": 1,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "aload_0"
+              },
+              {
+                "bci": 1,
+                "instruction": "invokespecial #1                  // Method java/lang/Object.\"<init>\":()V"
+              },
+              {
+                "bci": 4,
+                "instruction": "return"
+              }
+            ],
+            "key": "<init>()V"
+          },
+          "andWhile(Z)I": {
+            "declaration": "public static int andWhile(boolean)",
+            "flags": 9,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "iconst_0"
+              },
+              {
+                "bci": 1,
+                "instruction": "istore_1"
+              },
+              {
+                "bci": 2,
+                "instruction": "iload_0"
+              },
+              {
+                "bci": 3,
+                "instruction": "ifeq          18"
+              },
+              {
+                "bci": 6,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 7,
+                "instruction": "bipush        10"
+              },
+              {
+                "bci": 9,
+                "instruction": "if_icmpge     18"
+              },
+              {
+                "bci": 12,
+                "instruction": "iinc          1, 1"
+              },
+              {
+                "bci": 15,
+                "instruction": "goto          2"
+              },
+              {
+                "bci": 18,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 19,
+                "instruction": "ireturn"
+              }
+            ],
+            "key": "andWhile(Z)I"
+          },
+          "counted(II)I": {
+            "declaration": "public static int counted(int, int)",
+            "flags": 9,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "iload_0"
+              },
+              {
+                "bci": 1,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 2,
+                "instruction": "iadd"
+              },
+              {
+                "bci": 3,
+                "instruction": "istore_2"
+              },
+              {
+                "bci": 4,
+                "instruction": "iload_0"
+              },
+              {
+                "bci": 5,
+                "instruction": "istore_3"
+              },
+              {
+                "bci": 6,
+                "instruction": "iload_3"
+              },
+              {
+                "bci": 7,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 8,
+                "instruction": "if_icmpge     33"
+              },
+              {
+                "bci": 11,
+                "instruction": "iload_3"
+              },
+              {
+                "bci": 12,
+                "instruction": "bipush        7"
+              },
+              {
+                "bci": 14,
+                "instruction": "if_icmpne     23"
+              },
+              {
+                "bci": 17,
+                "instruction": "iinc          2, 2"
+              },
+              {
+                "bci": 20,
+                "instruction": "goto          27"
+              },
+              {
+                "bci": 23,
+                "instruction": "iload_2"
+              },
+              {
+                "bci": 24,
+                "instruction": "iconst_2"
+              },
+              {
+                "bci": 25,
+                "instruction": "imul"
+              },
+              {
+                "bci": 26,
+                "instruction": "istore_2"
+              },
+              {
+                "bci": 27,
+                "instruction": "iinc          3, 1"
+              },
+              {
+                "bci": 30,
+                "instruction": "goto          6"
+              },
+              {
+                "bci": 33,
+                "instruction": "iinc          2, -1"
+              },
+              {
+                "bci": 36,
+                "instruction": "iload_2"
+              },
+              {
+                "bci": 37,
+                "instruction": "ireturn"
+              }
+            ],
+            "key": "counted(II)I"
+          },
+          "lastIndexOf([IIII)I": {
+            "declaration": "public static int lastIndexOf(int[], int, int, int)",
+            "flags": 9,
+            "instructions": [
+              {
+                "bci": 0,
+                "instruction": "iload_3"
+              },
+              {
+                "bci": 1,
+                "instruction": "iconst_1"
+              },
+              {
+                "bci": 2,
+                "instruction": "isub"
+              },
+              {
+                "bci": 3,
+                "instruction": "istore        4"
+              },
+              {
+                "bci": 5,
+                "instruction": "iload         4"
+              },
+              {
+                "bci": 7,
+                "instruction": "iload_2"
+              },
+              {
+                "bci": 8,
+                "instruction": "if_icmplt     28"
+              },
+              {
+                "bci": 11,
+                "instruction": "aload_0"
+              },
+              {
+                "bci": 12,
+                "instruction": "iload         4"
+              },
+              {
+                "bci": 14,
+                "instruction": "iaload"
+              },
+              {
+                "bci": 15,
+                "instruction": "iload_1"
+              },
+              {
+                "bci": 16,
+                "instruction": "if_icmpne     22"
+              },
+              {
+                "bci": 19,
+                "instruction": "iload         4"
+              },
+              {
+                "bci": 21,
+                "instruction": "ireturn"
+              },
+              {
+                "bci": 22,
+                "instruction": "iinc          4, -1"
+              },
+              {
+                "bci": 25,
+                "instruction": "goto          5"
+              },
+              {
+                "bci": 28,
+                "instruction": "iconst_m1"
+              },
+              {
+                "bci": 29,
+                "instruction": "ireturn"
+              }
+            ],
+            "key": "lastIndexOf([IIII)I"
+          }
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "label": "javac8-original-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-original-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-original-javap",
+      "exit": 0,
+      "stdout_sha256": "44a93a3847e9bd92de82ad0fa2e69d9ae3833d3fbd3e0f547592998bfabfd4f7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-original-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-original-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-original-javap",
+      "exit": 0,
+      "stdout_sha256": "26c331adcdc1f61edbeefa8f46b66668134951aa433e1b4ad46d34ce94b2ce2c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-version",
+      "exit": 0,
+      "stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-default-decompile",
+      "exit": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-none-decompile",
+      "exit": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-default-render",
+      "exit": 0,
+      "stdout_sha256": "a550cc61ceda8f8dad9ef287822912fb4f03d5d03465a001dbbcd088c7e2b485",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-render",
+      "exit": 0,
+      "stdout_sha256": "293ec978566106fc2f9e67bd6b38e6f74ea598550877e6c8334cab4cbb7f4da6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-default-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-default-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-render",
+      "exit": 0,
+      "stdout_sha256": "7b19edec6fa8f2a8a03919ee76029bffc684f1be515e4fd52de3812c7d46b0e1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-render",
+      "exit": 0,
+      "stdout_sha256": "7050099e61d3b8cb5c82dba2f8de454adfe4d80ac32f0d5f421e87769c2ca9eb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-compile",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-run",
+      "exit": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "jdk_leg": "javac8",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac8-original/classes/cf07/LoopCases.class",
+        "cases/javac8-original/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac23-original",
+      "jdk_leg": "javac23",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac23-original/classes/cf07/LoopCases.class",
+        "cases/javac23-original/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac8-jadx-default",
+      "jdk_leg": "javac8",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac8-jadx-default/classes/cf07/LoopCases.class",
+        "cases/javac8-jadx-default/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac23-jadx-default",
+      "jdk_leg": "javac23",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac23-jadx-default/classes/cf07/LoopCases.class",
+        "cases/javac23-jadx-default/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac8-jadx-none",
+      "jdk_leg": "javac8",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac8-jadx-none/classes/cf07/LoopCases.class",
+        "cases/javac8-jadx-none/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac23-jadx-none",
+      "jdk_leg": "javac23",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac23-jadx-none/classes/cf07/LoopCases.class",
+        "cases/javac23-jadx-none/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default",
+      "jdk_leg": "javac8",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac8-jarde-default/classes/cf07/LoopCases.class",
+        "cases/javac8-jarde-default/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all",
+      "jdk_leg": "javac8",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac8-jarde-all/classes/cf07/LoopCases.class",
+        "cases/javac8-jarde-all/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default",
+      "jdk_leg": "javac23",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac23-jarde-default/classes/cf07/LoopCases.class",
+        "cases/javac23-jarde-default/classes/cf07/Runner.class"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all",
+      "jdk_leg": "javac23",
+      "compile_exit": 0,
+      "runtime_exit": 0,
+      "runtime_stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "runtime_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "class_paths": [
+        "cases/javac23-jarde-all/classes/cf07/LoopCases.class",
+        "cases/javac23-jarde-all/classes/cf07/Runner.class"
+      ]
+    }
+  ],
+  "jarde_render_profiles": [
+    {
+      "case": "javac8-jarde-default",
+      "profile": "default",
+      "document_path": "cases/javac8-jarde-render/class-source-default.json",
+      "document_sha256": "a550cc61ceda8f8dad9ef287822912fb4f03d5d03465a001dbbcd088c7e2b485",
+      "owner": {
+        "class_bytes": {
+          "digest": "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+          "length": 419
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "physical_field_count": 0,
+      "methods": [
+        {
+          "method": "<init>()V",
+          "physical_flags": 1,
+          "physical_bcis": [
+            0,
+            1,
+            4
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            4
+          ],
+          "missing_origin_bcis": [],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 0,
+              "provenance": "Derived",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                174,
+                186
+              ]
+            }
+          ]
+        },
+        {
+          "method": "andWhile(Z)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            15,
+            18,
+            19
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            18,
+            19
+          ],
+          "missing_origin_bcis": [
+            15
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                195,
+                196
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 3,
+              "provenance": "Derived",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                223
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                226,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                255
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                232,
+                261
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 18,
+              "provenance": "Direct",
+              "span": [
+                278,
+                284
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                267,
+                286
+              ]
+            }
+          ]
+        },
+        {
+          "method": "counted(II)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            20,
+            23,
+            24,
+            25,
+            26,
+            27,
+            30,
+            33,
+            36,
+            37
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            23,
+            24,
+            25,
+            26,
+            27,
+            33,
+            36,
+            37
+          ],
+          "missing_origin_bcis": [
+            20,
+            30
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                211,
+                215
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                218,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                211,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                224
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                237,
+                241
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                224,
+                243
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                260
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                263,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                289
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                293,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 14,
+              "provenance": "Derived",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                325
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                328,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                298,
+                331
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 23,
+              "provenance": "Direct",
+              "span": [
+                369,
+                375
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 24,
+              "provenance": "Direct",
+              "span": [
+                378,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 25,
+              "provenance": "Direct",
+              "span": [
+                369,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 26,
+              "provenance": "Direct",
+              "span": [
+                348,
+                381
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                271,
+                391
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                414
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                417,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                391,
+                420
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                243,
+                426
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                445
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                448,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                426,
+                451
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 36,
+              "provenance": "Direct",
+              "span": [
+                462,
+                468
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 37,
+              "provenance": "Direct",
+              "span": [
+                451,
+                470
+              ]
+            }
+          ]
+        },
+        {
+          "method": "lastIndexOf([IIII)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            25,
+            28,
+            29
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            28,
+            29
+          ],
+          "missing_origin_bcis": [
+            25
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                173,
+                189
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                202,
+                206
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                209,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                202,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                189,
+                212
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                229
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                233,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                253,
+                257
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                264
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                265
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 15,
+              "provenance": "Direct",
+              "span": [
+                269,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 16,
+              "provenance": "Derived",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                296,
+                302
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 21,
+              "provenance": "Direct",
+              "span": [
+                277,
+                304
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                348
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                351,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                321,
+                354
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 16,
+              "provenance": "Direct",
+              "span": [
+                241,
+                364
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                212,
+                370
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 28,
+              "provenance": "Direct",
+              "span": [
+                381,
+                383
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 29,
+              "provenance": "Direct",
+              "span": [
+                370,
+                385
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "javac8-jarde-all",
+      "profile": "all",
+      "document_path": "cases/javac8-jarde-render/class-source-all.json",
+      "document_sha256": "293ec978566106fc2f9e67bd6b38e6f74ea598550877e6c8334cab4cbb7f4da6",
+      "owner": {
+        "class_bytes": {
+          "digest": "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+          "length": 419
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "physical_field_count": 0,
+      "methods": [
+        {
+          "method": "<init>()V",
+          "physical_flags": 1,
+          "physical_bcis": [
+            0,
+            1,
+            4
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            4
+          ],
+          "missing_origin_bcis": [],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 0,
+              "provenance": "Derived",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                174,
+                186
+              ]
+            }
+          ]
+        },
+        {
+          "method": "andWhile(Z)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            15,
+            18,
+            19
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            18,
+            19
+          ],
+          "missing_origin_bcis": [
+            15
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                195,
+                196
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 3,
+              "provenance": "Derived",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                223
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                226,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                255
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                232,
+                261
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 18,
+              "provenance": "Direct",
+              "span": [
+                278,
+                284
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                267,
+                286
+              ]
+            }
+          ]
+        },
+        {
+          "method": "counted(II)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            20,
+            23,
+            24,
+            25,
+            26,
+            27,
+            30,
+            33,
+            36,
+            37
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            23,
+            24,
+            25,
+            26,
+            27,
+            33,
+            36,
+            37
+          ],
+          "missing_origin_bcis": [
+            20,
+            30
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                211,
+                215
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                218,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                211,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                224
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                237,
+                241
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                224,
+                243
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                260
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                263,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                289
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                293,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 14,
+              "provenance": "Derived",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                325
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                328,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                298,
+                331
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 23,
+              "provenance": "Direct",
+              "span": [
+                369,
+                375
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 24,
+              "provenance": "Direct",
+              "span": [
+                378,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 25,
+              "provenance": "Direct",
+              "span": [
+                369,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 26,
+              "provenance": "Direct",
+              "span": [
+                348,
+                381
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                271,
+                391
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                414
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                417,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                391,
+                420
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                243,
+                426
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                445
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                448,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                426,
+                451
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 36,
+              "provenance": "Direct",
+              "span": [
+                462,
+                468
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 37,
+              "provenance": "Direct",
+              "span": [
+                451,
+                470
+              ]
+            }
+          ]
+        },
+        {
+          "method": "lastIndexOf([IIII)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            25,
+            28,
+            29
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            28,
+            29
+          ],
+          "missing_origin_bcis": [
+            25
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                173,
+                189
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                202,
+                206
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                209,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                202,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                189,
+                212
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                229
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                233,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                253,
+                257
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                264
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                265
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 15,
+              "provenance": "Direct",
+              "span": [
+                269,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 16,
+              "provenance": "Derived",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                296,
+                302
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 21,
+              "provenance": "Direct",
+              "span": [
+                277,
+                304
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                348
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                351,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                321,
+                354
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 16,
+              "provenance": "Direct",
+              "span": [
+                241,
+                364
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                212,
+                370
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 28,
+              "provenance": "Direct",
+              "span": [
+                381,
+                383
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 29,
+              "provenance": "Direct",
+              "span": [
+                370,
+                385
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "javac23-jarde-default",
+      "profile": "default",
+      "document_path": "cases/javac23-jarde-render/class-source-default.json",
+      "document_sha256": "7b19edec6fa8f2a8a03919ee76029bffc684f1be515e4fd52de3812c7d46b0e1",
+      "owner": {
+        "class_bytes": {
+          "digest": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+          "length": 419
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "physical_field_count": 0,
+      "methods": [
+        {
+          "method": "<init>()V",
+          "physical_flags": 1,
+          "physical_bcis": [
+            0,
+            1,
+            4
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            4
+          ],
+          "missing_origin_bcis": [],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 0,
+              "provenance": "Derived",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                174,
+                186
+              ]
+            }
+          ]
+        },
+        {
+          "method": "andWhile(Z)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            15,
+            18,
+            19
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            18,
+            19
+          ],
+          "missing_origin_bcis": [
+            15
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                195,
+                196
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 3,
+              "provenance": "Derived",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                223
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                226,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                255
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                232,
+                261
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 18,
+              "provenance": "Direct",
+              "span": [
+                278,
+                284
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                267,
+                286
+              ]
+            }
+          ]
+        },
+        {
+          "method": "counted(II)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            20,
+            23,
+            24,
+            25,
+            26,
+            27,
+            30,
+            33,
+            36,
+            37
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            23,
+            24,
+            25,
+            26,
+            27,
+            33,
+            36,
+            37
+          ],
+          "missing_origin_bcis": [
+            20,
+            30
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                211,
+                215
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                218,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                211,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                224
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                237,
+                241
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                224,
+                243
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                260
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                263,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                289
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                293,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 14,
+              "provenance": "Derived",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                325
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                328,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                298,
+                331
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 23,
+              "provenance": "Direct",
+              "span": [
+                369,
+                375
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 24,
+              "provenance": "Direct",
+              "span": [
+                378,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 25,
+              "provenance": "Direct",
+              "span": [
+                369,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 26,
+              "provenance": "Direct",
+              "span": [
+                348,
+                381
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                271,
+                391
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                414
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                417,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                391,
+                420
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                243,
+                426
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                445
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                448,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                426,
+                451
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 36,
+              "provenance": "Direct",
+              "span": [
+                462,
+                468
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 37,
+              "provenance": "Direct",
+              "span": [
+                451,
+                470
+              ]
+            }
+          ]
+        },
+        {
+          "method": "lastIndexOf([IIII)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            25,
+            28,
+            29
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            28,
+            29
+          ],
+          "missing_origin_bcis": [
+            25
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                173,
+                189
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                202,
+                206
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                209,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                202,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                189,
+                212
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                229
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                233,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                253,
+                257
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                264
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                265
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 15,
+              "provenance": "Direct",
+              "span": [
+                269,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 16,
+              "provenance": "Derived",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                296,
+                302
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 21,
+              "provenance": "Direct",
+              "span": [
+                277,
+                304
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                348
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                351,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                321,
+                354
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 16,
+              "provenance": "Direct",
+              "span": [
+                241,
+                364
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                212,
+                370
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 28,
+              "provenance": "Direct",
+              "span": [
+                381,
+                383
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 29,
+              "provenance": "Direct",
+              "span": [
+                370,
+                385
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "javac23-jarde-all",
+      "profile": "all",
+      "document_path": "cases/javac23-jarde-render/class-source-all.json",
+      "document_sha256": "7050099e61d3b8cb5c82dba2f8de454adfe4d80ac32f0d5f421e87769c2ca9eb",
+      "owner": {
+        "class_bytes": {
+          "digest": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+          "length": 419
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "physical_field_count": 0,
+      "methods": [
+        {
+          "method": "<init>()V",
+          "physical_flags": 1,
+          "physical_bcis": [
+            0,
+            1,
+            4
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            4
+          ],
+          "missing_origin_bcis": [],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 0,
+              "provenance": "Derived",
+              "span": [
+                161,
+                174
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                174,
+                186
+              ]
+            }
+          ]
+        },
+        {
+          "method": "andWhile(Z)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            15,
+            18,
+            19
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            9,
+            12,
+            18,
+            19
+          ],
+          "missing_origin_bcis": [
+            15
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                195,
+                196
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 3,
+              "provenance": "Derived",
+              "span": [
+                209,
+                213
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                223
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                226,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                217,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 9,
+              "provenance": "Derived",
+              "span": [
+                209,
+                228
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                255
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                249,
+                259
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                232,
+                261
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 18,
+              "provenance": "Direct",
+              "span": [
+                278,
+                284
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                267,
+                286
+              ]
+            }
+          ]
+        },
+        {
+          "method": "counted(II)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            20,
+            23,
+            24,
+            25,
+            26,
+            27,
+            30,
+            33,
+            36,
+            37
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            11,
+            12,
+            14,
+            17,
+            23,
+            24,
+            25,
+            26,
+            27,
+            33,
+            36,
+            37
+          ],
+          "missing_origin_bcis": [
+            20,
+            30
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                166,
+                182
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                182,
+                198
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                211,
+                215
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                218,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                211,
+                222
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                198,
+                224
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 4,
+              "provenance": "Direct",
+              "span": [
+                237,
+                241
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                224,
+                243
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                260
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                263,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 6,
+              "provenance": "Direct",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                254,
+                267
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                289
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                293,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 14,
+              "provenance": "Derived",
+              "span": [
+                283,
+                294
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                325
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                328,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                319,
+                329
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 17,
+              "provenance": "Direct",
+              "span": [
+                298,
+                331
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 23,
+              "provenance": "Direct",
+              "span": [
+                369,
+                375
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 24,
+              "provenance": "Direct",
+              "span": [
+                378,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 25,
+              "provenance": "Direct",
+              "span": [
+                369,
+                379
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 26,
+              "provenance": "Direct",
+              "span": [
+                348,
+                381
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                271,
+                391
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                414
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                417,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                408,
+                418
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 27,
+              "provenance": "Direct",
+              "span": [
+                391,
+                420
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                243,
+                426
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                445
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                448,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                439,
+                449
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 33,
+              "provenance": "Direct",
+              "span": [
+                426,
+                451
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 36,
+              "provenance": "Direct",
+              "span": [
+                462,
+                468
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 37,
+              "provenance": "Direct",
+              "span": [
+                451,
+                470
+              ]
+            }
+          ]
+        },
+        {
+          "method": "lastIndexOf([IIII)I",
+          "physical_flags": 9,
+          "physical_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            25,
+            28,
+            29
+          ],
+          "source_map_all_origin_bcis": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            11,
+            12,
+            14,
+            15,
+            16,
+            19,
+            21,
+            22,
+            28,
+            29
+          ],
+          "missing_origin_bcis": [
+            25
+          ],
+          "origin_spans": [
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                173,
+                189
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 0,
+              "provenance": "Direct",
+              "span": [
+                202,
+                206
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 1,
+              "provenance": "Direct",
+              "span": [
+                209,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 2,
+              "provenance": "Direct",
+              "span": [
+                202,
+                210
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 3,
+              "provenance": "Direct",
+              "span": [
+                189,
+                212
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                229
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 7,
+              "provenance": "Direct",
+              "span": [
+                233,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 5,
+              "provenance": "Direct",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 8,
+              "provenance": "Derived",
+              "span": [
+                223,
+                237
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 11,
+              "provenance": "Direct",
+              "span": [
+                253,
+                257
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 12,
+              "provenance": "Direct",
+              "span": [
+                258,
+                264
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                265
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 15,
+              "provenance": "Direct",
+              "span": [
+                269,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 14,
+              "provenance": "Direct",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "derived",
+              "bci": 16,
+              "provenance": "Derived",
+              "span": [
+                253,
+                273
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 19,
+              "provenance": "Direct",
+              "span": [
+                296,
+                302
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 21,
+              "provenance": "Direct",
+              "span": [
+                277,
+                304
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                348
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                351,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                342,
+                352
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 22,
+              "provenance": "Direct",
+              "span": [
+                321,
+                354
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 16,
+              "provenance": "Direct",
+              "span": [
+                241,
+                364
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 8,
+              "provenance": "Direct",
+              "span": [
+                212,
+                370
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 28,
+              "provenance": "Direct",
+              "span": [
+                381,
+                383
+              ]
+            },
+            {
+              "role": "primary",
+              "bci": 29,
+              "provenance": "Direct",
+              "span": [
+                370,
+                385
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "render_equality": {
+    "javac8": {
+      "generated_text_equal": true,
+      "method_text_equal": {
+        "<init>()V": true,
+        "andWhile(Z)I": true,
+        "counted(II)I": true,
+        "lastIndexOf([IIII)I": true
+      },
+      "source_map_equal": {
+        "<init>()V": true,
+        "andWhile(Z)I": true,
+        "counted(II)I": true,
+        "lastIndexOf([IIII)I": true
+      }
+    },
+    "javac23": {
+      "generated_text_equal": true,
+      "method_text_equal": {
+        "<init>()V": true,
+        "andWhile(Z)I": true,
+        "counted(II)I": true,
+        "lastIndexOf([IIII)I": true
+      },
+      "source_map_equal": {
+        "<init>()V": true,
+        "andWhile(Z)I": true,
+        "counted(II)I": true,
+        "lastIndexOf([IIII)I": true
+      }
+    }
+  },
+  "jarde_profile_gaps": {
+    "andWhile(Z)I": [
+      15
+    ],
+    "counted(II)I": [
+      20,
+      30
+    ],
+    "lastIndexOf([IIII)I": [
+      25
+    ]
+  },
+  "physical_goto_observations": {
+    "javac8": {
+      "andWhile(Z)I@15": {
+        "instruction": "goto          2",
+        "target": 2,
+        "source_origin_missing": true
+      },
+      "counted(II)I@20": {
+        "instruction": "goto          27",
+        "target": 27,
+        "source_origin_missing": true
+      },
+      "counted(II)I@30": {
+        "instruction": "goto          6",
+        "target": 6,
+        "source_origin_missing": true
+      },
+      "lastIndexOf([IIII)I@25": {
+        "instruction": "goto          5",
+        "target": 5,
+        "source_origin_missing": true
+      }
+    },
+    "javac23": {
+      "andWhile(Z)I@15": {
+        "instruction": "goto          2",
+        "target": 2,
+        "source_origin_missing": true
+      },
+      "counted(II)I@20": {
+        "instruction": "goto          27",
+        "target": 27,
+        "source_origin_missing": true
+      },
+      "counted(II)I@30": {
+        "instruction": "goto          6",
+        "target": 6,
+        "source_origin_missing": true
+      },
+      "lastIndexOf([IIII)I@25": {
+        "instruction": "goto          5",
+        "target": 5,
+        "source_origin_missing": true
+      }
+    }
+  },
+  "claim_boundary": "These facts verify the frozen original/JADX/Jarde evidence and source maps. Missing origins at andWhile@15, counted@20/@30, and lastIndexOf@25 are recorded as source-map gaps; no candidate acceptance or complete BCI coverage is claimed."
+}

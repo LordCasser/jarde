@@ -1,0 +1,415 @@
+diff --git a/crates/jarde-java/src/region.rs b/crates/jarde-java/src/region.rs
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -4080,12 +4080,14 @@
+             body,
+             exit: Some(exit),
+             gateway_origins,
++            form,
++            for_header,
+             ..
+         } = arm
+         else {
+             return Ok(None);
+         };
+-        if exit != join || !gateway_origins.is_empty() || !body.iter().all(closed_body) {
++        if exit != join || !body.iter().all(closed_body) {
+             return Ok(None);
+         }
+         let Some(header_node) = self.view.index_of(header) else {
+@@ -4115,6 +4117,20 @@
+                     })
+             })
+         {
++            return Ok(None);
++        }
++        let allowed_latch_origin = if gateway_origins.is_empty() {
++            true
++        } else if *form == LoopForm::While
++            && for_header.is_none()
++            && gateway_origins.len() == 1
++        {
++            self.implicit_tail_latch_origin(header_node, body, for_header.as_ref())?
++                == gateway_origins.first().copied()
++        } else {
++            false
++        };
++        if !allowed_latch_origin {
+             return Ok(None);
+         }
+         charge(
+@@ -10083,6 +10099,83 @@
+         )))
+     }
+ 
++    /// The one hidden transfer a final straight run may assign to a header-tested `while`: its
++    /// natural latch, when the terminal instruction is an unconditional transfer back to this
++    /// header and the canonical graph gives it no other outgoing edge.
++    fn implicit_tail_latch_origin(
++        &mut self,
++        header_node: usize,
++        body: &[Region],
++        for_header: Option<&ForHeader>,
++    ) -> Result<Option<u32>, StopReason> {
++        if for_header.is_some() {
++            return Ok(None);
++        }
++        let Some(Region::Straight { blocks: tail }) = body.last() else {
++            return Ok(None);
++        };
++        let Some(latch_id) = tail.last() else {
++            return Ok(None);
++        };
++        let Some(latch_node) = self.view.index_of(latch_id) else {
++            return Ok(None);
++        };
++        let Some(natural_loop) = self.view.loop_entered_at(header_node) else {
++            return Ok(None);
++        };
++        let Some(header_id) = self.view.id_of(header_node) else {
++            return Ok(None);
++        };
++        let Some(latch_bci) = self.terminal_bci(latch_id) else {
++            return Ok(None);
++        };
++        poll(self.budget, Some(latch_bci))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(natural_loop.latches().len()).unwrap_or(u64::MAX),
++            Some(latch_bci),
++        )?;
++        if natural_loop.header() != header_node
++            || natural_loop.is_irreducible()
++            || natural_loop.latches().len() != 1
++            || !natural_loop.latches().contains(&latch_node)
++        {
++            return Ok(None);
++        }
++        if !self.ssa.block(latch_id).is_some_and(|block| {
++            block.instructions().last().is_some_and(|instruction| {
++                instruction.bci() == latch_bci
++                    && matches!(instruction.opcode(), 0xa7 | 0xc8)
++                    && matches!(self.operations.get(latch_bci), Some(Operation::Transfer))
++            })
++        }) || self.view.successors(latch_node) != [header_node]
++        {
++            return Ok(None);
++        }
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
++            Some(latch_bci),
++        )?;
++        let mut outgoing = 0usize;
++        for edge in self.canonical.edges() {
++            poll(self.budget, Some(latch_bci))?;
++            if edge.from() != latch_id {
++                continue;
++            }
++            outgoing += 1;
++            if edge.kind() != CanonicalEdgeKind::Normal || edge.to() != header_id {
++                return Ok(None);
++            }
++        }
++        if outgoing != 1 {
++            return Ok(None);
++        }
++        Ok(Some(latch_bci))
++    }
++
+     /// The `while`/`for` shape: the header's own branch tests and one of its arms leaves the loop.
+     fn header_tested_loop(
+         &mut self,
+@@ -10142,6 +10235,10 @@
+                         body,
+                     )));
+                 }
++                let gateway_origins = self
++                    .implicit_tail_latch_origin(header_node, &body, None)?
++                    .into_iter()
++                    .collect();
+                 return Ok(Some((
+                     vec![Region::Loop {
+                         header: header.clone(),
+@@ -10151,7 +10248,7 @@
+                         for_header: None,
+                         body,
+                         exit: Some(chain.exit.clone()),
+-                        gateway_origins: Vec::new(),
++                        gateway_origins,
+                     }],
+                     Some(chain.exit),
+                 )));
+@@ -10314,6 +10411,12 @@
+                 .is_some_and(|candidate| candidate.update_block == proof.update)
+         {
+             gateway_origins.push(proof.update_transfer_bci);
++        }
++        if let Some(latch_bci) =
++            self.implicit_tail_latch_origin(header_node, &body, for_header.as_ref())?
++            && !gateway_origins.contains(&latch_bci)
++        {
++            gateway_origins.push(latch_bci);
+         }
+         let run = vec![Region::Loop {
+             header: header.clone(),
+diff --git a/crates/jarde-java/tests/p3_loop_exit_gateways.rs b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+--- a/crates/jarde-java/tests/p3_loop_exit_gateways.rs
++++ b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+@@ -26,6 +26,10 @@
+ // This gives the gateway a second normal predecessor and passes `java -Xverify:all`.
+ const EXTRA_ENTRY: &[u8] =
+     include_bytes!("../../../tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class");
++const NO_PREFIX: &[u8] = include_bytes!(
++    "../../../openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
++);
++const NO_PREFIX_BCIS: [u32; 11] = [0, 1, 2, 3, 6, 7, 8, 11, 14, 17, 18];
+ 
+ fn limits() -> Limits {
+     Limits {
+@@ -259,3 +263,135 @@
+     assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+     assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+ }
++
++#[test]
++fn no_prefix_while_latch_keeps_physical_source_and_one_owner() {
++    let default = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "noPrefix",
++        "(ZI)I",
++        RecoveryEvidenceRequest::essential(),
++        None,
++    );
++    let all = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "noPrefix",
++        "(ZI)I",
++        RecoveryEvidenceRequest::all(),
++        None,
++    );
++    assert!(default.produced(), "default: {:?}", default.outcome);
++    assert!(all.produced(), "all: {:?}", all.outcome);
++    assert_eq!(default.text, all.text);
++    assert_eq!(default.source_map, all.source_map);
++    assert!(!all.text.contains("@bytecode"), "{}", all.text);
++
++    for bci in NO_PREFIX_BCIS {
++        assert!(
++            !all.source_map.of_bci(bci).is_empty(),
++            "BCI {bci} lost source: {}",
++            all.text
++        );
++    }
++    let latch_spans = all.source_map.derived_of_bci(14);
++    assert!(
++        latch_spans
++            .iter()
++            .any(|segment| segment.text(&all.text).trim_start().starts_with("while (")),
++        "goto@14 is not derived from the loop statement: {}",
++        all.text
++    );
++    let mut owner_budget = Budget::new(limits());
++    let owner_snapshot = ArtifactSnapshot::open(
++        ArtifactInput::bytes(NO_PREFIX.to_vec()),
++        &mut owner_budget,
++    )
++    .expect("frozen class snapshot opens");
++    let expected_owner = PhysicalDefinitionId {
++        location: PhysicalClassLocation::StandaloneRoot {
++            snapshot: owner_snapshot.id().clone(),
++        },
++        class_bytes: ClassBytesId {
++            digest: Digest(blake3::hash(NO_PREFIX).to_hex().to_string()),
++            length: NO_PREFIX.len() as u64,
++        },
++        variant: PhysicalVariant::Base,
++    };
++    for segment in all.source_map.segments() {
++        for origin in std::iter::once(segment.origin().primary())
++            .chain(segment.origin().derived())
++        {
++            assert!(
++                NO_PREFIX_BCIS.contains(&origin.bci()),
++                "unexpected source-map BCI {}",
++                origin.bci()
++            );
++            let method = origin.method().expect("source-map origin has a physical method");
++            assert_eq!(method.name.0.as_slice(), b"noPrefix");
++            assert_eq!(method.descriptor.0.as_slice(), b"(ZI)I");
++            assert_eq!(&method.owner, &expected_owner);
++        }
++    }
++    for block_bci in [0, 6, 11, 17] {
++        let owners: Vec<_> = all
++            .regions
++            .iter()
++            .filter(|region| region.blocks.contains(&block_bci))
++            .collect();
++        assert_eq!(owners.len(), 1, "BCI {block_bci}: {:?}", all.regions);
++        assert!(owners[0].structured, "BCI {block_bci}: {:?}", all.regions);
++    }
++}
++
++#[test]
++fn no_prefix_latch_budget_and_cancellation_publish_no_partial_source() {
++    use jarde_java::StopReason;
++    use jarde_reader::model::ExecutionReport;
++
++    let full = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "noPrefix",
++        "(ZI)I",
++        RecoveryEvidenceRequest::essential(),
++        Some(Budget::new(limits())),
++    );
++    let ExecutionReport::Complete { usage } = full.execution else {
++        panic!("full candidate did not complete: {:?}", full.outcome);
++    };
++    let mut late = limits();
++    late.analysis_steps = usage.analysis_steps.saturating_sub(1);
++    let stopped = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "noPrefix",
++        "(ZI)I",
++        RecoveryEvidenceRequest::essential(),
++        Some(Budget::new(late)),
++    );
++    assert!(!stopped.produced());
++    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
++    assert!(matches!(
++        stopped.stop(),
++        Some(StopReason::Budget {
++            dimension: CountedBudgetDimension::AnalysisSteps,
++            ..
++        })
++    ));
++
++    let token = CancellationToken::new();
++    token.cancel();
++    let cancelled = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "noPrefix",
++        "(ZI)I",
++        RecoveryEvidenceRequest::essential(),
++        Some(Budget::with_cancellation_token(limits(), token)),
++    );
++    assert!(!cancelled.produced());
++    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
++    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
++}
+diff --git a/tests/p3_loop_arm_join.rs b/tests/p3_loop_arm_join.rs
+--- a/tests/p3_loop_arm_join.rs
++++ b/tests/p3_loop_arm_join.rs
+@@ -76,10 +76,25 @@
+         assert!(
+             !recovery.source_map.of_bci(bci).is_empty(),
+             "BCI {bci} lost its source: {text}"
+         );
+     }
++    assert!(
++        !recovery.source_map.of_bci(23).is_empty(),
++        "latch goto at BCI 23 lost its source: {}",
++        recovery.text
++    );
++    assert!(
++        recovery.source_map.derived_of_bci(23).iter().any(|segment| {
++            segment
++                .text(&recovery.text)
++                .trim_start()
++                .starts_with("while (")
++        }),
++        "latch goto at BCI 23 is not derived from the while span: {}",
++        recovery.text
++    );
+ }
+ 
+ fn with_branch_target(from: &[u8], to: &[u8]) -> Vec<u8> {
+     let occurrences = JOIN
+         .windows(from.len())
+diff --git a/crates/jarde-java/tests/p3_loop_body_double_jumps.rs b/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
+--- a/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
++++ b/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
+@@ -210,10 +210,28 @@
+         (L1, "L1", "deepLabels", vec![27, 35, 53, 62]),
+         (DJ_LOOPS, "DJLoops", "dblContLabels", vec![37, 45]),
+     ] {
+         let report = int_string_method(class, owner, name);
+         for bci in anchors {
++            let source_segments = report.source_map.of_bci(bci);
++            assert!(
++                !source_segments.is_empty(),
++                "{name}: BCI {bci} lost its source"
++            );
++            for segment in source_segments {
++                let segment_text = segment.text(&report.text);
++                let first_line = segment_text.lines().next().unwrap_or("").trim_start();
++                let starts_loop = first_line.starts_with("while (")
++                    || first_line.starts_with("for (")
++                    || first_line.rsplit_once(": ").is_some_and(|(_, statement)| {
++                        statement.starts_with("while (") || statement.starts_with("for (")
++                    });
++                assert!(
++                    !starts_loop,
++                    "{name}: transfer BCI {bci} is mapped to a loop header: {segment_text}"
++                );
++            }
+             let owners: Vec<_> = report
+                 .regions
+                 .iter()
+                 .filter(|region| region.blocks.contains(&bci))
+                 .collect();
+diff --git a/tests/p3_loop_boolean_exit.rs b/tests/p3_loop_boolean_exit.rs
+--- a/tests/p3_loop_boolean_exit.rs
++++ b/tests/p3_loop_boolean_exit.rs
+@@ -94,6 +94,21 @@
+             "BCI {bci} maps to the emitted compound loop condition"
+         );
+     }
++    let and_latch = recovery(and_while).source_map.derived_of_bci(20);
++    assert!(
++        and_latch.iter().any(|segment| {
++            segment.origin().derived().iter().any(|origin| {
++                origin.method() == Some(&and_while.item.identity)
++            }) && {
++                let span = segment.text(&recovery(and_while).text);
++                !span.is_empty()
++                    && span.trim_start().starts_with("while (arg0 > 0 && arg1 > 0)")
++                    && span.trim_end().ends_with('}')
++            }
++        }),
++        "goto@20 must derive a nonempty while-statement span from and_while(II)I: {}",
++        recovery(and_while).text
++    );
+ 
+     let or_while = method(&report, "orWhile");
+     assert!(
+@@ -117,6 +132,21 @@
+             "BCI {bci} maps to the emitted compound loop condition"
+         );
+     }
++    let or_latch = recovery(or_while).source_map.derived_of_bci(19);
++    assert!(
++        or_latch.iter().any(|segment| {
++            segment.origin().derived().iter().any(|origin| {
++                origin.method() == Some(&or_while.item.identity)
++            }) && {
++                let span = segment.text(&recovery(or_while).text);
++                !span.is_empty()
++                    && span.trim_start().starts_with("while (arg0 > 0 || arg1 > 0)")
++                    && span.trim_end().ends_with('}')
++            }
++        }),
++        "goto@19 must derive a nonempty while-statement span from or_while(II)I: {}",
++        recovery(or_while).text
++    );
+ 
+     for name in ["mixedWhile"] {
+         let refused = method(&report, name);

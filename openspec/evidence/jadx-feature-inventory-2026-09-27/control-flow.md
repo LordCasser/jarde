@@ -127,3 +127,9 @@ CF-20 于 2026-09-27 完成一个独立 Java 8 mask 谓词首片审计。固定 
 CF-18 于 2026-09-27 完成六项固定测试断言审阅及嵌套 handler/if/continue Java 8 三方审计。两项固定 source tests 各有运行 `check()`，但没有验证本次跨区域组合；两项 Smali test 与其余 source tests 分别只有文本形状或编译 smoke 证据。新 fixture 的 handler 表为 `28..35→38 NumberFormatException`、`13..25/28..52/55..69→72 IllegalStateException`；原 class 输出 `124:115`。JADX 完整类编译但在 `work(2)` 处将 `IllegalStateException` 外抛；Jarde 在 `run()I` 整体 region BCI 0 报 `jre_region_irreducible`（8 blocks `[8,13,17,28,85,58,63,66]`），完整类因此缺返回而编译失败。精确断言、BCI、首个拒绝点和本地复放见 `openspec/evidence/java-syntax-2026-09-27/cf18-exception-regions/report.md`。
 
 CF-18 于 2026-09-28 完成上述固定形态的受证恢复：两份完整 Java 8 类的原/Jarde 运行结果分别同为 `4:110`、`124:115`，Jarde 的物理 BCI 来源分别覆盖 31/31、47/47；八份 verifier 有效近邻负例均整方法拒绝。独立验收见 `openspec/evidence/java-syntax-2026-09-28/cf18-fragmented-loop-catches/root-acceptance-2026-09-28.md`。本结论不延伸到本单元的其它异常区域组合。
+
+### 2026-10-10 CF-07 回跳来源复验
+
+复用既有 LoopCases 全类，root 实际固定双JDK/当前JADX default-none/旧冻结Jarde default-all 重放29命令、10个完整编译运行腿；各重建程序 exit/stdout/stderr 与原oracle一致。证据见 [CF-07来源基线](../java-syntax-2026-10-10/cf07-loop-latch-baseline/README.md)，root实际独立verifier-v4退出0，接受118文件闭合、完整类原始流及primary+derived物理来源；准确文件为independent-verification-root-v3.json。来源仍准确遗漏 andWhile goto@15→2、counted goto@20→27及@30→6、lastIndexOf goto@25→5，不能以运行成功声称全部BCI来源完整。
+
+当前 [preserve-proved-loop-latch-origins](../../changes/preserve-proved-loop-latch-origins/verification-root.md) private-v6只处理已证普通while末尾Straight的单个隐式latch，未应用/编译；现有AND/OR永久正例再补准确@20/@19物理来源断言。if汇合及末尾返回分支内部回跳分开分析，不扩大当前机制或CF-07整单元完成统计。资源恢复后须fresh CLI再次核整类运行与来源变化。71/612分母不变。
