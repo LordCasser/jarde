@@ -1,0 +1,15 @@
+{
+  "status": "baseline-controls-complete",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "failures": []
+}
+{
+  "status": "candidate_replay_observed",
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1",
+  "candidate_commands": 29,
+  "method_deltas": 8
+}

@@ -1,0 +1,9 @@
+# Private patch: preserve proved for latch origins
+
+This candidate contains only a unified diff for `crates/jarde-java/src/region.rs` and `crates/jarde-java/tests/p3_loop_exit_gateways.rs`. It is intentionally stored under `/private/tmp`; no repository file was edited and no Git, Cargo, JDK, CLI, or test command was run.
+
+The region change reuses `implicit_tail_latch_origin`. The existing final-Straight, natural-loop sole-latch, terminal `goto`/`goto_w` + decoded transfer, sole Normal successor, and canonical exactly-one-Normal-edge checks remain in place. With a `ForHeader`, the same check additionally requires the proven update block to be the latch, the last two physical instructions to be the proof's update followed by the terminal transfer, and the update's decoded Increment/Store slot to equal the proven slot. It does not redo counted-loop recognition. The single-arm join gate still requires `LoopForm::While` and exactly one gateway origin; it now verifies that origin through the same helper with the loop's optional `ForHeader`.
+
+The permanent Plain fixture test checks BCI 20 as a derived origin on the complete `for` statement range in each of `prefixWhile`, `takenArm`, and `loopAndTail`, checks that every original method BCI remains mapped, and checks the latch origin's `(ZI)I` physical method name and fixture class bytes. Existing iterator@42 and ordinary while@14 tests remain unchanged. Existing `p3_loop_exit_gateways` wrong-target/extra-entry/exceptional-edge controls and its one-arm budget/cancellation no-partial-source test remain in the suite; this patch does not add a fabricated `ForHeader` seam to unit tests.
+
+Validation is pending. The root agent must review and apply the patch, then run the specified guarded tests and whole-class/source-map acceptance. This artifact does not claim BCI 20 is accepted or that the OpenSpec change is complete.

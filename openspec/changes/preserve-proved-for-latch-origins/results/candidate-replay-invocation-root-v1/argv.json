@@ -1,0 +1,20 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/prepare-candidate-root-v1.py",
+  "--cli",
+  "/private/tmp/jarde-proved-for-latch-cli-v1",
+  "--cli-sha256",
+  "d2d9773d94011a680e18d968ea1b3684036791ceb7dfa769455adf9247f0d33a",
+  "--metadata",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/candidate-cli-v1.json",
+  "--metadata-sha256",
+  "aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c",
+  "--build",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json"
+]

@@ -22,7 +22,9 @@
 
 **自身CI：** 单臂确切产品`ca43ac74767c4609284f13b251de9d6c349c67a4`自身CI38048944005已root独立v4接受4jobs/52steps、双seed各3383/0/97与354records；50pins同产品Git blob与冻结CLI/build-v5，旧整数11、新单臂4及旧来源2 tests逐seed通过。接受文件recover-prefixed-one-arm-loops/results/ci-product-v1/acceptance-prefixed-one-arm-loops-root-v4.json，实际调用ci-verification-invocation-root-v4。3.2已关闭，不借404b/文档提交CI；3.3待依赖来源完成后最终干净交付。
 
-**接续执行：** 独立 `preserve-proved-for-latch-origins` 四文档strict有效、当前1/6，严格观测基线已由root接受。优先复用现有ForHeader、implicit_tail_latch_origin及gateway_origins，精确核末尾Straight/唯一自然latch/update_block/update_bci/真实goto与唯一canonical正常边；join gate消费同一证明，无新publicIR/Frame/pass。Luna私有v1已读审，root尚未应用；需修测试borrow/BCI解引用并补真实更新槽反例。资源满足5GiB/target1GiB后由root应用、fmt、guarded新CLI构建，重新执行八份完整类与CF07控制，独立全BCI接受才可关闭单臂3.1。本来源产品仍需自己的提交推送与精确自身CI。71/612和EM23/CF07整单元计数不变；root/fuzz target目前不存在，14辅助worktree保持clean detached ancestor无分支占用，保护副本保留。
+**当前来源片（15:13 UTC）：** `preserve-proved-for-latch-origins` 已由root应用两文件最小修复，3/6。既有ForHeader/implicit_tail_latch_origin/gateway_origins复用，唯一末尾Straight/natural latch/update block/BCI/slot/真实goto与canonical单边证明，无新IR/Frame/pass。真实12guarded命令558/0/1通过、50pins恒同；新冻结CLI `/private/tmp/jarde-proved-for-latch-cli-v1` SHA d2d9773d94011a680e18d968ea1b3684036791ceb7dfa769455adf9247f0d33a，metadata SHA aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c，build-v1基础87090b为不可改历史身份。root清理669.1MiB，本仓target不存在。
+
+新CLI fresh57命令/20完整编译运行腿、八份Jarde完整生成类、28方法profile全部物理BCI已root独立接受，`results/candidate-whole-classes-acceptance-root-v1.json`明确full_bci_acceptance=true。另新旧对比核全部正文及旧来源不变、恰12条derived for@20新增。CF07新CLI29命令/10完整腿raw同原已实跑，但独立验收待root运行；counted@20、lastIndexOf@25仍为单列缺口。完成独立CF07后关闭本片3.1及单臂片3.1；本产品提交推送后仍需精确自身CI及最终干净交付。71/612与EM23/CF07整单元计数不变，14辅助worktree clean detached ancestor无分支占用，保护副本保留。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 

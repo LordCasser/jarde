@@ -1,0 +1,2167 @@
+{
+  "schema": "preserve-proved-for-latch-origins-cf07-candidate-observation-v1",
+  "status": "candidate_replay_observed",
+  "collector_sha256": "87c693a53f31898374d5c963c6fbe14b550db20439e0409486b9d191a00cec8f",
+  "wrapper": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/prepare-cf07-candidate-root-v1.py",
+    "sha256": "196202bacbcffc09666ff122e1db605d39f7718e10c322f9243d4bcd23311020"
+  },
+  "candidate_cli_sha256": "d2d9773d94011a680e18d968ea1b3684036791ceb7dfa769455adf9247f0d33a",
+  "metadata_sha256": "aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c",
+  "build_execution": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json",
+    "sha256": "2dd0b5357c047472d600a09ef37c2be97c286a950d09671ebf072189c63ce838",
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/run-validation-build-root-v1.py",
+      "sha256": "33ec5b321c44218c2085a48749b992771a53248e2bc435e3d3d02841da41500f"
+    },
+    "status": "validation-passed-cli-frozen"
+  },
+  "baseline": {
+    "closed": true,
+    "files": 118,
+    "commands": 29,
+    "cases": 10,
+    "manifest_sha256": "1a374647a971b416635bc114b9c197d05c855c51eeabd274f3ee571e868a64ee",
+    "inventory_sha256": "35e40b315f9936bcef0c774ec806c94e151a32790e7b233cdc01654913b3a08e",
+    "schema": "cf07-loop-latch-baseline-luna-v1"
+  },
+  "whole_class": {
+    "command_count": 29,
+    "cases": {
+      "original": 2,
+      "jadx": 4,
+      "jarde": 4
+    },
+    "candidate_all_four_legs_successful": true
+  },
+  "source_map_observations": {
+    "methods": {
+      "javac8/<init>()V": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          4
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          4
+        ],
+        "added_origin_records": 0,
+        "removed_origin_records": 0,
+        "added_origin_facts": [],
+        "missing_physical_bcis": [],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              161,
+              174
+            ],
+            "span_text": "    super();\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 0,
+            "span": [
+              161,
+              174
+            ],
+            "span_text": "    super();\n",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 4,
+            "span": [
+              174,
+              186
+            ],
+            "span_text": "    return;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac8/andWhile(Z)I": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          9,
+          12,
+          18,
+          19
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          9,
+          12,
+          15,
+          18,
+          19
+        ],
+        "added_origin_records": 1,
+        "removed_origin_records": 0,
+        "added_origin_facts": [
+          [
+            198,
+            267,
+            [
+              97,
+              110,
+              100,
+              87,
+              104,
+              105,
+              108,
+              101
+            ],
+            [
+              40,
+              90,
+              41,
+              73
+            ],
+            "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+            419,
+            "standalone_root",
+            "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+            "{\"kind\":\"base\"}",
+            15,
+            "Derived",
+            "null"
+          ]
+        ],
+        "missing_physical_bcis": [],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              166,
+              182
+            ],
+            "span_text": "    int local1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 0,
+            "span": [
+              195,
+              196
+            ],
+            "span_text": "0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              182,
+              198
+            ],
+            "span_text": "    local1 = 0;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 2,
+            "span": [
+              209,
+              213
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 3,
+            "span": [
+              209,
+              213
+            ],
+            "span_text": "arg0",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              217,
+              223
+            ],
+            "span_text": "local1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 7,
+            "span": [
+              226,
+              228
+            ],
+            "span_text": "10",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              217,
+              228
+            ],
+            "span_text": "local1 < 10",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 9,
+            "span": [
+              217,
+              228
+            ],
+            "span_text": "local1 < 10",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              209,
+              228
+            ],
+            "span_text": "arg0 && local1 < 10",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 9,
+            "span": [
+              209,
+              228
+            ],
+            "span_text": "arg0 && local1 < 10",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              249,
+              255
+            ],
+            "span_text": "local1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              258,
+              259
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              249,
+              259
+            ],
+            "span_text": "local1 + 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              232,
+              261
+            ],
+            "span_text": "        local1 = local1 + 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              198,
+              267
+            ],
+            "span_text": "    while (arg0 && local1 < 10) {\n        local1 = local1 + 1;\n    }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 15,
+            "span": [
+              198,
+              267
+            ],
+            "span_text": "    while (arg0 && local1 < 10) {\n        local1 = local1 + 1;\n    }\n",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 18,
+            "span": [
+              278,
+              284
+            ],
+            "span_text": "local1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 19,
+            "span": [
+              267,
+              286
+            ],
+            "span_text": "    return local1;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac8/counted(II)I": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          14,
+          17,
+          23,
+          24,
+          25,
+          26,
+          27,
+          33,
+          36,
+          37
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          14,
+          17,
+          23,
+          24,
+          25,
+          26,
+          27,
+          30,
+          33,
+          36,
+          37
+        ],
+        "added_origin_records": 1,
+        "removed_origin_records": 0,
+        "added_origin_facts": [
+          [
+            243,
+            426,
+            [
+              99,
+              111,
+              117,
+              110,
+              116,
+              101,
+              100
+            ],
+            [
+              40,
+              73,
+              73,
+              41,
+              73
+            ],
+            "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+            419,
+            "standalone_root",
+            "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+            "{\"kind\":\"base\"}",
+            30,
+            "Derived",
+            "null"
+          ]
+        ],
+        "missing_physical_bcis": [
+          20
+        ],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              166,
+              182
+            ],
+            "span_text": "    int local2;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              182,
+              198
+            ],
+            "span_text": "    int local3;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 0,
+            "span": [
+              211,
+              215
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              218,
+              222
+            ],
+            "span_text": "arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 2,
+            "span": [
+              211,
+              222
+            ],
+            "span_text": "arg0 + arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              198,
+              224
+            ],
+            "span_text": "    local2 = arg0 + arg1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 4,
+            "span": [
+              237,
+              241
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              224,
+              243
+            ],
+            "span_text": "    local3 = arg0;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              254,
+              260
+            ],
+            "span_text": "local3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 7,
+            "span": [
+              263,
+              267
+            ],
+            "span_text": "arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              254,
+              267
+            ],
+            "span_text": "local3 < arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 8,
+            "span": [
+              254,
+              267
+            ],
+            "span_text": "local3 < arg1",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 11,
+            "span": [
+              283,
+              289
+            ],
+            "span_text": "local3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              293,
+              294
+            ],
+            "span_text": "7",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 11,
+            "span": [
+              283,
+              294
+            ],
+            "span_text": "local3 == 7",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 14,
+            "span": [
+              283,
+              294
+            ],
+            "span_text": "local3 == 7",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              319,
+              325
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              328,
+              329
+            ],
+            "span_text": "2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              319,
+              329
+            ],
+            "span_text": "local2 + 2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              298,
+              331
+            ],
+            "span_text": "            local2 = local2 + 2;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 23,
+            "span": [
+              369,
+              375
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 24,
+            "span": [
+              378,
+              379
+            ],
+            "span_text": "2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 25,
+            "span": [
+              369,
+              379
+            ],
+            "span_text": "local2 * 2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 26,
+            "span": [
+              348,
+              381
+            ],
+            "span_text": "            local2 = local2 * 2;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 14,
+            "span": [
+              271,
+              391
+            ],
+            "span_text": "        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              408,
+              414
+            ],
+            "span_text": "local3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              417,
+              418
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              408,
+              418
+            ],
+            "span_text": "local3 + 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              391,
+              420
+            ],
+            "span_text": "        local3 = local3 + 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 8,
+            "span": [
+              243,
+              426
+            ],
+            "span_text": "    while (local3 < arg1) {\n        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n        local3 = local3 + 1;\n    }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 30,
+            "span": [
+              243,
+              426
+            ],
+            "span_text": "    while (local3 < arg1) {\n        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n        local3 = local3 + 1;\n    }\n",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              439,
+              445
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              448,
+              449
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              439,
+              449
+            ],
+            "span_text": "local2 - 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              426,
+              451
+            ],
+            "span_text": "    local2 = local2 - 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 36,
+            "span": [
+              462,
+              468
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 37,
+            "span": [
+              451,
+              470
+            ],
+            "span_text": "    return local2;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac8/lastIndexOf([IIII)I": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7,
+          8,
+          11,
+          12,
+          14,
+          15,
+          16,
+          19,
+          21,
+          22,
+          28,
+          29
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7,
+          8,
+          11,
+          12,
+          14,
+          15,
+          16,
+          19,
+          21,
+          22,
+          28,
+          29
+        ],
+        "added_origin_records": 0,
+        "removed_origin_records": 0,
+        "added_origin_facts": [],
+        "missing_physical_bcis": [
+          25
+        ],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              173,
+              189
+            ],
+            "span_text": "    int local4;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 0,
+            "span": [
+              202,
+              206
+            ],
+            "span_text": "arg3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              209,
+              210
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 2,
+            "span": [
+              202,
+              210
+            ],
+            "span_text": "arg3 - 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              189,
+              212
+            ],
+            "span_text": "    local4 = arg3 - 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              223,
+              229
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 7,
+            "span": [
+              233,
+              237
+            ],
+            "span_text": "arg2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              223,
+              237
+            ],
+            "span_text": "local4 >= arg2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 8,
+            "span": [
+              223,
+              237
+            ],
+            "span_text": "local4 >= arg2",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 11,
+            "span": [
+              253,
+              257
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              258,
+              264
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 14,
+            "span": [
+              253,
+              265
+            ],
+            "span_text": "arg0[local4]",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 15,
+            "span": [
+              269,
+              273
+            ],
+            "span_text": "arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 14,
+            "span": [
+              253,
+              273
+            ],
+            "span_text": "arg0[local4] == arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 16,
+            "span": [
+              253,
+              273
+            ],
+            "span_text": "arg0[local4] == arg1",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 19,
+            "span": [
+              296,
+              302
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 21,
+            "span": [
+              277,
+              304
+            ],
+            "span_text": "            return local4;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              342,
+              348
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              351,
+              352
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              342,
+              352
+            ],
+            "span_text": "local4 - 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              321,
+              354
+            ],
+            "span_text": "            local4 = local4 - 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 16,
+            "span": [
+              241,
+              364
+            ],
+            "span_text": "        if (arg0[local4] == arg1) {\n            return local4;\n        } else {\n            local4 = local4 - 1;\n        }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 8,
+            "span": [
+              212,
+              370
+            ],
+            "span_text": "    while (local4 >= arg2) {\n        if (arg0[local4] == arg1) {\n            return local4;\n        } else {\n            local4 = local4 - 1;\n        }\n    }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 28,
+            "span": [
+              381,
+              383
+            ],
+            "span_text": "-1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 29,
+            "span": [
+              370,
+              385
+            ],
+            "span_text": "    return -1;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac23/<init>()V": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          4
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          4
+        ],
+        "added_origin_records": 0,
+        "removed_origin_records": 0,
+        "added_origin_facts": [],
+        "missing_physical_bcis": [],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              161,
+              174
+            ],
+            "span_text": "    super();\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 0,
+            "span": [
+              161,
+              174
+            ],
+            "span_text": "    super();\n",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 4,
+            "span": [
+              174,
+              186
+            ],
+            "span_text": "    return;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac23/andWhile(Z)I": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          9,
+          12,
+          18,
+          19
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          9,
+          12,
+          15,
+          18,
+          19
+        ],
+        "added_origin_records": 1,
+        "removed_origin_records": 0,
+        "added_origin_facts": [
+          [
+            198,
+            267,
+            [
+              97,
+              110,
+              100,
+              87,
+              104,
+              105,
+              108,
+              101
+            ],
+            [
+              40,
+              90,
+              41,
+              73
+            ],
+            "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+            419,
+            "standalone_root",
+            "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+            "{\"kind\":\"base\"}",
+            15,
+            "Derived",
+            "null"
+          ]
+        ],
+        "missing_physical_bcis": [],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              166,
+              182
+            ],
+            "span_text": "    int local1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 0,
+            "span": [
+              195,
+              196
+            ],
+            "span_text": "0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              182,
+              198
+            ],
+            "span_text": "    local1 = 0;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 2,
+            "span": [
+              209,
+              213
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 3,
+            "span": [
+              209,
+              213
+            ],
+            "span_text": "arg0",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              217,
+              223
+            ],
+            "span_text": "local1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 7,
+            "span": [
+              226,
+              228
+            ],
+            "span_text": "10",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              217,
+              228
+            ],
+            "span_text": "local1 < 10",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 9,
+            "span": [
+              217,
+              228
+            ],
+            "span_text": "local1 < 10",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              209,
+              228
+            ],
+            "span_text": "arg0 && local1 < 10",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 9,
+            "span": [
+              209,
+              228
+            ],
+            "span_text": "arg0 && local1 < 10",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              249,
+              255
+            ],
+            "span_text": "local1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              258,
+              259
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              249,
+              259
+            ],
+            "span_text": "local1 + 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              232,
+              261
+            ],
+            "span_text": "        local1 = local1 + 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              198,
+              267
+            ],
+            "span_text": "    while (arg0 && local1 < 10) {\n        local1 = local1 + 1;\n    }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 15,
+            "span": [
+              198,
+              267
+            ],
+            "span_text": "    while (arg0 && local1 < 10) {\n        local1 = local1 + 1;\n    }\n",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 18,
+            "span": [
+              278,
+              284
+            ],
+            "span_text": "local1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 19,
+            "span": [
+              267,
+              286
+            ],
+            "span_text": "    return local1;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac23/counted(II)I": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          14,
+          17,
+          23,
+          24,
+          25,
+          26,
+          27,
+          33,
+          36,
+          37
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          11,
+          12,
+          14,
+          17,
+          23,
+          24,
+          25,
+          26,
+          27,
+          30,
+          33,
+          36,
+          37
+        ],
+        "added_origin_records": 1,
+        "removed_origin_records": 0,
+        "added_origin_facts": [
+          [
+            243,
+            426,
+            [
+              99,
+              111,
+              117,
+              110,
+              116,
+              101,
+              100
+            ],
+            [
+              40,
+              73,
+              73,
+              41,
+              73
+            ],
+            "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+            419,
+            "standalone_root",
+            "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+            "{\"kind\":\"base\"}",
+            30,
+            "Derived",
+            "null"
+          ]
+        ],
+        "missing_physical_bcis": [
+          20
+        ],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              166,
+              182
+            ],
+            "span_text": "    int local2;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              182,
+              198
+            ],
+            "span_text": "    int local3;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 0,
+            "span": [
+              211,
+              215
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              218,
+              222
+            ],
+            "span_text": "arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 2,
+            "span": [
+              211,
+              222
+            ],
+            "span_text": "arg0 + arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              198,
+              224
+            ],
+            "span_text": "    local2 = arg0 + arg1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 4,
+            "span": [
+              237,
+              241
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              224,
+              243
+            ],
+            "span_text": "    local3 = arg0;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              254,
+              260
+            ],
+            "span_text": "local3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 7,
+            "span": [
+              263,
+              267
+            ],
+            "span_text": "arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 6,
+            "span": [
+              254,
+              267
+            ],
+            "span_text": "local3 < arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 8,
+            "span": [
+              254,
+              267
+            ],
+            "span_text": "local3 < arg1",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 11,
+            "span": [
+              283,
+              289
+            ],
+            "span_text": "local3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              293,
+              294
+            ],
+            "span_text": "7",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 11,
+            "span": [
+              283,
+              294
+            ],
+            "span_text": "local3 == 7",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 14,
+            "span": [
+              283,
+              294
+            ],
+            "span_text": "local3 == 7",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              319,
+              325
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              328,
+              329
+            ],
+            "span_text": "2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              319,
+              329
+            ],
+            "span_text": "local2 + 2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 17,
+            "span": [
+              298,
+              331
+            ],
+            "span_text": "            local2 = local2 + 2;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 23,
+            "span": [
+              369,
+              375
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 24,
+            "span": [
+              378,
+              379
+            ],
+            "span_text": "2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 25,
+            "span": [
+              369,
+              379
+            ],
+            "span_text": "local2 * 2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 26,
+            "span": [
+              348,
+              381
+            ],
+            "span_text": "            local2 = local2 * 2;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 14,
+            "span": [
+              271,
+              391
+            ],
+            "span_text": "        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              408,
+              414
+            ],
+            "span_text": "local3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              417,
+              418
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              408,
+              418
+            ],
+            "span_text": "local3 + 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 27,
+            "span": [
+              391,
+              420
+            ],
+            "span_text": "        local3 = local3 + 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 8,
+            "span": [
+              243,
+              426
+            ],
+            "span_text": "    while (local3 < arg1) {\n        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n        local3 = local3 + 1;\n    }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 30,
+            "span": [
+              243,
+              426
+            ],
+            "span_text": "    while (local3 < arg1) {\n        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n        local3 = local3 + 1;\n    }\n",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              439,
+              445
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              448,
+              449
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              439,
+              449
+            ],
+            "span_text": "local2 - 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 33,
+            "span": [
+              426,
+              451
+            ],
+            "span_text": "    local2 = local2 - 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 36,
+            "span": [
+              462,
+              468
+            ],
+            "span_text": "local2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 37,
+            "span": [
+              451,
+              470
+            ],
+            "span_text": "    return local2;\n",
+            "provenance": "Direct"
+          }
+        ]
+      },
+      "javac23/lastIndexOf([IIII)I": {
+        "old_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7,
+          8,
+          11,
+          12,
+          14,
+          15,
+          16,
+          19,
+          21,
+          22,
+          28,
+          29
+        ],
+        "candidate_mapped_bcis": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7,
+          8,
+          11,
+          12,
+          14,
+          15,
+          16,
+          19,
+          21,
+          22,
+          28,
+          29
+        ],
+        "added_origin_records": 0,
+        "removed_origin_records": 0,
+        "added_origin_facts": [],
+        "missing_physical_bcis": [
+          25
+        ],
+        "candidate_origins": [
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              173,
+              189
+            ],
+            "span_text": "    int local4;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 0,
+            "span": [
+              202,
+              206
+            ],
+            "span_text": "arg3",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 1,
+            "span": [
+              209,
+              210
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 2,
+            "span": [
+              202,
+              210
+            ],
+            "span_text": "arg3 - 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 3,
+            "span": [
+              189,
+              212
+            ],
+            "span_text": "    local4 = arg3 - 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              223,
+              229
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 7,
+            "span": [
+              233,
+              237
+            ],
+            "span_text": "arg2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 5,
+            "span": [
+              223,
+              237
+            ],
+            "span_text": "local4 >= arg2",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 8,
+            "span": [
+              223,
+              237
+            ],
+            "span_text": "local4 >= arg2",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 11,
+            "span": [
+              253,
+              257
+            ],
+            "span_text": "arg0",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 12,
+            "span": [
+              258,
+              264
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 14,
+            "span": [
+              253,
+              265
+            ],
+            "span_text": "arg0[local4]",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 15,
+            "span": [
+              269,
+              273
+            ],
+            "span_text": "arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 14,
+            "span": [
+              253,
+              273
+            ],
+            "span_text": "arg0[local4] == arg1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "derived",
+            "bci": 16,
+            "span": [
+              253,
+              273
+            ],
+            "span_text": "arg0[local4] == arg1",
+            "provenance": "Derived"
+          },
+          {
+            "role": "primary",
+            "bci": 19,
+            "span": [
+              296,
+              302
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 21,
+            "span": [
+              277,
+              304
+            ],
+            "span_text": "            return local4;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              342,
+              348
+            ],
+            "span_text": "local4",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              351,
+              352
+            ],
+            "span_text": "1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              342,
+              352
+            ],
+            "span_text": "local4 - 1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 22,
+            "span": [
+              321,
+              354
+            ],
+            "span_text": "            local4 = local4 - 1;\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 16,
+            "span": [
+              241,
+              364
+            ],
+            "span_text": "        if (arg0[local4] == arg1) {\n            return local4;\n        } else {\n            local4 = local4 - 1;\n        }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 8,
+            "span": [
+              212,
+              370
+            ],
+            "span_text": "    while (local4 >= arg2) {\n        if (arg0[local4] == arg1) {\n            return local4;\n        } else {\n            local4 = local4 - 1;\n        }\n    }\n",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 28,
+            "span": [
+              381,
+              383
+            ],
+            "span_text": "-1",
+            "provenance": "Direct"
+          },
+          {
+            "role": "primary",
+            "bci": 29,
+            "span": [
+              370,
+              385
+            ],
+            "span_text": "    return -1;\n",
+            "provenance": "Direct"
+          }
+        ]
+      }
+    },
+    "scope": {
+      "in_scope_derived_loop_origins": {
+        "andWhile(Z)I": 15,
+        "counted(II)I": 30
+      },
+      "physical_loop_statement_tokens": {
+        "andWhile(Z)I": "while (",
+        "counted(II)I": "while ("
+      },
+      "out_of_scope_physical_anchors_reported_without_acceptance": {
+        "counted(II)I": 20,
+        "lastIndexOf([IIII)I": 25
+      }
+    },
+    "default_all_equal": true,
+    "existing_method_text_and_origins_preserved": true
+  },
+  "claim_boundary": "This is a candidate replay observation. It does not independently accept the evidence or claim counted@20/lastIndexOf@25 are covered."
+}

@@ -1,0 +1,8 @@
+{
+  "free_bytes": 69520695296,
+  "root_target_exists": false,
+  "fuzz_target_exists": false,
+  "git_head": "87090b3b4735693d0930f24f817d19f41cb63d98",
+  "minimum_free_bytes": 5368709120,
+  "maximum_target_bytes": 1073741824
+}

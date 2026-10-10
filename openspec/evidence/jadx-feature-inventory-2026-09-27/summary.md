@@ -322,3 +322,5 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 05:51 UTC EM23原形baseline已root独立v3接受126闭合files/33命令及全部成员/来源/BCI；原2/JADX4成功、旧Jarde4完整编译拒绝，Multiply最小change任务2/7。失败v2与实际raw保留，不改变71/612或整单元分类。
 
 06:04 UTC multiply controls历史基线独立v1已实际接受：126闭合files/33命令、原2/JADX4完整源码raw成功、旧Jarde4编译拒绝且零运行。乘法最小change仍2/7、产品未应用；private v2/validation runner v2/candidate collector v2全部root读审，等待资源守卫满足后实跑。71/612及EM23整单元计数不变。
+
+2026-10-10 15:13 UTC：preserve-proved-for-latch-origins两文件最小修复已root应用，既有ForHeader与implicit-tail单边证明共用；无新IR/Frame/pass。真实12命令558/0/1、50pins和guard通过；新CLI双JDK/default-all八份完整生成类原样重编运行，20完整腿raw同原、28方法profile全部物理BCI完整，root独立接受full_bci_acceptance=true。新旧所有正文/旧来源恒同，仅12条derived for@20新增。CF07新29命令/10完整腿全成功，但独立验收待完成，counted@20与lastIndexOf@25独立缺口保持；本片3/6，自身产品CI和干净交付待完成。源码、raw及旧失败保留，target已清669.1MiB。71/612和EM23/CF07整单元计数不变。

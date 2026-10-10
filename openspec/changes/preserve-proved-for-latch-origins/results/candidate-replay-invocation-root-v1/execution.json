@@ -1,0 +1,37 @@
+{
+  "utc": "2026-10-10T15:05:26.116721+00:00",
+  "duration_seconds": 58.94802770897513,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/prepare-candidate-root-v1.py",
+    "--cli",
+    "/private/tmp/jarde-proved-for-latch-cli-v1",
+    "--cli-sha256",
+    "d2d9773d94011a680e18d968ea1b3684036791ceb7dfa769455adf9247f0d33a",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c",
+    "--build",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 188,
+      "sha256": "3c1c790c4690c803d3f4735fc8b8e12cdb6d5ae1ba778124c7c0646edf9dd13f"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

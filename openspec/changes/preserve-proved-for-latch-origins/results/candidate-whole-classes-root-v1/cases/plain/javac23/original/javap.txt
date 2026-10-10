@@ -1,0 +1,147 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/candidate-whole-classes-root-v1/cases/plain-javac23-original/classes/PlainOneArmLoops.class
+  Last modified 2026年10月10日; size 468 bytes
+  SHA-256 checksum a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989
+public class PlainOneArmLoops
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // PlainOneArmLoops
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 5, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // PlainOneArmLoops
+   #8 = Utf8               PlainOneArmLoops
+   #9 = Utf8               Code
+  #10 = Utf8               prefixWhile
+  #11 = Utf8               (ZI)I
+  #12 = Utf8               StackMapTable
+  #13 = Utf8               noPrefix
+  #14 = Utf8               loopAndTail
+  #15 = Utf8               takenArm
+{
+  public PlainOneArmLoops();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int prefixWhile(boolean, int);
+    descriptor: (ZI)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: iload_0
+         3: ifeq          23
+         6: iconst_0
+         7: istore_3
+         8: iload_3
+         9: iload_1
+        10: if_icmpge     23
+        13: iload_2
+        14: iload_3
+        15: iadd
+        16: istore_2
+        17: iinc          3, 1
+        20: goto          8
+        23: iload_2
+        24: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 8
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 14
+
+  public static int noPrefix(boolean, int);
+    descriptor: (ZI)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: iload_0
+         3: ifeq          17
+         6: iload_2
+         7: iload_1
+         8: if_icmpge     17
+        11: iinc          2, 1
+        14: goto          6
+        17: iload_2
+        18: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 6
+          locals = [ int ]
+        frame_type = 10 /* same */
+
+  public static int loopAndTail(boolean, int);
+    descriptor: (ZI)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: iload_0
+         3: ifeq          26
+         6: iconst_0
+         7: istore_3
+         8: iload_3
+         9: iload_1
+        10: if_icmpge     23
+        13: iload_2
+        14: iload_3
+        15: iadd
+        16: istore_2
+        17: iinc          3, 1
+        20: goto          8
+        23: iinc          2, 100
+        26: iload_2
+        27: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 253 /* append */
+          offset_delta = 8
+          locals = [ int, int ]
+        frame_type = 14 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 2
+
+  public static int takenArm(boolean, int);
+    descriptor: (ZI)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: iload_0
+         3: ifne          23
+         6: iconst_0
+         7: istore_3
+         8: iload_3
+         9: iload_1
+        10: if_icmpge     23
+        13: iload_2
+        14: iload_3
+        15: iadd
+        16: istore_2
+        17: iinc          3, 1
+        20: goto          8
+        23: iload_2
+        24: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 8
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 14
+}

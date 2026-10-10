@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "python3",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/run-validation-build-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 16528,
+      "sha256": "a90e07c655115bcac083f085f2aca11dea1bbdb763ae4db535e36de83c7f2590"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "status": "completed",
+  "session_id": 73442
+}

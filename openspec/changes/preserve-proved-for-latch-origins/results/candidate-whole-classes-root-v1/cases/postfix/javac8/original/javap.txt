@@ -1,0 +1,89 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/candidate-whole-classes-root-v1/cases/postfix-javac8-original/classes/VariablePostfixLoop.class
+  Last modified 2026-10-10; size 540 bytes
+  MD5 checksum 657a1cfa3225ca64013afeee2828e0ed
+public class VariablePostfixLoop
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#18         // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #19.#20        // java/util/List.iterator:()Ljava/util/Iterator;
+   #3 = InterfaceMethodref #21.#22        // java/util/Iterator.hasNext:()Z
+   #4 = InterfaceMethodref #21.#23        // java/util/Iterator.next:()Ljava/lang/Object;
+   #5 = Class              #24            // java/lang/String
+   #6 = Methodref          #5.#25         // java/lang/String.isEmpty:()Z
+   #7 = Class              #26            // VariablePostfixLoop
+   #8 = Class              #27            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               countEmpty
+  #13 = Utf8               (Ljava/util/List;)I
+  #14 = Utf8               StackMapTable
+  #15 = Class              #28            // java/util/Iterator
+  #16 = Utf8               Signature
+  #17 = Utf8               (Ljava/util/List<Ljava/lang/String;>;)I
+  #18 = NameAndType        #9:#10         // "<init>":()V
+  #19 = Class              #29            // java/util/List
+  #20 = NameAndType        #30:#31        // iterator:()Ljava/util/Iterator;
+  #21 = Class              #28            // java/util/Iterator
+  #22 = NameAndType        #32:#33        // hasNext:()Z
+  #23 = NameAndType        #34:#35        // next:()Ljava/lang/Object;
+  #24 = Utf8               java/lang/String
+  #25 = NameAndType        #36:#33        // isEmpty:()Z
+  #26 = Utf8               VariablePostfixLoop
+  #27 = Utf8               java/lang/Object
+  #28 = Utf8               java/util/Iterator
+  #29 = Utf8               java/util/List
+  #30 = Utf8               iterator
+  #31 = Utf8               ()Ljava/util/Iterator;
+  #32 = Utf8               hasNext
+  #33 = Utf8               ()Z
+  #34 = Utf8               next
+  #35 = Utf8               ()Ljava/lang/Object;
+  #36 = Utf8               isEmpty
+{
+  public VariablePostfixLoop();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int countEmpty(java.util.List<java.lang.String>);
+    descriptor: (Ljava/util/List;)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=4, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: aload_0
+         3: ifnull        45
+         6: aload_0
+         7: invokeinterface #2,  1            // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+        12: astore_2
+        13: aload_2
+        14: invokeinterface #3,  1            // InterfaceMethod java/util/Iterator.hasNext:()Z
+        19: ifeq          45
+        22: aload_2
+        23: invokeinterface #4,  1            // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        28: checkcast     #5                  // class java/lang/String
+        31: astore_3
+        32: aload_3
+        33: invokevirtual #6                  // Method java/lang/String.isEmpty:()Z
+        36: ifeq          42
+        39: iinc          1, 1
+        42: goto          13
+        45: iload_1
+        46: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 253 /* append */
+          offset_delta = 13
+          locals = [ int, class java/util/Iterator ]
+        frame_type = 28 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 2
+    Signature: #17                          // (Ljava/util/List<Ljava/lang/String;>;)I
+}

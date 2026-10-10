@@ -1,0 +1,263 @@
+{
+  "schema": "proved-for-latch-old-new-origin-delta-root-v1",
+  "verified": true,
+  "method_rows": [
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "plain",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 1,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac8",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac8",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac23",
+      "mode": "default",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    },
+    {
+      "suite": "postfix",
+      "leg": "javac23",
+      "mode": "all",
+      "method": null,
+      "added_points": 0,
+      "old_points_preserved": true,
+      "text_equal": true
+    }
+  ],
+  "total_added_points": 12,
+  "only_added_bci": 20,
+  "all_text_and_existing_points_preserved": true,
+  "old_manifest_sha256": "9f09c37ea2d86583c5c219dbcaab0d8794999a03901c5afa928f199f50befb76",
+  "new_manifest_sha256": "38e80cb85429e0236f91b9828fafc145eebf23e990e79b4ef02e9609dc7c5525"
+}

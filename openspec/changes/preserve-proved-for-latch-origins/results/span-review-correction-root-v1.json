@@ -1,0 +1,6 @@
+{
+  "reason": "Emitter::node owns statement indentation, closing brace and newline; For statement ends with put(\"}\\n\"); exact span test must include newline and remain wholly inside arm.",
+  "file": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/tests/p3_loop_exit_gateways.rs",
+  "after_sha256": "3c80e3a14ff9cb4bd0c19712c0cf8a2970c2381a91a0c027adf0db21f48eb9da",
+  "scope": "permanent test assertion only; production patch unchanged"
+}

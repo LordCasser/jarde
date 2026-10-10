@@ -1,0 +1,8 @@
+
+running 3 tests
+test an_independent_effect_between_header_tests_is_never_folded_into_the_condition ... ok
+test proved_header_test_chains_become_short_circuit_loop_conditions ... ok
+test recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_inputs ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s
+

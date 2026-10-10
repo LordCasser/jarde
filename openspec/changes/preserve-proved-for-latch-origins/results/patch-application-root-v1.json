@@ -1,0 +1,45 @@
+{
+  "utc": "2026-10-10T14:54:30.836383+00:00",
+  "patch_sha256": "bec6020c82a03fc027801cdfbb5b246aac16b207247c5ec361079b973295af32",
+  "before": {
+    "crates/jarde-java/src/region.rs": "a36b1fe19a907bd5d481cd9021424a81811ff337e5b86afd8ee1a9a6e22c40da",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "62a43f59382214b7504a07c6ee84a6d048b4c5214ef4b25cd3b5ff47b53af9f3"
+  },
+  "after": {
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "a7aac957915d76a953d2ec9af4b6c92aeca65bcbf924418f79e3353bbe7f8f18"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/preserve-proved-for-latch-origins-root-luna-v2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/preserve-proved-for-latch-origins-root-luna-v2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

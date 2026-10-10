@@ -1,0 +1,264 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -4136,7 +4136,7 @@
+         }
+         let allowed_latch_origin = if gateway_origins.is_empty() {
+             true
+-        } else if *form == LoopForm::While && for_header.is_none() && gateway_origins.len() == 1 {
++        } else if *form == LoopForm::While && gateway_origins.len() == 1 {
+             self.implicit_tail_latch_origin(header_node, body, for_header.as_ref())?
+                 == gateway_origins.first().copied()
+         } else {
+@@ -10276,18 +10276,15 @@
+         )))
+     }
+ 
+-    /// The one hidden transfer a final straight run may assign to a header-tested `while`: its
+-    /// natural latch, when the terminal instruction is an unconditional transfer back to this
+-    /// header and the canonical graph gives it no other outgoing edge.
++    /// The hidden transfer a final straight run may assign to a header-tested loop: a `while`
++    /// latch, or the exact update block already proved by `ForHeader`, whose terminal instruction
++    /// transfers back to this header and whose canonical block has no other outgoing edge.
+     fn implicit_tail_latch_origin(
+         &mut self,
+         header_node: usize,
+         body: &[Region],
+         for_header: Option<&ForHeader>,
+     ) -> Result<Option<u32>, StopReason> {
+-        if for_header.is_some() {
+-            return Ok(None);
+-        }
+         let Some(Region::Straight { blocks: tail }) = body.last() else {
+             return Ok(None);
+         };
+@@ -10307,6 +10304,28 @@
+             return Ok(None);
+         };
+         poll(self.budget, Some(latch_bci))?;
++        if let Some(proof) = for_header {
++            let Some(instructions) = self.ssa.block(latch_id).map(|block| block.instructions()) else {
++                return Ok(None);
++            };
++            let Some([update, transfer]) = instructions
++                .get(instructions.len().saturating_sub(2)..)
++            else {
++                return Ok(None);
++            };
++            let update_matches_slot = match self.operations.get(proof.update_bci) {
++                Some(Operation::Increment { slot, .. }) => *slot == proof.slot,
++                Some(Operation::Store { slot }) => *slot == proof.slot,
++                _ => false,
++            };
++            if &proof.update_block != latch_id
++                || update.bci() != proof.update_bci
++                || transfer.bci() != latch_bci
++                || !update_matches_slot
++            {
++                return Ok(None);
++            }
++        }
+         charge(
+             self.budget,
+             CountedBudgetDimension::AnalysisSteps,
+
+--- a/crates/jarde-java/tests/p3_loop_exit_gateways.rs
++++ b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+@@ -9,7 +9,7 @@
+ use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+ use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+ use jarde_reader::budget::{Budget, CancellationToken, CountedBudgetDimension, Limits};
+-use jarde_reader::classfile::{DescriptorKind, descriptor_facts};
++use jarde_reader::classfile::{DescriptorKind, MethodSelector, descriptor_facts, inspect_method_bytecode};
+ use jarde_reader::model::{
+     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
+     PhysicalVariant,
+@@ -450,14 +450,27 @@
+ fn one_arm_straight_prefix_loop_and_optional_tail_are_closed() {
+     // Block starts are frozen from javac23-original/javap.txt: prefix 6, loop
+     // header 8, loop body 13, and loopAndTail's exclusive tail 23.
+-    for (name, guard, tail, blocks) in [
+-        ("prefixWhile", "if (arg0) {", None, &[6, 8, 13][..]),
+-        ("takenArm", "if (!arg0) {", None, &[6, 8, 13][..]),
++    for (name, guard, tail, blocks, method_bcis) in [
++        (
++            "prefixWhile",
++            "if (arg0) {",
++            None,
++            &[6, 8, 13][..],
++            &[0, 1, 2, 3, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 20, 23, 24][..],
++        ),
++        (
++            "takenArm",
++            "if (!arg0) {",
++            None,
++            &[6, 8, 13][..],
++            &[0, 1, 2, 3, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 20, 23, 24][..],
++        ),
+         (
+             "loopAndTail",
+             "if (arg0) {",
+             Some("local2 = local2 + 100;"),
+             &[6, 8, 13, 23][..],
++            &[0, 1, 2, 3, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 20, 23, 26, 27][..],
+         ),
+     ] {
+         let default = recover_class_method_with_budget(
+@@ -531,7 +544,42 @@
+                 all.text
+             );
+         }
+-        assert_one_structured_owner_in(&all, arm, blocks, "local3 = 0", &[6, 7]);
++        assert_one_structured_owner_in(&all, arm.clone(), blocks, "local3 = 0", &[6, 7]);
++        for bci in method_bcis {
++            assert!(
++                !all.source_map.of_bci(*bci).is_empty(),
++                "{name} lost existing or latch source BCI {bci}: {}",
++                all.text
++            );
++        }
++        let loop_start = arm.start
++            + arm_text
++                .find(if form == "for" { "for (" } else { "while (" })
++                .expect("the selected loop marker was found");
++        let loop_end = arm.start + loop_body.end + 1;
++        let latch_spans = all.source_map.derived_of_bci(20);
++        assert!(
++            latch_spans.iter().any(|segment| {
++                segment.start() <= loop_start
++                    && segment.end() == loop_end
++                    && segment.text(&all.text).trim_start().starts_with("for (")
++            }),
++            "{name} goto@20 is not derived from the complete for statement in its arm: {}",
++            all.text
++        );
++        for segment in &latch_spans {
++            for origin in std::iter::once(segment.origin().primary())
++                .chain(segment.origin().derived())
++                .filter(|origin| origin.bci() == 20)
++            {
++                let method = origin.method().expect("latch source has physical method identity");
++                assert_eq!(method.name.0.as_slice(), name.as_bytes(), "{name}");
++                assert_eq!(method.descriptor.0.as_slice(), b"(ZI)I", "{name}");
++                assert_eq!(method.owner.class_bytes.digest.0, blake3::hash(NO_PREFIX).to_hex().to_string());
++                assert_eq!(method.owner.class_bytes.length, NO_PREFIX.len() as u64);
++                assert_eq!(method.owner.variant, PhysicalVariant::Base);
++            }
++        }
+     }
+ 
+     let iterator_default = recover_class_method_with_budget(
+@@ -566,6 +614,113 @@
+     // Frozen javac23 branch targets/fallthrough give arm blocks 6, 13, 22,
+     // 39, 42; 45 is the shared exit and is deliberately outside the arm.
+     assert_one_structured_owner_in(&iterator, arm, &[6, 13, 22, 39, 42], ".iterator()", &[6, 7]);
++}
++
++#[test]
++fn rejected_for_update_slot_keeps_the_independent_while_latch() {
++    let mut matched_updates = 0;
++    for name in ["prefixWhile", "takenArm", "loopAndTail"] {
++        let inspection = inspect_method_bytecode(
++            NO_PREFIX,
++            MethodSelector {
++                name: JvmBytes(name.as_bytes().to_vec()),
++                descriptor: JvmBytes(b"(ZI)I".to_vec()),
++            },
++            &mut Budget::new(limits()),
++        )
++        .expect("frozen method bytecode reads");
++        let updates: Vec<_> = inspection
++            .instructions
++            .iter()
++            .filter(|instruction| {
++                instruction.bci == 17
++                    && instruction.opcode == 0x84
++                    && usize::try_from(instruction.span.start)
++                        .ok()
++                        .and_then(|start| NO_PREFIX.get(start..start + 3))
++                        == Some(&[0x84, 0x03, 0x01][..])
++            })
++            .collect();
++        assert_eq!(updates.len(), 1, "{name} update byte pattern");
++        matched_updates += updates.len();
++        let byte_offset = usize::try_from(updates[0].span.start).expect("class offset fits") + 1;
++        let mut changed = NO_PREFIX.to_vec();
++        assert_eq!(changed[byte_offset], 3, "{name} local slot operand");
++        changed[byte_offset] = 2;
++
++        let report = recover_class_method_with_budget(
++            &changed,
++            "PlainOneArmLoops",
++            name,
++            "(ZI)I",
++            RecoveryEvidenceRequest::all(),
++            None,
++        );
++        assert!(report.produced(), "{name}: {:?}", report.outcome);
++        assert!(report.text.contains("while ("), "{name}: {}", report.text);
++        assert!(!report.text.contains("for ("), "{name}: {}", report.text);
++        assert!(
++            report
++                .source_map
++                .derived_of_bci(20)
++                .iter()
++                .any(|segment| segment.text(&report.text).trim_start().starts_with("while (")),
++            "{name} lost the independently proved while latch: {}",
++            report.text
++        );
++    }
++    assert_eq!(matched_updates, 3, "exactly three frozen method bodies matched");
++}
++
++#[test]
++fn non_backedge_transfer_does_not_gain_a_loop_latch_origin() {
++    for name in ["prefixWhile", "takenArm", "loopAndTail"] {
++        let inspection = inspect_method_bytecode(
++            NO_PREFIX,
++            MethodSelector {
++                name: JvmBytes(name.as_bytes().to_vec()),
++                descriptor: JvmBytes(b"(ZI)I".to_vec()),
++            },
++            &mut Budget::new(limits()),
++        )
++        .expect("frozen method bytecode reads");
++        let gotos: Vec<_> = inspection
++            .instructions
++            .iter()
++            .filter(|instruction| instruction.bci == 20 && instruction.opcode == 0xa7)
++            .collect();
++        assert_eq!(gotos.len(), 1, "{name} goto@20");
++        let offset = usize::try_from(gotos[0].span.start).expect("class offset fits");
++        let mut changed = NO_PREFIX.to_vec();
++        assert_eq!(&changed[offset..offset + 3], &[0xa7, 0xff, 0xf4], "{name} goto bytes");
++        changed[offset + 1..offset + 3].copy_from_slice(&3_i16.to_be_bytes());
++        assert_eq!(20 + i16::from_be_bytes([changed[offset + 1], changed[offset + 2]]) as i32, 23);
++
++        // This byte mutation is an analysis counterexample only; it is not submitted to a JVM.
++        let report = recover_class_method_with_budget(
++            &changed,
++            "PlainOneArmLoops",
++            name,
++            "(ZI)I",
++            RecoveryEvidenceRequest::all(),
++            None,
++        );
++        assert!(report.produced(), "{name}: {:?}", report.outcome);
++        assert!(!report.text.contains("for ("), "{name}: {}", report.text);
++        assert!(!report.text.contains("while ("), "{name}: {}", report.text);
++        assert!(
++            !report
++                .source_map
++                .derived_of_bci(20)
++                .iter()
++                .any(|segment| {
++                    let text = segment.text(&report.text).trim_start();
++                    text.starts_with("for (") || text.starts_with("while (")
++                }),
++            "{name} assigned goto@20 to a loop without a back edge: {}",
++            report.text
++        );
++    }
+ }
+ 
+ #[test]
+

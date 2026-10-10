@@ -1,0 +1,124 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac8-original/classes/cf07/LoopCases.class
+  Last modified 2026-10-10; size 419 bytes
+  MD5 checksum 1bb1fbd64ffcd6f80eb94981493afdba
+public class cf07.LoopCases
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#14         // java/lang/Object."<init>":()V
+   #2 = Class              #15            // cf07/LoopCases
+   #3 = Class              #16            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               andWhile
+   #8 = Utf8               (Z)I
+   #9 = Utf8               StackMapTable
+  #10 = Utf8               counted
+  #11 = Utf8               (II)I
+  #12 = Utf8               lastIndexOf
+  #13 = Utf8               ([IIII)I
+  #14 = NameAndType        #4:#5          // "<init>":()V
+  #15 = Utf8               cf07/LoopCases
+  #16 = Utf8               java/lang/Object
+{
+  public cf07.LoopCases();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int andWhile(boolean);
+    descriptor: (Z)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: iconst_0
+         1: istore_1
+         2: iload_0
+         3: ifeq          18
+         6: iload_1
+         7: bipush        10
+         9: if_icmpge     18
+        12: iinc          1, 1
+        15: goto          2
+        18: iload_1
+        19: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+        frame_type = 15 /* same */
+
+  public static int counted(int, int);
+    descriptor: (II)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iload_0
+         1: iload_1
+         2: iadd
+         3: istore_2
+         4: iload_0
+         5: istore_3
+         6: iload_3
+         7: iload_1
+         8: if_icmpge     33
+        11: iload_3
+        12: bipush        7
+        14: if_icmpne     23
+        17: iinc          2, 2
+        20: goto          27
+        23: iload_2
+        24: iconst_2
+        25: imul
+        26: istore_2
+        27: iinc          3, 1
+        30: goto          6
+        33: iinc          2, -1
+        36: iload_2
+        37: ireturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 6
+          locals = [ int, int ]
+        frame_type = 16 /* same */
+        frame_type = 3 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+
+  public static int lastIndexOf(int[], int, int, int);
+    descriptor: ([IIII)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=5, args_size=4
+         0: iload_3
+         1: iconst_1
+         2: isub
+         3: istore        4
+         5: iload         4
+         7: iload_2
+         8: if_icmplt     28
+        11: aload_0
+        12: iload         4
+        14: iaload
+        15: iload_1
+        16: if_icmpne     22
+        19: iload         4
+        21: ireturn
+        22: iinc          4, -1
+        25: goto          5
+        28: iconst_m1
+        29: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 5
+          locals = [ int ]
+        frame_type = 16 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+}

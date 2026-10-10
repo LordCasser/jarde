@@ -1,0 +1,139 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -4136,7 +4136,7 @@
+         }
+         let allowed_latch_origin = if gateway_origins.is_empty() {
+             true
+-        } else if *form == LoopForm::While && for_header.is_none() && gateway_origins.len() == 1 {
++        } else if *form == LoopForm::While && gateway_origins.len() == 1 {
+             self.implicit_tail_latch_origin(header_node, body, for_header.as_ref())?
+                 == gateway_origins.first().copied()
+         } else {
+@@ -10276,18 +10276,15 @@
+         )))
+     }
+ 
+-    /// The one hidden transfer a final straight run may assign to a header-tested `while`: its
+-    /// natural latch, when the terminal instruction is an unconditional transfer back to this
+-    /// header and the canonical graph gives it no other outgoing edge.
++    /// The hidden transfer a final straight run may assign to a header-tested loop: a `while`
++    /// latch, or the exact update block already proved by `ForHeader`, whose terminal instruction
++    /// transfers back to this header and whose canonical block has no other outgoing edge.
+     fn implicit_tail_latch_origin(
+         &mut self,
+         header_node: usize,
+         body: &[Region],
+         for_header: Option<&ForHeader>,
+     ) -> Result<Option<u32>, StopReason> {
+-        if for_header.is_some() {
+-            return Ok(None);
+-        }
+         let Some(Region::Straight { blocks: tail }) = body.last() else {
+             return Ok(None);
+         };
+@@ -10306,6 +10303,28 @@
+         let Some(latch_bci) = self.terminal_bci(latch_id) else {
+             return Ok(None);
+         };
++        if let Some(proof) = for_header {
++            let Some(instructions) = self.ssa.block(latch_id).map(|block| block.instructions()) else {
++                return Ok(None);
++            };
++            let Some([update, transfer]) = instructions
++                .get(instructions.len().saturating_sub(2)..)
++            else {
++                return Ok(None);
++            };
++            let update_matches_slot = match self.operations.get(proof.update_bci) {
++                Some(Operation::Increment { slot, .. }) => *slot == proof.slot,
++                Some(Operation::Store { slot }) => *slot == proof.slot,
++                _ => false,
++            };
++            if &proof.update_block != latch_id
++                || update.bci() != proof.update_bci
++                || transfer.bci() != latch_bci
++                || !update_matches_slot
++            {
++                return Ok(None);
++            }
++        }
+         poll(self.budget, Some(latch_bci))?;
+         charge(
+             self.budget,
+
+--- a/crates/jarde-java/tests/p3_loop_exit_gateways.rs
++++ b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+@@ -450,14 +450,27 @@
+ fn one_arm_straight_prefix_loop_and_optional_tail_are_closed() {
+     // Block starts are frozen from javac23-original/javap.txt: prefix 6, loop
+     // header 8, loop body 13, and loopAndTail's exclusive tail 23.
+-    for (name, guard, tail, blocks) in [
+-        ("prefixWhile", "if (arg0) {", None, &[6, 8, 13][..]),
+-        ("takenArm", "if (!arg0) {", None, &[6, 8, 13][..]),
++    for (name, guard, tail, blocks, method_bcis) in [
++        (
++            "prefixWhile",
++            "if (arg0) {",
++            None,
++            &[6, 8, 13][..],
++            &[0, 1, 2, 3, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 20, 23, 24][..],
++        ),
++        (
++            "takenArm",
++            "if (!arg0) {",
++            None,
++            &[6, 8, 13][..],
++            &[0, 1, 2, 3, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 20, 23, 24][..],
++        ),
+         (
+             "loopAndTail",
+             "if (arg0) {",
+             Some("local2 = local2 + 100;"),
+             &[6, 8, 13, 23][..],
++            &[0, 1, 2, 3, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 20, 23, 26, 27][..],
+         ),
+     ] {
+         let default = recover_class_method_with_budget(
+@@ -532,6 +545,41 @@
+             );
+         }
+         assert_one_structured_owner_in(&all, arm, blocks, "local3 = 0", &[6, 7]);
++        for bci in method_bcis {
++            assert!(
++                !all.source_map.of_bci(bci).is_empty(),
++                "{name} lost existing or latch source BCI {bci}: {}",
++                all.text
++            );
++        }
++        let loop_start = arm.start
++            + arm_text
++                .find(if form == "for" { "for (" } else { "while (" })
++                .expect("the selected loop marker was found");
++        let loop_end = arm.start + loop_body.end + 1;
++        let latch_spans = all.source_map.derived_of_bci(20);
++        assert!(
++            latch_spans.iter().any(|segment| {
++                segment.start() <= loop_start
++                    && segment.end() == loop_end
++                    && segment.text(&all.text).trim_start().starts_with("for (")
++            }),
++            "{name} goto@20 is not derived from the complete for statement in its arm: {}",
++            all.text
++        );
++        for segment in &latch_spans {
++            for origin in std::iter::once(segment.origin().primary())
++                .chain(segment.origin().derived())
++                .filter(|origin| origin.bci() == 20)
++            {
++                let method = origin.method().expect("latch source has physical method identity");
++                assert_eq!(method.name.0.as_slice(), name.as_bytes(), "{name}");
++                assert_eq!(method.descriptor.0.as_slice(), b"(ZI)I", "{name}");
++                assert_eq!(method.owner.class_bytes.digest.0, blake3::hash(NO_PREFIX).to_hex().to_string());
++                assert_eq!(method.owner.class_bytes.length, NO_PREFIX.len() as u64);
++                assert_eq!(method.owner.variant, PhysicalVariant::Base);
++            }
++        }
+     }
+ 
+     let iterator_default = recover_class_method_with_budget(
+

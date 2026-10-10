@@ -1,0 +1,3189 @@
+{
+  "schema": "preserve-proved-for-latch-origins-validation-build-root-v1",
+  "validation_runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/run-validation-build-root-v1.py",
+    "sha256": "33ec5b321c44218c2085a48749b992771a53248e2bc435e3d3d02841da41500f"
+  },
+  "guarded_runner_template": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "status": "validation-passed-cli-frozen",
+  "source_commit_base_expected": "87090b3b4735693d0930f24f817d19f41cb63d98",
+  "uncommitted_for_latch_product": true,
+  "environment_overrides": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_TERM_COLOR": "always"
+  },
+  "guards": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824
+  },
+  "preflight": {
+    "git_head": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "value": "87090b3b4735693d0930f24f817d19f41cb63d98",
+      "matches_expected": true,
+      "stdout": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/git-head.stdout.raw",
+        "bytes": 41,
+        "sha256": "66aa7037021bb8d612813133e01aca33906d25d4e8416ac973d830efcd1a5933"
+      },
+      "stderr": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/git-head.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "source_pins_before": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+        "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+        "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+        "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+        "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+        "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+        "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+        "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+        "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+        "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "crates/jarde-java/tests/p3_effectful_exits.rs": "ad03f864744cb2c3b17552ca464db019bbb691a6ae601b148f3e4d70711887d5",
+        "crates/jarde-java/tests/p3_loop_body_double_jumps.rs": "b4e4ca7786740e86311fa2a66ad2620ddd9b5877d86271bad34a8e84ce5d0963",
+        "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "3c80e3a14ff9cb4bd0c19712c0cf8a2970c2381a91a0c027adf0db21f48eb9da",
+        "crates/jarde-java/tests/p3_loop_terminal_return.rs": "51d2f1387c29708b2b23678f6f36d18a7b13dc007e0dd7a6a1c4f9a299f7d48d",
+        "tests/p3_loop_arm_join.rs": "b37866c07eb2ea7718cb31fe9cd1b46a243509bc39fc45eddad6f47ff392898d",
+        "tests/p3_loop_boolean_exit.rs": "e3b6728bdd6639c7d3a7c5e601cf699469e226ea119b177e54ade57dfdb0ac6c",
+        "tests/p5_corpus_fingerprint.rs": "a29cc5ca21c3201466c7c4bca62d84e16fe3cfe5b40b05a2bafcf29b2fc3ffaa"
+      },
+      "canonical_files": {
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJLoops.class": "51412a18470844c5c5c80f4f98049ed7b2122692a4e4209520cba9c26c311efe",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJTripleJump.class": "ed9bcdc4d40c1ff10e82c537c6bfc2aecbcb631d5ce99706db7df1946ec7193d",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L1.class": "538a551413509655fe7aefa2661a0f59a6097d714e9a26058ab2780bdad4db97",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L2.class": "54080c587e19b40044927a10c4cf677734830179a940f25bf01e2f65de68acbc",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L5.class": "baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55",
+        "openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class": "b5a7541fc6dc6a6eaff229f3559968cd7e20a4f48c063e4fd019186f92b4a240",
+        "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+        "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989",
+        "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class": "b1e6bd92f8fe92e726e7a2a95461327dd3f7abe65ee7f451f1225777ed7ea6d4",
+        "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class": "4a3a1c09a64993411fcfb3f167cebd46fa51f5e1afe1eac330ee2663b9951096",
+        "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class": "2b29c9a9ba3812ed5083d8e983e907f9575dcb700dc52b2a7842e7fcc4667bee",
+        "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class": "4253b590f7b9e051c1b2d3f26157744920205915c84f4239f32290e471494006",
+        "tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class": "8f29f5db6c51e8a62fbcec09b4f162e498004ba19159daa56721563a2af1b1be",
+        "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class": "dd1cd6cd5faca218508416c2431f350e0a470936915ace9d54bfc9ad3755e533",
+        "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExits.class": "2e27cffb9361cbd78a689b404457b68d6bc31f1739362659ce71c0e276c0bae8",
+        "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoin.class": "542c856a156103f8c4e20372fcbeb3bc767b0c706f3270d73d5ec6dddfefdc2a",
+        "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoinExtraBreak.class": "14ba9f16f39c051b680a4d886656571e40f41a8b13a881ba6f0ddef6ebe6d954",
+        "tests/fixtures/p3-loop-boolean-exit/LoopBool.java": "57056904a51f6d8278703a0a34de89fb11f8204766639ce519c4fab4fcbf7391",
+        "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class": "cc727795087999f893efffd1f98ccafb93e25f988b62689850af51be1f25914f",
+        "tests/fixtures/p3-loop-gateway/EndlessInts.class": "bf215f7654fd928d7255bc04db8c97de6a8cb064b3390235c9c815d7ea0f8fc4",
+        "tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class": "c760085f59e5b7320b34bb4b56940258924e5eea35636c4ff4bd39ee16c9797d",
+        "tests/fixtures/p3-loop-gateway/cf08/LoopGatewayNegatives.class": "90217a24e3370215334ccbf94eeb86c7616cd2f9c733523e07ef872b0647d85f",
+        "tests/fixtures/p3-loop-terminal/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+        "tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class": "b006bce3a47e211f69bb07e989036c2cd32dede94dcf5a8fcab47b39832877c5",
+        "tests/fixtures/p3-loop-terminal/cf07/LoopTerminalNegatives.class": "afd0b5ef202935165f6b9566a107e073f6ea5d89148901acda8a4a94920534fd"
+      }
+    },
+    "source_pins_after": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+        "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+        "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+        "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+        "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+        "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+        "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+        "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+        "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+        "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "crates/jarde-java/tests/p3_effectful_exits.rs": "ad03f864744cb2c3b17552ca464db019bbb691a6ae601b148f3e4d70711887d5",
+        "crates/jarde-java/tests/p3_loop_body_double_jumps.rs": "b4e4ca7786740e86311fa2a66ad2620ddd9b5877d86271bad34a8e84ce5d0963",
+        "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "3c80e3a14ff9cb4bd0c19712c0cf8a2970c2381a91a0c027adf0db21f48eb9da",
+        "crates/jarde-java/tests/p3_loop_terminal_return.rs": "51d2f1387c29708b2b23678f6f36d18a7b13dc007e0dd7a6a1c4f9a299f7d48d",
+        "tests/p3_loop_arm_join.rs": "b37866c07eb2ea7718cb31fe9cd1b46a243509bc39fc45eddad6f47ff392898d",
+        "tests/p3_loop_boolean_exit.rs": "e3b6728bdd6639c7d3a7c5e601cf699469e226ea119b177e54ade57dfdb0ac6c",
+        "tests/p5_corpus_fingerprint.rs": "a29cc5ca21c3201466c7c4bca62d84e16fe3cfe5b40b05a2bafcf29b2fc3ffaa"
+      },
+      "canonical_files": {
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJLoops.class": "51412a18470844c5c5c80f4f98049ed7b2122692a4e4209520cba9c26c311efe",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJTripleJump.class": "ed9bcdc4d40c1ff10e82c537c6bfc2aecbcb631d5ce99706db7df1946ec7193d",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L1.class": "538a551413509655fe7aefa2661a0f59a6097d714e9a26058ab2780bdad4db97",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L2.class": "54080c587e19b40044927a10c4cf677734830179a940f25bf01e2f65de68acbc",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L5.class": "baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55",
+        "openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class": "b5a7541fc6dc6a6eaff229f3559968cd7e20a4f48c063e4fd019186f92b4a240",
+        "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+        "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989",
+        "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class": "b1e6bd92f8fe92e726e7a2a95461327dd3f7abe65ee7f451f1225777ed7ea6d4",
+        "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class": "4a3a1c09a64993411fcfb3f167cebd46fa51f5e1afe1eac330ee2663b9951096",
+        "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class": "2b29c9a9ba3812ed5083d8e983e907f9575dcb700dc52b2a7842e7fcc4667bee",
+        "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class": "4253b590f7b9e051c1b2d3f26157744920205915c84f4239f32290e471494006",
+        "tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class": "8f29f5db6c51e8a62fbcec09b4f162e498004ba19159daa56721563a2af1b1be",
+        "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class": "dd1cd6cd5faca218508416c2431f350e0a470936915ace9d54bfc9ad3755e533",
+        "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExits.class": "2e27cffb9361cbd78a689b404457b68d6bc31f1739362659ce71c0e276c0bae8",
+        "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoin.class": "542c856a156103f8c4e20372fcbeb3bc767b0c706f3270d73d5ec6dddfefdc2a",
+        "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoinExtraBreak.class": "14ba9f16f39c051b680a4d886656571e40f41a8b13a881ba6f0ddef6ebe6d954",
+        "tests/fixtures/p3-loop-boolean-exit/LoopBool.java": "57056904a51f6d8278703a0a34de89fb11f8204766639ce519c4fab4fcbf7391",
+        "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class": "cc727795087999f893efffd1f98ccafb93e25f988b62689850af51be1f25914f",
+        "tests/fixtures/p3-loop-gateway/EndlessInts.class": "bf215f7654fd928d7255bc04db8c97de6a8cb064b3390235c9c815d7ea0f8fc4",
+        "tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class": "c760085f59e5b7320b34bb4b56940258924e5eea35636c4ff4bd39ee16c9797d",
+        "tests/fixtures/p3-loop-gateway/cf08/LoopGatewayNegatives.class": "90217a24e3370215334ccbf94eeb86c7616cd2f9c733523e07ef872b0647d85f",
+        "tests/fixtures/p3-loop-terminal/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+        "tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class": "b006bce3a47e211f69bb07e989036c2cd32dede94dcf5a8fcab47b39832877c5",
+        "tests/fixtures/p3-loop-terminal/cf07/LoopTerminalNegatives.class": "afd0b5ef202935165f6b9566a107e073f6ea5d89148901acda8a4a94920534fd"
+      }
+    },
+    "uncommitted_for_latch_product": true,
+    "stripped_environment_keys": [],
+    "jdk23": {
+      "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tools": {
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      }
+    },
+    "check_only_metadata_cleanup": []
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T14:58:47.441279+00:00",
+      "duration_seconds": 3.0217837919772137,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 63636459520,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T14:58:50.464590+00:00",
+      "duration_seconds": 63.56767841600231,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 110972951,
+      "free_bytes_after": 63519637504,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/1.stderr.raw",
+          "bytes": 7482,
+          "sha256": "cbd6256b50414c68665b2eaf97743bfd3f2e1b8c09e8be76a0326c0e29f2ec0a"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [],
+        "check_only_metadata": [
+          {
+            "path": "target/debug/deps/libadler2-412f829012592ebc.rmeta",
+            "bytes": 16134,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanonymous_allocation_candidates-729ef136ab324ad0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanonymous_parameterized_root-5600ad8e5b92e5d7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanonymous_supertype_return-d43ef45bdff4c2fd.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanstream-dfbe8078769129df.rmeta",
+            "bytes": 166453,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanstyle-be2e9695416103b2.rmeta",
+            "bytes": 133324,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanstyle_parse-bd50c4e276f21f73.rmeta",
+            "bytes": 136449,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libanstyle_query-46de76e4bb8ebc74.rmeta",
+            "bytes": 7851,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libarray_invocation_widening-f5c4dd2878f17e6a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libarrayvec-8074982adb8b6fbf.rmeta",
+            "bytes": 158499,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libartifact_tree_cli-796061d37fe73a8b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libassert_statement_sugar-f83d0c23cd8ebee3.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbit_set-d9d26725e58abd79.rmeta",
+            "bytes": 60506,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbit_vec-6c0a68556db3154c.rmeta",
+            "bytes": 90433,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbitflags-5a6a094631adcead.rmeta",
+            "bytes": 175796,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libblake3-4c762bde632bf547.rmeta",
+            "bytes": 161911,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_backpressure-cd381853727c0d58.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_cancel-8a0cccaa8539a7f3.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_delivery-6d3a97f82134f45e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_handover-07176687a1bda680.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_lifecycle-bb0e5b7eebec7265.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_retention-b7fe79d1e5c1dbe1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_serial-c63fb79c738b2e91.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_recovery_workers-e2d29c032d602165.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libbulk_support-93802223b8de2a33.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libcfg_if-2d437f532eb74f1d.rmeta",
+            "bytes": 5524,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclap-24aa961c099e79f7.rmeta",
+            "bytes": 12663,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclap_builder-eb6112f47fde41c8.rmeta",
+            "bytes": 1643224,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclap_lex-4b40027962aa5c84.rmeta",
+            "bytes": 55942,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclass_annotation_facts-0a1487f090d9e428.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclass_initializer_candidates-69ffa6e4888619f3.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclass_scope_constructor_projection-1ab8f912111be647.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclass_source-6bded57c0978a88d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclass_source_cli-692b6d62be094974.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libclass_static_initializer_projection-37b084098c3e7938.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libcolorchoice-8db712bdf7f488e5.rmeta",
+            "bytes": 11507,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libconstant_time_eq-3a54fd63bd89314b.rmeta",
+            "bytes": 395289,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libcrc32fast-8d2dd8344562ca55.rmeta",
+            "bytes": 41587,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libctor_reorder_dispatch_guard-66a2a537d4aa3c7a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd0_demand_counts-e4c6b17290c31334.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd1_evidence_selection-e458a57dac1e0dff.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd2_prepared_handoff-8e7a5e674210d6fa.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd3_artifact_binding-8593b1168fb72044.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd5_acceptance_ledger-7bdef32f97b0d14d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd5_process_release-2ddf59fa2028e9ee.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libd5_semantic_comparison-4d514a2736ca1677.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libdouble_brace_capture-0e5b7759c47a92d2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libem22_boolean_xor-f102bc494a3d8346.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libem23_field_unit_updates-c5eaa870e221134b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libem27_inline_char_array-68e2c9a424872bd5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libengine-dd8c4f88ed98752e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libenum_string_field_name-79c321b6f5f82d0b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libequivalent-aca07167ce421136.rmeta",
+            "bytes": 7689,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/liberrno-0b538ed1ab4c066c.rmeta",
+            "bytes": 14682,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libexport_cli-d29491b00ec1b085.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libfastrand-1a5b34bfa5a48049.rmeta",
+            "bytes": 63933,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libfield_generic_projection-40faa5763a133135.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libfixedbitset-e1e5b7570ddfa23d.rmeta",
+            "bytes": 101101,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libfixture_behavior_guards-8a70a38daac52c83.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libflate2-62f8350824f3b027.rmeta",
+            "bytes": 428159,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libfnv-e66f7a299551a494.rmeta",
+            "bytes": 9593,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libfoldhash-fdfe086b9d5ac164.rmeta",
+            "bytes": 62808,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_body_throws_projection-5cdc2e5b59a4d166.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_constructor_projection-310cc590111bfb2d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_method_budget-1a01b56ea8149138.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_method_projection-d49a6281c43da045.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_outer_member_family-8efba0ae35ee55fb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_static_member_family-af6555ab2bfc9467.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgeneric_throws_projection-0cfd4524dedb3ddc.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgetrandom-642a6cc1ad9a5f18.rmeta",
+            "bytes": 52265,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libgetrandom-860ed8d1a879c4c0.rmeta",
+            "bytes": 53329,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libhashbrown-13b12c751e9698ae.rmeta",
+            "bytes": 883669,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libhashbrown-d612a3c06bb6125e.rmeta",
+            "bytes": 829879,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libhistorical_classfile_corpus-0e96c07ab1d5eb84.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libindexmap-ac36ca895f398d58.rmeta",
+            "bytes": 911800,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libinner_class_static_mixed_folding-ca4ea8b83f4c461c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libinterface_initializer_projection-3e2daa33fb278922.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libinterface_initializer_proof-ee837e787e386230.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libis_terminal_polyfill-7ba689f0b9e2cde3.rmeta",
+            "bytes": 8428,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libitoa-3b5029a72d2f69ab.rmeta",
+            "bytes": 49508,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde-30acae5e931da076.rmeta",
+            "bytes": 3868297,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde-f0fc35c272b367f3.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_cli-95f867c75c79fc2f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_cli-d52583494ea904b5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_java-9529ddbd1cc6a36d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_java-d9167a10b86412e9.rmeta",
+            "bytes": 4320873,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_jvm-54e966793fdd2254.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_jvm-c2c0c6b943f59987.rmeta",
+            "bytes": 2204040,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_query-bf83d8e3c7c8dc27.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_query-cf5d48229ce54a7a.rmeta",
+            "bytes": 939425,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_reader-4aa2d5e7b86776c8.rmeta",
+            "bytes": 4580200,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjarde_reader-560fc4281e76e7f2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjson_cli-3c1a45f9e164b270.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libjvm_bytecode_oracle-51636d7a644e73e0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/liblambda_companion_bodies-89a0785da15692f5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/liblambda_root_member_folding-f1a715682cbf178a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/liblibc-364d4f6a41d745e0.rmeta",
+            "bytes": 2079772,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmember_annotation_facts-fab8149f2401f243.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmember_capture_outer_read-ff28a74d9f95c5d9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmember_class_static_folding-85ead25e385c49f8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmember_family_external_use-53ba07b5fba65e02.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmember_family_identity-1bfe63027bf23e41.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmember_local_type_source_names-f855fb6d8a54e159.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmemchr-48ee4641fa860e2a.rmeta",
+            "bytes": 835624,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libmethod_signature_proof-4d85fc4712c10ef4.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libminiz_oxide-4254226e8fedf5e9.rmeta",
+            "bytes": 354619,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnavigation-ca12b418100153e5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnested_class_literal_values-cc04af945f03d68a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnested_ctor_argument_sites-96ad720b66cbfa95.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnested_generic_header_projection-5c6d17603f695a93.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnested_monitor_regions-8b9360951b90958f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnested_type_source_spelling-3c1f85b8d80bee78.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnoak-7629e40fa48fe701.rmeta",
+            "bytes": 2135865,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libnum_traits-9f82622df0f2b783.rmeta",
+            "bytes": 1255724,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libonce_cell-202cbc758b9dfa0f.rmeta",
+            "bytes": 138671,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libordinary_generic_projection-e5477efc9aba714d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libowner_candidates-095e492baee598cd.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_active_facts-ad0ac974b591b2dc.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_artifact_tree-2d43a4a434966a14.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_budget_ledger-dac027b212925f82.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_multi_release-f58586c7d3e2fd48.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_prepared_class-d2346b636c7f8409.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_query_api-07399399df0e7dd8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_query_bounds-55f18855d89989e6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_query_demand-0810468ae3251837.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_query_model-f390e3e890963754.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_query_planes-8b200ded94072e52.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_query_positions-0c0fe118f72b6e47.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_reader_facts-230a08cbc4cb6d49.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_scope_cursor-cb18e61035d8b91e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_xref_bootstrap-629613549d1d4123.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_xref_code-8abdb705cc5e5108.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_xref_golden-73506fccd3a2aa8f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_xref_metadata-ea061f2f96ead5ec.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp1_xref_properties-24397a9d2fdb4b7e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_canonical-64bb5f36769ef095.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_cfg-7ed03e37b748608f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_closure-f62340caa728e781.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_contracts-0a25884237a58744.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_declaration_refs-a90baf30d1c2cfbe.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_dispatch-64cadefbb66b2599.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_entry_counts-1cf5635593b9b68f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_frame-66b7d57e9af7f8f2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_golden-21b506fc1bf79bfd.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_members-d04832c9a2d819ad.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_passes-9ba8fefa3b930f04.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_prefixed_roots-07d991a0cfbf5073.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_properties-1784dc1ffc249ee1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_resolution-620ee5dc28d1d9e8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_return_address-c4b46d2df321c52e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp2_ssa-2ec2e4abddcc5de1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_accessor_edges-d4b70783a6ccef9f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_alias_field-18672caf67ab96a6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_annotation_default-9fb79a64aab31988.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_anonymous_class_facts-4e0fd321277940ee.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_array_access-348b67235405650c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_array_foreach-b4cb8935d3b2b3e5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_array_initializers-166fa001e9f8962f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_array_slot_retype_locals-648914561262248f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_array_types-aec388957bad162c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_arraylength_loop_condition-f2bf435e5f795bfb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_bigdecimal_number_widening-a9fc18b7b0a9eb9f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_bitwise-a4e37259259e2553.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_array_initializer_contract-5b52e4fa2b0ddf51.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_array_initializers-81c5507c75d22b6e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_array_store_contract-19a0fb963bfe3bc0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_array_stores-629ae97b8031337e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_contexts-6052f73c3cad5a29.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_field_stores-e39272053a79fe2e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_boolean_short_circuit_return-3dcbe336f9b5957f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_carried_conditional_arguments-4a4a8282cdd54e8f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_catch_after_field_assignment-121d827e139add79.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_caught_value_argument_typing-fc52fe8c67c19707.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_chained_store-b46f8bc332a11f14.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_char_switch-b6f960173fbad5a7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_class_literals-141c3001e237b954.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_compound_lvalue_updates-fe2e4493c5a28e52.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_concat_char-311fa94734b552c5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_concat_conversion-e3ed5292740947f8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_conditional_field_writes-8830751db54a9e5a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_conditional_values-528e0d9bf5b7c450.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_constructed_reference_array_elements-93ccd614bf5d3c74.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_constructor_primitive_conversion_arguments-7dc1f7772ee176c9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_content-a3834e02c1e40e4f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_crossing_array_read_values-96c407a7031510a6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_declaration_handoff-5c0813ce1f589fcb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_declarations-705499bda7145cf1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_deferred_value_order-7a282fcae1da5013.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_do_while_return-12290287acb12003.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_edge_settlement-0338057e17acb1e9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_effectful_exits-aba00dac624d04a1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_eval_context-22aa23b6254865e9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_exception_only_catchall-a0f5b3ba51b82139.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_exception_scope-b257bb68089fe9c5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_execution_comparison-ae881ffa568b1831.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_field_increment-6bc3a6709af1ecba.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_field_presentations-7a02c88c4d1dda86.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_final_static-3537aa7a296cd195.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_finally_straight-3523b3cc02e7362b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_flag_conditional_finally-061680ca79a50743.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_floating_constants-4891ec02a47bec3a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_for_add_store-e6febc835bd5b651.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_for_latch-bbbd3dec052ee1d7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_forward_join-da9bc050d7045cd6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_guard-4e0c945e7cb717b2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_handler_store-4d49125dd50cf93d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_heterogeneous_array_initializers-e96c8b6819df5c7d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_hoisted_boolean-17e62537d5175962.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_immediate_functional_receivers-61bb78cadbce1fb0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_inner_assignment-7fcfaf097b3beeca.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_instance_receiver-ea7e709df5287d67.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_instanceof-2a1256bbafcee37d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_integer_boolean_return_boundaries-9895155ba07ccb19.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_integer_boolean_return_contract-c7e57ffae3fc1fd7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_integer_boolean_returns-57c91e12900634b9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_intermediate_join-d193adcb7a08e62d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_invocation_arguments-d065d5e09dc5c52c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_isolation-f565493ebd00ff0f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_iterable_foreach-b297001cf3b375eb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_java_recovery-8996e2de34c2930f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_labeled_loop_tail-609c1bdacbdacf66.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_lambda_adaptation-e8fa4f01a7aadfd4.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_local_null_conditional_finally-f8b1a3f98f1200aa.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_local_postfix_array_elements-40a3109f9e0407e6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_local_rewrite-52d36d4a847b41e5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_long_field_assignment_result-1c1a78d216413454.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_arm_join-daaa4af41de63ed3.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_body_double_jumps-25c0d1000dc69f0a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_boolean_do-71f1b39bfd5c71af.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_boolean_exit-b62154f3b651733d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_exit_gateways-7a668252a8bc9ff7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_terminal_return-6a84ea2fd38f5b6a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_test_values-b4128215535c1bd0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_transfers-8813ae0d174ed3ad.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_loop_try_handler_entry-5e754b658782f055.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_meeting-34e6590ca72b8cc4.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_method_ir-317643bd24ee07b2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mixed_short_circuit_argument-a0fcbb36118c11ef.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mixed_short_circuit_array-ebb96aebcf30d96d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mixed_short_circuit_field-7a461d419e40f4ac.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mixed_short_circuit_instance_field-34f2b20de118efce.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mixed_short_circuit_local-884808a17f739078.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mixed_short_circuit_return-62e8cbefddf6a82d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_multi_resource_twr_geometry-527dd713b69f9a0b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_mutf8-4de6fa5a4a167cd8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_narrow_array_store_order-4eac94e797f7f92f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_narrow_array_stores-19be213fd646703e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_narrow_field_stores-443c3c3d48e77bbc.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_narrow_integer_return_contract-087c867566af566f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_narrow_integer_returns-401bd5f89cd825a6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_narrow_return_boundaries-e149ee739fe9a8c9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_nested_annotation_source-b54aee7a0abfca78.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_nested_array_initializers-3f76a39fd731d341.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_nested_int_array_compound_updates-fa617fed2345fb89.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_nested_try-40a9f4ff9270dda8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_new_value-e386cfddb0beb097.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_null_lead_straight_finally-b4af3fa9da73b700.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_null_resource-d063ad08f6b51345.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_numeric_comparison-cfe2de62ce33c68d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_one_armed_if-0d2704dfcf5ad75c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_ordinary_new_invokes-6278720b7626640c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_parameter_slots-725cbc6fbb5962c7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_partial_array_allocation-127bf4e8f1872813.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_patterns-5db372b5db07e3de.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_platform_collection_widening-0a415bd583b4259b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_popped_static_qualifier-edc0c8d6cb740b99.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_postfix_handler_boundary-5e32d4f88b3560c2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_postfix_lvalue_values-4e8443151d00d0ef.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_preceded_catches-1bc3c5ece2229a86.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_precise_rethrow-db4330e4b1af2297.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_prefix_survival-add62793d5a1646c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_prepared_input-8a7a0d4485d29403.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_primitive_conversions-60d6266c886c6d8b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_product_vocabulary-93bd6e799728827e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_proved_boolean_conditional_returns-dd3072e1ff98ad24.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_proved_varargs_calls-ce17d0b77f84cc2c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_recovery_entry-96021333a3898716.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_reference_cast-c716cb018c02d8df.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_reference_slot_lifetimes-520d06e1824e1993.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_region_fallback_origins-d1e7e1d265735c8a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_region_owner_overlap-cabdb28b58e78a33.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_repeq_boolean_arguments-a60fe7d3da8e9952.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_required_conversions-b21c967916bdbf20.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_scope-6d9647b88272b3d8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_scv_concat_consumers-890aa52b0d8cd59d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_segmented_null_lead_finally-2821f75bdcdb2425.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_shared_catchall_finally-99ae59c53c9f728b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_shared_join_finally-794d7b0d9d9a2513.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_shared_latch_nested_loops-db955ca9f297e76b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_shared_tail-bd89302c9da2bee5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_shift_expressions-dcb88f174eadcda9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_shift_negative_boundaries-e145eea5d580d202.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_short_circuit_chain_controls-df38c9c68f74f7ca.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_short_circuit_exception_chain-fc95a51a6e73997d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_short_circuit_exception_edge-6b0d49f704e0044a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_short_circuit_transfer_gateway-fcba01c4b282bb02.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_snapshot_hierarchy_widening-dd36a68f9eeb3ed6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_special_dispatch-d93fb15edd28c456.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_special_refusal-d4c080f3e0a1a181.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_stated_rows-e650b1d241de7c0c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_static_call-920db48b2eb7bea4.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_string_switch_projection-878017c2a41f20d1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_switch_arm_loop_exits-585cbdf04d6c04a1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_switch_fallthrough-053811e107382a9c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_switch_forward_join-864ae22b6b1327ac.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_switch_loop_exits-13cf7869f21285a1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_switch_value-3537dfe2d42b8990.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_sync_return-06f200984e4ceb00.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_throw-8f67c3ba322f8a13.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_throwable_wrap_arguments-30fe3b46337a3838.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_transparent_empty_finally-45ee3f025946a99d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_try_local-1c3e97bff843bc05.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_two_exit_return-30a76f06ddef05b1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_catch-5729568a63073104.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_discarded_call-a3638ebfc684ab13.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_enclosing_catch-c9ac98a17ba158de.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_enclosing_catch_call-7f370a2de5e4d95b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_lead_sequence-5770ff6a4111b548.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_return_tail-3ab927caa88d909f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_twr_saved_return_typing-c37735015cd85f99.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_type_qualifier-ca20fd0dfb634e7b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_typed_catch-69686ba3da47f7c6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_typed_catch_boundary_return-86f43abfa1c0086f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_unary_negation-7ad757c63f473e8d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_varargs-0f28a0c519a9840b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_void_loop_finally-e5b08720c0d79fd6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp3_wrapped_array_foreach-446bd1be437636e6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_feature_registry-f63b35910cd5b5c7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_golden-131c78fb33396924.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_modern_facts-6ca73f32832d4c3d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_plugins-6015ef3f9b9e0fa4.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_runtime_matrix-afb3b867bd7b679d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_x2_states-bd202e7a23bb4dee.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp4_x3_patterns-54149e66ada1f7df.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_benchmark-4b06aabe2f5dc5ea.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_bulk_corpus-4a5293d6cd4491d5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_container_lookup-b7a2a96d846b7bcd.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_corpus_fingerprint-4fb753eadb4b6191.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_definition_read_reuse-26ee0dd14fb63d65.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_facts_cache-b96479b497161966.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_optimize_workloads-4f31f2750b545254.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libp5_shared_payload-f819041bd5fbb1d0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libparameterized_interface_headers-9dda16fe4075bbfc.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libpetgraph-5fb4f70ce3d81e9e.rmeta",
+            "bytes": 1773135,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libppv_lite86-c0955acc1237c30f.rmeta",
+            "bytes": 263573,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libpreserve_local_scope_plan-af97f33529483bcb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libpreserve_local_scope_refusals-2d4540ceb548492f.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libpreserve_monitor_exit_evaluation_order-1a06bc8b960b13f8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libproptest-351046b45135e24a.rmeta",
+            "bytes": 2708423,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libqualified_super_default-894b468b913d21a0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libquery_cli-21c0b50e7518a16e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libquick_error-63faee97440637c8.rmeta",
+            "bytes": 82312,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librand-158fb5fdc64509a5.rmeta",
+            "bytes": 637938,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librand_chacha-a2583b36a54f8c83.rmeta",
+            "bytes": 97354,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librand_core-a92ff5262d05a78a.rmeta",
+            "bytes": 98523,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librand_xorshift-46e3e780fc48b0f5.rmeta",
+            "bytes": 12023,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libraw_receiver_field_selection-828493882af305fd.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librawzip-7667900a1b3bf82a.rmeta",
+            "bytes": 753060,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_array_element_field_receiver-862836625d232297.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_array_initializer_value_positions-737118b666f70aeb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_boolean_int_bitwise_operands-be266983f80019cb.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_boxed_number_widening-72412f715c5c6122.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_branching_guard_body-3ac7a3e4bbdd22db.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_chained_field_assignment-0fb505ba2169edc7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_conditional_rhs_field_compound-bfd18b151172e275.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_covariant_array_store_receiver-226a802519b7626b.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_double_brace_allocation_site-4e43070aa0d9064c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_dup_store_conditional-836d6080089a0244.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_inline_conditional_concat_operands-a0636202a78291b9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_instance_field_assignment_chains-71db5572353c8804.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_io_resource_finally-bd7fc2e359898ab5.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_javac8_allocation_qualifier_null_check-791b1098d2b776e9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_javac8_getclass_null_check_idiom-ba969f8bbffbb278.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_lambda_primitive_array_capture-43e15de66168d03d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_lock_guard_loop_finally-c84f90cc96d30e7a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_loop_else_if_early_returns-eee910f26aa53f59.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_loop_test_copy_store-dbcf26f1519c10f8.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_nested_lock_finally_bodies-125b8cad12427e5d.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_platform_implementer_argument_widening-eafdfe2a2498bd0a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_platform_interface_argument_widening-dcd1b5e9a3255f3e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_postfix_condition_positions-7eea76c443d6f172.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_postfix_old_value_snapshot-30a392157b531385.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_proved_nonnull_bound_receivers-755d9bedf2f6f4c0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_short_circuit_local_branch_reads-2c0bdbaea304486c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_statement_position_news-7881f814b31fff35.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_static_generic_field_init_text-6bc3e18ec592d07e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_synthetic_ctor_super_order-4da9e306c2b9e59e.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_temporal_argument_widening-903d8f213f1d43f9.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_unicode_identifiers-237cfe4d2bd6ec0c.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librecover_write_accessor_field_types-2db04437c7169f03.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libregex_syntax-1f15d96183aa2bd7.rmeta",
+            "bytes": 4186126,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librustix-ddaecdf636b742f5.rmeta",
+            "bytes": 2042394,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/librusty_fork-57f1f0b31daf8554.rmeta",
+            "bytes": 73461,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libsame_class_generic_binding-859e201d655f2a93.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libsame_class_generic_call_consumers-5c78b7461955b3d7.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libserde-34dbb60303697f6e.rmeta",
+            "bytes": 516737,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libserde_core-690ba7d10b8aa432.rmeta",
+            "bytes": 2655982,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libserde_json-c799c30930577d77.rmeta",
+            "bytes": 948565,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libsimd_adler32-905bf5e186143d83.rmeta",
+            "bytes": 467536,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libstatic_method_local_generic_throws-c6e95fb834e0a19a.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libstrsim-d48e9fc335afd3bb.rmeta",
+            "bytes": 35448,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libtask_cli-e99e86acdd1633c2.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libtask_operations-d11a93bf462bdbf1.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libtempfile-abc9966ed25265c4.rmeta",
+            "bytes": 188127,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libthiserror-db4dfde5d98ebd3e.rmeta",
+            "bytes": 29129,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libtwr_direct_finally-3fae15b90715b237.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libtwr_inner_finally-6a0060e41382b4e6.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libtype_annotation_facts-0f546766fb8bc0b0.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libunarray-787b6da655a386e0.rmeta",
+            "bytes": 29796,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libutf8parse-6e8cbf0b2b442bdd.rmeta",
+            "bytes": 20736,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libvarargs_ctor_argument_sites-049b93724e3b04dc.rmeta",
+            "bytes": 0,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libwait_timeout-b716de6d871a783c.rmeta",
+            "bytes": 16341,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libzerocopy-c27b7a064b0a7476.rmeta",
+            "bytes": 12558956,
+            "kind": "check-only-rmeta"
+          },
+          {
+            "path": "target/debug/deps/libzmij-c2c2e62c7f059787.rmeta",
+            "bytes": 139866,
+            "kind": "check-only-rmeta"
+          }
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T14:59:54.086615+00:00",
+      "duration_seconds": 24.81603683400317,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 186803273,
+      "free_bytes_after": 63442874368,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            335,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            335,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope"
+        ],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/2.stdout.raw",
+          "bytes": 31155,
+          "sha256": "a2a804371241b94f9665a45a526b2f6912ce2bebb40c979ee40efd2bcaa70e2b"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/2.stderr.raw",
+          "bytes": 1680,
+          "sha256": "5bdb4f9cceadfcb1aed953450e28751ed79552b6be8421af909254d16505f385"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/jarde_java-9c368dde3446805c",
+            "bytes": 33382128,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_loop_exit_gateways",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:00:18.931509+00:00",
+      "duration_seconds": 10.308483209024416,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 238550857,
+      "free_bytes_after": 63372423168,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            9,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            9,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source",
+          "rejected_for_update_slot_keeps_the_independent_while_latch",
+          "non_backedge_transfer_does_not_gain_a_loop_latch_origin"
+        ],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/3.stdout.raw",
+          "bytes": 756,
+          "sha256": "5022f50f98b10c0537ea47c06d3c69d74e66424fb82536c73218acb22fa1543e"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/3.stderr.raw",
+          "bytes": 297,
+          "sha256": "9f09e981f8b952a3cdb4888f8837b92557e917ebdc60e91a05fcb9e632e5d165"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p3_loop_exit_gateways-cc124f0ddd55c761",
+            "bytes": 31586496,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p3_loop_arm_join",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:00:29.266906+00:00",
+      "duration_seconds": 30.053688625019277,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 481910545,
+      "free_bytes_after": 63118589952,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            4,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            4,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/4.stdout.raw",
+          "bytes": 381,
+          "sha256": "7f8880a5d190e0bf9781581b4a4bc8b415c3204ca0963d24777467d615c27a5e"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/4.stderr.raw",
+          "bytes": 1968,
+          "sha256": "5dfbe648eac382489e6068d7f5b09551583d3d77319b63937e023a1511b525c0"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p3_loop_arm_join-66a3ef75e4ea1e16",
+            "bytes": 49277952,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 5,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_loop_body_double_jumps",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:00:59.351486+00:00",
+      "duration_seconds": 1.0917386669898406,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 464063855,
+      "free_bytes_after": 63136325632,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/5.stdout.raw",
+          "bytes": 534,
+          "sha256": "5d1d1bf5372e0b39d4a771148fc6aa0160905636b586ba69980d0b667598ca23"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/5.stderr.raw",
+          "bytes": 305,
+          "sha256": "38c30e34aaad7abde0d9ba6afbf07b2fc99b0bd7d7e8b758e4e39c3149ceacda"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p3_loop_body_double_jumps-239924312e0ed8dc",
+            "bytes": 31428768,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 6,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_loop_terminal_return",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:01:00.474017+00:00",
+      "duration_seconds": 1.0890735829889309,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 464017325,
+      "free_bytes_after": 63136301056,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/6.stdout.raw",
+          "bytes": 437,
+          "sha256": "8a117c2c81ce1f7cf36e07426ebd28d5a366e626a87a19a5c54a888c7293b870"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/6.stderr.raw",
+          "bytes": 301,
+          "sha256": "2377cd3e3bd941c154175a0d6e1a145bcf656615477a46d40101968dc46f57ac"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p3_loop_terminal_return-cdb9f3928a1eaa65",
+            "bytes": 31379776,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 7,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_effectful_exits",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:01:01.593286+00:00",
+      "duration_seconds": 1.0900418749952223,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 464141319,
+      "free_bytes_after": 63136133120,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            12,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            12,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/7.stdout.raw",
+          "bytes": 901,
+          "sha256": "407ba8d537091792dbc84ee9fa451e15001cbc020ca0cb3e6ea817a605183283"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/7.stderr.raw",
+          "bytes": 291,
+          "sha256": "f14284cb8a2062640dbf16a31cf554d88300ad541aea5aa2675fc5224eeef67e"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p3_effectful_exits-aa1782ce021e3dbe",
+            "bytes": 31498576,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 8,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:01:02.712906+00:00",
+      "duration_seconds": 5.224773207999533,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 443044747,
+      "free_bytes_after": 63157170176,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            178,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            178,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/8.stdout.raw",
+          "bytes": 15727,
+          "sha256": "353dc69151cb6d095ececc814769cc77f37ecf6e52b89e097e3ad937295d0fdc"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/8.stderr.raw",
+          "bytes": 282,
+          "sha256": "3c9d8d47dc9a9326480771f31bf26e9f014ff050a32db7d6e5f31b5451bfb8e2"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/jarde_reader-929f805051e76b5a",
+            "bytes": 10397584,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 9,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:01:07.967852+00:00",
+      "duration_seconds": 1.068647250009235,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 434519488,
+      "free_bytes_after": 63165517824,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        "actual": [
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/9.stdout.raw",
+          "bytes": 565,
+          "sha256": "fd1681fc1b00272b2f130a42cb9a04344b50364353b05a708342ae6a6a2c3be7"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/9.stderr.raw",
+          "bytes": 274,
+          "sha256": "df1050171766ff219d54e9105edb1770f40f6efc3619097c50676a9744262fac"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p5_corpus_fingerprint-03ae81b079343d4f",
+            "bytes": 1870736,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 10,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p3_loop_boolean_exit",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:01:09.064486+00:00",
+      "duration_seconds": 2.105036916997051,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 482013730,
+      "free_bytes_after": 63117553664,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            3,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            3,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/10.stdout.raw",
+          "bytes": 372,
+          "sha256": "a1cee2789156caae46614e56dee4897e4ecedbd07f0c7242921cf4da3565e5d3"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/10.stderr.raw",
+          "bytes": 272,
+          "sha256": "b67b04bc038b2071bf381b647b831dbb8fb4bb575a27edc891da201f2a62ce47"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [
+          {
+            "path": "target/debug/deps/p3_loop_boolean_exit-58b0fe584f4250aa",
+            "bytes": 49363040,
+            "kind": "test-binary"
+          }
+        ],
+        "check_only_metadata": []
+      }
+    },
+    {
+      "index": 11,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T15:01:11.199221+00:00",
+      "duration_seconds": 26.95502329201554,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 701574616,
+      "free_bytes_after": 62956453888,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_test_names": [],
+        "required_test_names_present": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/11.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/11.stderr.raw",
+          "bytes": 1268,
+          "sha256": "07ad56d4653355ba8a7e4a8404ff4d2fca47709750536c0466a824f4e1986311"
+        }
+      },
+      "cleanup": {
+        "test_binaries": [],
+        "check_only_metadata": []
+      }
+    }
+  ],
+  "freeze": {
+    "cli_path": "/private/tmp/jarde-proved-for-latch-cli-v1",
+    "cli_sha256": "d2d9773d94011a680e18d968ea1b3684036791ceb7dfa769455adf9247f0d33a",
+    "cli_mode": "0o555",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/candidate-cli-v1.json",
+    "source_commit_base": "87090b3b4735693d0930f24f817d19f41cb63d98",
+    "uncommitted_for_latch_product": true,
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/run-validation-build-root-v1.py",
+      "sha256": "33ec5b321c44218c2085a48749b992771a53248e2bc435e3d3d02841da41500f"
+    },
+    "guarded_runner_template": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "product_path_sets": {
+      "candidate_sources": [
+        "Cargo.lock",
+        "Cargo.toml",
+        "crates/jarde-cli/Cargo.toml",
+        "crates/jarde-cli/src/main.rs",
+        "crates/jarde-cli/src/task.rs",
+        "crates/jarde-java/Cargo.toml",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/lib.rs",
+        "crates/jarde-java/src/region.rs",
+        "crates/jarde-java/src/report.rs",
+        "crates/jarde-jvm/Cargo.toml",
+        "crates/jarde-query/Cargo.toml",
+        "crates/jarde-reader/Cargo.toml",
+        "src/class_source.rs",
+        "src/facade.rs",
+        "src/lib.rs"
+      ],
+      "test_sources": [
+        ".github/workflows/ci.yml",
+        "crates/jarde-java/tests/p3_effectful_exits.rs",
+        "crates/jarde-java/tests/p3_loop_body_double_jumps.rs",
+        "crates/jarde-java/tests/p3_loop_exit_gateways.rs",
+        "crates/jarde-java/tests/p3_loop_terminal_return.rs",
+        "tests/p3_loop_arm_join.rs",
+        "tests/p3_loop_boolean_exit.rs",
+        "tests/p5_corpus_fingerprint.rs"
+      ],
+      "canonical_files": [
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJLoops.class",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/DJTripleJump.class",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L1.class",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L2.class",
+        "crates/jarde-java/tests/fixtures/p3-loop-double-jumps/L5.class",
+        "openspec/evidence/java-syntax-2026-09-27/cf08-endless-loops/two-level-if-baseline/baseline/classes/cf08twolvl/TwoLevelIf.class",
+        "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+        "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoop.class",
+        "tests/fixtures/cf08-constructor-predicate/cf08/NotIndexedLoopNegatives.class",
+        "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectful.class",
+        "tests/fixtures/cf08-nested-effectful/cf08nested/NestedEffectfulNegatives.class",
+        "tests/fixtures/cf08-two-level-effectful/cf08twolvl/TwoLevelIfNegatives.class",
+        "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExitNegatives.class",
+        "tests/fixtures/p3-effectful-exits/cf08effects/EffectfulExits.class",
+        "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoin.class",
+        "tests/fixtures/p3-loop-arm-join/v8/LoopIfJoinExtraBreak.class",
+        "tests/fixtures/p3-loop-boolean-exit/LoopBool.java",
+        "tests/fixtures/p3-loop-boolean-exit/v8/LoopBool.class",
+        "tests/fixtures/p3-loop-gateway/EndlessInts.class",
+        "tests/fixtures/p3-loop-gateway/LoopGatewayExtraEntry.class",
+        "tests/fixtures/p3-loop-gateway/cf08/LoopGatewayNegatives.class",
+        "tests/fixtures/p3-loop-terminal/LoopCases.class",
+        "tests/fixtures/p3-loop-terminal/LoopTerminalExtraEntry.class",
+        "tests/fixtures/p3-loop-terminal/cf07/LoopTerminalNegatives.class"
+      ]
+    }
+  }
+}

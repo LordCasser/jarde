@@ -1,0 +1,17 @@
+
+running 12 tests
+test certificate_budget_and_cancellation_leave_no_partial_source ... ok
+test constructor_predicate_complete_method_and_sources ... ok
+test constructor_predicate_rejects_unproved_producers_and_joins ... ok
+test constructor_predicate_stops_atomically ... ok
+test effectful_exits_own_each_block_and_source_once ... ok
+test nested_effectful_certificate_stops_without_partial_source ... ok
+test nested_effectful_exits_keep_the_inner_tail_in_its_if_arm ... ok
+test nested_effectful_exits_reject_unproved_edges ... ok
+test non_matching_edges_effects_and_handler_do_not_publish_endless_loop ... ok
+test two_level_effectful_certificate_stops_atomically ... ok
+test two_level_effectful_exits_reject_unproved_edges_and_values ... ok
+test two_level_effectful_exits_share_only_the_inner_join ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
