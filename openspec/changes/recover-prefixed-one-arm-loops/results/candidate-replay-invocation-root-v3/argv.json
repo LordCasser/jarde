@@ -1,0 +1,20 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prepare-candidate-root-v3.py",
+  "--cli",
+  "/private/tmp/jarde-prefixed-loop-cli-v1",
+  "--cli-sha256",
+  "472c5f957470671252649da688287895596bb8008342fb5d35e7e51d40d1e18a",
+  "--metadata",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/candidate-cli-v1.json",
+  "--metadata-sha256",
+  "fe55d6aa49d1fc7bbe2b56f23e92df998acc6bee69d5f9ba07ccc23eda58d555",
+  "--build",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/validation-build-root-v5/execution.json"
+]

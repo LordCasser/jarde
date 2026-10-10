@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-ci-product-root-v3.py", line 514, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-ci-product-root-v3.py", line 474, in main
+    build = verify_build_and_candidate(product, args.metadata_sha256.lower(),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-ci-product-root-v3.py", line 366, in verify_build_and_candidate
+    assert freeze["built_binary"] == str(ROOT / "target/debug/jarde-cli")
+           ~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'built_binary'

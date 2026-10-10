@@ -1,0 +1,37 @@
+{
+  "status": "completed",
+  "utc": "2026-10-10T14:49:07.200286+00:00",
+  "duration_seconds": 0.8842449999938253,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-ci-product-root-v4.py",
+    "ca43ac74767c4609284f13b251de9d6c349c67a4",
+    "38048944005",
+    "--metadata-sha256",
+    "fe55d6aa49d1fc7bbe2b56f23e92df998acc6bee69d5f9ba07ccc23eda58d555",
+    "--build-path",
+    "openspec/changes/recover-prefixed-one-arm-loops/results/validation-build-root-v5/execution.json",
+    "--build-schema",
+    "recover-prefixed-one-arm-loops-validation-build-root-v5"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 206,
+      "sha256": "38d916eb2da636f099a51d599bafae0adcb3559a801d4458f7c23311b02e648b"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "verifier_sha256": "2b9c367a9bad3476017af1386fc8da21a38a965759a4365d16b3c9c639a91694"
+}

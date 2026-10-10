@@ -1,0 +1,428 @@
+{
+  "schema": "recover-prefixed-one-arm-loops-ci-product-root-acceptance-v4",
+  "status": "accepted",
+  "product_commit": "ca43ac74767c4609284f13b251de9d6c349c67a4",
+  "run_id": 38048944005,
+  "source_commit_base": "404b422e141e200f0eea000f64937becedbad664",
+  "shared_ci_verification": {
+    "static_helper": {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py",
+      "sha256": "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d",
+      "verify_ci_called": true,
+      "main_called": false
+    },
+    "accepted_integer_verifier": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/verify-int-array-ci-product-luna-v2.py",
+      "sha256": "e5534e0b2acc6066ba518a1b55f5d0f79b9e5e25a1c4dc5db768040b6d47b425",
+      "integer_test_helper_called": true
+    }
+  },
+  "binary_group_adaptation": {
+    "target": "tests/p3_loop_exit_gateways.rs",
+    "method": "recheck exact gateway binary summary and all seven gateway test names in each seed command group",
+    "all_test_names_and_exact_summary_rechecked": true
+  },
+  "ci": {
+    "ci_json_sha256": "1dab8018e5f5a7b9f44e86f5d4283bc6c94d19ac1da062668c0d1f3b099c1d0b",
+    "stable_gzip_sha256": "ea4151e042c08daf5297b5a83cdc830c377440fac2febadaa1ec2d1a3807b083",
+    "stable_raw_sha256": "b99fb4fb57c01582bbc5452fd6a7346e258d6cc9237925fd3e4f1d27ab5e58f6",
+    "supply_gzip_sha256": "27e3873c37d36d115d4869a2c57c878709572095bc83b3d459358b3ab7f19ec7",
+    "supply_raw_sha256": "45240be975b7058f547ee8198ea6cce59d6102b9b0d2b72659a6001120ed646e",
+    "jobs": 4,
+    "step_count": 52,
+    "all_jobs_and_steps_success": true,
+    "installed_jdk": "25.0.4+7.0.LTS",
+    "workspace_seed_runs": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "seed": "5350648285461741569",
+        "binaries": {
+          "tests/class_static_initializer_projection.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/interface_initializer_proof.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_patterns.rs": {
+            "passed": 85,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_array_slot_retype_locals.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/recover_unicode_identifiers.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p5_corpus_fingerprint.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          },
+          "tests/p5_bulk_corpus.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          }
+        },
+        "test_result_records": 354,
+        "passed": 3383,
+        "failed": 0,
+        "ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "seed": "5350648285461741570",
+        "binaries": {
+          "tests/class_static_initializer_projection.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/interface_initializer_proof.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_patterns.rs": {
+            "passed": 85,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_array_slot_retype_locals.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/recover_unicode_identifiers.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p5_corpus_fingerprint.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          },
+          "tests/p5_bulk_corpus.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          }
+        },
+        "test_result_records": 354,
+        "passed": 3383,
+        "failed": 0,
+        "ignored": 97
+      }
+    ],
+    "workspace_seeds": [
+      "5350648285461741569",
+      "5350648285461741570"
+    ],
+    "ignored_comparisons": {
+      "jdk25_instruction_boundaries": {
+        "command": "cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "p3_execution": {
+        "command": "cargo test --test p3_execution_comparison --locked -- --ignored",
+        "records": 1,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      "functional_constructor": {
+        "command": "cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "bigdecimal": {
+        "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+        "records": 1,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      "nested": {
+        "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "returned": {
+        "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    "cargo_deny": {
+      "version": "0.20.2",
+      "commands": [
+        "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+        "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+      ]
+    },
+    "workflow_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a"
+  },
+  "workspace_regressions": {
+    "prefixed_one_arm_workspace_tests": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "seed": "5350648285461741569",
+        "command_group_index": 706,
+        "focused_binary": "tests/p3_loop_exit_gateways.rs",
+        "focused_test_counts": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "region_test_names": [
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope"
+        ],
+        "region_test_results": {
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners": "ok",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope": "ok"
+        },
+        "prefixed_one_arm_tests": [
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources",
+          "cf08_unproved_gateways_keep_physical_quotes",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source"
+        ],
+        "prefixed_one_arm_test_results": {
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources": "ok",
+          "cf08_unproved_gateways_keep_physical_quotes": "ok",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source": "ok",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed": "ok",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source": "ok",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner": "ok",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source": "ok"
+        },
+        "workspace_result_records": 354,
+        "workspace_expected_totals": [
+          3383,
+          0,
+          97
+        ],
+        "workspace_passed": 3383,
+        "workspace_failed": 0,
+        "workspace_ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "seed": "5350648285461741570",
+        "command_group_index": 6393,
+        "focused_binary": "tests/p3_loop_exit_gateways.rs",
+        "focused_test_counts": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "region_test_names": [
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope"
+        ],
+        "region_test_results": {
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners": "ok",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope": "ok"
+        },
+        "prefixed_one_arm_tests": [
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources",
+          "cf08_unproved_gateways_keep_physical_quotes",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source"
+        ],
+        "prefixed_one_arm_test_results": {
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources": "ok",
+          "cf08_unproved_gateways_keep_physical_quotes": "ok",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source": "ok",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed": "ok",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source": "ok",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner": "ok",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source": "ok"
+        },
+        "workspace_result_records": 354,
+        "workspace_expected_totals": [
+          3383,
+          0,
+          97
+        ],
+        "workspace_passed": 3383,
+        "workspace_failed": 0,
+        "workspace_ignored": 97
+      }
+    ],
+    "prior_integer_array_tests": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "command_group_index": 706,
+        "seed": "5350648285461741569",
+        "required_tests": [
+          "facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name",
+          "facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins",
+          "facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection",
+          "facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection",
+          "facade::integer_constant_name_tests::staged_same_method_text_is_not_overwritten_after_a_valid_replay",
+          "facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key",
+          "facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body",
+          "facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals",
+          "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+          "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+          "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop"
+        ],
+        "required_tests_ok": 11,
+        "actual_test_result_records": 354,
+        "actual_passed": 3383,
+        "actual_failed": 0,
+        "actual_ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "command_group_index": 6393,
+        "seed": "5350648285461741570",
+        "required_tests": [
+          "facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name",
+          "facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins",
+          "facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection",
+          "facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection",
+          "facade::integer_constant_name_tests::staged_same_method_text_is_not_overwritten_after_a_valid_replay",
+          "facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key",
+          "facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body",
+          "facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals",
+          "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+          "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+          "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop"
+        ],
+        "required_tests_ok": 11,
+        "actual_test_result_records": 354,
+        "actual_passed": 3383,
+        "actual_failed": 0,
+        "actual_ignored": 97
+      }
+    ],
+    "prior_integer_array_test_count": 11
+  },
+  "frozen_cli_and_build": {
+    "candidate_metadata_sha256": "fe55d6aa49d1fc7bbe2b56f23e92df998acc6bee69d5f9ba07ccc23eda58d555",
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-prefixed-loop-cli-v1",
+      "sha256": "472c5f957470671252649da688287895596bb8008342fb5d35e7e51d40d1e18a",
+      "mode": "0o555"
+    },
+    "candidate_build_sha256": "3a05abafc302794861b5d0318cfe6dfe6fdca52cf62a31530cfcd581b4f99ec2",
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/run-validation-build-root-v5.py",
+      "sha256": "9dd49d5f241bbc498372daad45abf12ed99a970abd1e09bc9cd6c53a929ebacd"
+    },
+    "guarded_runner_template": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "product_commit_git_blob_pins_verified": 50,
+    "current_files_match_build_pins": 50,
+    "pin_counts": {
+      "candidate_sources": 17,
+      "test_sources": 8,
+      "canonical_files": 25
+    },
+    "source_commit_base": "404b422e141e200f0eea000f64937becedbad664",
+    "uncommitted_prefixed_loop_product": true,
+    "build_commands": 12,
+    "build_streams_verified": 24,
+    "build_test_result_records_recomputed_from_stdout": {
+      "2": [
+        [
+          335,
+          0,
+          0
+        ]
+      ],
+      "3": [
+        [
+          7,
+          0,
+          0
+        ]
+      ],
+      "4": [
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "5": [
+        [
+          7,
+          0,
+          0
+        ]
+      ],
+      "6": [
+        [
+          5,
+          0,
+          0
+        ]
+      ],
+      "7": [
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "8": [
+        [
+          178,
+          0,
+          0
+        ]
+      ],
+      "9": [
+        [
+          5,
+          0,
+          1
+        ]
+      ],
+      "10": [
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    "all_build_commands_exit_zero_no_guard_stop": true
+  },
+  "acceptance_scope": "this exact submitted product commit, current source and fixture pins, frozen candidate CLI/build, four successful CI jobs and all recorded steps, exact workspace result totals and required prefixed-loop/latch/integer regression names from both fixed seeds; does not establish the separate full-class allBCI gate"
+}

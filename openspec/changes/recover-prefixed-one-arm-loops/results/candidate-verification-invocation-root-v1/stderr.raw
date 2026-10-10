@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-candidate-root-v3.py", line 218, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-candidate-root-v3.py", line 194, in main
+    if fact['outcome_kind']!='recovered' or fact['quality']!='structured' or fact['representation']!='java' or fact['content']!='contains_statements' or fact['fallbacks']!=[] or fact['validation_errors']:reject(suite+'/'+leg+'/'+mode+' method presentation failed: '+str(fact['method']))
+                                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-candidate-root-v3.py", line 22, in reject
+    def reject(m):raise RuntimeError(m)
+                  ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: plain/javac8/default method presentation failed: ['prefixWhile', '(ZI)I']

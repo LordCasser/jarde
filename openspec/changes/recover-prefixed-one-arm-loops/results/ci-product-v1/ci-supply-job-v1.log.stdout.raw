@@ -1,0 +1,923 @@
+supply chain	UNKNOWN STEP	﻿2026-10-10T11:35:27.5530559Z Current runner version: '2.337.0'
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5556301Z ##[group]Runner Image Provisioner
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5557195Z Hosted Compute Agent
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5557874Z Version: 20261002.596
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5558513Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5559259Z Build Date: 2026-10-02T22:28:27Z
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5560037Z Worker ID: {bbee13b8-ab83-49bb-b46d-d40c3f65b623}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5560781Z Region: eastus2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5561580Z Cloud: Azure
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5562152Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5563666Z ##[group]Operating System
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5564440Z Ubuntu
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5565023Z 24.04.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5565566Z LTS
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5566095Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5566657Z ##[group]Runner Image
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5567314Z Image: ubuntu-24.04
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5567902Z Version: 20261004.327.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5569217Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5570818Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5572062Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5573283Z ##[group]GITHUB_TOKEN Permissions
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5575836Z Contents: read
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5576472Z Metadata: read
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5577106Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5579578Z Secret source: Actions
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5580581Z Cache mode: write
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5581950Z Prepare workflow directory
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.5982113Z Prepare all required actions
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.6031007Z Getting action download info
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.8146426Z Download action repository 'actions/checkout@v7.0.1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:27.9224551Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:686976e191b89faba57d3206551f0f330d8cb249)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.1703481Z Complete job name: supply chain
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2498038Z ##[group]Run actions/checkout@v7.0.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2498993Z with:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2499458Z   repository: LordCasser/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2503783Z   token: ***
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2504228Z   ssh-strict: true
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2504663Z   ssh-user: git
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2505110Z   persist-credentials: true
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2505596Z   clean: true
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2506034Z   sparse-checkout-cone-mode: true
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2506545Z   fetch-depth: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2506968Z   fetch-tags: false
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2507410Z   show-progress: true
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2507849Z   lfs: false
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2508265Z   submodules: false
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2508717Z   set-safe-directory: true
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2509212Z   allow-unsafe-pr-checkout: false
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2509992Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2510407Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2510864Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2511523Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2512024Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.2512500Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3496628Z Syncing repository: LordCasser/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3498840Z ##[group]Getting Git version info
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3499571Z Working directory is '/home/runner/work/jarde/jarde'
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3500611Z [command]/usr/bin/git version
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3598694Z git version 2.55.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3633676Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3642579Z Temporarily overriding HOME='/home/runner/work/_temp/c5015a6a-046f-4a47-8690-28424adfe2f7' before making global git config changes
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3644933Z Adding repository directory to the temporary git global config as a safe directory
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3650145Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jarde/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3712537Z Deleting the contents of '/home/runner/work/jarde/jarde'
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3715041Z ##[group]Determining repository object format
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3716901Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3718454Z ##[group]Initializing the repository
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3720625Z [command]/usr/bin/git init /home/runner/work/jarde/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3825932Z hint: Using 'master' as the name for the initial branch. This default branch name
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3827630Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3829164Z hint: to use in all of your new repositories, which will suppress this warning,
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3830465Z hint: call:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3831319Z hint:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3832160Z hint: 	git config --global init.defaultBranch <name>
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3833156Z hint:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3834101Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3835706Z hint: 'development'. The just-created branch can be renamed via this command:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3836914Z hint:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3837560Z hint: 	git branch -m <name>
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3838303Z hint:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3839368Z hint: Disable this message with "git config set advice.defaultBranchName false"
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3846151Z Initialized empty Git repository in /home/runner/work/jarde/jarde/.git/
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3856369Z [command]/usr/bin/git remote add origin https://github.com/LordCasser/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3908898Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3909804Z ##[group]Disabling automatic garbage collection
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3912902Z [command]/usr/bin/git config --local gc.auto 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3949930Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3951471Z ##[group]Setting up auth
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3952054Z Removing SSH command configuration
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3958936Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.3996259Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4365268Z Removing HTTP extra header
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4371000Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4415185Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4643831Z Removing includeIf entries pointing to credentials config files
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4649801Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4688280Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4919140Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4961550Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jarde/jarde/.git.path /home/runner/work/_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.4997091Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.5035789Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.5073317Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.5105954Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.5107275Z ##[group]Fetching the repository
+supply chain	UNKNOWN STEP	2026-10-10T11:35:28.5114409Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ca43ac74767c4609284f13b251de9d6c349c67a4:refs/remotes/origin/main
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8338012Z From https://github.com/LordCasser/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8339438Z  * [new ref]           ca43ac74767c4609284f13b251de9d6c349c67a4 -> origin/main
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8362432Z [command]/usr/bin/git branch --list --remote origin/main
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8385263Z   origin/main
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8396187Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8426766Z ca43ac74767c4609284f13b251de9d6c349c67a4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8439758Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8441365Z ##[group]Determining the checkout info
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8442921Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8445713Z [command]/usr/bin/git sparse-checkout disable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8505188Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8543873Z ##[group]Checking out the ref
+supply chain	UNKNOWN STEP	2026-10-10T11:35:34.8546842Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.0601156Z Updating files:  10% (17303/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.4699208Z Updating files:  11% (18031/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.5650711Z Updating files:  12% (19671/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.6642090Z Updating files:  13% (21310/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.7257149Z Updating files:  14% (22949/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.7804075Z Updating files:  15% (24588/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.8515776Z Updating files:  16% (26227/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:36.9536356Z Updating files:  17% (27867/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.0263570Z Updating files:  18% (29506/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.0575486Z Updating files:  18% (30620/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.2586037Z Updating files:  19% (31145/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.3540858Z Updating files:  20% (32784/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.4489368Z Updating files:  21% (34423/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.7045886Z Updating files:  22% (36062/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.8058496Z Updating files:  23% (37702/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.8990221Z Updating files:  24% (39341/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:37.9917909Z Updating files:  25% (40980/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.0262909Z Updating files:  26% (42619/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.1820289Z Updating files:  26% (43253/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.2717524Z Updating files:  27% (44258/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.3596170Z Updating files:  28% (45898/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.4474138Z Updating files:  29% (47537/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.5395543Z Updating files:  30% (49176/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.6922268Z Updating files:  31% (50815/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.7859352Z Updating files:  32% (52454/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.8749868Z Updating files:  33% (54093/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:38.9652274Z Updating files:  34% (55733/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.0263383Z Updating files:  35% (57372/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.1809645Z Updating files:  35% (58501/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.2738461Z Updating files:  36% (59011/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.3665535Z Updating files:  37% (60650/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.4536063Z Updating files:  38% (62289/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.5317813Z Updating files:  39% (63929/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.5868859Z Updating files:  40% (65568/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.6412895Z Updating files:  41% (67207/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.7031756Z Updating files:  42% (68846/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.8717085Z Updating files:  43% (70485/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:39.9456544Z Updating files:  44% (72124/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.0002966Z Updating files:  45% (73764/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.0262477Z Updating files:  46% (75403/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.0547095Z Updating files:  46% (76180/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.1088856Z Updating files:  47% (77042/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.1640866Z Updating files:  48% (78681/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.3400655Z Updating files:  49% (80320/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.3953684Z Updating files:  50% (81959/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.4489136Z Updating files:  51% (83599/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.5040645Z Updating files:  52% (85238/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.5584652Z Updating files:  53% (86877/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.6181584Z Updating files:  54% (88516/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.6761892Z Updating files:  55% (90155/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.7318104Z Updating files:  56% (91795/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.7875393Z Updating files:  57% (93434/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.8432417Z Updating files:  58% (95073/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.8986382Z Updating files:  59% (96712/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:40.9543502Z Updating files:  60% (98351/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.0103122Z Updating files:  61% (99990/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.0262379Z Updating files:  62% (101630/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.0707481Z Updating files:  62% (102114/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.1468932Z Updating files:  63% (103269/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.2280006Z Updating files:  64% (104908/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.2969434Z Updating files:  65% (106547/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.3632611Z Updating files:  66% (108186/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.4232646Z Updating files:  67% (109826/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.4822271Z Updating files:  68% (111465/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.5634509Z Updating files:  69% (113104/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.6460506Z Updating files:  70% (114743/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.7306232Z Updating files:  71% (116382/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.8262319Z Updating files:  72% (118021/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:41.9468796Z Updating files:  73% (119661/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.1708149Z Updating files:  74% (121300/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.1888438Z Updating files:  74% (122569/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.2704334Z Updating files:  75% (122939/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.3402483Z Updating files:  76% (124578/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.4113207Z Updating files:  77% (126217/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.4876084Z Updating files:  78% (127857/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.5628638Z Updating files:  79% (129496/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.6270647Z Updating files:  80% (131135/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.7009732Z Updating files:  81% (132774/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.7888748Z Updating files:  82% (134413/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.8736170Z Updating files:  83% (136052/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:42.9559538Z Updating files:  84% (137692/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.0263622Z Updating files:  85% (139331/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.0366867Z Updating files:  85% (140764/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.1097695Z Updating files:  86% (140970/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.2215829Z Updating files:  87% (142609/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.5132870Z Updating files:  88% (144248/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.6039445Z Updating files:  89% (145888/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.6800569Z Updating files:  90% (147527/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.7585755Z Updating files:  91% (149166/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.8344043Z Updating files:  92% (150805/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:43.9271809Z Updating files:  93% (152444/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.0069717Z Updating files:  94% (154083/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.0262787Z Updating files:  95% (155723/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.1392143Z Updating files:  95% (156096/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.2254733Z Updating files:  96% (157362/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.3155666Z Updating files:  97% (159001/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.4156507Z Updating files:  98% (160640/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.5160137Z Updating files:  99% (162279/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.5161347Z Updating files: 100% (163918/163918)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.5161982Z Updating files: 100% (163918/163918), done.
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.7600470Z Switched to a new branch 'main'
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.7601457Z branch 'main' set up to track 'origin/main'.
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.7650538Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.7699397Z [command]/usr/bin/git log -1 --format=%H
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.7732466Z ca43ac74767c4609284f13b251de9d6c349c67a4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8083897Z ##[group]Run dtolnay/rust-toolchain@stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8084217Z with:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8084424Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8084632Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8084816Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8085033Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8085246Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8085664Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8085899Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8154210Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8215013Z ##[group]Run if [[ -z $toolchain ]]; then
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8215440Z ^[[36;1mif [[ -z $toolchain ]]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8216000Z ^[[36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8216564Z ^[[36;1m  echo "'toolchain' is a required input" >&2^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8216873Z ^[[36;1m  exit 1^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8217262Z ^[[36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8217686Z ^[[36;1m  if [[ Linux == macOS ]]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8218221Z ^[[36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8218758Z ^[[36;1m  else^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8219163Z ^[[36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8219639Z ^[[36;1m  fi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8219947Z ^[[36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8220489Z ^[[36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8220959Z ^[[36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8221955Z ^[[36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8222462Z ^[[36;1melse^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8222665Z ^[[36;1m  delimiter=EOF^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8222972Z ^[[36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8223474Z ^[[36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8223917Z ^[[36;1mfi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8478156Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8478554Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8478778Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8479009Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8479239Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8479462Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8479703Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8479917Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8628702Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=47]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8634124Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8667863Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8668356Z ^[[36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8732456Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8732815Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8733023Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8733245Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8733462Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8733678Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8733909Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8828796Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=19]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8831856Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8859795Z ##[group]Run if ! command -v rustup &>/dev/null; then
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8860391Z ^[[36;1mif ! command -v rustup &>/dev/null; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8861467Z ^[[36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8862216Z ^[[36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8862492Z ^[[36;1mfi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8926385Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8926729Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8926926Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8927144Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8927398Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8927698Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8927937Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.8928183Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9020324Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=18]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9023397Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9031628Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9047906Z ##[start-action display=rustup toolchain install stable;id=__dtolnay_rust-toolchain.__run_4]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9067212Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9067906Z ^[[36;1mset -f  # split targets and components on commas and whitespace, without glob expansion^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9068350Z ^[[36;1mflags=()^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9068628Z ^[[36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9069054Z ^[[36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9069563Z ^[[36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9069998Z ^[[36;1mlog=$(mktemp)^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9070244Z ^[[36;1mtrap 'rm -f "$log"' EXIT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9070522Z ^[[36;1mfor attempt in 1 2 3 4 5; do^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9071395Z ^[[36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9071977Z ^[[36;1m    break^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9072181Z ^[[36;1m  else^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9072390Z ^[[36;1m    status=$?^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9072609Z ^[[36;1m  fi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9072901Z ^[[36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9073456Z ^[[36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9073920Z ^[[36;1m    exit "$status"^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9074143Z ^[[36;1m  fi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9074495Z ^[[36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9074917Z ^[[36;1m  sleep 30^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9075125Z ^[[36;1mdone^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9139397Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9139753Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9139947Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9140173Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9140390Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9140600Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9140859Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9141332Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9141541Z   targets: 
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9141731Z   components: 
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9141950Z   RUSTUP_PERMIT_COPY_RENAME: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:44.9142191Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.3838450Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7330261Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7408531Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7408939Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7456161Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=840]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7468227Z ##[start-action display=rustup default stable;id=__dtolnay_rust-toolchain.__run_5]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7609778Z ##[group]Run rustup default "$toolchain" --force-non-host
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7610200Z ^[[36;1mrustup default "$toolchain" --force-non-host^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7676491Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7677032Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7677227Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7677452Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7677675Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7677900Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7678153Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7678406Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7678614Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7807405Z info: using existing install for stable-x86_64-unknown-linux-gnu
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7815147Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7815450Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7890253Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7890638Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7908447Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=43]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7913181Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7933620Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7934541Z ^[[36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7935269Z ^[[36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.7935808Z ^[[36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8002696Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8003059Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8003249Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8003474Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8003690Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8003901Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8004137Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8004385Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8004605Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8556481Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=64]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8559374Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8602370Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8602764Z ^[[36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8603103Z ^[[36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8603387Z ^[[36;1mfi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8672342Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8672701Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8672898Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8673114Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8673326Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8673533Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8673767Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8674020Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8766345Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=20]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8768699Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8788374Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8788730Z ^[[36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8789061Z ^[[36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8789354Z ^[[36;1mfi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8855849Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8856200Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8856588Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8856810Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8857022Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8857231Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8857465Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8857707Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8951365Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=18]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8955995Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8977656Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8978183Z ^[[36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8978892Z ^[[36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8979653Z ^[[36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8980241Z ^[[36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8980784Z ^[[36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8981650Z ^[[36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8982259Z ^[[36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8982783Z ^[[36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8983136Z ^[[36;1m  fi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.8983325Z ^[[36;1mfi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9048183Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9048523Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9048711Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9048928Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9049139Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9049356Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9049594Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9049833Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9050037Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9390672Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=43]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9395513Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9415905Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9416655Z ^[[36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9417284Z ^[[36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9417763Z ^[[36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9418345Z ^[[36;1mfi^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9489543Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9489903Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9490123Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9490356Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9490574Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9490798Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9491308Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9491595Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9491801Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9708937Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=31]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9714899Z ##[start-action display=rustc +stable --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9734977Z ##[group]Run rustc +"$toolchain" --version --verbose
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9735348Z ^[[36;1mrustc +"$toolchain" --version --verbose^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9804477Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9804821Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9805193Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9805428Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9805642Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9805853Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9806090Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9806336Z   toolchain: stable
+supply chain	UNKNOWN STEP	2026-10-10T11:35:45.9806539Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0001661Z rustc 1.99.0 (b940084d7 2026-09-28)
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0002268Z binary: rustc
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0002590Z commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0003103Z commit-date: 2026-09-28
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0003370Z host: x86_64-unknown-linux-gnu
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0003632Z release: 1.99.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0003856Z LLVM version: 23.1.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0024492Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=30]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0086022Z ##[group]Run cargo install cargo-deny --version 0.20.2 --locked
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0086488Z ^[[36;1mcargo install cargo-deny --version 0.20.2 --locked^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0156164Z shell: /usr/bin/bash -e {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0156424Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0156622Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0156851Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0157066Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0157275Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0157512Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.0157771Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:35:46.8809317Z ^[[1m^[[92m    Updating^[[0m crates.io index
+supply chain	UNKNOWN STEP	2026-10-10T11:35:47.1499741Z ^[[1m^[[92m Downloading^[[0m crates ...
+supply chain	UNKNOWN STEP	2026-10-10T11:35:47.2618244Z ^[[1m^[[92m  Downloaded^[[0m cargo-deny v0.20.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:47.3956761Z ^[[1m^[[92m  Installing^[[0m cargo-deny v0.20.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:47.3987314Z ^[[1m^[[92m    Updating^[[0m crates.io index
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.2746855Z ^[[1m^[[92m    Updating^[[0m crates.io index
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.3730719Z ^[[1m^[[92m Downloading^[[0m crates ...
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.3948859Z ^[[1m^[[92m  Downloaded^[[0m anstream v1.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.3970597Z ^[[1m^[[92m  Downloaded^[[0m anstyle-parse v1.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.3987111Z ^[[1m^[[92m  Downloaded^[[0m allocator-api2 v0.2.21
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4017422Z ^[[1m^[[92m  Downloaded^[[0m anstyle v1.0.14
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4032614Z ^[[1m^[[92m  Downloaded^[[0m aho-corasick v1.1.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4085116Z ^[[1m^[[92m  Downloaded^[[0m anstyle-query v1.1.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4098007Z ^[[1m^[[92m  Downloaded^[[0m equivalent v1.0.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4108689Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-deque v0.8.6
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4122876Z ^[[1m^[[92m  Downloaded^[[0m fern v0.7.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4168650Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-channel v0.5.15
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4212646Z ^[[1m^[[92m  Downloaded^[[0m either v1.16.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4228414Z ^[[1m^[[92m  Downloaded^[[0m funty v2.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4236933Z ^[[1m^[[92m  Downloaded^[[0m cfg-expr v0.20.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4269793Z ^[[1m^[[92m  Downloaded^[[0m cfg-if v1.0.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4282602Z ^[[1m^[[92m  Downloaded^[[0m crossbeam v0.8.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4296943Z ^[[1m^[[92m  Downloaded^[[0m find-msvc-tools v0.1.9
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4313328Z ^[[1m^[[92m  Downloaded^[[0m heck v0.5.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4327665Z ^[[1m^[[92m  Downloaded^[[0m cc v1.2.62
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4363042Z ^[[1m^[[92m  Downloaded^[[0m clap_lex v1.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4375335Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer_data v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4403797Z ^[[1m^[[92m  Downloaded^[[0m block-buffer v0.10.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4415514Z ^[[1m^[[92m  Downloaded^[[0m generic-array v0.14.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4430066Z ^[[1m^[[92m  Downloaded^[[0m smol_str v0.3.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4448327Z ^[[1m^[[92m  Downloaded^[[0m camino v1.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4473396Z ^[[1m^[[92m  Downloaded^[[0m strum_macros v0.28.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4500135Z ^[[1m^[[92m  Downloaded^[[0m synstructure v0.13.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4512823Z ^[[1m^[[92m  Downloaded^[[0m codespan-reporting v0.13.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4610124Z ^[[1m^[[92m  Downloaded^[[0m cpufeatures v0.2.17
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4629240Z ^[[1m^[[92m  Downloaded^[[0m digest v0.10.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4653027Z ^[[1m^[[92m  Downloaded^[[0m displaydoc v0.2.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4693472Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-epoch v0.9.20
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4718241Z ^[[1m^[[92m  Downloaded^[[0m icu_locale_core v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4788931Z ^[[1m^[[92m  Downloaded^[[0m plain v0.2.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4799471Z ^[[1m^[[92m  Downloaded^[[0m clap v4.6.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4897775Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.17.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4950262Z ^[[1m^[[92m  Downloaded^[[0m globset v0.4.18
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4964916Z ^[[1m^[[92m  Downloaded^[[0m form_urlencoded v1.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.4972631Z ^[[1m^[[92m  Downloaded^[[0m http v1.4.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5008718Z ^[[1m^[[92m  Downloaded^[[0m crypto-common v0.1.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5017486Z ^[[1m^[[92m  Downloaded^[[0m log v0.4.29
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5042120Z ^[[1m^[[92m  Downloaded^[[0m bytes v1.11.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5083964Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.2.17
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5112877Z ^[[1m^[[92m  Downloaded^[[0m icu_provider v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5138871Z ^[[1m^[[92m  Downloaded^[[0m idna v1.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5173537Z ^[[1m^[[92m  Downloaded^[[0m nu-ansi-term v0.50.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5197147Z ^[[1m^[[92m  Downloaded^[[0m proc-macro2 v1.0.106
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5226737Z ^[[1m^[[92m  Downloaded^[[0m scroll_derive v0.13.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5234384Z ^[[1m^[[92m  Downloaded^[[0m sha2 v0.10.9
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5259640Z ^[[1m^[[92m  Downloaded^[[0m anyhow v1.0.103
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5300020Z ^[[1m^[[92m  Downloaded^[[0m bitvec v1.0.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5470998Z ^[[1m^[[92m  Downloaded^[[0m codespan v0.13.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5482443Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5519010Z ^[[1m^[[92m  Downloaded^[[0m writeable v0.6.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5538382Z ^[[1m^[[92m  Downloaded^[[0m colorchoice v1.0.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5548185Z ^[[1m^[[92m  Downloaded^[[0m cfg_aliases v0.2.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5557886Z ^[[1m^[[92m  Downloaded^[[0m same-file v1.0.6
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5571124Z ^[[1m^[[92m  Downloaded^[[0m strsim v0.11.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5584232Z ^[[1m^[[92m  Downloaded^[[0m idna_adapter v1.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5592966Z ^[[1m^[[92m  Downloaded^[[0m itoa v1.0.18
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5606866Z ^[[1m^[[92m  Downloaded^[[0m lock_api v0.4.14
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5619485Z ^[[1m^[[92m  Downloaded^[[0m percent-encoding v2.3.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5627836Z ^[[1m^[[92m  Downloaded^[[0m potential_utf v0.1.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5638721Z ^[[1m^[[92m  Downloaded^[[0m radium v0.7.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5648413Z ^[[1m^[[92m  Downloaded^[[0m scopeguard v1.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5659971Z ^[[1m^[[92m  Downloaded^[[0m strum v0.28.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5668426Z ^[[1m^[[92m  Downloaded^[[0m borsh v1.6.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5740264Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-queue v0.3.12
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5752725Z ^[[1m^[[92m  Downloaded^[[0m foldhash v0.1.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5764426Z ^[[1m^[[92m  Downloaded^[[0m is_terminal_polyfill v1.70.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5773998Z ^[[1m^[[92m  Downloaded^[[0m jobserver v0.1.34
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5794272Z ^[[1m^[[92m  Downloaded^[[0m quote v1.0.45
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5820786Z ^[[1m^[[92m  Downloaded^[[0m scroll v0.13.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5834427Z ^[[1m^[[92m  Downloaded^[[0m smallvec v1.15.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5854887Z ^[[1m^[[92m  Downloaded^[[0m shlex v1.3.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5867008Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-utils v0.8.21
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5893861Z ^[[1m^[[92m  Downloaded^[[0m memmap2 v0.9.11
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5910669Z ^[[1m^[[92m  Downloaded^[[0m tame-index v0.26.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5954024Z ^[[1m^[[92m  Downloaded^[[0m yoke-derive v0.8.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5965816Z ^[[1m^[[92m  Downloaded^[[0m fixedbitset v0.5.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.5984510Z ^[[1m^[[92m  Downloaded^[[0m litemap v0.8.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6007515Z ^[[1m^[[92m  Downloaded^[[0m pkg-config v0.3.33
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6023268Z ^[[1m^[[92m  Downloaded^[[0m untrusted v0.9.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6040136Z ^[[1m^[[92m  Downloaded^[[0m rustc-stable-hash v0.1.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6056314Z ^[[1m^[[92m  Downloaded^[[0m icu_properties v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6079304Z ^[[1m^[[92m  Downloaded^[[0m parking_lot_core v0.9.12
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6100334Z ^[[1m^[[92m  Downloaded^[[0m icu_collections v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6164488Z ^[[1m^[[92m  Downloaded^[[0m parking_lot v0.12.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6189542Z ^[[1m^[[92m  Downloaded^[[0m serde_core v1.0.228
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6216675Z ^[[1m^[[92m  Downloaded^[[0m zerofrom-derive v0.1.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6227354Z ^[[1m^[[92m  Downloaded^[[0m krates v0.21.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6251723Z ^[[1m^[[92m  Downloaded^[[0m semver v1.0.28
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6275372Z ^[[1m^[[92m  Downloaded^[[0m serde_derive v1.0.228
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6306264Z ^[[1m^[[92m  Downloaded^[[0m version_check v0.9.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6318779Z ^[[1m^[[92m  Downloaded^[[0m memchr v2.8.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6373226Z ^[[1m^[[92m  Downloaded^[[0m rayon-core v1.13.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6410481Z ^[[1m^[[92m  Downloaded^[[0m serde v1.0.228
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6446660Z ^[[1m^[[92m  Downloaded^[[0m serde_json v1.0.150
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6520555Z ^[[1m^[[92m  Downloaded^[[0m indexmap v2.14.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6563818Z ^[[1m^[[92m  Downloaded^[[0m regex v1.12.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6617293Z ^[[1m^[[92m  Downloaded^[[0m tap v1.0.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6627067Z ^[[1m^[[92m  Downloaded^[[0m tinyvec_macros v0.1.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6635770Z ^[[1m^[[92m  Downloaded^[[0m utf8_iter v1.0.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6646093Z ^[[1m^[[92m  Downloaded^[[0m bstr v1.12.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6725727Z ^[[1m^[[92m  Downloaded^[[0m stable_deref_trait v1.2.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6735039Z ^[[1m^[[92m  Downloaded^[[0m clap_builder v4.6.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6800514Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.15.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6850532Z ^[[1m^[[92m  Downloaded^[[0m icu_properties_data v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.6960791Z ^[[1m^[[92m  Downloaded^[[0m goblin v0.10.5
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7036163Z ^[[1m^[[92m  Downloaded^[[0m rayon v1.12.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7134752Z ^[[1m^[[92m  Downloaded^[[0m regex-syntax v0.8.10
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7202607Z ^[[1m^[[92m  Downloaded^[[0m yoke v0.8.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7220441Z ^[[1m^[[92m  Downloaded^[[0m zerofrom v0.1.8
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7230629Z ^[[1m^[[92m  Downloaded^[[0m termcolor v1.4.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7243431Z ^[[1m^[[92m  Downloaded^[[0m utf8parse v0.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7252787Z ^[[1m^[[92m  Downloaded^[[0m zerovec-derive v0.11.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7267481Z ^[[1m^[[92m  Downloaded^[[0m zmij v1.0.21
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7285015Z ^[[1m^[[92m  Downloaded^[[0m zstd-safe v7.2.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7299391Z ^[[1m^[[92m  Downloaded^[[0m regex-automata v0.4.14
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7439169Z ^[[1m^[[92m  Downloaded^[[0m jiff v0.2.24
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7605055Z ^[[1m^[[92m  Downloaded^[[0m petgraph v0.8.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.7798353Z ^[[1m^[[92m  Downloaded^[[0m libc v0.2.186
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8199356Z ^[[1m^[[92m  Downloaded^[[0m thiserror v2.0.18
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8265483Z ^[[1m^[[92m  Downloaded^[[0m target-lexicon v0.13.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8285975Z ^[[1m^[[92m  Downloaded^[[0m tinystr v0.8.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8306558Z ^[[1m^[[92m  Downloaded^[[0m wyz v0.5.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8318419Z ^[[1m^[[92m  Downloaded^[[0m walkdir v2.5.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8336332Z ^[[1m^[[92m  Downloaded^[[0m zstd v0.13.3
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8366112Z ^[[1m^[[92m  Downloaded^[[0m ring v0.17.14
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8793028Z ^[[1m^[[92m  Downloaded^[[0m thiserror-impl v2.0.18
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8807142Z ^[[1m^[[92m  Downloaded^[[0m tinyvec v1.11.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8833386Z ^[[1m^[[92m  Downloaded^[[0m toml-span v0.7.1
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8848747Z ^[[1m^[[92m  Downloaded^[[0m unicode-ident v1.0.24
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8876322Z ^[[1m^[[92m  Downloaded^[[0m twox-hash v2.1.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8898675Z ^[[1m^[[92m  Downloaded^[[0m zerotrie v0.2.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.8938402Z ^[[1m^[[92m  Downloaded^[[0m syn v2.0.117
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9044658Z ^[[1m^[[92m  Downloaded^[[0m url v2.5.8
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9070133Z ^[[1m^[[92m  Downloaded^[[0m zerovec v0.11.6
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9130206Z ^[[1m^[[92m  Downloaded^[[0m typenum v1.20.0
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9164978Z ^[[1m^[[92m  Downloaded^[[0m unicode-normalization v0.1.25
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9198719Z ^[[1m^[[92m  Downloaded^[[0m unicode-width v0.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9255362Z ^[[1m^[[92m  Downloaded^[[0m zstd-sys v2.0.16+zstd.1.5.7
+supply chain	UNKNOWN STEP	2026-10-10T11:35:48.9424641Z ^[[1m^[[92m  Downloaded^[[0m spdx v0.13.4
+supply chain	UNKNOWN STEP	2026-10-10T11:35:49.1861770Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.106
+supply chain	UNKNOWN STEP	2026-10-10T11:35:58.0830310Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.24
+supply chain	UNKNOWN STEP	2026-10-10T11:35:58.3453047Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.45
+supply chain	UNKNOWN STEP	2026-10-10T11:35:59.5830231Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.117
+supply chain	UNKNOWN STEP	2026-10-10T11:36:01.6334271Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.186
+supply chain	UNKNOWN STEP	2026-10-10T11:36:01.7829298Z ^[[1m^[[92m   Compiling^[[0m synstructure v0.13.2
+supply chain	UNKNOWN STEP	2026-10-10T11:36:02.2233752Z ^[[1m^[[92m   Compiling^[[0m zerofrom-derive v0.1.7
+supply chain	UNKNOWN STEP	2026-10-10T11:36:02.6969524Z ^[[1m^[[92m   Compiling^[[0m zerofrom v0.1.8
+supply chain	UNKNOWN STEP	2026-10-10T11:36:02.9063440Z ^[[1m^[[92m   Compiling^[[0m yoke-derive v0.8.2
+supply chain	UNKNOWN STEP	2026-10-10T11:36:03.3008405Z ^[[1m^[[92m   Compiling^[[0m stable_deref_trait v1.2.1
+supply chain	UNKNOWN STEP	2026-10-10T11:36:03.3208776Z ^[[1m^[[92m   Compiling^[[0m yoke v0.8.2
+supply chain	UNKNOWN STEP	2026-10-10T11:36:04.3878006Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.228
+supply chain	UNKNOWN STEP	2026-10-10T11:36:04.4915140Z ^[[1m^[[92m   Compiling^[[0m jobserver v0.1.34
+supply chain	UNKNOWN STEP	2026-10-10T11:36:04.6862761Z ^[[1m^[[92m   Compiling^[[0m zerovec-derive v0.11.3
+supply chain	UNKNOWN STEP	2026-10-10T11:36:05.2800910Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.9
+supply chain	UNKNOWN STEP	2026-10-10T11:36:05.4678762Z ^[[1m^[[92m   Compiling^[[0m shlex v1.3.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:05.5859788Z ^[[1m^[[92m   Compiling^[[0m smallvec v1.15.1
+supply chain	UNKNOWN STEP	2026-10-10T11:36:05.8228993Z ^[[1m^[[92m   Compiling^[[0m cc v1.2.62
+supply chain	UNKNOWN STEP	2026-10-10T11:36:06.8140990Z ^[[1m^[[92m   Compiling^[[0m zerovec v0.11.6
+supply chain	UNKNOWN STEP	2026-10-10T11:36:08.9704089Z ^[[1m^[[92m   Compiling^[[0m displaydoc v0.2.5
+supply chain	UNKNOWN STEP	2026-10-10T11:36:09.2516197Z ^[[1m^[[92m   Compiling^[[0m crossbeam-utils v0.8.21
+supply chain	UNKNOWN STEP	2026-10-10T11:36:09.3413580Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:10.3762409Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.228
+supply chain	UNKNOWN STEP	2026-10-10T11:36:10.4676332Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
+supply chain	UNKNOWN STEP	2026-10-10T11:36:10.5998789Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+supply chain	UNKNOWN STEP	2026-10-10T11:36:10.6620777Z ^[[1m^[[92m   Compiling^[[0m tinystr v0.8.3
+supply chain	UNKNOWN STEP	2026-10-10T11:36:10.7896641Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.228
+supply chain	UNKNOWN STEP	2026-10-10T11:36:12.6003534Z ^[[1m^[[92m   Compiling^[[0m litemap v0.8.2
+supply chain	UNKNOWN STEP	2026-10-10T11:36:12.6982672Z ^[[1m^[[92m   Compiling^[[0m crossbeam-epoch v0.9.20
+supply chain	UNKNOWN STEP	2026-10-10T11:36:12.7668337Z ^[[1m^[[92m   Compiling^[[0m writeable v0.6.3
+supply chain	UNKNOWN STEP	2026-10-10T11:36:12.8699648Z ^[[1m^[[92m   Compiling^[[0m pkg-config v0.3.33
+supply chain	UNKNOWN STEP	2026-10-10T11:36:13.1351239Z ^[[1m^[[92m   Compiling^[[0m zstd-sys v2.0.16+zstd.1.5.7
+supply chain	UNKNOWN STEP	2026-10-10T11:36:13.3003152Z ^[[1m^[[92m   Compiling^[[0m icu_locale_core v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:15.7900163Z ^[[1m^[[92m   Compiling^[[0m zerotrie v0.2.4
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.0096600Z ^[[1m^[[92m   Compiling^[[0m potential_utf v0.1.5
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.0664631Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.1187917Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.5636942Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.6172564Z ^[[1m^[[92m   Compiling^[[0m utf8_iter v1.0.4
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.6748666Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.4
+supply chain	UNKNOWN STEP	2026-10-10T11:36:16.6948391Z ^[[1m^[[92m   Compiling^[[0m icu_collections v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:36:17.4816582Z ^[[1m^[[92m   Compiling^[[0m icu_provider v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:03.1882987Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.21
+supply chain	UNKNOWN STEP	2026-10-10T11:37:03.2755781Z ^[[1m^[[92m   Compiling^[[0m crossbeam-deque v0.8.6
+supply chain	UNKNOWN STEP	2026-10-10T11:37:03.4597926Z ^[[1m^[[92m   Compiling^[[0m aho-corasick v1.1.4
+supply chain	UNKNOWN STEP	2026-10-10T11:37:05.5766871Z ^[[1m^[[92m   Compiling^[[0m rayon-core v1.13.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:05.6243784Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.150
+supply chain	UNKNOWN STEP	2026-10-10T11:37:05.6766222Z ^[[1m^[[92m   Compiling^[[0m camino v1.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:05.7665125Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+supply chain	UNKNOWN STEP	2026-10-10T11:37:05.8683907Z ^[[1m^[[92m   Compiling^[[0m unicode-width v0.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:05.9914380Z ^[[1m^[[92m   Compiling^[[0m utf8parse v0.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:06.0222909Z ^[[1m^[[92m   Compiling^[[0m zstd-safe v7.2.4
+supply chain	UNKNOWN STEP	2026-10-10T11:37:06.0758200Z ^[[1m^[[92m   Compiling^[[0m target-lexicon v0.13.3
+supply chain	UNKNOWN STEP	2026-10-10T11:37:06.2992986Z ^[[1m^[[92m   Compiling^[[0m termcolor v1.4.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:06.5175774Z ^[[1m^[[92m   Compiling^[[0m regex-syntax v0.8.10
+supply chain	UNKNOWN STEP	2026-10-10T11:37:09.3370635Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:09.3598625Z ^[[1m^[[92m   Compiling^[[0m regex-automata v0.4.14
+supply chain	UNKNOWN STEP	2026-10-10T11:37:13.5246042Z ^[[1m^[[92m   Compiling^[[0m codespan-reporting v0.13.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:14.1149950Z ^[[1m^[[92m   Compiling^[[0m anstyle-parse v1.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:14.2145515Z ^[[1m^[[92m   Compiling^[[0m icu_properties v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:15.1481460Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer v2.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.1005188Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.1542565Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.1916933Z ^[[1m^[[92m   Compiling^[[0m anstyle-query v1.1.5
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.2214694Z ^[[1m^[[92m   Compiling^[[0m tinyvec_macros v0.1.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.2400251Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.18
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.3439634Z ^[[1m^[[92m   Compiling^[[0m log v0.4.29
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.4386986Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.8727216Z ^[[1m^[[92m   Compiling^[[0m parking_lot_core v0.9.12
+supply chain	UNKNOWN STEP	2026-10-10T11:37:16.9388098Z ^[[1m^[[92m   Compiling^[[0m allocator-api2 v0.2.21
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.1675104Z ^[[1m^[[92m   Compiling^[[0m radium v0.7.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.2366816Z ^[[1m^[[92m   Compiling^[[0m is_terminal_polyfill v1.70.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.2628555Z ^[[1m^[[92m   Compiling^[[0m foldhash v0.1.5
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.3457720Z ^[[1m^[[92m   Compiling^[[0m colorchoice v1.0.5
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.3762568Z ^[[1m^[[92m   Compiling^[[0m anstyle v1.0.14
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.4864394Z ^[[1m^[[92m   Compiling^[[0m anstream v1.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:17.6717575Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.15.5
+supply chain	UNKNOWN STEP	2026-10-10T11:37:18.1179144Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:18.7454214Z ^[[1m^[[92m   Compiling^[[0m tinyvec v1.11.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:19.0232477Z ^[[1m^[[92m   Compiling^[[0m digest v0.10.7
+supply chain	UNKNOWN STEP	2026-10-10T11:37:20.3195033Z ^[[1m^[[92m   Compiling^[[0m idna_adapter v1.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:21.4684913Z ^[[1m^[[92m   Compiling^[[0m semver v1.0.28
+supply chain	UNKNOWN STEP	2026-10-10T11:37:21.7217609Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
+supply chain	UNKNOWN STEP	2026-10-10T11:37:21.9141640Z ^[[1m^[[92m   Compiling^[[0m thiserror-impl v2.0.18
+supply chain	UNKNOWN STEP	2026-10-10T11:37:22.5264164Z ^[[1m^[[92m   Compiling^[[0m scroll_derive v0.13.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:22.8709607Z ^[[1m^[[92m   Compiling^[[0m fixedbitset v0.5.7
+supply chain	UNKNOWN STEP	2026-10-10T11:37:23.0779241Z ^[[1m^[[92m   Compiling^[[0m tap v1.0.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:23.1179146Z ^[[1m^[[92m   Compiling^[[0m percent-encoding v2.3.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:23.2105957Z ^[[1m^[[92m   Compiling^[[0m either v1.16.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:23.3076923Z ^[[1m^[[92m   Compiling^[[0m scopeguard v1.2.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:23.3360764Z ^[[1m^[[92m   Compiling^[[0m bytes v1.11.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:23.7657377Z ^[[1m^[[92m   Compiling^[[0m strsim v0.11.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:24.1543150Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+supply chain	UNKNOWN STEP	2026-10-10T11:37:24.1745926Z ^[[1m^[[92m   Compiling^[[0m anyhow v1.0.103
+supply chain	UNKNOWN STEP	2026-10-10T11:37:24.2684854Z ^[[1m^[[92m   Compiling^[[0m clap_lex v1.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:24.3989852Z ^[[1m^[[92m   Compiling^[[0m heck v0.5.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:24.4803316Z ^[[1m^[[92m   Compiling^[[0m strum_macros v0.28.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:25.5368029Z ^[[1m^[[92m   Compiling^[[0m clap_builder v4.6.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:29.9397166Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+supply chain	UNKNOWN STEP	2026-10-10T11:37:30.4701852Z ^[[1m^[[92m   Compiling^[[0m http v1.4.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:31.3669658Z ^[[1m^[[92m   Compiling^[[0m lock_api v0.4.14
+supply chain	UNKNOWN STEP	2026-10-10T11:37:31.4900385Z ^[[1m^[[92m   Compiling^[[0m rayon v1.12.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:33.3235725Z ^[[1m^[[92m   Compiling^[[0m form_urlencoded v1.2.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:33.4089750Z ^[[1m^[[92m   Compiling^[[0m wyz v0.5.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:33.5104195Z ^[[1m^[[92m   Compiling^[[0m petgraph v0.8.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:34.7072534Z ^[[1m^[[92m   Compiling^[[0m scroll v0.13.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:42.7703704Z ^[[1m^[[92m   Compiling^[[0m cfg-expr v0.20.7
+supply chain	UNKNOWN STEP	2026-10-10T11:37:43.2618722Z ^[[1m^[[92m   Compiling^[[0m idna v1.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:44.1658789Z ^[[1m^[[92m   Compiling^[[0m zstd v0.13.3
+supply chain	UNKNOWN STEP	2026-10-10T11:37:44.3568291Z ^[[1m^[[92m   Compiling^[[0m unicode-normalization v0.1.25
+supply chain	UNKNOWN STEP	2026-10-10T11:37:44.9300580Z ^[[1m^[[92m   Compiling^[[0m toml-span v0.7.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:46.2913761Z ^[[1m^[[92m   Compiling^[[0m regex v1.12.3
+supply chain	UNKNOWN STEP	2026-10-10T11:37:46.7913836Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.2.17
+supply chain	UNKNOWN STEP	2026-10-10T11:37:46.8777677Z ^[[1m^[[92m   Compiling^[[0m smol_str v0.3.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.0134971Z ^[[1m^[[92m   Compiling^[[0m crossbeam-queue v0.3.12
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.0859409Z ^[[1m^[[92m   Compiling^[[0m crossbeam-channel v0.5.15
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.4409643Z ^[[1m^[[92m   Compiling^[[0m bstr v1.12.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.8085258Z ^[[1m^[[92m   Compiling^[[0m untrusted v0.9.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.8496976Z ^[[1m^[[92m   Compiling^[[0m twox-hash v2.1.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.9242642Z ^[[1m^[[92m   Compiling^[[0m same-file v1.0.6
+supply chain	UNKNOWN STEP	2026-10-10T11:37:47.9791556Z ^[[1m^[[92m   Compiling^[[0m plain v0.2.3
+supply chain	UNKNOWN STEP	2026-10-10T11:37:48.0157449Z ^[[1m^[[92m   Compiling^[[0m funty v2.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:37:48.5089508Z ^[[1m^[[92m   Compiling^[[0m rustc-stable-hash v0.1.2
+supply chain	UNKNOWN STEP	2026-10-10T11:37:48.5815338Z ^[[1m^[[92m   Compiling^[[0m tame-index v0.26.3
+supply chain	UNKNOWN STEP	2026-10-10T11:37:51.2104173Z ^[[1m^[[92m   Compiling^[[0m bitvec v1.0.1
+supply chain	UNKNOWN STEP	2026-10-10T11:37:53.0661813Z ^[[1m^[[92m   Compiling^[[0m goblin v0.10.5
+supply chain	UNKNOWN STEP	2026-10-10T11:37:58.3572598Z ^[[1m^[[92m   Compiling^[[0m walkdir v2.5.0
+supply chain	UNKNOWN STEP	2026-10-10T11:38:00.5975031Z ^[[1m^[[92m   Compiling^[[0m globset v0.4.18
+supply chain	UNKNOWN STEP	2026-10-10T11:38:01.6800095Z ^[[1m^[[92m   Compiling^[[0m crossbeam v0.8.4
+supply chain	UNKNOWN STEP	2026-10-10T11:38:01.7027706Z ^[[1m^[[92m   Compiling^[[0m spdx v0.13.4
+supply chain	UNKNOWN STEP	2026-10-10T11:38:03.2048511Z ^[[1m^[[92m   Compiling^[[0m parking_lot v0.12.5
+supply chain	UNKNOWN STEP	2026-10-10T11:38:03.5602232Z ^[[1m^[[92m   Compiling^[[0m url v2.5.8
+supply chain	UNKNOWN STEP	2026-10-10T11:38:04.5781443Z ^[[1m^[[92m   Compiling^[[0m krates v0.21.2
+supply chain	UNKNOWN STEP	2026-10-10T11:38:07.9741651Z ^[[1m^[[92m   Compiling^[[0m clap v4.6.1
+supply chain	UNKNOWN STEP	2026-10-10T11:38:07.9985239Z ^[[1m^[[92m   Compiling^[[0m strum v0.28.0
+supply chain	UNKNOWN STEP	2026-10-10T11:38:08.0323190Z ^[[1m^[[92m   Compiling^[[0m fern v0.7.1
+supply chain	UNKNOWN STEP	2026-10-10T11:38:08.5737054Z ^[[1m^[[92m   Compiling^[[0m codespan v0.13.1
+supply chain	UNKNOWN STEP	2026-10-10T11:38:08.7749032Z ^[[1m^[[92m   Compiling^[[0m memmap2 v0.9.11
+supply chain	UNKNOWN STEP	2026-10-10T11:38:08.8959054Z ^[[1m^[[92m   Compiling^[[0m jiff v0.2.24
+supply chain	UNKNOWN STEP	2026-10-10T11:38:13.1962130Z ^[[1m^[[92m   Compiling^[[0m nu-ansi-term v0.50.3
+supply chain	UNKNOWN STEP	2026-10-10T11:38:13.3956220Z ^[[1m^[[92m   Compiling^[[0m cargo-deny v0.20.2
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.6669257Z ^[[1m^[[92m    Finished^[[0m `release` profile [optimized] target(s) in 3m 29s
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.6766450Z ^[[1m^[[92m  Installing^[[0m /home/runner/.cargo/bin/cargo-deny
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.6939834Z ^[[1m^[[92m   Installed^[[0m package `cargo-deny v0.20.2` (executable `cargo-deny`)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8522598Z ##[group]Run cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8523431Z ^[[36;1mcargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8586449Z shell: /usr/bin/bash -e {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8586688Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8586873Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8587086Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8587295Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8587507Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8587741Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:39:15.8587977Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8032899Z ^[[0m^[[1m^[[38;5;11mwarning[duplicate]^[[0m^[[1m: found 2 duplicate entries for crate 'hashbrown'^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8034414Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/Cargo.lock:31:1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8035092Z    ^[[0m^[[36m│^[[0m  
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8036216Z ^[[0m^[[36m31^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m╭^[[0m ^[[0m^[[33mhashbrown 0.15.5 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8037742Z ^[[0m^[[36m32^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m│^[[0m ^[[0m^[[33mhashbrown 0.17.1 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8039174Z    ^[[0m^[[36m│^[[0m ^[[0m^[[33m╰^[[0m^[[0m^[[33m──────────────────────────────────────────────────────────────────────┘ lock entries^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8040011Z    ^[[0m^[[36m│^[[0m  
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8040452Z    ^[[0m^[[36m├^[[0m hashbrown v0.15.5
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8040973Z      └── petgraph v0.8.3
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8041718Z          ├── (dev) jarde v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8042231Z          │   └── jarde-cli v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8042734Z          ├── jarde-java v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8043214Z          │   └── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8043706Z          └── jarde-jvm v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8044237Z              ├── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8044762Z              └── jarde-java v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8045793Z    ^[[0m^[[36m├^[[0m hashbrown v0.17.1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8046313Z      └── indexmap v2.14.2
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8046757Z          ├── noak v0.7.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8047279Z          │   └── jarde-reader v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8047810Z          │       ├── jarde v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8048322Z          │       │   └── jarde-cli v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8048857Z          │       ├── jarde-java v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8049398Z          │       │   └── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8049971Z          │       ├── jarde-jvm v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8050546Z          │       │   ├── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8051463Z          │       │   └── jarde-java v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8052029Z          │       └── jarde-query v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8052536Z          │           ├── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8053114Z          │           └── jarde-jvm v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8053651Z          └── petgraph v0.8.3
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8054179Z              ├── (dev) jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8054693Z              ├── jarde-java v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8055202Z              └── jarde-jvm v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8055496Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8056248Z ^[[0m^[[1m^[[38;5;11mwarning[license-exception-not-encountered]^[[0m^[[1m: license exception was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8057403Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:33:10
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8058008Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8058600Z ^[[0m^[[36m33^[[0m ^[[0m^[[36m│^[[0m crate = "^[[0m^[[33mlibfuzzer-sys@0.4.13^[[0m"
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8059453Z    ^[[0m^[[36m│^[[0m          ^[[0m^[[33m━━━━━━━━━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license exception^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8059848Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8060411Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8061722Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:18:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8062390Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8063377Z ^[[0m^[[36m18^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-2-Clause^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8064280Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8064806Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8065388Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8066408Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:19:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8067029Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8067562Z ^[[0m^[[36m19^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-3-Clause^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8068396Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8068948Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8069500Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8070441Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:24:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8071274Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8071879Z ^[[0m^[[36m24^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mUnicode-DFS-2016^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8072748Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8073301Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8395600Z advisories ^[[32mok^[[0m, bans ^[[32mok^[[0m, licenses ^[[32mok^[[0m, sources ^[[32mok^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8473694Z ##[group]Run cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8474569Z ^[[36;1mcargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8536947Z shell: /usr/bin/bash -e {0}
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8537191Z env:
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8537379Z   CARGO_BUILD_JOBS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8537593Z   CARGO_INCREMENTAL: 0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8537798Z   RUST_TEST_THREADS: 1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8538005Z   CARGO_TERM_COLOR: always
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8538244Z   CARGO_HOME: /home/runner/.cargo
+supply chain	UNKNOWN STEP	2026-10-10T11:39:16.8538695Z ##[endgroup]
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1743207Z ^[[0m^[[1m^[[38;5;11mwarning[duplicate]^[[0m^[[1m: found 2 duplicate entries for crate 'hashbrown'^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1744725Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/fuzz/Cargo.lock:16:1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1745722Z    ^[[0m^[[36m│^[[0m  
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1747025Z ^[[0m^[[36m16^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m╭^[[0m ^[[0m^[[33mhashbrown 0.15.5 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1748725Z ^[[0m^[[36m17^[[0m ^[[0m^[[36m│^[[0m ^[[0m^[[33m│^[[0m ^[[0m^[[33mhashbrown 0.17.1 registry+https://github.com/rust-lang/crates.io-index^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1750497Z    ^[[0m^[[36m│^[[0m ^[[0m^[[33m╰^[[0m^[[0m^[[33m──────────────────────────────────────────────────────────────────────┘ lock entries^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1751886Z    ^[[0m^[[36m│^[[0m  
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1752507Z    ^[[0m^[[36m├^[[0m hashbrown v0.15.5
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1753188Z      └── petgraph v0.8.3
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1753843Z          ├── jarde-java v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1754527Z          │   └── jarde v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1755238Z          │       └── jarde-fuzz v0.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1755936Z          └── jarde-jvm v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1756561Z              ├── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1757299Z              └── jarde-java v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1758067Z    ^[[0m^[[36m├^[[0m hashbrown v0.17.1
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1758756Z      └── indexmap v2.14.2
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1759376Z          ├── noak v0.7.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1760001Z          │   └── jarde-reader v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1760669Z          │       ├── jarde v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1761656Z          │       │   └── jarde-fuzz v0.0.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1762365Z          │       ├── jarde-java v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1763155Z          │       │   └── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1763887Z          │       ├── jarde-jvm v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1764594Z          │       │   ├── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1765345Z          │       │   └── jarde-java v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1766115Z          │       └── jarde-query v0.1.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1766818Z          │           ├── jarde v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1767618Z          │           └── jarde-jvm v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1768326Z          └── petgraph v0.8.3
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1768986Z              ├── jarde-java v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1769741Z              └── jarde-jvm v0.1.0 (*)
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1770275Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1771263Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1772460Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:18:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1773284Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1774019Z ^[[0m^[[36m18^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-2-Clause^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1775111Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1775886Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1776605Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1777883Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:19:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1778748Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1779458Z ^[[0m^[[36m19^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mBSD-3-Clause^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1780842Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1781819Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1782551Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1783762Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:24:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1784493Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1785192Z ^[[0m^[[36m24^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mUnicode-DFS-2016^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1786220Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1786893Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1787562Z ^[[0m^[[1m^[[38;5;11mwarning[license-not-encountered]^[[0m^[[1m: license was not encountered^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1789066Z    ^[[0m^[[36m┌─^[[0m /home/runner/work/jarde/jarde/./deny.toml:25:4
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1789811Z    ^[[0m^[[36m│^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1790477Z ^[[0m^[[36m25^[[0m ^[[0m^[[36m│^[[0m   "^[[0m^[[33mUnlicense^[[0m",
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1791823Z    ^[[0m^[[36m│^[[0m    ^[[0m^[[33m━━━━━━━━━^[[0m ^[[0m^[[33munmatched license allowance^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.1792613Z 
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.2032198Z advisories ^[[32mok^[[0m, bans ^[[32mok^[[0m, licenses ^[[32mok^[[0m, sources ^[[32mok^[[0m
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.2193464Z Post job cleanup.
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3061597Z [command]/usr/bin/git version
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3114510Z git version 2.55.0
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3166529Z Temporarily overriding HOME='/home/runner/work/_temp/75a93d77-fcf4-4462-aacd-7b714343f1f3' before making global git config changes
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3167814Z Adding repository directory to the temporary git global config as a safe directory
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3173044Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jarde/jarde
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3206602Z Removing SSH command configuration
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3213859Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3253620Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3804631Z Removing HTTP extra header
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3810724Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.3859797Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4310532Z Removing includeIf entries pointing to credentials config files
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4318641Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4353139Z includeif.gitdir:/home/runner/work/jarde/jarde/.git.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4354090Z includeif.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4354703Z includeif.gitdir:/github/workspace/.git.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4370190Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4372313Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/jarde/jarde/.git.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4391456Z /home/runner/work/_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4402052Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/jarde/jarde/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-2cde5242\-e22c\-442a\-a2d7\-aaa446cd013a\.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4442276Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4470187Z /home/runner/work/_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4479157Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/jarde/jarde/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-2cde5242\-e22c\-442a\-a2d7\-aaa446cd013a\.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4524772Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4550757Z /github/runner_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4560143Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-2cde5242\-e22c\-442a\-a2d7\-aaa446cd013a\.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4597001Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4622193Z /github/runner_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4631867Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-2cde5242\-e22c\-442a\-a2d7\-aaa446cd013a\.config
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.4670105Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.5089877Z Removing credentials config '/home/runner/work/_temp/git-credentials-2cde5242-e22c-442a-a2d7-aaa446cd013a.config'
+supply chain	UNKNOWN STEP	2026-10-10T11:39:17.5232919Z Cleaning up orphan processes

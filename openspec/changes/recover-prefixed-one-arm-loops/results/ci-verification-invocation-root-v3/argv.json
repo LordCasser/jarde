@@ -1,0 +1,18 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-ci-product-root-v3.py",
+  "ca43ac74767c4609284f13b251de9d6c349c67a4",
+  "38048944005",
+  "--metadata-sha256",
+  "fe55d6aa49d1fc7bbe2b56f23e92df998acc6bee69d5f9ba07ccc23eda58d555",
+  "--build-path",
+  "openspec/changes/recover-prefixed-one-arm-loops/results/validation-build-root-v5/execution.json",
+  "--build-schema",
+  "recover-prefixed-one-arm-loops-validation-build-root-v5"
+]
