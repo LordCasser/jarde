@@ -1,0 +1,2515 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac23-original/classes/ControlsRunner.class
+  Last modified 2026年10月10日; size 10964 bytes
+  SHA-256 checksum 7c468fe1bf28ff1c4c6d9b4ffbf795cb3648328ed5f3c3887e9071abf44c7892
+  Compiled from "ControlsRunner.java"
+public class ControlsRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #32                         // ControlsRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 17, attributes: 1
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/AssertionError
+    #8 = Utf8               java/lang/AssertionError
+    #9 = Methodref          #7.#10        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+   #10 = NameAndType        #5:#11        // "<init>":(Ljava/lang/Object;)V
+   #11 = Utf8               (Ljava/lang/Object;)V
+   #12 = Methodref          #13.#14       // java/lang/String.equals:(Ljava/lang/Object;)Z
+   #13 = Class              #15           // java/lang/String
+   #14 = NameAndType        #16:#17       // equals:(Ljava/lang/Object;)Z
+   #15 = Utf8               java/lang/String
+   #16 = Utf8               equals
+   #17 = Utf8               (Ljava/lang/Object;)Z
+   #18 = Class              #19           // java/lang/StringBuilder
+   #19 = Utf8               java/lang/StringBuilder
+   #20 = Methodref          #18.#3        // java/lang/StringBuilder."<init>":()V
+   #21 = Methodref          #18.#22       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #22 = NameAndType        #23:#24       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #23 = Utf8               append
+   #24 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #25 = String             #26           //  trace:
+   #26 = Utf8                trace:
+   #27 = Methodref          #18.#28       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #28 = NameAndType        #29:#30       // toString:()Ljava/lang/String;
+   #29 = Utf8               toString
+   #30 = Utf8               ()Ljava/lang/String;
+   #31 = Methodref          #32.#33       // ControlsRunner.require:(ZLjava/lang/String;)V
+   #32 = Class              #34           // ControlsRunner
+   #33 = NameAndType        #35:#36       // require:(ZLjava/lang/String;)V
+   #34 = Utf8               ControlsRunner
+   #35 = Utf8               require
+   #36 = Utf8               (ZLjava/lang/String;)V
+   #37 = Methodref          #38.#39       // java/util/Arrays.equals:([B[B)Z
+   #38 = Class              #40           // java/util/Arrays
+   #39 = NameAndType        #16:#41       // equals:([B[B)Z
+   #40 = Utf8               java/util/Arrays
+   #41 = Utf8               ([B[B)Z
+   #42 = String             #43           // array:
+   #43 = Utf8               array:
+   #44 = Methodref          #38.#45       // java/util/Arrays.toString:([B)Ljava/lang/String;
+   #45 = NameAndType        #29:#46       // toString:([B)Ljava/lang/String;
+   #46 = Utf8               ([B)Ljava/lang/String;
+   #47 = String             #48           //  expected null array
+   #48 = Utf8                expected null array
+   #49 = String             #50           //
+   #50 = Utf8
+   #51 = Fieldref           #52.#53       // CommonDirectSuperByteArray.trace:Ljava/lang/String;
+   #52 = Class              #54           // CommonDirectSuperByteArray
+   #53 = NameAndType        #55:#56       // trace:Ljava/lang/String;
+   #54 = Utf8               CommonDirectSuperByteArray
+   #55 = Utf8               trace
+   #56 = Utf8               Ljava/lang/String;
+   #57 = Methodref          #52.#3        // CommonDirectSuperByteArray."<init>":()V
+   #58 = Fieldref           #52.#59       // CommonDirectSuperByteArray.bytes:[B
+   #59 = NameAndType        #60:#61       // bytes:[B
+   #60 = Utf8               bytes
+   #61 = Utf8               [B
+   #62 = Methodref          #32.#63       // ControlsRunner.bytes:([B[B)V
+   #63 = NameAndType        #60:#64       // bytes:([B[B)V
+   #64 = Utf8               ([B[B)V
+   #65 = String             #66           // eval:10;eval:20;body:noarg;
+   #66 = Utf8               eval:10;eval:20;body:noarg;
+   #67 = String             #68           // common noarg 0
+   #68 = Utf8               common noarg 0
+   #69 = Methodref          #32.#70       // ControlsRunner.trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+   #70 = NameAndType        #55:#71       // trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+   #71 = Utf8               (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+   #72 = String             #73           // common noarg 1
+   #73 = Utf8               common noarg 1
+   #74 = String             #75           // common noarg arrays are fresh
+   #75 = Utf8               common noarg arrays are fresh
+   #76 = Methodref          #52.#77       // CommonDirectSuperByteArray."<init>":(I)V
+   #77 = NameAndType        #5:#78        // "<init>":(I)V
+   #78 = Utf8               (I)V
+   #79 = String             #80           // eval:10;eval:20;body:int:4;
+   #80 = Utf8               eval:10;eval:20;body:int:4;
+   #81 = String             #82           // common int 0
+   #82 = Utf8               common int 0
+   #83 = String             #84           // eval:10;eval:20;body:int:5;
+   #84 = Utf8               eval:10;eval:20;body:int:5;
+   #85 = String             #86           // common int 1
+   #86 = Utf8               common int 1
+   #87 = String             #88           // common int arrays are fresh
+   #88 = Utf8               common int arrays are fresh
+   #89 = Fieldref           #90.#91       // java/lang/System.out:Ljava/io/PrintStream;
+   #90 = Class              #92           // java/lang/System
+   #91 = NameAndType        #93:#94       // out:Ljava/io/PrintStream;
+   #92 = Utf8               java/lang/System
+   #93 = Utf8               out
+   #94 = Utf8               Ljava/io/PrintStream;
+   #95 = String             #96           // base-common=
+   #96 = Utf8               base-common=
+   #97 = String             #98           // ;
+   #98 = Utf8               ;
+   #99 = Methodref          #100.#101     // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #100 = Class              #102          // java/io/PrintStream
+  #101 = NameAndType        #103:#104     // println:(Ljava/lang/String;)V
+  #102 = Utf8               java/io/PrintStream
+  #103 = Utf8               println
+  #104 = Utf8               (Ljava/lang/String;)V
+  #105 = Fieldref           #106.#53      // ThisDelegatingByteArray.trace:Ljava/lang/String;
+  #106 = Class              #107          // ThisDelegatingByteArray
+  #107 = Utf8               ThisDelegatingByteArray
+  #108 = Methodref          #106.#3       // ThisDelegatingByteArray."<init>":()V
+  #109 = Fieldref           #106.#59      // ThisDelegatingByteArray.bytes:[B
+  #110 = String             #111          // eval:21;eval:22;body:target:7;body:delegate;
+  #111 = Utf8               eval:21;eval:22;body:target:7;body:delegate;
+  #112 = String             #113          // delegate noarg 0
+  #113 = Utf8               delegate noarg 0
+  #114 = String             #115          // delegate noarg 1
+  #115 = Utf8               delegate noarg 1
+  #116 = String             #117          // delegating noarg arrays are fresh
+  #117 = Utf8               delegating noarg arrays are fresh
+  #118 = Methodref          #106.#77      // ThisDelegatingByteArray."<init>":(I)V
+  #119 = String             #120          // eval:21;eval:22;body:target:8;
+  #120 = Utf8               eval:21;eval:22;body:target:8;
+  #121 = String             #122          // delegate int 0
+  #122 = Utf8               delegate int 0
+  #123 = String             #124          // eval:21;eval:22;body:target:9;
+  #124 = Utf8               eval:21;eval:22;body:target:9;
+  #125 = String             #126          // delegate int 1
+  #126 = Utf8               delegate int 1
+  #127 = String             #128          // delegating int arrays are fresh
+  #128 = Utf8               delegating int arrays are fresh
+  #129 = String             #130          // base-delegating=
+  #130 = Utf8               base-delegating=
+  #131 = Fieldref           #132.#53      // DifferentRhsByteArray.trace:Ljava/lang/String;
+  #132 = Class              #133          // DifferentRhsByteArray
+  #133 = Utf8               DifferentRhsByteArray
+  #134 = Methodref          #132.#3       // DifferentRhsByteArray."<init>":()V
+  #135 = Fieldref           #132.#59      // DifferentRhsByteArray.bytes:[B
+  #136 = String             #137          // eval:31;body:noarg;
+  #137 = Utf8               eval:31;body:noarg;
+  #138 = String             #139          // different noarg 0
+  #139 = Utf8               different noarg 0
+  #140 = String             #141          // different noarg 1
+  #141 = Utf8               different noarg 1
+  #142 = String             #143          // different noarg arrays are fresh
+  #143 = Utf8               different noarg arrays are fresh
+  #144 = Methodref          #132.#77      // DifferentRhsByteArray."<init>":(I)V
+  #145 = String             #146          // eval:32;body:int:5;
+  #146 = Utf8               eval:32;body:int:5;
+  #147 = String             #148          // different int 0
+  #148 = Utf8               different int 0
+  #149 = String             #150          // eval:32;body:int:6;
+  #150 = Utf8               eval:32;body:int:6;
+  #151 = String             #152          // different int 1
+  #152 = Utf8               different int 1
+  #153 = String             #154          // different int arrays are fresh
+  #154 = Utf8               different int arrays are fresh
+  #155 = String             #156          // base-different=
+  #156 = Utf8               base-different=
+  #157 = Fieldref           #158.#53      // FinalLiteralTwoArrays.trace:Ljava/lang/String;
+  #158 = Class              #159          // FinalLiteralTwoArrays
+  #159 = Utf8               FinalLiteralTwoArrays
+  #160 = Methodref          #158.#3       // FinalLiteralTwoArrays."<init>":()V
+  #161 = Fieldref           #158.#162     // FinalLiteralTwoArrays.first:[B
+  #162 = NameAndType        #163:#61      // first:[B
+  #163 = Utf8               first
+  #164 = Fieldref           #158.#165     // FinalLiteralTwoArrays.second:[B
+  #165 = NameAndType        #166:#61      // second:[B
+  #166 = Utf8               second
+  #167 = String             #168          // body:noarg;
+  #168 = Utf8               body:noarg;
+  #169 = String             #170          // final literal noarg 0
+  #170 = Utf8               final literal noarg 0
+  #171 = String             #172          // final literal noarg 1
+  #172 = Utf8               final literal noarg 1
+  #173 = String             #174          // final noarg arrays are fresh
+  #174 = Utf8               final noarg arrays are fresh
+  #175 = Methodref          #158.#77      // FinalLiteralTwoArrays."<init>":(I)V
+  #176 = String             #177          // body:int:2;
+  #177 = Utf8               body:int:2;
+  #178 = String             #179          // final literal int 0
+  #179 = Utf8               final literal int 0
+  #180 = String             #181          // body:int:3;
+  #181 = Utf8               body:int:3;
+  #182 = String             #183          // final literal int 1
+  #183 = Utf8               final literal int 1
+  #184 = String             #185          // final int arrays are fresh
+  #185 = Utf8               final int arrays are fresh
+  #186 = String             #187          // final-literal=
+  #187 = Utf8               final-literal=
+  #188 = Fieldref           #189.#53      // MissingWriteByteArray.trace:Ljava/lang/String;
+  #189 = Class              #190          // MissingWriteByteArray
+  #190 = Utf8               MissingWriteByteArray
+  #191 = Methodref          #189.#3       // MissingWriteByteArray."<init>":()V
+  #192 = Fieldref           #189.#59      // MissingWriteByteArray.bytes:[B
+  #193 = String             #194          // eval:41;body:write;
+  #194 = Utf8               eval:41;body:write;
+  #195 = String             #196          // missing write ctor 0
+  #196 = Utf8               missing write ctor 0
+  #197 = String             #198          // missing write ctor 1
+  #198 = Utf8               missing write ctor 1
+  #199 = String             #200          // missing-write path arrays are fresh
+  #200 = Utf8               missing-write path arrays are fresh
+  #201 = Methodref          #189.#77      // MissingWriteByteArray."<init>":(I)V
+  #202 = String             #203          // missing path 0
+  #203 = Utf8               missing path 0
+  #204 = Methodref          #32.#205      // ControlsRunner.nullBytes:([BLjava/lang/String;)V
+  #205 = NameAndType        #206:#207     // nullBytes:([BLjava/lang/String;)V
+  #206 = Utf8               nullBytes
+  #207 = Utf8               ([BLjava/lang/String;)V
+  #208 = String             #209          // body:omit:7;
+  #209 = Utf8               body:omit:7;
+  #210 = String             #211          // missing path 1
+  #211 = Utf8               missing path 1
+  #212 = String             #213          // body:omit:8;
+  #213 = Utf8               body:omit:8;
+  #214 = String             #215          // missing-write=
+  #215 = Utf8               missing-write=
+  #216 = String             #217          // ;omitted=null
+  #217 = Utf8               ;omitted=null
+  #218 = Fieldref           #219.#53      // DuplicateWriteByteArray.trace:Ljava/lang/String;
+  #219 = Class              #220          // DuplicateWriteByteArray
+  #220 = Utf8               DuplicateWriteByteArray
+  #221 = Methodref          #219.#3       // DuplicateWriteByteArray."<init>":()V
+  #222 = Fieldref           #219.#59      // DuplicateWriteByteArray.bytes:[B
+  #223 = String             #224          // eval:51;eval:52;body:noarg;
+  #224 = Utf8               eval:51;eval:52;body:noarg;
+  #225 = String             #226          // duplicate noarg 0
+  #226 = Utf8               duplicate noarg 0
+  #227 = String             #228          // duplicate noarg 1
+  #228 = Utf8               duplicate noarg 1
+  #229 = String             #230          // duplicate noarg final arrays are fresh
+  #230 = Utf8               duplicate noarg final arrays are fresh
+  #231 = Methodref          #219.#77      // DuplicateWriteByteArray."<init>":(I)V
+  #232 = String             #233          // eval:51;body:int:9;
+  #233 = Utf8               eval:51;body:int:9;
+  #234 = String             #235          // duplicate int 0
+  #235 = Utf8               duplicate int 0
+  #236 = String             #237          // eval:51;body:int:10;
+  #237 = Utf8               eval:51;body:int:10;
+  #238 = String             #239          // duplicate int 1
+  #239 = Utf8               duplicate int 1
+  #240 = String             #241          // duplicate int arrays are fresh
+  #241 = Utf8               duplicate int arrays are fresh
+  #242 = String             #243          // duplicate=
+  #243 = Utf8               duplicate=
+  #244 = Fieldref           #245.#53      // InterveningEffectByteArray.trace:Ljava/lang/String;
+  #245 = Class              #246          // InterveningEffectByteArray
+  #246 = Utf8               InterveningEffectByteArray
+  #247 = Methodref          #245.#3       // InterveningEffectByteArray."<init>":()V
+  #248 = Fieldref           #245.#59      // InterveningEffectByteArray.bytes:[B
+  #249 = String             #250          // gap;eval:61;body:noarg;
+  #250 = Utf8               gap;eval:61;body:noarg;
+  #251 = String             #252          // gap noarg 0
+  #252 = Utf8               gap noarg 0
+  #253 = String             #254          // gap noarg 1
+  #254 = Utf8               gap noarg 1
+  #255 = String             #256          // gap noarg arrays are fresh
+  #256 = Utf8               gap noarg arrays are fresh
+  #257 = Methodref          #245.#77      // InterveningEffectByteArray."<init>":(I)V
+  #258 = String             #259          // eval:61;body:int:11;
+  #259 = Utf8               eval:61;body:int:11;
+  #260 = String             #261          // gap int 0
+  #261 = Utf8               gap int 0
+  #262 = String             #263          // eval:61;body:int:12;
+  #263 = Utf8               eval:61;body:int:12;
+  #264 = String             #265          // gap int 1
+  #265 = Utf8               gap int 1
+  #266 = String             #267          // gap int arrays are fresh
+  #267 = Utf8               gap int arrays are fresh
+  #268 = String             #269          // intervening=
+  #269 = Utf8               intervening=
+  #270 = Fieldref           #271.#53      // ParameterRhsByteArray.trace:Ljava/lang/String;
+  #271 = Class              #272          // ParameterRhsByteArray
+  #272 = Utf8               ParameterRhsByteArray
+  #273 = Methodref          #271.#3       // ParameterRhsByteArray."<init>":()V
+  #274 = Fieldref           #271.#59      // ParameterRhsByteArray.bytes:[B
+  #275 = String             #276          // eval:71;body:noarg;
+  #276 = Utf8               eval:71;body:noarg;
+  #277 = String             #278          // parameter noarg 0
+  #278 = Utf8               parameter noarg 0
+  #279 = String             #280          // parameter noarg 1
+  #280 = Utf8               parameter noarg 1
+  #281 = String             #282          // parameter noarg arrays are fresh
+  #282 = Utf8               parameter noarg arrays are fresh
+  #283 = Methodref          #271.#77      // ParameterRhsByteArray."<init>":(I)V
+  #284 = String             #285          // eval:72;body:int:72;
+  #285 = Utf8               eval:72;body:int:72;
+  #286 = String             #287          // parameter int 0
+  #287 = Utf8               parameter int 0
+  #288 = String             #289          // eval:73;body:int:73;
+  #289 = Utf8               eval:73;body:int:73;
+  #290 = String             #291          // parameter int 1
+  #291 = Utf8               parameter int 1
+  #292 = String             #293          // parameter int arrays are fresh
+  #293 = Utf8               parameter int arrays are fresh
+  #294 = String             #295          // parameter-rhs=
+  #295 = Utf8               parameter-rhs=
+  #296 = Fieldref           #297.#53      // ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+  #297 = Class              #298          // ReverseFieldOrderByteArray
+  #298 = Utf8               ReverseFieldOrderByteArray
+  #299 = Methodref          #297.#3       // ReverseFieldOrderByteArray."<init>":()V
+  #300 = Fieldref           #297.#162     // ReverseFieldOrderByteArray.first:[B
+  #301 = Fieldref           #297.#165     // ReverseFieldOrderByteArray.second:[B
+  #302 = String             #303          // eval:82;eval:81;body:noarg;
+  #303 = Utf8               eval:82;eval:81;body:noarg;
+  #304 = String             #305          // reverse noarg 0
+  #305 = Utf8               reverse noarg 0
+  #306 = String             #307          // reverse noarg 1
+  #307 = Utf8               reverse noarg 1
+  #308 = String             #309          // reverse noarg arrays are fresh
+  #309 = Utf8               reverse noarg arrays are fresh
+  #310 = Methodref          #297.#77      // ReverseFieldOrderByteArray."<init>":(I)V
+  #311 = String             #312          // eval:82;eval:81;body:int:14;
+  #312 = Utf8               eval:82;eval:81;body:int:14;
+  #313 = String             #314          // reverse int 0
+  #314 = Utf8               reverse int 0
+  #315 = String             #316          // eval:82;eval:81;body:int:15;
+  #316 = Utf8               eval:82;eval:81;body:int:15;
+  #317 = String             #318          // reverse int 1
+  #318 = Utf8               reverse int 1
+  #319 = String             #320          // reverse int arrays are fresh
+  #320 = Utf8               reverse int arrays are fresh
+  #321 = String             #322          // reverse-fields=
+  #322 = Utf8               reverse-fields=
+  #323 = Fieldref           #324.#325     // HandlerArrayByteArray.fail:Z
+  #324 = Class              #326          // HandlerArrayByteArray
+  #325 = NameAndType        #327:#328     // fail:Z
+  #326 = Utf8               HandlerArrayByteArray
+  #327 = Utf8               fail
+  #328 = Utf8               Z
+  #329 = Fieldref           #324.#53      // HandlerArrayByteArray.trace:Ljava/lang/String;
+  #330 = Methodref          #324.#3       // HandlerArrayByteArray."<init>":()V
+  #331 = Fieldref           #324.#59      // HandlerArrayByteArray.bytes:[B
+  #332 = String             #333          // eval:91;body:noarg;
+  #333 = Utf8               eval:91;body:noarg;
+  #334 = String             #335          // handler noarg success 0
+  #335 = Utf8               handler noarg success 0
+  #336 = String             #337          // handler noarg success 1
+  #337 = Utf8               handler noarg success 1
+  #338 = String             #339          // handler noarg arrays are fresh
+  #339 = Utf8               handler noarg arrays are fresh
+  #340 = String             #341          // handler noarg caught 0
+  #341 = Utf8               handler noarg caught 0
+  #342 = String             #343          // eval:91;caught;body:noarg;
+  #343 = Utf8               eval:91;caught;body:noarg;
+  #344 = String             #345          // handler noarg caught 1
+  #345 = Utf8               handler noarg caught 1
+  #346 = String             #347          // handler-noarg=
+  #347 = Utf8               handler-noarg=
+  #348 = String             #349          // ;caught=null
+  #349 = Utf8               ;caught=null
+  #350 = Methodref          #324.#77      // HandlerArrayByteArray."<init>":(I)V
+  #351 = String             #352          // eval:91;body:int:16;
+  #352 = Utf8               eval:91;body:int:16;
+  #353 = String             #354          // handler int success 0
+  #354 = Utf8               handler int success 0
+  #355 = String             #356          // eval:91;body:int:17;
+  #356 = Utf8               eval:91;body:int:17;
+  #357 = String             #358          // handler int success 1
+  #358 = Utf8               handler int success 1
+  #359 = String             #360          // handler int arrays are fresh
+  #360 = Utf8               handler int arrays are fresh
+  #361 = String             #362          // handler int caught 0
+  #362 = Utf8               handler int caught 0
+  #363 = String             #364          // eval:91;caught;body:int:18;
+  #364 = Utf8               eval:91;caught;body:int:18;
+  #365 = String             #366          // handler int caught 1
+  #366 = Utf8               handler int caught 1
+  #367 = String             #368          // eval:91;caught;body:int:19;
+  #368 = Utf8               eval:91;caught;body:int:19;
+  #369 = String             #370          // handler-int=
+  #370 = Utf8               handler-int=
+  #371 = Methodref          #32.#372      // ControlsRunner.commonConstructors:()V
+  #372 = NameAndType        #373:#6       // commonConstructors:()V
+  #373 = Utf8               commonConstructors
+  #374 = Methodref          #32.#375      // ControlsRunner.delegatingConstructors:()V
+  #375 = NameAndType        #376:#6       // delegatingConstructors:()V
+  #376 = Utf8               delegatingConstructors
+  #377 = Methodref          #32.#378      // ControlsRunner.differentRhsConstructors:()V
+  #378 = NameAndType        #379:#6       // differentRhsConstructors:()V
+  #379 = Utf8               differentRhsConstructors
+  #380 = Methodref          #32.#381      // ControlsRunner.finalLiteralConstructors:()V
+  #381 = NameAndType        #382:#6       // finalLiteralConstructors:()V
+  #382 = Utf8               finalLiteralConstructors
+  #383 = Methodref          #32.#384      // ControlsRunner.missingWrite:()V
+  #384 = NameAndType        #385:#6       // missingWrite:()V
+  #385 = Utf8               missingWrite
+  #386 = Methodref          #32.#387      // ControlsRunner.duplicateWrite:()V
+  #387 = NameAndType        #388:#6       // duplicateWrite:()V
+  #388 = Utf8               duplicateWrite
+  #389 = Methodref          #32.#390      // ControlsRunner.interveningEffect:()V
+  #390 = NameAndType        #391:#6       // interveningEffect:()V
+  #391 = Utf8               interveningEffect
+  #392 = Methodref          #32.#393      // ControlsRunner.parameterRhs:()V
+  #393 = NameAndType        #394:#6       // parameterRhs:()V
+  #394 = Utf8               parameterRhs
+  #395 = Methodref          #32.#396      // ControlsRunner.reverseFieldOrder:()V
+  #396 = NameAndType        #397:#6       // reverseFieldOrder:()V
+  #397 = Utf8               reverseFieldOrder
+  #398 = Methodref          #32.#399      // ControlsRunner.handlerNoarg:()V
+  #399 = NameAndType        #400:#6       // handlerNoarg:()V
+  #400 = Utf8               handlerNoarg
+  #401 = Methodref          #32.#402      // ControlsRunner.handlerInt:()V
+  #402 = NameAndType        #403:#6       // handlerInt:()V
+  #403 = Utf8               handlerInt
+  #404 = Utf8               Code
+  #405 = Utf8               LineNumberTable
+  #406 = Utf8               LocalVariableTable
+  #407 = Utf8               this
+  #408 = Utf8               LControlsRunner;
+  #409 = Utf8               condition
+  #410 = Utf8               message
+  #411 = Utf8               StackMapTable
+  #412 = Utf8               actual
+  #413 = Utf8               expected
+  #414 = Utf8               label
+  #415 = Utf8               c0
+  #416 = Utf8               LCommonDirectSuperByteArray;
+  #417 = Utf8               c1
+  #418 = Utf8               c2
+  #419 = Utf8               c3
+  #420 = Utf8               d0
+  #421 = Utf8               LThisDelegatingByteArray;
+  #422 = Utf8               d1
+  #423 = Utf8               d2
+  #424 = Utf8               d3
+  #425 = Utf8               r0
+  #426 = Utf8               LDifferentRhsByteArray;
+  #427 = Utf8               r1
+  #428 = Utf8               r2
+  #429 = Utf8               r3
+  #430 = Utf8               f0
+  #431 = Utf8               LFinalLiteralTwoArrays;
+  #432 = Utf8               f1
+  #433 = Utf8               f2
+  #434 = Utf8               f3
+  #435 = Utf8               m0
+  #436 = Utf8               LMissingWriteByteArray;
+  #437 = Utf8               m1
+  #438 = Utf8               omitted0
+  #439 = Utf8               omitted1
+  #440 = Utf8               x0
+  #441 = Utf8               LDuplicateWriteByteArray;
+  #442 = Utf8               x1
+  #443 = Utf8               y0
+  #444 = Utf8               y1
+  #445 = Utf8               g0
+  #446 = Utf8               LInterveningEffectByteArray;
+  #447 = Utf8               g1
+  #448 = Utf8               h0
+  #449 = Utf8               h1
+  #450 = Utf8               p0
+  #451 = Utf8               LParameterRhsByteArray;
+  #452 = Utf8               p1
+  #453 = Utf8               q0
+  #454 = Utf8               q1
+  #455 = Utf8               v0
+  #456 = Utf8               LReverseFieldOrderByteArray;
+  #457 = Utf8               v1
+  #458 = Utf8               w0
+  #459 = Utf8               w1
+  #460 = Utf8               e0
+  #461 = Utf8               LHandlerArrayByteArray;
+  #462 = Utf8               e1
+  #463 = Utf8               e2
+  #464 = Utf8               e3
+  #465 = Utf8               main
+  #466 = Utf8               ([Ljava/lang/String;)V
+  #467 = Utf8               args
+  #468 = Utf8               [Ljava/lang/String;
+  #469 = Utf8               SourceFile
+  #470 = Utf8               ControlsRunner.java
+{
+  public ControlsRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LControlsRunner;
+
+  private static void require(boolean, java.lang.String);
+    descriptor: (ZLjava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iload_0
+         1: ifne          13
+         4: new           #7                  // class java/lang/AssertionError
+         7: dup
+         8: aload_1
+         9: invokespecial #9                  // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        12: athrow
+        13: return
+      LineNumberTable:
+        line 5: 0
+        line 6: 4
+        line 8: 13
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      14     0 condition   Z
+            0      14     1 message   Ljava/lang/String;
+      StackMapTable: number_of_entries = 1
+        frame_type = 13 /* same */
+
+  private static void trace(java.lang.String, java.lang.String, java.lang.String);
+    descriptor: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=3
+         0: aload_1
+         1: aload_0
+         2: invokevirtual #12                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+         5: new           #18                 // class java/lang/StringBuilder
+         8: dup
+         9: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        12: aload_2
+        13: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        16: ldc           #25                 // String  trace:
+        18: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        21: aload_0
+        22: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        25: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        28: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        31: return
+      LineNumberTable:
+        line 11: 0
+        line 12: 31
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      32     0 actual   Ljava/lang/String;
+            0      32     1 expected   Ljava/lang/String;
+            0      32     2 label   Ljava/lang/String;
+
+  private static void bytes(byte[], byte...);
+    descriptor: ([B[B)V
+    flags: (0x008a) ACC_PRIVATE, ACC_STATIC, ACC_VARARGS
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokestatic  #37                 // Method java/util/Arrays.equals:([B[B)Z
+         5: new           #18                 // class java/lang/StringBuilder
+         8: dup
+         9: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        12: ldc           #42                 // String array:
+        14: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        17: aload_0
+        18: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+        21: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        24: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        27: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        30: return
+      LineNumberTable:
+        line 15: 0
+        line 16: 30
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      31     0 actual   [B
+            0      31     1 expected   [B
+
+  private static void nullBytes(byte[], java.lang.String);
+    descriptor: ([BLjava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: ifnonnull     8
+         4: iconst_1
+         5: goto          9
+         8: iconst_0
+         9: new           #18                 // class java/lang/StringBuilder
+        12: dup
+        13: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        16: aload_1
+        17: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        20: ldc           #47                 // String  expected null array
+        22: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        25: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        28: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        31: return
+      LineNumberTable:
+        line 19: 0
+        line 20: 31
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      32     0 actual   [B
+            0      32     1 label   Ljava/lang/String;
+      StackMapTable: number_of_entries = 2
+        frame_type = 8 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void commonConstructors();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+         5: new           #52                 // class CommonDirectSuperByteArray
+         8: dup
+         9: invokespecial #57                 // Method CommonDirectSuperByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+        17: iconst_2
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        10
+        24: bastore
+        25: dup
+        26: iconst_1
+        27: bipush        20
+        29: bastore
+        30: invokestatic  #62                 // Method bytes:([B[B)V
+        33: getstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+        36: ldc           #65                 // String eval:10;eval:20;body:noarg;
+        38: ldc           #67                 // String common noarg 0
+        40: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        43: ldc           #49                 // String
+        45: putstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+        48: new           #52                 // class CommonDirectSuperByteArray
+        51: dup
+        52: invokespecial #57                 // Method CommonDirectSuperByteArray."<init>":()V
+        55: astore_1
+        56: aload_1
+        57: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+        60: iconst_2
+        61: newarray       byte
+        63: dup
+        64: iconst_0
+        65: bipush        10
+        67: bastore
+        68: dup
+        69: iconst_1
+        70: bipush        20
+        72: bastore
+        73: invokestatic  #62                 // Method bytes:([B[B)V
+        76: getstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+        79: ldc           #65                 // String eval:10;eval:20;body:noarg;
+        81: ldc           #72                 // String common noarg 1
+        83: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        86: aload_0
+        87: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+        90: aload_1
+        91: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+        94: if_acmpeq     101
+        97: iconst_1
+        98: goto          102
+       101: iconst_0
+       102: ldc           #74                 // String common noarg arrays are fresh
+       104: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       107: ldc           #49                 // String
+       109: putstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+       112: new           #52                 // class CommonDirectSuperByteArray
+       115: dup
+       116: iconst_4
+       117: invokespecial #76                 // Method CommonDirectSuperByteArray."<init>":(I)V
+       120: astore_2
+       121: aload_2
+       122: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+       125: iconst_2
+       126: newarray       byte
+       128: dup
+       129: iconst_0
+       130: bipush        10
+       132: bastore
+       133: dup
+       134: iconst_1
+       135: bipush        20
+       137: bastore
+       138: invokestatic  #62                 // Method bytes:([B[B)V
+       141: getstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+       144: ldc           #79                 // String eval:10;eval:20;body:int:4;
+       146: ldc           #81                 // String common int 0
+       148: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       151: ldc           #49                 // String
+       153: putstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+       156: new           #52                 // class CommonDirectSuperByteArray
+       159: dup
+       160: iconst_5
+       161: invokespecial #76                 // Method CommonDirectSuperByteArray."<init>":(I)V
+       164: astore_3
+       165: aload_3
+       166: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+       169: iconst_2
+       170: newarray       byte
+       172: dup
+       173: iconst_0
+       174: bipush        10
+       176: bastore
+       177: dup
+       178: iconst_1
+       179: bipush        20
+       181: bastore
+       182: invokestatic  #62                 // Method bytes:([B[B)V
+       185: getstatic     #51                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+       188: ldc           #83                 // String eval:10;eval:20;body:int:5;
+       190: ldc           #85                 // String common int 1
+       192: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       195: aload_2
+       196: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+       199: aload_3
+       200: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+       203: if_acmpeq     210
+       206: iconst_1
+       207: goto          211
+       210: iconst_0
+       211: ldc           #87                 // String common int arrays are fresh
+       213: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       216: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       219: new           #18                 // class java/lang/StringBuilder
+       222: dup
+       223: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       226: ldc           #95                 // String base-common=
+       228: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       231: aload_0
+       232: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+       235: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       238: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       241: ldc           #97                 // String ;
+       243: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       246: aload_2
+       247: getfield      #58                 // Field CommonDirectSuperByteArray.bytes:[B
+       250: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       253: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       256: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       259: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       262: return
+      LineNumberTable:
+        line 23: 0
+        line 24: 5
+        line 25: 13
+        line 26: 33
+        line 27: 43
+        line 28: 48
+        line 29: 56
+        line 30: 76
+        line 31: 86
+        line 33: 107
+        line 34: 112
+        line 35: 121
+        line 36: 141
+        line 37: 151
+        line 38: 156
+        line 39: 165
+        line 40: 185
+        line 41: 195
+        line 42: 216
+        line 43: 262
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     250     0    c0   LCommonDirectSuperByteArray;
+           56     207     1    c1   LCommonDirectSuperByteArray;
+          121     142     2    c2   LCommonDirectSuperByteArray;
+          165      98     3    c3   LCommonDirectSuperByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 101
+          locals = [ class CommonDirectSuperByteArray, class CommonDirectSuperByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 107
+          locals = [ class CommonDirectSuperByteArray, class CommonDirectSuperByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void delegatingConstructors();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+         5: new           #106                // class ThisDelegatingByteArray
+         8: dup
+         9: invokespecial #108                // Method ThisDelegatingByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+        17: iconst_2
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        21
+        24: bastore
+        25: dup
+        26: iconst_1
+        27: bipush        22
+        29: bastore
+        30: invokestatic  #62                 // Method bytes:([B[B)V
+        33: getstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+        36: ldc           #110                // String eval:21;eval:22;body:target:7;body:delegate;
+        38: ldc           #112                // String delegate noarg 0
+        40: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        43: ldc           #49                 // String
+        45: putstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+        48: new           #106                // class ThisDelegatingByteArray
+        51: dup
+        52: invokespecial #108                // Method ThisDelegatingByteArray."<init>":()V
+        55: astore_1
+        56: aload_1
+        57: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+        60: iconst_2
+        61: newarray       byte
+        63: dup
+        64: iconst_0
+        65: bipush        21
+        67: bastore
+        68: dup
+        69: iconst_1
+        70: bipush        22
+        72: bastore
+        73: invokestatic  #62                 // Method bytes:([B[B)V
+        76: getstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+        79: ldc           #110                // String eval:21;eval:22;body:target:7;body:delegate;
+        81: ldc           #114                // String delegate noarg 1
+        83: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        86: aload_0
+        87: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+        90: aload_1
+        91: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+        94: if_acmpeq     101
+        97: iconst_1
+        98: goto          102
+       101: iconst_0
+       102: ldc           #116                // String delegating noarg arrays are fresh
+       104: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       107: ldc           #49                 // String
+       109: putstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       112: new           #106                // class ThisDelegatingByteArray
+       115: dup
+       116: bipush        8
+       118: invokespecial #118                // Method ThisDelegatingByteArray."<init>":(I)V
+       121: astore_2
+       122: aload_2
+       123: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+       126: iconst_2
+       127: newarray       byte
+       129: dup
+       130: iconst_0
+       131: bipush        21
+       133: bastore
+       134: dup
+       135: iconst_1
+       136: bipush        22
+       138: bastore
+       139: invokestatic  #62                 // Method bytes:([B[B)V
+       142: getstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       145: ldc           #119                // String eval:21;eval:22;body:target:8;
+       147: ldc           #121                // String delegate int 0
+       149: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       152: ldc           #49                 // String
+       154: putstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       157: new           #106                // class ThisDelegatingByteArray
+       160: dup
+       161: bipush        9
+       163: invokespecial #118                // Method ThisDelegatingByteArray."<init>":(I)V
+       166: astore_3
+       167: aload_3
+       168: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+       171: iconst_2
+       172: newarray       byte
+       174: dup
+       175: iconst_0
+       176: bipush        21
+       178: bastore
+       179: dup
+       180: iconst_1
+       181: bipush        22
+       183: bastore
+       184: invokestatic  #62                 // Method bytes:([B[B)V
+       187: getstatic     #105                // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       190: ldc           #123                // String eval:21;eval:22;body:target:9;
+       192: ldc           #125                // String delegate int 1
+       194: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       197: aload_2
+       198: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+       201: aload_3
+       202: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+       205: if_acmpeq     212
+       208: iconst_1
+       209: goto          213
+       212: iconst_0
+       213: ldc           #127                // String delegating int arrays are fresh
+       215: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       218: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       221: new           #18                 // class java/lang/StringBuilder
+       224: dup
+       225: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       228: ldc           #129                // String base-delegating=
+       230: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       233: aload_0
+       234: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+       237: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       240: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       243: ldc           #97                 // String ;
+       245: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       248: aload_2
+       249: getfield      #109                // Field ThisDelegatingByteArray.bytes:[B
+       252: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       255: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       258: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       261: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       264: return
+      LineNumberTable:
+        line 46: 0
+        line 47: 5
+        line 48: 13
+        line 49: 33
+        line 50: 43
+        line 51: 48
+        line 52: 56
+        line 53: 76
+        line 54: 86
+        line 56: 107
+        line 57: 112
+        line 58: 122
+        line 59: 142
+        line 60: 152
+        line 61: 157
+        line 62: 167
+        line 63: 187
+        line 64: 197
+        line 65: 218
+        line 66: 264
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     252     0    d0   LThisDelegatingByteArray;
+           56     209     1    d1   LThisDelegatingByteArray;
+          122     143     2    d2   LThisDelegatingByteArray;
+          167      98     3    d3   LThisDelegatingByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 101
+          locals = [ class ThisDelegatingByteArray, class ThisDelegatingByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 109
+          locals = [ class ThisDelegatingByteArray, class ThisDelegatingByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void differentRhsConstructors();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+         5: new           #132                // class DifferentRhsByteArray
+         8: dup
+         9: invokespecial #134                // Method DifferentRhsByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+        17: iconst_1
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        31
+        24: bastore
+        25: invokestatic  #62                 // Method bytes:([B[B)V
+        28: getstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+        31: ldc           #136                // String eval:31;body:noarg;
+        33: ldc           #138                // String different noarg 0
+        35: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        38: ldc           #49                 // String
+        40: putstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+        43: new           #132                // class DifferentRhsByteArray
+        46: dup
+        47: invokespecial #134                // Method DifferentRhsByteArray."<init>":()V
+        50: astore_1
+        51: aload_1
+        52: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+        55: iconst_1
+        56: newarray       byte
+        58: dup
+        59: iconst_0
+        60: bipush        31
+        62: bastore
+        63: invokestatic  #62                 // Method bytes:([B[B)V
+        66: getstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+        69: ldc           #136                // String eval:31;body:noarg;
+        71: ldc           #140                // String different noarg 1
+        73: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        76: aload_0
+        77: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+        80: aload_1
+        81: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+        84: if_acmpeq     91
+        87: iconst_1
+        88: goto          92
+        91: iconst_0
+        92: ldc           #142                // String different noarg arrays are fresh
+        94: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        97: ldc           #49                 // String
+        99: putstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       102: new           #132                // class DifferentRhsByteArray
+       105: dup
+       106: iconst_5
+       107: invokespecial #144                // Method DifferentRhsByteArray."<init>":(I)V
+       110: astore_2
+       111: aload_2
+       112: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+       115: iconst_1
+       116: newarray       byte
+       118: dup
+       119: iconst_0
+       120: bipush        32
+       122: bastore
+       123: invokestatic  #62                 // Method bytes:([B[B)V
+       126: getstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       129: ldc           #145                // String eval:32;body:int:5;
+       131: ldc           #147                // String different int 0
+       133: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       136: ldc           #49                 // String
+       138: putstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       141: new           #132                // class DifferentRhsByteArray
+       144: dup
+       145: bipush        6
+       147: invokespecial #144                // Method DifferentRhsByteArray."<init>":(I)V
+       150: astore_3
+       151: aload_3
+       152: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+       155: iconst_1
+       156: newarray       byte
+       158: dup
+       159: iconst_0
+       160: bipush        32
+       162: bastore
+       163: invokestatic  #62                 // Method bytes:([B[B)V
+       166: getstatic     #131                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       169: ldc           #149                // String eval:32;body:int:6;
+       171: ldc           #151                // String different int 1
+       173: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       176: aload_2
+       177: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+       180: aload_3
+       181: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+       184: if_acmpeq     191
+       187: iconst_1
+       188: goto          192
+       191: iconst_0
+       192: ldc           #153                // String different int arrays are fresh
+       194: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       197: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       200: new           #18                 // class java/lang/StringBuilder
+       203: dup
+       204: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       207: ldc           #155                // String base-different=
+       209: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       212: aload_0
+       213: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+       216: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       219: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       222: ldc           #97                 // String ;
+       224: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       227: aload_2
+       228: getfield      #135                // Field DifferentRhsByteArray.bytes:[B
+       231: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       234: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       237: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       240: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       243: return
+      LineNumberTable:
+        line 69: 0
+        line 70: 5
+        line 71: 13
+        line 72: 28
+        line 73: 38
+        line 74: 43
+        line 75: 51
+        line 76: 66
+        line 77: 76
+        line 79: 97
+        line 80: 102
+        line 81: 111
+        line 82: 126
+        line 83: 136
+        line 84: 141
+        line 85: 151
+        line 86: 166
+        line 87: 176
+        line 88: 197
+        line 89: 243
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     231     0    r0   LDifferentRhsByteArray;
+           51     193     1    r1   LDifferentRhsByteArray;
+          111     133     2    r2   LDifferentRhsByteArray;
+          151      93     3    r3   LDifferentRhsByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 91
+          locals = [ class DifferentRhsByteArray, class DifferentRhsByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 98
+          locals = [ class DifferentRhsByteArray, class DifferentRhsByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void finalLiteralConstructors();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+         5: new           #158                // class FinalLiteralTwoArrays
+         8: dup
+         9: invokespecial #160                // Method FinalLiteralTwoArrays."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+        17: iconst_2
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: iconst_1
+        23: bastore
+        24: dup
+        25: iconst_1
+        26: iconst_2
+        27: bastore
+        28: invokestatic  #62                 // Method bytes:([B[B)V
+        31: aload_0
+        32: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+        35: iconst_2
+        36: newarray       byte
+        38: dup
+        39: iconst_0
+        40: iconst_3
+        41: bastore
+        42: dup
+        43: iconst_1
+        44: iconst_4
+        45: bastore
+        46: invokestatic  #62                 // Method bytes:([B[B)V
+        49: getstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+        52: ldc           #167                // String body:noarg;
+        54: ldc           #169                // String final literal noarg 0
+        56: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        59: ldc           #49                 // String
+        61: putstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+        64: new           #158                // class FinalLiteralTwoArrays
+        67: dup
+        68: invokespecial #160                // Method FinalLiteralTwoArrays."<init>":()V
+        71: astore_1
+        72: aload_1
+        73: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+        76: iconst_2
+        77: newarray       byte
+        79: dup
+        80: iconst_0
+        81: iconst_1
+        82: bastore
+        83: dup
+        84: iconst_1
+        85: iconst_2
+        86: bastore
+        87: invokestatic  #62                 // Method bytes:([B[B)V
+        90: aload_1
+        91: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+        94: iconst_2
+        95: newarray       byte
+        97: dup
+        98: iconst_0
+        99: iconst_3
+       100: bastore
+       101: dup
+       102: iconst_1
+       103: iconst_4
+       104: bastore
+       105: invokestatic  #62                 // Method bytes:([B[B)V
+       108: getstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+       111: ldc           #167                // String body:noarg;
+       113: ldc           #171                // String final literal noarg 1
+       115: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       118: aload_0
+       119: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       122: aload_1
+       123: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       126: if_acmpeq     144
+       129: aload_0
+       130: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       133: aload_1
+       134: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       137: if_acmpeq     144
+       140: iconst_1
+       141: goto          145
+       144: iconst_0
+       145: ldc           #173                // String final noarg arrays are fresh
+       147: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       150: ldc           #49                 // String
+       152: putstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+       155: new           #158                // class FinalLiteralTwoArrays
+       158: dup
+       159: iconst_2
+       160: invokespecial #175                // Method FinalLiteralTwoArrays."<init>":(I)V
+       163: astore_2
+       164: aload_2
+       165: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       168: iconst_2
+       169: newarray       byte
+       171: dup
+       172: iconst_0
+       173: iconst_1
+       174: bastore
+       175: dup
+       176: iconst_1
+       177: iconst_2
+       178: bastore
+       179: invokestatic  #62                 // Method bytes:([B[B)V
+       182: aload_2
+       183: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       186: iconst_2
+       187: newarray       byte
+       189: dup
+       190: iconst_0
+       191: iconst_3
+       192: bastore
+       193: dup
+       194: iconst_1
+       195: iconst_4
+       196: bastore
+       197: invokestatic  #62                 // Method bytes:([B[B)V
+       200: getstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+       203: ldc           #176                // String body:int:2;
+       205: ldc           #178                // String final literal int 0
+       207: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       210: ldc           #49                 // String
+       212: putstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+       215: new           #158                // class FinalLiteralTwoArrays
+       218: dup
+       219: iconst_3
+       220: invokespecial #175                // Method FinalLiteralTwoArrays."<init>":(I)V
+       223: astore_3
+       224: aload_3
+       225: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       228: iconst_2
+       229: newarray       byte
+       231: dup
+       232: iconst_0
+       233: iconst_1
+       234: bastore
+       235: dup
+       236: iconst_1
+       237: iconst_2
+       238: bastore
+       239: invokestatic  #62                 // Method bytes:([B[B)V
+       242: aload_3
+       243: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       246: iconst_2
+       247: newarray       byte
+       249: dup
+       250: iconst_0
+       251: iconst_3
+       252: bastore
+       253: dup
+       254: iconst_1
+       255: iconst_4
+       256: bastore
+       257: invokestatic  #62                 // Method bytes:([B[B)V
+       260: getstatic     #157                // Field FinalLiteralTwoArrays.trace:Ljava/lang/String;
+       263: ldc           #180                // String body:int:3;
+       265: ldc           #182                // String final literal int 1
+       267: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       270: aload_2
+       271: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       274: aload_3
+       275: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       278: if_acmpeq     296
+       281: aload_2
+       282: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       285: aload_3
+       286: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       289: if_acmpeq     296
+       292: iconst_1
+       293: goto          297
+       296: iconst_0
+       297: ldc           #184                // String final int arrays are fresh
+       299: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       302: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       305: new           #18                 // class java/lang/StringBuilder
+       308: dup
+       309: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       312: ldc           #186                // String final-literal=
+       314: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       317: aload_0
+       318: getfield      #161                // Field FinalLiteralTwoArrays.first:[B
+       321: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       324: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       327: ldc           #97                 // String ;
+       329: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       332: aload_0
+       333: getfield      #164                // Field FinalLiteralTwoArrays.second:[B
+       336: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       339: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       342: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       345: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       348: return
+      LineNumberTable:
+        line 92: 0
+        line 93: 5
+        line 94: 13
+        line 95: 31
+        line 96: 49
+        line 97: 59
+        line 98: 64
+        line 99: 72
+        line 100: 90
+        line 101: 108
+        line 102: 118
+        line 104: 150
+        line 105: 155
+        line 106: 164
+        line 107: 182
+        line 108: 200
+        line 109: 210
+        line 110: 215
+        line 111: 224
+        line 112: 242
+        line 113: 260
+        line 114: 270
+        line 115: 302
+        line 116: 348
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     336     0    f0   LFinalLiteralTwoArrays;
+           72     277     1    f1   LFinalLiteralTwoArrays;
+          164     185     2    f2   LFinalLiteralTwoArrays;
+          224     125     3    f3   LFinalLiteralTwoArrays;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 144
+          locals = [ class FinalLiteralTwoArrays, class FinalLiteralTwoArrays ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 150
+          locals = [ class FinalLiteralTwoArrays, class FinalLiteralTwoArrays ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void missingWrite();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+         5: new           #189                // class MissingWriteByteArray
+         8: dup
+         9: invokespecial #191                // Method MissingWriteByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+        17: iconst_1
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        41
+        24: bastore
+        25: invokestatic  #62                 // Method bytes:([B[B)V
+        28: getstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+        31: ldc           #193                // String eval:41;body:write;
+        33: ldc           #195                // String missing write ctor 0
+        35: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        38: ldc           #49                 // String
+        40: putstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+        43: new           #189                // class MissingWriteByteArray
+        46: dup
+        47: invokespecial #191                // Method MissingWriteByteArray."<init>":()V
+        50: astore_1
+        51: aload_1
+        52: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+        55: iconst_1
+        56: newarray       byte
+        58: dup
+        59: iconst_0
+        60: bipush        41
+        62: bastore
+        63: invokestatic  #62                 // Method bytes:([B[B)V
+        66: getstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+        69: ldc           #193                // String eval:41;body:write;
+        71: ldc           #197                // String missing write ctor 1
+        73: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        76: aload_0
+        77: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+        80: aload_1
+        81: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+        84: if_acmpeq     91
+        87: iconst_1
+        88: goto          92
+        91: iconst_0
+        92: ldc           #199                // String missing-write path arrays are fresh
+        94: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        97: ldc           #49                 // String
+        99: putstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+       102: new           #189                // class MissingWriteByteArray
+       105: dup
+       106: bipush        7
+       108: invokespecial #201                // Method MissingWriteByteArray."<init>":(I)V
+       111: astore_2
+       112: aload_2
+       113: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+       116: ldc           #202                // String missing path 0
+       118: invokestatic  #204                // Method nullBytes:([BLjava/lang/String;)V
+       121: getstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+       124: ldc           #208                // String body:omit:7;
+       126: ldc           #202                // String missing path 0
+       128: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       131: ldc           #49                 // String
+       133: putstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+       136: new           #189                // class MissingWriteByteArray
+       139: dup
+       140: bipush        8
+       142: invokespecial #201                // Method MissingWriteByteArray."<init>":(I)V
+       145: astore_3
+       146: aload_3
+       147: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+       150: ldc           #210                // String missing path 1
+       152: invokestatic  #204                // Method nullBytes:([BLjava/lang/String;)V
+       155: getstatic     #188                // Field MissingWriteByteArray.trace:Ljava/lang/String;
+       158: ldc           #212                // String body:omit:8;
+       160: ldc           #210                // String missing path 1
+       162: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       165: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       168: new           #18                 // class java/lang/StringBuilder
+       171: dup
+       172: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       175: ldc           #214                // String missing-write=
+       177: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       180: aload_0
+       181: getfield      #192                // Field MissingWriteByteArray.bytes:[B
+       184: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       187: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       190: ldc           #216                // String ;omitted=null
+       192: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       195: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       198: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       201: return
+      LineNumberTable:
+        line 119: 0
+        line 120: 5
+        line 121: 13
+        line 122: 28
+        line 123: 38
+        line 124: 43
+        line 125: 51
+        line 126: 66
+        line 127: 76
+        line 128: 97
+        line 129: 102
+        line 130: 112
+        line 131: 121
+        line 132: 131
+        line 133: 136
+        line 134: 146
+        line 135: 155
+        line 136: 165
+        line 137: 201
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     189     0    m0   LMissingWriteByteArray;
+           51     151     1    m1   LMissingWriteByteArray;
+          112      90     2 omitted0   LMissingWriteByteArray;
+          146      56     3 omitted1   LMissingWriteByteArray;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 91
+          locals = [ class MissingWriteByteArray, class MissingWriteByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void duplicateWrite();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+         5: new           #219                // class DuplicateWriteByteArray
+         8: dup
+         9: invokespecial #221                // Method DuplicateWriteByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+        17: iconst_1
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        52
+        24: bastore
+        25: invokestatic  #62                 // Method bytes:([B[B)V
+        28: getstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+        31: ldc           #223                // String eval:51;eval:52;body:noarg;
+        33: ldc           #225                // String duplicate noarg 0
+        35: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        38: ldc           #49                 // String
+        40: putstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+        43: new           #219                // class DuplicateWriteByteArray
+        46: dup
+        47: invokespecial #221                // Method DuplicateWriteByteArray."<init>":()V
+        50: astore_1
+        51: aload_1
+        52: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+        55: iconst_1
+        56: newarray       byte
+        58: dup
+        59: iconst_0
+        60: bipush        52
+        62: bastore
+        63: invokestatic  #62                 // Method bytes:([B[B)V
+        66: getstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+        69: ldc           #223                // String eval:51;eval:52;body:noarg;
+        71: ldc           #227                // String duplicate noarg 1
+        73: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        76: aload_0
+        77: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+        80: aload_1
+        81: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+        84: if_acmpeq     91
+        87: iconst_1
+        88: goto          92
+        91: iconst_0
+        92: ldc           #229                // String duplicate noarg final arrays are fresh
+        94: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        97: ldc           #49                 // String
+        99: putstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+       102: new           #219                // class DuplicateWriteByteArray
+       105: dup
+       106: bipush        9
+       108: invokespecial #231                // Method DuplicateWriteByteArray."<init>":(I)V
+       111: astore_2
+       112: aload_2
+       113: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+       116: iconst_1
+       117: newarray       byte
+       119: dup
+       120: iconst_0
+       121: bipush        51
+       123: bastore
+       124: invokestatic  #62                 // Method bytes:([B[B)V
+       127: getstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+       130: ldc           #232                // String eval:51;body:int:9;
+       132: ldc           #234                // String duplicate int 0
+       134: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       137: ldc           #49                 // String
+       139: putstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+       142: new           #219                // class DuplicateWriteByteArray
+       145: dup
+       146: bipush        10
+       148: invokespecial #231                // Method DuplicateWriteByteArray."<init>":(I)V
+       151: astore_3
+       152: aload_3
+       153: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+       156: iconst_1
+       157: newarray       byte
+       159: dup
+       160: iconst_0
+       161: bipush        51
+       163: bastore
+       164: invokestatic  #62                 // Method bytes:([B[B)V
+       167: getstatic     #218                // Field DuplicateWriteByteArray.trace:Ljava/lang/String;
+       170: ldc           #236                // String eval:51;body:int:10;
+       172: ldc           #238                // String duplicate int 1
+       174: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       177: aload_2
+       178: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+       181: aload_3
+       182: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+       185: if_acmpeq     192
+       188: iconst_1
+       189: goto          193
+       192: iconst_0
+       193: ldc           #240                // String duplicate int arrays are fresh
+       195: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       198: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       201: new           #18                 // class java/lang/StringBuilder
+       204: dup
+       205: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       208: ldc           #242                // String duplicate=
+       210: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       213: aload_0
+       214: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+       217: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       220: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       223: ldc           #97                 // String ;
+       225: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       228: aload_2
+       229: getfield      #222                // Field DuplicateWriteByteArray.bytes:[B
+       232: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       235: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       238: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       241: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       244: return
+      LineNumberTable:
+        line 140: 0
+        line 141: 5
+        line 142: 13
+        line 143: 28
+        line 144: 38
+        line 145: 43
+        line 146: 51
+        line 147: 66
+        line 148: 76
+        line 149: 97
+        line 150: 102
+        line 151: 112
+        line 152: 127
+        line 153: 137
+        line 154: 142
+        line 155: 152
+        line 156: 167
+        line 157: 177
+        line 158: 198
+        line 159: 244
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     232     0    x0   LDuplicateWriteByteArray;
+           51     194     1    x1   LDuplicateWriteByteArray;
+          112     133     2    y0   LDuplicateWriteByteArray;
+          152      93     3    y1   LDuplicateWriteByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 91
+          locals = [ class DuplicateWriteByteArray, class DuplicateWriteByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 99
+          locals = [ class DuplicateWriteByteArray, class DuplicateWriteByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void interveningEffect();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+         5: new           #245                // class InterveningEffectByteArray
+         8: dup
+         9: invokespecial #247                // Method InterveningEffectByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+        17: iconst_1
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        61
+        24: bastore
+        25: invokestatic  #62                 // Method bytes:([B[B)V
+        28: getstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+        31: ldc           #249                // String gap;eval:61;body:noarg;
+        33: ldc           #251                // String gap noarg 0
+        35: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        38: ldc           #49                 // String
+        40: putstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+        43: new           #245                // class InterveningEffectByteArray
+        46: dup
+        47: invokespecial #247                // Method InterveningEffectByteArray."<init>":()V
+        50: astore_1
+        51: aload_1
+        52: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+        55: iconst_1
+        56: newarray       byte
+        58: dup
+        59: iconst_0
+        60: bipush        61
+        62: bastore
+        63: invokestatic  #62                 // Method bytes:([B[B)V
+        66: getstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+        69: ldc           #249                // String gap;eval:61;body:noarg;
+        71: ldc           #253                // String gap noarg 1
+        73: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        76: aload_0
+        77: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+        80: aload_1
+        81: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+        84: if_acmpeq     91
+        87: iconst_1
+        88: goto          92
+        91: iconst_0
+        92: ldc           #255                // String gap noarg arrays are fresh
+        94: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+        97: ldc           #49                 // String
+        99: putstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+       102: new           #245                // class InterveningEffectByteArray
+       105: dup
+       106: bipush        11
+       108: invokespecial #257                // Method InterveningEffectByteArray."<init>":(I)V
+       111: astore_2
+       112: aload_2
+       113: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+       116: iconst_1
+       117: newarray       byte
+       119: dup
+       120: iconst_0
+       121: bipush        61
+       123: bastore
+       124: invokestatic  #62                 // Method bytes:([B[B)V
+       127: getstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+       130: ldc_w         #258                // String eval:61;body:int:11;
+       133: ldc_w         #260                // String gap int 0
+       136: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       139: ldc           #49                 // String
+       141: putstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+       144: new           #245                // class InterveningEffectByteArray
+       147: dup
+       148: bipush        12
+       150: invokespecial #257                // Method InterveningEffectByteArray."<init>":(I)V
+       153: astore_3
+       154: aload_3
+       155: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+       158: iconst_1
+       159: newarray       byte
+       161: dup
+       162: iconst_0
+       163: bipush        61
+       165: bastore
+       166: invokestatic  #62                 // Method bytes:([B[B)V
+       169: getstatic     #244                // Field InterveningEffectByteArray.trace:Ljava/lang/String;
+       172: ldc_w         #262                // String eval:61;body:int:12;
+       175: ldc_w         #264                // String gap int 1
+       178: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       181: aload_2
+       182: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+       185: aload_3
+       186: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+       189: if_acmpeq     196
+       192: iconst_1
+       193: goto          197
+       196: iconst_0
+       197: ldc_w         #266                // String gap int arrays are fresh
+       200: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       203: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       206: new           #18                 // class java/lang/StringBuilder
+       209: dup
+       210: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       213: ldc_w         #268                // String intervening=
+       216: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       219: aload_0
+       220: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+       223: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       226: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       229: ldc           #97                 // String ;
+       231: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       234: aload_2
+       235: getfield      #248                // Field InterveningEffectByteArray.bytes:[B
+       238: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       241: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       244: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       247: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       250: return
+      LineNumberTable:
+        line 162: 0
+        line 163: 5
+        line 164: 13
+        line 165: 28
+        line 166: 38
+        line 167: 43
+        line 168: 51
+        line 169: 66
+        line 170: 76
+        line 171: 97
+        line 172: 102
+        line 173: 112
+        line 174: 127
+        line 175: 139
+        line 176: 144
+        line 177: 154
+        line 178: 169
+        line 179: 181
+        line 180: 203
+        line 181: 250
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     238     0    g0   LInterveningEffectByteArray;
+           51     200     1    g1   LInterveningEffectByteArray;
+          112     139     2    h0   LInterveningEffectByteArray;
+          154      97     3    h1   LInterveningEffectByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 91
+          locals = [ class InterveningEffectByteArray, class InterveningEffectByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 103
+          locals = [ class InterveningEffectByteArray, class InterveningEffectByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void parameterRhs();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+         5: new           #271                // class ParameterRhsByteArray
+         8: dup
+         9: invokespecial #273                // Method ParameterRhsByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+        17: iconst_1
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        71
+        24: bastore
+        25: invokestatic  #62                 // Method bytes:([B[B)V
+        28: getstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+        31: ldc_w         #275                // String eval:71;body:noarg;
+        34: ldc_w         #277                // String parameter noarg 0
+        37: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        40: ldc           #49                 // String
+        42: putstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+        45: new           #271                // class ParameterRhsByteArray
+        48: dup
+        49: invokespecial #273                // Method ParameterRhsByteArray."<init>":()V
+        52: astore_1
+        53: aload_1
+        54: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+        57: iconst_1
+        58: newarray       byte
+        60: dup
+        61: iconst_0
+        62: bipush        71
+        64: bastore
+        65: invokestatic  #62                 // Method bytes:([B[B)V
+        68: getstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+        71: ldc_w         #275                // String eval:71;body:noarg;
+        74: ldc_w         #279                // String parameter noarg 1
+        77: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        80: aload_0
+        81: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+        84: aload_1
+        85: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+        88: if_acmpeq     95
+        91: iconst_1
+        92: goto          96
+        95: iconst_0
+        96: ldc_w         #281                // String parameter noarg arrays are fresh
+        99: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       102: ldc           #49                 // String
+       104: putstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+       107: new           #271                // class ParameterRhsByteArray
+       110: dup
+       111: bipush        72
+       113: invokespecial #283                // Method ParameterRhsByteArray."<init>":(I)V
+       116: astore_2
+       117: aload_2
+       118: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       121: iconst_1
+       122: newarray       byte
+       124: dup
+       125: iconst_0
+       126: bipush        72
+       128: bastore
+       129: invokestatic  #62                 // Method bytes:([B[B)V
+       132: getstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+       135: ldc_w         #284                // String eval:72;body:int:72;
+       138: ldc_w         #286                // String parameter int 0
+       141: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       144: ldc           #49                 // String
+       146: putstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+       149: new           #271                // class ParameterRhsByteArray
+       152: dup
+       153: bipush        73
+       155: invokespecial #283                // Method ParameterRhsByteArray."<init>":(I)V
+       158: astore_3
+       159: aload_3
+       160: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       163: iconst_1
+       164: newarray       byte
+       166: dup
+       167: iconst_0
+       168: bipush        73
+       170: bastore
+       171: invokestatic  #62                 // Method bytes:([B[B)V
+       174: getstatic     #270                // Field ParameterRhsByteArray.trace:Ljava/lang/String;
+       177: ldc_w         #288                // String eval:73;body:int:73;
+       180: ldc_w         #290                // String parameter int 1
+       183: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       186: aload_2
+       187: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       190: aload_3
+       191: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       194: if_acmpeq     201
+       197: iconst_1
+       198: goto          202
+       201: iconst_0
+       202: ldc_w         #292                // String parameter int arrays are fresh
+       205: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       208: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       211: new           #18                 // class java/lang/StringBuilder
+       214: dup
+       215: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       218: ldc_w         #294                // String parameter-rhs=
+       221: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       224: aload_0
+       225: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       228: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       231: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       234: ldc           #97                 // String ;
+       236: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       239: aload_2
+       240: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       243: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       246: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       249: ldc           #97                 // String ;
+       251: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       254: aload_3
+       255: getfield      #274                // Field ParameterRhsByteArray.bytes:[B
+       258: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       261: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       264: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       267: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       270: return
+      LineNumberTable:
+        line 184: 0
+        line 185: 5
+        line 186: 13
+        line 187: 28
+        line 188: 40
+        line 189: 45
+        line 190: 53
+        line 191: 68
+        line 192: 80
+        line 193: 102
+        line 194: 107
+        line 195: 117
+        line 196: 132
+        line 197: 144
+        line 198: 149
+        line 199: 159
+        line 200: 174
+        line 201: 186
+        line 202: 208
+        line 203: 243
+        line 202: 267
+        line 204: 270
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     258     0    p0   LParameterRhsByteArray;
+           53     218     1    p1   LParameterRhsByteArray;
+          117     154     2    q0   LParameterRhsByteArray;
+          159     112     3    q1   LParameterRhsByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 95
+          locals = [ class ParameterRhsByteArray, class ParameterRhsByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 104
+          locals = [ class ParameterRhsByteArray, class ParameterRhsByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void reverseFieldOrder();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: ldc           #49                 // String
+         2: putstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+         5: new           #297                // class ReverseFieldOrderByteArray
+         8: dup
+         9: invokespecial #299                // Method ReverseFieldOrderByteArray."<init>":()V
+        12: astore_0
+        13: aload_0
+        14: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+        17: iconst_1
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        81
+        24: bastore
+        25: invokestatic  #62                 // Method bytes:([B[B)V
+        28: aload_0
+        29: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+        32: iconst_1
+        33: newarray       byte
+        35: dup
+        36: iconst_0
+        37: bipush        82
+        39: bastore
+        40: invokestatic  #62                 // Method bytes:([B[B)V
+        43: getstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+        46: ldc_w         #302                // String eval:82;eval:81;body:noarg;
+        49: ldc_w         #304                // String reverse noarg 0
+        52: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        55: ldc           #49                 // String
+        57: putstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+        60: new           #297                // class ReverseFieldOrderByteArray
+        63: dup
+        64: invokespecial #299                // Method ReverseFieldOrderByteArray."<init>":()V
+        67: astore_1
+        68: aload_1
+        69: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+        72: iconst_1
+        73: newarray       byte
+        75: dup
+        76: iconst_0
+        77: bipush        81
+        79: bastore
+        80: invokestatic  #62                 // Method bytes:([B[B)V
+        83: aload_1
+        84: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+        87: iconst_1
+        88: newarray       byte
+        90: dup
+        91: iconst_0
+        92: bipush        82
+        94: bastore
+        95: invokestatic  #62                 // Method bytes:([B[B)V
+        98: getstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+       101: ldc_w         #302                // String eval:82;eval:81;body:noarg;
+       104: ldc_w         #306                // String reverse noarg 1
+       107: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       110: aload_0
+       111: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       114: aload_1
+       115: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       118: if_acmpeq     136
+       121: aload_0
+       122: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       125: aload_1
+       126: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       129: if_acmpeq     136
+       132: iconst_1
+       133: goto          137
+       136: iconst_0
+       137: ldc_w         #308                // String reverse noarg arrays are fresh
+       140: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       143: ldc           #49                 // String
+       145: putstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+       148: new           #297                // class ReverseFieldOrderByteArray
+       151: dup
+       152: bipush        14
+       154: invokespecial #310                // Method ReverseFieldOrderByteArray."<init>":(I)V
+       157: astore_2
+       158: aload_2
+       159: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       162: iconst_1
+       163: newarray       byte
+       165: dup
+       166: iconst_0
+       167: bipush        81
+       169: bastore
+       170: invokestatic  #62                 // Method bytes:([B[B)V
+       173: aload_2
+       174: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       177: iconst_1
+       178: newarray       byte
+       180: dup
+       181: iconst_0
+       182: bipush        82
+       184: bastore
+       185: invokestatic  #62                 // Method bytes:([B[B)V
+       188: getstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+       191: ldc_w         #311                // String eval:82;eval:81;body:int:14;
+       194: ldc_w         #313                // String reverse int 0
+       197: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       200: ldc           #49                 // String
+       202: putstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+       205: new           #297                // class ReverseFieldOrderByteArray
+       208: dup
+       209: bipush        15
+       211: invokespecial #310                // Method ReverseFieldOrderByteArray."<init>":(I)V
+       214: astore_3
+       215: aload_3
+       216: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       219: iconst_1
+       220: newarray       byte
+       222: dup
+       223: iconst_0
+       224: bipush        81
+       226: bastore
+       227: invokestatic  #62                 // Method bytes:([B[B)V
+       230: aload_3
+       231: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       234: iconst_1
+       235: newarray       byte
+       237: dup
+       238: iconst_0
+       239: bipush        82
+       241: bastore
+       242: invokestatic  #62                 // Method bytes:([B[B)V
+       245: getstatic     #296                // Field ReverseFieldOrderByteArray.trace:Ljava/lang/String;
+       248: ldc_w         #315                // String eval:82;eval:81;body:int:15;
+       251: ldc_w         #317                // String reverse int 1
+       254: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       257: aload_2
+       258: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       261: aload_3
+       262: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       265: if_acmpeq     283
+       268: aload_2
+       269: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       272: aload_3
+       273: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       276: if_acmpeq     283
+       279: iconst_1
+       280: goto          284
+       283: iconst_0
+       284: ldc_w         #319                // String reverse int arrays are fresh
+       287: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       290: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       293: new           #18                 // class java/lang/StringBuilder
+       296: dup
+       297: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       300: ldc_w         #321                // String reverse-fields=
+       303: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       306: aload_0
+       307: getfield      #300                // Field ReverseFieldOrderByteArray.first:[B
+       310: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       313: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       316: ldc           #97                 // String ;
+       318: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       321: aload_0
+       322: getfield      #301                // Field ReverseFieldOrderByteArray.second:[B
+       325: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       328: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       331: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       334: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       337: return
+      LineNumberTable:
+        line 207: 0
+        line 208: 5
+        line 209: 13
+        line 210: 28
+        line 211: 43
+        line 212: 55
+        line 213: 60
+        line 214: 68
+        line 215: 83
+        line 216: 98
+        line 217: 110
+        line 218: 143
+        line 219: 148
+        line 220: 158
+        line 221: 173
+        line 222: 188
+        line 223: 200
+        line 224: 205
+        line 225: 215
+        line 226: 230
+        line 227: 245
+        line 228: 257
+        line 229: 290
+        line 230: 337
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           13     325     0    v0   LReverseFieldOrderByteArray;
+           68     270     1    v1   LReverseFieldOrderByteArray;
+          158     180     2    w0   LReverseFieldOrderByteArray;
+          215     123     3    w1   LReverseFieldOrderByteArray;
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 136
+          locals = [ class ReverseFieldOrderByteArray, class ReverseFieldOrderByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 253 /* append */
+          offset_delta = 145
+          locals = [ class ReverseFieldOrderByteArray, class ReverseFieldOrderByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void handlerNoarg();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: iconst_0
+         1: putstatic     #323                // Field HandlerArrayByteArray.fail:Z
+         4: ldc           #49                 // String
+         6: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+         9: new           #324                // class HandlerArrayByteArray
+        12: dup
+        13: invokespecial #330                // Method HandlerArrayByteArray."<init>":()V
+        16: astore_0
+        17: aload_0
+        18: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        21: iconst_1
+        22: newarray       byte
+        24: dup
+        25: iconst_0
+        26: bipush        91
+        28: bastore
+        29: invokestatic  #62                 // Method bytes:([B[B)V
+        32: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+        35: ldc_w         #332                // String eval:91;body:noarg;
+        38: ldc_w         #334                // String handler noarg success 0
+        41: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        44: ldc           #49                 // String
+        46: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+        49: new           #324                // class HandlerArrayByteArray
+        52: dup
+        53: invokespecial #330                // Method HandlerArrayByteArray."<init>":()V
+        56: astore_1
+        57: aload_1
+        58: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        61: iconst_1
+        62: newarray       byte
+        64: dup
+        65: iconst_0
+        66: bipush        91
+        68: bastore
+        69: invokestatic  #62                 // Method bytes:([B[B)V
+        72: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+        75: ldc_w         #332                // String eval:91;body:noarg;
+        78: ldc_w         #336                // String handler noarg success 1
+        81: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        84: aload_0
+        85: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        88: aload_1
+        89: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        92: if_acmpeq     99
+        95: iconst_1
+        96: goto          100
+        99: iconst_0
+       100: ldc_w         #338                // String handler noarg arrays are fresh
+       103: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       106: iconst_1
+       107: putstatic     #323                // Field HandlerArrayByteArray.fail:Z
+       110: ldc           #49                 // String
+       112: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       115: new           #324                // class HandlerArrayByteArray
+       118: dup
+       119: invokespecial #330                // Method HandlerArrayByteArray."<init>":()V
+       122: astore_2
+       123: aload_2
+       124: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+       127: ldc_w         #340                // String handler noarg caught 0
+       130: invokestatic  #204                // Method nullBytes:([BLjava/lang/String;)V
+       133: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       136: ldc_w         #342                // String eval:91;caught;body:noarg;
+       139: ldc_w         #340                // String handler noarg caught 0
+       142: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       145: ldc           #49                 // String
+       147: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       150: new           #324                // class HandlerArrayByteArray
+       153: dup
+       154: invokespecial #330                // Method HandlerArrayByteArray."<init>":()V
+       157: astore_3
+       158: aload_3
+       159: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+       162: ldc_w         #344                // String handler noarg caught 1
+       165: invokestatic  #204                // Method nullBytes:([BLjava/lang/String;)V
+       168: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       171: ldc_w         #342                // String eval:91;caught;body:noarg;
+       174: ldc_w         #344                // String handler noarg caught 1
+       177: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       180: iconst_0
+       181: putstatic     #323                // Field HandlerArrayByteArray.fail:Z
+       184: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       187: new           #18                 // class java/lang/StringBuilder
+       190: dup
+       191: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       194: ldc_w         #346                // String handler-noarg=
+       197: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       200: aload_0
+       201: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+       204: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       207: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       210: ldc_w         #348                // String ;caught=null
+       213: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       216: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       219: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       222: return
+      LineNumberTable:
+        line 233: 0
+        line 234: 4
+        line 235: 9
+        line 236: 17
+        line 237: 32
+        line 238: 44
+        line 239: 49
+        line 240: 57
+        line 241: 72
+        line 242: 84
+        line 243: 106
+        line 244: 110
+        line 245: 115
+        line 246: 123
+        line 247: 133
+        line 248: 145
+        line 249: 150
+        line 250: 158
+        line 251: 168
+        line 252: 180
+        line 253: 184
+        line 254: 222
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           17     206     0    e0   LHandlerArrayByteArray;
+           57     166     1    e1   LHandlerArrayByteArray;
+          123     100     2    e2   LHandlerArrayByteArray;
+          158      65     3    e3   LHandlerArrayByteArray;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 99
+          locals = [ class HandlerArrayByteArray, class HandlerArrayByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  private static void handlerInt();
+    descriptor: ()V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=4, args_size=0
+         0: iconst_0
+         1: putstatic     #323                // Field HandlerArrayByteArray.fail:Z
+         4: ldc           #49                 // String
+         6: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+         9: new           #324                // class HandlerArrayByteArray
+        12: dup
+        13: bipush        16
+        15: invokespecial #350                // Method HandlerArrayByteArray."<init>":(I)V
+        18: astore_0
+        19: aload_0
+        20: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        23: iconst_1
+        24: newarray       byte
+        26: dup
+        27: iconst_0
+        28: bipush        91
+        30: bastore
+        31: invokestatic  #62                 // Method bytes:([B[B)V
+        34: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+        37: ldc_w         #351                // String eval:91;body:int:16;
+        40: ldc_w         #353                // String handler int success 0
+        43: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        46: ldc           #49                 // String
+        48: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+        51: new           #324                // class HandlerArrayByteArray
+        54: dup
+        55: bipush        17
+        57: invokespecial #350                // Method HandlerArrayByteArray."<init>":(I)V
+        60: astore_1
+        61: aload_1
+        62: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        65: iconst_1
+        66: newarray       byte
+        68: dup
+        69: iconst_0
+        70: bipush        91
+        72: bastore
+        73: invokestatic  #62                 // Method bytes:([B[B)V
+        76: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+        79: ldc_w         #355                // String eval:91;body:int:17;
+        82: ldc_w         #357                // String handler int success 1
+        85: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+        88: aload_0
+        89: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        92: aload_1
+        93: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+        96: if_acmpeq     103
+        99: iconst_1
+       100: goto          104
+       103: iconst_0
+       104: ldc_w         #359                // String handler int arrays are fresh
+       107: invokestatic  #31                 // Method require:(ZLjava/lang/String;)V
+       110: iconst_1
+       111: putstatic     #323                // Field HandlerArrayByteArray.fail:Z
+       114: ldc           #49                 // String
+       116: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       119: new           #324                // class HandlerArrayByteArray
+       122: dup
+       123: bipush        18
+       125: invokespecial #350                // Method HandlerArrayByteArray."<init>":(I)V
+       128: astore_2
+       129: aload_2
+       130: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+       133: ldc_w         #361                // String handler int caught 0
+       136: invokestatic  #204                // Method nullBytes:([BLjava/lang/String;)V
+       139: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       142: ldc_w         #363                // String eval:91;caught;body:int:18;
+       145: ldc_w         #361                // String handler int caught 0
+       148: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       151: ldc           #49                 // String
+       153: putstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       156: new           #324                // class HandlerArrayByteArray
+       159: dup
+       160: bipush        19
+       162: invokespecial #350                // Method HandlerArrayByteArray."<init>":(I)V
+       165: astore_3
+       166: aload_3
+       167: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+       170: ldc_w         #365                // String handler int caught 1
+       173: invokestatic  #204                // Method nullBytes:([BLjava/lang/String;)V
+       176: getstatic     #329                // Field HandlerArrayByteArray.trace:Ljava/lang/String;
+       179: ldc_w         #367                // String eval:91;caught;body:int:19;
+       182: ldc_w         #365                // String handler int caught 1
+       185: invokestatic  #69                 // Method trace:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       188: iconst_0
+       189: putstatic     #323                // Field HandlerArrayByteArray.fail:Z
+       192: getstatic     #89                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       195: new           #18                 // class java/lang/StringBuilder
+       198: dup
+       199: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       202: ldc_w         #369                // String handler-int=
+       205: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       208: aload_0
+       209: getfield      #331                // Field HandlerArrayByteArray.bytes:[B
+       212: invokestatic  #44                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       215: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       218: ldc_w         #348                // String ;caught=null
+       221: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       224: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       227: invokevirtual #99                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       230: return
+      LineNumberTable:
+        line 257: 0
+        line 258: 4
+        line 259: 9
+        line 260: 19
+        line 261: 34
+        line 262: 46
+        line 263: 51
+        line 264: 61
+        line 265: 76
+        line 266: 88
+        line 267: 110
+        line 268: 114
+        line 269: 119
+        line 270: 129
+        line 271: 139
+        line 272: 151
+        line 273: 156
+        line 274: 166
+        line 275: 176
+        line 276: 188
+        line 277: 192
+        line 278: 230
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           19     212     0    e0   LHandlerArrayByteArray;
+           61     170     1    e1   LHandlerArrayByteArray;
+          129     102     2    e2   LHandlerArrayByteArray;
+          166      65     3    e3   LHandlerArrayByteArray;
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 103
+          locals = [ class HandlerArrayByteArray, class HandlerArrayByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=0, locals=1, args_size=1
+         0: invokestatic  #371                // Method commonConstructors:()V
+         3: invokestatic  #374                // Method delegatingConstructors:()V
+         6: invokestatic  #377                // Method differentRhsConstructors:()V
+         9: invokestatic  #380                // Method finalLiteralConstructors:()V
+        12: invokestatic  #383                // Method missingWrite:()V
+        15: invokestatic  #386                // Method duplicateWrite:()V
+        18: invokestatic  #389                // Method interveningEffect:()V
+        21: invokestatic  #392                // Method parameterRhs:()V
+        24: invokestatic  #395                // Method reverseFieldOrder:()V
+        27: invokestatic  #398                // Method handlerNoarg:()V
+        30: invokestatic  #401                // Method handlerInt:()V
+        33: return
+      LineNumberTable:
+        line 281: 0
+        line 282: 3
+        line 283: 6
+        line 284: 9
+        line 285: 12
+        line 286: 15
+        line 287: 18
+        line 288: 21
+        line 289: 24
+        line 290: 27
+        line 291: 30
+        line 292: 33
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      34     0  args   [Ljava/lang/String;
+}
+SourceFile: "ControlsRunner.java"

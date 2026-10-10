@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/results/verify-baseline-root-prepared-v2.py"
+  ],
+  "exit": 1,
+  "verifier_sha256": "6f6e42bac9fb77d202f37547a9a44f68be02466e11c6ef8e086b4cb6ac76e0d1"
+}

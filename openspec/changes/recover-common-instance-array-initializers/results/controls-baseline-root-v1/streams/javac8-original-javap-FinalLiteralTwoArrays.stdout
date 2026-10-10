@@ -1,0 +1,193 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/FinalLiteralTwoArrays.class
+  Last modified 2026-10-10; size 919 bytes
+  MD5 checksum 7baca64687a78e11ea9df735c18f66eb
+  Compiled from "FinalLiteralTwoArrays.java"
+public class FinalLiteralTwoArrays
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #15.#34        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #14.#35        // FinalLiteralTwoArrays.first:[B
+   #3 = Fieldref           #14.#36        // FinalLiteralTwoArrays.second:[B
+   #4 = Class              #37            // java/lang/StringBuilder
+   #5 = Methodref          #4.#34         // java/lang/StringBuilder."<init>":()V
+   #6 = Fieldref           #14.#38        // FinalLiteralTwoArrays.trace:Ljava/lang/String;
+   #7 = Methodref          #4.#39         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #8 = String             #40            // body:noarg;
+   #9 = Methodref          #4.#41         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #10 = String             #42            // body:int:
+  #11 = Methodref          #4.#43         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #12 = String             #44            // ;
+  #13 = String             #45            //
+  #14 = Class              #46            // FinalLiteralTwoArrays
+  #15 = Class              #47            // java/lang/Object
+  #16 = Utf8               trace
+  #17 = Utf8               Ljava/lang/String;
+  #18 = Utf8               first
+  #19 = Utf8               [B
+  #20 = Utf8               second
+  #21 = Utf8               <init>
+  #22 = Utf8               ()V
+  #23 = Utf8               Code
+  #24 = Utf8               LineNumberTable
+  #25 = Utf8               LocalVariableTable
+  #26 = Utf8               this
+  #27 = Utf8               LFinalLiteralTwoArrays;
+  #28 = Utf8               (I)V
+  #29 = Utf8               marker
+  #30 = Utf8               I
+  #31 = Utf8               <clinit>
+  #32 = Utf8               SourceFile
+  #33 = Utf8               FinalLiteralTwoArrays.java
+  #34 = NameAndType        #21:#22        // "<init>":()V
+  #35 = NameAndType        #18:#19        // first:[B
+  #36 = NameAndType        #20:#19        // second:[B
+  #37 = Utf8               java/lang/StringBuilder
+  #38 = NameAndType        #16:#17        // trace:Ljava/lang/String;
+  #39 = NameAndType        #48:#49        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #40 = Utf8               body:noarg;
+  #41 = NameAndType        #50:#51        // toString:()Ljava/lang/String;
+  #42 = Utf8               body:int:
+  #43 = NameAndType        #48:#52        // append:(I)Ljava/lang/StringBuilder;
+  #44 = Utf8               ;
+  #45 = Utf8
+  #46 = Utf8               FinalLiteralTwoArrays
+  #47 = Utf8               java/lang/Object
+  #48 = Utf8               append
+  #49 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #50 = Utf8               toString
+  #51 = Utf8               ()Ljava/lang/String;
+  #52 = Utf8               (I)Ljava/lang/StringBuilder;
+{
+  static java.lang.String trace;
+    descriptor: Ljava/lang/String;
+    flags: ACC_STATIC
+
+  final byte[] first;
+    descriptor: [B
+    flags: ACC_FINAL
+
+  final byte[] second;
+    descriptor: [B
+    flags: ACC_FINAL
+
+  public FinalLiteralTwoArrays();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_2
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: iconst_1
+        11: bastore
+        12: dup
+        13: iconst_1
+        14: iconst_2
+        15: bastore
+        16: putfield      #2                  // Field first:[B
+        19: aload_0
+        20: iconst_2
+        21: newarray       byte
+        23: dup
+        24: iconst_0
+        25: iconst_3
+        26: bastore
+        27: dup
+        28: iconst_1
+        29: iconst_4
+        30: bastore
+        31: putfield      #3                  // Field second:[B
+        34: new           #4                  // class java/lang/StringBuilder
+        37: dup
+        38: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+        41: getstatic     #6                  // Field trace:Ljava/lang/String;
+        44: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        47: ldc           #8                  // String body:noarg;
+        49: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        55: putstatic     #6                  // Field trace:Ljava/lang/String;
+        58: return
+      LineNumberTable:
+        line 7: 0
+        line 8: 4
+        line 9: 19
+        line 10: 34
+        line 11: 58
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      59     0  this   LFinalLiteralTwoArrays;
+
+  public FinalLiteralTwoArrays(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_2
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: iconst_1
+        11: bastore
+        12: dup
+        13: iconst_1
+        14: iconst_2
+        15: bastore
+        16: putfield      #2                  // Field first:[B
+        19: aload_0
+        20: iconst_2
+        21: newarray       byte
+        23: dup
+        24: iconst_0
+        25: iconst_3
+        26: bastore
+        27: dup
+        28: iconst_1
+        29: iconst_4
+        30: bastore
+        31: putfield      #3                  // Field second:[B
+        34: new           #4                  // class java/lang/StringBuilder
+        37: dup
+        38: invokespecial #5                  // Method java/lang/StringBuilder."<init>":()V
+        41: getstatic     #6                  // Field trace:Ljava/lang/String;
+        44: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        47: ldc           #10                 // String body:int:
+        49: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        52: iload_1
+        53: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        56: ldc           #12                 // String ;
+        58: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        61: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        64: putstatic     #6                  // Field trace:Ljava/lang/String;
+        67: return
+      LineNumberTable:
+        line 14: 0
+        line 15: 4
+        line 16: 19
+        line 17: 34
+        line 18: 67
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      68     0  this   LFinalLiteralTwoArrays;
+            0      68     1 marker   I
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #13                 // String
+         2: putstatic     #6                  // Field trace:Ljava/lang/String;
+         5: return
+      LineNumberTable:
+        line 2: 0
+}
+SourceFile: "FinalLiteralTwoArrays.java"

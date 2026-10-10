@@ -1,0 +1,349 @@
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -3176,6 +3176,7 @@
+             .anonymous_constructor_initializer_bci
+             .clone(),
+         generic_call_init: ast.projection.generic_call_init.clone(),
++        instance_field_write_evidence: ast.projection.instance_field_write_evidence.clone(),
+     };
+     Ok(Some(ClassSourceMethodAst {
+         projection: Arc::new(projection),
+@@ -3713,6 +3714,224 @@
+         indentation,
+         budget,
+     )
++}
++
++/// One direct-super constructor's same-run, contiguous primitive-array field-write prefix.
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayConstructorProjection {
++    pub member: PhysicalMethodId,
++    pub init: crate::init::InitRecord,
++    pub writes: Vec<ClassSourceInstanceArrayFieldWrite>,
++    /// Re-emitted body after the proved field-write prefix, at method-body indentation.
++    pub remaining_body: String,
++}
++
++/// One source-safe field/value pair from a constructor prefix.
++#[doc(hidden)]
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct ClassSourceInstanceArrayFieldWrite {
++    pub bci: u32,
++    pub owner: String,
++    pub name: String,
++    pub descriptor: String,
++    pub value: String,
++    /// Calls in the value, in source evaluation order, joined to this physical method's decode.
++    pub calls: Vec<crate::facts::CallTarget>,
++}
++
++/// Extracts only a top-level, immediately post-`super` sequence of claimed primitive-array
++/// field writes. The caller still proves class-wide completeness, field declarations, and static
++/// call targets before committing any source edit.
++#[doc(hidden)]
++pub fn class_source_instance_array_constructor_projection(
++    ast: &ClassSourceMethodAst,
++    budget: &mut Budget,
++) -> Result<Option<ClassSourceInstanceArrayConstructorProjection>, crate::stop::StopReason> {
++    let source = &ast.projection;
++    let Some(init) = source.generic_call_init.as_ref() else {
++        return Ok(None);
++    };
++    if !source.complete_code
++        || source.has_exception_handlers
++        || !init.presented
++        || init.target != Some(crate::ast::ConstructorTarget::Super)
++    {
++        return Ok(None);
++    }
++    let Some(crate::ast::Stmt {
++        kind: StmtKind::ConstructorCall {
++            target: ConstructorTarget::Super,
++            ..
++        },
++        origin,
++    }) = source.program.stmts.first()
++    else {
++        return Ok(None);
++    };
++    if Some(origin.primary().bci()) != init.bci {
++        return Ok(None);
++    }
++
++    let mut writes = Vec::new();
++    let mut prefix_bcis = std::collections::BTreeSet::new();
++    let mut cursor = 1usize;
++    for statement in source.program.stmts.iter().skip(1) {
++        let StmtKind::FieldAssign {
++            receiver: Some(receiver),
++            name,
++            op: AssignOp::Assign,
++            value,
++        } = &statement.kind
++        else {
++            break;
++        };
++        if !matches!(&receiver.kind, ExprKind::Local(name) if name == "this") {
++            break;
++        }
++        let bci = statement.origin.primary().bci();
++        let Some(evidence) = source
++            .instance_field_write_evidence
++            .iter()
++            .find(|evidence| evidence.bci == bci)
++        else {
++            break;
++        };
++        if evidence.is_static || evidence.name != *name || !prefix_bcis.insert(bci) {
++            break;
++        }
++        let ExprKind::NewArray {
++            element,
++            lengths,
++            initializers: Some(initializers),
++            total_dimensions: 1,
++        } = &value.kind
++        else {
++            break;
++        };
++        if !matches!(
++            element,
++            Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long | Type::Float | Type::Double
++        ) || !lengths.is_empty()
++            || !matches!(
++                value.presented,
++                Some(Type::Reference(ref presented))
++                    if presented == &format!("{}[]", element.spell())
++            )
++        {
++            break;
++        }
++        let mut calls = Vec::new();
++        if !initializers.iter().all(|expression| {
++            instance_array_value_supported(expression, source, &mut calls)
++        }) {
++            break;
++        }
++        let Some((_, _, field)) = source
++            .instance_field_write_evidence
++            .iter()
++            .find(|field| field.bci == bci)
++            .map(|field| (field.bci, field.is_static, field))
++        else {
++            break;
++        };
++        let rendered = crate::emit::emit_class_initializer_value(
++            value,
++            &source.member,
++            source.current_class.as_deref(),
++            &source.nested_class_members,
++            budget,
++        )?;
++        writes.push(ClassSourceInstanceArrayFieldWrite {
++            bci,
++            owner: field.owner.clone(),
++            name: field.name.clone(),
++            descriptor: field.descriptor.clone(),
++            value: rendered,
++            calls,
++        });
++        cursor += 1;
++    }
++    if writes.is_empty() {
++        return Ok(None);
++    }
++    for write in &writes {
++        let all_writes: Vec<_> = source
++            .instance_field_write_evidence
++            .iter()
++            .filter(|evidence| {
++                evidence.owner == write.owner
++                    && evidence.name == write.name
++                    && evidence.descriptor == write.descriptor
++            })
++            .collect();
++        if all_writes.len() != 1 || all_writes[0].bci != write.bci {
++            return Ok(None);
++        }
++    }
++    let remaining_body = crate::emit::emit_class_source_statements(
++        &source.program.stmts[cursor..],
++        &source.member,
++        source.current_class.as_deref(),
++        &source.nested_class_members,
++        4,
++        budget,
++    )?;
++    Ok(Some(ClassSourceInstanceArrayConstructorProjection {
++        member: source.member.clone(),
++        init: init.clone(),
++        writes,
++        remaining_body,
++    }))
++}
++
++fn instance_array_value_supported(
++    expression: &Expr,
++    source: &ClassSourceMethodAstSource,
++    calls: &mut Vec<crate::facts::CallTarget>,
++) -> bool {
++    match &expression.kind {
++        ExprKind::Integer(_) | ExprKind::Boolean(_) | ExprKind::Long(_) | ExprKind::Float(_) | ExprKind::Double(_) => true,
++        ExprKind::Cast { ty, value } => {
++            matches!(
++                ty,
++                Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long | Type::Float | Type::Double
++            ) && matches!(
++                value.kind,
++                ExprKind::Integer(_) | ExprKind::Boolean(_) | ExprKind::Long(_) | ExprKind::Float(_) | ExprKind::Double(_)
++            )
++        }
++        ExprKind::Call {
++            receiver: None,
++            args,
++            ..
++        } if args.iter().all(|argument| match &argument.kind {
++            ExprKind::Integer(_) | ExprKind::Boolean(_) | ExprKind::Long(_) | ExprKind::Float(_) | ExprKind::Double(_) => true,
++            ExprKind::Cast { ty, value } => {
++                matches!(
++                    ty,
++                    Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long | Type::Float | Type::Double
++                ) && matches!(
++                    value.kind,
++                    ExprKind::Integer(_) | ExprKind::Boolean(_) | ExprKind::Long(_) | ExprKind::Float(_) | ExprKind::Double(_)
++                )
++            }
++            _ => false,
++        }) => {
++            let bci = expression.origin.primary().bci();
++            let targets: Vec<_> = source
++                .call_targets
++                .iter()
++                .filter(|(target_bci, opcode, _)| *target_bci == bci && *opcode == 0xb8)
++                .collect();
++            let [( _, _, target)] = targets.as_slice() else {
++                return false;
++            };
++            calls.push((*target).clone());
++            true
++        }
++        _ => false,
++    }
+ }
+ 
+ /// The javac assert-switch field name, for the class-source projection that census-checks it.
+@@ -4952,9 +5171,14 @@
+     pub(crate) call_targets: Vec<(u32, u8, crate::facts::CallTarget)>,
+     pub(crate) anonymous_constructor_initializer_bci:
+         Option<ClassSourceAnonymousConstructorInitializer>,
+-    /// Same-run verified constructor prologue, retained only for generic-call proofs. The public
+-    /// `RuleDetails` selection may omit this record even though the body and SSA were recovered.
++    /// Same-run verified constructor prologue, retained for generic-call and class-source
++    /// constructor-prefix proofs. The public `RuleDetails` selection may omit this record even
++    /// though the body and SSA were recovered.
+     pub(crate) generic_call_init: Option<crate::init::InitRecord>,
++    /// Same-run claimed instance-field writes in this constructor. This is retained only for the
++    /// class-source instance-initializer projection, which compares its selected prefix with the
++    /// complete physical write inventory before moving any write.
++    pub(crate) instance_field_write_evidence: Vec<crate::field::Evidence>,
+ }
+ 
+ #[doc(hidden)]
+@@ -10280,7 +10504,7 @@
+         } else {
+             None
+         };
+-        let generic_call_init = if retain_generic_call_asts
++        let generic_call_init = if (retain_generic_call_asts || retain_all_method_asts)
+             && request.facts.method().name() == "<init>"
+             && let Some(prologue) = prologues.prologue()
+         {
+@@ -10302,6 +10526,47 @@
+             Some(prologues.record())
+         } else {
+             None
++        };
++        let instance_field_write_evidence = if retain_all_method_asts
++            && request.facts.method().name() == "<init>"
++        {
++            let mut evidence = Vec::new();
++            for (bci, operation) in operations.iter() {
++                let crate::facts::Operation::Field {
++                    access: crate::field::FieldAccess::Write,
++                    is_static: false,
++                    ..
++                } = operation
++                else {
++                    continue;
++                };
++                let Some((field, shape)) = fields.claim(*bci) else {
++                    continue;
++                };
++                if !shape.writes() || field.is_static {
++                    continue;
++                }
++                let item_cost = field
++                    .owner
++                    .len()
++                    .saturating_add(field.name.len())
++                    .saturating_add(field.descriptor.len())
++                    .saturating_add(1);
++                if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
++                    crate::stop::charge(
++                        budget,
++                        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
++                        u64::try_from(item_cost).unwrap_or(u64::MAX),
++                        Some(*bci),
++                    )
++                }) {
++                    return stopped(method, profile.clone(), &selection, stop, budget);
++                }
++                evidence.push(field.clone());
++            }
++            evidence
++        } else {
++            Vec::new()
+         };
+         *slot = Some(ClassSourceMethodAst {
+             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
+@@ -10332,6 +10597,7 @@
+                 call_targets,
+                 anonymous_constructor_initializer_bci,
+                 generic_call_init,
++                instance_field_write_evidence,
+             }),
+         });
+     }
+@@ -12153,6 +12419,7 @@
+             call_targets: vec![(3, 0xb6, target)],
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: Vec::new(),
+         };
+         (
+             ClassSourceMethodAst {
+@@ -12326,6 +12593,7 @@
+             call_targets,
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: Vec::new(),
+         };
+         (
+             ClassSourceMethodAst {
+@@ -13742,6 +14010,7 @@
+             call_targets: Vec::new(),
+             anonymous_constructor_initializer_bci: None,
+             generic_call_init: None,
++            instance_field_write_evidence: Vec::new(),
+         }
+     }
+ 
+@@ -13834,6 +14103,7 @@
+                 call_targets: Vec::new(),
+                 anonymous_constructor_initializer_bci: None,
+                 generic_call_init: None,
++                instance_field_write_evidence: Vec::new(),
+             }),
+         }
+     }

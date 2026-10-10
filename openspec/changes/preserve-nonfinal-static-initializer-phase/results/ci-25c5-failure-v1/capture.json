@@ -1,0 +1,33 @@
+[
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "38012927864",
+      "--json",
+      "headSha,status,conclusion,url,jobs"
+    ],
+    "exit": 0,
+    "output": "ci-run.json",
+    "raw_bytes": 10113,
+    "raw_sha256": "5b05ce8a5290d3dfd69a16222321bee7fe2ff78c2f59d4fceca650a4de048866",
+    "stored_sha256": "5b05ce8a5290d3dfd69a16222321bee7fe2ff78c2f59d4fceca650a4de048866"
+  },
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "38012927864",
+      "--job",
+      "114096771573",
+      "--log"
+    ],
+    "exit": 1,
+    "output": "stable.log.gz",
+    "raw_bytes": 0,
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-luna-v1.patch",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-luna-v2.patch",
+    ":(exclude)openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-a1-static-tests-v1/stdout",
+    ":(exclude)openspec/changes/recover-common-instance-array-initializers/results/instance-array-prefix-luna-v1.patch"
+  ],
+  "exit": 0,
+  "exact_immutable_raw_exclusions": {
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-luna-v1.patch": "af100f82dbacd8682431025abdbd5925f5561c894891d42897710be590e969b3",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-luna-v2.patch": "eaceec9c31a9de4d03b875d82d6cd746c3242ebe66837d1b836cd244295cdd31",
+    "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-a1-static-tests-v1/stdout": "def9d47b892952a8fd12462cbd4d9d6cd144ad30e9a7543d4a9fa6ce4c0a4602",
+    "openspec/changes/recover-common-instance-array-initializers/results/instance-array-prefix-luna-v1.patch": "f6c635b3b18afc61bd4b6b3619285ee7463671de85255ec56f3a0dab1a97d01a"
+  },
+  "reason": "Unified diff blank context lines and unmodified cargo stdout final blank line; no production or document exclusions."
+}

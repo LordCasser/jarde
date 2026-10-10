@@ -1,0 +1,189 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ParameterRhsByteArray.class
+  Last modified 2026-10-10; size 992 bytes
+  MD5 checksum 092337270fe65078bfee6779fb1d1c73
+  Compiled from "ParameterRhsByteArray.java"
+public class ParameterRhsByteArray
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Class              #37            // java/lang/StringBuilder
+   #2 = Methodref          #1.#38         // java/lang/StringBuilder."<init>":()V
+   #3 = Fieldref           #15.#39        // ParameterRhsByteArray.trace:Ljava/lang/String;
+   #4 = Methodref          #1.#40         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #5 = String             #41            // eval:
+   #6 = Methodref          #1.#42         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #7 = String             #43            // ;
+   #8 = Methodref          #1.#44         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #9 = Methodref          #16.#38        // java/lang/Object."<init>":()V
+  #10 = Methodref          #15.#45        // ParameterRhsByteArray.mark:(I)B
+  #11 = Fieldref           #15.#46        // ParameterRhsByteArray.bytes:[B
+  #12 = String             #47            // body:noarg;
+  #13 = String             #48            // body:int:
+  #14 = String             #49            //
+  #15 = Class              #50            // ParameterRhsByteArray
+  #16 = Class              #51            // java/lang/Object
+  #17 = Utf8               trace
+  #18 = Utf8               Ljava/lang/String;
+  #19 = Utf8               bytes
+  #20 = Utf8               [B
+  #21 = Utf8               mark
+  #22 = Utf8               (I)B
+  #23 = Utf8               Code
+  #24 = Utf8               LineNumberTable
+  #25 = Utf8               LocalVariableTable
+  #26 = Utf8               value
+  #27 = Utf8               I
+  #28 = Utf8               <init>
+  #29 = Utf8               ()V
+  #30 = Utf8               this
+  #31 = Utf8               LParameterRhsByteArray;
+  #32 = Utf8               (I)V
+  #33 = Utf8               marker
+  #34 = Utf8               <clinit>
+  #35 = Utf8               SourceFile
+  #36 = Utf8               ParameterRhsByteArray.java
+  #37 = Utf8               java/lang/StringBuilder
+  #38 = NameAndType        #28:#29        // "<init>":()V
+  #39 = NameAndType        #17:#18        // trace:Ljava/lang/String;
+  #40 = NameAndType        #52:#53        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #41 = Utf8               eval:
+  #42 = NameAndType        #52:#54        // append:(I)Ljava/lang/StringBuilder;
+  #43 = Utf8               ;
+  #44 = NameAndType        #55:#56        // toString:()Ljava/lang/String;
+  #45 = NameAndType        #21:#22        // mark:(I)B
+  #46 = NameAndType        #19:#20        // bytes:[B
+  #47 = Utf8               body:noarg;
+  #48 = Utf8               body:int:
+  #49 = Utf8
+  #50 = Utf8               ParameterRhsByteArray
+  #51 = Utf8               java/lang/Object
+  #52 = Utf8               append
+  #53 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #54 = Utf8               (I)Ljava/lang/StringBuilder;
+  #55 = Utf8               toString
+  #56 = Utf8               ()Ljava/lang/String;
+{
+  static java.lang.String trace;
+    descriptor: Ljava/lang/String;
+    flags: ACC_STATIC
+
+  byte[] bytes;
+    descriptor: [B
+    flags:
+
+  static byte mark(int);
+    descriptor: (I)B
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #1                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #3                  // Field trace:Ljava/lang/String;
+        10: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #5                  // String eval:
+        15: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: iload_0
+        19: invokevirtual #6                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        22: ldc           #7                  // String ;
+        24: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        30: putstatic     #3                  // Field trace:Ljava/lang/String;
+        33: iload_0
+        34: i2b
+        35: ireturn
+      LineNumberTable:
+        line 6: 0
+        line 7: 33
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      36     0 value   I
+
+  public ParameterRhsByteArray();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #9                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_1
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: bipush        71
+        12: invokestatic  #10                 // Method mark:(I)B
+        15: bastore
+        16: putfield      #11                 // Field bytes:[B
+        19: new           #1                  // class java/lang/StringBuilder
+        22: dup
+        23: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+        26: getstatic     #3                  // Field trace:Ljava/lang/String;
+        29: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: ldc           #12                 // String body:noarg;
+        34: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        37: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        40: putstatic     #3                  // Field trace:Ljava/lang/String;
+        43: return
+      LineNumberTable:
+        line 11: 0
+        line 12: 4
+        line 13: 19
+        line 14: 43
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      44     0  this   LParameterRhsByteArray;
+
+  public ParameterRhsByteArray(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #9                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_1
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: iload_1
+        11: invokestatic  #10                 // Method mark:(I)B
+        14: bastore
+        15: putfield      #11                 // Field bytes:[B
+        18: new           #1                  // class java/lang/StringBuilder
+        21: dup
+        22: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+        25: getstatic     #3                  // Field trace:Ljava/lang/String;
+        28: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        31: ldc           #13                 // String body:int:
+        33: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        36: iload_1
+        37: invokevirtual #6                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        40: ldc           #7                  // String ;
+        42: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        45: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        48: putstatic     #3                  // Field trace:Ljava/lang/String;
+        51: return
+      LineNumberTable:
+        line 17: 0
+        line 18: 4
+        line 19: 18
+        line 20: 51
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      52     0  this   LParameterRhsByteArray;
+            0      52     1 marker   I
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #14                 // String
+         2: putstatic     #3                  // Field trace:Ljava/lang/String;
+         5: return
+      LineNumberTable:
+        line 2: 0
+}
+SourceFile: "ParameterRhsByteArray.java"

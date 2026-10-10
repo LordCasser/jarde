@@ -1,0 +1,497 @@
+[
+  {
+    "path": "cases/javac23-jadx-default/classes/defpackage/PrimitiveArrayBranches.class",
+    "bytes": 354,
+    "sha256": "89fd46ed7d26e34b68a5614bfc7bdb80e343bc0682ea6dc2c1dc16c5e9ec620f"
+  },
+  {
+    "path": "cases/javac23-jadx-default/classes/defpackage/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2373,
+    "sha256": "ba8239951a6b927d0a91b2aa60b944a9dd94c3079bbeae144fe237342586ff8e"
+  },
+  {
+    "path": "cases/javac23-jadx-default/generated-sources/PrimitiveArrayBranches.java",
+    "bytes": 571,
+    "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+  },
+  {
+    "path": "cases/javac23-jadx-default/sources/PrimitiveArrayBranches.java",
+    "bytes": 571,
+    "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+  },
+  {
+    "path": "cases/javac23-jadx-default/sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2132,
+    "sha256": "40f62f8573a4281259724d66a14d704930de83a4f2bacb8c1582487e793de8a1"
+  },
+  {
+    "path": "cases/javac23-jadx-none/classes/PrimitiveArrayBranches.class",
+    "bytes": 343,
+    "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+  },
+  {
+    "path": "cases/javac23-jadx-none/classes/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2351,
+    "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+  },
+  {
+    "path": "cases/javac23-jadx-none/generated-sources/PrimitiveArrayBranches.java",
+    "bytes": 570,
+    "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+  },
+  {
+    "path": "cases/javac23-jadx-none/sources/PrimitiveArrayBranches.java",
+    "bytes": 570,
+    "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+  },
+  {
+    "path": "cases/javac23-jadx-none/sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "cases/javac23-jarde/class-source/PrimitiveArrayBranches.java",
+    "bytes": 1592,
+    "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+  },
+  {
+    "path": "cases/javac23-jarde/class-source/class-source.json",
+    "bytes": 55672,
+    "sha256": "16eb60ee81e21abc9a7573e4248651e7cc19227ab5e05d659d0a0b306ae63503"
+  },
+  {
+    "path": "cases/javac23-jarde/class-source/class-source.txt",
+    "bytes": 1592,
+    "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+  },
+  {
+    "path": "cases/javac23-jarde/classes/PrimitiveArrayBranches.class",
+    "bytes": 343,
+    "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+  },
+  {
+    "path": "cases/javac23-jarde/classes/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2351,
+    "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+  },
+  {
+    "path": "cases/javac23-jarde/sources/PrimitiveArrayBranches.java",
+    "bytes": 1592,
+    "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+  },
+  {
+    "path": "cases/javac23-jarde/sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+    "bytes": 343,
+    "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+  },
+  {
+    "path": "cases/javac23-original/classes/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2351,
+    "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+  },
+  {
+    "path": "cases/javac23-original/input-sources/PrimitiveArrayBranches.java",
+    "bytes": 404,
+    "sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5"
+  },
+  {
+    "path": "cases/javac23-original/input-sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "cases/javac8-jadx-default/classes/defpackage/PrimitiveArrayBranches.class",
+    "bytes": 354,
+    "sha256": "1aea38bdf141ed604a210c70d17517acc33ef89014316f92f3ae1a1c1874dbbd"
+  },
+  {
+    "path": "cases/javac8-jadx-default/classes/defpackage/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2403,
+    "sha256": "700c4740c858a1f6617c21d44816a00f057a416eb1c2cb1b81ae4151052adf36"
+  },
+  {
+    "path": "cases/javac8-jadx-default/generated-sources/PrimitiveArrayBranches.java",
+    "bytes": 571,
+    "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+  },
+  {
+    "path": "cases/javac8-jadx-default/sources/PrimitiveArrayBranches.java",
+    "bytes": 571,
+    "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+  },
+  {
+    "path": "cases/javac8-jadx-default/sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2132,
+    "sha256": "40f62f8573a4281259724d66a14d704930de83a4f2bacb8c1582487e793de8a1"
+  },
+  {
+    "path": "cases/javac8-jadx-none/classes/PrimitiveArrayBranches.class",
+    "bytes": 343,
+    "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+  },
+  {
+    "path": "cases/javac8-jadx-none/classes/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2381,
+    "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+  },
+  {
+    "path": "cases/javac8-jadx-none/generated-sources/PrimitiveArrayBranches.java",
+    "bytes": 570,
+    "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+  },
+  {
+    "path": "cases/javac8-jadx-none/sources/PrimitiveArrayBranches.java",
+    "bytes": 570,
+    "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+  },
+  {
+    "path": "cases/javac8-jadx-none/sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "cases/javac8-jarde/class-source/PrimitiveArrayBranches.java",
+    "bytes": 1592,
+    "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+  },
+  {
+    "path": "cases/javac8-jarde/class-source/class-source.json",
+    "bytes": 55672,
+    "sha256": "023ce0b748050cfe5260dd78601a302bb67a824334eee77cc771331cd5749182"
+  },
+  {
+    "path": "cases/javac8-jarde/class-source/class-source.txt",
+    "bytes": 1592,
+    "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+  },
+  {
+    "path": "cases/javac8-jarde/classes/PrimitiveArrayBranches.class",
+    "bytes": 343,
+    "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+  },
+  {
+    "path": "cases/javac8-jarde/classes/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2381,
+    "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+  },
+  {
+    "path": "cases/javac8-jarde/sources/PrimitiveArrayBranches.java",
+    "bytes": 1592,
+    "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+  },
+  {
+    "path": "cases/javac8-jarde/sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "cases/javac8-original/classes/PrimitiveArrayBranches.class",
+    "bytes": 343,
+    "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+  },
+  {
+    "path": "cases/javac8-original/classes/PrimitiveArrayBranchesRunner.class",
+    "bytes": 2381,
+    "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+  },
+  {
+    "path": "cases/javac8-original/input-sources/PrimitiveArrayBranches.java",
+    "bytes": 404,
+    "sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5"
+  },
+  {
+    "path": "cases/javac8-original/input-sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "jadx/default/sources/defpackage/PrimitiveArrayBranches.java",
+    "bytes": 571,
+    "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+  },
+  {
+    "path": "jadx/none/sources/PrimitiveArrayBranches.java",
+    "bytes": 570,
+    "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+  },
+  {
+    "path": "jadx-input/PrimitiveArrayBranches.jar",
+    "bytes": 417,
+    "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+  },
+  {
+    "path": "manifest.json",
+    "bytes": 111613,
+    "sha256": "be7b578eef48ca2d6bb84241fbe68233f6a498ac566a46524cddd9fd207822dd"
+  },
+  {
+    "path": "original-sources/PrimitiveArrayBranches.java",
+    "bytes": 404,
+    "sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5"
+  },
+  {
+    "path": "original-sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  {
+    "path": "original-sources/TestArrays2.java",
+    "bytes": 807,
+    "sha256": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d"
+  },
+  {
+    "path": "streams/jadx-default-decompile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/jadx-default-decompile.stdout",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "path": "streams/jadx-none-decompile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/jadx-none-decompile.stdout",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "path": "streams/jadx-version.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/jadx-version.stdout",
+    "bytes": 6,
+    "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+  },
+  {
+    "path": "streams/javac23-jadx-default-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jadx-default-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jadx-default-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jadx-default-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac23-jadx-none-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jadx-none-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jadx-none-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jadx-none-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac23-jarde-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jarde-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jarde-render.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jarde-render.stdout",
+    "bytes": 55672,
+    "sha256": "16eb60ee81e21abc9a7573e4248651e7cc19227ab5e05d659d0a0b306ae63503"
+  },
+  {
+    "path": "streams/javac23-jarde-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-jarde-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac23-original-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-original-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-original-javap-PrimitiveArrayBranches.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-original-javap-PrimitiveArrayBranches.stdout",
+    "bytes": 3585,
+    "sha256": "f88d5eb100ac42ed113a63914d6c585fc99d25fb2aa3c7cea4fd292d5c1ee554"
+  },
+  {
+    "path": "streams/javac23-original-javap-PrimitiveArrayBranchesRunner.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-original-javap-PrimitiveArrayBranchesRunner.stdout",
+    "bytes": 26437,
+    "sha256": "0036d39d23af7691d9a1be9a3fe29baf20ae7eb55d9a7d679c26f1714ecb2346"
+  },
+  {
+    "path": "streams/javac23-original-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac23-original-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac8-jadx-default-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jadx-default-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jadx-default-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jadx-default-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac8-jadx-none-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jadx-none-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jadx-none-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jadx-none-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac8-jarde-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jarde-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jarde-render.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jarde-render.stdout",
+    "bytes": 55672,
+    "sha256": "023ce0b748050cfe5260dd78601a302bb67a824334eee77cc771331cd5749182"
+  },
+  {
+    "path": "streams/javac8-jarde-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-jarde-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  },
+  {
+    "path": "streams/javac8-original-compile.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-original-compile.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-original-javap-PrimitiveArrayBranches.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-original-javap-PrimitiveArrayBranches.stdout",
+    "bytes": 3321,
+    "sha256": "8def9a2398c8d86d4db67fc97a2b2bd017ea50ee6b372edd2f6d3f3bd1959728"
+  },
+  {
+    "path": "streams/javac8-original-javap-PrimitiveArrayBranchesRunner.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-original-javap-PrimitiveArrayBranchesRunner.stdout",
+    "bytes": 26754,
+    "sha256": "408ebbb59b6e64bb3ebd80e300645f824e120d4ccace1d9e66248537e75dde81"
+  },
+  {
+    "path": "streams/javac8-original-run.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "streams/javac8-original-run.stdout",
+    "bytes": 204,
+    "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+  }
+]

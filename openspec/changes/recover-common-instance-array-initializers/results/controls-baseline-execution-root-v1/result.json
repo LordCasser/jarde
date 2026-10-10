@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/prepare-controls-baseline-root-v3.py",
+    "--cli",
+    "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "--cli-sha256",
+    "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  ],
+  "exit": 0,
+  "script_sha256": "cc6a64af52570c7f51a1eed626d612185c59dc3e0e17b77e9604ef92ed44711a"
+}

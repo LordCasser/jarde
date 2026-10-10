@@ -1,0 +1,114 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranches.class
+  Last modified 2026年10月10日; size 343 bytes
+  SHA-256 checksum 319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8
+public class PrimitiveArrayBranches
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // PrimitiveArrayBranches
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // PrimitiveArrayBranches.test4:(I)Ljava/lang/Object;
+   #8 = Class              #10            // PrimitiveArrayBranches
+   #9 = NameAndType        #11:#12        // test4:(I)Ljava/lang/Object;
+  #10 = Utf8               PrimitiveArrayBranches
+  #11 = Utf8               test4
+  #12 = Utf8               (I)Ljava/lang/Object;
+  #13 = Utf8               Code
+  #14 = Utf8               StackMapTable
+  #15 = Utf8               choose
+{
+  public PrimitiveArrayBranches();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static java.lang.Object test4(int);
+    descriptor: (I)Ljava/lang/Object;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: iload_0
+         1: iconst_1
+         2: if_icmpne     17
+         5: iconst_2
+         6: newarray       int
+         8: dup
+         9: iconst_0
+        10: iconst_1
+        11: iastore
+        12: dup
+        13: iconst_1
+        14: iconst_2
+        15: iastore
+        16: areturn
+        17: iload_0
+        18: iconst_2
+        19: if_icmpne     34
+        22: iconst_2
+        23: newarray       float
+        25: dup
+        26: iconst_0
+        27: fconst_1
+        28: fastore
+        29: dup
+        30: iconst_1
+        31: fconst_2
+        32: fastore
+        33: areturn
+        34: iload_0
+        35: iconst_3
+        36: if_icmpne     51
+        39: iconst_2
+        40: newarray       short
+        42: dup
+        43: iconst_0
+        44: iconst_1
+        45: sastore
+        46: dup
+        47: iconst_1
+        48: iconst_2
+        49: sastore
+        50: areturn
+        51: iload_0
+        52: iconst_4
+        53: if_icmpne     68
+        56: iconst_2
+        57: newarray       byte
+        59: dup
+        60: iconst_0
+        61: iconst_1
+        62: bastore
+        63: dup
+        64: iconst_1
+        65: iconst_2
+        66: bastore
+        67: areturn
+        68: aconst_null
+        69: areturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 17 /* same */
+        frame_type = 16 /* same */
+        frame_type = 16 /* same */
+        frame_type = 16 /* same */
+
+  public static java.lang.Object choose(int);
+    descriptor: (I)Ljava/lang/Object;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: iload_0
+         1: invokestatic  #7                  // Method test4:(I)Ljava/lang/Object;
+         4: areturn
+}

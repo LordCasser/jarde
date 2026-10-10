@@ -1,0 +1,9 @@
+type=1;class=[I;values=[1, 2]
+type=2;class=[F;values=[1.0, 2.0]
+type=3;class=[S;values=[1, 2]
+type=4;class=[B;values=[1, 2]
+type=0;null
+type=5;null
+type=-1;null
+type=-2147483648;null
+type=2147483647;null

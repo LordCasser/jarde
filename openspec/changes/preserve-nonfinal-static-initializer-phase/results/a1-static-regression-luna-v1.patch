@@ -1,0 +1,102 @@
+--- a/tests/p3_array_slot_retype_locals.rs
++++ b/tests/p3_array_slot_retype_locals.rs
+@@ -251,7 +251,45 @@
+ }
+ 
+ #[test]
+-fn the_dynamic_dimension_control_keeps_its_text_verbatim() {
+-    assert_verbatim("A1", A1, A1_BASELINE, A1_EXPECTED);
+-    assert_complete("A1", A1, A1_EXPECTED);
+-}
++fn the_dynamic_dimension_control_projects_the_proven_static_field_initializer() {
++    let text = assert_complete("A1", A1, A1_EXPECTED);
++    let report = recover(A1, "A1");
++    assert_eq!(report.fields.len(), 1, "the physical field remains in the report");
++    assert_eq!(report.methods.len(), 6, "all six physical methods remain in the report");
++    assert_eq!(
++        text,
++        include_str!("fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java"),
++        "every physical method keeps its baseline body while the proved field moves to its declaration"
++    );
++
++    let ClassSourceInitializerProof::Proved { fields } = &report.initializer_proof else {
++        panic!("A1's complete static initializer group is proved: {:?}", report.initializer_proof);
++    };
++    assert_eq!(fields.len(), 1, "one runtime static field write is projected");
++    assert_eq!(fields[0].field_index, 0, "proof retains physical field order");
++    assert_eq!(fields[0].write_order, 0, "proof retains initializer execution order");
++    assert_eq!(fields[0].write_bci, 1, "proof points at the physical putstatic");
++    assert_eq!(text.matches("static int calls = 0;").count(), 1);
++    assert!(
++        !text.lines().any(|line| line.trim() == "static {"),
++        "the assembled class does not duplicate the projected initializer block:\n{text}"
++    );
++
++    let clinit = report
++        .methods
++        .iter()
++        .find(|method| method.item.identity.name.0 == b"<clinit>")
++        .expect("the original physical <clinit> remains in the report");
++    let ClassSourceOutcome::Recovered { report: body, .. } = &clinit.outcome else {
++        panic!("the original <clinit> remains recovered: {:?}", clinit.outcome);
++    };
++    assert!(body.produced(), "the physical <clinit> still has a recovered body");
++    assert!(
++        !body.source_map.of_bci(fields[0].write_bci).is_empty(),
++        "the projected field write remains anchored to physical <clinit> source"
++    );
++    assert!(
++        clinit.text.lines().any(|line| line.trim() == "static {"),
++        "the original method-local initializer spelling remains auditable"
++    );
++}
+--- /dev/null
++++ b/tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java
+@@ -0,0 +1,47 @@
++// jarde: presentation of `A1` from the class file's own declaration and one recovery run per member.
++// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.
++public class A1 extends java.lang.Object {
++    static int calls = 0;
++
++    public A1() {
++        // @method <init>()V
++        // @declaration a constructor of `A1`, member flags 0x0001
++        // recovered from bytecode; presentation is not claimed to compile
++        super();
++        return;
++    }
++
++    static int n() {
++        // @method n()I
++        // @declaration a static method of `A1`, member flags 0x0008
++        // recovered from bytecode; presentation is not claimed to compile
++        A1.calls = A1.calls + 1;
++        return 3;
++    }
++
++    public static int[][] dynDims() {
++        // @method dynDims()[[I
++        // @declaration a static method of `A1`, member flags 0x0009
++        // recovered from bytecode; presentation is not claimed to compile
++        int[][] local0 = new int[n()][];
++        local0[0] = new int[n()];
++        return new int[][]{local0[0], new int[n()]};
++    }
++
++    public static java.lang.Object[] mixed() {
++        // @method mixed()[Ljava/lang/Object;
++        // @declaration a static method of `A1`, member flags 0x0009
++        // recovered from bytecode; presentation is not claimed to compile
++        return new java.lang.Object[]{"s", java.lang.Integer.valueOf(n()), new int[n()]};
++    }
++
++    public static void main(java.lang.String[] arg0) {
++        // @method main([Ljava/lang/String;)V
++        // @declaration a static method of `A1`, member flags 0x0009
++        // recovered from bytecode; presentation is not claimed to compile
++        int[][] local1 = dynDims();
++        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(local1.length).append(":").append(local1[0].length).append(":").append(A1.calls).toString());
++        java.lang.System.out.println((java.lang.String) new java.lang.StringBuilder().append(mixed().length).append(":").append(A1.calls).toString());
++        return;
++    }
++}

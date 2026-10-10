@@ -1,0 +1,229 @@
+[
+  {
+    "label": "source:CommonDirectSuperByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/CommonDirectSuperByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:ThisDelegatingByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/ThisDelegatingByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:DifferentRhsByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/DifferentRhsByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:InstanceFieldInitRunner.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/InstanceFieldInitRunner.java",
+    "ok": true
+  },
+  {
+    "label": "source:FinalLiteralTwoArrays.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/FinalLiteralTwoArrays.java",
+    "ok": true
+  },
+  {
+    "label": "source:MissingWriteByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/MissingWriteByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:DuplicateWriteByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/DuplicateWriteByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:InterveningEffectByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/InterveningEffectByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:ParameterRhsByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/ParameterRhsByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:ReverseFieldOrderByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/ReverseFieldOrderByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:HandlerArrayByteArray.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/HandlerArrayByteArray.java",
+    "ok": true
+  },
+  {
+    "label": "source:ControlsRunner.java",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-prepared-v1/sources/ControlsRunner.java",
+    "ok": true
+  },
+  {
+    "label": "new-cli-metadata",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "expected_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+    "actual_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+    "ok": true
+  },
+  {
+    "label": "new-frozen-cli",
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "metadata_declared_path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "metadata_declared_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "ok": true
+  },
+  {
+    "label": "metadata-has-exact-ten-product-pins",
+    "expected_paths": [
+      "Cargo.lock",
+      "crates/jarde-java/src/asserts.rs",
+      "crates/jarde-java/src/ast.rs",
+      "crates/jarde-java/src/build.rs",
+      "crates/jarde-java/src/emit.rs",
+      "crates/jarde-java/src/field.rs",
+      "crates/jarde-java/src/init.rs",
+      "crates/jarde-java/src/report.rs",
+      "src/class_source.rs",
+      "src/facade.rs"
+    ],
+    "actual_paths": [
+      "Cargo.lock",
+      "crates/jarde-java/src/asserts.rs",
+      "crates/jarde-java/src/ast.rs",
+      "crates/jarde-java/src/build.rs",
+      "crates/jarde-java/src/emit.rs",
+      "crates/jarde-java/src/field.rs",
+      "crates/jarde-java/src/init.rs",
+      "crates/jarde-java/src/report.rs",
+      "src/class_source.rs",
+      "src/facade.rs"
+    ],
+    "ok": true
+  },
+  {
+    "label": "candidate-source:Cargo.lock",
+    "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+    "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/asserts.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/asserts.rs",
+    "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/ast.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+    "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/build.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+    "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/emit.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/emit.rs",
+    "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/field.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+    "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/init.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+    "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:crates/jarde-java/src/report.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+    "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:src/class_source.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+    "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "ok": true
+  },
+  {
+    "label": "candidate-source:src/facade.rs",
+    "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+    "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "ok": true
+  },
+  {
+    "label": "fixed-jdk-manifest",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "ok": true
+  },
+  {
+    "label": "javac8:javac",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "ok": true
+  },
+  {
+    "label": "javac8:java",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+    "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "ok": true
+  },
+  {
+    "label": "javac8:javap",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+    "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+    "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+    "ok": true
+  },
+  {
+    "label": "javac23:javac",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+    "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+    "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+    "ok": true
+  },
+  {
+    "label": "javac23:java",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+    "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "ok": true
+  },
+  {
+    "label": "javac23:javap",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+    "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+    "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+    "ok": true
+  },
+  {
+    "label": "two-required-jdk-legs",
+    "ok": true
+  }
+]

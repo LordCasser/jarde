@@ -1,0 +1,2493 @@
+{
+  "schema": "primitive-array-branches-baseline-root-v1",
+  "status": "completed",
+  "claim_boundary": "Focused adaptation of TestArrays2.test4(int) with JUnit removed and a public choose(int) wrapper added. This does not represent the full TestArrays2 test class or the full EM18 suite.",
+  "oracle": "Fresh original complete-class runs on each JDK. Every reconstructed leg records and compares exit/stdout/stderr byte-for-byte against its same-JDK original runtime; failures and mismatches remain in the evidence.",
+  "upstream": {
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/arrays/TestArrays2.java",
+    "sha256": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d",
+    "snapshot": {
+      "path": "original-sources/TestArrays2.java",
+      "bytes": 807,
+      "sha256": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d"
+    }
+  },
+  "method_identity": {
+    "method": "private static Object test4(int type)",
+    "body_matches_upstream": true,
+    "adapter_wrapper": "public static Object choose(int type)"
+  },
+  "source": {
+    "path": "original-sources/PrimitiveArrayBranches.java",
+    "bytes": 404,
+    "sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5"
+  },
+  "runner": {
+    "path": "original-sources/PrimitiveArrayBranchesRunner.java",
+    "bytes": 2111,
+    "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+  },
+  "source_hashes": {
+    "adapter": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5",
+    "runner": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4",
+    "upstream_TestArrays2": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d"
+  },
+  "script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/prepare-baseline-root-v2.py",
+    "bytes": 27046,
+    "sha256": "ddfe22c18388e2b678a02892b2ef038250979c781d642f516fe86afac28ffc86"
+  },
+  "cli_metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  },
+  "frozen_cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e"
+  },
+  "candidate_sources": {
+    "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "crates/jarde-java/src/report.rs": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "crates/jarde-java/src/build.rs": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "crates/jarde-java/src/ast.rs": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "crates/jarde-java/src/emit.rs": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "crates/jarde-java/src/field.rs": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "src/facade.rs": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "src/class_source.rs": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "jadx": {
+    "path": "/opt/homebrew/bin/jadx",
+    "version": "1.5.6",
+    "executable_path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "executable_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "version_command": {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "input_jar": {
+      "path": "jadx-input/PrimitiveArrayBranches.jar",
+      "bytes": 417,
+      "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+    },
+    "jar_members": [
+      {
+        "name": "PrimitiveArrayBranches.class",
+        "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+        "bytes": 343,
+        "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+      }
+    ],
+    "profiles": [
+      {
+        "label": "jadx-default",
+        "profile": "default",
+        "input_jar": {
+          "path": "jadx-input/PrimitiveArrayBranches.jar",
+          "bytes": 417,
+          "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+        },
+        "jar_members": [
+          {
+            "name": "PrimitiveArrayBranches.class",
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-default-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-default-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/default/sources/defpackage/PrimitiveArrayBranches.java",
+            "bytes": 571,
+            "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+          }
+        ],
+        "generated_source_count": 1,
+        "packages": [
+          "defpackage"
+        ],
+        "decompile_success": true
+      },
+      {
+        "label": "jadx-none",
+        "profile": "none",
+        "input_jar": {
+          "path": "jadx-input/PrimitiveArrayBranches.jar",
+          "bytes": 417,
+          "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+        },
+        "jar_members": [
+          {
+            "name": "PrimitiveArrayBranches.class",
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-none-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-none-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/none/sources/PrimitiveArrayBranches.java",
+            "bytes": 570,
+            "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+          }
+        ],
+        "generated_source_count": 1,
+        "packages": [
+          null
+        ],
+        "decompile_success": true
+      }
+    ]
+  },
+  "environment_policy": {
+    "removed_for_each_process": [
+      "JAVA_TOOL_OPTIONS",
+      "_JAVA_OPTIONS",
+      "JDK_JAVA_OPTIONS",
+      "CLASSPATH"
+    ],
+    "JDK_HOME_and_PATH_set_for_JDK_processes": true
+  },
+  "preflight": [
+    {
+      "label": "metadata",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+      "expected_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "actual_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "ok": true
+    },
+    {
+      "label": "cli",
+      "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "expected_path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "metadata_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "ok": true
+    },
+    {
+      "label": "product-pin-set",
+      "expected": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "actual": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/init.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/report.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/ast.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/emit.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/emit.rs",
+      "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/asserts.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/asserts.rs",
+      "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "ok": true
+    },
+    {
+      "label": "product-source:crates/jarde-java/src/field.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "ok": true
+    },
+    {
+      "label": "product-source:src/facade.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "ok": true
+    },
+    {
+      "label": "product-source:src/class_source.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "ok": true
+    },
+    {
+      "label": "product-source:Cargo.lock",
+      "path": "/Users/lordcasser/workspace/projects/jarde/Cargo.lock",
+      "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "ok": true
+    },
+    {
+      "label": "upstream-TestArrays2",
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/arrays/TestArrays2.java",
+      "expected_sha256": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d",
+      "actual_sha256": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d",
+      "snapshot_sha256": "8f3f006efc74144fedb359b3830a78c131d4d8ac0a9ef095c4d05fe6b302664d",
+      "ok": true
+    },
+    {
+      "label": "test4-method-preserved",
+      "ok": true
+    },
+    {
+      "label": "adapter",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/PrimitiveArrayBranches.java",
+      "expected_sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5",
+      "actual_sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5",
+      "ok": true
+    },
+    {
+      "label": "runner",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/PrimitiveArrayBranchesRunner.java",
+      "expected_sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4",
+      "actual_sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4",
+      "ok": true
+    },
+    {
+      "label": "jdk-controls",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "jdk-legs",
+      "expected": [
+        "javac8",
+        "javac23"
+      ],
+      "actual": [
+        "javac23",
+        "javac8"
+      ],
+      "ok": true
+    },
+    {
+      "label": "jadx-version",
+      "expected": "1.5.6",
+      "actual_stdout": "1.5.6",
+      "command": {
+        "label": "jadx-version",
+        "argv": [
+          "/opt/homebrew/bin/jadx",
+          "--version"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/jadx-version.stdout",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "streams/jadx-version.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 2
+  },
+  "original_cross_jdk_raw_equal": true,
+  "commands": [
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-version.stdout",
+        "bytes": 6,
+        "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+      },
+      "stderr": {
+        "path": "streams/jadx-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/input-sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/input-sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes",
+        "PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-javap-PrimitiveArrayBranches",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes/PrimitiveArrayBranches.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-javap-PrimitiveArrayBranches.stdout",
+        "bytes": 3321,
+        "sha256": "8def9a2398c8d86d4db67fc97a2b2bd017ea50ee6b372edd2f6d3f3bd1959728"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-javap-PrimitiveArrayBranches.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-javap-PrimitiveArrayBranchesRunner",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes/PrimitiveArrayBranchesRunner.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-javap-PrimitiveArrayBranchesRunner.stdout",
+        "bytes": 26754,
+        "sha256": "408ebbb59b6e64bb3ebd80e300645f824e120d4ccace1d9e66248537e75dde81"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-javap-PrimitiveArrayBranchesRunner.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/input-sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/input-sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes",
+        "PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-javap-PrimitiveArrayBranches",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranches.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-javap-PrimitiveArrayBranches.stdout",
+        "bytes": 3585,
+        "sha256": "f88d5eb100ac42ed113a63914d6c585fc99d25fb2aa3c7cea4fd292d5c1ee554"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-javap-PrimitiveArrayBranches.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-javap-PrimitiveArrayBranchesRunner",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranchesRunner.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-javap-PrimitiveArrayBranchesRunner.stdout",
+        "bytes": 26437,
+        "sha256": "0036d39d23af7691d9a1be9a3fe29baf20ae7eb55d9a7d679c26f1714ecb2346"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-javap-PrimitiveArrayBranchesRunner.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/default",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-default-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/jadx-default-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/jadx-none-decompile.stdout",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "streams/jadx-none-decompile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "defpackage.PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-default-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "defpackage.PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-default-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-default-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jadx-none-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac8-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jadx-none-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac23-jadx-none-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes/PrimitiveArrayBranches.class",
+        "--class",
+        "PrimitiveArrayBranches",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-render.stdout",
+        "bytes": 55672,
+        "sha256": "023ce0b748050cfe5260dd78601a302bb67a824334eee77cc771331cd5749182"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/classes",
+        "PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-jarde-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac8-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranches.class",
+        "--class",
+        "PrimitiveArrayBranches",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-render.stdout",
+        "bytes": 55672,
+        "sha256": "16eb60ee81e21abc9a7573e4248651e7cc19227ab5e05d659d0a0b306ae63503"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/sources/PrimitiveArrayBranches.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/sources/PrimitiveArrayBranchesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-jarde-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/classes",
+        "PrimitiveArrayBranchesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-jarde-run.stdout",
+        "bytes": 204,
+        "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+      },
+      "stderr": {
+        "path": "streams/javac23-jarde-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/input-sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/input-sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes",
+          "PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-original/input-sources/PrimitiveArrayBranches.java",
+          "bytes": 404,
+          "sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5"
+        },
+        {
+          "path": "cases/javac8-original/input-sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2111,
+          "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/PrimitiveArrayBranches.class",
+          "bytes": 343,
+          "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+        },
+        {
+          "path": "cases/javac8-original/classes/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2381,
+          "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "expected_class_names": [
+        "PrimitiveArrayBranches.class",
+        "PrimitiveArrayBranchesRunner.class"
+      ],
+      "produced_class_names": [
+        "PrimitiveArrayBranches.class",
+        "PrimitiveArrayBranchesRunner.class"
+      ],
+      "complete_class_set": true,
+      "success": true,
+      "runtime_sha256": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "javap": [
+        {
+          "class": "PrimitiveArrayBranches",
+          "class_file": {
+            "path": "cases/javac8-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+          },
+          "command": {
+            "label": "javac8-original-javap-PrimitiveArrayBranches",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes/PrimitiveArrayBranches.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-javap-PrimitiveArrayBranches.stdout",
+              "bytes": 3321,
+              "sha256": "8def9a2398c8d86d4db67fc97a2b2bd017ea50ee6b372edd2f6d3f3bd1959728"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap-PrimitiveArrayBranches.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        },
+        {
+          "class": "PrimitiveArrayBranchesRunner",
+          "class_file": {
+            "path": "cases/javac8-original/classes/PrimitiveArrayBranchesRunner.class",
+            "bytes": 2381,
+            "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+          },
+          "command": {
+            "label": "javac8-original-javap-PrimitiveArrayBranchesRunner",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes/PrimitiveArrayBranchesRunner.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-javap-PrimitiveArrayBranchesRunner.stdout",
+              "bytes": 26754,
+              "sha256": "408ebbb59b6e64bb3ebd80e300645f824e120d4ccace1d9e66248537e75dde81"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap-PrimitiveArrayBranchesRunner.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        }
+      ]
+    },
+    {
+      "label": "javac23-original",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/input-sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/input-sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes",
+          "PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-original/input-sources/PrimitiveArrayBranches.java",
+          "bytes": 404,
+          "sha256": "504986e4a62260aa3b9fec5721e6d29631bde2de8b260af340999ab1b37ccbb5"
+        },
+        {
+          "path": "cases/javac23-original/input-sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2111,
+          "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+          "bytes": 343,
+          "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+        },
+        {
+          "path": "cases/javac23-original/classes/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2351,
+          "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "expected_class_names": [
+        "PrimitiveArrayBranches.class",
+        "PrimitiveArrayBranchesRunner.class"
+      ],
+      "produced_class_names": [
+        "PrimitiveArrayBranches.class",
+        "PrimitiveArrayBranchesRunner.class"
+      ],
+      "complete_class_set": true,
+      "success": true,
+      "runtime_sha256": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "javap": [
+        {
+          "class": "PrimitiveArrayBranches",
+          "class_file": {
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          },
+          "command": {
+            "label": "javac23-original-javap-PrimitiveArrayBranches",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranches.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-javap-PrimitiveArrayBranches.stdout",
+              "bytes": 3585,
+              "sha256": "f88d5eb100ac42ed113a63914d6c585fc99d25fb2aa3c7cea4fd292d5c1ee554"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap-PrimitiveArrayBranches.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        },
+        {
+          "class": "PrimitiveArrayBranchesRunner",
+          "class_file": {
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranchesRunner.class",
+            "bytes": 2351,
+            "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+          },
+          "command": {
+            "label": "javac23-original-javap-PrimitiveArrayBranchesRunner",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranchesRunner.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-javap-PrimitiveArrayBranchesRunner.stdout",
+              "bytes": 26437,
+              "sha256": "0036d39d23af7691d9a1be9a3fe29baf20ae7eb55d9a7d679c26f1714ecb2346"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap-PrimitiveArrayBranchesRunner.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true
+        }
+      ]
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "defpackage.PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-default-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-default/sources/PrimitiveArrayBranches.java",
+          "bytes": 571,
+          "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+        },
+        {
+          "path": "cases/javac8-jadx-default/sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2132,
+          "sha256": "40f62f8573a4281259724d66a14d704930de83a4f2bacb8c1582487e793de8a1"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/PrimitiveArrayBranches.class",
+          "bytes": 354,
+          "sha256": "1aea38bdf141ed604a210c70d17517acc33ef89014316f92f3ae1a1c1874dbbd"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2403,
+          "sha256": "700c4740c858a1f6617c21d44816a00f057a416eb1c2cb1b81ae4151052adf36"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "decompilation": {
+        "label": "jadx-default",
+        "profile": "default",
+        "input_jar": {
+          "path": "jadx-input/PrimitiveArrayBranches.jar",
+          "bytes": 417,
+          "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+        },
+        "jar_members": [
+          {
+            "name": "PrimitiveArrayBranches.class",
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-default-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-default-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/default/sources/defpackage/PrimitiveArrayBranches.java",
+            "bytes": 571,
+            "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+          }
+        ],
+        "generated_source_count": 1,
+        "packages": [
+          "defpackage"
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac8-jadx-default/generated-sources/PrimitiveArrayBranches.java",
+          "bytes": 571,
+          "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+        }
+      ],
+      "runner_adaptation": {
+        "path": "cases/javac8-jadx-default/sources/PrimitiveArrayBranchesRunner.java",
+        "bytes": 2132,
+        "sha256": "40f62f8573a4281259724d66a14d704930de83a4f2bacb8c1582487e793de8a1"
+      },
+      "runner_class": "defpackage.PrimitiveArrayBranchesRunner",
+      "runtime_matches_original_raw": true,
+      "original_runtime": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "success": true
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "defpackage.PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-default-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-default/sources/PrimitiveArrayBranches.java",
+          "bytes": 571,
+          "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+        },
+        {
+          "path": "cases/javac23-jadx-default/sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2132,
+          "sha256": "40f62f8573a4281259724d66a14d704930de83a4f2bacb8c1582487e793de8a1"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/PrimitiveArrayBranches.class",
+          "bytes": 354,
+          "sha256": "89fd46ed7d26e34b68a5614bfc7bdb80e343bc0682ea6dc2c1dc16c5e9ec620f"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2373,
+          "sha256": "ba8239951a6b927d0a91b2aa60b944a9dd94c3079bbeae144fe237342586ff8e"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "decompilation": {
+        "label": "jadx-default",
+        "profile": "default",
+        "input_jar": {
+          "path": "jadx-input/PrimitiveArrayBranches.jar",
+          "bytes": 417,
+          "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+        },
+        "jar_members": [
+          {
+            "name": "PrimitiveArrayBranches.class",
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-default-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-default-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/default/sources/defpackage/PrimitiveArrayBranches.java",
+            "bytes": 571,
+            "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+          }
+        ],
+        "generated_source_count": 1,
+        "packages": [
+          "defpackage"
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac23-jadx-default/generated-sources/PrimitiveArrayBranches.java",
+          "bytes": 571,
+          "sha256": "5158c6586375408fe6e02cb73c24b6184fb06e7584e8e35fd69d85b8c0b36de4"
+        }
+      ],
+      "runner_adaptation": {
+        "path": "cases/javac23-jadx-default/sources/PrimitiveArrayBranchesRunner.java",
+        "bytes": 2132,
+        "sha256": "40f62f8573a4281259724d66a14d704930de83a4f2bacb8c1582487e793de8a1"
+      },
+      "runner_class": "defpackage.PrimitiveArrayBranchesRunner",
+      "runtime_matches_original_raw": true,
+      "original_runtime": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "success": true
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jadx-none-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-none/sources/PrimitiveArrayBranches.java",
+          "bytes": 570,
+          "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+        },
+        {
+          "path": "cases/javac8-jadx-none/sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2111,
+          "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-none/classes/PrimitiveArrayBranches.class",
+          "bytes": 343,
+          "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2381,
+          "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac8",
+      "decompilation": {
+        "label": "jadx-none",
+        "profile": "none",
+        "input_jar": {
+          "path": "jadx-input/PrimitiveArrayBranches.jar",
+          "bytes": 417,
+          "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+        },
+        "jar_members": [
+          {
+            "name": "PrimitiveArrayBranches.class",
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-none-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-none-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/none/sources/PrimitiveArrayBranches.java",
+            "bytes": 570,
+            "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+          }
+        ],
+        "generated_source_count": 1,
+        "packages": [
+          null
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac8-jadx-none/generated-sources/PrimitiveArrayBranches.java",
+          "bytes": 570,
+          "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+        }
+      ],
+      "runner_adaptation": {
+        "path": "cases/javac8-jadx-none/sources/PrimitiveArrayBranchesRunner.java",
+        "bytes": 2111,
+        "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+      },
+      "runner_class": "PrimitiveArrayBranchesRunner",
+      "runtime_matches_original_raw": true,
+      "original_runtime": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "success": true
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jadx-none-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-none/sources/PrimitiveArrayBranches.java",
+          "bytes": 570,
+          "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+        },
+        {
+          "path": "cases/javac23-jadx-none/sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2111,
+          "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-none/classes/PrimitiveArrayBranches.class",
+          "bytes": 343,
+          "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2351,
+          "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac23",
+      "decompilation": {
+        "label": "jadx-none",
+        "profile": "none",
+        "input_jar": {
+          "path": "jadx-input/PrimitiveArrayBranches.jar",
+          "bytes": 417,
+          "sha256": "648b903e386993d2ea4bb8173ca517addee464d907b440eb5a37a02ac7fee6d8"
+        },
+        "jar_members": [
+          {
+            "name": "PrimitiveArrayBranches.class",
+            "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+            "bytes": 343,
+            "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+          }
+        ],
+        "decompile": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/jadx-input/PrimitiveArrayBranches.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/jadx-none-decompile.stdout",
+            "bytes": 148,
+            "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+          },
+          "stderr": {
+            "path": "streams/jadx-none-decompile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "generated_sources": [
+          {
+            "path": "jadx/none/sources/PrimitiveArrayBranches.java",
+            "bytes": 570,
+            "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+          }
+        ],
+        "generated_source_count": 1,
+        "packages": [
+          null
+        ],
+        "decompile_success": true
+      },
+      "generated_sources": [
+        {
+          "path": "cases/javac23-jadx-none/generated-sources/PrimitiveArrayBranches.java",
+          "bytes": 570,
+          "sha256": "2656c174ffa9c569ed827292f739eeb9c8c034860af04f11cdeff74aecd96ee0"
+        }
+      ],
+      "runner_adaptation": {
+        "path": "cases/javac23-jadx-none/sources/PrimitiveArrayBranchesRunner.java",
+        "bytes": 2111,
+        "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+      },
+      "runner_class": "PrimitiveArrayBranchesRunner",
+      "runtime_matches_original_raw": true,
+      "original_runtime": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "success": true
+    },
+    {
+      "label": "javac8-jarde",
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "original_class": {
+        "path": "cases/javac8-original/classes/PrimitiveArrayBranches.class",
+        "bytes": 343,
+        "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+      },
+      "render": {
+        "label": "javac8-jarde-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-original/classes/PrimitiveArrayBranches.class",
+          "--class",
+          "PrimitiveArrayBranches",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-render.stdout",
+          "bytes": 55672,
+          "sha256": "023ce0b748050cfe5260dd78601a302bb67a824334eee77cc771331cd5749182"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "compile": {
+        "label": "javac8-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/classes",
+          "PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-jarde-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde/sources/PrimitiveArrayBranches.java",
+          "bytes": 1592,
+          "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+        },
+        {
+          "path": "cases/javac8-jarde/sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2111,
+          "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jarde/classes/PrimitiveArrayBranches.class",
+          "bytes": 343,
+          "sha256": "d042c6df0e0fcce439b428c98c7567090986c3280e23bf484e54e0df44857db0"
+        },
+        {
+          "path": "cases/javac8-jarde/classes/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2381,
+          "sha256": "55e7340593f5808a08cc858c85bffd9e11205b1dcbda29ec6bc29bc6828f0f7d"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac8-jarde/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "class_source_json": {
+        "path": "cases/javac8-jarde/class-source/class-source.json",
+        "bytes": 55672,
+        "sha256": "023ce0b748050cfe5260dd78601a302bb67a824334eee77cc771331cd5749182"
+      },
+      "class_source_text": {
+        "path": "cases/javac8-jarde/class-source/class-source.txt",
+        "bytes": 1592,
+        "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+      },
+      "generated_source": {
+        "path": "cases/javac8-jarde/class-source/PrimitiveArrayBranches.java",
+        "bytes": 1592,
+        "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac8-jarde/sources/PrimitiveArrayBranchesRunner.java",
+        "bytes": 2111,
+        "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+      },
+      "runner_class": "PrimitiveArrayBranchesRunner",
+      "member_count": 3,
+      "field_count": 0,
+      "runtime_matches_original_raw": true,
+      "original_runtime": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "success": true
+    },
+    {
+      "label": "javac23-jarde",
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "original_class": {
+        "path": "cases/javac23-original/classes/PrimitiveArrayBranches.class",
+        "bytes": 343,
+        "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+      },
+      "render": {
+        "label": "javac23-jarde-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranches.class",
+          "--class",
+          "PrimitiveArrayBranches",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-render.stdout",
+          "bytes": 55672,
+          "sha256": "16eb60ee81e21abc9a7573e4248651e7cc19227ab5e05d659d0a0b306ae63503"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "compile": {
+        "label": "javac23-jarde-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/sources/PrimitiveArrayBranches.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/sources/PrimitiveArrayBranchesRunner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac23-jarde-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/classes",
+          "PrimitiveArrayBranchesRunner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-jarde-run.stdout",
+          "bytes": 204,
+          "sha256": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde/sources/PrimitiveArrayBranches.java",
+          "bytes": 1592,
+          "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+        },
+        {
+          "path": "cases/javac23-jarde/sources/PrimitiveArrayBranchesRunner.java",
+          "bytes": 2111,
+          "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jarde/classes/PrimitiveArrayBranches.class",
+          "bytes": 343,
+          "sha256": "319566a849e6ce9737fcee0dfcbe0a1cbf6e0081af36f0d6cd6758650503e2e8"
+        },
+        {
+          "path": "cases/javac23-jarde/classes/PrimitiveArrayBranchesRunner.class",
+          "bytes": 2351,
+          "sha256": "e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd"
+        }
+      ],
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-jarde/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "class_source_json": {
+        "path": "cases/javac23-jarde/class-source/class-source.json",
+        "bytes": 55672,
+        "sha256": "16eb60ee81e21abc9a7573e4248651e7cc19227ab5e05d659d0a0b306ae63503"
+      },
+      "class_source_text": {
+        "path": "cases/javac23-jarde/class-source/class-source.txt",
+        "bytes": 1592,
+        "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+      },
+      "generated_source": {
+        "path": "cases/javac23-jarde/class-source/PrimitiveArrayBranches.java",
+        "bytes": 1592,
+        "sha256": "eb9a07a627d9f7e233aeea471252b18cef708054d85db3c8ee2765c6e4747986"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac23-jarde/sources/PrimitiveArrayBranchesRunner.java",
+        "bytes": 2111,
+        "sha256": "fbacb4d827fe517da19c5fcb8b1c6972b7e8cc9ba29aa419a4c2e50e044ab8a4"
+      },
+      "runner_class": "PrimitiveArrayBranchesRunner",
+      "member_count": 3,
+      "field_count": 0,
+      "runtime_matches_original_raw": true,
+      "original_runtime": {
+        "stdout": "f71408208205dfd43bc8f3db367dc016af027ee81ff7fbf7b3a82cdd9313b072",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit": 0
+      },
+      "success": true
+    }
+  ],
+  "failures": [],
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

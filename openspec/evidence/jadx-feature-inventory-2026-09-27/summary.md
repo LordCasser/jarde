@@ -298,3 +298,5 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 2026-10-10 CF16检查点acd55c213ac7c670c6e76609871281a341d03ad0确切CI38007755097四job/52steps成功，双seed各354records/3355passed/0failed/97ignored，真Temurin25及所有门禁成功；root实际完整日志/pins验收v3通过，CF16本change11/11。不代表浅层loop+saved-return/Completion组合或小栈安全均覆盖。
 
 7196非final静态产品CI38010503464失败于一条旧ordinary class静态块断言；仅该test更新后本机精准1pass，完整OrdinaryInit双JDK原2/2+candidate4/4 raw一致，修复提交自己的CI仍待验收。本change仍6/7，非产品逻辑回退。实例字段下一组31命令/8腿独立v7验收：原2/2/Jarde2/2，JADX四份完整生成源码均编译但DifferentRHS运行失败(31代32)，不能称8/8。第一MVP限all direct-super共享数组前缀，this链保留现状；无需先建构造图，强RHS比较替代软opcode同形。71分母/EM18整单元状态不变。
+
+2026-10-10 static产品25c5确切CI38012927864继续暴露A1旧整类golden（MSRV/fuzz/supply成功），只因calls=0已合法提升，数组方法不变。root最小测试更新本机6/6，历史baseline保留/新expected为实际CLI全文；最终产品仍6/7待下一确切CI。TestArrays2.test4 primitive分支适配片fresh25命令/8腿原2/2、JADX4/4、Jarde2/2，root独立v7接受99闭合文件、完整3methods0fields/全BCI/raw，已有实现覆盖，不新增机制。新recover-common-instance-array-initializers规划4/4、任务2/8；Luna共同prefix patch准备中，尚未应用或验收。71分母/EM18整单元状态不变。

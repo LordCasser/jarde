@@ -1,0 +1,486 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/baseline-root-v1/cases/javac23-original/classes/PrimitiveArrayBranchesRunner.class
+  Last modified 2026年10月10日; size 2351 bytes
+  SHA-256 checksum e983d4fc1f41f5a97dc208495dfff661c21ba62e3404e0cca493ff7f8639c8bd
+public class PrimitiveArrayBranchesRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #37                         // PrimitiveArrayBranchesRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 5, attributes: 0
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/AssertionError
+    #8 = Utf8               java/lang/AssertionError
+    #9 = Methodref          #7.#10        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+   #10 = NameAndType        #5:#11        // "<init>":(Ljava/lang/Object;)V
+   #11 = Utf8               (Ljava/lang/Object;)V
+   #12 = Methodref          #13.#14       // PrimitiveArrayBranches.choose:(I)Ljava/lang/Object;
+   #13 = Class              #15           // PrimitiveArrayBranches
+   #14 = NameAndType        #16:#17       // choose:(I)Ljava/lang/Object;
+   #15 = Utf8               PrimitiveArrayBranches
+   #16 = Utf8               choose
+   #17 = Utf8               (I)Ljava/lang/Object;
+   #18 = Class              #19           // java/lang/StringBuilder
+   #19 = Utf8               java/lang/StringBuilder
+   #20 = Methodref          #18.#3        // java/lang/StringBuilder."<init>":()V
+   #21 = String             #22           // type
+   #22 = Utf8               type
+   #23 = Methodref          #18.#24       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #24 = NameAndType        #25:#26       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #25 = Utf8               append
+   #26 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #27 = Methodref          #18.#28       // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #28 = NameAndType        #25:#29       // append:(I)Ljava/lang/StringBuilder;
+   #29 = Utf8               (I)Ljava/lang/StringBuilder;
+   #30 = String             #31           //  returned null
+   #31 = Utf8                returned null
+   #32 = Methodref          #18.#33       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #33 = NameAndType        #34:#35       // toString:()Ljava/lang/String;
+   #34 = Utf8               toString
+   #35 = Utf8               ()Ljava/lang/String;
+   #36 = Methodref          #37.#38       // PrimitiveArrayBranchesRunner.require:(ZLjava/lang/String;)V
+   #37 = Class              #39           // PrimitiveArrayBranchesRunner
+   #38 = NameAndType        #40:#41       // require:(ZLjava/lang/String;)V
+   #39 = Utf8               PrimitiveArrayBranchesRunner
+   #40 = Utf8               require
+   #41 = Utf8               (ZLjava/lang/String;)V
+   #42 = Methodref          #2.#43        // java/lang/Object.getClass:()Ljava/lang/Class;
+   #43 = NameAndType        #44:#45       // getClass:()Ljava/lang/Class;
+   #44 = Utf8               getClass
+   #45 = Utf8               ()Ljava/lang/Class;
+   #46 = String             #47           //  returned
+   #47 = Utf8                returned
+   #48 = Methodref          #49.#50       // java/lang/Class.getName:()Ljava/lang/String;
+   #49 = Class              #51           // java/lang/Class
+   #50 = NameAndType        #52:#35       // getName:()Ljava/lang/String;
+   #51 = Utf8               java/lang/Class
+   #52 = Utf8               getName
+   #53 = Class              #54           // "[I"
+   #54 = Utf8               [I
+   #55 = Methodref          #56.#57       // java/util/Arrays.equals:([I[I)Z
+   #56 = Class              #58           // java/util/Arrays
+   #57 = NameAndType        #59:#60       // equals:([I[I)Z
+   #58 = Utf8               java/util/Arrays
+   #59 = Utf8               equals
+   #60 = Utf8               ([I[I)Z
+   #61 = String             #62           // int values
+   #62 = Utf8               int values
+   #63 = Class              #64           // "[F"
+   #64 = Utf8               [F
+   #65 = Methodref          #56.#66       // java/util/Arrays.equals:([F[F)Z
+   #66 = NameAndType        #59:#67       // equals:([F[F)Z
+   #67 = Utf8               ([F[F)Z
+   #68 = String             #69           // float values
+   #69 = Utf8               float values
+   #70 = Class              #71           // "[S"
+   #71 = Utf8               [S
+   #72 = Methodref          #56.#73       // java/util/Arrays.equals:([S[S)Z
+   #73 = NameAndType        #59:#74       // equals:([S[S)Z
+   #74 = Utf8               ([S[S)Z
+   #75 = String             #76           // short values
+   #76 = Utf8               short values
+   #77 = Class              #78           // "[B"
+   #78 = Utf8               [B
+   #79 = Methodref          #56.#80       // java/util/Arrays.equals:([B[B)Z
+   #80 = NameAndType        #59:#81       // equals:([B[B)Z
+   #81 = Utf8               ([B[B)Z
+   #82 = String             #83           // byte values
+   #83 = Utf8               byte values
+   #84 = String             #85           // unexpected primitive branch:
+   #85 = Utf8               unexpected primitive branch:
+   #86 = Methodref          #56.#87       // java/util/Arrays.toString:([I)Ljava/lang/String;
+   #87 = NameAndType        #34:#88       // toString:([I)Ljava/lang/String;
+   #88 = Utf8               ([I)Ljava/lang/String;
+   #89 = Methodref          #56.#90       // java/util/Arrays.toString:([F)Ljava/lang/String;
+   #90 = NameAndType        #34:#91       // toString:([F)Ljava/lang/String;
+   #91 = Utf8               ([F)Ljava/lang/String;
+   #92 = Methodref          #56.#93       // java/util/Arrays.toString:([S)Ljava/lang/String;
+   #93 = NameAndType        #34:#94       // toString:([S)Ljava/lang/String;
+   #94 = Utf8               ([S)Ljava/lang/String;
+   #95 = Methodref          #56.#96       // java/util/Arrays.toString:([B)Ljava/lang/String;
+   #96 = NameAndType        #34:#97       // toString:([B)Ljava/lang/String;
+   #97 = Utf8               ([B)Ljava/lang/String;
+   #98 = Methodref          #99.#100      // java/lang/String.equals:(Ljava/lang/Object;)Z
+   #99 = Class              #101          // java/lang/String
+  #100 = NameAndType        #59:#102      // equals:(Ljava/lang/Object;)Z
+  #101 = Utf8               java/lang/String
+  #102 = Utf8               (Ljava/lang/Object;)Z
+  #103 = String             #104          //  rendered
+  #104 = Utf8                rendered
+  #105 = Fieldref           #106.#107     // java/lang/System.out:Ljava/io/PrintStream;
+  #106 = Class              #108          // java/lang/System
+  #107 = NameAndType        #109:#110     // out:Ljava/io/PrintStream;
+  #108 = Utf8               java/lang/System
+  #109 = Utf8               out
+  #110 = Utf8               Ljava/io/PrintStream;
+  #111 = String             #112          // type=
+  #112 = Utf8               type=
+  #113 = String             #114          // ;class=
+  #114 = Utf8               ;class=
+  #115 = String             #116          // ;values=
+  #116 = Utf8               ;values=
+  #117 = Methodref          #118.#119     // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #118 = Class              #120          // java/io/PrintStream
+  #119 = NameAndType        #121:#122     // println:(Ljava/lang/String;)V
+  #120 = Utf8               java/io/PrintStream
+  #121 = Utf8               println
+  #122 = Utf8               (Ljava/lang/String;)V
+  #123 = String             #124          //  expected null, got
+  #124 = Utf8                expected null, got
+  #125 = Methodref          #18.#126      // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #126 = NameAndType        #25:#127      // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #127 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #128 = String             #129          // ;null
+  #129 = Utf8               ;null
+  #130 = String             #131          // [1, 2]
+  #131 = Utf8               [1, 2]
+  #132 = Methodref          #37.#133      // PrimitiveArrayBranchesRunner.checkArray:(ILjava/lang/Class;Ljava/lang/String;)V
+  #133 = NameAndType        #134:#135     // checkArray:(ILjava/lang/Class;Ljava/lang/String;)V
+  #134 = Utf8               checkArray
+  #135 = Utf8               (ILjava/lang/Class;Ljava/lang/String;)V
+  #136 = String             #137          // [1.0, 2.0]
+  #137 = Utf8               [1.0, 2.0]
+  #138 = Methodref          #37.#139      // PrimitiveArrayBranchesRunner.checkNull:(I)V
+  #139 = NameAndType        #140:#141     // checkNull:(I)V
+  #140 = Utf8               checkNull
+  #141 = Utf8               (I)V
+  #142 = Class              #143          // java/lang/Integer
+  #143 = Utf8               java/lang/Integer
+  #144 = Integer            -2147483648
+  #145 = Integer            2147483647
+  #146 = Utf8               Code
+  #147 = Utf8               StackMapTable
+  #148 = Utf8               Signature
+  #149 = Utf8               (ILjava/lang/Class<*>;Ljava/lang/String;)V
+  #150 = Utf8               main
+  #151 = Utf8               ([Ljava/lang/String;)V
+{
+  public PrimitiveArrayBranchesRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  private static void require(boolean, java.lang.String);
+    descriptor: (ZLjava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iload_0
+         1: ifne          13
+         4: new           #7                  // class java/lang/AssertionError
+         7: dup
+         8: aload_1
+         9: invokespecial #9                  // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        12: athrow
+        13: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 13 /* same */
+
+  private static void checkArray(int, java.lang.Class<?>, java.lang.String);
+    descriptor: (ILjava/lang/Class;Ljava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=5, args_size=3
+         0: iload_0
+         1: invokestatic  #12                 // Method PrimitiveArrayBranches.choose:(I)Ljava/lang/Object;
+         4: astore_3
+         5: aload_3
+         6: ifnull        13
+         9: iconst_1
+        10: goto          14
+        13: iconst_0
+        14: new           #18                 // class java/lang/StringBuilder
+        17: dup
+        18: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        21: ldc           #21                 // String type
+        23: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        26: iload_0
+        27: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        30: ldc           #30                 // String  returned null
+        32: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        38: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+        41: aload_3
+        42: invokevirtual #42                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        45: aload_1
+        46: if_acmpne     53
+        49: iconst_1
+        50: goto          54
+        53: iconst_0
+        54: new           #18                 // class java/lang/StringBuilder
+        57: dup
+        58: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        61: ldc           #21                 // String type
+        63: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        66: iload_0
+        67: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        70: ldc           #46                 // String  returned
+        72: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        75: aload_3
+        76: invokevirtual #42                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+        79: invokevirtual #48                 // Method java/lang/Class.getName:()Ljava/lang/String;
+        82: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        85: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        88: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+        91: iload_0
+        92: tableswitch   { // 1 to 4
+                       1: 124
+                       2: 150
+                       3: 176
+                       4: 202
+                 default: 228
+            }
+       124: aload_3
+       125: checkcast     #53                 // class "[I"
+       128: iconst_2
+       129: newarray       int
+       131: dup
+       132: iconst_0
+       133: iconst_1
+       134: iastore
+       135: dup
+       136: iconst_1
+       137: iconst_2
+       138: iastore
+       139: invokestatic  #55                 // Method java/util/Arrays.equals:([I[I)Z
+       142: ldc           #61                 // String int values
+       144: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+       147: goto          255
+       150: aload_3
+       151: checkcast     #63                 // class "[F"
+       154: iconst_2
+       155: newarray       float
+       157: dup
+       158: iconst_0
+       159: fconst_1
+       160: fastore
+       161: dup
+       162: iconst_1
+       163: fconst_2
+       164: fastore
+       165: invokestatic  #65                 // Method java/util/Arrays.equals:([F[F)Z
+       168: ldc           #68                 // String float values
+       170: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+       173: goto          255
+       176: aload_3
+       177: checkcast     #70                 // class "[S"
+       180: iconst_2
+       181: newarray       short
+       183: dup
+       184: iconst_0
+       185: iconst_1
+       186: sastore
+       187: dup
+       188: iconst_1
+       189: iconst_2
+       190: sastore
+       191: invokestatic  #72                 // Method java/util/Arrays.equals:([S[S)Z
+       194: ldc           #75                 // String short values
+       196: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+       199: goto          255
+       202: aload_3
+       203: checkcast     #77                 // class "[B"
+       206: iconst_2
+       207: newarray       byte
+       209: dup
+       210: iconst_0
+       211: iconst_1
+       212: bastore
+       213: dup
+       214: iconst_1
+       215: iconst_2
+       216: bastore
+       217: invokestatic  #79                 // Method java/util/Arrays.equals:([B[B)Z
+       220: ldc           #82                 // String byte values
+       222: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+       225: goto          255
+       228: new           #7                  // class java/lang/AssertionError
+       231: dup
+       232: new           #18                 // class java/lang/StringBuilder
+       235: dup
+       236: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       239: ldc           #84                 // String unexpected primitive branch:
+       241: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       244: iload_0
+       245: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       248: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       251: invokespecial #9                  // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+       254: athrow
+       255: aload_3
+       256: instanceof    #53                 // class "[I"
+       259: ifeq          274
+       262: aload_3
+       263: checkcast     #53                 // class "[I"
+       266: invokestatic  #86                 // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+       269: astore        4
+       271: goto          321
+       274: aload_3
+       275: instanceof    #63                 // class "[F"
+       278: ifeq          293
+       281: aload_3
+       282: checkcast     #63                 // class "[F"
+       285: invokestatic  #89                 // Method java/util/Arrays.toString:([F)Ljava/lang/String;
+       288: astore        4
+       290: goto          321
+       293: aload_3
+       294: instanceof    #70                 // class "[S"
+       297: ifeq          312
+       300: aload_3
+       301: checkcast     #70                 // class "[S"
+       304: invokestatic  #92                 // Method java/util/Arrays.toString:([S)Ljava/lang/String;
+       307: astore        4
+       309: goto          321
+       312: aload_3
+       313: checkcast     #77                 // class "[B"
+       316: invokestatic  #95                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       319: astore        4
+       321: aload_2
+       322: aload         4
+       324: invokevirtual #98                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       327: new           #18                 // class java/lang/StringBuilder
+       330: dup
+       331: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       334: ldc           #21                 // String type
+       336: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       339: iload_0
+       340: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       343: ldc           #103                // String  rendered
+       345: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       348: aload         4
+       350: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       353: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       356: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+       359: getstatic     #105                // Field java/lang/System.out:Ljava/io/PrintStream;
+       362: new           #18                 // class java/lang/StringBuilder
+       365: dup
+       366: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       369: ldc           #111                // String type=
+       371: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       374: iload_0
+       375: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+       378: ldc           #113                // String ;class=
+       380: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       383: aload_3
+       384: invokevirtual #42                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       387: invokevirtual #48                 // Method java/lang/Class.getName:()Ljava/lang/String;
+       390: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       393: ldc           #115                // String ;values=
+       395: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       398: aload         4
+       400: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       403: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       406: invokevirtual #117                // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       409: return
+      StackMapTable: number_of_entries = 14
+        frame_type = 252 /* append */
+          offset_delta = 13
+          locals = [ class java/lang/Object ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 38 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 251 /* same_frame_extended */
+          offset_delta = 69
+        frame_type = 25 /* same */
+        frame_type = 25 /* same */
+        frame_type = 25 /* same */
+        frame_type = 25 /* same */
+        frame_type = 26 /* same */
+        frame_type = 18 /* same */
+        frame_type = 18 /* same */
+        frame_type = 18 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 8
+          locals = [ class java/lang/String ]
+    Signature: #149                         // (ILjava/lang/Class<*>;Ljava/lang/String;)V
+
+  private static void checkNull(int);
+    descriptor: (I)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iload_0
+         1: invokestatic  #12                 // Method PrimitiveArrayBranches.choose:(I)Ljava/lang/Object;
+         4: astore_1
+         5: aload_1
+         6: ifnonnull     13
+         9: iconst_1
+        10: goto          14
+        13: iconst_0
+        14: new           #18                 // class java/lang/StringBuilder
+        17: dup
+        18: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        21: ldc           #21                 // String type
+        23: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        26: iload_0
+        27: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        30: ldc           #123                // String  expected null, got
+        32: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        35: aload_1
+        36: invokevirtual #125                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        39: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        42: invokestatic  #36                 // Method require:(ZLjava/lang/String;)V
+        45: getstatic     #105                // Field java/lang/System.out:Ljava/io/PrintStream;
+        48: new           #18                 // class java/lang/StringBuilder
+        51: dup
+        52: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        55: ldc           #111                // String type=
+        57: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        60: iload_0
+        61: invokevirtual #27                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        64: ldc           #128                // String ;null
+        66: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        69: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        72: invokevirtual #117                // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        75: return
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 13
+          locals = [ class java/lang/Object ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=1, args_size=1
+         0: iconst_1
+         1: ldc           #53                 // class "[I"
+         3: ldc           #130                // String [1, 2]
+         5: invokestatic  #132                // Method checkArray:(ILjava/lang/Class;Ljava/lang/String;)V
+         8: iconst_2
+         9: ldc           #63                 // class "[F"
+        11: ldc           #136                // String [1.0, 2.0]
+        13: invokestatic  #132                // Method checkArray:(ILjava/lang/Class;Ljava/lang/String;)V
+        16: iconst_3
+        17: ldc           #70                 // class "[S"
+        19: ldc           #130                // String [1, 2]
+        21: invokestatic  #132                // Method checkArray:(ILjava/lang/Class;Ljava/lang/String;)V
+        24: iconst_4
+        25: ldc           #77                 // class "[B"
+        27: ldc           #130                // String [1, 2]
+        29: invokestatic  #132                // Method checkArray:(ILjava/lang/Class;Ljava/lang/String;)V
+        32: iconst_0
+        33: invokestatic  #138                // Method checkNull:(I)V
+        36: iconst_5
+        37: invokestatic  #138                // Method checkNull:(I)V
+        40: iconst_m1
+        41: invokestatic  #138                // Method checkNull:(I)V
+        44: ldc           #144                // int -2147483648
+        46: invokestatic  #138                // Method checkNull:(I)V
+        49: ldc           #145                // int 2147483647
+        51: invokestatic  #138                // Method checkNull:(I)V
+        54: return
+}

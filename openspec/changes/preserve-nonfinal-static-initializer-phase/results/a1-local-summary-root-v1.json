@@ -1,0 +1,13 @@
+{
+  "status": "actual-local-gates-passed-product-ci-pending",
+  "a1_tests": [
+    6,
+    0,
+    0
+  ],
+  "a1_clippy_exit": 0,
+  "new_expected_matches_actual_cli": true,
+  "historical_a1_baseline_unchanged": true,
+  "target_absent": true,
+  "clean_result_sha256": "e1628ff2291798d204e1c686f133d0c160998cd1085772b37b115f8a28a60067"
+}

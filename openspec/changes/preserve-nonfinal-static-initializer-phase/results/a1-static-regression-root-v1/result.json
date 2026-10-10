@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "class-source",
+    "--input",
+    "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-array-slot-retype-locals/v8/A1.class",
+    "--class",
+    "A1",
+    "--policy",
+    "single-class",
+    "--release",
+    "8",
+    "--format",
+    "json",
+    "--evidence",
+    "all"
+  ],
+  "exit": 0,
+  "cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "bytes": 36470032,
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e"
+  },
+  "input": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-array-slot-retype-locals/v8/A1.class",
+    "bytes": 976,
+    "sha256": "24a58f9a4f5a5c2d0e4e5cce4f9bf2bc404aa81591a55e9eaacf0e53a2e8ced0"
+  },
+  "stdout": {
+    "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-root-v1/stdout",
+    "bytes": 89590,
+    "sha256": "d20339ff123c147c14aa16827a3bead854a0f414f079ccb6149e9a3d5005aff6"
+  },
+  "stderr": {
+    "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-root-v1/stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

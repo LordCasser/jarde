@@ -1,0 +1,591 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac23-original/classes/InstanceFieldInitRunner.class
+  Last modified 2026年10月10日; size 3155 bytes
+  SHA-256 checksum 446e9f13d0d91448c5a0b4544b3411898dfefdfd47811d0ef08f3ca8e07ced73
+  Compiled from "InstanceFieldInitRunner.java"
+public class InstanceFieldInitRunner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #35                         // InstanceFieldInitRunner
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 4, attributes: 1
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/lang/AssertionError
+    #8 = Utf8               java/lang/AssertionError
+    #9 = Methodref          #7.#10        // java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+   #10 = NameAndType        #5:#11        // "<init>":(Ljava/lang/Object;)V
+   #11 = Utf8               (Ljava/lang/Object;)V
+   #12 = Methodref          #13.#14       // java/util/Arrays.equals:([B[B)Z
+   #13 = Class              #15           // java/util/Arrays
+   #14 = NameAndType        #16:#17       // equals:([B[B)Z
+   #15 = Utf8               java/util/Arrays
+   #16 = Utf8               equals
+   #17 = Utf8               ([B[B)Z
+   #18 = Class              #19           // java/lang/StringBuilder
+   #19 = Utf8               java/lang/StringBuilder
+   #20 = Methodref          #18.#3        // java/lang/StringBuilder."<init>":()V
+   #21 = String             #22           // array:
+   #22 = Utf8               array:
+   #23 = Methodref          #18.#24       // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #24 = NameAndType        #25:#26       // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #25 = Utf8               append
+   #26 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #27 = Methodref          #13.#28       // java/util/Arrays.toString:([B)Ljava/lang/String;
+   #28 = NameAndType        #29:#30       // toString:([B)Ljava/lang/String;
+   #29 = Utf8               toString
+   #30 = Utf8               ([B)Ljava/lang/String;
+   #31 = Methodref          #18.#32       // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #32 = NameAndType        #29:#33       // toString:()Ljava/lang/String;
+   #33 = Utf8               ()Ljava/lang/String;
+   #34 = Methodref          #35.#36       // InstanceFieldInitRunner.require:(ZLjava/lang/String;)V
+   #35 = Class              #37           // InstanceFieldInitRunner
+   #36 = NameAndType        #38:#39       // require:(ZLjava/lang/String;)V
+   #37 = Utf8               InstanceFieldInitRunner
+   #38 = Utf8               require
+   #39 = Utf8               (ZLjava/lang/String;)V
+   #40 = String             #41           //
+   #41 = Utf8
+   #42 = Fieldref           #43.#44       // CommonDirectSuperByteArray.trace:Ljava/lang/String;
+   #43 = Class              #45           // CommonDirectSuperByteArray
+   #44 = NameAndType        #46:#47       // trace:Ljava/lang/String;
+   #45 = Utf8               CommonDirectSuperByteArray
+   #46 = Utf8               trace
+   #47 = Utf8               Ljava/lang/String;
+   #48 = Methodref          #43.#3        // CommonDirectSuperByteArray."<init>":()V
+   #49 = Fieldref           #43.#50       // CommonDirectSuperByteArray.bytes:[B
+   #50 = NameAndType        #51:#52       // bytes:[B
+   #51 = Utf8               bytes
+   #52 = Utf8               [B
+   #53 = Methodref          #35.#54       // InstanceFieldInitRunner.requireArray:([B[B)V
+   #54 = NameAndType        #55:#56       // requireArray:([B[B)V
+   #55 = Utf8               requireArray
+   #56 = Utf8               ([B[B)V
+   #57 = String             #58           // eval:10;eval:20;body:noarg;
+   #58 = Utf8               eval:10;eval:20;body:noarg;
+   #59 = Methodref          #60.#61       // java/lang/String.equals:(Ljava/lang/Object;)Z
+   #60 = Class              #62           // java/lang/String
+   #61 = NameAndType        #16:#63       // equals:(Ljava/lang/Object;)Z
+   #62 = Utf8               java/lang/String
+   #63 = Utf8               (Ljava/lang/Object;)Z
+   #64 = String             #65           // common noarg order:
+   #65 = Utf8               common noarg order:
+   #66 = Methodref          #43.#67       // CommonDirectSuperByteArray."<init>":(I)V
+   #67 = NameAndType        #5:#68        // "<init>":(I)V
+   #68 = Utf8               (I)V
+   #69 = String             #70           // eval:10;eval:20;body:int:4;
+   #70 = Utf8               eval:10;eval:20;body:int:4;
+   #71 = String             #72           // common int order:
+   #72 = Utf8               common int order:
+   #73 = String             #74           // each instance gets its own array
+   #74 = Utf8               each instance gets its own array
+   #75 = Fieldref           #76.#77       // java/lang/System.out:Ljava/io/PrintStream;
+   #76 = Class              #78           // java/lang/System
+   #77 = NameAndType        #79:#80       // out:Ljava/io/PrintStream;
+   #78 = Utf8               java/lang/System
+   #79 = Utf8               out
+   #80 = Utf8               Ljava/io/PrintStream;
+   #81 = String             #82           // common=
+   #82 = Utf8               common=
+   #83 = String             #84           // ;
+   #84 = Utf8               ;
+   #85 = String             #86           // ;distinct=
+   #86 = Utf8               ;distinct=
+   #87 = Methodref          #18.#88       // java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+   #88 = NameAndType        #25:#89       // append:(Z)Ljava/lang/StringBuilder;
+   #89 = Utf8               (Z)Ljava/lang/StringBuilder;
+   #90 = Methodref          #91.#92       // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #91 = Class              #93           // java/io/PrintStream
+   #92 = NameAndType        #94:#95       // println:(Ljava/lang/String;)V
+   #93 = Utf8               java/io/PrintStream
+   #94 = Utf8               println
+   #95 = Utf8               (Ljava/lang/String;)V
+   #96 = Fieldref           #97.#44       // ThisDelegatingByteArray.trace:Ljava/lang/String;
+   #97 = Class              #98           // ThisDelegatingByteArray
+   #98 = Utf8               ThisDelegatingByteArray
+   #99 = Methodref          #97.#3        // ThisDelegatingByteArray."<init>":()V
+  #100 = Fieldref           #97.#50       // ThisDelegatingByteArray.bytes:[B
+  #101 = String             #102          // eval:21;eval:22;body:target:7;body:delegate;
+  #102 = Utf8               eval:21;eval:22;body:target:7;body:delegate;
+  #103 = String             #104          // delegating order/count:
+  #104 = Utf8               delegating order/count:
+  #105 = String             #106          // each delegation initializes once:
+  #106 = Utf8               each delegation initializes once:
+  #107 = String             #108          // delegated instances get distinct arrays
+  #108 = Utf8               delegated instances get distinct arrays
+  #109 = String             #110          // delegated=
+  #110 = Utf8               delegated=
+  #111 = String             #112          // ;trace=
+  #112 = Utf8               ;trace=
+  #113 = Fieldref           #114.#44      // DifferentRhsByteArray.trace:Ljava/lang/String;
+  #114 = Class              #115          // DifferentRhsByteArray
+  #115 = Utf8               DifferentRhsByteArray
+  #116 = Methodref          #114.#3       // DifferentRhsByteArray."<init>":()V
+  #117 = Fieldref           #114.#50      // DifferentRhsByteArray.bytes:[B
+  #118 = String             #119          // eval:31;body:noarg;
+  #119 = Utf8               eval:31;body:noarg;
+  #120 = String             #121          // different noarg path:
+  #121 = Utf8               different noarg path:
+  #122 = Methodref          #114.#67      // DifferentRhsByteArray."<init>":(I)V
+  #123 = String             #124          // eval:32;body:int:5;
+  #124 = Utf8               eval:32;body:int:5;
+  #125 = String             #126          // different int path:
+  #126 = Utf8               different int path:
+  #127 = String             #128          // different=
+  #128 = Utf8               different=
+  #129 = Utf8               Code
+  #130 = Utf8               LineNumberTable
+  #131 = Utf8               LocalVariableTable
+  #132 = Utf8               this
+  #133 = Utf8               LInstanceFieldInitRunner;
+  #134 = Utf8               condition
+  #135 = Utf8               Z
+  #136 = Utf8               message
+  #137 = Utf8               StackMapTable
+  #138 = Utf8               actual
+  #139 = Utf8               expected
+  #140 = Utf8               main
+  #141 = Utf8               ([Ljava/lang/String;)V
+  #142 = Utf8               args
+  #143 = Utf8               [Ljava/lang/String;
+  #144 = Utf8               common0
+  #145 = Utf8               LCommonDirectSuperByteArray;
+  #146 = Utf8               common1
+  #147 = Utf8               delegated0
+  #148 = Utf8               LThisDelegatingByteArray;
+  #149 = Utf8               firstDelegationTrace
+  #150 = Utf8               delegated1
+  #151 = Utf8               different0
+  #152 = Utf8               LDifferentRhsByteArray;
+  #153 = Utf8               different1
+  #154 = Class              #143          // "[Ljava/lang/String;"
+  #155 = Utf8               SourceFile
+  #156 = Utf8               InstanceFieldInitRunner.java
+{
+  public InstanceFieldInitRunner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   LInstanceFieldInitRunner;
+
+  private static void require(boolean, java.lang.String);
+    descriptor: (ZLjava/lang/String;)V
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: iload_0
+         1: ifne          13
+         4: new           #7                  // class java/lang/AssertionError
+         7: dup
+         8: aload_1
+         9: invokespecial #9                  // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+        12: athrow
+        13: return
+      LineNumberTable:
+        line 5: 0
+        line 6: 4
+        line 8: 13
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      14     0 condition   Z
+            0      14     1 message   Ljava/lang/String;
+      StackMapTable: number_of_entries = 1
+        frame_type = 13 /* same */
+
+  private static void requireArray(byte[], byte...);
+    descriptor: ([B[B)V
+    flags: (0x008a) ACC_PRIVATE, ACC_STATIC, ACC_VARARGS
+    Code:
+      stack=3, locals=2, args_size=2
+         0: aload_0
+         1: aload_1
+         2: invokestatic  #12                 // Method java/util/Arrays.equals:([B[B)Z
+         5: new           #18                 // class java/lang/StringBuilder
+         8: dup
+         9: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        12: ldc           #21                 // String array:
+        14: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        17: aload_0
+        18: invokestatic  #27                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+        21: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        24: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        27: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+        30: return
+      LineNumberTable:
+        line 11: 0
+        line 12: 30
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      31     0 actual   [B
+            0      31     1 expected   [B
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=8, args_size=1
+         0: ldc           #40                 // String
+         2: putstatic     #42                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+         5: new           #43                 // class CommonDirectSuperByteArray
+         8: dup
+         9: invokespecial #48                 // Method CommonDirectSuperByteArray."<init>":()V
+        12: astore_1
+        13: aload_1
+        14: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+        17: iconst_2
+        18: newarray       byte
+        20: dup
+        21: iconst_0
+        22: bipush        10
+        24: bastore
+        25: dup
+        26: iconst_1
+        27: bipush        20
+        29: bastore
+        30: invokestatic  #53                 // Method requireArray:([B[B)V
+        33: ldc           #57                 // String eval:10;eval:20;body:noarg;
+        35: getstatic     #42                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+        38: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+        41: new           #18                 // class java/lang/StringBuilder
+        44: dup
+        45: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+        48: ldc           #64                 // String common noarg order:
+        50: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        53: getstatic     #42                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+        56: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        59: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        62: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+        65: ldc           #40                 // String
+        67: putstatic     #42                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+        70: new           #43                 // class CommonDirectSuperByteArray
+        73: dup
+        74: iconst_4
+        75: invokespecial #66                 // Method CommonDirectSuperByteArray."<init>":(I)V
+        78: astore_2
+        79: aload_2
+        80: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+        83: iconst_2
+        84: newarray       byte
+        86: dup
+        87: iconst_0
+        88: bipush        10
+        90: bastore
+        91: dup
+        92: iconst_1
+        93: bipush        20
+        95: bastore
+        96: invokestatic  #53                 // Method requireArray:([B[B)V
+        99: ldc           #69                 // String eval:10;eval:20;body:int:4;
+       101: getstatic     #42                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+       104: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       107: new           #18                 // class java/lang/StringBuilder
+       110: dup
+       111: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       114: ldc           #71                 // String common int order:
+       116: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       119: getstatic     #42                 // Field CommonDirectSuperByteArray.trace:Ljava/lang/String;
+       122: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       125: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       128: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       131: aload_1
+       132: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+       135: aload_2
+       136: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+       139: if_acmpeq     146
+       142: iconst_1
+       143: goto          147
+       146: iconst_0
+       147: ldc           #73                 // String each instance gets its own array
+       149: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       152: getstatic     #75                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       155: new           #18                 // class java/lang/StringBuilder
+       158: dup
+       159: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       162: ldc           #81                 // String common=
+       164: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       167: aload_1
+       168: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+       171: invokestatic  #27                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       174: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       177: ldc           #83                 // String ;
+       179: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       182: aload_2
+       183: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+       186: invokestatic  #27                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       189: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       192: ldc           #85                 // String ;distinct=
+       194: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       197: aload_1
+       198: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+       201: aload_2
+       202: getfield      #49                 // Field CommonDirectSuperByteArray.bytes:[B
+       205: if_acmpeq     212
+       208: iconst_1
+       209: goto          213
+       212: iconst_0
+       213: invokevirtual #87                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       216: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       219: invokevirtual #90                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       222: ldc           #40                 // String
+       224: putstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       227: new           #97                 // class ThisDelegatingByteArray
+       230: dup
+       231: invokespecial #99                 // Method ThisDelegatingByteArray."<init>":()V
+       234: astore_3
+       235: aload_3
+       236: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       239: iconst_2
+       240: newarray       byte
+       242: dup
+       243: iconst_0
+       244: bipush        21
+       246: bastore
+       247: dup
+       248: iconst_1
+       249: bipush        22
+       251: bastore
+       252: invokestatic  #53                 // Method requireArray:([B[B)V
+       255: ldc           #101                // String eval:21;eval:22;body:target:7;body:delegate;
+       257: getstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       260: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       263: new           #18                 // class java/lang/StringBuilder
+       266: dup
+       267: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       270: ldc           #103                // String delegating order/count:
+       272: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       275: getstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       278: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       281: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       284: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       287: getstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       290: astore        4
+       292: ldc           #40                 // String
+       294: putstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       297: new           #97                 // class ThisDelegatingByteArray
+       300: dup
+       301: invokespecial #99                 // Method ThisDelegatingByteArray."<init>":()V
+       304: astore        5
+       306: aload         5
+       308: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       311: iconst_2
+       312: newarray       byte
+       314: dup
+       315: iconst_0
+       316: bipush        21
+       318: bastore
+       319: dup
+       320: iconst_1
+       321: bipush        22
+       323: bastore
+       324: invokestatic  #53                 // Method requireArray:([B[B)V
+       327: aload         4
+       329: getstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       332: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       335: new           #18                 // class java/lang/StringBuilder
+       338: dup
+       339: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       342: ldc           #105                // String each delegation initializes once:
+       344: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       347: getstatic     #96                 // Field ThisDelegatingByteArray.trace:Ljava/lang/String;
+       350: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       353: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       356: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       359: aload_3
+       360: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       363: aload         5
+       365: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       368: if_acmpeq     375
+       371: iconst_1
+       372: goto          376
+       375: iconst_0
+       376: ldc           #107                // String delegated instances get distinct arrays
+       378: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       381: getstatic     #75                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       384: new           #18                 // class java/lang/StringBuilder
+       387: dup
+       388: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       391: ldc           #109                // String delegated=
+       393: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       396: aload_3
+       397: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       400: invokestatic  #27                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       403: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       406: ldc           #111                // String ;trace=
+       408: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       411: aload         4
+       413: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       416: ldc           #85                 // String ;distinct=
+       418: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       421: aload_3
+       422: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       425: aload         5
+       427: getfield      #100                // Field ThisDelegatingByteArray.bytes:[B
+       430: if_acmpeq     437
+       433: iconst_1
+       434: goto          438
+       437: iconst_0
+       438: invokevirtual #87                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+       441: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       444: invokevirtual #90                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       447: ldc           #40                 // String
+       449: putstatic     #113                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       452: new           #114                // class DifferentRhsByteArray
+       455: dup
+       456: invokespecial #116                // Method DifferentRhsByteArray."<init>":()V
+       459: astore        6
+       461: aload         6
+       463: getfield      #117                // Field DifferentRhsByteArray.bytes:[B
+       466: iconst_1
+       467: newarray       byte
+       469: dup
+       470: iconst_0
+       471: bipush        31
+       473: bastore
+       474: invokestatic  #53                 // Method requireArray:([B[B)V
+       477: ldc           #118                // String eval:31;body:noarg;
+       479: getstatic     #113                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       482: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       485: new           #18                 // class java/lang/StringBuilder
+       488: dup
+       489: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       492: ldc           #120                // String different noarg path:
+       494: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       497: getstatic     #113                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       500: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       503: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       506: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       509: ldc           #40                 // String
+       511: putstatic     #113                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       514: new           #114                // class DifferentRhsByteArray
+       517: dup
+       518: iconst_5
+       519: invokespecial #122                // Method DifferentRhsByteArray."<init>":(I)V
+       522: astore        7
+       524: aload         7
+       526: getfield      #117                // Field DifferentRhsByteArray.bytes:[B
+       529: iconst_1
+       530: newarray       byte
+       532: dup
+       533: iconst_0
+       534: bipush        32
+       536: bastore
+       537: invokestatic  #53                 // Method requireArray:([B[B)V
+       540: ldc           #123                // String eval:32;body:int:5;
+       542: getstatic     #113                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       545: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       548: new           #18                 // class java/lang/StringBuilder
+       551: dup
+       552: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       555: ldc           #125                // String different int path:
+       557: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       560: getstatic     #113                // Field DifferentRhsByteArray.trace:Ljava/lang/String;
+       563: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       566: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       569: invokestatic  #34                 // Method require:(ZLjava/lang/String;)V
+       572: getstatic     #75                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       575: new           #18                 // class java/lang/StringBuilder
+       578: dup
+       579: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+       582: ldc           #127                // String different=
+       584: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       587: aload         6
+       589: getfield      #117                // Field DifferentRhsByteArray.bytes:[B
+       592: invokestatic  #27                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       595: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       598: ldc           #83                 // String ;
+       600: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       603: aload         7
+       605: getfield      #117                // Field DifferentRhsByteArray.bytes:[B
+       608: invokestatic  #27                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+       611: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       614: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       617: invokevirtual #90                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+       620: return
+      LineNumberTable:
+        line 15: 0
+        line 16: 5
+        line 17: 13
+        line 18: 33
+        line 21: 65
+        line 22: 70
+        line 23: 79
+        line 24: 99
+        line 26: 131
+        line 27: 152
+        line 28: 186
+        line 27: 219
+        line 30: 222
+        line 31: 227
+        line 32: 235
+        line 33: 255
+        line 35: 287
+        line 36: 292
+        line 37: 297
+        line 38: 306
+        line 39: 327
+        line 41: 359
+        line 42: 381
+        line 45: 447
+        line 46: 452
+        line 47: 461
+        line 48: 477
+        line 50: 509
+        line 51: 514
+        line 52: 524
+        line 53: 540
+        line 55: 572
+        line 56: 608
+        line 55: 617
+        line 57: 620
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0     621     0  args   [Ljava/lang/String;
+           13     608     1 common0   LCommonDirectSuperByteArray;
+           79     542     2 common1   LCommonDirectSuperByteArray;
+          235     386     3 delegated0   LThisDelegatingByteArray;
+          292     329     4 firstDelegationTrace   Ljava/lang/String;
+          306     315     5 delegated1   LThisDelegatingByteArray;
+          461     160     6 different0   LDifferentRhsByteArray;
+          524      97     7 different1   LDifferentRhsByteArray;
+      StackMapTable: number_of_entries = 8
+        frame_type = 253 /* append */
+          offset_delta = 146
+          locals = [ class CommonDirectSuperByteArray, class CommonDirectSuperByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 64
+          locals = [ class "[Ljava/lang/String;", class CommonDirectSuperByteArray, class CommonDirectSuperByteArray ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 0
+          locals = [ class "[Ljava/lang/String;", class CommonDirectSuperByteArray, class CommonDirectSuperByteArray ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder, int ]
+        frame_type = 254 /* append */
+          offset_delta = 161
+          locals = [ class ThisDelegatingByteArray, class java/lang/String, class ThisDelegatingByteArray ]
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 60
+          locals = [ class "[Ljava/lang/String;", class CommonDirectSuperByteArray, class CommonDirectSuperByteArray, class ThisDelegatingByteArray, class java/lang/String, class ThisDelegatingByteArray ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 0
+          locals = [ class "[Ljava/lang/String;", class CommonDirectSuperByteArray, class CommonDirectSuperByteArray, class ThisDelegatingByteArray, class java/lang/String, class ThisDelegatingByteArray ]
+          stack = [ class java/io/PrintStream, class java/lang/StringBuilder, int ]
+}
+SourceFile: "InstanceFieldInitRunner.java"

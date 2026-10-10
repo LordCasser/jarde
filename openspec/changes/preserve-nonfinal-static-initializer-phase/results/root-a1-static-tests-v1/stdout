@@ -1,0 +1,11 @@
+
+running 6 tests
+test a_join_that_merges_two_definitions_keeps_one_variable_verbatim ... ok
+test a_loop_that_merges_two_definitions_keeps_one_variable_verbatim ... ok
+test the_dynamic_dimension_control_projects_the_proven_static_field_initializer ... ok
+test the_retyped_slot_presents_one_declaration_per_definition_and_recompiles ... ok
+test the_same_element_shape_keeps_one_variable_verbatim ... ok
+test the_three_type_alternation_presents_three_declarations_and_recompiles ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s
+

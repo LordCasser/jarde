@@ -1,0 +1,201 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/InterveningEffectByteArray.class
+  Last modified 2026-10-10; size 1046 bytes
+  MD5 checksum fc327a31092bd5098fc01bc743d1c7d4
+  Compiled from "InterveningEffectByteArray.java"
+public class InterveningEffectByteArray
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Class              #38            // java/lang/StringBuilder
+   #2 = Methodref          #1.#39         // java/lang/StringBuilder."<init>":()V
+   #3 = Fieldref           #16.#40        // InterveningEffectByteArray.trace:Ljava/lang/String;
+   #4 = Methodref          #1.#41         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #5 = String             #42            // eval:
+   #6 = Methodref          #1.#43         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+   #7 = String             #44            // ;
+   #8 = Methodref          #1.#45         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #9 = Methodref          #17.#39        // java/lang/Object."<init>":()V
+  #10 = String             #46            // gap;
+  #11 = Methodref          #16.#47        // InterveningEffectByteArray.mark:(I)B
+  #12 = Fieldref           #16.#48        // InterveningEffectByteArray.bytes:[B
+  #13 = String             #49            // body:noarg;
+  #14 = String             #50            // body:int:
+  #15 = String             #51            //
+  #16 = Class              #52            // InterveningEffectByteArray
+  #17 = Class              #53            // java/lang/Object
+  #18 = Utf8               trace
+  #19 = Utf8               Ljava/lang/String;
+  #20 = Utf8               bytes
+  #21 = Utf8               [B
+  #22 = Utf8               mark
+  #23 = Utf8               (I)B
+  #24 = Utf8               Code
+  #25 = Utf8               LineNumberTable
+  #26 = Utf8               LocalVariableTable
+  #27 = Utf8               value
+  #28 = Utf8               I
+  #29 = Utf8               <init>
+  #30 = Utf8               ()V
+  #31 = Utf8               this
+  #32 = Utf8               LInterveningEffectByteArray;
+  #33 = Utf8               (I)V
+  #34 = Utf8               marker
+  #35 = Utf8               <clinit>
+  #36 = Utf8               SourceFile
+  #37 = Utf8               InterveningEffectByteArray.java
+  #38 = Utf8               java/lang/StringBuilder
+  #39 = NameAndType        #29:#30        // "<init>":()V
+  #40 = NameAndType        #18:#19        // trace:Ljava/lang/String;
+  #41 = NameAndType        #54:#55        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #42 = Utf8               eval:
+  #43 = NameAndType        #54:#56        // append:(I)Ljava/lang/StringBuilder;
+  #44 = Utf8               ;
+  #45 = NameAndType        #57:#58        // toString:()Ljava/lang/String;
+  #46 = Utf8               gap;
+  #47 = NameAndType        #22:#23        // mark:(I)B
+  #48 = NameAndType        #20:#21        // bytes:[B
+  #49 = Utf8               body:noarg;
+  #50 = Utf8               body:int:
+  #51 = Utf8
+  #52 = Utf8               InterveningEffectByteArray
+  #53 = Utf8               java/lang/Object
+  #54 = Utf8               append
+  #55 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #56 = Utf8               (I)Ljava/lang/StringBuilder;
+  #57 = Utf8               toString
+  #58 = Utf8               ()Ljava/lang/String;
+{
+  static java.lang.String trace;
+    descriptor: Ljava/lang/String;
+    flags: ACC_STATIC
+
+  byte[] bytes;
+    descriptor: [B
+    flags:
+
+  static byte mark(int);
+    descriptor: (I)B
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #1                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #3                  // Field trace:Ljava/lang/String;
+        10: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: ldc           #5                  // String eval:
+        15: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        18: iload_0
+        19: invokevirtual #6                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        22: ldc           #7                  // String ;
+        24: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        27: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        30: putstatic     #3                  // Field trace:Ljava/lang/String;
+        33: iload_0
+        34: i2b
+        35: ireturn
+      LineNumberTable:
+        line 6: 0
+        line 7: 33
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      36     0 value   I
+
+  public InterveningEffectByteArray();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #9                  // Method java/lang/Object."<init>":()V
+         4: new           #1                  // class java/lang/StringBuilder
+         7: dup
+         8: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+        11: getstatic     #3                  // Field trace:Ljava/lang/String;
+        14: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        17: ldc           #10                 // String gap;
+        19: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        22: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        25: putstatic     #3                  // Field trace:Ljava/lang/String;
+        28: aload_0
+        29: iconst_1
+        30: newarray       byte
+        32: dup
+        33: iconst_0
+        34: bipush        61
+        36: invokestatic  #11                 // Method mark:(I)B
+        39: bastore
+        40: putfield      #12                 // Field bytes:[B
+        43: new           #1                  // class java/lang/StringBuilder
+        46: dup
+        47: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+        50: getstatic     #3                  // Field trace:Ljava/lang/String;
+        53: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        56: ldc           #13                 // String body:noarg;
+        58: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        61: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        64: putstatic     #3                  // Field trace:Ljava/lang/String;
+        67: return
+      LineNumberTable:
+        line 11: 0
+        line 12: 4
+        line 13: 28
+        line 14: 43
+        line 15: 67
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      68     0  this   LInterveningEffectByteArray;
+
+  public InterveningEffectByteArray(int);
+    descriptor: (I)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=2, args_size=2
+         0: aload_0
+         1: invokespecial #9                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_1
+         6: newarray       byte
+         8: dup
+         9: iconst_0
+        10: bipush        61
+        12: invokestatic  #11                 // Method mark:(I)B
+        15: bastore
+        16: putfield      #12                 // Field bytes:[B
+        19: new           #1                  // class java/lang/StringBuilder
+        22: dup
+        23: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+        26: getstatic     #3                  // Field trace:Ljava/lang/String;
+        29: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        32: ldc           #14                 // String body:int:
+        34: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        37: iload_1
+        38: invokevirtual #6                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        41: ldc           #7                  // String ;
+        43: invokevirtual #4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        46: invokevirtual #8                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        49: putstatic     #3                  // Field trace:Ljava/lang/String;
+        52: return
+      LineNumberTable:
+        line 18: 0
+        line 19: 4
+        line 20: 19
+        line 21: 52
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      53     0  this   LInterveningEffectByteArray;
+            0      53     1 marker   I
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: ldc           #15                 // String
+         2: putstatic     #3                  // Field trace:Ljava/lang/String;
+         5: return
+      LineNumberTable:
+        line 2: 0
+}
+SourceFile: "InterveningEffectByteArray.java"

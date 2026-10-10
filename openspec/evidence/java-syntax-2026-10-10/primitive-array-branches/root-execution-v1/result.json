@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "openspec/evidence/java-syntax-2026-10-10/primitive-array-branches/prepare-baseline-root-v2.py",
+    "--cli",
+    "/private/tmp/jarde-nonfinal-static-cli-v1"
+  ],
+  "exit": 0,
+  "streams": {
+    "stdout": {
+      "bytes": 516,
+      "sha256": "c782d289beca8c48917975a69bd814084f0bea1206bee6a9c6c9d5a4818fe76b"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

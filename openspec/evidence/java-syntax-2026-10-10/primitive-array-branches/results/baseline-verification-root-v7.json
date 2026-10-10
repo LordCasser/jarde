@@ -1,0 +1,30 @@
+{
+  "cli_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+  "inventory_files": 99,
+  "jadx_version": "1.5.6",
+  "manifest_sha256": "be7b578eef48ca2d6bb84241fbe68233f6a498ac566a46524cddd9fd207822dd",
+  "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+  "physical_fields": 0,
+  "physical_methods_per_class": 3,
+  "raw_runtime_equal": true,
+  "schema": "primitive-array-branches-baseline-verification-root-v7",
+  "scope": "focused TestArrays2.test4 primitive-array branch adaptation only",
+  "source_map_bci_coverage": "all physical method BCIs for both Jarde legs",
+  "status": "verified",
+  "verified_cases": [
+    "javac8-original",
+    "javac23-original",
+    "javac8-jadx-default",
+    "javac23-jadx-default",
+    "javac8-jadx-none",
+    "javac23-jadx-none",
+    "javac8-jarde",
+    "javac23-jarde"
+  ],
+  "verified_commands": 25,
+  "verified_jdk_legs": [
+    "javac8",
+    "javac23"
+  ],
+  "whole_em18_complete": false
+}
