@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "38033367666",
+    "--json",
+    "headSha,status,conclusion,url,jobs,createdAt,updatedAt,event,name,number,databaseId"
+  ],
+  "started_utc": "2026-10-10T07:10:57.083045+00:00",
+  "duration_seconds": 3.1306373749976046,
+  "exit_code": 0,
+  "streams": {
+    "ci-run-live.json": {
+      "bytes": 9551,
+      "sha256": "8a3930d135f8dd734bf9016b4a1708352b041c36f81fadab6a0e8487b128ec97"
+    },
+    "stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
