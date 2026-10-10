@@ -1,6 +1,6 @@
 # Root verification — preserve-proved-discarded-call-origins
 
-当前4/6，生产已应用并实际本地/完整类验收；精确自身产品CI和最终clean主线仍待完成。该片不关闭整个CF12或71单元持续目标。
+当前5/6，生产、本地/完整类和精确自身产品CI均已独立接受；最终clean主线仍待完成。该片不关闭整个CF12或71单元持续目标。
 
 ## Implementation
 
@@ -20,6 +20,14 @@ baseline-root-v1是root独立接受的26cmd observation-only，缺三pop；candi
 
 额外pop2-controls-root-v1实际2cmd，冻结244B verifier-valid class的全部三方法正文/maps/quality/outcome/diagnostics/refusals恒同旧CLI，discardWide仍fallback，pop2@3不获derived。guarded-call8旧测试实际包括dup/cast/额外reader/pop2准确jre_guard_body@8，不能把该受保护body refusal层级泛称所有普通调用拒绝层级。
 
+## Exact product CI
+
+strict全343/343实际通过（product-strict-root-v1）；产品 **c5941c890b352b281fc2bcf4102e45243691bddb** 已提交推送，其准确自身 **CI38079005388** 已成功。root实际下载精确run API/stable/supply原日志并独立执行verifier v3，退出0：4jobs/52steps全部成功；两个准确seed各355条summary、3398/0/97，直接核lib337、gateway15与五新增完整测试名，并检查旧11整数回归。冻结CLI/build及全部17product/8test/47canonical的Git blob和live SHA均匹配。
+
+准确pin计数为72分类条目、**71唯一路径**：p3_patterns.rs同时属于test与canonical。v2的72唯一路径断言真实失败，v3保留全套SHA检查并明确核该唯一交集。v1则因GH前缀日期regex少了day段无法规范化测试行；raw实际五项均ok。两次verifier失败argv/UTC/原始stderr完整保存，只修日期格式和计数口径，未改产品或放宽测试/源码证明。
+
+接受记录 [acceptance-proved-discarded-call-ci-root-v3.json](results/ci-product-v1/acceptance-proved-discarded-call-ci-root-v3.json) SHA **16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2**；verifier源码SHA0e41a5fd1b9257734f872f56d3c45462434ae373f4310991853bff9fa9d9c9db。本片不借前片或后续文档CI。
+
 ## Remaining delivery
 
-strict全343/343实际通过（product-strict-root-v1）；产品commit/push后准确自身CI4jobs52steps、双seed各3398/0/97及355records，需直接证明五新增函数名和旧lib337/gateway15并核72live/Git pins。最终15worktrees全clean/仅main/main=origin/无target再记录，才继续typed。下一片需独立冻结新的pretyped CF12基线；pop修复会合法改变旧control的append-pop maps，不可用candidate自身充当预期，也不能放松全来源断言。
+提交新验收/独立基线/交接文档后，须实核15worktrees全clean/仅main/main=origin/无target，使用准确新pop CLI的audit，再关闭3.3。新的pretyped CF12基线已经独立48cmd/16整类报告/38方法profile接受，准确九处Stmt pop derived新增，其他正文/maps恒同；JDK8 ORIGINAL helper版本失败原样保留，完整上游控制仅JDK23/Java8 source-target。typed仍2/8，生产未重新应用。

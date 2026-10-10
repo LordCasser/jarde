@@ -4,17 +4,17 @@
 
 ## 当前工作：调用结果 pop 来源
 
-`preserve-proved-discarded-call-origins` **4/6**。已应用build.rs两条普通调用语句共用的小型来源消费helper，复用既有discards准确一对一证据，预算/poll后将pop挂到完整Stmt derived；无新IR/Frame/计划/pass，未扩大qualifier/pop2准入。根实际定向5/0/0；完整本地12cmd639/0/0、target峰值701811680bytes；新CLI完整对照26cmd/8runtime腿/28方法profile/18class独立接受，仅pop4/13/15新增来源，正文和旧maps恒同；额外pop2完整三方法恒同回退。详见 [verification-root](openspec/changes/preserve-proved-discarded-call-origins/verification-root.md)。
+`preserve-proved-discarded-call-origins` **5/6**。已应用build.rs两条普通调用语句共用的小型来源消费helper，复用既有discards准确一对一证据，预算/poll后将pop挂到完整Stmt derived；无新IR/Frame/计划/pass，未扩大qualifier/pop2准入。根实际定向5/0/0；完整本地12cmd639/0/0、target峰值701811680bytes；新CLI完整对照26cmd/8runtime腿/28方法profile/18class独立接受，仅pop4/13/15新增来源，正文和旧maps恒同；额外pop2完整三方法恒同回退。详见 [verification-root](openspec/changes/preserve-proved-discarded-call-origins/verification-root.md)。
 
-CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde；metadata/build在该change/results，真实sourcebase7a1ca930fc6178613df5df86145fff846c79791c，历史uncommitted标志不回写。cargo clean实际3027files/669.3MiB，target不存在；当前有授权产品/证据文档修改，不能冒称工作区clean。strict343/343已实际通过，待产品提交推送、准确自身CI及15worktrees clean验收后关闭本片，再应用typed。
+CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde；metadata/build在该change/results，真实sourcebase7a1ca930fc6178613df5df86145fff846c79791c，历史uncommitted标志不回写。产品c5941c890b352b281fc2bcf4102e45243691bddb已实际提交推送，自身CI38079005388已独立接受4jobs/52steps、双seed各3398/0/97及355summary；五新增名/lib337/gateway15与72分类条目（71唯一路径）Git/live pins均核。接受记录SHA16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2，两次verifier格式/计数失败保留。cargo clean实际3027files/669.3MiB，target不存在；当前有新基线/证据文档修改，不能冒称工作区clean。strict343/343已实际通过，待15worktrees clean验收后关闭本片，再应用typed。
 
 ## 后续已有方向
 
-`recover-proved-local-source-types` **2/8**：第一次两轮真实2/1，null/String全来源与atomic Stop通过；char正文正确但仍缺append后pop82/92/105。已完整保存实际patch/test/失败raw并恢复build.rs及自动测试目录，生产尚未再次应用。pop来源片关闭后先冻结独立新的CF12 pretyped基线，准确接受pop造成的control maps delta，再重新应用typed actual product，保留全部physical BCI断言。原CF12 rootv6 raw不覆盖，不让typed candidate充当自己预期。
+`recover-proved-local-source-types` **2/8**：第一次两轮真实2/1，null/String全来源与atomic Stop通过；char正文正确但仍缺append后pop82/92/105。已完整保存实际patch/test/失败raw并恢复build.rs及自动测试目录，生产尚未再次应用。独立post-pop/pretyped基线已实际48cmd/16整类报告/38方法profile接受，只有九处准确完整Stmt pop来源新增，旧正文/maps恒同。完整上游控制为JDK23/Java8 source-target；ORIGINAL JDK8 helper版本失败18cmd/raw保留，无stub或删check。详见[typed root验收](openspec/changes/recover-proved-local-source-types/verification-root.md)。pop片关闭后重新应用typed并保留全部physical BCI断言，原rootv6 raw不覆盖，不能让候选充当预期。
 
-类型v3实现/永久测试及replay v2私有稿保存待完整审查/实际执行；原边界12cmd/4腿只能算original验收。root已全文读预算observer草稿，因4个test-only实体/thread-local+生产cfg分支过重而不应用；使用临时实际trace保存prefix后移除、已有trusted真实IR永久测试准确Stop/public cancel即可。
+类型saved实际patch/永久测试已root全文读；replay v2/v3已全文审查发现身份/路径/物理BCI和拒绝分类缺陷，v5已root审读修正，仓库results/private-replay-luna-v5保留，尚无候选执行。原边界12cmd/4腿只能算original验收。root已全文读预算observer草稿，因4个test-only实体/thread-local+生产cfg分支过重而不应用；使用临时实际trace保存prefix后移除、已有trusted真实IR永久测试准确Stop/public cancel即可。
 
-`recover-proved-conditional-switch-fallthrough` **1/7**：实际11canonical块/17Normal edge诊断已独立接受，group fall_through不能表达case局部分支break；需要有限Region::SwitchBreak证据叶及最近switch作用域准确消费现有AST Break，不重扫CFG修AST。private v2尚未root全文/API/工具链验收，对抗审查风险待实际scope/预算/所有权反例验证。暂未应用生产。常量名门与computed-init for等保持独立债务，不扩大当前片。
+`recover-proved-conditional-switch-fallthrough` **1/7**：实际11canonical块/17Normal edge诊断已独立接受，group fall_through不能表达case局部分支break；需要有限Region::SwitchBreak证据叶及最近switch作用域准确消费现有AST Break，不重扫CFG修AST。root已全文读private实现v2及真实positive永久测试草稿v4，但未应用或工具链/API接受；scope/预算/完整canonical边及所有权反例待实测。另有五个条件/内层loop/内层switch/terminal/exception源码私有草稿，无实际CFG或拒绝结论。常量名门与computed-init for等保持独立债务，不扩大当前片。
 
 ## 已闭合的前片
 

@@ -360,3 +360,7 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 ### 2026-10-11 调用结果 pop 来源实际候选验收
 
 独立preserve-proved-discarded-call-origins已4/6：最小两条普通Stmt消费既有discards、真实5永久tests、本地12cmd639/0/0，完整源码/JADX/Jarde双JDK/default-all26cmd8runtime腿28method profiles18class独立接受，只新增pop4/13/15准确完整Stmt derived，正文及所有旧maps恒同。wide pop2另实际2CLI核全三方法refusal/map不变。CLI已冻结，cargo clean3027files/669.3MiB、target不存在；精确自身产品CI/最后主线clean仍待完成。typed仍2/8且生产未重新应用，下一步先接受post-pop独立pretyped CF12基线；不增加71整单元完成数。
+
+2026-10-11：在pop产品c5941c890的自身CI等待期间，root用冻结pop CLI独立完成CF12 post-pop/pretyped基线，实际48cmd/六用例/八输入实例/16整类报告/38方法profile；独立verifier退出0，接受记录SHAbc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06。准确九处pop新增完整Stmt derived，删除这些新增后所有旧正文/maps/物理方法身份恒同；原与历史JADX raw及旧失败分类重新核对。完整上游控制矩阵只使用pinned JDK23/Java8 source-target；首轮JDK8的ORIGINAL FallThrough.check因原SDK helper class55失败，18命令与异常raw原样保留，未改helper或删check。两个类型锚与独立边界仍待候选双JDK验证，typed2/8、整CF12及71/612计数不变。见[typed root验收](../../changes/recover-proved-local-source-types/verification-root.md)。
+
+2026-10-11：pop产品c5941c890b352b281fc2bcf4102e45243691bddb的准确自身CI38079005388已root独立接受，4jobs/52steps成功、两seed各355summary/3398通过0失败97忽略；lib337/gateway15及五新增测试直接原日志核实。全部17product/8test/47canonical的72分类条目、71唯一路径Git/live SHA通过，唯一交集为p3_patterns.rs。接受记录SHA16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2，verifier日期格式与唯一路径计数的两次失败原样保存后v3真实通过。任务5/6，等待文档提交推送和15worktree实际clean交付；typed仍2/8且未重新应用，不增加整CF12/71计数。
