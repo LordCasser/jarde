@@ -11,4 +11,4 @@
 
 - [x] 3.1 root按5GiB/target1GiB守卫实跑fmt/CI同范围Clippy/相关测试，冻结新CLI/meta/source/test/class pins；原/JADX/Jarde完整class双JDK/default-all重编运行同原，唯一已证pop新增完整语句derived、正文与旧来源恒同。
 - [x] 3.2 strict实际通过，产品提交推送并独立接受精确自身CI全部jobs/steps/双seed/新旧测试/source pins；失败raw原样保留，不借前片或文档CI。
-- [ ] 3.3 root更新verification-root/71账本/handoff，提交推送全部授权修改，实核main/origin相同、15worktrees全clean/无待合入或占用、cargo clean无target，保留CLI和原始证据，再恢复typed候选实测；不冒称整CF12或持续目标完成。
+- [x] 3.3 root更新verification-root/71账本/handoff，提交推送全部授权修改，实核main/origin相同、15worktrees全clean/无待合入或占用、cargo clean无target，保留CLI和原始证据，再恢复typed候选实测；不冒称整CF12或持续目标完成。
