@@ -13961,8 +13961,8 @@ fn prove_field_update(
     let Some(add) = instruction_in_block(block, add_bci) else {
         return Ok(None);
     };
-    // The read-modify-write's one arithmetic step: `+=` adds, `-=` subtracts. Both spellings
-    // name the same single read and single write the rest of this proof pins down.
+    // The read-modify-write's one arithmetic step. Each spelling names the same single read and
+    // single write the rest of this proof pins down.
     let update_op = match (add.opcode(), operations.get(add_bci)) {
         (
             0x60,
@@ -13976,6 +13976,12 @@ fn prove_field_update(
                 op: ArithmeticOp::Subtract,
             }),
         ) => ArithmeticOp::Subtract,
+        (
+            0x68,
+            Some(Operation::Arithmetic {
+                op: ArithmeticOp::Multiply,
+            }),
+        ) => ArithmeticOp::Multiply,
         _ => return Ok(None),
     };
     let Some((old, rhs)) = two_stack_values(add) else {
@@ -27242,11 +27248,14 @@ impl Builder<'_> {
             let op = match update_op {
                 ArithmeticOp::Add => AssignOp::Add,
                 ArithmeticOp::Subtract => AssignOp::Subtract,
+                ArithmeticOp::Multiply => AssignOp::Multiply,
                 _ => {
                     let bcis = self.quoted_bcis(at);
                     return self.fallback(
                         bcis,
-                        format!("the proved int field update at BCI {at} does not add or subtract"),
+                        format!(
+                            "the proved int field update at BCI {at} uses an unsupported operator"
+                        ),
                         at,
                     );
                 }
