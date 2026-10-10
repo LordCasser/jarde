@@ -1,0 +1,5 @@
+# Handler goto 来源边界
+
+两个HandlerArrayByteArray ctor在javac8/23各有goto@19→47，完整生成源码及原始runner四条success/caught路径与原程序一致。当前完整证据source_map对这些goto没有锚点；其余physicalBCI完整核对。事实与精确inputs/raw见controls-baseline-source-map-gaps-root-v1.json和独立acceptance-v5，闭合inventory未改。
+
+这不是已证明的语义恢复错误，也不能据此宣称source_map的complete与所有物理指令一一覆盖等价。后续独立审查SourceMap对结构性goto的合同及来源传递；必要时单独OpenSpec，当前共同实例初值不修此路径。候选验收须保持此精确边界，不能扩大豁免BCI集合。

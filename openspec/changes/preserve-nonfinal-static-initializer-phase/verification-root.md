@@ -41,3 +41,11 @@ Luna patch v1上下文遗漏既有unknown-static拒绝分支，apply check失败
 仅最后A1 test与其已unused const更新；历史baseline/A1.jarde.java不变，新增expected/A1.static-init.jarde.java逐字等于root实际CLI输出。保留整类原/恢复编译运行，补proof顺序、无重复根static块、物理clinit及source-map BCI断言，其余五项原断言不变。root-a1-static-tests-v1实际6/6，通过20GiB/1GiB守卫，最低22362042368字节。本产品仍6/7，必须待再次修复提交自己的完整CI。
 
 A1相关Clippy实际exit0（root-a1-clippy-v1），fmt/all OpenSpec strict/diffcheck通过（root-validation-v3）。只清本仓target362.4MiB（root-clean-v3实际stderr），10产品pins/CLI/meta不变；未声称本机全仓测试通过。
+
+## 2daa CI 的 corpus 登记遗漏
+
+2daa21c99db7e126d91b5ccbe3d016208fd54aba 的确切 CI38014660202在stable第一seed失败于 `corpus_files_match_the_recorded_fingerprint`，仅缺本次新增 `expected/A1.static-init.jarde.java`；A1六项恢复测试已通过，另MSRV/fuzz/supply成功。完整API/stable日志572529 byte及真实采集argv/exit/hash保留在results/ci-2daa-failure-v1。不能验收失败CI，也不回退合法静态提升。
+
+root实际执行register-a1-fingerprint-luna-v1.py，以Python blake3 1.0.11独立扫描与Rust测试相同的两root/排除规则，2062文件全部核对：原2061条字节/digest恒同，唯一新增2210字节A1 expected SHA a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca，BLAKE3 eaac73c5450923dadab849829f1dc2ca1e9503b0c5c3aa14fbd7ab39df6cc7b4与真实CI相同。manifest仅增加这条sorted entry，classification/原数据不改；新manifest SHA6f7eac52f10e231cd45666438a31e9807bd4ba442c8ac4abfb83d56f51a38147。真实结果register-a1-fingerprint-root-v1.json及wrapper raw完整保留。
+
+本机空间低于20GiB且target已不存在，因此此次未执行官方Rust generator或P5 Rust测试；独立Python全量核验不冒称Rust门禁通过，下一修复提交须再次验收自己的双seed全仓/P5完整CI。本片仍6/7。生产/测试逻辑、原fixture和冻结CLI/metadata不变。

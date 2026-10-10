@@ -1742,6 +1742,11 @@
       "path": "tests/fixtures/p3-array-slot-retype-locals/baseline/V4.jarde.java"
     },
     {
+      "blake3": "eaac73c5450923dadab849829f1dc2ca1e9503b0c5c3aa14fbd7ab39df6cc7b4",
+      "bytes": 2210,
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java"
+    },
+    {
       "blake3": "8880274a660d25a7720501c2fd217b40782135ce4be3ea42f1f837eb4a446bef",
       "bytes": 10,
       "path": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.stdout"

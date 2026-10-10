@@ -1,0 +1,15 @@
+# Constructor primitive-array prefix patch review
+
+Patch: `instance-array-prefix-luna-v2.patch` (SHA-256 `04e71d76933ec150d47896a92cf1f8584fb63d3cef09fc22d6c795bac496d9b0`).
+
+The patch changes only `crates/jarde-java/src/report.rs` and `src/facade.rs`. The report layer reuses the existing `InitRecord` and retained constructor AST, records a complete claimed instance-field write inventory only when every physical non-static write is claimed, identifies only contiguous post-direct-super primitive-array field writes, compares RHS expressions from their original AST nodes (including raw floating-point bits, presented types, casts, invocation kind/owner/name/descriptor, and literal arguments), and re-emits the full constructor after removing only proved prefix BCIs. `super(args)` and all suffix statements, including `return`, remain in the emitted body. No public serialized report shape or existing recovery text/map is changed.
+
+The facade gates the group on every physical constructor having a complete structured body and a matching retained AST; requires the same ordered field identities and strongly equal RHSs in every constructor; validates exact field descriptor/declaration order, blank initializer state, absence of `ConstantValue`/field `Signature`, and unique same-class static helper declarations with primitive-only signatures and no `Exceptions`; then stages all field fragments and member texts before committing. It refuses a conflicting prior member projection and budget stops publish no partial group. The AST bridge uses an opaque retained expression; it does not create a second typed RHS tree.
+
+Added unit coverage in `report.rs` exercises `super(7)` plus final `return` preservation, refusal for `this()`, handlers, missing/duplicate write evidence, differing call arguments/overloads, distinct long and raw float/double bits, and budget-stop refusal. The pre-existing Java8 class/Runner baselines remain unchanged and are not included in this patch.
+
+Preparation only: no production source was edited; no Git, Cargo, rustfmt, JDK, JADX, or Jarde command was run. The Rust patch and new tests have therefore not been compiled or executed. Root should review and run the required checks before applying it.
+
+## Root disposition
+
+Rejected without applying or compiling. The patch compares constructor count against all methods and requires two constructors, omitting valid single-constructor cases; it refuses an absent static field-order projection instead of using the actual ordinary field order, and checks nonstatic ConstantValue only on selected array fields. The initializer emitter call has one extra argument and some Budget Error-to-StopReason conversions are inconsistent with current APIs. Evidence retention/deep clone accounting and real facade coverage also need correction. V3 is being prepared privately. The existing initializer emitter already includes ` = ` and field declarations do not contain a semicolon; appending its fragment is the correct reusable seam. `matches_current_text` takes a recovery artifact, not the complete placed member text.

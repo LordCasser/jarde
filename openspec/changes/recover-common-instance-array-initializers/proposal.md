@@ -22,4 +22,4 @@ JADX TestArrayInitField对应的实例数组仍以构造器赋值呈现。完整
 
 `crates/jarde-java/src/report.rs` 的opaque同轮AST适配器、`src/facade.rs` 的class-source装配、现有字段/方法投影与集成测试；复用既有AST/emitter/field@1/init@1/call targets，无新IR/pass/全局类型框架/依赖/公开报告schema。若物理字段claim尚未保留，仅在构造器同轮opaque sidecar带必要已证事实，并逐项计费。
 
-前置：instance-field-init-next的原2/2/Jarde2/2和JADX4编译成功但4语义失败基线已root独立验收，当前25c5测试修复提交自己的CI待验，不能提前借其门禁。非目标：constructor graph/this链提升、标量常量变量/ConstantValue、参考类型协变数组/嵌套多维、更广表达式、字段重排、try范围搬移、其它JADX错误修补，或EM18整单元完成。
+前置：instance-field-init-next的原2/2/Jarde2/2和JADX4编译成功但4语义失败基线已root独立验收，静态片2daa确切CI因新增A1 expected遗漏corpus登记失败，仅补登记后新修复提交自己的CI待验，不能提前借其门禁。非目标：constructor graph/this链提升、标量常量变量/ConstantValue、参考类型协变数组/嵌套多维、更广表达式、字段重排、try范围搬移、其它JADX错误修补，或EM18整单元完成。

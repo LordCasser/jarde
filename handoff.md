@@ -4,9 +4,10 @@
 
 ## 当前状态与立即下一步
 
-main已推送静态阶段产品 **7196a3653f7b8d5b6b285970c3b41b59adf84e55**。其[确切CI38010503464](https://github.com/LordCasser/jarde/actions/runs/38010503464)失败于旧测试 `enum_constants::tests::ordinary_class_fields_and_static_initializer_keep_the_existing_projection`，仍要求bare字段/static块；另3job成功。此次只更新该测试函数，保留enum NotApplicable/default-all正文一致，并核Proved2顺序/field index/nonfinal flags/根无重复static块/物理clinit及write BCI来源。root本机准确测试 **1pass**。生产10pins与冻结CLI完全未变。
+上一已推送检查点为 **2daa21c99db7e126d91b5ccbe3d016208fd54aba**；本次仅修复A1语料指纹登记并保存完整审查证据，修复提交的确切CI待验。非final静态产品逻辑仍是7196的一项flags修正；随后只修两个陈旧测试预期，生产10pins/冻结CLI不变。7196的CI38010503464失败于ordinary static旧断言，25c5的CI38012927864失败于A1旧golden；两次真实失败raw保留。A1新expected来自实际CLI完整输出，历史baseline不改；本机文件6/6与相关Clippy通过。
 
-修复提交25c5a6fd09ed8603dbbbf3d217469432f27e5c40的CI38012927864仍失败于A1旧整类golden：合法static calls=0提升取代bare字段+静态块，其余全文不变。MSRV/fuzz/supply成功，失败raw在results/ci-25c5-failure-v1/v2（首次网络EOF保留）。root已应用最小A1测试补丁，历史baseline不改/newexpected来自实际CLI完整输出；全文件6/6本机和相关Clippy通过、静态proof/原clinit来源及整类运行保留。新修复尚待提交推送和自己的完整CI。本片仍6/7；verify-ci-product-root-v4.py仅前置pins/local核验，未完整执行；下一v5准备加入A1额外pins与双seed检查，不重写冻结metadata。
+[确切CI38014660202](https://github.com/LordCasser/jarde/actions/runs/38014660202)已失败：stable seed1到P5 corpus指纹只发现新增A1 expected未登记，A1六项已通过，MSRV/supply/fuzz成功。完整API/stable日志保留ci-2daa-failure-v1。root实际独立BLAKE3核全部2062 corpus文件，原2061恒同、唯一新增登记；仅fingerprint JSON增加一条2210byte entry，classification与原所有pins不变（register-a1-fingerprint-root-v1.json）。本机低于20GiB，官方Rustgenerator/P5此次未运行；下一修复提交自己的完整CI待验，本片仍 **6/7**。v5准备版未完整执行；v6准备版遗留旧fingerprint等值断言，root拒绝使用；v7只保留reader旧pin，额外严格核指纹唯一登记，不改冻结metadata，尚未完整执行。
+
 下一 EM18 实例数组完整基线已实际完成，见 [README](openspec/evidence/java-syntax-2026-10-10/instance-field-init-next/README.md) 和 results/baseline-root-verification-v7.json：三类+Runner共 **31命令/8腿**，原双JDK **2/2**、当前Jarde **2/2** raw匹配；fresh JADX1.5.6 default/none从同一javac23 jar各提取一次，完整源码各双JDK重编 **4/4编译成功、0/4语义成功**。DifferentRhsByteArray的ctor(int)把mark32误改mark31。失败raw必须保留；不能说8/8通过。
 
 CommonDirectSuperByteArray的共同初值JADX提升而Jarde保留；ThisDelegatingByteArray两者都保留target ctor赋值且恰一次。第一MVP只恢复全部direct-super构造器共同连续数组初始化前缀，this链/参数依赖/不同RHS/不安全顺序先保留；不先建constructor graph。本地JADX dev checkout的soft isSame是可信问题候选，不等于已证1.5.6内部调用路径。root已核InsnNode/InvokeNode/ExtractFieldInit原代码。设计接缝见 [instance-promotion-architecture-root](openspec/evidence/java-syntax-2026-10-10/array-field-initializers/instance-promotion-architecture-root.md)；已建立recover-common-instance-array-initializers规划4/4、tasks2/8。Luna准备中的adapter草稿因丢super/字符串RHS比较/缺预算与field census被root拒绝，尚未应用，实例生产未改。
@@ -40,6 +41,14 @@ TestArrayInit.test2 方法byte[]字段写现已正确，原2/2/JADX4/4/Jarde2/2�
 
 ## 本轮下一片实际状态
 
-TestArrays2.test4已完成fresh25命令/8腿，原2/2、JADX4/4、Jarde2/2全部raw一致；root实际verify-baseline-root-v7接受99闭合文件/完整3methods0fields/原BCI。现有功能覆盖，不新增实现。实例prefix7控制+原3类与2Runner脚本controls-prepared-v1/prepare-controls-root-v2.py准备但未执行，必须显式传新CLI/meta pins，完整类集不得裁剪。
+TestArrays2.test4已完成fresh25命令/8腿，原2/2、JADX4/4、Jarde2/2全部raw一致；root实际verify-baseline-root-v7接受99闭合文件/完整3methods0fields/原BCI。现有功能覆盖，不新增实现。实例prefix7控制+原3类与2Runner的旧CLI基线已完成；prepare-controls-root-v2.py的新CLI候选回放尚未执行，须显式传新CLI/meta pins，完整类集不得裁剪。
 
 本轮A1验证后只cargo clean本仓target362.4MiB（实际stderr/results/root-clean-v3），target不存在。20GiB守卫保留；实时其它进程可能继续耗盘。
+
+实例10完整控制类/2Runner旧CLI基线已实际80命令/44cases全通过，root独立acceptance-v5。只有handler两ctor双JDKgoto@19来源缺口，精确记录不作全BCI覆盖声明，合同待独立审查。typed value shadow tree被root收敛掉，Luna改为opaque原AST预算化strong compare，产品patch尚未应用。
+
+三项ArrayFill边界已实际baseline-root-v2：39命令/8完整腿，原2/2、fresh JADX4/4、当前Jarde2/2重编/raw成功；root实际独立verifier v2已接受205闭合文件，39命令/78raw streams/12CLI/每类2methods与全部BCI；v1仅准备未执行。long极值与dependent stores已有语义恢复；CONST_INT符号与Long.MAX_VALUE呈现较JADX仍有差距，正在基于JADX真实算法分析歧义与复用接缝。
+
+2026-10-10 02:03 UTC实时可用约14GiB，本仓target不存在，低于20GiB守卫不启动Cargo。继续独立审查/小Java证据与CI，勿清其他项目或修改停止线。
+
+实例patch v2 root完整审查拒绝、未应用：全methods与ctor数量误比、单ctor误拒、无static order准入和整体nonstatic ConstantValue遗漏及API/预算问题；v3私有补丁已准备，尚未应用/编译/验收，root继续对抗审查。原AST RHS比值方向保持，不开放新typed shadow tree。

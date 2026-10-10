@@ -35,4 +35,4 @@
 
 ## Migration Plan
 
-先独立确认static片25c5确切CI，同时Luna准备本片patch但不应用。root审查、唯一工具链执行、冻结新CLI并完成双JDK/旧回归/准确新CI；任务按实际结果勾选。仅清本仓target，20GiB/1GiB守卫不降；historical raw和旧CLI全保留。
+先独立确认static片A1指纹登记修复提交的确切CI，同时Luna准备本片patch但不应用。root审查、唯一工具链执行、冻结新CLI并完成双JDK/旧回归/准确新CI；任务按实际结果勾选。仅清本仓target，20GiB/1GiB守卫不降；historical raw和旧CLI全保留。
