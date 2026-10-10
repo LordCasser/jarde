@@ -23,6 +23,6 @@ root 读审 region.rs 的 header_tested_loop 两个成功构造路径、loop_bod
 - [隐藏 goto 被误归显式 continue 或内层 loop] → 只取末尾 Straight 的本 loop latch，准确 terminal transfer/唯一正常目标与既有 owner 同时核，不递归抓所有 BCI。
 - [仅修了来源却改变正文或 optional evidence 行为] → fresh CLI 逐方法文本与冻结基线逐字比，default/all 正文与 source map 比；其余方法 map 恒同，noPrefix 只允许真实@14派生来源增加。
 - [全类仍失败被当成修复失败或完整成功] → 单列 method 来源接受与全类 observation，最终整类运行依赖单臂片，再核完整物理 BCI，不降低门禁。
-- [预算扫描新增未计量工作] → 每条实际候选/边检查沿用预算 charge，永久停止测试及相邻回归；机器20GiB/本仓target1GiB守卫满足后才运行Rust。
+- [预算扫描新增未计量工作] → 每条实际候选/边检查沿用预算 charge，永久停止测试及相邻回归；机器5GiB/本仓target1GiB守卫满足后才运行Rust；构建期间持续核验，越界即中止，完成后清理本仓 target。5GiB 下限由用户明确授权替换原20GiB，下限变更不降低 target 上限或语义验收。
 
 无需数据迁移或新实体。root 应用并实跑前，Luna patch 仅为候选；本片来源 spec 不代表覆盖其它 loop 形状。

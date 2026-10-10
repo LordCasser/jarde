@@ -27,4 +27,4 @@ root复核 `Frame::arm`、`region_at`/loop-header分段、one-arm caller、`cont
 - [Stop被当作失败继续走] → 预算/取消/递归中断测试如实核execution，原传播路径不改；临时diagnostic撤销后冻结产品CLI。
 - [新控制基线的旧goto14缺口让来源门禁失真] → 独立来源change关闭后再做最终all-BCI接受；本片task不能单凭runtime或quality勾完整来源验收。
 
-无需迁移或兼容层。Rust仅在20GiB机器/1GiB本仓target守卫满足后串行执行，临时probe撤销前不提交生产源码。
+无需迁移或兼容层。Rust仅在5GiB机器/1GiB本仓target守卫满足后串行执行（用户已明确授权下调机器下限，保留实时中止及完成清理），临时probe撤销前不提交生产源码。

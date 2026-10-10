@@ -78,6 +78,25 @@ fn loop_arm_joins_before_the_outer_arm_tail_once() {
             "BCI {bci} lost its source: {text}"
         );
     }
+    assert!(
+        !recovery.source_map.of_bci(23).is_empty(),
+        "latch goto at BCI 23 lost its source: {}",
+        recovery.text
+    );
+    assert!(
+        recovery
+            .source_map
+            .derived_of_bci(23)
+            .iter()
+            .any(|segment| {
+                segment
+                    .text(&recovery.text)
+                    .trim_start()
+                    .starts_with("while (")
+            }),
+        "latch goto at BCI 23 is not derived from the while span: {}",
+        recovery.text
+    );
 }
 
 fn with_branch_target(from: &[u8], to: &[u8]) -> Vec<u8> {

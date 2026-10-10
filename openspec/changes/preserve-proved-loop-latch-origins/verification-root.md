@@ -1,5 +1,19 @@
 # 普通 while 隐式回跳来源：root 验收入口
 
+当前 tasks **5/6**。局部来源实现、永久正反例和 fresh CLI 对照已由 root 实际验收；剩余 3.2 为提交推送后的精确产品 CI 与主线交付。单臂续接仍是另一项工作，不计 CF-07/EM-23 整单元完成。
+
+2026-10-10 10:31 UTC，root 完整执行 `results/run-validation-build-root-v9.py` 的12条命令，fmt、CI同范围Clippy及552 passed/0 failed/1 ignored全部通过。根 arm-join 4项、double-jumps 7项、Boolean-loop 3项均实跑，gateway 5项含 noPrefix 来源和预算/取消。源前后49个pins恒同，target峰值760681447 bytes；机器5GiB/target1GiB守卫全程未触发。fresh CLI `/private/tmp/jarde-loop-latch-cli-v1` SHA-256 `1728ef3fa1a3a9e8ed56d6f4384a1c54c3e63400e6495c750a0bd139d7623b5c`，metadata SHA `6b0c59d452d8d5a1fb157c60e81a6602f9cc78c26479f2638e98bdfda54df9e3`，准确身份以 `results/candidate-cli-v1.json` 为准。
+
+10:35 UTC root 实跑独立 verifier-v5退出0，接受结果 `results/candidate-acceptance-root-v5.json`，完整argv/raw/hash在 `results/independent-execution-root-v5`。Plain真实31命令/111闭合文件：noPrefix仅增加derived@14的完整while来源，所有已有来源、全部方法正文、其他方法map与基线恒同；全部物理owner/方法/BCI、default/all均核。三个旧单臂拒绝仍存在，Jarde四份完整类编译失败、零运行，未删除成员或修改生成源。CF-07真实29命令/119闭合文件：原2/JADX4/Jarde4完整类全部原样重编和验证运行成功，raw与原oracle相同；仅andWhile@15和counted@30新增准确while派生来源，旧来源/default-all保持。counted@20与lastIndexOf@25仍在范围外，不能据运行成功冒称全BCI完整。
+
+实际应用的五文件patch为 `results/loop-latch-origins-root-v7.patch`，SHA `3b5aa370bc52193eda4ea7c491930fc59d13ebfee3203d33e30192f7e6dc4c1c`。生产证明沿用已审v6；root依据真实失败把测试helper的参数槽数改为官方descriptor_facts，而非硬编码1，并在essential请求显式加入SourceMap。optional evidence语义与生产算法未因此改变。新增实体仅一个私有来源证明helper，复用现有自然循环、canonical/SSA、gateway_origins和emitter，不加public IR、Frame字段、pass或依赖。
+
+资源下限由用户明确授权20→5GiB，实时中止与完成清理保留。v4/v6真实因机器余量不足中止；v5因测试facts错误失败；v7摘要tuple/list假阴性及v8清理后空target错误均保存，未冒称接受。v9从空target重新完整执行，没有借旧成功行补齐结果。v4独立verifier的BLAKE3 callable/module类型错误raw保留，v5仅修调用形式后重新完整验收。CF首次root调用缺SHA参数在任何重放前拒绝，修正调用后实际完成。所有历史版本和原始证据保留。
+
+10:37 UTC root仅cargo clean本仓，释放725.4MiB/3436files，target不存在，冻结CLI保留；记录results/root-clean-five-gib-v2。OpenSpec全量strict实际337 passed/0 failed，git diff --check通过。辅助14工作树仍detached，无分支占用，受应用固定保护的副本保留。
+
+## 历史分析和准备（以下状态由上面的实际验收结果更新）
+
 当前 tasks **2/6**。已接受控制基线及私有源码证明；候选未应用、未编译，不能勾选动态验证任务。原始基线31命令/111文件，原2/JADX4完整类成功，Jarde4编译失败/零运行；`noPrefix` 的 goto@14→6 缺 map 已独立接受为真实来源缺口。详见 one-arm-loop-controls/verification-root.md。
 
 root 全文读审 Luna v2 与相邻 region/build/emit 后，发现新 helper 在 canonical edge 计费前重复调用无计量的 `leaving_edge`。root 私有 v3 只删除该调用；后面的计费、逐边 poll、唯一 Normal→本 header 门禁已涵盖异常/未知/多余边，不改变 shape。header-test-chain 与单条件两个成功构造点均已接入 helper，审查初期的 chain 漏接判断已撤回，不据未应用 main 误判候选。

@@ -4080,12 +4080,14 @@ impl Walker<'_> {
             body,
             exit: Some(exit),
             gateway_origins,
+            form,
+            for_header,
             ..
         } = arm
         else {
             return Ok(None);
         };
-        if exit != join || !gateway_origins.is_empty() || !body.iter().all(closed_body) {
+        if exit != join || !body.iter().all(closed_body) {
             return Ok(None);
         }
         let Some(header_node) = self.view.index_of(header) else {
@@ -4115,6 +4117,17 @@ impl Walker<'_> {
                     })
             })
         {
+            return Ok(None);
+        }
+        let allowed_latch_origin = if gateway_origins.is_empty() {
+            true
+        } else if *form == LoopForm::While && for_header.is_none() && gateway_origins.len() == 1 {
+            self.implicit_tail_latch_origin(header_node, body, for_header.as_ref())?
+                == gateway_origins.first().copied()
+        } else {
+            false
+        };
+        if !allowed_latch_origin {
             return Ok(None);
         }
         charge(
@@ -10083,6 +10096,83 @@ impl Walker<'_> {
         )))
     }
 
+    /// The one hidden transfer a final straight run may assign to a header-tested `while`: its
+    /// natural latch, when the terminal instruction is an unconditional transfer back to this
+    /// header and the canonical graph gives it no other outgoing edge.
+    fn implicit_tail_latch_origin(
+        &mut self,
+        header_node: usize,
+        body: &[Region],
+        for_header: Option<&ForHeader>,
+    ) -> Result<Option<u32>, StopReason> {
+        if for_header.is_some() {
+            return Ok(None);
+        }
+        let Some(Region::Straight { blocks: tail }) = body.last() else {
+            return Ok(None);
+        };
+        let Some(latch_id) = tail.last() else {
+            return Ok(None);
+        };
+        let Some(latch_node) = self.view.index_of(latch_id) else {
+            return Ok(None);
+        };
+        let Some(natural_loop) = self.view.loop_entered_at(header_node) else {
+            return Ok(None);
+        };
+        let Some(header_id) = self.view.id_of(header_node) else {
+            return Ok(None);
+        };
+        let Some(latch_bci) = self.terminal_bci(latch_id) else {
+            return Ok(None);
+        };
+        poll(self.budget, Some(latch_bci))?;
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(natural_loop.latches().len()).unwrap_or(u64::MAX),
+            Some(latch_bci),
+        )?;
+        if natural_loop.header() != header_node
+            || natural_loop.is_irreducible()
+            || natural_loop.latches().len() != 1
+            || !natural_loop.latches().contains(&latch_node)
+        {
+            return Ok(None);
+        }
+        if !self.ssa.block(latch_id).is_some_and(|block| {
+            block.instructions().last().is_some_and(|instruction| {
+                instruction.bci() == latch_bci
+                    && matches!(instruction.opcode(), 0xa7 | 0xc8)
+                    && matches!(self.operations.get(latch_bci), Some(Operation::Transfer))
+            })
+        }) || self.view.successors(latch_node) != [header_node]
+        {
+            return Ok(None);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX),
+            Some(latch_bci),
+        )?;
+        let mut outgoing = 0usize;
+        for edge in self.canonical.edges() {
+            poll(self.budget, Some(latch_bci))?;
+            if edge.from() != latch_id {
+                continue;
+            }
+            outgoing += 1;
+            if edge.kind() != CanonicalEdgeKind::Normal || edge.to() != header_id {
+                return Ok(None);
+            }
+        }
+        if outgoing != 1 {
+            return Ok(None);
+        }
+        Ok(Some(latch_bci))
+    }
+
     /// The `while`/`for` shape: the header's own branch tests and one of its arms leaves the loop.
     fn header_tested_loop(
         &mut self,
@@ -10142,6 +10232,10 @@ impl Walker<'_> {
                         body,
                     )));
                 }
+                let gateway_origins = self
+                    .implicit_tail_latch_origin(header_node, &body, None)?
+                    .into_iter()
+                    .collect();
                 return Ok(Some((
                     vec![Region::Loop {
                         header: header.clone(),
@@ -10151,7 +10245,7 @@ impl Walker<'_> {
                         for_header: None,
                         body,
                         exit: Some(chain.exit.clone()),
-                        gateway_origins: Vec::new(),
+                        gateway_origins,
                     }],
                     Some(chain.exit),
                 )));
@@ -10314,6 +10408,12 @@ impl Walker<'_> {
                 .is_some_and(|candidate| candidate.update_block == proof.update)
         {
             gateway_origins.push(proof.update_transfer_bci);
+        }
+        if let Some(latch_bci) =
+            self.implicit_tail_latch_origin(header_node, &body, for_header.as_ref())?
+            && !gateway_origins.contains(&latch_bci)
+        {
+            gateway_origins.push(latch_bci);
         }
         let run = vec![Region::Loop {
             header: header.clone(),

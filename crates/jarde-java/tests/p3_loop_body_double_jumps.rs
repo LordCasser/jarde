@@ -212,6 +212,24 @@ fn jump_transfer_blocks_have_one_owner_and_complete_sources() {
     ] {
         let report = int_string_method(class, owner, name);
         for bci in anchors {
+            let source_segments = report.source_map.of_bci(bci);
+            assert!(
+                !source_segments.is_empty(),
+                "{name}: BCI {bci} lost its source"
+            );
+            for segment in source_segments {
+                let segment_text = segment.text(&report.text);
+                let first_line = segment_text.lines().next().unwrap_or("").trim_start();
+                let starts_loop = first_line.starts_with("while (")
+                    || first_line.starts_with("for (")
+                    || first_line.rsplit_once(": ").is_some_and(|(_, statement)| {
+                        statement.starts_with("while (") || statement.starts_with("for (")
+                    });
+                assert!(
+                    !starts_loop,
+                    "{name}: transfer BCI {bci} is mapped to a loop header: {segment_text}"
+                );
+            }
             let owners: Vec<_> = report
                 .regions
                 .iter()
