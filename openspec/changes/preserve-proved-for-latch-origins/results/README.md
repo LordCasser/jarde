@@ -1,0 +1,7 @@
+# Proved latch origins guarded validation
+
+These private scripts are prepared for root review and have not been run. `run-validation-build-root-v1.py` reuses the pinned `preserve-proved-loop-latch-origins` v9 guard implementation (SHA-256 `51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33`) and owns the change-specific command list, source pins, summary checks, execution schema, CLI freeze, and metadata. It requires HEAD `87090b3b4735693d0930f24f817d19f41cb63d98`, uses the 5 GiB free-space and 1 GiB target guards, one Cargo job, JDK 23 setup, one-second process-group monitoring, and the existing successful test-binary/check-only metadata cleanup.
+
+The outputs are `openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/`, `candidate-cli-v1.json`, and `/private/tmp/jarde-proved-for-latch-cli-v1`. The independent verifier recomputes the 50 live source/test/include pins, checks both runner identities separately, verifies the 12 exact commands and 24 raw streams, rechecks summaries and exact test names, and writes `validation-acceptance-root-v1.json` exclusively after all checks pass. It does not assume or require a `built_binary` metadata field.
+
+The expected gateway binary has nine tests. The verifier checks all nine names and 9/0/0 raw output; the runner records the six required latch-origin and mutation-negative test names. Cleanup of test executables and check-only `.rmeta` files follows the pinned v9 guard code. Root performs final Cargo cleanup after validation.

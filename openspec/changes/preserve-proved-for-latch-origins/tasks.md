@@ -4,8 +4,8 @@
 
 ## 2. Reuse the existing latch proof
 
-- [ ] 2.1 Luna 提交私有最小 patch，root 全文审查应用；扩展现有 helper 对 ForHeader 的唯一末尾 latch、update_block/update_bci 和真实 goto/goto_w 完整边证明，join gate 共享验证；永久测试核三方法完整 for 范围、准确物理 BCI/方法与旧来源保留，无新 IR/Frame/pass。
-- [ ] 2.2 root 实跑更新不匹配、错误 transfer/边或多 latch 的对抗边界及预算/取消测试，保持既有保守拒绝/Stop 和无部分产物；相邻 while、iterator、单臂/双臂、effectful exits 永久回归通过，记录实际测试命令与 raw。
+- [x] 2.1 Luna 提交私有最小 patch，root 全文审查应用；扩展现有 helper 对 ForHeader 的唯一末尾 latch、update_block/update_bci 和真实 goto/goto_w 完整边证明，join gate 共享验证；永久测试核三方法完整 for 范围、准确物理 BCI/方法与旧来源保留，无新 IR/Frame/pass。
+- [x] 2.2 root 实跑更新不匹配、错误 transfer/边或多 latch 的对抗边界及预算/取消测试，保持既有保守拒绝/Stop 和无部分产物；相邻 while、iterator、单臂/双臂、effectful exits 永久回归通过，记录实际测试命令与 raw。
 
 ## 3. Whole-class and delivery acceptance
 

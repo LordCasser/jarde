@@ -4136,7 +4136,7 @@ impl Walker<'_> {
         }
         let allowed_latch_origin = if gateway_origins.is_empty() {
             true
-        } else if *form == LoopForm::While && for_header.is_none() && gateway_origins.len() == 1 {
+        } else if *form == LoopForm::While && gateway_origins.len() == 1 {
             self.implicit_tail_latch_origin(header_node, body, for_header.as_ref())?
                 == gateway_origins.first().copied()
         } else {
@@ -10276,18 +10276,15 @@ impl Walker<'_> {
         )))
     }
 
-    /// The one hidden transfer a final straight run may assign to a header-tested `while`: its
-    /// natural latch, when the terminal instruction is an unconditional transfer back to this
-    /// header and the canonical graph gives it no other outgoing edge.
+    /// The hidden transfer a final straight run may assign to a header-tested loop: a `while`
+    /// latch, or the exact update block already proved by `ForHeader`, whose terminal instruction
+    /// transfers back to this header and whose canonical block has no other outgoing edge.
     fn implicit_tail_latch_origin(
         &mut self,
         header_node: usize,
         body: &[Region],
         for_header: Option<&ForHeader>,
     ) -> Result<Option<u32>, StopReason> {
-        if for_header.is_some() {
-            return Ok(None);
-        }
         let Some(Region::Straight { blocks: tail }) = body.last() else {
             return Ok(None);
         };
@@ -10307,6 +10304,28 @@ impl Walker<'_> {
             return Ok(None);
         };
         poll(self.budget, Some(latch_bci))?;
+        if let Some(proof) = for_header {
+            let Some(instructions) = self.ssa.block(latch_id).map(|block| block.instructions())
+            else {
+                return Ok(None);
+            };
+            let Some([update, transfer]) = instructions.get(instructions.len().saturating_sub(2)..)
+            else {
+                return Ok(None);
+            };
+            let update_matches_slot = match self.operations.get(proof.update_bci) {
+                Some(Operation::Increment { slot, .. }) => *slot == proof.slot,
+                Some(Operation::Store { slot }) => *slot == proof.slot,
+                _ => false,
+            };
+            if &proof.update_block != latch_id
+                || update.bci() != proof.update_bci
+                || transfer.bci() != latch_bci
+                || !update_matches_slot
+            {
+                return Ok(None);
+            }
+        }
         charge(
             self.budget,
             CountedBudgetDimension::AnalysisSteps,
