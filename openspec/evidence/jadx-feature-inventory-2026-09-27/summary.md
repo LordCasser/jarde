@@ -348,3 +348,7 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 ### 2026-10-11 return-arm 精确产品 CI 验收
 
 产品0ae30a7c8d217522f2e5f5b954aa86c9b59356dd自身CI38073837512已root独立接受，4jobs/52steps、双seed3393/0/97与354记录、新增3gateway/1region及52live/Git pins全部通过。verifier plain Python缺blake3失败原raw保留，同脚本离线uv缓存重跑exit0。当前片6/7，最终clean交付尚待实际核对；71单元/612测试及整CF07/CF12完成数不增加。
+
+### 2026-10-11 return-arm 干净主线闭合
+
+6118e565已实际提交推送并审计接受：仅main、HEAD/main/origin同、15worktrees全clean、14辅助detached main祖先、无target/fuzz target/待合入或分支占用、free68,071,964,672 bytes。return-arm片7/7；关闭记录推送后root再次private实核再应用类型片。整CF07仍有computed-init for两独立门与ForHeader末尾If来源债务；71单元/612测试计数不变，持续目标active。
