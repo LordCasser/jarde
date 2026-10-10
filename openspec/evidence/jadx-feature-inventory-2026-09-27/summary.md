@@ -334,3 +334,5 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 15:55 UTC真实clean主线交付：8784e2f07 main/origin相等、15worktrees全部clean/main祖先、14辅助全部detached、仅main且无target/待合入/分支占用；冻结CLI/raw保留，free68989394944 bytes。审计For/results/delivery-clean-root-v1，For6/6、prefixed-one-arm7/7正式关闭。下一If片1/7规划和未执行诊断准备已提交，持续目标继续；71/612及整单元计数不变。
 
 15:59 UTC下一If片临时真实内部诊断root独立接受1/0/0：canonical branch11/physical14/join27/then Straight17末goto20、全边唯一Normal17→27、owner1/0/1；v1类型编译失败及raw保留，v3临时patch/v2runner成功。root还原50pins、清341files/144.8MiB，prod未改，新片2/7。已派发Luna私有最小实现、guarded新CLI验证准备及CF07完整对照准备并行，不把准备或diagnostic当新产品验收。71/612及整单元计数不变。
+
+2026-10-10 16:35 UTC：preserve-proved-if-arm-join-origins已root应用最小Builder来源修复并独立接受本地12命令562/0/1、52pins、target峰值701667300。新CLI真实CF0729命令/10完整类腿及全物理方法/source owner/准确goto重新验收，唯一新增四profile counted@20 derived完整If，counted全BCI覆盖，唯一剩余lastIndexOf25缺口保持；旧For/Postfix57命令20腿、28方法profile全BCI且8生成类正文/map精确同旧For。真实Exception反例恢复为Fallback而非Straight、整体quote只带blockleaders是独立债务，失败raw保留。当前5/7、自身CI及最终clean交付待关闭，cargo clean3022files/669.2MiB。71/612与整CF07计数不变，下一项明确为lastIndexOf25真实Region诊断。

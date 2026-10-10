@@ -8769,6 +8769,68 @@ fn append_quoted_stable_loads(
     Ok(())
 }
 
+/// Return the last direct `goto` of a nonempty if arm only when its complete canonical
+/// outgoing set is the one normal edge to that if's join. `region::recover` has already checked
+/// non-overlapping ownership on the completed tree, so this reads the terminal arm child without
+/// rebuilding a method-wide ownership index.
+fn nonempty_if_join_transfer(
+    arm: &Region,
+    join: Option<&CanonicalBlockId>,
+    canonical: &CanonicalCfg,
+    ssa: &SsaTable,
+    operations: &Operations,
+    budget: &mut Budget,
+) -> Result<Option<u32>, StopReason> {
+    let Some(join) = join else {
+        return Ok(None);
+    };
+    // A sequence may end in a straight run, but do not search inside an earlier or nested child.
+    let terminal = match arm {
+        Region::Straight { blocks } => Some(blocks.last()),
+        Region::Sequence { regions } => match regions.last() {
+            Some(Region::Straight { blocks }) => Some(blocks.last()),
+            _ => None,
+        },
+        _ => None,
+    }
+    .flatten();
+    let Some(terminal) = terminal else {
+        return Ok(None);
+    };
+    let Some(instructions) = ssa.block(terminal).map(|block| block.instructions()) else {
+        return Ok(None);
+    };
+    let Some(instruction) = instructions.last() else {
+        return Ok(None);
+    };
+    let bci = instruction.bci();
+    // Operation::Transfer is decoded only for the unconditional goto/goto_w opcodes.
+    if !matches!(operations.get(bci), Some(Operation::Transfer)) {
+        return Ok(None);
+    }
+
+    // The edge list is the full canonical outgoing set, including exceptional edges. Bill the
+    // examined list before polling and reading it; any Stop aborts Builder before it can publish.
+    charge(
+        budget,
+        CountedBudgetDimension::IrEdges,
+        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
+        Some(bci),
+    )?;
+    poll(budget, Some(bci))?;
+    let mut outgoing = canonical
+        .edges()
+        .iter()
+        .filter(|edge| edge.from() == terminal);
+    let Some(edge) = outgoing.next() else {
+        return Ok(None);
+    };
+    if outgoing.next().is_some() || edge.kind() != CanonicalEdgeKind::Normal || edge.to() != join {
+        return Ok(None);
+    }
+    Ok(Some(bci))
+}
+
 struct Builder<'a> {
     canonical: &'a CanonicalCfg,
     ssa: &'a SsaTable,
@@ -17443,7 +17505,7 @@ impl Builder<'_> {
                 branch_bci,
                 then_arm,
                 else_arm,
-                ..
+                join,
             } => {
                 for block in prefix {
                     self.block(block)?;
@@ -17490,22 +17552,34 @@ impl Builder<'_> {
                 // An empty arm may be a real, owned goto to this if's join. It emits no Java
                 // statement, so the if that presents that edge carries the goto's BCI.
                 for (arm, statements) in [(then_arm, &then_body), (else_arm, &else_body)] {
-                    if !statements.is_empty() {
-                        continue;
-                    }
-                    if let Region::Straight { blocks } = arm.as_ref() {
-                        for block in blocks {
-                            if let Some(instructions) =
-                                self.ssa.block(block).map(|block| block.instructions())
-                                && let [instruction] = instructions
-                                && matches!(
-                                    self.operations.get(instruction.bci()),
-                                    Some(Operation::Transfer)
-                                )
-                            {
-                                origin = origin.plus_derived(Origin::derived(instruction.bci()));
+                    if statements.is_empty() {
+                        // Preserve the existing empty-arm rule unchanged.
+                        if let Region::Straight { blocks } = arm.as_ref() {
+                            for block in blocks {
+                                if let Some(instructions) =
+                                    self.ssa.block(block).map(|block| block.instructions())
+                                    && let [instruction] = instructions
+                                    && matches!(
+                                        self.operations.get(instruction.bci()),
+                                        Some(Operation::Transfer)
+                                    )
+                                {
+                                    origin =
+                                        origin.plus_derived(Origin::derived(instruction.bci()));
+                                }
                             }
                         }
+                        continue;
+                    }
+                    if let Some(bci) = nonempty_if_join_transfer(
+                        arm,
+                        join.as_ref(),
+                        self.canonical,
+                        self.ssa,
+                        self.operations,
+                        self.budget,
+                    )? {
+                        origin = origin.plus_derived(Origin::derived(bci));
                     }
                 }
                 self.push(Stmt::new(
@@ -35301,6 +35375,9 @@ mod tests {
     );
     const LOOP_TRANSFERS_FIXTURE: &[u8] =
         include_bytes!("../../../tests/fixtures/p3-loop-transfers/v8/OuterContinue.class");
+    const EXCEPTION_IF_JOIN_FIXTURE: &[u8] = include_bytes!(
+        "../../../openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class"
+    );
     /// Runs the real JVM IR and region producers, then asks only this proof about their output.
     fn fixture_conditional_attempt(
         class: &[u8],
@@ -35357,6 +35434,40 @@ mod tests {
         descriptor: &str,
         short_region: Option<&Region>,
         mutate_region: Option<fn(&mut Region)>,
+    ) -> (
+        Region,
+        ConditionalValueAttempt,
+        Option<(u32, u32)>,
+        crate::region::Recovered,
+        crate::report::RecoveryReport,
+        ShortCircuitValueAttempt,
+        Option<ConditionalTreeProof>,
+        IntermediateJoinAttempt,
+        Vec<(u32, Vec<SsaUse>)>,
+    ) {
+        fixture_value_attempts_with_tree_observing(
+            class,
+            name,
+            descriptor,
+            short_region,
+            mutate_region,
+            |_, _, _, _, _| {},
+        )
+    }
+
+    fn fixture_value_attempts_with_tree_observing(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        short_region: Option<&Region>,
+        mutate_region: Option<fn(&mut Region)>,
+        inspect: impl FnOnce(
+            &crate::region::Recovered,
+            &CanonicalCfg,
+            &SsaTable,
+            &Operations,
+            &mut Budget,
+        ),
     ) -> (
         Region,
         ConditionalValueAttempt,
@@ -35483,6 +35594,7 @@ mod tests {
             &mut budget,
         )
         .expect("the fixture region tree is bounded");
+        inspect(&recovered, canonical, ssa, &operations, &mut budget);
         let candidate = recovered
             .regions
             .iter()
@@ -35598,6 +35710,115 @@ mod tests {
             intermediate_attempt,
             stack_phi_uses,
         )
+    }
+
+    #[test]
+    fn exception_if_join_transfer_rejects_a_canonical_exception_edge() {
+        use jarde_jvm::method_ir::CanonicalEdgeKind;
+
+        let (_, _, _, _, report, _, _, _, _) =
+            fixture_value_attempts_with_tree_observing(
+                EXCEPTION_IF_JOIN_FIXTURE,
+                "withException",
+                "(I)I",
+                None,
+                None,
+                |recovered, canonical, ssa, operations, budget| {
+                    eprintln!("ExceptionIfJoin recovered tree: {:#?}", recovered.regions);
+                    let mut matching_if = None;
+                    for root in &recovered.regions {
+                        collect_guards(root, &mut |candidate| {
+                            if matches!(candidate, Region::If { branch_bci: 12, .. }) {
+                                assert!(
+                                    matching_if.replace(candidate.clone()).is_none(),
+                                    "branch@12 has more than one recovered If"
+                                );
+                            }
+                        });
+                    }
+                    let Some(Region::If {
+                        then_arm,
+                        join: Some(join),
+                        ..
+                    }) = matching_if.as_ref()
+                    else {
+                        panic!(
+                            "the real recovered tree has no If@12 with a join: {:#?}",
+                            recovered.regions
+                        );
+                    };
+                    assert_eq!(join.bci(), 27, "javap pins the If join");
+
+                    let Region::Fallback {
+                        blocks,
+                        reason:
+                            crate::region::FallbackReason::ExceptionEdge {
+                                block_bci: 15,
+                                handler_ordinal: 0,
+                            },
+                    } = then_arm.as_ref()
+                    else {
+                        panic!(
+                            "the real exceptional arm must retain its physical quote: {then_arm:#?}"
+                        );
+                    };
+                    let [terminal] = blocks.as_slice() else {
+                        panic!("the real exceptional arm has one physical block: {blocks:?}");
+                    };
+                    let ssa_block = ssa
+                        .block(terminal)
+                        .expect("the real terminal canonical block has SSA");
+                    let bcis: Vec<_> = ssa_block
+                        .instructions()
+                        .iter()
+                        .map(SsaInstruction::bci)
+                        .collect();
+                    assert_eq!(bcis, [15, 18, 21], "javap pins the source block");
+                    assert!(matches!(operations.get(15), Some(Operation::Invoke(_))));
+                    assert!(matches!(
+                        operations.get(18),
+                        Some(Operation::Increment { .. })
+                    ));
+                    assert_eq!(operations.get(21), Some(&Operation::Transfer));
+
+                    let outgoing: Vec<_> = canonical
+                        .edges()
+                        .iter()
+                        .filter(|edge| edge.from() == terminal)
+                        .collect();
+                    assert_eq!(outgoing.len(), 2, "full canonical outgoing set");
+                    assert!(outgoing.iter().any(|edge| {
+                        edge.kind() == CanonicalEdgeKind::Normal && edge.to() == join
+                    }));
+                    assert!(outgoing.iter().any(|edge| {
+                        matches!(edge.kind(), CanonicalEdgeKind::Exception { .. })
+                            && edge.to().bci() == 36
+                    }));
+                    assert_eq!(
+                        nonempty_if_join_transfer(
+                            then_arm,
+                            Some(join),
+                            canonical,
+                            ssa,
+                            operations,
+                            budget,
+                        )
+                        .expect("the bounded edge proof completes"),
+                        None,
+                        "the actual arm with an exception edge cannot gain an If origin"
+                    );
+                },
+            );
+        eprintln!("ExceptionIfJoin recovery: {}", report.text);
+        assert!(report.produced(), "{:?}", report.outcome);
+        assert!(report.text.contains("// @bytecode"));
+        assert!(
+            !report
+                .source_map
+                .derived_of_bci(21)
+                .iter()
+                .any(|segment| { segment.text(&report.text).trim_start().starts_with("if (") })
+        );
     }
 
     #[test]

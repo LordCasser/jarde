@@ -1,0 +1,9 @@
+# Private If-arm join guarded validation runner draft
+
+This draft is not executed. It clones the already used For validation runner shape and imports the reviewed loop-latch v9 guard template at its pinned SHA-256. It retains the 12 serial validation commands, CI Clippy allowlist, JDK 23 identity checks, 5 GiB free-space / 1 GiB target guards with one-second process-group termination, successful test-binary cleanup, Clippy check-only rmeta cleanup, complete before/after source pins, and frozen CLI metadata.
+
+Before root runs it, root must supply the actual 40-hex `--source-base`, the exact expected `--expected-lib-count` and `--expected-gateway-count`, and each newly required passing test name using repeated `--required-lib-test` and `--required-gateway-test` flags. No future commit, counts, or new test names are guessed or embedded. The other summaries remain pinned to 4, 7, 5, 12, 178, 5 passed + 1 ignored, and 3. The focused source/test sets retain the established 17 product files and 8 test/control files; literal include paths are recalculated from those test sources at invocation, so the canonical input pins are exact and dynamic.
+
+The runner first verifies the already accepted d714a6bcc / CI run 38062706229 v2 artifact at `openspec/changes/preserve-proved-for-latch-origins/results/ci-verification-invocation-root-v2/stdout.raw` against its recorded SHA and full accepted record. This is only a prerequisite record; it is not treated as evidence for the new If-arm build.
+
+On a successful run it writes exclusively to `openspec/changes/preserve-proved-if-arm-join-origins/results/validation-build-root-v1`, freezes `/private/tmp/jarde-proved-if-join-cli-v1`, and creates `candidate-cli-v1.json` with the new If-arm schema and `uncommitted_if_arm_join_product=true`. Existing outputs cause refusal. The build has not been run, so this draft makes no build-success claim.

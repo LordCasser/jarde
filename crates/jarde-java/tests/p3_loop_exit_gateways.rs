@@ -36,6 +36,9 @@ const NO_PREFIX_BCIS: [u32; 11] = [0, 1, 2, 3, 6, 7, 8, 11, 14, 17, 18];
 const ITERATOR_PREFIX: &[u8] = include_bytes!(
     "../../../openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
 );
+const IF_JOIN_CF07: &[u8] = include_bytes!(
+    "../../../openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+);
 
 fn limits() -> Limits {
     Limits {
@@ -253,6 +256,278 @@ fn assert_one_structured_owner_in(
         "prefix source anchor is outside the selected if arm: {}",
         report.text
     );
+}
+
+#[test]
+fn cf07_nonempty_if_join_goto_is_derived_from_complete_if() {
+    const METHOD_BCIS: [u32; 18] = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 14, 17, 20, 23, 24, 25, 26,
+    ];
+    const METHOD_TAIL_BCIS: [u32; 5] = [27, 30, 33, 36, 37];
+    let evidence = RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap);
+    let default = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        evidence,
+        None,
+    );
+    let all = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(default.produced(), "default: {:?}", default.outcome);
+    assert!(all.produced(), "all: {:?}", all.outcome);
+    assert_eq!(default.text, all.text);
+    assert_eq!(default.source_map, all.source_map);
+    assert!(!all.text.contains("@bytecode"), "{}", all.text);
+
+    for bci in METHOD_BCIS.into_iter().chain(METHOD_TAIL_BCIS) {
+        assert!(
+            !all.source_map.of_bci(bci).is_empty(),
+            "BCI {bci} lost its source: {}",
+            all.text
+        );
+    }
+    let if_positions: Vec<_> = all.text.match_indices("if (").map(|(at, _)| at).collect();
+    assert_eq!(if_positions.len(), 1, "expected one inner if: {}", all.text);
+    let if_keyword = if_positions[0];
+    let if_start = all.text[..if_keyword].rfind('\n').map_or(0, |at| at + 1);
+    assert!(
+        all.text[if_start..if_keyword]
+            .bytes()
+            .all(|byte| byte == b' ')
+    );
+    let else_body = braced_body(&all.text, "else {");
+    // `braced_body` ends immediately before the else closing brace. Include that brace and
+    // the emitter's following newline in the complete If statement span.
+    let if_end = else_body.end + 2;
+    let outer_while_body = braced_body(&all.text, "while (");
+    assert!(
+        if_start >= outer_while_body.start && if_end <= outer_while_body.end,
+        "complete If statement is outside the outer while body: {}",
+        all.text
+    );
+    let if_spans = all
+        .source_map
+        .derived_of_bci(20)
+        .into_iter()
+        .filter(|segment| segment.start() == if_start && segment.end() == if_end)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        if_spans.len(),
+        1,
+        "goto@20 does not point to the exact complete If span {if_start}..{if_end}: {}",
+        all.text
+    );
+    assert!(
+        all.source_map
+            .of_bci(14)
+            .iter()
+            .any(|segment| { segment.text(&all.text).trim_start().starts_with("if (") }),
+        "condition@14 lost the inner-if source: {}",
+        all.text
+    );
+    assert!(
+        all.source_map
+            .derived_of_bci(30)
+            .iter()
+            .any(|segment| { segment.text(&all.text).trim_start().starts_with("while (") }),
+        "outer while latch@30 lost its source: {}",
+        all.text
+    );
+
+    let mut owner_budget = Budget::new(limits());
+    let owner_snapshot = ArtifactSnapshot::open(
+        ArtifactInput::bytes(IF_JOIN_CF07.to_vec()),
+        &mut owner_budget,
+    )
+    .expect("frozen class snapshot opens");
+    let expected_owner = PhysicalDefinitionId {
+        location: PhysicalClassLocation::StandaloneRoot {
+            snapshot: owner_snapshot.id().clone(),
+        },
+        class_bytes: ClassBytesId {
+            digest: Digest(blake3::hash(IF_JOIN_CF07).to_hex().to_string()),
+            length: IF_JOIN_CF07.len() as u64,
+        },
+        variant: PhysicalVariant::Base,
+    };
+    for segment in all.source_map.segments() {
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            if origin.bci() == 20 {
+                let method = origin.method().expect("goto source has physical method");
+                assert_eq!(method.name.0.as_slice(), b"counted");
+                assert_eq!(method.descriptor.0.as_slice(), b"(II)I");
+                assert_eq!(&method.owner, &expected_owner);
+            }
+        }
+    }
+}
+
+#[test]
+fn cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals() {
+    let inspection = inspect_method_bytecode(
+        IF_JOIN_CF07,
+        MethodSelector {
+            name: JvmBytes(b"counted".to_vec()),
+            descriptor: JvmBytes(b"(II)I".to_vec()),
+        },
+        &mut Budget::new(limits()),
+    )
+    .expect("frozen CF07 method bytecode reads");
+    let goto = inspection
+        .instructions
+        .iter()
+        .find(|instruction| instruction.bci == 20)
+        .expect("frozen counted method has BCI 20");
+    assert_eq!(goto.opcode, 0xa7, "BCI 20 is the frozen goto");
+    assert_eq!(goto.width, 3, "frozen goto width");
+    let goto_offset = usize::try_from(goto.span.start).expect("class offset fits");
+
+    // Analysis-only mutation: point the physical goto@20 to the outer while exit@33.
+    let mut loop_exit = IF_JOIN_CF07.to_vec();
+    assert_eq!(
+        &loop_exit[goto_offset..goto_offset + 3],
+        &[0xa7, 0x00, 0x07]
+    );
+    loop_exit[goto_offset + 1..goto_offset + 3].copy_from_slice(&13_i16.to_be_bytes());
+    assert_eq!(
+        20 + i16::from_be_bytes([loop_exit[goto_offset + 1], loop_exit[goto_offset + 2],]) as i32,
+        33,
+        "mutated goto targets the outer loop exit",
+    );
+    let loop_exit_report = recover_class_method_with_budget(
+        &loop_exit,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(
+        loop_exit_report.produced(),
+        "{:?}",
+        loop_exit_report.outcome
+    );
+    assert!(
+        !loop_exit_report
+            .source_map
+            .derived_of_bci(20)
+            .iter()
+            .any(|segment| segment
+                .text(&loop_exit_report.text)
+                .trim_start()
+                .starts_with("if (")),
+        "goto@20 to the outer loop exit gained an If origin: {}",
+        loop_exit_report.text
+    );
+    assert!(
+        !loop_exit_report.source_map.of_bci(20).is_empty(),
+        "loop-exit BCI 20 lost its existing source: {}",
+        loop_exit_report.text
+    );
+
+    // Analysis-only mutation: replace goto@20 with iinc slot 2 by 2. The instruction remains
+    // three bytes wide and falls through to the other arm@23; it is not a transfer.
+    let mut nonterminal = IF_JOIN_CF07.to_vec();
+    assert_eq!(
+        &nonterminal[goto_offset..goto_offset + 3],
+        &[0xa7, 0x00, 0x07]
+    );
+    nonterminal[goto_offset..goto_offset + 3].copy_from_slice(&[0x84, 0x02, 0x02]);
+    let nonterminal_report = recover_class_method_with_budget(
+        &nonterminal,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(
+        nonterminal_report.produced(),
+        "{:?}",
+        nonterminal_report.outcome
+    );
+    assert!(
+        nonterminal_report
+            .source_map
+            .of_bci(20)
+            .iter()
+            .any(|segment| segment.origin().primary().bci() == 20),
+        "iinc@20 lost its direct assignment source: {}",
+        nonterminal_report.text
+    );
+    assert!(
+        !nonterminal_report
+            .source_map
+            .derived_of_bci(20)
+            .iter()
+            .any(|segment| segment
+                .text(&nonterminal_report.text)
+                .trim_start()
+                .starts_with("if (")),
+        "nonterminal iinc@20 gained an If origin: {}",
+        nonterminal_report.text
+    );
+}
+
+#[test]
+fn cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source() {
+    use jarde_java::StopReason;
+    use jarde_reader::model::ExecutionReport;
+
+    let full = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(limits())),
+    );
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("full candidate did not complete: {:?}", full.outcome);
+    };
+    let mut late = limits();
+    late.ir_edges = usage.ir_edges.saturating_sub(1);
+    let stopped = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(late)),
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::IrEdges,
+            at: Some(20),
+            ..
+        })
+    ));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "counted",
+        "(II)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
 }
 
 #[test]
