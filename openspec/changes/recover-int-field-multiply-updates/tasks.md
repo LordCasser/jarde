@@ -12,4 +12,4 @@
 
 - [x] 3.1 冻结新CLI/产品与测试pins，原形outer/A完整源码双JDK/default-all重编-Xverify/raw一致，精确核全部物理方法/字段/OriginSet及class-family derived范围；小组溢出/null/effect对照通过，不手改生成源码或借原helper。
 - [x] 3.2 fmt/CI同范围Clippy/OpenSpec strict及相关回归通过，仅在20GiB机器/1GiB本仓target守卫满足后执行Rust；提交推送后独立验收本片确切产品CI双seed/JDK25/MSRV/fuzz/supply。
-- [ ] 3.3 更新handoff/71账本与任务的真实完成范围，提交推送干净main，清本仓编译残留并保留全部源/class/raw/冻结CLI，不计EM23整单元完成。
+- [x] 3.3 更新handoff/71账本与任务的真实完成范围，提交推送干净main，清本仓编译残留并保留全部源/class/raw/冻结CLI，不计EM23整单元完成。

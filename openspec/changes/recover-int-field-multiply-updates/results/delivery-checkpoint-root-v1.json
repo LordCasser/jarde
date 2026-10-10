@@ -1,0 +1,18 @@
+{
+  "status": "accepted-clean-pushed-checkpoint",
+  "observed_at_utc": "2026-10-10T08:08:44.424973+00:00",
+  "head": "b6bbd9dad8133319b140acbda3e7a0e037ba0f9d",
+  "origin_main": "b6bbd9dad8133319b140acbda3e7a0e037ba0f9d",
+  "git_status_stdout": "",
+  "branches": [
+    "main"
+  ],
+  "root_target_exists": false,
+  "root_fuzz_target_exists": false,
+  "free_bytes": 15280685056,
+  "worktree_audit": "worktree-checkpoint-audit-root-v1.json",
+  "product_head": "1ee7c42e1be2b244733e04653b31d092addf0238",
+  "product_ci_run": 38033367666,
+  "ci_acceptance": "ci-product-v1/acceptance-field-multiply-v6.json",
+  "em23_whole_unit_marked_complete": false
+}

@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-乘法片当前6/7：产品1ee7c42e1be2b244733e04653b31d092addf0238已提交推送main，本地9命令与40命令/8完整类腿独立验收均完成。07:54 UTC root实际独立CI verifier-v6接受该确切产品自己的CI38033367666：4jobs/52steps，两seed各3377 passed/0 failed/97 ignored、354结果记录，3条新乘法及11条旧整数回归逐seed接受；Temurin25完整类/MSRV/fuzz/supply通过。完整API/GH日志与接受文件在recover-int-field-multiply-updates/results/ci-product-v1；最后待本检查点文档提交推送后关闭3.3。
+乘法片当前7/7：产品1ee7c42e1be2b244733e04653b31d092addf0238已提交推送main，本地9命令与40命令/8完整类腿独立验收均完成。07:54 UTC root实际独立CI verifier-v6接受该确切产品自己的CI38033367666：4jobs/52steps，两seed各3377 passed/0 failed/97 ignored、354结果记录，3条新乘法及11条旧整数回归逐seed接受；Temurin25完整类/MSRV/fuzz/supply通过。完整API/GH日志与接受文件在recover-int-field-multiply-updates/results/ci-product-v1；证据/两项下一片OpenSpec检查点b6bbd9dad已提交推送；root随后核main与origin/main相等、工作区clean、仅main且本仓无target，3.3已关闭。
 
 上一产品375dee45a54d22ce960429cf11f0f96d33ca28b8的自身CI38026598963已独立接受4jobs/52steps、两seed3374 passed/0 failed/97 ignored。文档提交977f及其CI不能作为本乘法产品CI。
 
@@ -78,3 +78,5 @@
 07:58 UTC 普通控制基线独立v5实际接受111闭合files/31commands：原2/JADX4成功，Jarde4完整源缺return而编译失败、零runtime；prefixWhile/loopAndTail/takenArm在branch0拒绝，noPrefix structured但准确缺goto@14→6来源。两OpenSpec规划4/4/strict，root控制报告在one-arm-loop-controls/verification-root.md；private-v2与候选重放v2均已全文读审，后者root只读helper preflight接受111files/4旧profile仍准确拒为新candidate，未执行main/新CLI。两项分开，不增机制/整单元完成数。无p3_loop_arm_join target，loop-join证明相邻回归使用p3_effectful_exits。
 
 CI下载三次TLS/代理失败及原始字节保存；官方API/direct logs成功后，以NO_PROXY仅绕过两个实际job-log域名取得完整GH日志，未修改系统代理。最终CI独立root执行v2用缓存blake3环境，首次普通Python缺blake3的raw保留；接受精确1ee7，不借文档提交CI。所有新脚本失败/错误私有版本保留。当前root/fuzz target不存在、机器余量约18GB仍低20GiB，不执行新的Rust构建。
+
+08:09 UTC root核b6bbd9dad8133319b140acbda3e7a0e037ba0f9d已推送且主线clean，乘法片7/7关闭；十四辅助worktree已再次实际核detached/clean/main祖先/无target，证据results/worktree-checkpoint-audit-root-v1.json。仅本仓占用：.git181MiB、.atlas167MiB、openspec1.4GiB，均为当前历史/分析/接受证据；没有可清的Cargo残留，不删除这些受保护输入来凑构建余量。机器free约14GiB，继续守卫内只读推进循环片，持续目标保持active。
