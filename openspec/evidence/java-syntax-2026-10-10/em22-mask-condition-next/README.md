@@ -7,3 +7,5 @@
 05:05 UTC root审查完整delta后实际运行独立verifier v2，退出0并接受128个闭合文件、35条原始命令、10条隔离编译运行腿、唯一原javac23目标JADX jar、完整physical public方法身份/flags/index和原javap的全部BCI。默认/all完整正文相同，实际输出保留 `(arg1 & arg2) != 0`。结果见 `results/em22-mask-condition-independent-acceptance-luna-v2.json`，执行记录见 `results/independent-execution-root-v1`；v1脚本静态发现的未定义函数与JDK flags格式问题保留为未执行的历史版本。
 
 本形状没有已证产品缺口，不增加AST或pass，也不因此宣称EM-22全部追平。观察到既有else-if发射的闭括号缩进不整齐，源码可以完整重编且来源/行为均正确；格式问题单独记为后续审计项，不混入整数名称恢复。
+
+root读审定位：`crates/jarde-java/src/emit.rs` 的 `stmt_with_indent`（约776行）在 `write_indent=false` 时把共享 `pad` 设为空字符串；单child `else if` 调用（约968行）只想省略接在 `else ` 后的首行缩进，但If分支的结束括号也用这个pad。后续窄格式片应保留绝对indent，仅省略首行写入；沿既有commit/replay重算真实输出span和预算，不新建formatter，不改条件恢复。当前只登记，不修改产品。

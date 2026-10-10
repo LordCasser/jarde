@@ -1,6 +1,6 @@
 # 整数数组常量名称：root 实际验证
 
-当前 main/origin/main 基线192b0bc13eca631f44ebaf28a998db52d4f14040；本片产品仍为工作区未提交改动，不借实例或静态 CI。
+产品检查点375dee45a54d22ce960429cf11f0f96d33ca28b8已提交推送，其自身CI38026598963全部成功，05:47 UTC root独立verifier v2实际接受，任务8/8。192b0bc13eca631f44ebaf28a998db52d4f14040是本片CLI构建基线；以下按时间保留历史过程，不借实例或静态CI。
 
 已应用private v4；真实编译分别暴露测试AST新增字段/Range引用、facade Budget enum引用错误，Luna最小修正后重编。历史scoped-rust-root-v1/v2/v3和patch原样保留。
 
@@ -23,3 +23,5 @@ validation-build-root-v1 实际通过 scoped all-feature Clippy、实例 Java5/f
 05:00 UTC仅cargo clean本仓target，删除3216 files/858.9MiB；target不存在，所有冻结CLI、源/class/raw保留，记录root-clean-v3。
 
 05:08 UTC root审阅完整v4→v5 delta后实际运行独立verifier v5，退出0：接受417闭合文件、75命令/150raw streams、32renders、80物理方法完整OriginSet并集、8次正向名称观察与10次负向观察、10条新完整编译腿与18次原raw一致运行。导入的2个oracle整source_case及runtime与已接受原baseline逐字段相等，复制stdout/stderr逐字核原command raw，从原runtime取exit而不默认成功。接受结果candidate-full-class-luna-v5-verification.json，真实执行记录independent-execution-root-v2。Tasks更新6/8；仅产品提交、推送及其自己的CI验收待完成。
+
+05:47 UTC确切375dee自身CI38026598963由root独立verify-int-array-ci-product-luna-v2实际接受：4jobs/52steps，两seed各354records/3374 passed/0 failed/97 ignored，11项required新测试逐项成功；真Temurin25.0.4+7 instruction/P3/full-class比较、MSRV、Clippy、fuzz与supply均通过。接受文件results/ci-product-v1/acceptance-int-array-v2.json核30产品Git blobs及冻结CLI/meta/10命令构建raw，不借其它片CI。完整API/stable/supply gzip(mtime=0)与实际执行记录均已保存。watch TLS超时和初次日志下载EOF保留于ci-capture-network-failure-v1，属于本地网络读取失败，不是CI测试失败。此后检查点只提交文档、规划和证据；不把文档提交新CI冒称已经成功，不递归等待相同产品代码的文档CI。

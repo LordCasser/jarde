@@ -1,0 +1,11 @@
+# Candidate full-family replay v2 (prepared only)
+
+`prepare-candidate-full-family-luna-v2.py` is a new prepared collector; v1 and its output directory remain frozen. It reuses the two SHA-pinned Java 8 families (EM23 `InputFieldIncrement2` and `InputFieldMultiplyControls`) and imports, re-hashes, and validates their existing original/JADX artifacts. It does not rerun original compilation or JADX. The multiply controls baseline is described as a frozen baseline, not as independently accepted.
+
+Compared with v1, v2 confines `javap` parsing to the class-body braces, validates both original product/Runner source entries, records every command in the manifest, and checks full physical field/method identities. Its multiply control also requires structured, fallback-free `multiplyDivide`, all nested `f` accesses presented, an explicit `*= 8 / parameter` token order (parentheses are tolerated), and the returned post-update field read.
+
+Pass the exact frozen CLI and matching metadata with both SHA-256 values. The script checks closed baseline inventories and exact original/JADX class sets, source/Runner records, class bytes, BLAKE3/javap facts, tool pins, and raw runtime streams. `javap` parsing is restricted to the class body, avoiding constant-pool declarations.
+
+The fresh candidate matrix is 8 Jarde renders and 8 full-source compile/`-Xverify:all` runtime legs (two families × two JDKs × default/all). Candidate source and JSON remain unchanged; only the fixed Runner's package may be adapted. It checks complete physical identities and member items, every method's source-map BCI origin union, exact compiled class census, and fresh compiled outer/`$A` member censuses. For the multiply family it additionally requires structured, fallback-free `multiplyDivide`, presented nested `f` reads/writes, a `*= 8 / parameter` RHS (parentheses around operands are allowed), and the post-update field read; same-JDK original exit/stdout/stderr remain the behavioral oracle for division order and exceptions.
+
+The output is `results/candidate-root-luna-v2/` and the script refuses to overwrite it. Only Python syntax parsing and read-only baseline/schema validation have been performed; this collector has not been executed.
