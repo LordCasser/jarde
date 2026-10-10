@@ -1,0 +1,61 @@
+diff --git a/tests/p3_loop_arm_join.rs b/tests/p3_loop_arm_join.rs
+--- a/tests/p3_loop_arm_join.rs
++++ b/tests/p3_loop_arm_join.rs
+@@ -76,10 +76,25 @@
+         assert!(
+             !recovery.source_map.of_bci(bci).is_empty(),
+             "BCI {bci} lost its source: {text}"
+         );
+     }
++    assert!(
++        !recovery.source_map.of_bci(23).is_empty(),
++        "latch goto at BCI 23 lost its source: {}",
++        recovery.text
++    );
++    assert!(
++        recovery.source_map.derived_of_bci(23).iter().any(|segment| {
++            segment
++                .text(&recovery.text)
++                .trim_start()
++                .starts_with("while (")
++        }),
++        "latch goto at BCI 23 is not derived from the while span: {}",
++        recovery.text
++    );
+ }
+ 
+ fn with_branch_target(from: &[u8], to: &[u8]) -> Vec<u8> {
+     let occurrences = JOIN
+         .windows(from.len())
+diff --git a/crates/jarde-java/tests/p3_loop_body_double_jumps.rs b/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
+--- a/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
++++ b/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
+@@ -210,10 +210,28 @@
+         (L1, "L1", "deepLabels", vec![27, 35, 53, 62]),
+         (DJ_LOOPS, "DJLoops", "dblContLabels", vec![37, 45]),
+     ] {
+         let report = int_string_method(class, owner, name);
+         for bci in anchors {
++            let source_segments = report.source_map.of_bci(bci);
++            assert!(
++                !source_segments.is_empty(),
++                "{name}: BCI {bci} lost its source"
++            );
++            for segment in source_segments {
++                let segment_text = segment.text(&report.text);
++                let first_line = segment_text.lines().next().unwrap_or("").trim_start();
++                let starts_loop = first_line.starts_with("while (")
++                    || first_line.starts_with("for (")
++                    || first_line.rsplit_once(": ").is_some_and(|(_, statement)| {
++                        statement.starts_with("while (") || statement.starts_with("for (")
++                    });
++                assert!(
++                    !starts_loop,
++                    "{name}: transfer BCI {bci} is mapped to a loop header: {segment_text}"
++                );
++            }
+             let owners: Vec<_> = report
+                 .regions
+                 .iter()
+                 .filter(|region| region.blocks.contains(&bci))
+                 .collect();

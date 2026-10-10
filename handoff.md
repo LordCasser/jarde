@@ -14,7 +14,7 @@
 
 ## 立即接续
 
-**当前下一步：** 按两套已strict有效的OpenSpec推进普通循环。recover-prefixed-one-arm-loops当前1/7：原形与四方法控制基线独立接受，method-aware临时诊断patch已备而未应用/编译，先动态核arm分段停止点。preserve-proved-loop-latch-origins当前2/6：基线接受、Luna private-v2全文审查/apply-check通过，局部末尾latch来源与相邻双臂origin gate已有最小候选，生产源码仍与main恒同；待20GiB资源守卫满足后root应用/编译/正反例与fresh CLI接受。只有method来源修复不能冒称四份整类运行成功。
+**当前下一步：** 按两套已strict有效的OpenSpec推进普通循环。recover-prefixed-one-arm-loops当前1/7：原形与四方法控制基线独立接受，method-aware临时诊断patch已备而未应用/编译，先动态核arm分段停止点。preserve-proved-loop-latch-origins当前2/6：基线接受、root private-v4全文审查/apply-check通过，局部末尾latch来源与相邻双臂origin gate已有最小候选（含无计量重复扫描修正与两组来源对抗断言），生产源码仍与main恒同；待20GiB资源守卫满足后root应用/编译/正反例与fresh CLI接受。只有method来源修复不能冒称四份整类运行成功。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 
@@ -75,8 +75,10 @@
 循环下一片root已读architecture-audit-luna-v3/v4。continue_multi_return_loop_arm仅是特殊finally证书下两步续走先例，不能全局启用；Region blocks唯一ownership与source-map可重复anchors分开核。失败若直接设置unclosed_tail并整方法quote，无需通用事务/回滚实体；仅继续尝试其它结构时才按现有visited snapshot复原。诊断定位、新OpenSpec及实现均尚未开始。
 
 
-07:58 UTC 普通控制基线独立v5实际接受111闭合files/31commands：原2/JADX4成功，Jarde4完整源缺return而编译失败、零runtime；prefixWhile/loopAndTail/takenArm在branch0拒绝，noPrefix structured但准确缺goto@14→6来源。两OpenSpec规划4/4/strict，root控制报告在one-arm-loop-controls/verification-root.md；private-v2与候选重放v2均已全文读审，后者root只读helper preflight接受111files/4旧profile仍准确拒为新candidate，未执行main/新CLI。两项分开，不增机制/整单元完成数。无p3_loop_arm_join target，loop-join证明相邻回归使用p3_effectful_exits。
+07:58 UTC 普通控制基线独立v5实际接受111闭合files/31commands：原2/JADX4成功，Jarde4完整源缺return而编译失败、零runtime；prefixWhile/loopAndTail/takenArm在branch0拒绝，noPrefix structured但准确缺goto@14→6来源。两OpenSpec规划4/4/strict，root控制报告在one-arm-loop-controls/verification-root.md；private-v2与候选重放v2均已全文读审，后者root只读helper preflight接受111files/4旧profile仍准确拒为新candidate，未执行main/新CLI。两项分开，不增机制/整单元完成数。此前误以为不存在p3_loop_arm_join；08:16 root纠正：根tests/p3_loop_arm_join.rs属于-p jarde，须实跑，该target不能由p3_effectful_exits代替。
 
 CI下载三次TLS/代理失败及原始字节保存；官方API/direct logs成功后，以NO_PROXY仅绕过两个实际job-log域名取得完整GH日志，未修改系统代理。最终CI独立root执行v2用缓存blake3环境，首次普通Python缺blake3的raw保留；接受精确1ee7，不借文档提交CI。所有新脚本失败/错误私有版本保留。当前root/fuzz target不存在、机器余量约18GB仍低20GiB，不执行新的Rust构建。
 
 08:09 UTC root核b6bbd9dad8133319b140acbda3e7a0e037ba0f9d已推送且主线clean，乘法片7/7关闭；十四辅助worktree已再次实际核detached/clean/main祖先/无target，证据results/worktree-checkpoint-audit-root-v1.json。仅本仓占用：.git181MiB、.atlas167MiB、openspec1.4GiB，均为当前历史/分析/接受证据；没有可清的Cargo残留，不删除这些受保护输入来凑构建余量。机器free约14GiB，继续守卫内只读推进循环片，持续目标保持active。
+
+08:28 UTC循环来源片仍2/6，最新应用入口preserve-proved-loop-latch-origins/verification-root.md，private-v4 SHA c42c69662cb8206f702d8d682cfd5567f1eaabc017faa2fd9bc0241d30b9d8df已root全文读审/实际apply-check，生产未应用。root旧CLI4条定向来源观察及BLAKE3/物理owner/raw核验只用于测试设计；新11命令runner仅只读preflight通过，机器free约11GiB，零Cargo/零新CLI。资源满足后应用v4→fmt→以干净检查点完整HEAD运行runner→fresh双JDK对照→独立精确产品CI；普通单臂片仍1/7，method-aware probe未执行。

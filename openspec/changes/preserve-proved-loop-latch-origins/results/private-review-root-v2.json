@@ -1,0 +1,30 @@
+{
+  "status": "private-v3-reviewed-and-apply-check-passed-not-applied-or-compiled",
+  "observed_at_utc": "2026-10-10T08:24:24.077036+00:00",
+  "base_head": "69c2b321bf99e765926ae8121e203d9d600d79fe",
+  "patch_sha256": "3c1ae5a0e610d3a023f932b0fa5fc776366c72ab2f4b6bdde9133f91992eada0",
+  "argv": [
+    "git",
+    "apply",
+    "--check",
+    "openspec/changes/preserve-proved-loop-latch-origins/results/loop-latch-origins-root-v3.patch"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "production_diff": "",
+  "semantic_delta_from_luna_v2": "Remove only redundant unmetered leaving_edge(latch_id); charged canonical outgoing edge scan preserves exact unique Normal-to-header proof. Both header-test-chain and single-test callers remain.",
+  "applied": false,
+  "rust_commands": 0,
+  "preparation_note": "First root-only in-memory patch generation failed a whole-file occurrence-count assertion before writing output. Root scoped replacement to the new helper, then generated v3 without production writes.",
+  "correct_loop_arm_join_target": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde",
+    "--test",
+    "p3_loop_arm_join",
+    "--locked"
+  ],
+  "transfer_observations": "transfer-map-old-cli-root-v1/anchor-spans.json"
+}

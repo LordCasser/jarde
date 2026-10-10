@@ -1,0 +1,122 @@
+{
+  "observation_sha256": "48c9ced49594e7f12c99d66ab527f3ecfeed9e5836049c1f68ea1b1d802ccff8",
+  "old_cli_only": true,
+  "cases": [
+    {
+      "method": "brkSelfContSelf",
+      "input_sha256": "baaf9a55831bad8e2f1d40b183899aac015fefb86171f41e40a753aa62ed1d55",
+      "observed_anchors": [
+        {
+          "bci": 37,
+          "spans": [
+            {
+              "start": 534,
+              "end": 561,
+              "text": "                    break;\n",
+              "derived": false
+            }
+          ]
+        },
+        {
+          "bci": 45,
+          "spans": [
+            {
+              "start": 584,
+              "end": 699,
+              "text": "if (local4 == 0) {\n} else {\n                    local1.append(local2).append(local3).append(local4).append(' ');\n}\n",
+              "derived": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "method": "deepLabels",
+      "input_sha256": "538a551413509655fe7aefa2661a0f59a6097d714e9a26058ab2780bdad4db97",
+      "observed_anchors": [
+        {
+          "bci": 27,
+          "spans": [
+            {
+              "start": 464,
+              "end": 487,
+              "text": "                break;\n",
+              "derived": false
+            }
+          ]
+        },
+        {
+          "bci": 35,
+          "spans": [
+            {
+              "start": 532,
+              "end": 560,
+              "text": "                break loop;\n",
+              "derived": false
+            }
+          ]
+        },
+        {
+          "bci": 53,
+          "spans": [
+            {
+              "start": 641,
+              "end": 841,
+              "text": "                if (local4 == 1) {\n                } else if (local4 == 2) {\n                    break;\n} else {\n                    local1.append(local2).append(local3).append(local4).append(' ');\n}\n",
+              "derived": true
+            }
+          ]
+        },
+        {
+          "bci": 62,
+          "spans": [
+            {
+              "start": 718,
+              "end": 745,
+              "text": "                    break;\n",
+              "derived": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "method": "dblContLabels",
+      "input_sha256": "51412a18470844c5c5c80f4f98049ed7b2122692a4e4209520cba9c26c311efe",
+      "observed_anchors": [
+        {
+          "bci": 37,
+          "spans": [
+            {
+              "start": 508,
+              "end": 713,
+              "text": "                if (local4 == 1) {\n                } else if (local3 == 2) {\n                    break loop;\n} else {\n                    local1.append(local2).append(local3).append(local4).append(' ');\n}\n",
+              "derived": true
+            }
+          ]
+        },
+        {
+          "bci": 45,
+          "spans": [
+            {
+              "start": 585,
+              "end": 617,
+              "text": "                    break loop;\n",
+              "derived": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "method": "run",
+      "input_sha256": "542c856a156103f8c4e20372fcbeb3bc767b0c706f3270d73d5ec6dddfefdc2a",
+      "observed_anchors": [
+        {
+          "bci": 23,
+          "spans": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "status": "accepted-old-cli-planning-observations-only",
+  "observed_at_utc": "2026-10-10T08:25:58.721479+00:00",
+  "observations_sha256": "48c9ced49594e7f12c99d66ab527f3ecfeed9e5836049c1f68ea1b1d802ccff8",
+  "raw_commands": 4,
+  "cases": [
+    {
+      "method": "brkSelfContSelf",
+      "class_digest_blake3": "f94e09b2cd722739023d1a51d0d523a568330a8a909c2945331e65883b61e458",
+      "origins_method_identity_verified": true,
+      "anchors": {
+        "37": [
+          {
+            "start": 534,
+            "end": 561,
+            "first_line": "break;"
+          }
+        ],
+        "45": [
+          {
+            "start": 584,
+            "end": 699,
+            "first_line": "if (local4 == 0) {"
+          }
+        ]
+      }
+    },
+    {
+      "method": "deepLabels",
+      "class_digest_blake3": "c8130f1dffc7edf19eb72f8ce4b1463c36f3de41c16bacdbeb03888446c0570e",
+      "origins_method_identity_verified": true,
+      "anchors": {
+        "27": [
+          {
+            "start": 464,
+            "end": 487,
+            "first_line": "break;"
+          }
+        ],
+        "35": [
+          {
+            "start": 532,
+            "end": 560,
+            "first_line": "break loop;"
+          }
+        ],
+        "53": [
+          {
+            "start": 641,
+            "end": 841,
+            "first_line": "if (local4 == 1) {"
+          }
+        ],
+        "62": [
+          {
+            "start": 718,
+            "end": 745,
+            "first_line": "break;"
+          }
+        ]
+      }
+    },
+    {
+      "method": "dblContLabels",
+      "class_digest_blake3": "e89e0f9461fd25371385dd61e2fcea143192a0487ebaea098c5eaf457fd15bd9",
+      "origins_method_identity_verified": true,
+      "anchors": {
+        "37": [
+          {
+            "start": 508,
+            "end": 713,
+            "first_line": "if (local4 == 1) {"
+          }
+        ],
+        "45": [
+          {
+            "start": 585,
+            "end": 617,
+            "first_line": "break loop;"
+          }
+        ]
+      }
+    },
+    {
+      "method": "run",
+      "class_digest_blake3": "aa937e4c72579051fe06255873790ad6ec45a501efe09287c49adc003b4574ca",
+      "origins_method_identity_verified": true,
+      "anchors": {
+        "23": []
+      }
+    }
+  ],
+  "new_candidate_validated": false,
+  "rust_tests_run": false,
+  "full_class_compile_or_runtime_claim": false
+}

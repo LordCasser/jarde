@@ -1,0 +1,25 @@
+{
+  "status": "private-v4-reviewed-and-apply-check-passed-not-applied-or-compiled",
+  "observed_at_utc": "2026-10-10T08:26:43.050466+00:00",
+  "base_head": "69c2b321bf99e765926ae8121e203d9d600d79fe",
+  "patch_sha256": "c42c69662cb8206f702d8d682cfd5567f1eaabc017faa2fd9bc0241d30b9d8df",
+  "component_pins": {
+    "loop-latch-origins-root-v3.patch": "3c1ae5a0e610d3a023f932b0fa5fc776366c72ab2f4b6bdde9133f91992eada0",
+    "adversarial-latch-tests-luna-v2.patch": "cf8d6e9b365e86ce7026c246e4caeaf33a28855d5f7b6a6aebd4b2be69fc1499"
+  },
+  "argv": [
+    "git",
+    "apply",
+    "--check",
+    "openspec/changes/preserve-proved-loop-latch-origins/results/loop-latch-origins-root-v4.patch"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "production_diff": "",
+  "review_scope": "v3 proof + unchanged v2 noPrefix tests + two existing tests strengthen exact latch23 and non-loop transfer-span assertions; no extra test function/fixture",
+  "applied": false,
+  "rust_commands": 0,
+  "free_bytes": 12209512448,
+  "history": "test delta v1 apply-check actually exit128 corrupt patch at line31; v2 reconstructed from actual base with difflib, source assertions unchanged"
+}

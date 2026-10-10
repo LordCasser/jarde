@@ -1,0 +1,59 @@
+diff --git a/tests/p3_loop_arm_join.rs b/tests/p3_loop_arm_join.rs
+--- a/tests/p3_loop_arm_join.rs
++++ b/tests/p3_loop_arm_join.rs
+@@ -72,12 +72,27 @@ fn loop_arm_joins_before_the_outer_arm_tail_once() {
+     assert_eq!(text.matches("local2 = local2 + 10;").count(), 1, "{text}");
+     assert!(text.find("local2 = local2 + 10;") > text.find("while (local2 < 3)"));
+     for bci in [0, 6, 10, 15, 20, 26, 32, 34, 35] {
+         assert!(
+             !recovery.source_map.of_bci(bci).is_empty(),
+             "BCI {bci} lost its source: {text}"
+         );
+     }
++    assert!(
++        !recovery.source_map.of_bci(23).is_empty(),
++        "latch goto at BCI 23 lost its source: {}",
++        recovery.text
++    );
++    assert!(
++        recovery.source_map.derived_of_bci(23).iter().any(|segment| {
++            segment
++                .text(&recovery.text)
++                .trim_start()
++                .starts_with("while (")
++        }),
++        "latch goto at BCI 23 is not derived from the while span: {}",
++        recovery.text
++    );
+ }
+ 
+ fn with_branch_target(from: &[u8], to: &[u8]) -> Vec<u8> {
+diff --git a/crates/jarde-java/tests/p3_loop_body_double_jumps.rs b/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
+--- a/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
++++ b/crates/jarde-java/tests/p3_loop_body_double_jumps.rs
+@@ -212,8 +212,25 @@ fn jump_transfer_blocks_have_one_owner_and_complete_sources() {
+     ] {
+         let report = int_string_method(class, owner, name);
+         for bci in anchors {
++            let source_segments = report.source_map.of_bci(bci);
++            assert!(
++                !source_segments.is_empty(),
++                "{name}: BCI {bci} lost its source"
++            );
++            for segment in source_segments {
++                let segment_text = segment.text(&report.text);
++                let first_line = segment_text.lines().next().unwrap_or("").trim_start();
++                let starts_loop = first_line.starts_with("while (")
++                    || first_line.starts_with("for (")
++                    || first_line.rsplit_once(": ").is_some_and(|(_, statement)| {
++                        statement.starts_with("while (") || statement.starts_with("for (")
++                    });
++                assert!(
++                    !starts_loop,
++                    "{name}: transfer BCI {bci} is mapped to a loop header: {segment_text}"
++                );
++            }
+             let owners: Vec<_> = report
+                 .regions
+                 .iter()
+                 .filter(|region| region.blocks.contains(&bci))
