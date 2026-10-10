@@ -1,0 +1,7 @@
+# `baseline-root-v2` review note
+
+The sole recorded preparation failure is a JDK 8 `javap` format assumption. Corretto 8's `javap -p -c -s -v` output goes from the class `flags` line straight to `Constant pool`; unlike JDK 23, it does not print `interfaces: N, fields: N, methods: N`. The preparation script required that summary line, so it marked the two target classes in `javac8-original` as physical-count failures even though both `javap` commands exited 0. The raw descriptors show the expected three fields and four methods for `CommonNoClinitArrayInit`, plus the package-private base constructor. The manifest records that one case as the only failure; its compile and runtime legs succeeded.
+
+`verify-baseline-root-v1.py` is prepared as an independent read-only verifier. It validates the closed inventory and every command stream; parses actual class-file constant pools and member tables for physical fields, methods, flags, and `<clinit>` absence; independently parses the `javap` declarations/descriptors and checks constructor bytecode and source-map BCI order; and binds all eight full-class legs, frozen inputs, CLI JSON, source maps, class/source census, and same-JDK three-stream runtime comparisons. It does not edit or refresh `baseline-root-v2`.
+
+This is a preparation/review note only. The verifier was not executed here, so the evidence has not been independently accepted by this note.

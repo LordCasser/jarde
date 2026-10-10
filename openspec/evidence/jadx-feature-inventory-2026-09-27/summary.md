@@ -302,3 +302,11 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 2026-10-10 static产品25c5确切CI38012927864继续暴露A1旧整类golden（MSRV/fuzz/supply成功），只因calls=0已合法提升，数组方法不变。root最小测试更新本机6/6，历史baseline保留/新expected为实际CLI全文；最终产品仍6/7待下一确切CI。TestArrays2.test4 primitive分支适配片fresh25命令/8腿原2/2、JADX4/4、Jarde2/2，root独立v7接受99闭合文件、完整3methods0fields/全BCI/raw，已有实现覆盖，不新增机制。新recover-common-instance-array-initializers规划4/4、任务2/8；Luna共同prefix patch准备中，尚未应用或验收。71分母/EM18整单元状态不变。
 
 2026-10-10 2daa确切CI38014660202失败于有意新增A1 expected未登记corpus指纹；root独立全2062文件BLAKE3核验原2061恒同，仅新增一条sorted entry，待修复提交自己的全仓CI，static仍6/7。ArrayFill4/ConstReplace/Negative三项完整适配fresh39命令/8腿原2/2、JADX4/4、Jarde2/2，root实际独立verifier v2接受完整输入/成员/全部BCI/raw；long极值和dependent store语义已有覆盖。CONST_INT及Long.MAX_VALUE仍有符号呈现差距，已有integer name投影仅switch/直接int return；local JADX dev算法已只读核对，不能把等值当原源码符号证据。共同实例prefix patch v2经root审拒绝、v3准备未应用，71分母/整单元状态不变。
+
+2026-10-10：A1 fingerprint唯一登记修复已推送41b8，确切CI38017574260尚未完成，不勾静态片最后验收。实例共同prefix v5私有patch已完成root静态审查与git apply --check，仍未应用/编译；无clinit+不同super实参的完整3类对照正在准备。CONST_INT数组名称片已立OpenSpec recover-int-array-constant-names，4/4planning及strict、tasks2/8基线/设计；复用既有integer candidate/opaque AST/emitter replay，保持旧switch路径。EM18仍部分已测，71分母不改。
+
+2026-10-10 续审：41b8自己的CI38017574260已失败，stable唯一已观察失败为Unicode旧bare-field声明断言，另三job成功；完整API/644954byte日志保留ci-41b8-failure-v1。本片仍6/7，Luna两字符串精确test-only修复已由root应用，尚未新产品验收。no-clinit实例v2实际8腿编译/运行全部成功，但javap8没有collector要求的成员数量摘要，manifest保留javac8-original失败，独立class census核验待执行。新int-array常量名v1私有补丁root完整699行读审/dry-run通过，未应用；要求v2收窄capture/用途实体/占用策略并补扫描计费及BCI检查，tasks仍2/8。71单元分母及整单元完成统计不变。
+
+2026-10-10实例数组执行进展：无clinit双ctor baseline独立1053checks/8运行腿接受；v6加root实际验收修正已应用，scoped Rust最终5+6通过，OpenSpec tasks4/8。完整candidate CLI双JDK重编及确切产品CI尚未接受，不增加71单元完成计数。
+
+2026-10-10 03:58 UTC验收更新：非final静态阶段片确切6fd主线CI38019682442由root独立v12接受，4jobs/52steps、两seed各3357/0/97，任务7/7。实例共同数组前缀新CLI实际58命令/52cases（4完整重编/6运行）、旧literal/ordered8完整腿全部raw成功，root独立闭合验收；scoped5+6、reader178、fingerprint5及Clippy通过，tasks6/8待实例自己的CI。整数数组常量名private v4未应用。这些窄片不改变71/612分母，不增加EM18整单元完成计数。

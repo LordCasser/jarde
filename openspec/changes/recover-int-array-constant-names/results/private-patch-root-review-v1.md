@@ -1,0 +1,17 @@
+# int 数组常量名私有 v1：root 读审
+
+根提交41b8，补丁SHA cff8532daf70de060fcad9c7ee4ed09cd398c47057b0b956be3b9ba54c740e21，共699行。root完整读完四文件diff与现有候选、投影、formatter、SourceMap和范围装配接缝；git apply --check实际exit0，未应用、未编译、未执行补丁测试，tasks仍2/8。
+
+方向可复用：same-run opaque Program、IntegerConstantName Expr、现有候选表及Emitter body replay；新元素按BCI/完整physical member/名称取得formatter范围，旧switch label没有独立Expr范围，必须保留原case/return路径。class_source的Artifact/placed_artifact_span能翻译body-only范围，无需新parser或第二棵AST。
+
+v1要求修正版，不能仅以dry-run成功验收：
+
+- 新增IntegerConstantNameUseKind没有必要；保留case_label，新增可选body_range即可区分新元素与原两种用途。
+- capture将所有newarray opcode纳入，包括非int-array-return的方法及构造器；新准入应限定普通方法精确descriptor后缀`)[I`，原switch路径不动。
+- 新whole-class member_texts拒绝扩大了策略。新数组目标方法按physical index判断占用并核当前text是否为原AST装配；不改旧switch准入。现有source_text_with_method_projections的普通writer一致性条件仍保留，它并不组合所有retained projection_inputs，不应在本片顺便扩展。
+- 新stmt/element/segment/range扫描只有IrItems计费，缺设计要求的AnalysisSteps/poll；新use要验证BCI存在于原instruction_bcis。已有候选/名称遍历的历史计费债务不混入本片泛化重写。
+- assigned范围Vec应写明确Range类型；真实Rust编译前不能假设类型推导成功。测试需补新准入的歧义/遮蔽/不合形状及停止边界，不能将synthetic单元成功冒称完整物理类或动态回滚验证。
+
+Atlas scoped context查询q_1a123c42951_c87b的caller指向Engine::class_source_with_evidence，root逐字核src/facade.rs2184实际调用；Atlas同名collect/new/matches的callee匹配明显并非这些Rust泛型/宏调用的精确目标，不采用这些推测边为实现证据。仅使用已核实的局部接缝，不声称全仓调用图完备。
+
+Luna正准备immutable v2；root后续读delta。实际应用需静态片自身CI完成和磁盘编译守卫满足后，再独立冻结新CLI、完整类双JDK对照及新产品CI，不借41b8失败run。

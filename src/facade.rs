@@ -7158,6 +7158,58 @@ impl Engine {
                 field.name.raw().0 == jarde_java::report::ASSERT_SWITCH_FIELD_NAME.as_bytes()
                     && field.access_flags & (0x0008 | 0x0010 | 0x1000) == (0x0008 | 0x0010 | 0x1000)
             });
+        let mut constructor_count = 0usize;
+        let mut has_primitive_array_field = false;
+        if !ended
+            && structure_complete
+            && read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) == 0
+        {
+            for method in &read.facts.methods {
+                if let Err(error) = budget
+                    .poll()
+                    .and_then(|()| budget.charge(CountedBudgetDimension::AnalysisSteps, 1))
+                {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    ended = true;
+                    break;
+                }
+                if method.name.raw().0 == b"<init>" {
+                    constructor_count += 1;
+                }
+            }
+            if !ended {
+                for field in &read.facts.fields {
+                    if let Err(error) = budget
+                        .poll()
+                        .and_then(|()| budget.charge(CountedBudgetDimension::AnalysisSteps, 1))
+                    {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                        ended = true;
+                        break;
+                    }
+                    let descriptor = field.descriptor.raw().0.as_slice();
+                    if field.access_flags & 0x0008 == 0
+                        && (descriptor == b"[Z"
+                            || descriptor == b"[B"
+                            || descriptor == b"[C"
+                            || descriptor == b"[S"
+                            || descriptor == b"[I"
+                            || descriptor == b"[J"
+                            || descriptor == b"[F"
+                            || descriptor == b"[D")
+                    {
+                        has_primitive_array_field = true;
+                    }
+                }
+            }
+        }
+        let capture_instance_array_ctor_asts = !ended
+            && structure_complete
+            && read.facts.access_flags & (0x0200 | 0x2000 | 0x4000 | 0x8000) == 0
+            && constructor_count >= 1
+            && has_primitive_array_field;
         for (index, field) in read.facts.fields.iter().enumerate() {
             if ended {
                 break;
@@ -7558,6 +7610,7 @@ impl Engine {
                                 capture_array_helper_use_table: array_helper_use_runs.is_empty(),
                                 capture_anonymous_child_asts,
                                 capture_assert_asts,
+                                capture_instance_array_ctor_asts,
                                 capture_integer_constant_asts: !integer_constant_candidates
                                     .is_empty(),
                                 // Generic call publication needs a closed same-run inventory even
@@ -9599,7 +9652,62 @@ impl Engine {
                 diagnostics.push(diagnostic);
                 None
             }
+            Err(InitializerProjectionFailure::Error(error)) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                None
+            }
         };
+        if capture_instance_array_ctor_asts
+            && !ended
+            && matches!(&execution, ExecutionReport::Complete { .. })
+        {
+            if let Err(error) = budget.charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(staged_member_emissions.len()).unwrap_or(u64::MAX),
+            ) {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                ended = true;
+            }
+            let mut already_staged_members = Vec::with_capacity(staged_member_emissions.len());
+            for (member, _, _, _) in &staged_member_emissions {
+                if let Err(error) = budget.charge(CountedBudgetDimension::AnalysisSteps, 1) {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    ended = true;
+                    break;
+                }
+                already_staged_members.push(*member);
+            }
+            if !ended {
+                match project_instance_array_initializer_group(
+                    &declaration,
+                    &read.facts.methods,
+                    &mut fields,
+                    &methods,
+                    &method_asts,
+                    &read.facts.fields,
+                    initializer_field_order.as_deref(),
+                    &mut array_projection_method_texts,
+                    &already_staged_members,
+                    budget,
+                ) {
+                    Ok(()) => {}
+                    Err(InitializerProjectionFailure::Refused(_)) => {}
+                    Err(InitializerProjectionFailure::Stopped(stop)) => {
+                        let (stop, diagnostic) =
+                            initializer_projection_stop(&stop, budget, class_provenance.clone());
+                        merge_execution(&mut execution, stop);
+                        diagnostics.push(diagnostic);
+                    }
+                    Err(InitializerProjectionFailure::Error(error)) => {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    }
+                }
+            }
+        }
         let mut enum_constant_proof = if read.facts.stopped_at.is_some()
             || !matches!(&execution, ExecutionReport::Complete { .. })
         {
@@ -11106,6 +11214,472 @@ fn prove_static_initializer_group(
 enum InitializerProjectionFailure {
     Refused(String),
     Stopped(StopReason),
+    Error(Error),
+}
+
+fn project_instance_array_initializer_group(
+    declaration: &ClassSourceDeclaration,
+    headers: &[MemberHeader],
+    fields: &mut [ClassSourceField],
+    methods: &[ClassSourceMethod],
+    asts: &[(
+        PhysicalMethodId,
+        jarde_java::report::ClassSourceMethodAst,
+        Option<jarde_java::report::GenericConstructorCandidate>,
+        Option<jarde_java::report::AnonymousAllocationScan>,
+    )],
+    field_headers: &[MemberHeader],
+    field_order: Option<&[usize]>,
+    member_texts: &mut Vec<(u64, String)>,
+    already_staged_members: &[u64],
+    budget: &mut Budget,
+) -> std::result::Result<(), InitializerProjectionFailure> {
+    if declaration.item.declaration.access_flags
+        & (ACC_INTERFACE | ACC_ANNOTATION | 0x4000 | 0x8000)
+        != 0
+        || headers.len() != methods.len()
+        || field_headers.len() != fields.len()
+    {
+        return Ok(());
+    }
+
+    // `headers` and `methods` are the complete physical member census. Non-constructors remain in
+    // that census but need no constructor AST. Count first, then allocate the selected constructor
+    // records only after their exact IR cost has been charged.
+    let mut constructor_count = 0usize;
+    for header in headers {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        if header.name.raw().0 == b"<init>" {
+            if !class_source_runs_body(header) {
+                return Ok(());
+            }
+            constructor_count = constructor_count.saturating_add(1);
+        }
+    }
+    if constructor_count == 0 {
+        return Ok(());
+    }
+
+    // A non-static ConstantValue is unusual but still physically stated. Moving any constructor
+    // assignment across it could change the field writer's chosen initialization representation.
+    for header in field_headers {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        if header.access_flags & 0x0008 == 0 && class_source::declares_constant_value(header) {
+            return Ok(());
+        }
+    }
+
+    budget
+        .charge(
+            CountedBudgetDimension::IrItems,
+            u64::try_from(constructor_count).unwrap_or(u64::MAX),
+        )
+        .map_err(InitializerProjectionFailure::Error)?;
+    let mut selected = Vec::with_capacity(constructor_count);
+    for header in headers {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        if header.name.raw().0 != b"<init>" {
+            continue;
+        }
+        let mut ast_match = None;
+        for candidate in asts {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if candidate.0.name.0 == header.name.raw().0
+                && candidate.0.descriptor.0 == header.descriptor.raw().0
+            {
+                if ast_match.is_some() {
+                    return Ok(());
+                }
+                ast_match = Some(candidate);
+            }
+        }
+        let Some((identity, ast, _, _)) = ast_match else {
+            return Ok(());
+        };
+        let mut method_match = None;
+        for method in methods {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if method.item.identity == *identity {
+                if method_match.is_some() {
+                    return Ok(());
+                }
+                method_match = Some(method);
+            }
+        }
+        let Some(method) = method_match else {
+            return Ok(());
+        };
+        let class_source::ClassSourceOutcome::Recovered { report, analysis } = &method.outcome
+        else {
+            return Ok(());
+        };
+        if !matches!(&report.execution, ExecutionReport::Complete { .. })
+            || !matches!(&analysis.execution, ExecutionReport::Complete { .. })
+            || report.quality != Quality::Structured
+            || report.representation != crate::ir::Representation::Java
+            || report.content != RecoveryContent::ContainsStatements
+            || !report.fallbacks.is_empty()
+        {
+            return Ok(());
+        }
+        let Some(projection) =
+            jarde_java::report::class_source_instance_array_constructor_projection(ast, budget)
+                .map_err(InitializerProjectionFailure::Stopped)?
+        else {
+            return Ok(());
+        };
+        if projection.member != *identity {
+            return Ok(());
+        }
+        selected.push((method.item.index, method, ast, projection));
+    }
+
+    let Some((_, _, first_ast, first)) = selected.first() else {
+        return Ok(());
+    };
+    for (_, _, ast, projection) in selected.iter().skip(1) {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        if projection.writes.len() != first.writes.len() {
+            return Ok(());
+        }
+        for (left, right) in first.writes.iter().zip(&projection.writes) {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if left.owner != right.owner
+                || left.name != right.name
+                || left.descriptor != right.descriptor
+                || !jarde_java::report::class_source_instance_array_rhs_equal(
+                    first_ast, left.bci, ast, right.bci, budget,
+                )
+                .map_err(InitializerProjectionFailure::Stopped)?
+            {
+                return Ok(());
+            }
+        }
+    }
+
+    let class_name = declaration.item.declaration.this_class.raw().0.as_slice();
+    let stage_items = u64::try_from(first.writes.len())
+        .unwrap_or(u64::MAX)
+        .saturating_mul(2);
+    budget
+        .charge(CountedBudgetDimension::IrItems, stage_items)
+        .map_err(InitializerProjectionFailure::Error)?;
+    let mut staged_fields = Vec::with_capacity(first.writes.len());
+    let mut field_indices = Vec::with_capacity(first.writes.len());
+    for write in &first.writes {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        if write.owner.as_bytes() != class_name
+            || !primitive_array_descriptor(&write.element, &write.descriptor)
+        {
+            return Ok(());
+        }
+        let mut found = None;
+        for (index, field) in fields.iter().enumerate() {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if field.item.name.raw().0 == write.name.as_bytes()
+                && field.item.descriptor.raw().0 == write.descriptor.as_bytes()
+            {
+                if found.is_some() {
+                    return Ok(());
+                }
+                found = Some((index, field));
+            }
+        }
+        let Some((index, field)) = found else {
+            return Ok(());
+        };
+        if field.item.access_flags & 0x0008 != 0
+            || field
+                .declaration
+                .as_ref()
+                .is_none_or(|text| text.contains('='))
+        {
+            return Ok(());
+        }
+        let mut matching_header = None;
+        for header in field_headers {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if header.name.raw().0 == write.name.as_bytes()
+                && header.descriptor.raw().0 == write.descriptor.as_bytes()
+            {
+                if matching_header.is_some() {
+                    return Ok(());
+                }
+                matching_header = Some(header);
+            }
+        }
+        let Some(header) = matching_header else {
+            return Ok(());
+        };
+        if class_source::declares_constant_value(header) || class_source::declares_signature(header)
+        {
+            return Ok(());
+        }
+        let Some(fragment) = jarde_java::report::emit_class_source_instance_array_initializer(
+            first_ast, write.bci, budget,
+        )
+        .map_err(InitializerProjectionFailure::Stopped)?
+        else {
+            return Ok(());
+        };
+        let declaration = field.declaration.as_ref().expect("checked above");
+        budget
+            .charge(
+                CountedBudgetDimension::OutputBytes,
+                u64::try_from(declaration.len().saturating_add(fragment.len())).unwrap_or(u64::MAX),
+            )
+            .map_err(InitializerProjectionFailure::Error)?;
+        let projected = format!("{declaration}{fragment}");
+        staged_fields.push((index, projected));
+        field_indices.push(index);
+
+        let Some(calls) =
+            jarde_java::report::class_source_instance_array_calls(first_ast, write.bci, budget)
+                .map_err(InitializerProjectionFailure::Stopped)?
+        else {
+            return Ok(());
+        };
+        for call in calls {
+            let target = &call.target;
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if target.kind() != jarde_java::facts::InvokeKind::Static
+                || target.owner().as_bytes() != class_name
+                || target.is_interface_reference()
+            {
+                return Ok(());
+            }
+            let mut matching_header = None;
+            for header in headers {
+                budget.poll().map_err(InitializerProjectionFailure::Error)?;
+                budget
+                    .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                    .map_err(InitializerProjectionFailure::Error)?;
+                if header.name.raw().0 == target.name().as_bytes()
+                    && header.descriptor.raw().0 == target.descriptor().as_bytes()
+                {
+                    if matching_header.is_some() {
+                        return Ok(());
+                    }
+                    matching_header = Some(header);
+                }
+            }
+            let Some(header) = matching_header else {
+                return Ok(());
+            };
+            if header.access_flags & 0x0008 == 0 || class_source::declares_exceptions(header) {
+                return Ok(());
+            }
+            let Ok(descriptor) =
+                descriptor_facts(target.descriptor().as_bytes(), DescriptorKind::Method)
+            else {
+                return Ok(());
+            };
+            let Some(result_type) = descriptor.result().and_then(primitive_descriptor_type) else {
+                return Ok(());
+            };
+            if descriptor.parameters().len() != call.arguments.len()
+                || Some(result_type) != call.presented
+            {
+                return Ok(());
+            }
+            for (argument, parameter) in call.arguments.iter().zip(descriptor.parameters()) {
+                budget.poll().map_err(InitializerProjectionFailure::Error)?;
+                budget
+                    .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                    .map_err(InitializerProjectionFailure::Error)?;
+                if parameter.dimensions() != 0 || primitive_descriptor_type(parameter) != *argument
+                {
+                    return Ok(());
+                }
+            }
+        }
+    }
+
+    let mut prior = None;
+    for index in &field_indices {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        let position = if let Some(order) = field_order {
+            let mut found = None;
+            for (position, candidate) in order.iter().enumerate() {
+                budget.poll().map_err(InitializerProjectionFailure::Error)?;
+                budget
+                    .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                    .map_err(InitializerProjectionFailure::Error)?;
+                if candidate == index {
+                    found = Some(position);
+                    break;
+                }
+            }
+            let Some(position) = found else {
+                return Ok(());
+            };
+            position
+        } else {
+            *index
+        };
+        if prior.is_some_and(|previous| previous >= position) {
+            return Ok(());
+        }
+        prior = Some(position);
+    }
+
+    let stage_methods = u64::try_from(selected.len()).unwrap_or(u64::MAX);
+    budget
+        .charge(CountedBudgetDimension::IrItems, stage_methods)
+        .map_err(InitializerProjectionFailure::Error)?;
+    let mut staged_methods = Vec::with_capacity(selected.len());
+    for (member_index, method, ast, projection) in &selected {
+        budget.poll().map_err(InitializerProjectionFailure::Error)?;
+        budget
+            .charge(CountedBudgetDimension::AnalysisSteps, 1)
+            .map_err(InitializerProjectionFailure::Error)?;
+        for (index, _) in member_texts.iter() {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if *index == *member_index {
+                return Ok(());
+            }
+        }
+        for index in already_staged_members {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            if *index == *member_index {
+                return Ok(());
+            }
+        }
+        let class_source::ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
+            return Ok(());
+        };
+        let original_statements = jarde_java::report::emit_class_source_method_ast(ast, 4, budget)
+            .map_err(InitializerProjectionFailure::Stopped)?;
+        budget
+            .charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(report.text.len().saturating_add(original_statements.len()))
+                    .unwrap_or(u64::MAX),
+            )
+            .map_err(InitializerProjectionFailure::Error)?;
+        if !method.matches_current_text(&report.text)
+            || !lines_match(&report.text, &original_statements)
+        {
+            return Ok(());
+        }
+        budget
+            .charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(projection.writes.len()).unwrap_or(u64::MAX),
+            )
+            .map_err(InitializerProjectionFailure::Error)?;
+        let mut removed = Vec::with_capacity(projection.writes.len());
+        for write in &projection.writes {
+            budget.poll().map_err(InitializerProjectionFailure::Error)?;
+            budget
+                .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                .map_err(InitializerProjectionFailure::Error)?;
+            removed.push(write.bci);
+        }
+        let body = jarde_java::report::emit_class_source_instance_array_constructor_body(
+            ast, &removed, budget,
+        )
+        .map_err(InitializerProjectionFailure::Stopped)?;
+        let Some(text) = method.assert_projection_text(&body) else {
+            return Ok(());
+        };
+        budget
+            .charge(
+                CountedBudgetDimension::OutputBytes,
+                u64::try_from(text.len()).unwrap_or(u64::MAX),
+            )
+            .map_err(InitializerProjectionFailure::Error)?;
+        staged_methods.push((*member_index, text));
+    }
+
+    // The proof, all fields, all text-only constructor placements and every output charge are
+    // complete. Poll before the no-fail commit; reserved IR cost already covers each staged
+    // record. No body emission is registered: this projection has no re-spellable anchor table,
+    // and its member_texts entry reserves the constructor against a later competing rewrite.
+    budget.poll().map_err(InitializerProjectionFailure::Error)?;
+    for (index, declaration) in staged_fields {
+        fields[index].declaration = Some(declaration);
+    }
+    member_texts.extend(staged_methods);
+    Ok(())
+}
+
+fn primitive_descriptor_type(
+    component: &jarde_reader::classfile::DescriptorComponent,
+) -> Option<JavaType> {
+    if component.dimensions() != 0 {
+        return None;
+    }
+    let jarde_reader::classfile::Base::Primitive(base) = component.base() else {
+        return None;
+    };
+    Some(match base {
+        jarde_reader::classfile::BaseType::Boolean => JavaType::Boolean,
+        jarde_reader::classfile::BaseType::Byte => JavaType::Byte,
+        jarde_reader::classfile::BaseType::Char => JavaType::Char,
+        jarde_reader::classfile::BaseType::Short => JavaType::Short,
+        jarde_reader::classfile::BaseType::Int => JavaType::Int,
+        jarde_reader::classfile::BaseType::Long => JavaType::Long,
+        jarde_reader::classfile::BaseType::Float => JavaType::Float,
+        jarde_reader::classfile::BaseType::Double => JavaType::Double,
+    })
+}
+
+fn primitive_array_descriptor(element: &JavaType, descriptor: &str) -> bool {
+    let suffix = match element {
+        JavaType::Boolean => "Z",
+        JavaType::Byte => "B",
+        JavaType::Char => "C",
+        JavaType::Short => "S",
+        JavaType::Int => "I",
+        JavaType::Long => "J",
+        JavaType::Float => "F",
+        JavaType::Double => "D",
+        JavaType::Reference(_) => return false,
+    };
+    descriptor == format!("[{suffix}")
 }
 
 /// Commits an admitted runtime initializer group only after every RHS fragment has been emitted.
@@ -19321,6 +19895,7 @@ struct PreparedMemberOptions<'a> {
     capture_array_helper_use_table: bool,
     capture_anonymous_child_asts: bool,
     capture_assert_asts: bool,
+    capture_instance_array_ctor_asts: bool,
     capture_integer_constant_asts: bool,
     capture_member_uses: bool,
     capture_member_use_bootstrap: bool,
@@ -19440,6 +20015,7 @@ fn recover_prepared_member(
         options.capture_anonymous_child_asts
             || options.array_helper_census_needed
             || options.capture_assert_asts
+            || (options.capture_instance_array_ctor_asts && request.method.name.0 == b"<init>")
             || integer_switch_ast,
         options.retain_generic_call_asts,
         budget,
@@ -43815,5 +44391,482 @@ mod integer_constant_name_tests {
                 assert!(report.integer_constant_projections.is_empty());
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod common_instance_array_initializer_tests {
+    use super::*;
+    use jarde_reader::budget::{CancellationToken, Limits};
+    use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
+    use std::io::{Cursor, Write};
+
+    const COMMON: &[u8] = include_bytes!(
+        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/CommonDirectSuperByteArray.class"
+    );
+    const DIFFERENT: &[u8] = include_bytes!(
+        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/DifferentRhsByteArray.class"
+    );
+    const DELEGATING: &[u8] = include_bytes!(
+        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ThisDelegatingByteArray.class"
+    );
+    const REVERSED: &[u8] = include_bytes!(
+        "../openspec/changes/recover-common-instance-array-initializers/results/controls-baseline-root-v1/cases/javac8-original/classes/ReverseFieldOrderByteArray.class"
+    );
+    const SINGLETON: &[u8] = include_bytes!(
+        "../openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class"
+    );
+    const NO_CLINIT: &[u8] = include_bytes!(
+        "../openspec/changes/recover-common-instance-array-initializers/results/no-clinit-super-args-v1/baseline-root-v2/cases/javac8-original/classes/CommonNoClinitArrayInit.class"
+    );
+
+    fn limits() -> Limits {
+        Limits {
+            input_bytes: u64::MAX,
+            archive_entries: u64::MAX,
+            entry_bytes: u64::MAX,
+            read_bytes: u64::MAX,
+            class_bytes: u64::MAX,
+            attribute_bytes: u64::MAX,
+            code_bytes: u64::MAX,
+            result_items: u64::MAX,
+            output_bytes: u64::MAX,
+            class_headers: u64::MAX,
+            method_bodies: u64::MAX,
+            ir_items: u64::MAX,
+            ir_edges: u64::MAX,
+            analysis_steps: u64::MAX,
+            normalization_clones: u64::MAX,
+            nested_depth: u64::MAX,
+            dependency_depth: u64::MAX,
+            elapsed_millis: u64::MAX,
+        }
+    }
+
+    fn one_class_jar(name: &str, bytes: &[u8]) -> Vec<u8> {
+        let mut output = Cursor::new(Vec::new());
+        let mut zip = ZipArchiveWriter::new(&mut output);
+        let (mut entry, config) = zip
+            .new_file(EntryPath::verbatim(format!("{name}.class").into_bytes()))
+            .compression_method(CompressionMethod::new(0))
+            .start()
+            .unwrap();
+        let mut writer = config.wrap(&mut entry);
+        writer.write_all(bytes).unwrap();
+        let (_, descriptor) = writer.finish().unwrap();
+        entry.finish(descriptor).unwrap();
+        zip.finish().unwrap();
+        output.into_inner()
+    }
+
+    fn read_u2(bytes: &[u8], at: usize) -> usize {
+        usize::from(u16::from_be_bytes([bytes[at], bytes[at + 1]]))
+    }
+
+    fn class_with_nonstatic_constant_value(bytes: &[u8]) -> Vec<u8> {
+        let cp_count = read_u2(bytes, 8);
+        let mut cp_end = 10;
+        let mut index = 1;
+        while index < cp_count {
+            let tag = bytes[cp_end];
+            cp_end += 1;
+            match tag {
+                1 => {
+                    let length = read_u2(bytes, cp_end);
+                    cp_end += 2;
+                    cp_end += length;
+                }
+                3 | 4 => cp_end += 4,
+                5 | 6 => {
+                    cp_end += 8;
+                    index += 1;
+                }
+                7 | 8 | 16 | 19 | 20 => cp_end += 2,
+                9 | 10 | 11 | 12 | 17 | 18 => cp_end += 4,
+                15 => cp_end += 3,
+                _ => panic!("unexpected constant-pool tag {tag}"),
+            }
+            index += 1;
+        }
+        let constant_value_name = cp_count;
+        let marker_name = cp_count + 1;
+        let int_descriptor = cp_count + 2;
+        let integer_value = cp_count + 3;
+        let mut extra = Vec::new();
+        for name in [
+            b"ConstantValue".as_slice(),
+            b"marker".as_slice(),
+            b"I".as_slice(),
+        ] {
+            extra.push(1);
+            extra.extend_from_slice(&u16::try_from(name.len()).unwrap().to_be_bytes());
+            extra.extend_from_slice(name);
+        }
+        extra.push(3);
+        extra.extend_from_slice(&1i32.to_be_bytes());
+        let mut rewritten = Vec::with_capacity(bytes.len() + extra.len() + 18);
+        rewritten.extend_from_slice(&bytes[..8]);
+        rewritten.extend_from_slice(&u16::try_from(cp_count + 4).unwrap().to_be_bytes());
+        rewritten.extend_from_slice(&bytes[10..cp_end]);
+        rewritten.extend_from_slice(&extra);
+        rewritten.extend_from_slice(&bytes[cp_end..]);
+
+        let mut cursor = cp_end + extra.len() + 6; // access flags, this_class, super_class
+        let interfaces = read_u2(&rewritten, cursor);
+        cursor += 2 + interfaces * 2;
+        let field_count_at = cursor;
+        let field_count = read_u2(&rewritten, cursor);
+        cursor += 2;
+        for _ in 0..field_count {
+            cursor += 6;
+            let attributes = read_u2(&rewritten, cursor);
+            cursor += 2;
+            for _ in 0..attributes {
+                let length = (rewritten[cursor + 2] as usize) << 24
+                    | (rewritten[cursor + 3] as usize) << 16
+                    | (rewritten[cursor + 4] as usize) << 8
+                    | rewritten[cursor + 5] as usize;
+                cursor += 6 + length;
+            }
+        }
+        rewritten[field_count_at..field_count_at + 2]
+            .copy_from_slice(&u16::try_from(field_count + 1).unwrap().to_be_bytes());
+        let mut field = Vec::with_capacity(16);
+        field.extend_from_slice(&0u16.to_be_bytes()); // package-private, non-static
+        field.extend_from_slice(&u16::try_from(marker_name).unwrap().to_be_bytes());
+        field.extend_from_slice(&u16::try_from(int_descriptor).unwrap().to_be_bytes());
+        field.extend_from_slice(&1u16.to_be_bytes());
+        field.extend_from_slice(&u16::try_from(constant_value_name).unwrap().to_be_bytes());
+        field.extend_from_slice(&2u32.to_be_bytes());
+        field.extend_from_slice(&u16::try_from(integer_value).unwrap().to_be_bytes());
+        rewritten.splice(cursor..cursor, field);
+        rewritten
+    }
+
+    fn source_for(name: &str, bytes: &[u8], budget: &mut Budget) -> ClassSourceReport {
+        let engine = Engine::new();
+        let snapshot = engine
+            .open(ArtifactInput::bytes(one_class_jar(name, bytes)), budget)
+            .unwrap();
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let OperationOutcome::Performed(report) = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal(name),
+                    },
+                    environment,
+                },
+                budget,
+            )
+            .unwrap()
+        else {
+            panic!("complete fixture should produce a class-source report")
+        };
+        report
+    }
+
+    #[test]
+    fn direct_constructor_group_and_single_constructor_literal_are_projected() {
+        let mut budget = Budget::new(limits());
+        let common = source_for("CommonDirectSuperByteArray", COMMON, &mut budget);
+        assert!(
+            common
+                .text
+                .contains("byte[] bytes = new byte[]{mark(10), mark(20)};")
+        );
+        assert!(!common.text.contains("this.bytes = new byte[]"));
+        assert!(common.text.contains("\n        super();\n"));
+        assert!(matches!(common.execution, ExecutionReport::Complete { .. }));
+        for method in common
+            .methods
+            .iter()
+            .filter(|method| method.item.identity.name.0 == b"<init>")
+        {
+            let staged = common
+                .projection_inputs
+                .member_texts
+                .iter()
+                .find(|member| member.member == method.item.index)
+                .expect("each promoted physical constructor has one projected member text");
+            assert!(
+                staged.emission.is_none(),
+                "text-only constructor projection must not invent body anchors"
+            );
+            assert!(
+                method.text.contains("this.bytes = new byte[]"),
+                "physical method text remains unchanged"
+            );
+        }
+
+        let mut budget = Budget::new(limits());
+        let singleton = source_for("ArrayFieldLiteral", SINGLETON, &mut budget);
+        assert!(
+            singleton
+                .text
+                .contains("byte[] b = new byte[]{40, 50, 60};")
+        );
+        assert!(!singleton.text.contains("this.b = new byte[]"));
+    }
+
+    #[test]
+    fn no_clinit_two_constructor_group_preserves_super_calls_suffixes_and_physical_maps() {
+        let mut budget = Budget::new(limits());
+        let report = source_for("CommonNoClinitArrayInit", NO_CLINIT, &mut budget);
+
+        assert!(
+            !report
+                .methods
+                .iter()
+                .any(|method| method.item.identity.name.0 == b"<clinit>")
+        );
+        assert_eq!(
+            report.methods.len(),
+            4,
+            "the complete physical method table remains visible"
+        );
+        assert!(
+            report
+                .methods
+                .iter()
+                .any(|method| method.item.identity.name.0 == b"mark")
+        );
+        assert!(
+            report
+                .methods
+                .iter()
+                .any(|method| method.item.identity.name.0 == b"run")
+        );
+        assert!(report.text.contains("static byte mark"));
+        assert!(report.text.contains("static byte run"));
+        let arrays: Vec<_> = report
+            .fields
+            .iter()
+            .filter(|field| {
+                field.item.name.raw().0 == b"first" || field.item.name.raw().0 == b"second"
+            })
+            .collect();
+        assert_eq!(arrays.len(), 2);
+        assert_eq!(
+            arrays
+                .iter()
+                .map(|field| (field.item.index, field.item.name.raw().0.as_slice()))
+                .collect::<Vec<_>>(),
+            vec![(1, b"first".as_slice()), (2, b"second".as_slice())]
+        );
+        assert!(arrays.iter().all(|field| {
+            field
+                .declaration
+                .as_deref()
+                .is_some_and(|text| text.contains("new byte[]"))
+        }));
+        assert!(report.text.contains("final byte[] first = new byte[]"));
+        assert!(report.text.contains("final byte[] second = new byte[]"));
+
+        let constructors: Vec<_> = report
+            .methods
+            .iter()
+            .filter(|method| method.item.identity.name.0 == b"<init>")
+            .collect();
+        assert_eq!(constructors.len(), 2);
+        let no_arg = constructors
+            .iter()
+            .find(|method| method.item.identity.descriptor.0 == b"()V")
+            .unwrap();
+        let with_arg = constructors
+            .iter()
+            .find(|method| method.item.identity.descriptor.0 == b"(I)V")
+            .unwrap();
+        assert!(no_arg.text.contains("super(7);"));
+        assert!(with_arg.text.contains("super(arg1);"));
+        for method in [&no_arg, &with_arg] {
+            assert!(method.text.contains("mark(11)"));
+            assert!(method.text.contains("mark(12)"));
+            assert!(method.text.contains("run(21)"));
+            assert!(method.text.contains("this.first = new byte[]"));
+            assert!(method.text.contains("this.second = new byte[]"));
+            let class_source::ClassSourceOutcome::Recovered {
+                report: recovered, ..
+            } = &method.outcome
+            else {
+                panic!("the physical constructor recovery remains available")
+            };
+            for (bci, spelling) in [
+                (
+                    if method.item.identity.descriptor.0 == b"()V" {
+                        26
+                    } else {
+                        25
+                    },
+                    "this.first = new byte[]",
+                ),
+                (
+                    if method.item.identity.descriptor.0 == b"()V" {
+                        41
+                    } else {
+                        40
+                    },
+                    "this.second = new byte[]",
+                ),
+            ] {
+                assert!(
+                    recovered
+                        .source_map
+                        .of_bci(bci)
+                        .iter()
+                        .any(|segment| { segment.text(&recovered.text).contains(spelling) }),
+                    "original putfield BCI {bci} remains in the physical recovery map"
+                );
+            }
+        }
+        assert!(
+            no_arg.text.contains(
+                "CommonNoClinitArrayInit.trace = CommonNoClinitArrayInit.trace * 31 + 91;"
+            )
+        );
+        assert!(with_arg.text.contains(
+            "CommonNoClinitArrayInit.trace = CommonNoClinitArrayInit.trace * 31 + arg1;"
+        ));
+        assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    }
+
+    #[test]
+    fn unequal_this_delegating_and_reverse_order_groups_keep_constructor_writes() {
+        for (name, bytes, field) in [
+            ("DifferentRhsByteArray", DIFFERENT, "bytes"),
+            ("ThisDelegatingByteArray", DELEGATING, "bytes"),
+            ("ReverseFieldOrderByteArray", REVERSED, "first"),
+        ] {
+            let mut budget = Budget::new(limits());
+            let report = source_for(name, bytes, &mut budget);
+            assert!(
+                !report
+                    .text
+                    .contains(&format!("byte[] {field} = new byte[]")),
+                "{name}"
+            );
+            assert!(
+                report.text.contains(&format!("this.{field} = new byte[]")),
+                "{name}"
+            );
+        }
+    }
+
+    #[test]
+    fn constant_value_on_any_nonstatic_field_refuses_the_whole_group() {
+        let bytes = class_with_nonstatic_constant_value(COMMON);
+        let mut budget = Budget::new(limits());
+        let report = source_for("CommonDirectSuperByteArray", &bytes, &mut budget);
+        assert!(!report.text.contains("byte[] bytes = new byte[]"));
+        assert!(report.text.contains("this.bytes = new byte[]"));
+    }
+
+    #[test]
+    fn public_class_source_budget_stop_does_not_publish_a_partial_field_group() {
+        let engine = Engine::new();
+        let mut open_budget = Budget::new(limits());
+        let snapshot = engine
+            .open(
+                ArtifactInput::bytes(one_class_jar("CommonDirectSuperByteArray", COMMON)),
+                &mut open_budget,
+            )
+            .unwrap();
+        let mut constrained = limits();
+        constrained.analysis_steps = 0;
+        let mut budget = Budget::new(constrained);
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        match engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("CommonDirectSuperByteArray"),
+                    },
+                    environment,
+                },
+                &mut budget,
+            )
+            .unwrap()
+        {
+            OperationOutcome::Performed(report) => {
+                assert!(!report.text.contains("byte[] bytes = new byte[]"));
+                assert!(!matches!(
+                    report.execution,
+                    ExecutionReport::Complete { .. }
+                ));
+            }
+            OperationOutcome::Incomplete(candidates) | OperationOutcome::Ambiguous(candidates) => {
+                assert!(matches!(
+                    candidates.execution,
+                    ExecutionReport::Partial { .. } | ExecutionReport::Cancelled { .. }
+                ));
+            }
+        }
+    }
+
+    #[test]
+    fn public_class_source_honors_pre_cancelled_request() {
+        let engine = Engine::new();
+        let mut open_budget = Budget::new(limits());
+        let snapshot = engine
+            .open(
+                ArtifactInput::bytes(one_class_jar("CommonDirectSuperByteArray", COMMON)),
+                &mut open_budget,
+            )
+            .unwrap();
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut cancelled = Budget::with_cancellation_token(limits(), cancellation);
+        let environment = EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::PlainJar,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: jarde_reader::view::MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        };
+        let outcome = engine
+            .class_source(
+                std::slice::from_ref(&snapshot),
+                &ClassSourceRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("CommonDirectSuperByteArray"),
+                    },
+                    environment,
+                },
+                &mut cancelled,
+            )
+            .unwrap();
+        let execution = match outcome {
+            OperationOutcome::Performed(report) => report.execution,
+            OperationOutcome::Incomplete(candidates) | OperationOutcome::Ambiguous(candidates) => {
+                candidates.execution
+            }
+        };
+        assert!(matches!(execution, ExecutionReport::Cancelled { .. }));
     }
 }

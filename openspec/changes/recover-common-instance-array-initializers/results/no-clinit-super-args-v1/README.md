@@ -1,0 +1,5 @@
+# No-clinit/super-argument control source
+
+These complete Java sources are prepared as an additional control for the instance-array initializer change. Source preparation itself did not compile or run them. The separate `prepare-baseline-luna-v1.py` records the original, JADX, and frozen-CLI full-class runs on both pinned JDKs; root reviews and runs that script, which refuses to overwrite `baseline-root-v1` and preserves every command and raw stream.
+
+`CommonNoClinitArrayInit` has two direct-super constructors with distinct `super(...)` arguments, one common contiguous two-field final primitive-array prefix, same-class static `mark`/`run` calls, and different constructor suffix writes. `trace` has no explicit initializer, so the class has no source-level reason to emit `<clinit>`. `ArrayFieldInitBase` records the actual superclass argument. The Runner prints both constructor paths, array contents, effect trace, and per-instance array freshness; expected values are intentionally not recorded here as oracle results.

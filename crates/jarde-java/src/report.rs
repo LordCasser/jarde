@@ -3176,6 +3176,7 @@ pub fn project_class_source_invoke_argument_edits(
             .anonymous_constructor_initializer_bci
             .clone(),
         generic_call_init: ast.projection.generic_call_init.clone(),
+        instance_field_write_evidence: ast.projection.instance_field_write_evidence.clone(),
     };
     Ok(Some(ClassSourceMethodAst {
         projection: Arc::new(projection),
@@ -3385,7 +3386,23 @@ fn charge_class_source_ast(
         .first()
         .map(|stmt| stmt.origin.primary().bci());
     crate::stop::poll(budget, first_bci)?;
-    let node_count = program_node_count(&source.program);
+    let node_count = program_node_count(&source.program).saturating_add(
+        source
+            .instance_field_write_evidence
+            .as_ref()
+            .map_or(0, |items| {
+                u64::try_from(items.len())
+                    .unwrap_or(u64::MAX)
+                    .saturating_add(items.iter().fold(0u64, |total, item| {
+                        total.saturating_add(
+                            u64::try_from(
+                                item.owner.len() + item.name.len() + item.descriptor.len(),
+                            )
+                            .unwrap_or(u64::MAX),
+                        )
+                    }))
+            }),
+    );
     crate::stop::charge(
         budget,
         jarde_reader::budget::CountedBudgetDimension::IrItems,
@@ -3713,6 +3730,974 @@ pub fn emit_class_source_method_ast(
         indentation,
         budget,
     )
+}
+
+/// One direct-super constructor's same-run contiguous primitive-array write prefix.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInstanceArrayConstructorProjection {
+    pub member: PhysicalMethodId,
+    pub writes: Vec<ClassSourceInstanceArrayFieldWrite>,
+}
+
+/// Field identity and BCI only; its RHS remains in the retained physical AST.
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInstanceArrayFieldWrite {
+    pub bci: u32,
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    pub element: Type,
+}
+
+#[doc(hidden)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClassSourceInstanceArrayCall {
+    pub target: crate::facts::CallTarget,
+    pub presented: Option<Type>,
+    pub arguments: Vec<Option<Type>>,
+}
+
+#[doc(hidden)]
+pub fn class_source_instance_array_constructor_projection(
+    ast: &ClassSourceMethodAst,
+    budget: &mut Budget,
+) -> Result<Option<ClassSourceInstanceArrayConstructorProjection>, crate::stop::StopReason> {
+    let source = &ast.projection;
+    let Some(init) = source.generic_call_init.as_ref() else {
+        return Ok(None);
+    };
+    let first_is_super = source.program.stmts.first().is_some_and(|stmt| {
+        matches!(
+            &stmt.kind,
+            StmtKind::ConstructorCall {
+                target: ConstructorTarget::Super,
+                ..
+            }
+        ) && Some(stmt.origin.primary().bci()) == init.bci
+    });
+    if !source.complete_code
+        || source.has_exception_handlers
+        || !init.presented
+        || init.target != Some(ConstructorTarget::Super)
+        || !first_is_super
+    {
+        return Ok(None);
+    }
+    let Some(inventory) = source.instance_field_write_evidence.as_ref() else {
+        return Ok(None);
+    };
+    let map_items = u64::try_from(inventory.len())
+        .unwrap_or(u64::MAX)
+        .saturating_mul(2);
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        map_items,
+        source.instruction_bcis.first().copied(),
+    )?;
+    let mut by_bci = std::collections::HashMap::with_capacity(inventory.len());
+    let mut by_field =
+        std::collections::HashMap::<(&str, &str, &str), Vec<u32>>::with_capacity(inventory.len());
+    for write in inventory {
+        crate::stop::poll(budget, Some(write.bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(write.bci),
+        )?;
+        by_bci.insert(write.bci, write);
+        by_field
+            .entry((
+                write.owner.as_str(),
+                write.name.as_str(),
+                write.descriptor.as_str(),
+            ))
+            .or_default()
+            .push(write.bci);
+    }
+    let mut writes = Vec::new();
+    for stmt in source.program.stmts.iter().skip(1) {
+        let bci = stmt.origin.primary().bci();
+        crate::stop::poll(budget, Some(bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        let StmtKind::FieldAssign {
+            receiver: Some(receiver),
+            name,
+            op: AssignOp::Assign,
+            value,
+        } = &stmt.kind
+        else {
+            break;
+        };
+        if !matches!(&receiver.kind,ExprKind::Local(name) if name=="this")
+            || !primitive_array_initializer(value, budget)?
+        {
+            break;
+        }
+        let ExprKind::NewArray { element, .. } = &value.kind else {
+            break;
+        };
+        let Some(evidence) = by_bci.get(&bci).copied() else {
+            break;
+        };
+        if evidence.is_static || evidence.name != *name {
+            break;
+        }
+        let key = (
+            evidence.owner.as_str(),
+            evidence.name.as_str(),
+            evidence.descriptor.as_str(),
+        );
+        let Some(all) = by_field.get(&key) else {
+            return Ok(None);
+        };
+        if all.len() != 1 || all[0] != bci {
+            return Ok(None);
+        }
+        let fact_cost = evidence
+            .owner
+            .len()
+            .saturating_add(evidence.name.len())
+            .saturating_add(evidence.descriptor.len())
+            .saturating_add(1);
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::IrItems,
+            u64::try_from(fact_cost).unwrap_or(u64::MAX),
+            Some(bci),
+        )?;
+        writes.push(ClassSourceInstanceArrayFieldWrite {
+            bci,
+            owner: evidence.owner.clone(),
+            name: evidence.name.clone(),
+            descriptor: evidence.descriptor.clone(),
+            element: element.clone(),
+        });
+    }
+    Ok(
+        (!writes.is_empty()).then_some(ClassSourceInstanceArrayConstructorProjection {
+            member: source.member.clone(),
+            writes,
+        }),
+    )
+}
+
+fn primitive_array_initializer(
+    expr: &Expr,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    crate::stop::poll(budget, Some(expr.origin.primary().bci()))?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(expr.origin.primary().bci()),
+    )?;
+    let ExprKind::NewArray {
+        element,
+        lengths,
+        initializers: Some(values),
+        total_dimensions: 1,
+    } = &expr.kind
+    else {
+        return Ok(false);
+    };
+    if !lengths.is_empty()
+        || !matches!(
+            element,
+            Type::Boolean
+                | Type::Byte
+                | Type::Char
+                | Type::Short
+                | Type::Int
+                | Type::Long
+                | Type::Float
+                | Type::Double
+        )
+        || expr.presented.as_ref() != Some(&Type::Reference(format!("{}[]", element.spell())))
+    {
+        return Ok(false);
+    }
+    for value in values {
+        if !primitive_array_value(value, budget)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+fn primitive_array_value(
+    expr: &Expr,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    let mut current = expr;
+    loop {
+        crate::stop::poll(budget, Some(current.origin.primary().bci()))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(current.origin.primary().bci()),
+        )?;
+        match &current.kind {
+            ExprKind::Integer(_)
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_) => return Ok(true),
+            ExprKind::Cast { ty, value }
+                if matches!(
+                    ty,
+                    Type::Boolean
+                        | Type::Byte
+                        | Type::Char
+                        | Type::Short
+                        | Type::Int
+                        | Type::Long
+                        | Type::Float
+                        | Type::Double
+                ) =>
+            {
+                current = value
+            }
+            ExprKind::Call {
+                receiver: None,
+                args,
+                ..
+            } => {
+                for arg in args {
+                    if !primitive_array_literal(arg, budget)? {
+                        return Ok(false);
+                    }
+                }
+                return Ok(true);
+            }
+            _ => return Ok(false),
+        }
+    }
+}
+
+fn primitive_array_literal(
+    expr: &Expr,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    let mut current = expr;
+    loop {
+        crate::stop::poll(budget, Some(current.origin.primary().bci()))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(current.origin.primary().bci()),
+        )?;
+        match &current.kind {
+            ExprKind::Integer(_)
+            | ExprKind::Boolean(_)
+            | ExprKind::Long(_)
+            | ExprKind::Float(_)
+            | ExprKind::Double(_) => return Ok(true),
+            ExprKind::Cast { ty, value }
+                if matches!(
+                    ty,
+                    Type::Boolean
+                        | Type::Byte
+                        | Type::Char
+                        | Type::Short
+                        | Type::Int
+                        | Type::Long
+                        | Type::Float
+                        | Type::Double
+                ) =>
+            {
+                current = value
+            }
+            _ => return Ok(false),
+        }
+    }
+}
+
+fn field_write_value<'a>(
+    ast: &'a ClassSourceMethodAst,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<&'a Expr>, crate::stop::StopReason> {
+    for stmt in &ast.projection.program.stmts {
+        crate::stop::poll(budget, Some(stmt.origin.primary().bci()))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(stmt.origin.primary().bci()),
+        )?;
+        if stmt.origin.primary().bci() == bci {
+            return Ok(match &stmt.kind {
+                StmtKind::FieldAssign { value, .. } => Some(value),
+                _ => None,
+            });
+        }
+    }
+    Ok(None)
+}
+
+#[doc(hidden)]
+pub fn class_source_instance_array_rhs_equal(
+    a: &ClassSourceMethodAst,
+    ab: u32,
+    b: &ClassSourceMethodAst,
+    bb: u32,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    let (Some(left), Some(right)) = (
+        field_write_value(a, ab, budget)?,
+        field_write_value(b, bb, budget)?,
+    ) else {
+        return Ok(false);
+    };
+    compare_array_expr(left, &a.projection, right, &b.projection, budget)
+}
+
+fn compare_array_expr(
+    a: &Expr,
+    asrc: &ClassSourceMethodAstSource,
+    b: &Expr,
+    bsrc: &ClassSourceMethodAstSource,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    crate::stop::poll(budget, Some(a.origin.primary().bci()))?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(a.origin.primary().bci()),
+    )?;
+    if a.presented != b.presented {
+        return Ok(false);
+    }
+    let (
+        ExprKind::NewArray {
+            element: ae,
+            lengths: al,
+            initializers: Some(av),
+            total_dimensions: ad,
+        },
+        ExprKind::NewArray {
+            element: be,
+            lengths: bl,
+            initializers: Some(bv),
+            total_dimensions: bd,
+        },
+    ) = (&a.kind, &b.kind)
+    else {
+        return Ok(false);
+    };
+    if ae != be || ad != bd || !al.is_empty() || !bl.is_empty() || av.len() != bv.len() {
+        return Ok(false);
+    }
+    for (x, y) in av.iter().zip(bv) {
+        if !compare_array_value(x, asrc, y, bsrc, budget)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+fn compare_array_value(
+    a: &Expr,
+    asrc: &ClassSourceMethodAstSource,
+    b: &Expr,
+    bsrc: &ClassSourceMethodAstSource,
+    budget: &mut Budget,
+) -> Result<bool, crate::stop::StopReason> {
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(a.origin.primary().bci()),
+    )?;
+    let mut pending = vec![(a, b)];
+    while let Some((left, right)) = pending.pop() {
+        crate::stop::poll(budget, Some(left.origin.primary().bci()))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(left.origin.primary().bci()),
+        )?;
+        if left.presented != right.presented {
+            return Ok(false);
+        }
+        match (&left.kind, &right.kind) {
+            (ExprKind::Integer(x), ExprKind::Integer(y)) if x == y => {}
+            (ExprKind::Boolean(x), ExprKind::Boolean(y)) if x == y => {}
+            (ExprKind::Long(x), ExprKind::Long(y)) if x == y => {}
+            (ExprKind::Float(x), ExprKind::Float(y)) if x == y => {}
+            (ExprKind::Double(x), ExprKind::Double(y)) if x == y => {}
+            (ExprKind::Cast { ty: x, value: xv }, ExprKind::Cast { ty: y, value: yv })
+                if x == y =>
+            {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(left.origin.primary().bci()),
+                )?;
+                pending.push((xv, yv));
+            }
+            (
+                ExprKind::Call {
+                    receiver: None,
+                    name: x,
+                    args: xa,
+                },
+                ExprKind::Call {
+                    receiver: None,
+                    name: y,
+                    args: ya,
+                },
+            ) => {
+                let xt = array_call_target(asrc, left.origin.primary().bci(), x, budget)?;
+                let yt = array_call_target(bsrc, right.origin.primary().bci(), y, budget)?;
+                if x != y || xt.is_none() || xt != yt || xa.len() != ya.len() {
+                    return Ok(false);
+                }
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(xa.len()).unwrap_or(u64::MAX),
+                    Some(left.origin.primary().bci()),
+                )?;
+                for (xarg, yarg) in xa.iter().zip(ya) {
+                    pending.push((xarg, yarg));
+                }
+            }
+            _ => return Ok(false),
+        }
+    }
+    Ok(true)
+}
+
+fn array_call_target(
+    source: &ClassSourceMethodAstSource,
+    bci: u32,
+    name: &str,
+    budget: &mut Budget,
+) -> Result<Option<crate::facts::CallTarget>, crate::stop::StopReason> {
+    let mut found = None;
+    for (site, opcode, target) in &source.call_targets {
+        crate::stop::poll(budget, Some(*site))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(*site),
+        )?;
+        if *site == bci && *opcode == 0xb8 && target.name() == name {
+            if found.is_some() {
+                return Ok(None);
+            }
+            let fact_cost = target
+                .owner()
+                .len()
+                .saturating_add(target.name().len())
+                .saturating_add(target.descriptor().len())
+                .saturating_add(1);
+            crate::stop::charge(
+                budget,
+                jarde_reader::budget::CountedBudgetDimension::IrItems,
+                u64::try_from(fact_cost).unwrap_or(u64::MAX),
+                Some(*site),
+            )?;
+            found = Some(target.clone());
+        }
+    }
+    Ok(found)
+}
+
+#[doc(hidden)]
+pub fn class_source_instance_array_calls(
+    ast: &ClassSourceMethodAst,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<Vec<ClassSourceInstanceArrayCall>>, crate::stop::StopReason> {
+    let Some(value) = field_write_value(ast, bci, budget)? else {
+        return Ok(None);
+    };
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        1,
+        Some(bci),
+    )?;
+    let mut pending = vec![value];
+    let mut calls = Vec::new();
+    while let Some(expr) = pending.pop() {
+        crate::stop::poll(budget, Some(expr.origin.primary().bci()))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(expr.origin.primary().bci()),
+        )?;
+        match &expr.kind {
+            ExprKind::Call {
+                receiver: None,
+                name,
+                args,
+            } => {
+                let Some(target) =
+                    array_call_target(&ast.projection, expr.origin.primary().bci(), name, budget)?
+                else {
+                    return Ok(None);
+                };
+                let fact_cost = target
+                    .owner()
+                    .len()
+                    .saturating_add(target.name().len())
+                    .saturating_add(target.descriptor().len())
+                    .saturating_add(args.len())
+                    .saturating_add(1);
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(fact_cost).unwrap_or(u64::MAX),
+                    Some(expr.origin.primary().bci()),
+                )?;
+                calls.push(ClassSourceInstanceArrayCall {
+                    target,
+                    presented: expr.presented.clone(),
+                    arguments: args
+                        .iter()
+                        .map(|argument| argument.presented.clone())
+                        .collect(),
+                });
+                pending.extend(args.iter());
+            }
+            ExprKind::Cast { value, .. } => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    1,
+                    Some(expr.origin.primary().bci()),
+                )?;
+                pending.push(value);
+            }
+            ExprKind::NewArray {
+                initializers: Some(values),
+                ..
+            } => {
+                crate::stop::charge(
+                    budget,
+                    jarde_reader::budget::CountedBudgetDimension::IrItems,
+                    u64::try_from(values.len()).unwrap_or(u64::MAX),
+                    Some(expr.origin.primary().bci()),
+                )?;
+                pending.extend(values.iter());
+            }
+            _ => {}
+        }
+    }
+    Ok(Some(calls))
+}
+
+#[doc(hidden)]
+pub fn emit_class_source_instance_array_initializer(
+    ast: &ClassSourceMethodAst,
+    bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<String>, crate::stop::StopReason> {
+    let Some(value) = field_write_value(ast, bci, budget)? else {
+        return Ok(None);
+    };
+    Ok(Some(emit_class_initializer_value(
+        value,
+        &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
+        budget,
+    )?))
+}
+
+#[doc(hidden)]
+pub fn emit_class_source_instance_array_constructor_body(
+    ast: &ClassSourceMethodAst,
+    removed_bcis: &[u32],
+    budget: &mut Budget,
+) -> Result<String, crate::stop::StopReason> {
+    let first_bci = ast.projection.instruction_bcis.first().copied();
+    crate::stop::poll(budget, first_bci)?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        program_node_count(&ast.projection.program),
+        first_bci,
+    )?;
+    crate::stop::charge(
+        budget,
+        jarde_reader::budget::CountedBudgetDimension::IrItems,
+        u64::try_from(removed_bcis.len()).unwrap_or(u64::MAX),
+        first_bci,
+    )?;
+    let mut removed = std::collections::BTreeSet::new();
+    for bci in removed_bcis {
+        crate::stop::poll(budget, Some(*bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(*bci),
+        )?;
+        removed.insert(*bci);
+    }
+    let mut stmts = Vec::new();
+    for stmt in &ast.projection.program.stmts {
+        let bci = stmt.origin.primary().bci();
+        crate::stop::poll(budget, Some(bci))?;
+        crate::stop::charge(
+            budget,
+            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+            1,
+            Some(bci),
+        )?;
+        if !removed.contains(&bci) {
+            stmts.push(stmt.clone())
+        }
+    }
+    crate::emit::emit_class_source_statements(
+        &stmts,
+        &ast.projection.member,
+        ast.projection.current_class.as_deref(),
+        &ast.projection.nested_class_members,
+        1,
+        budget,
+    )
+}
+
+#[cfg(test)]
+mod instance_array_prefix_tests {
+    use super::*;
+    use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+    use jarde_reader::{
+        budget::{Budget, Limits},
+        model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalVariant, SnapshotId,
+        },
+    };
+    use std::collections::BTreeMap;
+
+    fn ast(
+        value: Expr,
+        target: ConstructorTarget,
+        handlers: bool,
+        evidence: Option<Vec<crate::field::Evidence>>,
+    ) -> ClassSourceMethodAst {
+        let owner = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: SnapshotId("instance-array-test".into()),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest("instance-array-test".into()),
+                length: 1,
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let member = PhysicalMethodId {
+            owner,
+            name: JvmBytes(b"<init>".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let call_origin = OriginSet::new(crate::source_map::Origin::direct(0));
+        let assign_origin = OriginSet::new(crate::source_map::Origin::direct(2));
+        let receiver = Expr::direct(ExprKind::Local("this".into()), 2)
+            .presenting(Type::Reference("sample.ArrayFieldStore".into()));
+        let mut stmts = vec![
+            Stmt::new(
+                StmtKind::ConstructorCall {
+                    target,
+                    args: vec![Expr::direct(ExprKind::Integer(7), 0)],
+                },
+                call_origin,
+            ),
+            Stmt::new(
+                StmtKind::FieldAssign {
+                    receiver: Some(receiver),
+                    name: "bytes".into(),
+                    op: AssignOp::Assign,
+                    value,
+                },
+                assign_origin,
+            ),
+        ];
+        stmts.push(Stmt::new(
+            StmtKind::Return { value: None },
+            OriginSet::new(crate::source_map::Origin::direct(7)),
+        ));
+        let source = ClassSourceMethodAstSource {
+            program: build::Program {
+                stmts,
+                field_increments: BTreeMap::new(),
+                statements: 3,
+                ragged: false,
+                lambdas: Vec::new(),
+                accessors: Vec::new(),
+                array_constructor_sites: Vec::new(),
+                lambda_refusals: Vec::new(),
+                accessor_refusals: Vec::new(),
+                lambdas_presented: 0,
+                accessors_presented: 0,
+            },
+            member,
+            current_class: Some("sample.ArrayFieldStore".into()),
+            nested_class_members: Vec::new(),
+            parameter_names: Vec::new(),
+            parameter_slots: Vec::new(),
+            complete_code: true,
+            has_exception_handlers: handlers,
+            instruction_count: 8,
+            instruction_bcis: (0..8).collect(),
+            call_targets: Vec::new(),
+            anonymous_constructor_initializer_bci: None,
+            generic_call_init: Some(crate::init::InitRecord {
+                bci: Some(0),
+                target: Some(target),
+                class: Some("java/lang/Object".into()),
+                declared: Some("sample/ArrayFieldStore".into()),
+                presented: true,
+                refusal: None,
+            }),
+            instance_field_write_evidence: evidence,
+        };
+        ClassSourceMethodAst {
+            projection: std::sync::Arc::new(source),
+        }
+    }
+
+    fn byte_array(value: i64) -> Expr {
+        Expr::direct(
+            ExprKind::NewArray {
+                element: Type::Byte,
+                lengths: Vec::new(),
+                initializers: Some(vec![
+                    Expr::direct(ExprKind::Integer(value), 3).presenting(Type::Byte),
+                ]),
+                total_dimensions: 1,
+            },
+            2,
+        )
+        .presenting(Type::Reference("byte[]".into()))
+    }
+    fn evidence() -> Vec<crate::field::Evidence> {
+        vec![crate::field::Evidence {
+            bci: 2,
+            access: crate::facts::FieldAccess::Write,
+            is_static: false,
+            owner: "sample/ArrayFieldStore".into(),
+            name: "bytes".into(),
+            descriptor: "[B".into(),
+        }]
+    }
+    fn budget() -> Budget {
+        Budget::new(Limits {
+            ir_items: 1000,
+            analysis_steps: 1000,
+            output_bytes: 1000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        })
+    }
+    fn call_array(argument: i64, descriptor: &str) -> ClassSourceMethodAst {
+        let mut ast = ast(
+            byte_array(0),
+            ConstructorTarget::Super,
+            false,
+            Some(evidence()),
+        );
+        let source = std::sync::Arc::get_mut(&mut ast.projection).unwrap();
+        let target = crate::facts::CallTarget::new(
+            crate::facts::InvokeKind::Static,
+            "sample/ArrayFieldStore",
+            "mark",
+            descriptor,
+            false,
+        );
+        let arg = Expr::direct(ExprKind::Integer(argument), 4).presenting(Type::Int);
+        let call = Expr::direct(
+            ExprKind::Call {
+                receiver: None,
+                name: "mark".into(),
+                args: vec![arg],
+            },
+            3,
+        )
+        .presenting(Type::Byte);
+        let value = Expr::direct(
+            ExprKind::NewArray {
+                element: Type::Byte,
+                lengths: Vec::new(),
+                initializers: Some(vec![call]),
+                total_dimensions: 1,
+            },
+            2,
+        )
+        .presenting(Type::Reference("byte[]".into()));
+        let StmtKind::FieldAssign { value: old, .. } = &mut source.program.stmts[1].kind else {
+            unreachable!()
+        };
+        *old = value;
+        source.call_targets = vec![(3, 0xb8, target)];
+        ast
+    }
+
+    #[test]
+    fn prefix_emission_keeps_super_arguments_and_final_return() {
+        let ast = ast(
+            byte_array(10),
+            ConstructorTarget::Super,
+            false,
+            Some(evidence()),
+        );
+        let mut b = budget();
+        let projection = class_source_instance_array_constructor_projection(&ast, &mut b)
+            .unwrap()
+            .unwrap();
+        let body = emit_class_source_instance_array_constructor_body(
+            &ast,
+            &projection.writes.iter().map(|w| w.bci).collect::<Vec<_>>(),
+            &mut b,
+        )
+        .unwrap();
+        assert!(body.contains("super(7);"));
+        assert!(body.contains("return;"));
+        assert!(!body.contains("this.bytes"));
+    }
+
+    #[test]
+    fn non_super_handlers_unclaimed_duplicate_and_rhs_mismatch_refuse() {
+        for ast in [
+            ast(
+                byte_array(10),
+                ConstructorTarget::This,
+                false,
+                Some(evidence()),
+            ),
+            ast(
+                byte_array(10),
+                ConstructorTarget::Super,
+                true,
+                Some(evidence()),
+            ),
+            ast(byte_array(10), ConstructorTarget::Super, false, None),
+        ] {
+            let mut b = budget();
+            assert!(
+                class_source_instance_array_constructor_projection(&ast, &mut b)
+                    .unwrap()
+                    .is_none()
+            );
+        }
+        let mut duplicate = evidence();
+        duplicate.extend(evidence());
+        let duplicate_ast = ast(
+            byte_array(10),
+            ConstructorTarget::Super,
+            false,
+            Some(duplicate),
+        );
+        let mut b = budget();
+        assert!(
+            class_source_instance_array_constructor_projection(&duplicate_ast, &mut b)
+                .unwrap()
+                .is_none()
+        );
+        let a = ast(
+            byte_array(10),
+            ConstructorTarget::Super,
+            false,
+            Some(evidence()),
+        );
+        let b_ast = ast(
+            byte_array(11),
+            ConstructorTarget::Super,
+            false,
+            Some(evidence()),
+        );
+        let mut b = budget();
+        assert!(!class_source_instance_array_rhs_equal(&a, 2, &b_ast, 2, &mut b).unwrap());
+    }
+
+    #[test]
+    fn static_rhs_call_arguments_and_overload_descriptor_are_exact() {
+        let left = call_array(31, "(I)B");
+        let other_argument = call_array(32, "(I)B");
+        let other_overload = call_array(31, "(J)B");
+        let mut b = budget();
+        assert!(
+            !class_source_instance_array_rhs_equal(&left, 2, &other_argument, 2, &mut b).unwrap()
+        );
+        assert!(
+            !class_source_instance_array_rhs_equal(&left, 2, &other_overload, 2, &mut b).unwrap()
+        );
+    }
+
+    #[test]
+    fn rhs_comparison_preserves_long_and_float_double_raw_bits() {
+        let source = ast(
+            byte_array(0),
+            ConstructorTarget::Super,
+            false,
+            Some(evidence()),
+        );
+        let mut b = budget();
+        for (left, right) in [
+            (
+                Expr::direct(ExprKind::Long(1), 1),
+                Expr::direct(ExprKind::Long(2), 9),
+            ),
+            (
+                Expr::direct(ExprKind::Float(0x7fc00001), 1),
+                Expr::direct(ExprKind::Float(0x7fc00002), 9),
+            ),
+            (
+                Expr::direct(ExprKind::Double(0x7ff8000000000001), 1),
+                Expr::direct(ExprKind::Double(0x7ff8000000000002), 9),
+            ),
+        ] {
+            assert!(
+                !compare_array_value(
+                    &left,
+                    &source.projection,
+                    &right,
+                    &source.projection,
+                    &mut b
+                )
+                .unwrap()
+            );
+        }
+    }
+
+    #[test]
+    fn budget_stop_returns_no_candidate() {
+        let ast = ast(
+            byte_array(10),
+            ConstructorTarget::Super,
+            false,
+            Some(evidence()),
+        );
+        let mut b = Budget::new(Limits {
+            analysis_steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            class_source_instance_array_constructor_projection(&ast, &mut b),
+            Err(crate::stop::StopReason::Budget { .. })
+        ));
+    }
 }
 
 /// The javac assert-switch field name, for the class-source projection that census-checks it.
@@ -4955,6 +5940,9 @@ pub(crate) struct ClassSourceMethodAstSource {
     /// Same-run verified constructor prologue, retained only for generic-call proofs. The public
     /// `RuleDetails` selection may omit this record even though the body and SSA were recovered.
     pub(crate) generic_call_init: Option<crate::init::InitRecord>,
+    /// Complete same-run instance-field write inventory, present only when every physical write
+    /// was claimed. `None` means unavailable or incomplete.
+    pub(crate) instance_field_write_evidence: Option<Vec<crate::field::Evidence>>,
 }
 
 #[doc(hidden)]
@@ -10280,7 +11268,7 @@ fn recover_inner(
         } else {
             None
         };
-        let generic_call_init = if retain_generic_call_asts
+        let generic_call_init = if (retain_generic_call_asts || retain_all_method_asts)
             && request.facts.method().name() == "<init>"
             && let Some(prologue) = prologues.prologue()
         {
@@ -10303,6 +11291,59 @@ fn recover_inner(
         } else {
             None
         };
+        let instance_field_write_evidence =
+            if retain_all_method_asts && request.facts.method().name() == "<init>" {
+                let mut evidence = Vec::new();
+                let mut complete = true;
+                for (bci, operation) in operations.iter() {
+                    if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::AnalysisSteps,
+                            1,
+                            Some(*bci),
+                        )
+                    }) {
+                        return stopped(method, profile.clone(), &selection, stop, budget);
+                    }
+                    let crate::facts::Operation::Field {
+                        access: crate::facts::FieldAccess::Write,
+                        is_static: false,
+                        ..
+                    } = operation
+                    else {
+                        continue;
+                    };
+                    let Some((field, shape)) = fields.claim(*bci) else {
+                        complete = false;
+                        continue;
+                    };
+                    if !shape.writes() || field.is_static {
+                        complete = false;
+                        continue;
+                    }
+                    let item_cost = field
+                        .owner
+                        .len()
+                        .saturating_add(field.name.len())
+                        .saturating_add(field.descriptor.len())
+                        .saturating_add(1);
+                    if let Err(stop) = crate::stop::poll(budget, Some(*bci)).and_then(|()| {
+                        crate::stop::charge(
+                            budget,
+                            jarde_reader::budget::CountedBudgetDimension::IrItems,
+                            u64::try_from(item_cost).unwrap_or(u64::MAX),
+                            Some(*bci),
+                        )
+                    }) {
+                        return stopped(method, profile.clone(), &selection, stop, budget);
+                    }
+                    evidence.push(field.clone());
+                }
+                complete.then_some(evidence)
+            } else {
+                None
+            };
         *slot = Some(ClassSourceMethodAst {
             projection: std::sync::Arc::new(ClassSourceMethodAstSource {
                 program: program.clone(),
@@ -10332,6 +11373,7 @@ fn recover_inner(
                 call_targets,
                 anonymous_constructor_initializer_bci,
                 generic_call_init,
+                instance_field_write_evidence,
             }),
         });
     }
@@ -12153,6 +13195,7 @@ mod generic_call_ast_projection_tests {
             call_targets: vec![(3, 0xb6, target)],
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
+            instance_field_write_evidence: None,
         };
         (
             ClassSourceMethodAst {
@@ -12326,6 +13369,7 @@ mod generic_call_ast_projection_tests {
             call_targets,
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
+            instance_field_write_evidence: None,
         };
         (
             ClassSourceMethodAst {
@@ -13742,6 +14786,7 @@ mod lambda_helper_instruction_coverage_tests {
             call_targets: Vec::new(),
             anonymous_constructor_initializer_bci: None,
             generic_call_init: None,
+            instance_field_write_evidence: None,
         }
     }
 
@@ -13834,6 +14879,7 @@ mod anonymous_capture_projection_tests {
                 call_targets: Vec::new(),
                 anonymous_constructor_initializer_bci: None,
                 generic_call_init: None,
+                instance_field_write_evidence: None,
             }),
         }
     }

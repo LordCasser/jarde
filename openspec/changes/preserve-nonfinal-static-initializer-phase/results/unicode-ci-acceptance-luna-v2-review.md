@@ -1,0 +1,9 @@
+# Unicode CI replay verifier v2 review
+
+This version is a new file; v1 remains unchanged and unexecuted. The verifier reads the root-captured replay and writes `unicode-ci-acceptance-luna-v2.json`. It is prepared for execution under the pinned `blake3==1.0.11` Python environment. I checked Python syntax only; I did not execute the verifier, CLI, JDK, Cargo, or CI.
+
+V2 corrects the repository root calculation for this results-directory script, expects the javac23 frozen-class flag’s captured `null`, and obtains recovered source bytes from `generated_compile.source_files` before comparing them to the matching rendered outer source. It also binds every nested compile, run, and render record back to a unique top-level command by label and exact argv, cwd, Java home, status, and raw-stream records.
+
+The independent checks now recompute BLAKE3 digests for actual class bytes and the exact two-entry stored jar. They compare each report’s complete class owner location, archive snapshot, entry ordinal/name, and base variant against those bytes. All source-map inventory rows must exactly cover the JSON method list; every segment must be within the UTF-8 report text, and each origin must name the exact physical method and a BCI present in that class’s captured javap listing. Field projections are checked in both profiles against physical names/descriptors and exact owner identity.
+
+The verifier retains the 14-case/30-command evidence checks, fixed CLI/metadata/JDK pins, two original and four complete-family runtime legs, eight JSON renders, empty classpath/sourcepath, Java 8 source/target/UTF-8, exact two-class outputs, `-Xverify:all`, structured Java reports without fallbacks, initializer proof/`putstatic` BCI order, and raw stdout/stderr parity. Root’s recorded collector completion is described as captured evidence only; this file does not claim independent verification or local Rust test execution.

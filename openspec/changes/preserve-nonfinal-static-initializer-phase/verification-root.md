@@ -59,3 +59,11 @@ root实际捕获完整API及stable stdout644954字节，原hash c5d670659f233c87
 root随后只应用这两字符串，独立git blob比较确认其余文件文字恒同，source新SHA9776f2f52eb7324fd83e5f5e389181c0577098b419d8773a7b0212e62dfb0890；10产品/4test/16canonical冻结pins逐一仍恒同，详unicode-test-only-root-audit-v1.json。本机约14GiB，未执行Rust测试；fmt/all334 OpenSpec strict/diffcheck实际exit0，raw在root-unicode-validation-v1。
 
 Unicode collector v1使用single-class及两个独立源码输入，不能证明实际两class family，root完整读审拒绝、未执行，原script保留。v2改为原两class恰一PlainJar、只重编outer完整源码（包含nested member）；root完整读delta后实际执行exit0，3.286秒，wrapper在root-unicode-ci-execution-v2。unicode-ci-root-v2保留30命令/60raw streams：原程序双JDK2/2及default/all四完整生成类family4/4全成功，原样源码、空CP/SP、fresh恰UT与UT$内部类两class、-Xverify/UTF8 exit/stdout/stderr等于各自原oracle；8份CLI outer/child完整JSON用于物理表核对。原UT 2fields/4methods（含clinit）、child1field/1ctor，Proved2 writebci1/25，default/all正文相同。独立closed-inventory/source-map verifier尚在准备，不能将collector success替代独立验收；新提交必须自己的完整CI。
+
+### Unicode完整来源验收（2026-10-10 03:40 UTC）
+
+root实际执行 `results/verify-unicode-ci-luna-v4.py`，退出0，接受文件 `results/unicode-ci-acceptance-luna-v4.json`（SHA256 3c55044d39160db928139d7f53e7d06ed7bdb5c7a616fcd58aa2252d0e676bda）。检查30命令、99闭合文件、8renders、6运行腿、原物理成员/BCI及所有映射范围；冻结静态CLI与6fd Git产品pins绑定，当前实例WIP仅作信息记录。v3实际失败于primary-bearing segment计数口径误写，原失败raw不改。CI38019682442仍待全部门禁，任务仍6/7。
+
+### 确切主线CI接受（2026-10-10 03:58 UTC）
+
+root实际执行verify-ci-product-root-v12，退出0，`results/ci-product-v5/acceptance-v12.json`接受6fd51a18dd83d980f2f060246c209fb6fb0afba1 / CI38019682442：4 jobs、52 steps全成功，两seed各354结果记录、3357 passed/0 failed/97 ignored；完整Temurin25.0.4+7对照、MSRV/fuzz/supply通过。完整1752511 byte stable及114221 byte supply raw以gzip保留，API/capture身份/hash已核。此前v10/v11误用Rust源码转义及failure capture字段导致的脚本失败raw全部保留，v12只纠正格式读取，不放松产品验收。结合既有完整源码、来源与准确本地门禁，本change任务7/7；实例片不借该CI。

@@ -11,5 +11,5 @@
 ## 3. 独立完整类与主线验收
 
 - [x] 3.1 冻结重建CLI对literal/ordered原样完整源码双JDK重编-Xverify/raw对照，确认ordered整组声明提升、无重复static块、nonfinal flags与无ConstantValue、物理方法/BCI保留。
-- [ ] 3.2 root对抗审查及相关Rust/Java测试、fmt/Clippy/OpenSpec strict/reader/fingerprint和确切新产品CI验收，分开登记实例提升与小栈限制。
+- [x] 3.2 root对抗审查及相关Rust/Java测试、fmt/Clippy/OpenSpec strict/reader/fingerprint和确切新产品CI验收，分开登记实例提升与小栈限制。
 - [x] 3.3 提交推送main并更新handoff/71账本及任务实际状态；磁盘清理只限本仓target，source/class/raw与冻结CLI保留。
