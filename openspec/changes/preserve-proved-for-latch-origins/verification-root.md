@@ -1,6 +1,6 @@
 # 已证明 for 回跳来源：root 验收入口
 
-当前5/6。root已应用两文件最小修复；本地构建、八份完整生成类已独立接受，CF07新候选已实跑并独立接受，本产品自身CI已独立接受，最终干净交付待完成。用户明确授权机器5GiB余量、本仓target1GiB上限、一秒实时中止与完成清理。
+当前6/6。root已应用两文件最小修复；本地构建、八份完整生成类已独立接受，CF07新候选已实跑并独立接受，本产品自身CI已独立接受，最终干净交付已实际接受。用户明确授权机器5GiB余量、本仓target1GiB上限、一秒实时中止与完成清理。
 
 生产仅修改region.rs既有implicit_tail_latch_origin和单臂join gate。已经存在的ForHeader证明需同时满足唯一自然latch、末尾Straight、真实goto/goto_w、唯一完整canonical正常边以及update_block/update_bci/更新槽一致；不新增IR、Frame、pass或扩大for识别。末尾回跳作为derived origin归属完整LoopStmt；poll仍在for分支返回前执行。永久gateway测试核三方法精确for范围、物理owner/method/全部BCI，增加真实槽位突变和非回边transfer两项反例。Emitter的LoopStmt包含闭括号与换行，root修正精确span期望，实际审查记录span-review-correction-root-v1.json。
 
@@ -27,3 +27,5 @@ results/candidate-whole-classes-root-v1实际57命令、20完整类编译运行�
 15:54 UTC精确产品CI接受：results/ci-product-v1/acceptance-proved-for-latch-ci-root-v2.json，4jobs/52steps全部成功、双seed各354records/3385 passed/0 failed/97 ignored，50当前/产品Git blob pins、12本地命令/24raw/558pass与冻结CLI完整绑定；JDK25/MSRV/fuzz/supply/三方完整类步骤全部通过。真实capture与verifier argv/raw见ci-capture-invocation-root-v1、ci-verification-invocation-root-v2。v1真实验收失败源于fingerprint摘要被交错stderr的下一Running行截断；v2只对该stdout block精确6名字/5ok+1ignored、唯一summary及无另一个running标记重核，未改raw或降低totals。v1脚本/失败调用保留。
 
 当前包含新If规划的全量OpenSpec strict实际339/0，raw见results/openspec-strict-pre-delivery-root-v1；338/0是历史产品阶段记录。最终3.3等待全部文档提交推送与真实clean main审计。
+
+最终交付实际审计results/delivery-clean-root-v1/execution.json接受：8784e2f07bb73a2d6084adac41dfda6dde9d2ce6 main/origin相等，15 worktrees（根+14辅助）全部clean/均main祖先、辅助全部detached、仅main分支，root/全部辅助/fuzz target均不存在，无待合入或分支占用。冻结CLI0555与SHA恒同，可用68989394944 bytes。3.3按这一真实clean checkpoint关闭；后续闭合记录另文档提交，不借该文档CI替代d714a6bcc自身CI。目标持续active，71/612和整单元计数不变。

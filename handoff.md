@@ -4,8 +4,8 @@
 
 ## 当前工作与准确状态
 
-- 产品 `d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c` 已提交推送 main；For来源片 `preserve-proved-for-latch-origins` **5/6**，本地与完整类来源已接受，精确自身CI **38062706229** 已由root独立v2接受4jobs/52steps、双seed各3385/0/97，最终干净交付待完成。
-- 前片 `recover-prefixed-one-arm-loops` **6/7**。ca43自身CI38048944005早已独立接受，其源码能完整运行但缺for@20的历史证据保留；新的For来源依赖已闭合3.1，3.3等待当前来源产品CI和主线交付。
+- 产品 `d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c` 已提交推送 main；For来源片 `preserve-proved-for-latch-origins` **6/6**，本地与完整类来源已接受，精确自身CI **38062706229** 已由root独立v2接受4jobs/52steps、双seed各3385/0/97，最终干净交付已实际接受。
+- 前片 `recover-prefixed-one-arm-loops` **7/7**。ca43自身CI38048944005早已独立接受，其源码能完整运行但缺for@20的历史证据保留；新的For来源依赖已闭合3.1，3.3已按8784e2f07真实clean主线审计关闭。
 - 下一片 `preserve-proved-if-arm-join-origins` **规划4/4、strict有效、任务1/7**；只接受基线，未实施生产/新CLI/内部测试诊断。优先按下一节执行，不重复已验收的循环来源片。
 
 ## 当前产品实际验收
@@ -34,7 +34,7 @@ lastIndexOf25嵌套else latch另片；conditional-value折叠、任意内部goto
 
 用户已明确批准机器 **5GiB最低余量 / 本仓target1GiB上限**，一秒守卫中止进程组、完成cargo clean。历史20GiB记录不再是当前约束。root独占Git/Cargo/rustfmt/JDK/JADX/CLI，Luna只做private准备或只读审计。
 
-已cargo clean本仓3022 files/669.1MiB，root/fuzz target不存在，冻结CLI及全部源/class/raw保留。仅main分支；14辅助worktree经实际预检均clean detached main祖先、无target/待合入/分支占用，保护副本保留。当前验收/下一规划文档待提交，不能把预检冒称最终clean交付；待CI接受后全部提交推送并再核main/origin和工作区。
+已cargo clean本仓3022 files/669.1MiB，root/fuzz target不存在，冻结CLI及全部源/class/raw保留。仅main分支；14辅助worktree经实际预检均clean detached main祖先、无target/待合入/分支占用，保护副本保留。验收与下一规划文档已提交推送8784e2f07，实际delivery-clean-root-v1审计15 worktrees全部clean，main/origin相等、仅main、辅助全部detached，无待合入或分支占用；free68989394944 bytes。随后仅提交本次闭合记录，再核clean。
 
 ## 已交付与独立债务
 

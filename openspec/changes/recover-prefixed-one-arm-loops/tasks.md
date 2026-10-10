@@ -12,4 +12,4 @@
 
 - [x] 3.1 冻结撤销 probe 后的 fresh CLI 与源码 pins；双 JDK 对照原形及 PlainOneArmLoops 的 default/all 八份完整生成类，原样重编运行并逐字比原 class 的 exit/stdout/stderr，核全部物理成员/owner/BCI 与 default/all 正文和 source map 恒同；noPrefix latch 来源独立修复完成后才可接受完整 BCI，不豁免已知 goto@14。
 - [x] 3.2 root 实跑 fmt、CI 同范围 Clippy、相邻回归与 OpenSpec strict；提交推送后捕获本产品精确 headSha 的 CI/API/日志并独立验收，不借旧提交 CI 或文档提交结果完成此门禁。
-- [ ] 3.3 更新 71 单元账本与根 handoff.md，记录局部接受范围、独立来源债务状态及精确证据路径，不冒增 EM23 整单元完成数；提交推送全部授权修改并仅清理本仓编译残留，核主线 clean、无待合入工作树和分支占用。
+- [x] 3.3 更新 71 单元账本与根 handoff.md，记录局部接受范围、独立来源债务状态及精确证据路径，不冒增 EM23 整单元完成数；提交推送全部授权修改并仅清理本仓编译残留，核主线 clean、无待合入工作树和分支占用。
