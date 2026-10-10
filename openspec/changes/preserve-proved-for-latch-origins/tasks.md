@@ -9,6 +9,6 @@
 
 ## 3. Whole-class and delivery acceptance
 
-- [ ] 3.1 root 在 5 GiB/1 GiB 实时守卫下实跑 fmt、CI 同范围 Clippy、相关测试并冻结本片新 CLI 与源码 pins；双 JDK/default/all 八份完整生成类原样重编运行、raw 同原 class，独立核全部物理成员/BCI 和 profile 恒同；CF07 控制保留独立旧缺口，不能用旧 CLI 观测代替新候选。
-- [ ] 3.2 本片产品提交推送后捕获精确 headSha 自身 CI/API/raw，由 root 独立验收全部 jobs/steps 与测试结果；实跑 OpenSpec strict，不借 ca43 或文档提交 CI。
+- [x] 3.1 root 在 5 GiB/1 GiB 实时守卫下实跑 fmt、CI 同范围 Clippy、相关测试并冻结本片新 CLI 与源码 pins；双 JDK/default/all 八份完整生成类原样重编运行、raw 同原 class，独立核全部物理成员/BCI 和 profile 恒同；CF07 控制保留独立旧缺口，不能用旧 CLI 观测代替新候选。
+- [x] 3.2 本片产品提交推送后捕获精确 headSha 自身 CI/API/raw，由 root 独立验收全部 jobs/steps 与测试结果；实跑 OpenSpec strict，不借 ca43 或文档提交 CI。
 - [ ] 3.3 更新本片 verification-root、上一片依赖门禁、71 单元账本和根 handoff；提交推送全部修改并核 main/origin 相等、工作区 clean、无分支占用，cargo clean 本仓 target；以实际交付审计关闭，不冒称整循环单元或持续目标完成。

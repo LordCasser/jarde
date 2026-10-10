@@ -38,3 +38,7 @@ candidate-whole-classes-root-v3 已真实完成57命令，原4/JADX8/Jarde8共20
 精确产品ca43ac74767c4609284f13b251de9d6c349c67a4自己的CI38048944005已捕获并由root实际verify-ci-product-root-v4独立接受：4jobs/52steps、两seed各354结果记录与3383passed/0failed/97ignored；七gateway、两新增region及旧整数11项逐seed通过。50源码/测试/include pins逐一同ca43 Git blob与当前源码、冻结CLI及12命令24raw同本片v5。准确接受文件results/ci-product-v1/acceptance-prefixed-one-arm-loops-root-v4.json，实际调用记录ci-verification-invocation-root-v4。私有v1/v2脚本的动态expected/testnames/不存在字段转抄错误未执行；root v3实跑因freeze没有built_binary字段退出1，原失败raw保留，v4按真实schema核build命令/CLI冻结而成功。共享SHA固定CI helper字节不改，stdout与stderr交错处理仅在本片独立适配器内核准确测试名和summary。
 
 下一步为独立OpenSpec preserve-proved-for-latch-origins（规划4/4、strict有效、tasks1/6），复用现有ForHeader与implicit-tail helper/gateway_origins，不扩大循环识别。3.1依赖新CLI八份完整生成类全部物理BCI独立接受；3.3待最终干净交付，71/612及EM23/CF07整单元统计不变。
+
+15:16 UTC依赖来源门禁完成：preserve-proved-for-latch-origins新CLI已实际执行57命令/20完整类腿、八份Jarde原样完整源码与28方法profile全部BCI独立接受，且CF07新29命令/10完整腿由root v2独立接受scoped observations。新旧正文和既有来源全部保留，只有三方法四profile的derived for@20新增。故本片3.1现关闭，旧v3 full失败不改写。当前6/7，3.3待来源产品d714a6bcc自身CI与最终main干净交付，不能把旧ca43 CI当新来源产品CI。
+
+15:54 UTC依赖来源产品d714a6bcc自身CI38062706229已root独立v2接受4jobs/52steps、双seed3385/0/97与50pins。当前6/7，最后3.3只待本次文档/账本/handoff实际干净main交付，旧ca43自身CI及历史失败不回写。
