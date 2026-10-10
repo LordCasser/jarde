@@ -1,6 +1,6 @@
-# Root验收：返回 int 数组复合更新（进行中）
+# Root验收：返回 int 数组复合更新（7/7完成）
 
-当前任务5/7。上一片确切561产品CI已独立验收，验收/规划提交38a9a142a推送main后再应用Luna v1。当前产品/测试是WIP，不能借561 CI，候选CLI v2已冻结并完成局部语义验收，最终产品CI仍待核对。
+当前任务7/7。产品 `6ddc77d5cc2a6fcf098aad40998f6d2602731c59` 已推送 main，确切 CI 38001720578 已由 root 按完整日志、冻结源码/CLI/canonical 身份独立验收。下面保留此前实际失败、局部通过和待验收阶段，最终结果以末节为准；后续新增 CF16 公共测试不借此产品 CI。
 
 ## 已实际执行
 
@@ -48,3 +48,11 @@ root-msrv-v3实际workspace/all-targets/locked检查成功，明确rustup run 1.
 第二次全仓root-workspace-seed1-v2实际冷构建120秒，target增长到4.1GiB，再触20GiB守卫且仍未进入测试。root清理本仓6780文件/4.1GiB，恢复4367175680字节；冻结CLI/raw仍保留。不继续第三次同条件全仓冷构建；本机仅补受影响Java-lib和邻近目标，完整双seed由确切新产品CI实测。
 
 受影响Java-lib实际325pass/0fail，邻近四integration目标实际15pass/1ignored；源/类型/字段/输出walker和旧compound/capture/constructed-array/boxed-widening均无回退。本机完整成功门禁与结果hash汇总在local-root-acceptance-v2.json，workspace两个磁盘停止记录明确保留，不能计为通过。
+
+## 确切产品 CI 与提交验收
+
+[CI 38001720578](https://github.com/LordCasser/jarde/actions/runs/38001720578) 准确绑定产品 `6ddc77d5cc2a6fcf098aad40998f6d2602731c59`，四 job、52 steps 全部成功。两个独立固定 seed 各为 354 test-result records、3353 passed/0 failed/97 ignored；日志中八个 nested/returned ordinary 测试均明确成功。真 Temurin 25.0.4+7.0.LTS 上的 returned ignored 1pass、nested ignored 1pass、BigDecimal ignored 2pass，及其余 Java/Clippy/MSRV/fuzz/API/tree/OpenSpec 门禁全部成功。固定 cargo-deny 0.20.2 对 root/fuzz 的 advisories/bans/licenses/sources 四政策各通过。
+
+完整 API JSON、stable/supply 原始 gzip 日志与 `ci-product-root-acceptance-v2.json` 保存在 results。root 实际运行 verifier v2，核对不可变 Git blob 的 10 产品源、5 测试源、22 canonical 文件及新 CLI v2 身份。v1 首次核验因 gh 日志用字面 `^[[32m` 颜色序列而无法匹配 `advisories ok`，失败记录保留在 `root-ci-verifier-v1-failure`；v2 仅准确移除两种颜色表示，全部语义条件不变，原始日志不改。本片 3.2/3.3 完成，后续 CF16 测试检查点须接受自己的 CI。
+
+产品提交后清理本仓 467.2 MiB/722 文件，真实命令/raw 在 `root-clean-submission-v1`；冻结 CLI 与全部证据保留。71 单元、612 JADX 文件分母及 DT26/EM18 整单元分类不变。

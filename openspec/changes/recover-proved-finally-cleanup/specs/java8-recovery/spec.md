@@ -27,3 +27,11 @@
 #### Scenario: Sources and bounded recovery
 - **WHEN** 请求默认或完整来源，或清理证明/发射中遇到预算耗尽或取消
 - **THEN** 两种来源模式 SHALL 有相同正文，并保留保护区间、正常与异常清理副本、保存的返回值和重抛指令的物理 BCI/成员来源；停止 MUST 遵循既有受限输出契约
+
+#### Scenario: Stop before committing the structured body
+- **WHEN** 非覆盖型 finally 的正文尚未提交，恢复预算耗尽或取消被观察到
+- **THEN** 报告 MUST 为未产生正文的停止结果，正文和来源表均为空，不得发布部分 try/finally 或已呈现声明
+
+#### Scenario: Evidence collection stops after committing the body
+- **WHEN** 完整 finally 正文已提交，随后请求的来源证据收集因预算停止
+- **THEN** 报告 SHALL 保留与成功运行相同的完整正文，并按现有证据状态和 execution 契约说明受限证据；不得把这一结果称为正文构建阶段的停止或内部回滚证据

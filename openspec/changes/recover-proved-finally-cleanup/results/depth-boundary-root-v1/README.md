@@ -1,0 +1,8 @@
+CF16 depth-boundary root preparation
+
+prepare-depth-boundary-root-v1.py generates two complete default-package DeepFinally classes with identical top-level name, at depths 2 and 33. Each has default-zero static trace, cleanup whose only effect is trace++, and one finally enclosing nested while loops whose thresholds descend from N to 1. The Runner calls run(0) and run(40), checking results 0 and 1 and trace counts 1 and 2.
+
+When run later, the script verifies the JDK binaries recorded by returned-next-baseline-v1/manifest.json (Corretto 8 and OpenJDK 23) and compiles/runs only each original generated class plus Runner with -Xverify:all. It then uses the frozen returned-array-v2 CLI identity for four class-source all JSON requests, saving exact raw streams, JSON, full class text, and run-body text/status. It never compiles or executes CLI-generated text. The depth-33 report is recorded as observed; the script does not assume recursion_bound. Root should independently compile the shallow recovered candidate.
+
+Preparation only: this script was not run and no JDK or CLI command was executed.
+Root execution, 2026-10-10: the preparation script was actually run. All four original cases compile and execute with the pinned JDKs and exact oracle output. All four frozen Jarde reports return explanation-only/fallback for run(I)I with complete execution and finally-copy/loop-shape/uncovered-block diagnostics. Neither input reaches recursion_bound; neither is accepted as a depth-limit test. Original full files and untrimmed streams are preserved under run/. A separate shallow comparison will compile the complete Jarde text unchanged and extract fresh JADX sources.

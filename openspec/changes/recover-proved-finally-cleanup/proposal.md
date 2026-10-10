@@ -20,4 +20,6 @@
 
 ## Impact
 
+2026-10-10 接续状态：straight/lead 与 `ImplicitCleanup.run()` 的受保护分支正文已经实现。当前冻结 CLI `71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110` 的双 JDK × all/essential 四份完整类、16 条完成路径由 root 重编执行，167 项独立核验通过；范围扩围反例继续拒绝，见 `results/current-finally-root-verification-v2.json`。下一片复用现有实现验证公共停止契约，不重复添加 finally AST、正文递归或证明机制；本 change 的未完成验收不等于正文仍缺失。
+
 影响 `jarde-java` 的 guarded-region 证明、区域归属及现有 Try 语句发射；无新 crate、运行时依赖或公共 API。产品不执行目标代码；JVM 运行仅为受控测试。本 change 排在当前错值修复之后串行实施。`finally` 的 return/throw 覆盖、break/continue、嵌套清理、多出口共享、旧 `jsr/ret` 与任意 catch-all handler 都不是本最小切片的已支持行为，另行分析，不能由此 change 宣称覆盖。

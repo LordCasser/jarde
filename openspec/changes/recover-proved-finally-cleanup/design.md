@@ -30,6 +30,14 @@ The local JADX 1.5.6 source is an algorithm reference, not a semantic oracle. `M
 
 ## Risks / Trade-offs
 
+### 2026-10-10 实现现状与剩余验收
+
+上文的结构接缝已经在现有 `Region::Guard`/`Builder::region` 中闭合；其中“继续引用”和“架构候选”描述的是当时阶段，不能据此再次实现正文。当前 CLI 的 `ImplicitCleanup` 全类 all/essential 正文相同，双 JDK 四腿、每腿四条完成路径通过，all 模式真实 BCI 闭合，范围扩围反例仍拒绝。固定 JADX 历史生成类本次重编运行，在 cleanup 覆盖返回时仍重复清理为 trace `299`，原程序与 Jarde 为 `29`。原始流、输入身份、19 条命令与 root 核验见本 change 的 `results/current-finally-v1/` 和 `results/current-finally-root-verification-v2.json`。
+
+结构化正文的现有事务位于 `Builder::region` 的 `Shape::Finally` 分支：子正文停止、正常 cleanup 停止、子树 fallback/未呈现声明和最终 Try push 失败均恢复 `finally_checkpoint`。优先审查并复用这一机制。Builder 停止后整个构建结果被丢弃；真正需要继续保持状态一致的路径是恢复 checkpoint 后输出整段拒绝。不能为了观测被丢弃的内部状态新增生产测试钩子。
+
+公共验收区分提交前后：提交前预算或取消返回 `Stopped`/`NotProduced`、空正文和空来源；提交后的证据收集停止保留完整已提交正文，并准确报告受限证据及 execution。`IrItems` 同时为 builder、报告后处理及证据回放计费，聚合 usage 和 BCI 均不能证明具体停止阶段。成功总量减一仅作为晚期压力，必须按实际报告分类核验，不能称为子正文已经写出后的内部回滚测试。预取消也仅证明公共停止契约。内部中途取消/child fallback 的精确动态定位尚无现成 harness，保留此证据限制，不以时序竞态或新机制补齐。
+
 - Equal-looking cleanup calls can consume different state or run a different number of times. Compare normalized operands and require a single path/copy per exit; refuse ambiguous mutations or aliases.
 - Moving the pending return computation after cleanup changes side effects and the returned value. Verify the saved local/value SSA chain and full-class execution when cleanup mutates observable state or throws.
 - A catch-all may represent generated control flow other than source `finally`. Treat the row as a candidate and keep the complete source-bearing refusal when its handler/copy/range proof fails.

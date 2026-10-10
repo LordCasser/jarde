@@ -1,12 +1,14 @@
 # HANDOFF — jarde 主线接续入口
 
-用户明确要求继续在当前聊天推进，不暂停持续目标。root负责架构、OpenSpec、真实Java/JADX对照和对抗验收；确定性实现由Luna完成。按JADX的71单元账本逐片推进，先追平既有能力，再探索额外场景。
+用户已明确回复「继续在当前聊天推进」。持续目标 active；root 负责架构、OpenSpec、真实 Java/JADX 对照和对抗验收，确定性脚本/实现由 Luna 完成。以 JADX 71 单元、612 测试文件账本为依据，先逐片追平，再探索额外场景。
 
-## 当前状态
+## 当前主线和已验收产品
 
-已验收产品为 **561de209531c021a9d8adb7c979bae5a57d6c3fb**，已推送main。[确切CI37994276707](https://github.com/LordCasser/jarde/actions/runs/37994276707)四job/51steps全部成功；两轮fresh workspace seed各354test-result记录、3348passed/0failed/96ignored，新增nested/BigDecimal真JDK25完整类执行、MSRV、Clippy、fuzz及固定cargo-deny0.20.2 root/fuzz四政策全部通过。原始JSON、完整日志及冻结source/CLI身份已由root独立核对，入口见[nested root验收](openspec/changes/recover-nested-int-array-compound-updates/verification-root.md)。
+已验收产品 **6ddc77d5cc2a6fcf098aad40998f6d2602731c59** 已推送 main。[确切 CI 38001720578](https://github.com/LordCasser/jarde/actions/runs/38001720578) 四 job/52 steps 全部成功；两个 fresh workspace seed 各 354 test-result records、3353 passed/0 failed/97 ignored。真 Temurin 25.0.4+7.0.LTS 的 returned ignored 1pass、nested ignored 1pass、BigDecimal ignored 2pass，MSRV/Clippy/fuzz/API/tree/OpenSpec 及 cargo-deny 0.20.2 root/fuzz 四政策全部成功。
 
-当前产品之后的验收/规划提交不改变产品源；新的returned片尚待最终CI验收，不借本次CI。
+root 已保存完整 API JSON、stable/supply 原始 gzip，实际运行独立 verifier v2 核对不可变 Git blob 的 10 产品源、5 测试源、22 canonical 文件和冻结 CLI。入口为 [returned root 验收](openspec/changes/recover-returned-int-array-compound-updates/verification-root.md) 及 results/ci-product-root-acceptance-v2.json。v1 因 gh 日志字面颜色格式匹配失败，原失败保留；v2 仅处理颜色表示，不改验收条件或 raw。
+
+冻结当前 CLI：`/private/tmp/jarde-returned-array-cli-v2`，SHA **71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110**。最新提交可能是随后验收/测试检查点，以 `git log -1` 为准；产品源仍与 6dd 相同。新增 CF16 公共测试属于后续检查点，不借 6dd CI。
 
 ```sh
 git status --short
@@ -16,60 +18,43 @@ git branch -av
 git worktree list
 ```
 
-验收/规划检查点38a9a142a已推送main。returned产品、测试和canonical fixture现已完成局部验收并进入产品提交检查点，工作树状态以git status为准；新CLI及局部门禁已过，确切新CI未验收。上一片561冻结CLI仅代表已验收历史产品。
+## 最新实现闭环
 
-## 已完成：nested int数组复合更新，7/7
+- [returned int 数组 +=](openspec/changes/recover-returned-int-array-compound-updates/verification-root.md) **7/7**：最小 ArrayAssign 值表达式，仅准确认领 int 返回的 dup2/iaload/iadd/dup_x2/iastore/ireturn 形状，沿既有类型/消费/顺序/依赖/所有权证明；没有新增全局 copy/type/pass。新完整类双 JDK 2/2、root 425 checks；旧 nested 4/4/479 checks、旧 24 腿 24/24/1231 checks，全部完整源码空 CP/SP 重编、仅新 classes -Xverify:all 执行，raw 与原一致。原程序/JADX 历史 hash 复用与 fresh candidate 执行分开声明。
+- [nested int 数组更新](openspec/changes/recover-nested-int-array-compound-updates/verification-root.md) **7/7**：DT26 P02 helper 的 `t[0][0] += i`，复用原始 `[[I`/aaload 行类型和四份 copy 证明，去掉冗余 store-copy 类型 gate。
+- [BigDecimal→Number](openspec/changes/recover-bigdecimal-number-widening/verification-root.md) **7/7**：准确 release-8 关系，旧 24 腿由 22/24 到 24/24；AtomicInteger 继续拒绝。旧失败 CI/raw 保留，561 组合 CI 已独立继承验收。
+- 子数组协变 **7/7**、reifiable wildcard 数组返回 **6/6**、构造 primitive 转换 **7/7** 的历史确切 CI 和完整类验收均已完成。不要以窄片或回归腿成功冒称整个 EM18/DT26 单元完成。
 
-[recover-nested-int-array-compound-updates](openspec/changes/recover-nested-int-array-compound-updates/verification-root.md)恢复DT-26 P02 lambda helper的`t[0][0] += i`。原始`[[I`沿既有`array_of_value`经aaload可证行为int[]；删除对dup2 store-copy的冗余类型gate，保留原始行类型、四份准确copy identity、唯一消费、顺序/依赖、预算/Stop。不新增pass、AST或类型传播服务。
+当前 reader 实测 pin **(1087,4830,463,2715,8)**，2061 fingerprint 输入；官方 fingerprint/P5 各 5pass/1ignored。当前 Java-lib 325pass，邻近四 integration 15pass/1ignored，returned ordinary 8pass/2ignored。细节与历史失败均在各片 verification-root/results。
 
-冻结CLI为`/private/tmp/jarde-nested-int-array-cli-v1`，SHA **8745071312981d4eafb8fbb738e6a1fa1edbb55753062bfae057e879c494bb7a**。新完整类四腿真实JDK8/23空CP/SP重编、只运行新classes且-Xverify:all，4/4与原始raw流一致，root独立474checks/0errors；旧24控制腿fresh24/24，root独立1226checks/0errors。original/JADX对旧24腿采用逐hash历史基线，不声称本次fresh。
+## CF16：主体已实现，剩余验收 10/11
 
-最终Rust边界/public预算/预取消及邻近回归14pass/2ignored，官方fingerprint5pass/1ignored，P5严格pins5pass/1ignored；325 Java-lib、新reader census(1071,4654,463,2715,8)、本机root/fuzz cargo-deny四政策也通过。fingerprint只新增11输入，原2029条不变。详细source/命令/raw/hash在results/local-root-acceptance-v1.json及verification-root。以前17GiB未执行记录保留为历史；上述是空间回升后实际补验。
+[recover-proved-finally-cleanup](openspec/changes/recover-proved-finally-cleanup/verification-root-2026-10-10.md) 的 ImplicitCleanup 分支/throw/saved return 主体并非缺失；旧 task2.3 已按真实状态纠正。当前 CLI 双 JDK × all/essential 四份完整类、16 路径 fresh 执行通过，root **167 checks/0 errors**，cleanup 覆盖返回的 trace 为 **29**；历史 JADX source 本次重编仍为 **299**，不能当 oracle，未声称 fresh 提取。
 
-3.2/3.3已完成：results/ci-product-root-acceptance-v1.json接受确切四job/全部steps、准确双seed、新nested ignored1pass与BigDecimal ignored2pass、真Temurin25.0.4+7.0.LTS与冻结source身份。supply独立CLI0.20.2安装与root/fuzz四政策成功；日志中的数字429只是时间戳，修正见ci-supply-http-status-correction-v2.json。历史未跑/失败记录保留。
+新增 `p3_patterns.rs::structured_finally_stop_never_publishes_partial_class_source` 覆盖 zero IR/zero output/预取消具体停止码与无半正文发布，并要求提交后证据受限 **Produced/Partial 且完整正文不变**。root 格式化后完整 p3_patterns **84/84**，构建峰值 187129829 字节。公共总预算不能定位 child 构造中途；静态复审既有 checkpoint/restore，不添加生产 hook，不宣称动态内部 rollback。新测试需由自己的 CI 验收。
 
-## 已完成：BigDecimal→Number，7/7
+深度探针 N=2/N=33 原程序双 JDK 共四份 fresh 编译/验证/执行通过，但 Jarde 四份 run 都 explanation_only/fallback，诊断为 finally copy、loop shape、uncovered blocks；execution=complete，未命中 recursion_bound。**这份早期探针不能算深度限制通过。** 证据在 results/depth-boundary-root-v1。N=2 是 protected-body 嵌套循环 + 单 saved int return + cleanup 的明确浅层组合待分析，不是 cleanup 内部循环。
 
-[recover-bigdecimal-number-widening](openspec/changes/recover-bigdecimal-number-widening/verification-root.md)只增加release-8 NUMBER_FAMILY中的准确BigDecimal→Number行，不改concat机制。完整24腿从22/24增至24/24，生产/双JDK/full-class与本地严格门禁已过；两个旧负例的过时预期已精准更新，AtomicInteger仍拒绝且来源保持。
+N=2 fresh 补验已完成：JADX/default/none 四完整腿4/4，Jarde原样完整重编0/2，root232checks/0errors。入口调度先接loop、generic finally起点随后已过晚；静态最小建议仍须实测，见 results/shallow-loop-finally-analysis-root.md。该自写组合先列候选，优先完成现有 JADX CF16 剩余验收；后续 field/branch 探针已到达既有 Region 真实深度限界，接着完成整类回归。已有 void-loop Test2 与 multi-return Test5 是不同完成形状，不能借它们算该单保护段组合已覆盖；不继续盲目加深输入，不先新增机制，也不混进当前公共停止测试。
 
-旧6997产品CI37989319644确实失败于过时断言，原日志保留。修正提交8cd8c4f的CI37991578328 stable/MSRV/fuzz成功，supply在checkout前DockerHub HTTP429失败；仅重试该失败任务后仍429，不继续循环重试。ci-run-v2/v3、完整stable及重试supply日志在本片results。不能把旧run称为success。
+最新 field/branch N=33 双 JDK 在 BCI450 确实停止：jre_recursion_bound/NotProduced/空正文与来源/Partial，root **204 checks/0 errors**。双原 class 复制为永久 cf16-region-depth fixture，现有 harness 新增 exact stop 测试。v6 在 libtest 默认小栈溢出失败；v7 明确8 MiB测试线程栈后最终完整 p3_patterns **85/85**。不改生产机制，不声称小栈安全或内部 Builder 动态 rollback；v5其实只有旧84项，不借其命名算新深度测试。任务2.4/3.1已勾选，3.2待新检查点CI。
 
-561组合产品四job全绿，root已实际运行本片results/verify-superseding-product-v1.py，superseding-product-root-acceptance-v1.json以**561身份、新CLI的24/24/1226checks及确切新CI**完成继承验收和3.2/3.3。原准确BigDecimal关系所在init/report/class_source/lock及原两个生产测试身份保持；当前build.rs重新随nested产品验收。不能冒称旧8cd CI成功。历史BigDecimal CLI SHA b79520629443a0211cd656d1374e415f76ac6adf400d79cb86154954caba9cb0只绑定历史blob，不代表当前产品。
+最终完整类对照已独立验收：Normal双JDK当前Jarde2/2完整重编/执行/raw匹配；Completion覆盖型仍2/2完整类编译拒绝，历史JADX重编错误566/8保留。26命令/12腿/94闭合文件，四份实际javap -p核对全部物理成员与Normal全BCI，root **536 checks/0 errors**。历史3/6 Code遗漏private mark，实际完整4/7，历史不篡改。原源码4/4、JDX固定历史source4/4重编（Completion语义错）、JardeNormal2/2成功/Completion2/2拒绝分开计；不是总体12/12语义通过。fmt/all OpenSpec strict/diff check通过。新测试检查点CI尚待验收，不借产品6dd CI。
 
-## 正在验收：返回int数组+=新值，5/7
+## EM18：最新完整基线无需实现
 
-[recover-returned-int-array-compound-updates](openspec/changes/recover-returned-int-array-compound-updates/)规划4/4、strict已通过，实施5/7。完整ReturnedIntArrayUpdates共11成员，原两真实JDK2/2、fresh JADX default/none四腿4/4，当前Jarde两份完整source均compile失败0/2；root独立156checks/0errors。所有返回值、十条异常/求值顺序轨迹和原始失败保留在前片results/returned-next-baseline-v1；不得借原classes编译恢复source。
+[array-field-store](openspec/evidence/java-syntax-2026-10-10/array-field-store/README.md) 以 JADX TestArrayInit.test2 为依据补 fresh byte[] 方法字段写：原双 JDK **2/2**、fresh JADX default/none **4/4**、当前 Jarde **2/2**，root **294 checks/0 errors**。完整七方法/两字段与 allocation/element/call/putfield/return 真实 BCI 保留；新数组身份、失败时旧数组对象身份、null RHS 顺序/异常优先级四条 raw 路径正确。现有 ArrayInitializers+FieldWrite 已闭合，不建重复实施 spec。
 
-原形状为dup2→iaload→iadd→dup_x2→iastore→ireturn。返回新值与现有返回旧值PostfixUpdate不同；现有IndexAssign只有语句形式。设计仅加最小值语义数组赋值Expr，复用AssignOp及已有左值/RHS证明，准确四份dup_x2消费者、同块紧邻形状与一次原子claim，不新增全局copy/type/pass或合成局部变量层。
-
-必须核对Java类型，category-1不是Java int证明；byte/short/char/int可合法提升，boolean或未知类型不得伪装为int。所有AST walker、来源/字段/命名/类型及emitter同步处理，赋值有副作用，lambda donor不能复制该写入。精准升级旧returned负例，merged row-Phi继续拒绝并保留BCI；补额外消费、错误复制、非int及停止控制。
-
-Luna完整v1 patch已经冻结并应用，root修正栈槽顺序、错误Duplicate标签/私有模块引用和漏掉的report/facade遍历，并补新增集合复制/提交计费。新AST仅表达已证明returned int +=，不扩frame/decode。第一次真实focused最终6pass/2ignored；首三轮compile/结构失败全部保留。完整v4测试artifact在低磁盘时直接执行，双真实JDK各2ignored pass、合计8次旧nested与新returned完整类比较成功；明确没有新Cargo构建，不代表当前新CLI或最终产品验收。
-
-2.2与3.1已完成：定向ordinary 8pass/2ignored，双JDK当前test各2ignored pass，额外sum/返回副本consumer及long返回六份控制都经真实JVM加载，非法dup2_x2两份输入被JVM拒绝且Jarde停止于frames表，无Java发布。新CLI v2 SHA71f0a864243e7c4155789e05a0c5021ec06e87ac8a8bf9dfb38b38acb4906110，全部10相关产品源/5测试源/canonical22身份冻结；新完整双JDK2/2、独立425checks，旧nested4/4/479checks、旧24/24/1231checks。所有源码完整空CP/SP重编且只新classes-Xverify/raw一致。原JADX/原程序按逐hash历史复用，不称fresh。
-
-受影响Java-lib325pass、邻近四integration目标15pass/1ignored；官方fingerprint与P5各5pass/1ignored，reader实测(1087,4830,463,2715,8)并复验1pass，fmt/OpenSpec全strict/source diff通过。全仓seed1冷构建因机器剩余低于20GiB中止，没进入测试；清本仓1.4GiB后再次下降，MSRV在preflight未启动。空间回升后本机CI-exact Clippy及明确rustup run 1.88.0 MSRV workspace/all-targets已实际通过；之前失败/未跑记录保留。本机第二次全仓构建再触20GiB且未进入测试，已清本仓4.1GiB。最终当前产品确切四job CI、完整双seed/真JDK25等仍待验收，3.2/3.3未勾。详见[returned root验收](openspec/changes/recover-returned-int-array-compound-updates/verification-root.md)。
-
-独立债务：历史fallback拒绝Arithmetic producer时未映射iadd@5，当前六个负例与冻结561拒绝正文及来源逐字一致；参数load由声明命名。负例明确保留copy/read/store/return/额外消费，成功compound仍要求全部真实来源。本片不扩大通用fallback机制。
-
-## 已完成与队列边界
-
-[71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)的71是验收单元数、612是JADX测试文件数，不是成功率。EM18/DT26仍部分已测；窄片或24控制腿不等于整单元完成。
-
-- 子数组协变7/7、wildcard数组返回6/6，确切45b CI已验收。
-- 构造参数primitive转换7/7，完整双JDK2/2；JADX四腿删除中间舍入，虽能编译但语义0/4，Jarde以原程序为oracle。详见[数值转换验收](openspec/changes/recover-constructor-primitive-conversion-arguments/verification-root.md)。
-- constructed reference array组合8/8，owner/value/store及Site原子闭合已完成；完整历史失败保留，后续数组与BigDecimal补片已解除当时剩余限制。
-- CF16 ImplicitCleanup主体已恢复：当前CLI双JDK/all与essential四腿16路径通过，原cleanup-over-return trace29，历史JADX重编仍trace299。不能重复实施主体；子Region停止/回滚边界须单独核对。
-- DT26原生int[] capture已恢复；P02二维helper正文已由当前nested片补齐。平坦Signature generic arity和receiver-tail收尾漏计是独立债务，不混入本片。
+EM18 下一片已锁定 JADX `TestArrayInitField.test()`（root核过本地测试原文），见 [基线计划](openspec/evidence/java-syntax-2026-10-10/array-field-store/next-static-constructor-plan-luna-v1.md)：先验 static/constructor 初始化顺序与完整类语义，若仅呈现差异不称机制缺失。后续有明确队列：static/constructor 数组字段呈现、TestArrays2 四种 primitive array 分支、signed byte/long 与 ConstantValue。先 fresh 完整类基线，确认缺口再立 spec；上项不证明 static promotion 已支持数组。[71 单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md) 的分母和整单元分类不变。
 
 ## 工作树、磁盘与执行纪律
 
-只有main/origin/main，无未合入分支或占用分支。14辅助worktree均detached、干净、main祖先、无target；受Codex保护的副本保留，没有遗留工作待合并。
+只有 main/origin/main，无未合入或占用分支。14 辅助 worktree 均 detached、干净、main 祖先、无 target；Codex 保护副本保留，无待合入工作。
 
-只由root串行执行Cargo/Git/rustfmt/Java/JADX/Jarde CLI，一次一个Cargo。CARGO_BUILD_JOBS=1、CARGO_INCREMENTAL=0、RUST_TEST_THREADS=1，关闭debug信息但保留assertions。全workspace20GiB停止线；实测局部nested/returned test与CLI冷构建约309MiB，明确采用本仓1GiB target/机器2GiB余量双守卫（当前change run-root-gate-v3.py只接受这两类命令）。不碰其它项目target。第二次workspace冷构建增长到4.1GiB、再触守卫且未进入测试，已清本仓4.1GiB；不重复同条件冷构建。最新清本仓部分workspace构建残留，冻结CLI/raw均保留；机器空间快速变化，以实时df和实际守卫为准。未跑/停止记录不得计为通过。
+root 串行执行 Git/Cargo/rustfmt/JDK/JADX/CLI，一次一个 Cargo；Luna 只读/patch/script，不共享运行编译。全 workspace **20 GiB** 机器余量停止线；nested/returned test+CLI 实测约309 MiB，p3_patterns 实测约178 MiB，只有明确窄目标采用 **2 GiB 机器余量/1 GiB 本仓 target** 双守卫。全仓冷构建两次在20 GiB前停止且未进测试，原记录保留，不重复同条件；完整双 seed 已由确切 6dd CI 补验。
 
-全部生成source参与空CP/SP重编，runtime仅新classes且-Xverify:all；原exit/stdout/stderr逐字核对。不得借原class/helper、剥离失败成员或修剪raw日志。原始日志的whitespace提示与源码diff检查分开记录，不设全局豁免。以前详细阶段可从Git历史及各片verification-root/results检索。
+只清本仓 target；不动其它项目。冻结 CLI、canonical fixture、原始 source/class/raw 全部保留。机器空间会随其他进程快速变化，以实时 df/runner 为准。以前提交清理467.2 MiB/722文件的真实记录在 returned/results/root-clean-submission-v1；当前检查点又清本仓178.5 MiB/348文件，记录在 CF16/results/root-clean-checkpoint-v1；最终85项通过后再次清理178.5 MiB/348文件，见 root-clean-checkpoint-v2。
 
-## 下一明确方向：CF-16剩余边界
+全部 generated source 空 CP/SP 重编，runtime 仅新 classes 且 -Xverify:all；不借原 class/helper、不删除失败成员、不手修生成文本。原 exit/stdout/stderr 逐字比较，完整日志不裁剪。71单元完成与窄形状完成分开计数。
 
-只读事实复审确认ImplicitCleanup主体不是实现缺口：历史root167checks、双JDK/all+essential四完整腿16路径已有。recover-proved-finally-cleanup task2.3仍写缺分支主体，是旧任务记录；剩余独立边界是structured-subregion budget/cancellation/rollback。guard层proof预算/预取消、p3_patterns完整输出及其它finally端到端原子性已有，不能替代ImplicitCleanup Builder子Region内部恢复状态验证。现有finally_checkpoint/restore_finally机制应优先复用；在returned产品确切CI验收后再同步OpenSpec/准备精准测试，不重复主体、不混CF17，也不凭未验证假设新增机制。
+独立债务：既有 fallback 对拒绝 Arithmetic producer 未映射 iadd@5、平坦 Signature generic arity、receiver-tail 收尾计费；有记录但不混入当前窄片。
