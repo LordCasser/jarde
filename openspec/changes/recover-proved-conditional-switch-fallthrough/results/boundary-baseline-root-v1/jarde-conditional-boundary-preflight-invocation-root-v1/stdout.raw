@@ -1,0 +1,15 @@
+{
+  "status": "failed-incomplete",
+  "output": "/private/tmp/jarde-conditional-boundary-preflight-root-v1",
+  "commands": 19,
+  "failures": [
+    "javac8: JADX decompile failed or was guard-stopped",
+    "javac8/default: candidate complete-class compile failed or was guard-stopped",
+    "javac8/all: candidate complete-class compile failed or was guard-stopped",
+    "javac23: JADX runtime differs from original oracle",
+    "javac23/default: candidate complete-class compile failed or was guard-stopped",
+    "javac23/all: candidate complete-class compile failed or was guard-stopped",
+    "command matrix incomplete: missing=['javac23-candidate-all-runtime', 'javac23-candidate-default-runtime', 'javac8-candidate-all-runtime', 'javac8-candidate-default-runtime', 'javac8-jadx-compile', 'javac8-jadx-runtime'] extra=[]",
+    "collector stopped: AttributeError: 'str' object has no attribute 'open'"
+  ]
+}

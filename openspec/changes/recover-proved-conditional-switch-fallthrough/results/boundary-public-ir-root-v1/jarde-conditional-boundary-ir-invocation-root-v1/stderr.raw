@@ -1,0 +1,4 @@
+  File "/private/tmp/jarde-run-conditional-ir-root-v1.py", line 14
+    text=source.read_text().replace('    assert_eq!(analysis.report().method, method);','    assert_eq!(analysis.report().method, method);
+                                                                                        ^
+SyntaxError: unterminated string literal (detected at line 14)

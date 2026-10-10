@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T20:51:00.230078+00:00",
+  "duration_seconds": 0.026281667000148445,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-run-conditional-ir-root-v1.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 359,
+      "sha256": "739598bfbfdb8b5a72184ed1dbced9127cbbe53f4c89fa28a40dd55bef9b06c4"
+    }
+  }
+}

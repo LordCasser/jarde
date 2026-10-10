@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-10T20:37:48.606811+00:00",
+  "duration_seconds": 19.4138644169725,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-conditional-boundary-preflight-luna-v2/prepare-boundary-preflight-root.py",
+    "--out",
+    "/private/tmp/jarde-conditional-boundary-preflight-root-v1"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 908,
+      "sha256": "cdea85d50429e6de05e010db22b72d05f2477daf51fb97f99519cb3d2e8e6934"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

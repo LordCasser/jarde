@@ -1,0 +1,7 @@
+error: unexpected argument '--debug' found
+
+  tip: a similar argument exists: '--budget'
+
+Usage: jarde-proved-local-source-types-cli-v1 class-source --input <PATH> --class <NAME|JSON> --policy <POLICY> --release <RELEASE> --format <FORMAT> --budget <DIMENSION=LIMIT>
+
+For more information, try '--help'.

@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-10T20:55:34.588478+00:00",
+  "duration_seconds": 7.995671458018478,
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "38084415019",
+    "--log-failed"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 442274,
+      "sha256": "1b804ff35ab6db7ae9c04d19f645497274b7db78ffd585b358d33996cde1fb3a"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

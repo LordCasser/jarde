@@ -1,0 +1,73 @@
+{
+  "schema": "meet-char-int-full-class-comparison-root-v1",
+  "utc": "2026-10-10T21:01:12.736409+00:00",
+  "fixture_sha256": "0e3b9f78d79e49e345ccb163a01eeaa0d21f9ed7ca0b340c24d7901cd4b1c04c",
+  "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+  "original_source_sha256": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132",
+  "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-meeting/v8/Meet.class",
+        "--class",
+        "Meet",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:12.760673+00:00",
+      "duration_seconds": 0.020538,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v1/0.stdout.raw",
+        "bytes": 95349,
+        "sha256": "037c83f6f9143cfe9dd2452a2a31598b30a6472b25074b6512c2443bee148d4f"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v1/0.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-meeting/v8/Meet.class",
+        "--class",
+        "Meet",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--debug",
+        "all"
+      ],
+      "exit_code": 2,
+      "utc": "2026-10-10T21:01:12.782338+00:00",
+      "duration_seconds": 0.004272,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v1/1.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v1/1.stderr.raw",
+        "bytes": 304,
+        "sha256": "7edf50627713a379256bae2f8b1b3473f592d1a506efd874cdf3d97cc48e9782"
+      }
+    }
+  ],
+  "legs": [],
+  "status": "failed",
+  "error": "AssertionError: ([PosixPath('/private/tmp/jarde-proved-local-source-types-cli-v1'), 'class-source', '--input', PosixPath('/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-meeting/v8/Meet.class'), '--class', 'Meet', '--policy', 'single-class', '--release', '8', '--format', 'json', '--debug', 'all'], \"error: unexpected argument '--debug' found\\n\\n  tip: a similar argument exists: '--budget'\\n\\nUsage: jarde-proved-local-source-types-cli-v1 class-source --input <PATH> --class <NAME|JSON> --policy <POLICY> --release <RELEASE> --format <FORMAT> --budget <DIMENSION=LIMIT>\\n\\nFor more information, try '--help'.\\n\")"
+}

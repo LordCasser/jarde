@@ -1,0 +1,14 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "/private/tmp/jarde-conditional-boundary-verifier-root-v2.py",
+  "--execution",
+  "/private/tmp/jarde-conditional-boundary-preflight-root-v2/execution.json",
+  "--acceptance",
+  "/private/tmp/jarde-conditional-boundary-acceptance-root-v2/observation-acceptance.json"
+]

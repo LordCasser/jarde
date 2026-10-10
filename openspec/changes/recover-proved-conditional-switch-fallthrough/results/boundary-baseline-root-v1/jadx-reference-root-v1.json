@@ -1,0 +1,18 @@
+{
+  "schema": "conditional-switch-jadx-local-reference-root-v1",
+  "checkout_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "runtime_jadx_version": "1.5.6",
+  "runtime_source_revision_identity_proven": false,
+  "sources": [
+    {
+      "original": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/maker/SwitchRegionMaker.java",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-baseline-root-v1/SwitchRegionMaker.java",
+      "sha256": "741133377c6d9ec0f60c40d234f01e3dbd79f2bd80e4a2ed15ca105f0a408bd1"
+    },
+    {
+      "original": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/SwitchBreakVisitor.java",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-baseline-root-v1/SwitchBreakVisitor.java",
+      "sha256": "7f49a6a38c2b11846501063fe234a098a35bb1b54b9dddc6d2efa04f3f50dbf5"
+    }
+  ]
+}

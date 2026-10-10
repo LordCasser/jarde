@@ -1,0 +1,2989 @@
+{
+  "schema": "conditional-boundary-public-ir-observations-acceptance-root-v1",
+  "status": "verified-observations-only",
+  "execution_sha256": "e9c326a09ddce4cad9a2de21edc7115186032c9d59a0832924eea6e769debbe6",
+  "observer_sha256": "e230bd60efcb560f143dafd2d5f578a3a2fa3b5009cc379665a480f62cf637a2",
+  "profiles": [
+    {
+      "leg": "javac8",
+      "name": "partialBreak",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "class_blake3": "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          27,
+          1
+        ],
+        [
+          37,
+          153,
+          3
+        ],
+        [
+          40,
+          44,
+          1
+        ],
+        [
+          41,
+          18,
+          2
+        ],
+        [
+          43,
+          182,
+          3
+        ],
+        [
+          46,
+          87,
+          1
+        ],
+        [
+          47,
+          167,
+          3
+        ],
+        [
+          50,
+          44,
+          1
+        ],
+        [
+          51,
+          18,
+          2
+        ],
+        [
+          53,
+          182,
+          3
+        ],
+        [
+          56,
+          87,
+          1
+        ],
+        [
+          57,
+          44,
+          1
+        ],
+        [
+          58,
+          18,
+          2
+        ],
+        [
+          60,
+          182,
+          3
+        ],
+        [
+          63,
+          87,
+          1
+        ],
+        [
+          64,
+          167,
+          3
+        ],
+        [
+          67,
+          44,
+          1
+        ],
+        [
+          68,
+          18,
+          2
+        ],
+        [
+          70,
+          182,
+          3
+        ],
+        [
+          73,
+          87,
+          1
+        ],
+        [
+          74,
+          44,
+          1
+        ],
+        [
+          75,
+          182,
+          3
+        ],
+        [
+          78,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          40
+        ],
+        [
+          57,
+          [],
+          67
+        ],
+        [
+          67,
+          [],
+          74
+        ],
+        [
+          40,
+          [],
+          50
+        ],
+        [
+          50,
+          [],
+          57
+        ],
+        [
+          74,
+          [],
+          79
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 50,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 50,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac8",
+      "name": "innerLoopBreak",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "class_blake3": "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          3,
+          1
+        ],
+        [
+          37,
+          62,
+          1
+        ],
+        [
+          38,
+          29,
+          1
+        ],
+        [
+          39,
+          5,
+          1
+        ],
+        [
+          40,
+          162,
+          3
+        ],
+        [
+          43,
+          44,
+          1
+        ],
+        [
+          44,
+          18,
+          2
+        ],
+        [
+          46,
+          182,
+          3
+        ],
+        [
+          49,
+          87,
+          1
+        ],
+        [
+          50,
+          27,
+          1
+        ],
+        [
+          51,
+          153,
+          3
+        ],
+        [
+          54,
+          167,
+          3
+        ],
+        [
+          57,
+          132,
+          3
+        ],
+        [
+          60,
+          167,
+          3
+        ],
+        [
+          63,
+          44,
+          1
+        ],
+        [
+          64,
+          18,
+          2
+        ],
+        [
+          66,
+          182,
+          3
+        ],
+        [
+          69,
+          87,
+          1
+        ],
+        [
+          70,
+          44,
+          1
+        ],
+        [
+          71,
+          18,
+          2
+        ],
+        [
+          73,
+          182,
+          3
+        ],
+        [
+          76,
+          87,
+          1
+        ],
+        [
+          77,
+          167,
+          3
+        ],
+        [
+          80,
+          44,
+          1
+        ],
+        [
+          81,
+          18,
+          2
+        ],
+        [
+          83,
+          182,
+          3
+        ],
+        [
+          86,
+          87,
+          1
+        ],
+        [
+          87,
+          44,
+          1
+        ],
+        [
+          88,
+          182,
+          3
+        ],
+        [
+          91,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          38
+        ],
+        [
+          70,
+          [],
+          80
+        ],
+        [
+          80,
+          [],
+          87
+        ],
+        [
+          38,
+          [],
+          43
+        ],
+        [
+          87,
+          [],
+          92
+        ],
+        [
+          43,
+          [],
+          54
+        ],
+        [
+          63,
+          [],
+          70
+        ],
+        [
+          54,
+          [],
+          57
+        ],
+        [
+          57,
+          [],
+          63
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 70,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 80,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 38,
+          "to_path": []
+        },
+        {
+          "from": 38,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 43,
+          "to_path": []
+        },
+        {
+          "from": 38,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 63,
+          "to_path": []
+        },
+        {
+          "from": 43,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 54,
+          "to_path": []
+        },
+        {
+          "from": 43,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 54,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 63,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 38,
+          "to_path": []
+        },
+        {
+          "from": 63,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 70,
+          "to_path": []
+        },
+        {
+          "from": 70,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 87,
+          "to_path": []
+        },
+        {
+          "from": 80,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 87,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac8",
+      "name": "innerSwitchBreak",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "class_blake3": "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          27,
+          1
+        ],
+        [
+          37,
+          171,
+          19
+        ],
+        [
+          56,
+          44,
+          1
+        ],
+        [
+          57,
+          18,
+          2
+        ],
+        [
+          59,
+          182,
+          3
+        ],
+        [
+          62,
+          87,
+          1
+        ],
+        [
+          63,
+          167,
+          3
+        ],
+        [
+          66,
+          44,
+          1
+        ],
+        [
+          67,
+          18,
+          2
+        ],
+        [
+          69,
+          182,
+          3
+        ],
+        [
+          72,
+          87,
+          1
+        ],
+        [
+          73,
+          44,
+          1
+        ],
+        [
+          74,
+          18,
+          2
+        ],
+        [
+          76,
+          182,
+          3
+        ],
+        [
+          79,
+          87,
+          1
+        ],
+        [
+          80,
+          44,
+          1
+        ],
+        [
+          81,
+          18,
+          2
+        ],
+        [
+          83,
+          182,
+          3
+        ],
+        [
+          86,
+          87,
+          1
+        ],
+        [
+          87,
+          167,
+          3
+        ],
+        [
+          90,
+          44,
+          1
+        ],
+        [
+          91,
+          18,
+          2
+        ],
+        [
+          93,
+          182,
+          3
+        ],
+        [
+          96,
+          87,
+          1
+        ],
+        [
+          97,
+          44,
+          1
+        ],
+        [
+          98,
+          182,
+          3
+        ],
+        [
+          101,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          56
+        ],
+        [
+          80,
+          [],
+          90
+        ],
+        [
+          90,
+          [],
+          97
+        ],
+        [
+          56,
+          [],
+          66
+        ],
+        [
+          66,
+          [],
+          73
+        ],
+        [
+          97,
+          [],
+          102
+        ],
+        [
+          73,
+          [],
+          80
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 80,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 90,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 56,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 66,
+          "to_path": []
+        },
+        {
+          "from": 56,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 73,
+          "to_path": []
+        },
+        {
+          "from": 66,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 73,
+          "to_path": []
+        },
+        {
+          "from": 73,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 80,
+          "to_path": []
+        },
+        {
+          "from": 80,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 97,
+          "to_path": []
+        },
+        {
+          "from": 90,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 97,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac8",
+      "name": "terminalCase",
+      "descriptor": "(I)Ljava/lang/String;",
+      "class_sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "class_blake3": "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          76,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          170,
+          27
+        ],
+        [
+          36,
+          43,
+          1
+        ],
+        [
+          37,
+          18,
+          2
+        ],
+        [
+          39,
+          182,
+          3
+        ],
+        [
+          42,
+          87,
+          1
+        ],
+        [
+          43,
+          43,
+          1
+        ],
+        [
+          44,
+          182,
+          3
+        ],
+        [
+          47,
+          176,
+          1
+        ],
+        [
+          48,
+          43,
+          1
+        ],
+        [
+          49,
+          18,
+          2
+        ],
+        [
+          51,
+          182,
+          3
+        ],
+        [
+          54,
+          87,
+          1
+        ],
+        [
+          55,
+          187,
+          3
+        ],
+        [
+          58,
+          89,
+          1
+        ],
+        [
+          59,
+          43,
+          1
+        ],
+        [
+          60,
+          182,
+          3
+        ],
+        [
+          63,
+          183,
+          3
+        ],
+        [
+          66,
+          191,
+          1
+        ],
+        [
+          67,
+          43,
+          1
+        ],
+        [
+          68,
+          18,
+          2
+        ],
+        [
+          70,
+          182,
+          3
+        ],
+        [
+          73,
+          87,
+          1
+        ],
+        [
+          74,
+          167,
+          3
+        ],
+        [
+          77,
+          43,
+          1
+        ],
+        [
+          78,
+          18,
+          2
+        ],
+        [
+          80,
+          182,
+          3
+        ],
+        [
+          83,
+          87,
+          1
+        ],
+        [
+          84,
+          43,
+          1
+        ],
+        [
+          85,
+          182,
+          3
+        ],
+        [
+          88,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          48
+        ],
+        [
+          48,
+          [],
+          67
+        ],
+        [
+          67,
+          [],
+          77
+        ],
+        [
+          77,
+          [],
+          84
+        ],
+        [
+          84,
+          [],
+          89
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 48,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 77,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 84,
+          "to_path": []
+        },
+        {
+          "from": 77,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 84,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac8",
+      "name": "caughtExceptionThenFallthrough",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "class_blake3": "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          27,
+          1
+        ],
+        [
+          37,
+          154,
+          3
+        ],
+        [
+          40,
+          18,
+          2
+        ],
+        [
+          42,
+          167,
+          3
+        ],
+        [
+          45,
+          18,
+          2
+        ],
+        [
+          47,
+          184,
+          3
+        ],
+        [
+          50,
+          62,
+          1
+        ],
+        [
+          51,
+          44,
+          1
+        ],
+        [
+          52,
+          29,
+          1
+        ],
+        [
+          53,
+          182,
+          3
+        ],
+        [
+          56,
+          87,
+          1
+        ],
+        [
+          57,
+          167,
+          3
+        ],
+        [
+          60,
+          78,
+          1
+        ],
+        [
+          61,
+          44,
+          1
+        ],
+        [
+          62,
+          18,
+          2
+        ],
+        [
+          64,
+          182,
+          3
+        ],
+        [
+          67,
+          87,
+          1
+        ],
+        [
+          68,
+          44,
+          1
+        ],
+        [
+          69,
+          18,
+          2
+        ],
+        [
+          71,
+          182,
+          3
+        ],
+        [
+          74,
+          87,
+          1
+        ],
+        [
+          75,
+          167,
+          3
+        ],
+        [
+          78,
+          44,
+          1
+        ],
+        [
+          79,
+          18,
+          2
+        ],
+        [
+          81,
+          182,
+          3
+        ],
+        [
+          84,
+          87,
+          1
+        ],
+        [
+          85,
+          44,
+          1
+        ],
+        [
+          86,
+          182,
+          3
+        ],
+        [
+          89,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          40
+        ],
+        [
+          68,
+          [],
+          78
+        ],
+        [
+          78,
+          [],
+          85
+        ],
+        [
+          40,
+          [],
+          45
+        ],
+        [
+          45,
+          [],
+          47
+        ],
+        [
+          85,
+          [],
+          90
+        ],
+        [
+          47,
+          [],
+          60
+        ],
+        [
+          60,
+          [],
+          68
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 68,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 78,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 45,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 47,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Exception { handler_ordinal: 0 }",
+          "to": 60,
+          "to_path": []
+        },
+        {
+          "from": 45,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 47,
+          "to_path": []
+        },
+        {
+          "from": 45,
+          "from_path": [],
+          "kind": "Exception { handler_ordinal: 0 }",
+          "to": 60,
+          "to_path": []
+        },
+        {
+          "from": 47,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 68,
+          "to_path": []
+        },
+        {
+          "from": 47,
+          "from_path": [],
+          "kind": "Exception { handler_ordinal: 0 }",
+          "to": 60,
+          "to_path": []
+        },
+        {
+          "from": 60,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 68,
+          "to_path": []
+        },
+        {
+          "from": 68,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 85,
+          "to_path": []
+        },
+        {
+          "from": 78,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 85,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [
+        "ExceptionHandlerFact { ordinal: 0, start_bci: 36, end_bci: 57, handler_bci: 60, catch_type_index: Some(24) }"
+      ],
+      "physical_exception_semantics": [
+        [
+          0,
+          36,
+          57,
+          60,
+          "java/lang/NumberFormatException"
+        ]
+      ]
+    },
+    {
+      "leg": "javac23",
+      "name": "partialBreak",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+      "class_blake3": "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          27,
+          1
+        ],
+        [
+          37,
+          153,
+          3
+        ],
+        [
+          40,
+          44,
+          1
+        ],
+        [
+          41,
+          18,
+          2
+        ],
+        [
+          43,
+          182,
+          3
+        ],
+        [
+          46,
+          87,
+          1
+        ],
+        [
+          47,
+          167,
+          3
+        ],
+        [
+          50,
+          44,
+          1
+        ],
+        [
+          51,
+          18,
+          2
+        ],
+        [
+          53,
+          182,
+          3
+        ],
+        [
+          56,
+          87,
+          1
+        ],
+        [
+          57,
+          44,
+          1
+        ],
+        [
+          58,
+          18,
+          2
+        ],
+        [
+          60,
+          182,
+          3
+        ],
+        [
+          63,
+          87,
+          1
+        ],
+        [
+          64,
+          167,
+          3
+        ],
+        [
+          67,
+          44,
+          1
+        ],
+        [
+          68,
+          18,
+          2
+        ],
+        [
+          70,
+          182,
+          3
+        ],
+        [
+          73,
+          87,
+          1
+        ],
+        [
+          74,
+          44,
+          1
+        ],
+        [
+          75,
+          182,
+          3
+        ],
+        [
+          78,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          40
+        ],
+        [
+          57,
+          [],
+          67
+        ],
+        [
+          67,
+          [],
+          74
+        ],
+        [
+          40,
+          [],
+          50
+        ],
+        [
+          50,
+          [],
+          57
+        ],
+        [
+          74,
+          [],
+          79
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 50,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 50,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac23",
+      "name": "innerLoopBreak",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+      "class_blake3": "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          3,
+          1
+        ],
+        [
+          37,
+          62,
+          1
+        ],
+        [
+          38,
+          29,
+          1
+        ],
+        [
+          39,
+          5,
+          1
+        ],
+        [
+          40,
+          162,
+          3
+        ],
+        [
+          43,
+          44,
+          1
+        ],
+        [
+          44,
+          18,
+          2
+        ],
+        [
+          46,
+          182,
+          3
+        ],
+        [
+          49,
+          87,
+          1
+        ],
+        [
+          50,
+          27,
+          1
+        ],
+        [
+          51,
+          153,
+          3
+        ],
+        [
+          54,
+          167,
+          3
+        ],
+        [
+          57,
+          132,
+          3
+        ],
+        [
+          60,
+          167,
+          3
+        ],
+        [
+          63,
+          44,
+          1
+        ],
+        [
+          64,
+          18,
+          2
+        ],
+        [
+          66,
+          182,
+          3
+        ],
+        [
+          69,
+          87,
+          1
+        ],
+        [
+          70,
+          44,
+          1
+        ],
+        [
+          71,
+          18,
+          2
+        ],
+        [
+          73,
+          182,
+          3
+        ],
+        [
+          76,
+          87,
+          1
+        ],
+        [
+          77,
+          167,
+          3
+        ],
+        [
+          80,
+          44,
+          1
+        ],
+        [
+          81,
+          18,
+          2
+        ],
+        [
+          83,
+          182,
+          3
+        ],
+        [
+          86,
+          87,
+          1
+        ],
+        [
+          87,
+          44,
+          1
+        ],
+        [
+          88,
+          182,
+          3
+        ],
+        [
+          91,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          38
+        ],
+        [
+          70,
+          [],
+          80
+        ],
+        [
+          80,
+          [],
+          87
+        ],
+        [
+          38,
+          [],
+          43
+        ],
+        [
+          87,
+          [],
+          92
+        ],
+        [
+          43,
+          [],
+          54
+        ],
+        [
+          63,
+          [],
+          70
+        ],
+        [
+          54,
+          [],
+          57
+        ],
+        [
+          57,
+          [],
+          63
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 70,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 80,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 38,
+          "to_path": []
+        },
+        {
+          "from": 38,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 43,
+          "to_path": []
+        },
+        {
+          "from": 38,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 63,
+          "to_path": []
+        },
+        {
+          "from": 43,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 54,
+          "to_path": []
+        },
+        {
+          "from": 43,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 54,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 63,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 38,
+          "to_path": []
+        },
+        {
+          "from": 63,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 70,
+          "to_path": []
+        },
+        {
+          "from": 70,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 87,
+          "to_path": []
+        },
+        {
+          "from": 80,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 87,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac23",
+      "name": "innerSwitchBreak",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+      "class_blake3": "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          27,
+          1
+        ],
+        [
+          37,
+          171,
+          19
+        ],
+        [
+          56,
+          44,
+          1
+        ],
+        [
+          57,
+          18,
+          2
+        ],
+        [
+          59,
+          182,
+          3
+        ],
+        [
+          62,
+          87,
+          1
+        ],
+        [
+          63,
+          167,
+          3
+        ],
+        [
+          66,
+          44,
+          1
+        ],
+        [
+          67,
+          18,
+          2
+        ],
+        [
+          69,
+          182,
+          3
+        ],
+        [
+          72,
+          87,
+          1
+        ],
+        [
+          73,
+          44,
+          1
+        ],
+        [
+          74,
+          18,
+          2
+        ],
+        [
+          76,
+          182,
+          3
+        ],
+        [
+          79,
+          87,
+          1
+        ],
+        [
+          80,
+          44,
+          1
+        ],
+        [
+          81,
+          18,
+          2
+        ],
+        [
+          83,
+          182,
+          3
+        ],
+        [
+          86,
+          87,
+          1
+        ],
+        [
+          87,
+          167,
+          3
+        ],
+        [
+          90,
+          44,
+          1
+        ],
+        [
+          91,
+          18,
+          2
+        ],
+        [
+          93,
+          182,
+          3
+        ],
+        [
+          96,
+          87,
+          1
+        ],
+        [
+          97,
+          44,
+          1
+        ],
+        [
+          98,
+          182,
+          3
+        ],
+        [
+          101,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          56
+        ],
+        [
+          80,
+          [],
+          90
+        ],
+        [
+          90,
+          [],
+          97
+        ],
+        [
+          56,
+          [],
+          66
+        ],
+        [
+          66,
+          [],
+          73
+        ],
+        [
+          97,
+          [],
+          102
+        ],
+        [
+          73,
+          [],
+          80
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 80,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 90,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 56,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 66,
+          "to_path": []
+        },
+        {
+          "from": 56,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 73,
+          "to_path": []
+        },
+        {
+          "from": 66,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 73,
+          "to_path": []
+        },
+        {
+          "from": 73,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 80,
+          "to_path": []
+        },
+        {
+          "from": 80,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 97,
+          "to_path": []
+        },
+        {
+          "from": 90,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 97,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac23",
+      "name": "terminalCase",
+      "descriptor": "(I)Ljava/lang/String;",
+      "class_sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+      "class_blake3": "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          76,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          170,
+          27
+        ],
+        [
+          36,
+          43,
+          1
+        ],
+        [
+          37,
+          18,
+          2
+        ],
+        [
+          39,
+          182,
+          3
+        ],
+        [
+          42,
+          87,
+          1
+        ],
+        [
+          43,
+          43,
+          1
+        ],
+        [
+          44,
+          182,
+          3
+        ],
+        [
+          47,
+          176,
+          1
+        ],
+        [
+          48,
+          43,
+          1
+        ],
+        [
+          49,
+          18,
+          2
+        ],
+        [
+          51,
+          182,
+          3
+        ],
+        [
+          54,
+          87,
+          1
+        ],
+        [
+          55,
+          187,
+          3
+        ],
+        [
+          58,
+          89,
+          1
+        ],
+        [
+          59,
+          43,
+          1
+        ],
+        [
+          60,
+          182,
+          3
+        ],
+        [
+          63,
+          183,
+          3
+        ],
+        [
+          66,
+          191,
+          1
+        ],
+        [
+          67,
+          43,
+          1
+        ],
+        [
+          68,
+          18,
+          2
+        ],
+        [
+          70,
+          182,
+          3
+        ],
+        [
+          73,
+          87,
+          1
+        ],
+        [
+          74,
+          167,
+          3
+        ],
+        [
+          77,
+          43,
+          1
+        ],
+        [
+          78,
+          18,
+          2
+        ],
+        [
+          80,
+          182,
+          3
+        ],
+        [
+          83,
+          87,
+          1
+        ],
+        [
+          84,
+          43,
+          1
+        ],
+        [
+          85,
+          182,
+          3
+        ],
+        [
+          88,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          48
+        ],
+        [
+          48,
+          [],
+          67
+        ],
+        [
+          67,
+          [],
+          77
+        ],
+        [
+          77,
+          [],
+          84
+        ],
+        [
+          84,
+          [],
+          89
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 48,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 77,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 84,
+          "to_path": []
+        },
+        {
+          "from": 77,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 84,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [],
+      "physical_exception_semantics": []
+    },
+    {
+      "leg": "javac23",
+      "name": "caughtExceptionThenFallthrough",
+      "descriptor": "(II)Ljava/lang/String;",
+      "class_sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+      "class_blake3": "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+      "physical": [
+        [
+          0,
+          187,
+          3
+        ],
+        [
+          3,
+          89,
+          1
+        ],
+        [
+          4,
+          183,
+          3
+        ],
+        [
+          7,
+          77,
+          1
+        ],
+        [
+          8,
+          26,
+          1
+        ],
+        [
+          9,
+          171,
+          27
+        ],
+        [
+          36,
+          27,
+          1
+        ],
+        [
+          37,
+          154,
+          3
+        ],
+        [
+          40,
+          18,
+          2
+        ],
+        [
+          42,
+          167,
+          3
+        ],
+        [
+          45,
+          18,
+          2
+        ],
+        [
+          47,
+          184,
+          3
+        ],
+        [
+          50,
+          62,
+          1
+        ],
+        [
+          51,
+          44,
+          1
+        ],
+        [
+          52,
+          29,
+          1
+        ],
+        [
+          53,
+          182,
+          3
+        ],
+        [
+          56,
+          87,
+          1
+        ],
+        [
+          57,
+          167,
+          3
+        ],
+        [
+          60,
+          78,
+          1
+        ],
+        [
+          61,
+          44,
+          1
+        ],
+        [
+          62,
+          18,
+          2
+        ],
+        [
+          64,
+          182,
+          3
+        ],
+        [
+          67,
+          87,
+          1
+        ],
+        [
+          68,
+          44,
+          1
+        ],
+        [
+          69,
+          18,
+          2
+        ],
+        [
+          71,
+          182,
+          3
+        ],
+        [
+          74,
+          87,
+          1
+        ],
+        [
+          75,
+          167,
+          3
+        ],
+        [
+          78,
+          44,
+          1
+        ],
+        [
+          79,
+          18,
+          2
+        ],
+        [
+          81,
+          182,
+          3
+        ],
+        [
+          84,
+          87,
+          1
+        ],
+        [
+          85,
+          44,
+          1
+        ],
+        [
+          86,
+          182,
+          3
+        ],
+        [
+          89,
+          176,
+          1
+        ]
+      ],
+      "nodes": [
+        [
+          0,
+          [],
+          36
+        ],
+        [
+          36,
+          [],
+          40
+        ],
+        [
+          68,
+          [],
+          78
+        ],
+        [
+          78,
+          [],
+          85
+        ],
+        [
+          40,
+          [],
+          45
+        ],
+        [
+          45,
+          [],
+          47
+        ],
+        [
+          85,
+          [],
+          90
+        ],
+        [
+          47,
+          [],
+          60
+        ],
+        [
+          60,
+          [],
+          68
+        ]
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 68,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 78,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 45,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 47,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Exception { handler_ordinal: 0 }",
+          "to": 60,
+          "to_path": []
+        },
+        {
+          "from": 45,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 47,
+          "to_path": []
+        },
+        {
+          "from": 45,
+          "from_path": [],
+          "kind": "Exception { handler_ordinal: 0 }",
+          "to": 60,
+          "to_path": []
+        },
+        {
+          "from": 47,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 68,
+          "to_path": []
+        },
+        {
+          "from": 47,
+          "from_path": [],
+          "kind": "Exception { handler_ordinal: 0 }",
+          "to": 60,
+          "to_path": []
+        },
+        {
+          "from": 60,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 68,
+          "to_path": []
+        },
+        {
+          "from": 68,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 85,
+          "to_path": []
+        },
+        {
+          "from": 78,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 85,
+          "to_path": []
+        }
+      ],
+      "physical_exception_table_rows": [
+        "ExceptionHandlerFact { ordinal: 0, start_bci: 36, end_bci: 57, handler_bci: 60, catch_type_index: Some(60) }"
+      ],
+      "physical_exception_semantics": [
+        [
+          0,
+          36,
+          57,
+          60,
+          "java/lang/NumberFormatException"
+        ]
+      ]
+    }
+  ],
+  "product_acceptance": false,
+  "cf12_complete": false,
+  "scope": "trusted public reader/JVM IR facts on exact two original inputs; raw stage completion, physical decode, canonical identities/coverage and SSA block membership; no new conditional proof gate accepted"
+}

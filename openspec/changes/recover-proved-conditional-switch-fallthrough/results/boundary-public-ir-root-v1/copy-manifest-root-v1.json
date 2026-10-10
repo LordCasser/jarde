@@ -1,0 +1,216 @@
+{
+  "schema": "conditional-public-ir-byte-exact-archive-root-v1",
+  "historical_absolute_references_preserved": true,
+  "files": [
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-observer-luna-v1/README.md",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-observer-luna-v1/README.md",
+      "bytes": 2761,
+      "sha256": "fc01b9ffb8f01a23d00e6e8592ee230cf23bb6c6f91bb08c450f5ebce64668aa"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-observer-luna-v1/conditional_boundary_ir_observer.rs",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-observer-luna-v1/conditional_boundary_ir_observer.rs",
+      "bytes": 9484,
+      "sha256": "02d7ed085c0438417255e31f01c1c26c0f5df7612dec3066790fbc2cf3ce3283"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-observer-luna-v1/preflight.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-observer-luna-v1/preflight.json",
+      "bytes": 1985,
+      "sha256": "399e7d6397d3134de5caaa354a59233d82b7e4a68d255e70761164e9af4b91b5"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-root-v2/0.stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-root-v2/0.stderr.raw",
+      "bytes": 1997,
+      "sha256": "4ae1c8e20098188fc1e7b317089412b217fcf3fc1a261f6b0fee210da7741636"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-root-v2/0.stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-root-v2/0.stdout.raw",
+      "bytes": 446321,
+      "sha256": "1360f4a2543cb296b07a53f1c4f85226c71026e785fa127b96db2688351b99be"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-root-v2/execution.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-root-v2/execution.json",
+      "bytes": 22896,
+      "sha256": "e9c326a09ddce4cad9a2de21edc7115186032c9d59a0832924eea6e769debbe6"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-root-v2/observer-root.rs",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-root-v2/observer-root.rs",
+      "bytes": 10495,
+      "sha256": "e230bd60efcb560f143dafd2d5f578a3a2fa3b5009cc379665a480f62cf637a2"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-root-v2/rustfmt.stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-root-v2/rustfmt.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-root-v2/rustfmt.stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-root-v2/rustfmt.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v1/argv.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v1/argv.json",
+      "bytes": 78,
+      "sha256": "68397117f47e467ec7ac0deaedcb2429c247e5e7b5a820af99bec46d4fbc7232"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v1/execution.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v1/execution.json",
+      "bytes": 532,
+      "sha256": "60ae3812f84732b685540f098f8632e9eee6577c51f9312f14caee9f688cbf1f"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v1/stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v1/stderr.raw",
+      "bytes": 359,
+      "sha256": "739598bfbfdb8b5a72184ed1dbced9127cbbe53f4c89fa28a40dd55bef9b06c4"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v1/stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v2/argv.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v2/argv.json",
+      "bytes": 78,
+      "sha256": "9c2d74be1674376eee06832ce23ce8970ff3e4aa4a119ba9ad01410a354cc2e0"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v2/execution.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v2/execution.json",
+      "bytes": 530,
+      "sha256": "59403713bd8a025cc690cd3a9db5a43f738977d619d9180c978c786a14d4c9d1"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v2/stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-invocation-root-v2/stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-invocation-root-v2/stdout.raw",
+      "bytes": 128,
+      "sha256": "1330b53d45e791567f28ae262a5369758d5a9bf6f3914ff37e429842022f2307"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-cargo-clean-root-v1/argv.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-cargo-clean-root-v1/argv.json",
+      "bytes": 25,
+      "sha256": "2aa0ec7108900b253b9b80ba5d66975e50fe0889843ce14e18565d333473c611"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-cargo-clean-root-v1/execution.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-cargo-clean-root-v1/execution.json",
+      "bytes": 475,
+      "sha256": "73aaff133c5eb838eff90f577da5dd06d09030cb86afa5bd80e03e15cdd7e7f8"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-cargo-clean-root-v1/stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-cargo-clean-root-v1/stderr.raw",
+      "bytes": 39,
+      "sha256": "7ded22e8283b16a131d7585a881494eeb1c216b2f051d56412ae660b0c7132c6"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-cargo-clean-root-v1/stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-cargo-clean-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v1/argv.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v1/argv.json",
+      "bytes": 136,
+      "sha256": "3510152d090e6e9c1ac2bae29db440ff0db4d8dfd9c1346bbc246025b6f1f538"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v1/execution.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v1/execution.json",
+      "bytes": 598,
+      "sha256": "4df8e7ed94f59b8afa4a89262cbc7fb8e91ae1ab251d65c7ef94334738babdce"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v1/stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v1/stderr.raw",
+      "bytes": 421,
+      "sha256": "3c6ac05222df74519dfe168a3ada26a75c1d2bea65380149a0a894e3c925a0b4"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v1/stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v2/argv.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v2/argv.json",
+      "bytes": 136,
+      "sha256": "ffaacb50548a7c8186bfb89d596c2ead423c5b01b0942d1cc2386d9a1fc1fbbc"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v2/execution.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v2/execution.json",
+      "bytes": 598,
+      "sha256": "e12883b42ed381adef267a94db08673b93a022c3ca2a08b7e69205c3170dab93"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v2/stderr.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-verifier-invocation-root-v2/stdout.raw",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-verifier-invocation-root-v2/stdout.raw",
+      "bytes": 470,
+      "sha256": "587470c0c5a606089777a0bd7f70eb9c27aaa42ebc740985cb92a5d525759a94"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-boundary-ir-acceptance-root-v2/acceptance.json",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-boundary-ir-acceptance-root-v2/acceptance.json",
+      "bytes": 46117,
+      "sha256": "7095238546c47ee8b36c17e1b1aaf82da60c61a34a13381c1596f9b81459f0fb"
+    },
+    {
+      "original": "/private/tmp/jarde-conditional-switch-proof-seam-proposal-luna-v1/proposal.md",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-conditional-switch-proof-seam-proposal-luna-v1/proposal.md",
+      "bytes": 10342,
+      "sha256": "e725524e3b909bc87be56b750bdf1f5a44d4c7a2e0f5770b4c5485dbf9194fda"
+    },
+    {
+      "original": "/private/tmp/jarde-run-conditional-ir-root-v1.py",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-run-conditional-ir-root-v1.py",
+      "bytes": 4232,
+      "sha256": "3d46c779242bc8175be4427a2d00b74586e2fff23c4a8f975ee84617fb3069d7"
+    },
+    {
+      "original": "/private/tmp/jarde-run-conditional-ir-root-v2.py",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-run-conditional-ir-root-v2.py",
+      "bytes": 4233,
+      "sha256": "ba58bf24f5f00888f01307b130c04226fd5287ea5fdcdfe2883ec10d0c11f3b3"
+    },
+    {
+      "original": "/private/tmp/jarde-verify-conditional-ir-root-v1.py",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-verify-conditional-ir-root-v1.py",
+      "bytes": 5697,
+      "sha256": "d2e903dc87f24cc5fb54df247469a72f756eaef294ccfbb64d63928e67923c91"
+    },
+    {
+      "original": "/private/tmp/jarde-verify-conditional-ir-root-v2.py",
+      "archive": "openspec/changes/recover-proved-conditional-switch-fallthrough/results/boundary-public-ir-root-v1/jarde-verify-conditional-ir-root-v2.py",
+      "bytes": 6666,
+      "sha256": "a845171d9542e309142182b912126762af7c114f99fbeaf49ecf47da82afa39d"
+    }
+  ]
+}

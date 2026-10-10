@@ -1,0 +1,18 @@
+{
+  "schema": "meet-char-int-whole-class-acceptance-root-v1",
+  "status": "accepted",
+  "execution_sha256": "11fbc21a2d2f9222127dc2f3c6dc79213e6c069cfa5d7b48a6b376f06b96ac6f",
+  "commands": 19,
+  "raw_streams_verified": 38,
+  "whole_class_members": 12,
+  "runtime_legs": 8,
+  "char_values_per_leg": 65536,
+  "range": [
+    0,
+    65535
+  ],
+  "expected_stdout": "chars=65536,sum=2147450880\n",
+  "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+  "fixture_sha256": "0e3b9f78d79e49e345ccb163a01eeaa0d21f9ed7ca0b340c24d7901cd4b1c04c",
+  "acceptance_scope": "Whole Meet source preserved; original, JADX and Jarde default/all compile and run on JDK8/23. Every char return is checked individually. This does not accept all CF12 scenarios."
+}

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-verify-conditional-ir-root-v1.py", line 50, in <module>
+    for k in ['descriptor','physical','nodes','edges','physical_exception_table_rows']:assert a[k]==b[k],(name,k)
+                                                                                              ^^^^^^^^^^
+AssertionError: ('caughtExceptionThenFallthrough', 'physical_exception_table_rows')

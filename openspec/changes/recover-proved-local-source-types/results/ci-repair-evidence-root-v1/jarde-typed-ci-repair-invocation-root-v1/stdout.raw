@@ -1,0 +1,1 @@
+{"status": "failed", "error": "AssertionError: (['cargo', 'test', '--workspace', '--all-targets', '--all-features', '--locked'], -15, {'target_bytes': 1098380034, 'free_bytes': 54835417088})", "workspace_summary_count": null, "workspace_totals": null, "pins_unchanged": true}

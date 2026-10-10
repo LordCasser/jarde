@@ -1,0 +1,781 @@
+{
+  "schema": "meet-char-int-full-class-comparison-root-v1",
+  "utc": "2026-10-10T21:01:27.304960+00:00",
+  "fixture_sha256": "0e3b9f78d79e49e345ccb163a01eeaa0d21f9ed7ca0b340c24d7901cd4b1c04c",
+  "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+  "original_source_sha256": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132",
+  "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-meeting/v8/Meet.class",
+        "--class",
+        "Meet",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:27.328923+00:00",
+      "duration_seconds": 0.01274,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/0.stdout.raw",
+        "bytes": 95345,
+        "sha256": "b2a2472fb6d0029176b645ed20016ec54b5a8065d758d40500fe31ae596b6e1f"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/0.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-meeting/v8/Meet.class",
+        "--class",
+        "Meet",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:27.342919+00:00",
+      "duration_seconds": 0.012536,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/1.stdout.raw",
+        "bytes": 99786,
+        "sha256": "30cdab70780cb60b631669bd123b5f5f4fb99dc4ca10281947ce867cf9f484be"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/jadx-output",
+        "/private/tmp/jarde-meet-char-root-v2/input.jar"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:27.358051+00:00",
+      "duration_seconds": 1.079608,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/2.stdout.raw",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/2.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/original/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/original/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/original/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/original/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/original/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:28.438466+00:00",
+      "duration_seconds": 0.333865,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/3.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/3.stderr.raw",
+        "bytes": 157,
+        "sha256": "035adb32de341872dad5deed8a07b9d1964e3dc458a9ba968e29f067ca9c6bb7"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/original/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:28.772827+00:00",
+      "duration_seconds": 0.063378,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/4.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/4.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/default/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/default/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/default/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/default/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/default/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:28.836920+00:00",
+      "duration_seconds": 0.278807,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/5.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/5.stderr.raw",
+        "bytes": 156,
+        "sha256": "94ea38634b5b18fb214cf9b3d34d5421cc91adfefbb9abb8b9d0c6901e4223fe"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/default/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:29.116532+00:00",
+      "duration_seconds": 0.052976,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/6.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/6.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/all/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/all/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/all/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/all/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/all/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:29.170351+00:00",
+      "duration_seconds": 0.250024,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/7.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/7.stderr.raw",
+        "bytes": 152,
+        "sha256": "8dce0247cfa3acf3d2e34301ff59ec937cceb42572bf569e0996a9dcc5eefe39"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/all/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:29.420913+00:00",
+      "duration_seconds": 0.052566,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/8.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/8.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:29.474242+00:00",
+      "duration_seconds": 0.20525,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/9.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/9.stderr.raw",
+        "bytes": 153,
+        "sha256": "ee5a8a60974cd7717a04431dbb0be99468caf6e0e59aa5319fe4b1363725d22c"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/classes",
+        "defpackage.Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:29.680375+00:00",
+      "duration_seconds": 0.049565,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/10.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/10.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/original/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/original/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/original/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/original/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/original/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:29.730844+00:00",
+      "duration_seconds": 0.277839,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/11.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/11.stderr.raw",
+        "bytes": 426,
+        "sha256": "2ed0e63c46049aa860b161ebd5d37769ce4af0e8d41c29616113c431829198e9"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/original/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.009229+00:00",
+      "duration_seconds": 0.072317,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/12.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/12.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/default/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/default/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/default/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/default/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/default/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.082321+00:00",
+      "duration_seconds": 0.273977,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/13.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/13.stderr.raw",
+        "bytes": 425,
+        "sha256": "8a6c7e451dc9768d339d4cde31dcb416cee412fce10d6556c3602f5cbb97ae5b"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/default/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.356811+00:00",
+      "duration_seconds": 0.050411,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/14.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/14.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/all/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/all/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/all/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/all/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/all/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.408004+00:00",
+      "duration_seconds": 0.225194,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/15.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/15.stderr.raw",
+        "bytes": 421,
+        "sha256": "8befda2f2ed1e17e7d612889bf19bde61575b8741f135b4841a47112e397f201"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/all/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.633889+00:00",
+      "duration_seconds": 0.052906,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/16.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/16.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/empty",
+        "-d",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/classes",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/Meet.java",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.687706+00:00",
+      "duration_seconds": 0.224554,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/17.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/17.stderr.raw",
+        "bytes": 422,
+        "sha256": "ff76240868ec595793562b209f3a2058131489dfa6ef17ef2e5ad0e609975973"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/classes",
+        "defpackage.Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:01:30.912782+00:00",
+      "duration_seconds": 0.051462,
+      "stdout": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/18.stdout.raw",
+        "bytes": 27,
+        "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-meet-char-root-v2/18.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "legs": [
+    {
+      "jdk": "javac8",
+      "profile": "original",
+      "source_sha256": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132",
+      "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac8/original/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:28.772827+00:00",
+        "duration_seconds": 0.063378,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/4.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac8",
+      "profile": "default",
+      "source_sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec",
+      "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac8/default/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:29.116532+00:00",
+        "duration_seconds": 0.052976,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/6.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac8",
+      "profile": "all",
+      "source_sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec",
+      "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac8/all/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:29.420913+00:00",
+        "duration_seconds": 0.052566,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/8.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac8",
+      "profile": "jadx",
+      "source_sha256": "093734fcdcafde32baf1a575cd3e46c15e81c0ac018f3b5c331ce0a54e11e918",
+      "runner_sha256": "5637febd9ed7bf3c4cc79f1f069e3b38bf9f1507c295da02e2a2f779394753c1",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/classes",
+          "defpackage.Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:29.680375+00:00",
+        "duration_seconds": 0.049565,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/10.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "original",
+      "source_sha256": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132",
+      "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac23/original/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:30.009229+00:00",
+        "duration_seconds": 0.072317,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/12.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "default",
+      "source_sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec",
+      "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac23/default/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:30.356811+00:00",
+        "duration_seconds": 0.050411,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/14.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "all",
+      "source_sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec",
+      "runner_sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac23/all/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:30.633889+00:00",
+        "duration_seconds": 0.052906,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/16.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "jadx",
+      "source_sha256": "093734fcdcafde32baf1a575cd3e46c15e81c0ac018f3b5c331ce0a54e11e918",
+      "runner_sha256": "5637febd9ed7bf3c4cc79f1f069e3b38bf9f1507c295da02e2a2f779394753c1",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/classes",
+          "defpackage.Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:01:30.912782+00:00",
+        "duration_seconds": 0.051462,
+        "stdout": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/18.stdout.raw",
+          "bytes": 27,
+          "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-meet-char-root-v2/18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "full_class_methods_retained": 12,
+  "characters_per_runtime_leg": 65536
+}

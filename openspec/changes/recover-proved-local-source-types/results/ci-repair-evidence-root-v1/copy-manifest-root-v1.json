@@ -1,0 +1,809 @@
+{
+  "schema": "byte-exact-copy-root-v1",
+  "entries": [
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-failure-capture-root-v1/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-failure-capture-root-v1/argv.json",
+      "bytes": 65,
+      "sha256": "b318e4ed596da64ecb292b3ac62e6741bc6154fa9d7dfde749432d2428276797"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-failure-capture-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-failure-capture-root-v1/execution.json",
+      "bytes": 523,
+      "sha256": "8f0fa48be31ce44f5f7746dfb8089b459485e96d2e99621508c2be8076226e72"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-failure-capture-root-v1/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-failure-capture-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-failure-capture-root-v1/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-failure-capture-root-v1/stdout.raw",
+      "bytes": 442274,
+      "sha256": "1b804ff35ab6db7ae9c04d19f645497274b7db78ffd585b358d33996cde1fb3a"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/0.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/0.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/1.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/1.stderr.raw",
+      "bytes": 3254,
+      "sha256": "d1f3e67a4875e0e5248e2b25897b7a99c3217cb63b4d1ac27b3017eb319a645c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/1.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/1.stdout.raw",
+      "bytes": 480,
+      "sha256": "4df18f1517b147e7a0ee22746bddc1a855f819ee7e3474b7475538447590b5eb"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/2.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/2.stderr.raw",
+      "bytes": 1411,
+      "sha256": "03ef3d2d91fd5cc73ab18a188156298d3b028335469fd61ad73dec011fa334cb"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/2.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v1/execution.json",
+      "bytes": 14672,
+      "sha256": "71c21c93d477852f4b9b77e123322cefbe09246d9e5225b3de451dbc6729e686"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v2/0.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v2/0.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v2/1.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/1.stderr.raw",
+      "bytes": 3254,
+      "sha256": "a235380c92fabf2b8f7b6e922f2ee33edd1c2d929b78cd48afc7cb1de3654e86"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v2/1.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/1.stdout.raw",
+      "bytes": 480,
+      "sha256": "8ce6a9791e6cadaa8feb577f205f6e4bd673d2ba386f5a891c14fcc09486bc07"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-root-v2/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/execution.json",
+      "bytes": 13204,
+      "sha256": "91b640610987a6fcf31a38c08137cd59b054c9b136fb02893265cc63c494e360"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v1/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v1/argv.json",
+      "bytes": 79,
+      "sha256": "08c97497153dc7cc53bd7e72ffbdba9d7e522d17c6931fc43bf4731b3d65a8cb"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v1/execution.json",
+      "bytes": 530,
+      "sha256": "bec58f1ba390e3c06d337e4c0196adfe9f549f97b893d8821aba85e84997561e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v1/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v1/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v1/stdout.raw",
+      "bytes": 276,
+      "sha256": "093487deae599aae982044aae06ca5c5c40c866ff5556901657e3d11556f1622"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v2/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v2/argv.json",
+      "bytes": 79,
+      "sha256": "cb6c3e13229e15b28cbfcebf5068d8da886e56287f025a40a4db30385f865e18"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v2/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v2/execution.json",
+      "bytes": 530,
+      "sha256": "39375c9d8051654b1595d59a149ac184e4b334cbcf9435c5a435c1575f4b3da5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v2/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-invocation-root-v2/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-invocation-root-v2/stdout.raw",
+      "bytes": 119,
+      "sha256": "23f5bdf699f0344391206fa1fd372566f039f44e483ea2552fedf82949921b8c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-clean-root-v1/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-clean-root-v1/argv.json",
+      "bytes": 25,
+      "sha256": "2aa0ec7108900b253b9b80ba5d66975e50fe0889843ce14e18565d333473c611"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-clean-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-clean-root-v1/execution.json",
+      "bytes": 475,
+      "sha256": "82725d973756cd613bba3ab2f35ec455151f9c185c32f487411f0f062cc7f999"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-clean-root-v1/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-clean-root-v1/stderr.raw",
+      "bytes": 37,
+      "sha256": "f43250fab0f48b4da2b91a122fab6f47121155fa09f0619c7e5255f79d55726c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-clean-root-v1/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-clean-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v1/0.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v1/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v1/0.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v1/0.stdout.raw",
+      "bytes": 95349,
+      "sha256": "037c83f6f9143cfe9dd2452a2a31598b30a6472b25074b6512c2443bee148d4f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v1/1.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v1/1.stderr.raw",
+      "bytes": 304,
+      "sha256": "7edf50627713a379256bae2f8b1b3473f592d1a506efd874cdf3d97cc48e9782"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v1/1.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v1/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v1/execution.json",
+      "bytes": 2996,
+      "sha256": "8a66ea83847a19856994ed6b321e84e49f9880b08c540c7d06b1ccbb7c99e24f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/0.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/0.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/0.stdout.raw",
+      "bytes": 95345,
+      "sha256": "b2a2472fb6d0029176b645ed20016ec54b5a8065d758d40500fe31ae596b6e1f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/1.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/1.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/1.stdout.raw",
+      "bytes": 99786,
+      "sha256": "30cdab70780cb60b631669bd123b5f5f4fb99dc4ca10281947ce867cf9f484be"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/10.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/10.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/10.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/11.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/11.stderr.raw",
+      "bytes": 426,
+      "sha256": "2ed0e63c46049aa860b161ebd5d37769ce4af0e8d41c29616113c431829198e9"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/11.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/12.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/12.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/12.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/13.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/13.stderr.raw",
+      "bytes": 425,
+      "sha256": "8a6c7e451dc9768d339d4cde31dcb416cee412fce10d6556c3602f5cbb97ae5b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/13.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/14.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/14.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/14.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/15.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/15.stderr.raw",
+      "bytes": 421,
+      "sha256": "8befda2f2ed1e17e7d612889bf19bde61575b8741f135b4841a47112e397f201"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/15.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/16.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/16.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/16.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/17.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/17.stderr.raw",
+      "bytes": 422,
+      "sha256": "ff76240868ec595793562b209f3a2058131489dfa6ef17ef2e5ad0e609975973"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/17.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/18.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/18.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/18.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/2.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/2.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/2.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/3.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/3.stderr.raw",
+      "bytes": 157,
+      "sha256": "035adb32de341872dad5deed8a07b9d1964e3dc458a9ba968e29f067ca9c6bb7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/3.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/4.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/4.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/4.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/5.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/5.stderr.raw",
+      "bytes": 156,
+      "sha256": "94ea38634b5b18fb214cf9b3d34d5421cc91adfefbb9abb8b9d0c6901e4223fe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/5.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/5.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/6.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/6.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/6.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/7.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/7.stderr.raw",
+      "bytes": 152,
+      "sha256": "8dce0247cfa3acf3d2e34301ff59ec937cceb42572bf569e0996a9dcc5eefe39"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/7.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/8.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/8.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/8.stdout.raw",
+      "bytes": 27,
+      "sha256": "6c7669784a02991d5cf43c1118a323c5ff5941592a4323f3e7e5695ab5ebace1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/9.stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/9.stderr.raw",
+      "bytes": 153,
+      "sha256": "ee5a8a60974cd7717a04431dbb0be99468caf6e0e59aa5319fe4b1363725d22c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/9.stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/acceptance-root-v1.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/acceptance-root-v1.json",
+      "bytes": 770,
+      "sha256": "184505a42b76c1b49aa0d757e231d51646de3d992f3ac1c6281502f9029eb574"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/execution.json",
+      "bytes": 28134,
+      "sha256": "11fbc21a2d2f9222127dc2f3c6dc79213e6c069cfa5d7b48a6b376f06b96ac6f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/input.jar",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/input.jar",
+      "bytes": 1058,
+      "sha256": "c6f8ae458f1439fc5daa04dbd96ba942d2ae13701f5f7139419596cc731289ce"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/jadx-output/sources/defpackage/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/jadx-output/sources/defpackage/Meet.java",
+      "bytes": 999,
+      "sha256": "093734fcdcafde32baf1a575cd3e46c15e81c0ac018f3b5c331ce0a54e11e918"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/all/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/all/Meet.java",
+      "bytes": 3837,
+      "sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/all/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/all/Runner.java",
+      "bytes": 267,
+      "sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/all/classes/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/all/classes/Meet.class",
+      "bytes": 941,
+      "sha256": "5f0c871c3e95fde9ae859b50a385e2906529ab2cb86d9d00b1d2359d22ca82c4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/all/classes/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/all/classes/Runner.class",
+      "bytes": 826,
+      "sha256": "b32aab9031ca97b516ffbde38991713272191b04fad1f08ec7b4236c80ce77a4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/default/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/default/Meet.java",
+      "bytes": 3837,
+      "sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/default/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/default/Runner.java",
+      "bytes": 267,
+      "sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/default/classes/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/default/classes/Meet.class",
+      "bytes": 941,
+      "sha256": "5f0c871c3e95fde9ae859b50a385e2906529ab2cb86d9d00b1d2359d22ca82c4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/default/classes/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/default/classes/Runner.class",
+      "bytes": 826,
+      "sha256": "b32aab9031ca97b516ffbde38991713272191b04fad1f08ec7b4236c80ce77a4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/jadx/Meet.java",
+      "bytes": 999,
+      "sha256": "093734fcdcafde32baf1a575cd3e46c15e81c0ac018f3b5c331ce0a54e11e918"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/jadx/Runner.java",
+      "bytes": 287,
+      "sha256": "5637febd9ed7bf3c4cc79f1f069e3b38bf9f1507c295da02e2a2f779394753c1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/classes/defpackage/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/jadx/classes/defpackage/Meet.class",
+      "bytes": 954,
+      "sha256": "8fa981fc88693e92d85baa84b51e9b9343075b601161e5f49d9fab41aba33d38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/jadx/classes/defpackage/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/jadx/classes/defpackage/Runner.class",
+      "bytes": 848,
+      "sha256": "1dca6a12314345991e157ff1839f279f7dfd90aff49b5a40feee01e3b33eae9a"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/original/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/original/Meet.java",
+      "bytes": 1332,
+      "sha256": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/original/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/original/Runner.java",
+      "bytes": 267,
+      "sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/original/classes/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/original/classes/Meet.class",
+      "bytes": 940,
+      "sha256": "0e3b9f78d79e49e345ccb163a01eeaa0d21f9ed7ca0b340c24d7901cd4b1c04c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac23/original/classes/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac23/original/classes/Runner.class",
+      "bytes": 826,
+      "sha256": "b32aab9031ca97b516ffbde38991713272191b04fad1f08ec7b4236c80ce77a4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/all/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/all/Meet.java",
+      "bytes": 3837,
+      "sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/all/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/all/Runner.java",
+      "bytes": 267,
+      "sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/all/classes/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/all/classes/Meet.class",
+      "bytes": 941,
+      "sha256": "96c59089ef1f0b53b6ba01f49aeb3f5e4d252f4c11e5b848237f4dd45d4e56f2"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/all/classes/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/all/classes/Runner.class",
+      "bytes": 826,
+      "sha256": "1b23b15f11adaaa2c5c2d70873d4e3ed3e0f6b3010c61ee59859c99efb9bbdf5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/default/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/default/Meet.java",
+      "bytes": 3837,
+      "sha256": "e006f05305c2c159aa96a1a675db49ba4d8f62086d31a3a8ac922c84579f42ec"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/default/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/default/Runner.java",
+      "bytes": 267,
+      "sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/default/classes/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/default/classes/Meet.class",
+      "bytes": 941,
+      "sha256": "96c59089ef1f0b53b6ba01f49aeb3f5e4d252f4c11e5b848237f4dd45d4e56f2"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/default/classes/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/default/classes/Runner.class",
+      "bytes": 826,
+      "sha256": "1b23b15f11adaaa2c5c2d70873d4e3ed3e0f6b3010c61ee59859c99efb9bbdf5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/jadx/Meet.java",
+      "bytes": 999,
+      "sha256": "093734fcdcafde32baf1a575cd3e46c15e81c0ac018f3b5c331ce0a54e11e918"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/jadx/Runner.java",
+      "bytes": 287,
+      "sha256": "5637febd9ed7bf3c4cc79f1f069e3b38bf9f1507c295da02e2a2f779394753c1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/classes/defpackage/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/jadx/classes/defpackage/Meet.class",
+      "bytes": 954,
+      "sha256": "951c18a1bb2716dede03f50d09e26364137e0b04524ce156763bbcb7ba28e709"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/jadx/classes/defpackage/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/jadx/classes/defpackage/Runner.class",
+      "bytes": 848,
+      "sha256": "2b7161383f05c4524f482b515ece772a48ecd58b18f08869faba891312053b98"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/original/Meet.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/original/Meet.java",
+      "bytes": 1332,
+      "sha256": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/original/Runner.java",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/original/Runner.java",
+      "bytes": 267,
+      "sha256": "6eaf85368963804a67fd7825a609e64e01d36145e519345abca18319e8b03b38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/original/classes/Meet.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/original/classes/Meet.class",
+      "bytes": 940,
+      "sha256": "52b4601386c10f4bd4190490e93d272ab5d2528d6c283bcb298a78514cd3accc"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-root-v2/javac8/original/classes/Runner.class",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/javac8/original/classes/Runner.class",
+      "bytes": 826,
+      "sha256": "1b23b15f11adaaa2c5c2d70873d4e3ed3e0f6b3010c61ee59859c99efb9bbdf5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v1/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v1/argv.json",
+      "bytes": 73,
+      "sha256": "94639ba58c2ba1cbf7740e005ac102f7e364ee5497b350ec162ec25a991ce818"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v1/execution.json",
+      "bytes": 525,
+      "sha256": "c78117c58ceefb2eb86e02e157616e0d20319c41c0778b4187db343f65c5b41d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v1/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v1/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v1/stdout.raw",
+      "bytes": 742,
+      "sha256": "c95404c59b4808f8bbe9fb795457113fca559b1cfa6b769e6b344ae3e48b56cd"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v2/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v2/argv.json",
+      "bytes": 73,
+      "sha256": "95cc39c4cc4147bc3f2c6bdbca9365007c37b7d59e61f22703e2c7e46e4330f1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v2/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v2/execution.json",
+      "bytes": 524,
+      "sha256": "03503dc9735646d0f965c6306d8624c251f19e1cdfb5518c031eb6b58475577c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v2/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-invocation-root-v2/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-invocation-root-v2/stdout.raw",
+      "bytes": 108,
+      "sha256": "032057b56038c27a0e87e8ae7f26645c61219fa1c4b4767a172d6188a400d0bb"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v1/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v1/argv.json",
+      "bytes": 76,
+      "sha256": "ce51744cb86d7a4190ffac8f8ed987afeedc8fa9a3a187951007086c9baf549b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v1/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v1/execution.json",
+      "bytes": 529,
+      "sha256": "8b710f10a8bcde65ecbdbcc1c7102836e9fa7582019acafa0f1cd07393b7b219"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v1/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v1/stderr.raw",
+      "bytes": 326,
+      "sha256": "9f0f92096c50b58d5b1018d9bb9bde7b6765086280f0754812c85d4626b7afb9"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v1/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v2/argv.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v2/argv.json",
+      "bytes": 76,
+      "sha256": "a83bcd6b3606fc9532c04a4164214463d0614741a796fea0bbf93e9366f0121e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v2/execution.json",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v2/execution.json",
+      "bytes": 529,
+      "sha256": "ee7f1e4798a829f2328b6c995228f30abe6a80bb6232baa51edd78d30feafed9"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v2/stderr.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-meet-char-verifier-invocation-root-v2/stdout.raw",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-meet-char-verifier-invocation-root-v2/stdout.raw",
+      "bytes": 730,
+      "sha256": "dc7f3c570f9346c2ed738ff2e9555aa5a5809056086db6fb82c2a496e244c9b0"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-adapter-luna-v1/README.md",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-adapter-luna-v1/README.md",
+      "bytes": 3125,
+      "sha256": "d19d9b19a5fd895002b681daaca614890b55a2b7490a3b51a80556590c55d0b8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-adapter-luna-v1/capture-typed-ci-root-v2.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-adapter-luna-v1/capture-typed-ci-root-v2.py",
+      "bytes": 6097,
+      "sha256": "ede8de526ec71bc738d2c5e82d21b3424791d5df3efb4afd632fd6a749ac4e8e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-adapter-luna-v1/capture-typed-ci-root-v2.py.diff",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-adapter-luna-v1/capture-typed-ci-root-v2.py.diff",
+      "bytes": 733,
+      "sha256": "41a9646c65a552dbb810bcbd25884ae352f081672c582e11670e13067a7f1aa6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-adapter-luna-v1/verify-typed-ci-root-v2.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-adapter-luna-v1/verify-typed-ci-root-v2.py",
+      "bytes": 29264,
+      "sha256": "a6aee5c3cec9f5d28b99907d888e92f0657003a9a6df2ddc8b20a4b1518b333b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-ci-repair-adapter-luna-v1/verify-typed-ci-root-v2.py.diff",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-adapter-luna-v1/verify-typed-ci-root-v2.py.diff",
+      "bytes": 14125,
+      "sha256": "25756ac288c790e0f1732330ea212466a8bc26ec64d1e1e66fce58c3c23d0048"
+    },
+    {
+      "original_path": "/private/tmp/jarde-run-typed-ci-repair-root-v1.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-run-typed-ci-repair-root-v1.py",
+      "bytes": 2943,
+      "sha256": "30b1ea1360c1aa5294fda85702b88d542e98efb3e702e96f610b14f23345d3dc"
+    },
+    {
+      "original_path": "/private/tmp/jarde-run-typed-ci-repair-root-v2.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-run-typed-ci-repair-root-v2.py",
+      "bytes": 2868,
+      "sha256": "e0c417dda23e614af5a060bc4208d66a800a5afa8fe8f205686847dd0559f9c6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-run-meet-char-root-v1.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-run-meet-char-root-v1.py",
+      "bytes": 5180,
+      "sha256": "a7f9a27577494d54b1a6fc146c06cc524ce685cab2f6365b7987f566479e9ec0"
+    },
+    {
+      "original_path": "/private/tmp/jarde-run-meet-char-root-v2.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-run-meet-char-root-v2.py",
+      "bytes": 5183,
+      "sha256": "d22dea9b426506d640668f481a707a26c0187be9e1d5948bac8ee5f3ef5106d3"
+    },
+    {
+      "original_path": "/private/tmp/jarde-verify-meet-char-root-v1.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-verify-meet-char-root-v1.py",
+      "bytes": 3642,
+      "sha256": "b89ade1e822d126d0fc96f0c0a53c36b89830510d8ad33aef91aef7f56c02cf4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-verify-meet-char-root-v2.py",
+      "archive_path": "openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v1/jarde-verify-meet-char-root-v2.py",
+      "bytes": 3998,
+      "sha256": "980767d549d29fd9cef9a0291d6cc2dc906b9180bc822320086f701a71ed1f43"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "private_verifier_sha256": "a6aee5c3cec9f5d28b99907d888e92f0657003a9a6df2ddc8b20a4b1518b333b",
+  "root_verifier_sha256": "99712b642206f165c3eef817d31b10e92501778d90455c0de2dba702a106a876",
+  "root_adjustments": [
+    "Accept actual repair record schema root-v1 retained by v2 execution; never rewrite historical records",
+    "Restore library_header retained by original verifier"
+  ],
+  "status": "reviewed-static-not-ci-accepted",
+  "repair_status": "passed"
+}

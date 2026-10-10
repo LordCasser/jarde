@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-10T20:40:16.666048+00:00",
+  "duration_seconds": 21.444976583996322,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-conditional-boundary-preflight-root-v1.py",
+    "--out",
+    "/private/tmp/jarde-conditional-boundary-preflight-root-v2"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 596,
+      "sha256": "411f4c72e8cd384682d6d56ffa544c72d908f1701ed08be3a907e29c8a9d6964"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

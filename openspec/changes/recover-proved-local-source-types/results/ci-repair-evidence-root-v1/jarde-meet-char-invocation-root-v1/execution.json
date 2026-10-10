@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:01:12.818398+00:00",
+  "duration_seconds": 0.1543484999856446,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-run-meet-char-root-v1.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 742,
+      "sha256": "c95404c59b4808f8bbe9fb795457113fca559b1cfa6b769e6b344ae3e48b56cd"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

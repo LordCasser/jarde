@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-10T20:54:26.401181+00:00",
+  "duration_seconds": 0.1631806250079535,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/private/tmp/jarde-verify-conditional-ir-root-v2.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 470,
+      "sha256": "587470c0c5a606089777a0bd7f70eb9c27aaa42ebc740985cb92a5d525759a94"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

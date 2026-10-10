@@ -1,0 +1,132 @@
+{
+  "schema": "conditional-switch-boundary-observation-verification-v2",
+  "product_acceptance": false,
+  "cf12_complete": false,
+  "execution_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v2/execution.json",
+  "execution_sha256": "d29c00ee0da18346a6c669497092c6886db1242574ea0280a8481bc02f6f20d9",
+  "checks": [
+    "wrong collector schema",
+    "collector did not complete observations",
+    "baseline record must not claim product acceptance",
+    "wrong observation scope",
+    "original source/Runner pins match",
+    "execution fixture binding exact",
+    "frozen typed CLI binding exact",
+    "typed metadata binding exact",
+    "typed build/source-base binding exact",
+    "typed live source pins before/after exact",
+    "5 GiB/1 GiB guard binding exact",
+    "JDK manifest binding exact",
+    "JADX tool/version exact",
+    "collector source live SHA",
+    "all raw streams, command indices, guard telemetry and environment records independently verified",
+    "two original JDK stdout/stderr/exit triples match exactly",
+    "closed inventory membership, byte counts, and SHA-256 verified"
+  ],
+  "runtime_diffs": {},
+  "runtime_acceptance": false,
+  "jadx_runtime_results": {
+    "javac8": {
+      "exit_code": 0,
+      "line_differences": [
+        {
+          "line": 10,
+          "oracle": "partial|s=0|f=0|FB\n",
+          "observed": "partial|s=0|f=0|F\n",
+          "equal": false
+        },
+        {
+          "line": 11,
+          "oracle": "loop|s=0|f=0|LLON\n",
+          "observed": "loop|s=0|f=0|LON\n",
+          "equal": false
+        },
+        {
+          "line": 12,
+          "oracle": "caught|s=0|f=0|7N\n",
+          "observed": "caught|s=0|f=0|7\n",
+          "equal": false
+        },
+        {
+          "line": 14,
+          "oracle": "loop|s=0|f=1|LON\n",
+          "observed": "loop|s=0|f=1|LOON\n",
+          "equal": false
+        },
+        {
+          "line": 15,
+          "oracle": "caught|s=0|f=1|CN\n",
+          "observed": "caught|s=0|f=1|C\n",
+          "equal": false
+        }
+      ],
+      "stderr_equal": true,
+      "matches_original": false
+    },
+    "javac23": {
+      "exit_code": 0,
+      "line_differences": [
+        {
+          "line": 10,
+          "oracle": "partial|s=0|f=0|FB\n",
+          "observed": "partial|s=0|f=0|F\n",
+          "equal": false
+        },
+        {
+          "line": 11,
+          "oracle": "loop|s=0|f=0|LLON\n",
+          "observed": "loop|s=0|f=0|LON\n",
+          "equal": false
+        },
+        {
+          "line": 12,
+          "oracle": "caught|s=0|f=0|7N\n",
+          "observed": "caught|s=0|f=0|7\n",
+          "equal": false
+        },
+        {
+          "line": 14,
+          "oracle": "loop|s=0|f=1|LON\n",
+          "observed": "loop|s=0|f=1|LOON\n",
+          "equal": false
+        },
+        {
+          "line": 15,
+          "oracle": "caught|s=0|f=1|CN\n",
+          "observed": "caught|s=0|f=1|C\n",
+          "equal": false
+        }
+      ],
+      "stderr_equal": true,
+      "matches_original": false
+    }
+  },
+  "candidate_runtime_results": {
+    "javac8/default": {
+      "compiled": false,
+      "runtime_observed": false,
+      "matches_original": false
+    },
+    "javac8/all": {
+      "compiled": false,
+      "runtime_observed": false,
+      "matches_original": false
+    },
+    "javac23/default": {
+      "compiled": false,
+      "runtime_observed": false,
+      "matches_original": false
+    },
+    "javac23/all": {
+      "compiled": false,
+      "runtime_observed": false,
+      "matches_original": false
+    }
+  },
+  "observed_runtime_count": 0,
+  "candidate_runtime_diff_count": 0,
+  "jadx_runtime_diff_count": 10,
+  "all_runtime_diff_count": 10,
+  "observation_only": true,
+  "accepted_claim": "verified baseline observation completeness and recorded runtime/source differences; candidate runtime acceptance is true only if all four candidate profiles compiled and exactly matched; no product acceptance or CF12 completion"
+}

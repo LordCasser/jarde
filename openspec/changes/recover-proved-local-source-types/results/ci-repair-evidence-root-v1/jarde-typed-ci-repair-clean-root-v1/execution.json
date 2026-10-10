@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-10T21:02:33.728617+00:00",
+  "duration_seconds": 0.23136283399071544,
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 37,
+      "sha256": "f43250fab0f48b4da2b91a122fab6f47121155fa09f0619c7e5255f79d55726c"
+    }
+  }
+}

@@ -1,0 +1,2798 @@
+{
+  "schema": "recover-proved-conditional-switch-fallthrough-boundary-baseline-observation-v2",
+  "status": "failed-incomplete",
+  "scope": "unpatched conditional-switch product baseline; complete-class runtime/source observation only",
+  "product_acceptance": false,
+  "collector": {
+    "path": "/private/tmp/jarde-conditional-boundary-preflight-luna-v2/prepare-boundary-preflight-root.py",
+    "sha256": "3b0824a1abbc72fece4b37167ea2c34d6878006f77e17cbe65bfc261468169f7"
+  },
+  "fixture": {
+    "source": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundaries.java",
+      "sha256": "72a8b7716d0867bf6c543baab64e24a2e8a1c3a4d6f3f64249c45d8c8784e636"
+    },
+    "runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundariesRunner.java",
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    "methods": [
+      "partialBreak",
+      "innerLoopBreak",
+      "innerSwitchBreak",
+      "terminalCase",
+      "caughtExceptionThenFallthrough"
+    ]
+  },
+  "baseline_product": {
+    "cli_path": "/private/tmp/jarde-proved-local-source-types-cli-v1",
+    "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/candidate-cli-typed-root-v1.json",
+    "metadata_sha256": "6295d4cc0c65bd5b5c476f71e44cf3abf513f77d854854bfdea777cbaf2be943",
+    "build_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/validation-build-root-v2/execution.json",
+    "build_sha256": "18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413",
+    "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02",
+    "metadata_schema": "recover-proved-local-source-types-candidate-cli-root-v1",
+    "build_schema": "recover-proved-local-source-types-validation-build-root-v1",
+    "uncommitted_local_source_types_product": true,
+    "source_pins_before": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+        "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+        "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+        "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+        "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+        "crates/jarde-java/src/build.rs": "d0d9b57d07df2430c973932467d1f33be581787f544eea2655c5319cde1e5e00",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+        "crates/jarde-java/src/region.rs": "9c0f180587dce4630b9fe931d6a4f4be2ff31f9571b91644ce2926898ee0bbb2",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+        "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+        "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+        "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "crates/jarde-java/tests/cf12_proved_local_source_types.rs": "e0471ee1078b6b81bd47fe6e97a2691d6d3d791ce780526f5006b33d5282978f",
+        "crates/jarde-java/tests/p3_patterns.rs": "19f773fc5a65567fc5cbc5e63ac05702490e327db9ca6ed0ea4ce5fd6f975be7",
+        "crates/jarde-java/tests/p3_proved_boolean_conditional_returns.rs": "d238eb5decbc470227c821c6d08338fd28614d44226c63cd61c191432f744500",
+        "tests/p3_array_slot_retype_locals.rs": "3fbfffe99a89ab76821d3158401ee5477cac3d0bff52beddf55072b53795bef5",
+        "tests/p3_declarations.rs": "58a3a63b43114cb67579749de3650c9d87471c13e2cb7e5f97a1a0b75153a66e",
+        "tests/p3_guard.rs": "1beb0b9caea3c6732e49085010c9cd34dd9a5167ab9ba58c43b7831b1dc113da",
+        "tests/p3_invocation_arguments.rs": "e8e3a8dd676d6203deb4f63e47bc74fd87b9cebac601895649c90f9aaffdc8b0",
+        "tests/p3_parameter_slots.rs": "34c08a94340684cd5408ce14214b2e7c5dc38d49313168762a7f9c5de1559559",
+        "tests/p3_popped_static_qualifier.rs": "3137f96b18bed057f4c11aa063aff3e6c462851666d1fa9d803665604b3f42f6"
+      },
+      "canonical_files": {
+        "crates/jarde-java/tests/fixtures/cf16-region-depth/javac23/BranchFinally.class": "59ceb398d1eecd251de372a7f7778196d400c40826a80d9758686fb540f0f248",
+        "crates/jarde-java/tests/fixtures/cf16-region-depth/javac8/BranchFinally.class": "ef062a2e0a1876a804a644855519d925cc81ef20c48143e9ba079f894a90fa1d",
+        "crates/jarde-java/tests/fixtures/em21-this-alias/ThisAliasRefusals.class": "a245d211ea8c2861333912cdcba10f5d32557bcbcce9859c05594c92307f984f",
+        "crates/jarde-java/tests/fixtures/em21-this-alias/ThisUse.class": "395f54b5335dd3c7b3a67c0151be2db5d82f247914e64c1f92508574a9f7609c",
+        "crates/jarde-java/tests/p3_patterns.rs": "19f773fc5a65567fc5cbc5e63ac05702490e327db9ca6ed0ea4ce5fd6f975be7",
+        "openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class": "0cfe997bfb5cf5660536928cdd672fdce0af36c6e539ab03bca9141897cee0c8",
+        "openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class": "b650e498695a06c5098b38970eafdf4167ad623c93754a1c1ce602c05dca32d3",
+        "openspec/evidence/java-syntax-2026-09-22/finally-completion/implicit-cleanup/ImplicitCleanup.class": "924437916dc278eefe3b83cdcf3bad14bfb3cf8b9e44c027786a89f0712247b6",
+        "openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/boundary/InterfaceBoundaryProbe.class": "ec0c9caa6d67c9f367549f5a7d306c2e57cb7804cb891c1ecf298d39d5904151",
+        "openspec/evidence/java-syntax-2026-09-22/static-field-qualifier/non-invoke-owner/NonInvokeQualifierProbe.owner-other.class": "5b6875ef447c448fa6dfaa65d5fdbeb0aa7e0848400bec8308df8e7649ce1180",
+        "openspec/evidence/java-syntax-2026-09-24/finally-range-widened/ImplicitCleanup.class": "c5407d3f29b135818f003e24b218b5e4b7348d261665f0c71605471a7492935e",
+        "openspec/evidence/java-syntax-2026-09-24/finally-straight-cleanup-throws/FinallyStraightThrow.class": "ce79125f7752333349583e6b1ca4a0297143b6b62bb002467db8934da314bdf9",
+        "openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/BooleanMergeControls.class": "f521c4330cbb789fa69b81c4ff623b97d416cccbc1fe17861cb2e29c4d5e682b",
+        "openspec/evidence/java-syntax-2026-09-25/instanceof-boolean-merge/InstanceOfMerge.class": "cf9066c3257306c9d7e3235daa70ae2f66bed835810ada637c013bbe95642efe",
+        "openspec/evidence/java-syntax-2026-09-26/boxed-sam-adaptations/v8/BoxedSamProbe.class": "42dec3fe7f959bf4577417bd497cc14b5a55c59b0e6354e8eb65a9be33e8d32b",
+        "openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/ExtraHashUse.original.class": "076e908fcc980f54a6aa09d49a1b63ebaeb6f9306431a0f8b9fad829daa910c5",
+        "openspec/evidence/java-syntax-2026-09-27/cf14-string-switch/baseline/NestedStringSwitchAudit.original.class": "3d459c2e5180f7c47790e251ed38fded363897de7c74015894008cb529e632cc",
+        "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18",
+        "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834",
+        "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class": "f9b6566fc4533e3be181ef7bf1455d478fb016f0d9a5e1f685a34901ddb0b6ad",
+        "tests/fixtures/p3-array-slot-retype-locals/baseline/V2.jarde.java": "a8a2f7dfe78259a566fcd9054742ecadfb410b653e5b96cee38651693912c4ed",
+        "tests/fixtures/p3-array-slot-retype-locals/baseline/V3.jarde.java": "959dce5c0bddfa5e886e9460ac62c2280ccfb9c125293518ee60602cf05983f6",
+        "tests/fixtures/p3-array-slot-retype-locals/baseline/V4.jarde.java": "2a275195295cb73c3cb37d7e555bfb99d82e404fccaf098eb22a7d2f91449074",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/A1.stdout": "1f4dc3a8717591e48b70f4588ea6f6be91f814fab3f80fc7910f92fea103fa2d",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/A2.stdout": "7201545704ac599a50e8b24fef766987338cfd070fcc73e28a8caafb3065e3d8",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/V1.stdout": "37c66ac932ac5c71ffe99727b005e76634953523be5cb2a97b190484c1d0d256",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/V2.stdout": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/V3.stdout": "f273e79af5c46cee7a186b3889f290e30458a03b7b3b71361420bbfcf4ec25c0",
+        "tests/fixtures/p3-array-slot-retype-locals/expected/V4.stdout": "f273e79af5c46cee7a186b3889f290e30458a03b7b3b71361420bbfcf4ec25c0",
+        "tests/fixtures/p3-array-slot-retype-locals/v8/A1.class": "24a58f9a4f5a5c2d0e4e5cce4f9bf2bc404aa81591a55e9eaacf0e53a2e8ced0",
+        "tests/fixtures/p3-array-slot-retype-locals/v8/A2.class": "0e441de3da38795dd1c9495e7d6d34972a4bc7c90e49274fb63c6869c6163e35",
+        "tests/fixtures/p3-array-slot-retype-locals/v8/V1.class": "7716b76c8e63ec2c254305ffad41700ef42784e038c76bf32150a9d039e1bbfc",
+        "tests/fixtures/p3-array-slot-retype-locals/v8/V2.class": "22d88380a39d0080fab5ff902e4ba7366c74f0a97f1cda76663d699390b63a37",
+        "tests/fixtures/p3-array-slot-retype-locals/v8/V3.class": "e48f86634de9044cf0fa6689e9929c6b3ba78a109bb6ad2ba0846e83a2b6fdc6",
+        "tests/fixtures/p3-array-slot-retype-locals/v8/V4.class": "e85de3405f70237686ae10ac2168e0792e17c3606544a53c9e5dfd4745bd34e0",
+        "tests/fixtures/p3-conditional-values/narrow-exception/NarrowException.class": "f7a2aaae1b55fe7642e25d8d3fc164b41b8ffd0735845add9574828f203e243f",
+        "tests/fixtures/p3-declarations/v8/p/Consts.class": "deafe155a7accfad5d17a5a96df47119df93d993df40138f6c3e83a441b45151",
+        "tests/fixtures/p3-declarations/v8/p/Ops2.class": "a0fcfeb367b105d9959b55b80e07347e630ee9f2ed7162dfa479fccd13fd030e",
+        "tests/fixtures/p3-dt29-branched/v8/BranchedBits.class": "3fc33386dd62b489874ce1ec1d9b0be7c346ffa6820028018c75b67532b87080",
+        "tests/fixtures/p3-dt29-branched/v8/BranchedBitsAlternate.class": "751d4fa80cf7f5e0c0c41c2a57a7e3046b6146bcdc05cda1802eb876fdd1c4cc",
+        "tests/fixtures/p3-dt29-branched/v8/BranchedBitsNegatives.class": "5b532b19c7d74109776ecdaa1434f38d2eef69fbda9028a7443f00b1f9fab05e",
+        "tests/fixtures/p3-handlers/v8/Guarded.class": "db52b41d27a78dcf5bc88fca2879c0f69947949afcc40112b58799245fe9edcf",
+        "tests/fixtures/p3-invocation-arguments/ArgumentTarget.java": "536eceb2661b4599454541f47dfc995f23a75acd9843865d12456eea968b8b72",
+        "tests/fixtures/p3-invocation-arguments/GenericFactory.java": "462385a9c86d47473708175686c998fd60b49b75eb692cfd0f054d5c0770c4c5",
+        "tests/fixtures/p3-invocation-arguments/InvocationArgumentsProbe.java": "c18c0e7dee86babda1c1bb44d0e0d95ea87d04c666168dc45f06bb7f1dcd7b79",
+        "tests/fixtures/p3-invocation-arguments/InvocationArgumentsRunner.java": "170625d2e2d68efa7c34d95fb63198262791c6ab427814fc8a5f7375367fe7f9",
+        "tests/fixtures/p3-invocation-arguments/v8/InvocationArgumentsProbe.class": "f4c364f1ecb388c64c4ae9140df820ad625a43e3b158426698865e4fe43bedde",
+        "tests/fixtures/p3-parameter-slots/v8/SlotTypes.class": "ba2a1380f4530f578a507a3587bce97b426979a28267a1d7db7294e190249c12",
+        "tests/fixtures/p3-popped-static-qualifier/v8/StaticQualifierProbe.class": "21cdace20a84accd06e52567c250b0359ef76e059df993cc6c00a9fe1d6b7266"
+      }
+    }
+  },
+  "guard": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "jadx": {
+    "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "version": "1.5.6",
+    "version_command": {
+      "index": 1,
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:29.285786+00:00",
+      "duration_seconds": 1.005900041986024,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66460291072,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/1.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "jadx-version",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    "version_observed": "1.5.6"
+  },
+  "jdk": {
+    "javac8": {
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "tools": {
+        "java": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "javac": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "javap": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap"
+      },
+      "tool_sha256": {
+        "java": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+        "javac": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+        "javap": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+      }
+    },
+    "javac23": {
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tools": {
+        "java": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "javac": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "javap": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap"
+      },
+      "tool_sha256": {
+        "java": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+        "javac": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+        "javap": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:29.285786+00:00",
+      "duration_seconds": 1.005900041986024,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66460291072,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/1.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "jadx-version",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 2,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:30.296029+00:00",
+      "duration_seconds": 1.021509165992029,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66460217344,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "required successful test summary was absent or empty"
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/2.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-original-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 3,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes",
+        "ConditionalSwitchBoundariesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:31.318279+00:00",
+      "duration_seconds": 1.015509791992372,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66460188672,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source"
+        ],
+        "required_gateway_tests_present": false,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(5, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/3.stdout.raw",
+          "bytes": 717,
+          "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-original-runtime",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 4,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:32.334662+00:00",
+      "duration_seconds": 1.014847959013423,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66460151808,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            4,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(4, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/4.stdout.raw",
+          "bytes": 9362,
+          "sha256": "e919c670aa71adf80a38f70020ded65b7ecbeef09d3bbafc2d1d83b578e68de0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-original-javap",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 5,
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jadx-output",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/input.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:33.350205+00:00",
+      "duration_seconds": 1.008882000023732,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66460090368,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/5.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/5.stderr.raw",
+          "bytes": 1150,
+          "sha256": "8dd7d02c598a3b9a4859de557437d2dba1feab9442331c7630897b3d173f6d93"
+        }
+      },
+      "label": "javac8-jadx-full-class",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 6,
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+        "--class",
+        "ConditionalSwitchBoundaries",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:34.359761+00:00",
+      "duration_seconds": 1.0087284579931293,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458902528,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(5, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/6.stdout.raw",
+          "bytes": 100610,
+          "sha256": "7a2b5cc3376c37b1d5917e04f7facd818759f58ade68995bd7030d925ec2b857"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-candidate-default-render",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 7,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:35.376329+00:00",
+      "duration_seconds": 1.0063501250115223,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458779648,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/7.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/7.stderr.raw",
+          "bytes": 586,
+          "sha256": "f5032054966dd0b09aca408b14ec157449daf166bce3ffbe35141926ae628bc6"
+        }
+      },
+      "label": "javac8-candidate-default-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 8,
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+        "--class",
+        "ConditionalSwitchBoundaries",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:36.384727+00:00",
+      "duration_seconds": 1.010190832981607,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458644480,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "required successful test summary was absent or empty"
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/8.stdout.raw",
+          "bytes": 107697,
+          "sha256": "738cff7a171af46e2ff4046e5ce62e9bb6bd4c5c9dc6d6272ee8617ae433bdfd"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-candidate-all-render",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 9,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:37.396755+00:00",
+      "duration_seconds": 1.011999458016362,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458501120,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/9.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/9.stderr.raw",
+          "bytes": 570,
+          "sha256": "b6386c920e1c2c7998141e9f39c3949c3acbf9a88043271a84972a76a7ee040c"
+        }
+      },
+      "label": "javac8-candidate-all-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 10,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:38.410512+00:00",
+      "duration_seconds": 1.0092620830109809,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458447872,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            3,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [
+          "proved_header_test_chains_become_short_circuit_loop_conditions",
+          "an_independent_effect_between_header_tests_is_never_folded_into_the_condition",
+          "recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_inputs"
+        ],
+        "required_boolean_loop_tests_present": false,
+        "ok": false,
+        "failure_reason": "expected summaries [(3, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/10.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-original-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 11,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes",
+        "ConditionalSwitchBoundariesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:39.420489+00:00",
+      "duration_seconds": 1.0121780839981511,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458570752,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/11.stdout.raw",
+          "bytes": 717,
+          "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-original-runtime",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 12,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:40.433520+00:00",
+      "duration_seconds": 1.008877374988515,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458718208,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/12.stdout.raw",
+          "bytes": 9362,
+          "sha256": "59b2770fadb7a264f971510640a1ed96eaf75cad3e28e3a2ae70a804e6429961"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-original-javap",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 13,
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-output",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/input.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:41.444672+00:00",
+      "duration_seconds": 1.0073536669951864,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458595328,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/13.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/13.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-jadx-full-class",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 14,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:42.453380+00:00",
+      "duration_seconds": 1.0104410839849152,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458419200,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/14.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-jadx-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 15,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/classes",
+        "defpackage.ConditionalSwitchBoundariesRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:43.464776+00:00",
+      "duration_seconds": 1.012180541001726,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458312704,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/15.stdout.raw",
+          "bytes": 714,
+          "sha256": "9bc259015890d064e8a3a0392ebf6bd84b893887b4d0dbb533bda3650b7fc012"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-jadx-runtime",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 16,
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+        "--class",
+        "ConditionalSwitchBoundaries",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:44.477764+00:00",
+      "duration_seconds": 1.0057851249875966,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458198016,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/16.stdout.raw",
+          "bytes": 100602,
+          "sha256": "8cf66a707e1e94c90e209b300774dee2354bcd57df0cff9bdc39edcb93526600"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-candidate-default-render",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 17,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:45.491343+00:00",
+      "duration_seconds": 1.0134729590208735,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66458062848,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/17.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/17.stderr.raw",
+          "bytes": 590,
+          "sha256": "3c5d9e82f770d92c7156f96a794865fc1659e176622f1d6c481e12c8bde4938b"
+        }
+      },
+      "label": "javac23-candidate-default-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 18,
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+        "--class",
+        "ConditionalSwitchBoundaries",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:46.510348+00:00",
+      "duration_seconds": 1.007773791992804,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66457899008,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/18.stdout.raw",
+          "bytes": 107697,
+          "sha256": "d8fb6a6d8deb2cb41f0973dbcecbf422b22bafb383296eb570a463d1a090617c"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-candidate-all-render",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    },
+    {
+      "index": 19,
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/empty",
+        "-d",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/classes",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/ConditionalSwitchBoundaries.java",
+        "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/ConditionalSwitchBoundariesRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:37:47.520367+00:00",
+      "duration_seconds": 1.0119369580061175,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66457878528,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/19.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/19.stderr.raw",
+          "bytes": 574,
+          "sha256": "109fa1e2d1609da5acaf9e9d9cbf5179a56d1a6a9b3fac1db9fa7da7f2219760"
+        }
+      },
+      "label": "javac23-candidate-all-compile",
+      "environment_removed": [
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "CLASSPATH"
+      ]
+    }
+  ],
+  "legs": {
+    "javac8": {
+      "original": {
+        "compile": {
+          "index": 2,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "-encoding",
+            "UTF-8",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-proc:none",
+            "-classpath",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/empty",
+            "-sourcepath",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/empty",
+            "-d",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/ConditionalSwitchBoundaries.java",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/ConditionalSwitchBoundariesRunner.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:30.296029+00:00",
+          "duration_seconds": 1.021509165992029,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66460217344,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": true,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": false,
+            "failure_reason": "required successful test summary was absent or empty"
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/2.stdout.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/2.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac8-original-compile",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "class_files": [
+          "ConditionalSwitchBoundaries.class",
+          "ConditionalSwitchBoundariesRunner.class"
+        ],
+        "classes_sha256": {
+          "ConditionalSwitchBoundaries.class": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+          "ConditionalSwitchBoundariesRunner.class": "0d91f27e72c5c1b979c9a89e22de54b9cbee08d759ea8f91ed0354b0457c1d61"
+        },
+        "runtime": {
+          "index": 3,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes",
+            "ConditionalSwitchBoundariesRunner"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:31.318279+00:00",
+          "duration_seconds": 1.015509791992372,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66460188672,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": [
+              [
+                5,
+                0,
+                0
+              ]
+            ],
+            "actual": [],
+            "required": true,
+            "required_gateway_tests": [
+              "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+              "no_prefix_latch_budget_and_cancellation_publish_no_partial_source"
+            ],
+            "required_gateway_tests_present": false,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": false,
+            "failure_reason": "expected summaries [(5, 0, 0)], got []"
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/3.stdout.raw",
+              "bytes": 717,
+              "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/3.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac8-original-runtime",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "javap": {
+          "index": 4,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:32.334662+00:00",
+          "duration_seconds": 1.014847959013423,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66460151808,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": [
+              [
+                4,
+                0,
+                0
+              ]
+            ],
+            "actual": [],
+            "required": true,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": false,
+            "failure_reason": "expected summaries [(4, 0, 0)], got []"
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/4.stdout.raw",
+              "bytes": 9362,
+              "sha256": "e919c670aa71adf80a38f70020ded65b7ecbeef09d3bbafc2d1d83b578e68de0"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/4.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac8-original-javap",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        }
+      },
+      "jadx": {
+        "decompile": {
+          "index": 5,
+          "argv": [
+            "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jadx-output",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/input.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:33.350205+00:00",
+          "duration_seconds": 1.008882000023732,
+          "exit_code": 1,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66460090368,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": null,
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/5.stdout.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/5.stderr.raw",
+              "bytes": 1150,
+              "sha256": "8dd7d02c598a3b9a4859de557437d2dba1feab9442331c7630897b3d173f6d93"
+            }
+          },
+          "label": "javac8-jadx-full-class",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "compile": null,
+        "runtime": null
+      },
+      "candidate": {
+        "default": {
+          "render": {
+            "index": 6,
+            "argv": [
+              "/private/tmp/jarde-proved-local-source-types-cli-v1",
+              "class-source",
+              "--input",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+              "--class",
+              "ConditionalSwitchBoundaries",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:34.359761+00:00",
+            "duration_seconds": 1.0087284579931293,
+            "exit_code": 0,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66458902528,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": {
+              "expected": [
+                [
+                  5,
+                  0,
+                  0
+                ]
+              ],
+              "actual": [],
+              "required": true,
+              "required_gateway_tests": [],
+              "required_gateway_tests_present": null,
+              "required_boolean_loop_tests": [],
+              "required_boolean_loop_tests_present": null,
+              "ok": false,
+              "failure_reason": "expected summaries [(5, 0, 0)], got []"
+            },
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/6.stdout.raw",
+                "bytes": 100610,
+                "sha256": "7a2b5cc3376c37b1d5917e04f7facd818759f58ade68995bd7030d925ec2b857"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/6.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "label": "javac8-candidate-default-render",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "report_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/report.json",
+          "report_sha256": "7a2b5cc3376c37b1d5917e04f7facd818759f58ade68995bd7030d925ec2b857",
+          "compile": {
+            "index": 7,
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-g:none",
+              "-Xlint:-options",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/empty",
+              "-sourcepath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/empty",
+              "-d",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/classes",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/ConditionalSwitchBoundaries.java",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/ConditionalSwitchBoundariesRunner.java"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:35.376329+00:00",
+            "duration_seconds": 1.0063501250115223,
+            "exit_code": 1,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66458779648,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": null,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/7.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/7.stderr.raw",
+                "bytes": 586,
+                "sha256": "f5032054966dd0b09aca408b14ec157449daf166bce3ffbe35141926ae628bc6"
+              }
+            },
+            "label": "javac8-candidate-default-compile",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "runtime": null,
+          "source_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/ConditionalSwitchBoundaries.java",
+          "source_sha256": "bebf23713427c3c01e64b5c576e782a518653c0b6c731696df87d77801564aa7",
+          "runner_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-default/ConditionalSwitchBoundariesRunner.java",
+          "runner_sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f",
+          "runner_bytes_identical": true,
+          "runner_package_adaptation_only": false,
+          "method_report_count": 6,
+          "method_source_maps_sha256": "cb64ec45e6f11cceea4ccebbb6753a84000e44fadbc4b9d218966569f4e1774a",
+          "method_identities": [
+            [
+              "<init>",
+              "()V",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              0,
+              "private ConditionalSwitchBoundaries()"
+            ],
+            [
+              "partialBreak",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              1,
+              "public static java.lang.String partialBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerLoopBreak",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              2,
+              "public static java.lang.String innerLoopBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerSwitchBreak",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              3,
+              "public static java.lang.String innerSwitchBreak(int arg0, int arg1)"
+            ],
+            [
+              "terminalCase",
+              "(I)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              4,
+              "public static java.lang.String terminalCase(int arg0)"
+            ],
+            [
+              "caughtExceptionThenFallthrough",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              5,
+              "public static java.lang.String caughtExceptionThenFallthrough(int arg0, int arg1)"
+            ]
+          ]
+        },
+        "all": {
+          "render": {
+            "index": 8,
+            "argv": [
+              "/private/tmp/jarde-proved-local-source-types-cli-v1",
+              "class-source",
+              "--input",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+              "--class",
+              "ConditionalSwitchBoundaries",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:36.384727+00:00",
+            "duration_seconds": 1.010190832981607,
+            "exit_code": 0,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66458644480,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": {
+              "expected": null,
+              "actual": [],
+              "required": true,
+              "required_gateway_tests": [],
+              "required_gateway_tests_present": null,
+              "required_boolean_loop_tests": [],
+              "required_boolean_loop_tests_present": null,
+              "ok": false,
+              "failure_reason": "required successful test summary was absent or empty"
+            },
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/8.stdout.raw",
+                "bytes": 107697,
+                "sha256": "738cff7a171af46e2ff4046e5ce62e9bb6bd4c5c9dc6d6272ee8617ae433bdfd"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/8.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "label": "javac8-candidate-all-render",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "report_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/report.json",
+          "report_sha256": "738cff7a171af46e2ff4046e5ce62e9bb6bd4c5c9dc6d6272ee8617ae433bdfd",
+          "compile": {
+            "index": 9,
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-g:none",
+              "-Xlint:-options",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/empty",
+              "-sourcepath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/empty",
+              "-d",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/classes",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/ConditionalSwitchBoundaries.java",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/ConditionalSwitchBoundariesRunner.java"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:37.396755+00:00",
+            "duration_seconds": 1.011999458016362,
+            "exit_code": 1,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66458501120,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": null,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/9.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/9.stderr.raw",
+                "bytes": 570,
+                "sha256": "b6386c920e1c2c7998141e9f39c3949c3acbf9a88043271a84972a76a7ee040c"
+              }
+            },
+            "label": "javac8-candidate-all-compile",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "runtime": null,
+          "source_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/ConditionalSwitchBoundaries.java",
+          "source_sha256": "bebf23713427c3c01e64b5c576e782a518653c0b6c731696df87d77801564aa7",
+          "runner_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac8/jarde-all/ConditionalSwitchBoundariesRunner.java",
+          "runner_sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f",
+          "runner_bytes_identical": true,
+          "runner_package_adaptation_only": false,
+          "method_report_count": 6,
+          "method_source_maps_sha256": "cb64ec45e6f11cceea4ccebbb6753a84000e44fadbc4b9d218966569f4e1774a",
+          "method_identities": [
+            [
+              "<init>",
+              "()V",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              0,
+              "private ConditionalSwitchBoundaries()"
+            ],
+            [
+              "partialBreak",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              1,
+              "public static java.lang.String partialBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerLoopBreak",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              2,
+              "public static java.lang.String innerLoopBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerSwitchBreak",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              3,
+              "public static java.lang.String innerSwitchBreak(int arg0, int arg1)"
+            ],
+            [
+              "terminalCase",
+              "(I)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              4,
+              "public static java.lang.String terminalCase(int arg0)"
+            ],
+            [
+              "caughtExceptionThenFallthrough",
+              "(II)Ljava/lang/String;",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              "49795c66605066655f48ac37b862ccd132e43b74d290653afd51762ab1a409b7",
+              5,
+              "public static java.lang.String caughtExceptionThenFallthrough(int arg0, int arg1)"
+            ]
+          ]
+        }
+      }
+    },
+    "javac23": {
+      "original": {
+        "compile": {
+          "index": 10,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "-encoding",
+            "UTF-8",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-proc:none",
+            "-classpath",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/empty",
+            "-sourcepath",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/empty",
+            "-d",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/ConditionalSwitchBoundaries.java",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/ConditionalSwitchBoundariesRunner.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:38.410512+00:00",
+          "duration_seconds": 1.0092620830109809,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66458447872,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": [
+              [
+                3,
+                0,
+                0
+              ]
+            ],
+            "actual": [],
+            "required": true,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [
+              "proved_header_test_chains_become_short_circuit_loop_conditions",
+              "an_independent_effect_between_header_tests_is_never_folded_into_the_condition",
+              "recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_inputs"
+            ],
+            "required_boolean_loop_tests_present": false,
+            "ok": false,
+            "failure_reason": "expected summaries [(3, 0, 0)], got []"
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/10.stdout.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/10.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac23-original-compile",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "class_files": [
+          "ConditionalSwitchBoundaries.class",
+          "ConditionalSwitchBoundariesRunner.class"
+        ],
+        "classes_sha256": {
+          "ConditionalSwitchBoundaries.class": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+          "ConditionalSwitchBoundariesRunner.class": "0ec7907db95aa33887257cdafec8feace2d5329fc8fe676010b1483ace781973"
+        },
+        "runtime": {
+          "index": 11,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes",
+            "ConditionalSwitchBoundariesRunner"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:39.420489+00:00",
+          "duration_seconds": 1.0121780839981511,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66458570752,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": false,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": true,
+            "failure_reason": null
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/11.stdout.raw",
+              "bytes": 717,
+              "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/11.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac23-original-runtime",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "javap": {
+          "index": 12,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:40.433520+00:00",
+          "duration_seconds": 1.008877374988515,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66458718208,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": false,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": true,
+            "failure_reason": null
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/12.stdout.raw",
+              "bytes": 9362,
+              "sha256": "59b2770fadb7a264f971510640a1ed96eaf75cad3e28e3a2ae70a804e6429961"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/12.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac23-original-javap",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        }
+      },
+      "jadx": {
+        "decompile": {
+          "index": 13,
+          "argv": [
+            "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-output",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/input.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:41.444672+00:00",
+          "duration_seconds": 1.0073536669951864,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66458595328,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": false,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": true,
+            "failure_reason": null
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/13.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/13.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac23-jadx-full-class",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "compile": {
+          "index": 14,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "-encoding",
+            "UTF-8",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-proc:none",
+            "-classpath",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/empty",
+            "-sourcepath",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/empty",
+            "-d",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/classes",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/ConditionalSwitchBoundaries.java",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/ConditionalSwitchBoundariesRunner.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:42.453380+00:00",
+          "duration_seconds": 1.0104410839849152,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66458419200,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": false,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": true,
+            "failure_reason": null
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/14.stdout.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/14.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac23-jadx-compile",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "runtime": {
+          "index": 15,
+          "argv": [
+            "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/classes",
+            "defpackage.ConditionalSwitchBoundariesRunner"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "started_at": "2026-10-10T20:37:43.464776+00:00",
+          "duration_seconds": 1.012180541001726,
+          "exit_code": 0,
+          "guard_stop": null,
+          "peak_target_bytes": 0,
+          "free_bytes_after": 66458312704,
+          "env_overrides": {
+            "CARGO_BUILD_JOBS": "1",
+            "CARGO_INCREMENTAL": "0",
+            "CARGO_PROFILE_DEV_DEBUG": "0",
+            "CARGO_PROFILE_TEST_DEBUG": "0",
+            "RUST_TEST_THREADS": "1",
+            "CARGO_TERM_COLOR": "always"
+          },
+          "test_summary_check": {
+            "expected": null,
+            "actual": [],
+            "required": false,
+            "required_gateway_tests": [],
+            "required_gateway_tests_present": null,
+            "required_boolean_loop_tests": [],
+            "required_boolean_loop_tests_present": null,
+            "ok": true,
+            "failure_reason": null
+          },
+          "streams": {
+            "stdout": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/15.stdout.raw",
+              "bytes": 714,
+              "sha256": "9bc259015890d064e8a3a0392ebf6bd84b893887b4d0dbb533bda3650b7fc012"
+            },
+            "stderr": {
+              "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/15.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "label": "javac23-jadx-runtime",
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ]
+        },
+        "source_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jadx-complete/ConditionalSwitchBoundaries.java",
+        "source_sha256": "f77597e1410ab613067c2325a228ae3fae11996661e29e7db259eeb594fc92dc",
+        "runner_sha256": "636075c4b4882b71563213c11794b37865e6f9f51e66248e21716ec97489cc9f",
+        "runner_bytes_identical": false,
+        "runner_package_adaptation_only": true,
+        "class_files": [
+          "defpackage/ConditionalSwitchBoundaries.class",
+          "defpackage/ConditionalSwitchBoundariesRunner.class"
+        ],
+        "runtime_matches_original": false
+      },
+      "candidate": {
+        "default": {
+          "render": {
+            "index": 16,
+            "argv": [
+              "/private/tmp/jarde-proved-local-source-types-cli-v1",
+              "class-source",
+              "--input",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+              "--class",
+              "ConditionalSwitchBoundaries",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:44.477764+00:00",
+            "duration_seconds": 1.0057851249875966,
+            "exit_code": 0,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66458198016,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": {
+              "expected": null,
+              "actual": [],
+              "required": false,
+              "required_gateway_tests": [],
+              "required_gateway_tests_present": null,
+              "required_boolean_loop_tests": [],
+              "required_boolean_loop_tests_present": null,
+              "ok": true,
+              "failure_reason": null
+            },
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/16.stdout.raw",
+                "bytes": 100602,
+                "sha256": "8cf66a707e1e94c90e209b300774dee2354bcd57df0cff9bdc39edcb93526600"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/16.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "label": "javac23-candidate-default-render",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "report_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/report.json",
+          "report_sha256": "8cf66a707e1e94c90e209b300774dee2354bcd57df0cff9bdc39edcb93526600",
+          "compile": {
+            "index": 17,
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-g:none",
+              "-Xlint:-options",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/empty",
+              "-sourcepath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/empty",
+              "-d",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/classes",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/ConditionalSwitchBoundariesRunner.java"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:45.491343+00:00",
+            "duration_seconds": 1.0134729590208735,
+            "exit_code": 1,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66458062848,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": null,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/17.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/17.stderr.raw",
+                "bytes": 590,
+                "sha256": "3c5d9e82f770d92c7156f96a794865fc1659e176622f1d6c481e12c8bde4938b"
+              }
+            },
+            "label": "javac23-candidate-default-compile",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "runtime": null,
+          "source_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java",
+          "source_sha256": "bebf23713427c3c01e64b5c576e782a518653c0b6c731696df87d77801564aa7",
+          "runner_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-default/ConditionalSwitchBoundariesRunner.java",
+          "runner_sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f",
+          "runner_bytes_identical": true,
+          "runner_package_adaptation_only": false,
+          "method_report_count": 6,
+          "method_source_maps_sha256": "335945995429d07e757f4fa4434c0ecdedd16c94784b96ed749ca28a0e081d1f",
+          "method_identities": [
+            [
+              "<init>",
+              "()V",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              0,
+              "private ConditionalSwitchBoundaries()"
+            ],
+            [
+              "partialBreak",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              1,
+              "public static java.lang.String partialBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerLoopBreak",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              2,
+              "public static java.lang.String innerLoopBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerSwitchBreak",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              3,
+              "public static java.lang.String innerSwitchBreak(int arg0, int arg1)"
+            ],
+            [
+              "terminalCase",
+              "(I)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              4,
+              "public static java.lang.String terminalCase(int arg0)"
+            ],
+            [
+              "caughtExceptionThenFallthrough",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              5,
+              "public static java.lang.String caughtExceptionThenFallthrough(int arg0, int arg1)"
+            ]
+          ]
+        },
+        "all": {
+          "render": {
+            "index": 18,
+            "argv": [
+              "/private/tmp/jarde-proved-local-source-types-cli-v1",
+              "class-source",
+              "--input",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+              "--class",
+              "ConditionalSwitchBoundaries",
+              "--policy",
+              "single-class",
+              "--release",
+              "8",
+              "--format",
+              "json",
+              "--evidence",
+              "all"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:46.510348+00:00",
+            "duration_seconds": 1.007773791992804,
+            "exit_code": 0,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66457899008,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": {
+              "expected": null,
+              "actual": [],
+              "required": false,
+              "required_gateway_tests": [],
+              "required_gateway_tests_present": null,
+              "required_boolean_loop_tests": [],
+              "required_boolean_loop_tests_present": null,
+              "ok": true,
+              "failure_reason": null
+            },
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/18.stdout.raw",
+                "bytes": 107697,
+                "sha256": "d8fb6a6d8deb2cb41f0973dbcecbf422b22bafb383296eb570a463d1a090617c"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/18.stderr.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "label": "javac23-candidate-all-render",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "report_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/report.json",
+          "report_sha256": "d8fb6a6d8deb2cb41f0973dbcecbf422b22bafb383296eb570a463d1a090617c",
+          "compile": {
+            "index": 19,
+            "argv": [
+              "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+              "-encoding",
+              "UTF-8",
+              "-source",
+              "8",
+              "-target",
+              "8",
+              "-g:none",
+              "-Xlint:-options",
+              "-proc:none",
+              "-classpath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/empty",
+              "-sourcepath",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/empty",
+              "-d",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/classes",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/ConditionalSwitchBoundaries.java",
+              "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/ConditionalSwitchBoundariesRunner.java"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "started_at": "2026-10-10T20:37:47.520367+00:00",
+            "duration_seconds": 1.0119369580061175,
+            "exit_code": 1,
+            "guard_stop": null,
+            "peak_target_bytes": 0,
+            "free_bytes_after": 66457878528,
+            "env_overrides": {
+              "CARGO_BUILD_JOBS": "1",
+              "CARGO_INCREMENTAL": "0",
+              "CARGO_PROFILE_DEV_DEBUG": "0",
+              "CARGO_PROFILE_TEST_DEBUG": "0",
+              "RUST_TEST_THREADS": "1",
+              "CARGO_TERM_COLOR": "always"
+            },
+            "test_summary_check": null,
+            "streams": {
+              "stdout": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/19.stdout.raw",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/guard-streams/19.stderr.raw",
+                "bytes": 574,
+                "sha256": "109fa1e2d1609da5acaf9e9d9cbf5179a56d1a6a9b3fac1db9fa7da7f2219760"
+              }
+            },
+            "label": "javac23-candidate-all-compile",
+            "environment_removed": [
+              "JAVA_TOOL_OPTIONS",
+              "_JAVA_OPTIONS",
+              "JDK_JAVA_OPTIONS",
+              "CLASSPATH"
+            ]
+          },
+          "runtime": null,
+          "source_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/ConditionalSwitchBoundaries.java",
+          "source_sha256": "bebf23713427c3c01e64b5c576e782a518653c0b6c731696df87d77801564aa7",
+          "runner_path": "/private/tmp/jarde-conditional-boundary-preflight-root-v1/cases/javac23/jarde-all/ConditionalSwitchBoundariesRunner.java",
+          "runner_sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f",
+          "runner_bytes_identical": true,
+          "runner_package_adaptation_only": false,
+          "method_report_count": 6,
+          "method_source_maps_sha256": "335945995429d07e757f4fa4434c0ecdedd16c94784b96ed749ca28a0e081d1f",
+          "method_identities": [
+            [
+              "<init>",
+              "()V",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              0,
+              "private ConditionalSwitchBoundaries()"
+            ],
+            [
+              "partialBreak",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              1,
+              "public static java.lang.String partialBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerLoopBreak",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              2,
+              "public static java.lang.String innerLoopBreak(int arg0, int arg1)"
+            ],
+            [
+              "innerSwitchBreak",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              3,
+              "public static java.lang.String innerSwitchBreak(int arg0, int arg1)"
+            ],
+            [
+              "terminalCase",
+              "(I)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              4,
+              "public static java.lang.String terminalCase(int arg0)"
+            ],
+            [
+              "caughtExceptionThenFallthrough",
+              "(II)Ljava/lang/String;",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              "470c67edd6f0b50e613680cf45bb13c790e584afb83e7157bd98d30c043fbd0c",
+              5,
+              "public static java.lang.String caughtExceptionThenFallthrough(int arg0, int arg1)"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "javac8": {
+      "default_all_text_equal": true,
+      "default_all_method_source_maps_equal": true
+    },
+    "javac23": {
+      "default_all_text_equal": true,
+      "default_all_method_source_maps_equal": true
+    },
+    "original_cross_jdk_raw_equal": true
+  },
+  "failures": [
+    "javac8: JADX decompile failed or was guard-stopped",
+    "javac8/default: candidate complete-class compile failed or was guard-stopped",
+    "javac8/all: candidate complete-class compile failed or was guard-stopped",
+    "javac23: JADX runtime differs from original oracle",
+    "javac23/default: candidate complete-class compile failed or was guard-stopped",
+    "javac23/all: candidate complete-class compile failed or was guard-stopped",
+    "command matrix incomplete: missing=['javac23-candidate-all-runtime', 'javac23-candidate-default-runtime', 'javac8-candidate-all-runtime', 'javac8-candidate-default-runtime', 'javac8-jadx-compile', 'javac8-jadx-runtime'] extra=[]",
+    "collector stopped: AttributeError: 'str' object has no attribute 'open'"
+  ],
+  "finished_at": "2026-10-10T20:37:48.594437+00:00"
+}

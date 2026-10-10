@@ -1,0 +1,63 @@
+{
+  "schema": "conditional-switch-boundary-ir-observer-draft-preflight-v1",
+  "status": "read-only-source-and-input-inspection-only",
+  "observer_source": "/private/tmp/jarde-conditional-boundary-ir-observer-luna-v1/conditional_boundary_ir_observer.rs",
+  "observer_sha256": "02d7ed085c0438417255e31f01c1c26c0f5df7612dec3066790fbc2cf3ce3283",
+  "inputs": [
+    {
+      "leg": "javac8",
+      "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v2/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b",
+      "exists": true
+    },
+    {
+      "leg": "javac23",
+      "path": "/private/tmp/jarde-conditional-boundary-preflight-root-v2/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5",
+      "exists": true
+    }
+  ],
+  "methods": [
+    {
+      "name": "partialBreak",
+      "descriptor": "(II)Ljava/lang/String;"
+    },
+    {
+      "name": "innerLoopBreak",
+      "descriptor": "(II)Ljava/lang/String;"
+    },
+    {
+      "name": "innerSwitchBreak",
+      "descriptor": "(II)Ljava/lang/String;"
+    },
+    {
+      "name": "terminalCase",
+      "descriptor": "(I)Ljava/lang/String;"
+    },
+    {
+      "name": "caughtExceptionThenFallthrough",
+      "descriptor": "(II)Ljava/lang/String;"
+    }
+  ],
+  "apis_read": [
+    "jarde_reader::artifact::ArtifactSnapshot",
+    "jarde_reader::classfile::inspect_method_bytecode",
+    "jarde_jvm::engine::analyze_method_ir",
+    "MethodIr::code",
+    "MethodIr::canonical",
+    "MethodIr::ssa",
+    "CanonicalCfg::{blocks,edges,handler_rows,throw_sites,completeness,unreachable}",
+    "SsaTable::{blocks,phis}"
+  ],
+  "execution": {
+    "rust_test_compiled": false,
+    "cargo": false,
+    "jvm": false,
+    "jadx": false,
+    "cli": false,
+    "git": false,
+    "repository_modified": false
+  }
+}

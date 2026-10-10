@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:03:38.847241+00:00",
+  "duration_seconds": 0.07667175002279691,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-verify-meet-char-root-v1.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 326,
+      "sha256": "9f0f92096c50b58d5b1018d9bb9bde7b6765086280f0754812c85d4626b7afb9"
+    }
+  }
+}

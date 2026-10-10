@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-verify-meet-char-root-v1.py", line 16, in <module>
+    assert reports[0]['text']==reports[1]['text'] and reports[0]['methods']==reports[1]['methods']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

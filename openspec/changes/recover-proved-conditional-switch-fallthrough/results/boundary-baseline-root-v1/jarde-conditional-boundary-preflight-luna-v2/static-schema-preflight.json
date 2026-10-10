@@ -1,0 +1,151 @@
+{
+  "schema": "conditional-switch-boundary-static-schema-preflight-luna-v2",
+  "status": "read-only-input-schema-and-hash-checks-only",
+  "typed_cli": {
+    "path": "/private/tmp/jarde-proved-local-source-types-cli-v1",
+    "sha256": "6295d4cc0c65bd5b5c476f71e44cf3abf513f77d854854bfdea777cbaf2be943",
+    "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+    "cli_mode": "0o555",
+    "schema": "recover-proved-local-source-types-candidate-cli-root-v1",
+    "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02",
+    "uncommitted_product": true,
+    "build_result_sha256": "18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413",
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/run-validation-build-root-v2.py",
+      "sha256": "75e3b3494bf6a2f3179fc1d61e01865382cbdcb4bcefc527f9bc97f012687b87"
+    }
+  },
+  "typed_build": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/validation-build-root-v2/execution.json",
+    "sha256": "18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413",
+    "schema": "recover-proved-local-source-types-validation-build-root-v1",
+    "status": "validation-passed-cli-frozen",
+    "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02",
+    "guarded_runner_template": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "freeze_has_status_field": false,
+    "source_pins_before_equals_metadata": true,
+    "source_pins_after_equals_metadata": true
+  },
+  "live_pin_groups": {
+    "candidate_sources": {
+      "count": 17,
+      "live_mismatches": [],
+      "map_sha256": "85602d17a04c9bc4c9aebe2c603031f1e3b6717275244d6fe923f8c8c2c8d253"
+    },
+    "test_sources": {
+      "count": 10,
+      "live_mismatches": [],
+      "map_sha256": "1374407a03b303e3826b72375a98f9274113a73c28a2e3df6f8c7a1a6488573b"
+    },
+    "canonical_files": {
+      "count": 50,
+      "live_mismatches": [],
+      "map_sha256": "a536ed8f879327fb6af9d9a95be391c7141b66ec8bd9dc73a749fcd9ec73cceb"
+    }
+  },
+  "fixture": {
+    "source": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundaries.java",
+      "sha256": "72a8b7716d0867bf6c543baab64e24a2e8a1c3a4d6f3f64249c45d8c8784e636"
+    },
+    "runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundariesRunner.java",
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    "methods": [
+      "partialBreak",
+      "innerLoopBreak",
+      "innerSwitchBreak",
+      "terminalCase",
+      "caughtExceptionThenFallthrough"
+    ]
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "legs": {
+      "javac8": {
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "tools": {
+          "javac": {
+            "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+          },
+          "java": {
+            "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+          },
+          "javap": {
+            "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+          }
+        }
+      },
+      "javac23": {
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "tools": {
+          "javac": {
+            "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+          },
+          "java": {
+            "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+          },
+          "javap": {
+            "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+          }
+        }
+      }
+    }
+  },
+  "jadx": {
+    "symlink_path": "/opt/homebrew/bin/jadx",
+    "resolved_path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "version": "1.5.6",
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+  },
+  "actual_report_schema_sample": {
+    "path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.test/javac23/all/TestSwitchLabels$TestCls$Inner.json",
+    "sha256": "6b837b671f78cc95b7a587b58063573e0c388998f06c63940bfbd15e4590de05",
+    "method_item_keys": [
+      "access_flags",
+      "body",
+      "descriptor",
+      "identity",
+      "index",
+      "name"
+    ],
+    "method_identity_keys": [
+      "descriptor",
+      "name",
+      "owner"
+    ],
+    "item_index_type": "int",
+    "raw_name_type": "list",
+    "raw_descriptor_type": "list",
+    "source_map_keys": [
+      "segments"
+    ],
+    "segment_origin_keys": [
+      "derived",
+      "primary"
+    ],
+    "primary_method_keys": [
+      "descriptor",
+      "name",
+      "owner"
+    ],
+    "primary_method_identity_schema": "origin.primary.method.{name,descriptor,owner}"
+  },
+  "collector_static_validation": {
+    "ast_parse": "passed",
+    "collector_execution": "not run",
+    "toolchain_commands": "none",
+    "collector_sha256": "027a530e8e34b2ef3f22c9ebdce0f9d429cdd887bb49dbf4b5f635e00f2d3dfe"
+  }
+}

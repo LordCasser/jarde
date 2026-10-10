@@ -1,0 +1,13 @@
+{
+  "status": "observations-complete",
+  "output": "/private/tmp/jarde-conditional-boundary-preflight-root-v2",
+  "commands": 21,
+  "failures": [
+    "javac8: JADX runtime differs from original oracle",
+    "javac8/default: candidate complete-class compile failed or was guard-stopped",
+    "javac8/all: candidate complete-class compile failed or was guard-stopped",
+    "javac23: JADX runtime differs from original oracle",
+    "javac23/default: candidate complete-class compile failed or was guard-stopped",
+    "javac23/all: candidate complete-class compile failed or was guard-stopped"
+  ]
+}

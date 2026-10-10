@@ -1,0 +1,13 @@
+/private/tmp/jarde-conditional-boundary-preflight-root-v2/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java:19: error: missing return statement
+    }
+    ^
+/private/tmp/jarde-conditional-boundary-preflight-root-v2/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java:28: error: missing return statement
+    }
+    ^
+/private/tmp/jarde-conditional-boundary-preflight-root-v2/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java:37: error: missing return statement
+    }
+    ^
+/private/tmp/jarde-conditional-boundary-preflight-root-v2/cases/javac23/jarde-default/ConditionalSwitchBoundaries.java:69: error: missing return statement
+    }
+    ^
+4 errors
