@@ -633,6 +633,12 @@ impl Billing {
 // share and charge the caller's Budget instead of running with None. IrItems/AnalysisSteps
 // deltas for flat/nested/two-origins/many/damaged/deep are +24/+24/+24/+106/+24/+0 and
 // +141/+226/+123/+1175/+123/+194 respectively; the arm deltas are +202/+1982, their sums.
+// 2026-10-11 recover-proved-local-source-types: remeasured AnalysisSteps-only deltas
+// for flat/nested/two-origins/many/damaged/deep are +16/+22/+14/+43/+14/+3; both
+// per-method arms are +112, exactly their sum. The local type decision now bills
+// every physical write examined by its char proof and eligible null-leading
+// reference scans. No fixture, read, IR, source, disposition or delivery count moved.
+// The ignored recorder and old-arm raw observations are retained in that change.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     ///
@@ -653,7 +659,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 17,
         ir_items: 2497,
-        analysis_steps: 1501,
+        analysis_steps: 1517,
         result_items: 37,
         output_bytes: 3657,
     };
@@ -677,7 +683,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 26,
         ir_items: 4322,
-        analysis_steps: 2319,
+        analysis_steps: 2341,
         result_items: 64,
         output_bytes: 5628,
     };
@@ -699,7 +705,7 @@ impl Billing {
         class_headers: 4,
         method_bodies: 12,
         ir_items: 2082,
-        analysis_steps: 1244,
+        analysis_steps: 1258,
         result_items: 43,
         output_bytes: 2638,
     };
@@ -783,7 +789,7 @@ impl Billing {
         // tables), so the ask itself is billed. No text, classification, read or delivery
         // dimension moved — this test's own text comparison is unchanged.
         ir_items: 21384,
-        analysis_steps: 11784,
+        analysis_steps: 11827,
         result_items: 122,
         output_bytes: 23333,
     };
@@ -801,7 +807,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 12,
         ir_items: 2082,
-        analysis_steps: 1244,
+        analysis_steps: 1258,
         result_items: 35,
         output_bytes: 2638,
     };
@@ -817,7 +823,7 @@ impl Billing {
         class_headers: 0,
         method_bodies: 7,
         ir_items: 3213,
-        analysis_steps: 1366,
+        analysis_steps: 1369,
         result_items: 18,
         output_bytes: 1723,
     };
@@ -868,7 +874,7 @@ impl Billing {
         // +3 with `recover-io-resource-finally`, for the reason [`Billing::MANY_METHOD_CLASS`]
         // records: the row-set predicate's own ask at the blocks whose row set it reads.
         ir_items: 35580,
-        analysis_steps: 19458,
+        analysis_steps: 19570,
         result_items: 1378,
         output_bytes: 39617,
     };
@@ -907,7 +913,7 @@ impl Billing {
         // +1598 with `recover-chained-field-assignment`, the same work the direct arm records.
         // +3 with `recover-io-resource-finally`, the same work the direct arm records.
         ir_items: 35580,
-        analysis_steps: 19458,
+        analysis_steps: 19570,
         result_items: 26,
         output_bytes: 39617,
     };

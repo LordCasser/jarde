@@ -1,0 +1,1 @@
+原字节复制；绝对路径与SHA按历史保留。完整RequiredConversions/NullThenBuilder运行已由root独立接受；Null原Java不可得，original为canonical class。Luna verifier的identity schema误读失败和root独立BLAKE3/span/owner修复成功均保留。workspace v1/v2/v3为真实未完成或失败，不计全量通过；v4当前执行不复制活跃raw。P5 six rows ignored recorder与two-arm旧pin失败测量支持AnalysisSteps-only重新固定，其他维度不改；常规测试重新运行在v4。
