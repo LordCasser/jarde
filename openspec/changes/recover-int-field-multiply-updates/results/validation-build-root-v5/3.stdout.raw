@@ -1,0 +1,12 @@
+
+running 7 tests
+test multiply_public_recovery_keeps_output_budget_and_cancellation_atomic ... ok
+test nested_int_field_multiply_keeps_every_instruction_and_field_read_presented ... ok
+test compound_recovery_keeps_output_evidence_and_cancellation_stops ... ok
+test same_block_field_and_int_array_updates_are_single_evaluation_source_mapped_statements ... ok
+test multiply_does_not_merge_two_reads_or_cross_field_width_or_consumer_boundaries ... ok
+test mismatched_and_shared_lvalue_copies_are_refused_with_their_source_anchors ... ok
+test lvalue_prefix_gaps_refuse_compound_claims_and_keep_the_complete_chain ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+

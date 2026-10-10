@@ -1,0 +1,17 @@
+{
+  "schema": "em23-int-field-multiply-candidate-summary-v2",
+  "status": "completed",
+  "render_counts": {
+    "increment": 4,
+    "multiply": 4
+  },
+  "candidate_case_counts": {
+    "increment": 4,
+    "multiply": 4
+  },
+  "candidate_success_counts": {
+    "increment": 4,
+    "multiply": 4
+  },
+  "failures": []
+}

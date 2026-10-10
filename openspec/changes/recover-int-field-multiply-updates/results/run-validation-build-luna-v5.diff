@@ -1,0 +1,31 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v4.py	2026-10-10 14:35:58
++++ openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v5.py	2026-10-10 14:41:39
+@@ -21,7 +21,7 @@
+ HERE = Path(__file__).resolve().parent
+ ROOT = Path(__file__).resolve().parents[4]
+ RESULTS = HERE
+-OUT = RESULTS / "validation-build-root-v4"
++OUT = RESULTS / "validation-build-root-v5"
+ CLI_PATH = Path("/private/tmp/jarde-field-multiply-cli-v2")
+ METADATA_PATH = RESULTS / "candidate-cli-v2.json"
+ SOURCE_COMMIT_BASE: str | None = None
+@@ -162,7 +162,7 @@
+ 
+ def write_execution(status: str, rows: list[dict], preflight: dict, freeze: dict | None = None) -> None:
+     write_json(OUT / "execution.json", {
+-        "schema": "int-field-multiply-validation-build-root-v4",
++        "schema": "int-field-multiply-validation-build-root-v5",
+         "validation_runner": {
+             "path": str(Path(__file__).resolve()),
+             "sha256": sha_file(Path(__file__).resolve()),
+@@ -235,6 +235,10 @@
+     SOURCE_COMMIT_BASE = args.source_base.lower()
+     if not re.fullmatch(r"[0-9a-f]{40}", SOURCE_COMMIT_BASE):
+         raise SystemExit("--source-base must be an exact 40-character commit SHA")
++    if shutil.disk_usage(ROOT).free < FREE_LIMIT:
++        raise SystemExit("20 GiB free-space preflight failed before creating validation output; free space and retry")
++    if target_bytes() > TARGET_LIMIT:
++        raise SystemExit("1 GiB target-size preflight failed before creating validation output; reduce target and retry")
+     if OUT.exists():
+         raise SystemExit(f"refusing to overwrite validation evidence: {OUT}")
+     if CLI_PATH.exists() or METADATA_PATH.exists():

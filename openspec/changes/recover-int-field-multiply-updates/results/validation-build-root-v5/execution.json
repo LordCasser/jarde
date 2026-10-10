@@ -1,0 +1,713 @@
+{
+  "schema": "int-field-multiply-validation-build-root-v5",
+  "validation_runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v5.py",
+    "sha256": "93f22e0bccf4459563a0bd4d8274fbf28d85d483ba63a2ac609aae95ad2bdb56"
+  },
+  "status": "validation-passed-cli-frozen",
+  "source_commit_base_expected": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+  "uncommitted_field_multiply_product": true,
+  "environment_overrides": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "guards": {
+    "minimum_free_bytes": 21474836480,
+    "maximum_target_bytes": 1073741824
+  },
+  "preflight": {
+    "git_head": {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "value": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+      "stdout": {
+        "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/git-head.stdout.raw",
+        "bytes": 41,
+        "sha256": "03d9ea108a2c73aa96478d1ad39ca86faec29d1a5dd1ee67e482f0f2c2689900"
+      },
+      "stderr": {
+        "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/git-head.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_expected": true
+    },
+    "source_pins_before": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+        "crates/jarde-java/src/ast.rs": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171",
+        "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/field.rs": "68cb90ff3dc08d9ad8ccb834079f1e2590b1b2c145fc55cc4594b4259d377145",
+        "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "tests/p3_compound_lvalue_updates.rs": "ae4389a1d9296c86d8e9fb64de983d2ab316965e631f73a25477cffa8c09a9be"
+      },
+      "canonical_files": {
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-original/classes/em23/InputFieldMultiplyControls$A.class": "8bb4762346ded92210f217fa77b90637feb48cb2fa788f4c2506237695488b27",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-original/classes/em23/InputFieldMultiplyControls.class": "e8a5e216c5f91c7987d0f9ed19517e0bd514a1b7eb7d69b3f1d42ea8a94843aa",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/file-inventory.json": "13528c4a32bfcf1d12d808c6a9d81f990d4bb7f2dfb989ed04bb94a854646ba9",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/manifest.json": "7538e33c5b687efbba53bf6efcee55be9ae2668519fd96fbc7b46b4a85832b75",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/original-sources/InputFieldMultiplyControls.java": "8ba481b7c116d9e8a2386bc6be3295642d28af69b58bd334b933e3b4828150a3",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/original-sources/Runner.java": "940bb4d04c0d1f125e0ba3ad33d1abab6fb92bfbaa5ddcc918a8041aaeb9fd9e",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class": "e071bb8287ccc9a7106010dcf488ee612971807e21f178faaecb11c5791aff9e",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2.class": "05e658eb292cca8d4b3f0fb7fdff0c299cc94d804020e3e498cb5b94d18896de",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/file-inventory.json": "669a1beddf5d90c5664ac371b0ad1a6b2c4180f35704119feefa79f05fa90bc7",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/manifest.json": "c0bb2a701f064966bba0576a72fca0f699763f22c79ba9676bf966db2e77a006",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/original-sources/InputFieldIncrement2.java": "1ccb555a5ceb55920fbfefd7a2698f9a6bfb3e0dc3efdc69c620ad1b392b0711",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/original-sources/Runner.java": "5cd3b364b3e1c52242ecf11fc56d157da50957b7dff862cfbb0d6f735ad1359b",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-array-copy/CompoundBoundaryProbe.class": "7663a371df4785133cef9294e3376f8642061e4443ec4a04e9702c65f4509c8b",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-index-copy/CompoundBoundaryProbe.class": "506a236c4d0bf737de24ff5bd98a0d8d94feb0525e089d88b386c002fc14d1cf",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-after-dup/CompoundBoundaryProbe.class": "60e06f1b20f10a8affcb2599120bcad74b64c4cba360c2b2a8132ea51948fc61",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-index/CompoundBoundaryProbe.class": "d45af194ca820d976959d5a77121dec0174dc695cb81592d55e1ec94d651e282",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-store/CompoundBoundaryProbe.class": "67fa3d918a2b13eeeeb7abfe45f8a5d4e8f1b1c338a8051e0e62df4840ead6d1",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-multi-consumer/CompoundBoundaryProbe.class": "c30abf634b607f82868c9d39edab7e265810c12bbf50f5b9341813a7d6f28700",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-different-member/CompoundBoundaryProbe.class": "eba814e99be6e02bfd88adb7ae55e0557ebc0dd428c3a061e011fa15b1cadb90",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-after-dup/CompoundBoundaryProbe.class": "45bf7beed7e159f19d7f75998f81148a54c2923e5abdbe3fb3e9261734afee43",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-dup/CompoundBoundaryProbe.class": "527139fbe6336607923db585df37899bfb8b2c9fd68766aa5c23638e39733553",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-store/CompoundBoundaryProbe.class": "d338967f9fdd30a14187f2d5f8329c6bdb91f92b8b88ab5f05083ec06a2f1646",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-multi-consumer/CompoundBoundaryProbe.class": "99e9456f109b8252feaef71bb36663585397dbc8f29ae8a94fa9605cc4b843f0",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/BoundaryBox.class": "3b7d1f963f27b4307c368ceb8b572ef805c1692b4796157993f6564581a07cd9",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryProbe.class": "d5acfc8babad92a18357a4fbf0e38657e374d384b15c4ffe365f8cdedc7422ed",
+        "tests/fixtures/p3-compound-lvalue-updates/v8/CompoundProbe.class": "889f36d3a5c06951d32762c8914829c059d8b1d6692001c08df73404c92f673f"
+      }
+    },
+    "source_pins_after": {
+      "candidate_sources": {
+        "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "crates/jarde-java/src/asserts.rs": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+        "crates/jarde-java/src/ast.rs": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171",
+        "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+        "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+        "crates/jarde-java/src/field.rs": "68cb90ff3dc08d9ad8ccb834079f1e2590b1b2c145fc55cc4594b4259d377145",
+        "crates/jarde-java/src/init.rs": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+        "crates/jarde-java/src/report.rs": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+        "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+        "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3"
+      },
+      "test_sources": {
+        ".github/workflows/ci.yml": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "tests/p3_compound_lvalue_updates.rs": "ae4389a1d9296c86d8e9fb64de983d2ab316965e631f73a25477cffa8c09a9be"
+      },
+      "canonical_files": {
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-original/classes/em23/InputFieldMultiplyControls$A.class": "8bb4762346ded92210f217fa77b90637feb48cb2fa788f4c2506237695488b27",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-original/classes/em23/InputFieldMultiplyControls.class": "e8a5e216c5f91c7987d0f9ed19517e0bd514a1b7eb7d69b3f1d42ea8a94843aa",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/file-inventory.json": "13528c4a32bfcf1d12d808c6a9d81f990d4bb7f2dfb989ed04bb94a854646ba9",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/manifest.json": "7538e33c5b687efbba53bf6efcee55be9ae2668519fd96fbc7b46b4a85832b75",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/original-sources/InputFieldMultiplyControls.java": "8ba481b7c116d9e8a2386bc6be3295642d28af69b58bd334b933e3b4828150a3",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/original-sources/Runner.java": "940bb4d04c0d1f125e0ba3ad33d1abab6fb92bfbaa5ddcc918a8041aaeb9fd9e",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class": "e071bb8287ccc9a7106010dcf488ee612971807e21f178faaecb11c5791aff9e",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2.class": "05e658eb292cca8d4b3f0fb7fdff0c299cc94d804020e3e498cb5b94d18896de",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/file-inventory.json": "669a1beddf5d90c5664ac371b0ad1a6b2c4180f35704119feefa79f05fa90bc7",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/manifest.json": "c0bb2a701f064966bba0576a72fca0f699763f22c79ba9676bf966db2e77a006",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/original-sources/InputFieldIncrement2.java": "1ccb555a5ceb55920fbfefd7a2698f9a6bfb3e0dc3efdc69c620ad1b392b0711",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/original-sources/Runner.java": "5cd3b364b3e1c52242ecf11fc56d157da50957b7dff862cfbb0d6f735ad1359b",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-array-copy/CompoundBoundaryProbe.class": "7663a371df4785133cef9294e3376f8642061e4443ec4a04e9702c65f4509c8b",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-index-copy/CompoundBoundaryProbe.class": "506a236c4d0bf737de24ff5bd98a0d8d94feb0525e089d88b386c002fc14d1cf",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-after-dup/CompoundBoundaryProbe.class": "60e06f1b20f10a8affcb2599120bcad74b64c4cba360c2b2a8132ea51948fc61",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-index/CompoundBoundaryProbe.class": "d45af194ca820d976959d5a77121dec0174dc695cb81592d55e1ec94d651e282",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-store/CompoundBoundaryProbe.class": "67fa3d918a2b13eeeeb7abfe45f8a5d4e8f1b1c338a8051e0e62df4840ead6d1",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-multi-consumer/CompoundBoundaryProbe.class": "c30abf634b607f82868c9d39edab7e265810c12bbf50f5b9341813a7d6f28700",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-different-member/CompoundBoundaryProbe.class": "eba814e99be6e02bfd88adb7ae55e0557ebc0dd428c3a061e011fa15b1cadb90",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-after-dup/CompoundBoundaryProbe.class": "45bf7beed7e159f19d7f75998f81148a54c2923e5abdbe3fb3e9261734afee43",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-dup/CompoundBoundaryProbe.class": "527139fbe6336607923db585df37899bfb8b2c9fd68766aa5c23638e39733553",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-store/CompoundBoundaryProbe.class": "d338967f9fdd30a14187f2d5f8329c6bdb91f92b8b88ab5f05083ec06a2f1646",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-multi-consumer/CompoundBoundaryProbe.class": "99e9456f109b8252feaef71bb36663585397dbc8f29ae8a94fa9605cc4b843f0",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/BoundaryBox.class": "3b7d1f963f27b4307c368ceb8b572ef805c1692b4796157993f6564581a07cd9",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryProbe.class": "d5acfc8babad92a18357a4fbf0e38657e374d384b15c4ffe365f8cdedc7422ed",
+        "tests/fixtures/p3-compound-lvalue-updates/v8/CompoundProbe.class": "889f36d3a5c06951d32762c8914829c059d8b1d6692001c08df73404c92f673f"
+      }
+    }
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:48:28.425963+00:00",
+      "duration_seconds": 4.019917041005101,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 24991592448,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:48:32.446870+00:00",
+      "duration_seconds": 34.8727917909855,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 110964942,
+      "free_bytes_after": 25919012864,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/1.stderr.raw",
+          "bytes": 2795,
+          "sha256": "134ce939b7ade4792dba60ccc998eb946a51ffae1b15b45a4acb2c82ed2f2769"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:49:07.348691+00:00",
+      "duration_seconds": 17.581108166021295,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 246467802,
+      "free_bytes_after": 25780277248,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [
+          [
+            333,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/2.stdout.raw",
+          "bytes": 30958,
+          "sha256": "4b3d8520791cd5874a252f59fae6b6cffe9ae88cf1992631e3369082cc474f18"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/2.stderr.raw",
+          "bytes": 1277,
+          "sha256": "9a2e29908128cf4b5bfd9a5ec55c1d7539075c5970fc687819c11062a37e5a57"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p3_compound_lvalue_updates",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:49:24.956961+00:00",
+      "duration_seconds": 18.831224666995695,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 521375430,
+      "free_bytes_after": 25217662976,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/3.stdout.raw",
+          "bytes": 712,
+          "sha256": "33ade1d133e17fc9c0ff9806fa7afedb0ce6c10f7fde8d421d98ece57906a61a"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/3.stderr.raw",
+          "bytes": 1507,
+          "sha256": "bd3abdbf851cfff9d31419ff6c3c5a4105c19202c44814eb1d0f822c1fa4bdd7"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--lib",
+        "integer_array_name_projection_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:49:43.974269+00:00",
+      "duration_seconds": 1.0841572500066832,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 521375430,
+      "free_bytes_after": 25147854848,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/4.stdout.raw",
+          "bytes": 357,
+          "sha256": "5d114239c85b7bb5c9c0ec4a3299a8cb596abb8a9eaaa148cdff8080e27d5d09"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/4.stderr.raw",
+          "bytes": 143,
+          "sha256": "41765f5e16bb684c757c215046f01202b6b1464fbd216d4f1efe3d3d65ac6acc"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--lib",
+        "integer_constant_name_tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:49:45.096577+00:00",
+      "duration_seconds": 10.405300750018796,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 600428082,
+      "free_bytes_after": 25072168960,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            8,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            8,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/5.stdout.raw",
+          "bytes": 1039,
+          "sha256": "2a82d0b57e617bbe816170cff0a164bb05b91d5f74dc153c3293d83e1cb95e83"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/5.stderr.raw",
+          "bytes": 209,
+          "sha256": "a04534b1331cee601608d48e62dbdf111ecf1617475808776583e72b3cf6a401"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-reader",
+        "--lib",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:49:55.531224+00:00",
+      "duration_seconds": 5.228039207984693,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 583914932,
+      "free_bytes_after": 24952918016,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            178,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            178,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/6.stdout.raw",
+          "bytes": 15727,
+          "sha256": "eefde658a7436468981659ffe456f02410e626b6fd481d7fe60c424515bfb05b"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/6.stderr.raw",
+          "bytes": 243,
+          "sha256": "a6d9b8459988186b094bd97455d69e57652e59a8a8713e6a5823108a5c0f6092"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--test",
+        "p5_corpus_fingerprint",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:50:00.802395+00:00",
+      "duration_seconds": 1.1021770839870442,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 585787257,
+      "free_bytes_after": 24946778112,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        "actual": [
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        "required": true,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/7.stdout.raw",
+          "bytes": 565,
+          "sha256": "bfc395afbb89dc3851657ecd15f063eecbf21a5d4cc58a09bc37c692312ef417"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/7.stderr.raw",
+          "bytes": 235,
+          "sha256": "b8ec3d79cef8e9af1459dfd34896a660c4b3bf9a73709ffce6f3839af62d38cd"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T06:50:01.945651+00:00",
+      "duration_seconds": 21.951628666982288,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 854345947,
+      "free_bytes_after": 24576442368,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/8.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-int-field-multiply-updates/results/validation-build-root-v5/8.stderr.raw",
+          "bytes": 1008,
+          "sha256": "6034966ef39d2826495f2bf626a8788b59c4ddcf6f9eae6a1412827daf668d9d"
+        }
+      }
+    }
+  ],
+  "freeze": {
+    "built_binary": "/Users/lordcasser/workspace/projects/jarde/target/debug/jarde-cli",
+    "cli_path": "/private/tmp/jarde-field-multiply-cli-v2",
+    "cli_sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "cli_mode": "0o555",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/candidate-cli-v2.json",
+    "source_commit_base": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+    "uncommitted_field_multiply_product": true,
+    "product_path_sets": {
+      "candidate_sources": [
+        "Cargo.lock",
+        "crates/jarde-java/src/asserts.rs",
+        "crates/jarde-java/src/ast.rs",
+        "crates/jarde-java/src/build.rs",
+        "crates/jarde-java/src/emit.rs",
+        "crates/jarde-java/src/field.rs",
+        "crates/jarde-java/src/init.rs",
+        "crates/jarde-java/src/report.rs",
+        "src/class_source.rs",
+        "src/facade.rs"
+      ],
+      "test_sources": [
+        ".github/workflows/ci.yml",
+        "tests/p3_compound_lvalue_updates.rs"
+      ],
+      "canonical_files": [
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-original/classes/em23/InputFieldMultiplyControls$A.class",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-original/classes/em23/InputFieldMultiplyControls.class",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/file-inventory.json",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/manifest.json",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/original-sources/InputFieldMultiplyControls.java",
+        "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/original-sources/Runner.java",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2.class",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/file-inventory.json",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/manifest.json",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/original-sources/InputFieldIncrement2.java",
+        "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/original-sources/Runner.java",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-array-copy/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-different-index-copy/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-after-dup/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-index/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-gap-before-store/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/array-multi-consumer/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-different-member/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-after-dup/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-dup/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-gap-before-store/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/patched/field-multi-consumer/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/BoundaryBox.class",
+        "tests/fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryProbe.class",
+        "tests/fixtures/p3-compound-lvalue-updates/v8/CompoundProbe.class"
+      ]
+    }
+  }
+}

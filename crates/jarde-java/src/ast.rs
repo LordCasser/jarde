@@ -732,6 +732,8 @@ pub enum AssignOp {
     Add,
     /// `-=`
     Subtract,
+    /// `*=`
+    Multiply,
 }
 
 impl AssignOp {
@@ -741,6 +743,7 @@ impl AssignOp {
             Self::Assign => "=",
             Self::Add => "+=",
             Self::Subtract => "-=",
+            Self::Multiply => "*=",
         }
     }
 }

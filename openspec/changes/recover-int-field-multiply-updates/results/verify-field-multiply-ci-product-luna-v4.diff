@@ -1,0 +1,42 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v3.py	2026-10-10 14:34:33
++++ openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v4.py	2026-10-10 14:36:01
+@@ -18,7 +18,7 @@
+ HERE = Path(__file__).resolve().parent
+ ROOT = HERE.parents[3]
+ CI_EVIDENCE = HERE / "ci-product-v1"
+-RESULT = CI_EVIDENCE / "acceptance-field-multiply-v3.json"
++RESULT = CI_EVIDENCE / "acceptance-field-multiply-v4.json"
+ 
+ STATIC_HELPER = ROOT / "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py"
+ STATIC_HELPER_SHA256 = "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d"
+@@ -26,9 +26,9 @@
+ INTEGER_VERIFIER_SHA256 = "e5534e0b2acc6066ba518a1b55f5d0f79b9e5e25a1c4dc5db768040b6d47b425"
+ METADATA_PATH = HERE / "candidate-cli-v2.json"
+ CLI_PATH = Path("/private/tmp/jarde-field-multiply-cli-v2")
+-BUILD_PATH = HERE / "validation-build-root-v3" / "execution.json"
+-BUILD_RUNNER_PATH = HERE / "run-validation-build-luna-v3.py"
+-BUILD_RUNNER_SHA256 = "0300873d8e7336c897e035f17fd87b0e9691fddfea99e2d42e93ce84ac8aeb95"
++BUILD_PATH = HERE / "validation-build-root-v4" / "execution.json"
++BUILD_RUNNER_PATH = HERE / "run-validation-build-luna-v4.py"
++BUILD_RUNNER_SHA256 = "ab7975fb2f73f7ea9fc6665d74785027172099f8de1feca84169f67ac5b0958b"
+ SOURCE_COMMIT_BASE = "977f761d9f68c6cb4de02f42b060de5290a1a947"
+ 
+ PRODUCT_SOURCES = {
+@@ -178,7 +178,7 @@
+     build_bytes = read(BUILD_PATH)
+     assert sha(build_bytes) == build_sha256
+     build = json.loads(build_bytes)
+-    assert build["schema"] == "int-field-multiply-validation-build-root-v3"
++    assert build["schema"] == "int-field-multiply-validation-build-root-v4"
+     assert sha(read(BUILD_RUNNER_PATH)) == BUILD_RUNNER_SHA256
+     assert build["validation_runner"] == {
+         "path": str(BUILD_RUNNER_PATH.resolve()), "sha256": BUILD_RUNNER_SHA256,
+@@ -372,7 +372,7 @@
+     workspace = verify_multiply_workspace_tests(helper, product, integer_verifier)
+ 
+     result = {
+-        "schema": "int-field-multiply-ci-product-luna-acceptance-v3",
++        "schema": "int-field-multiply-ci-product-luna-acceptance-v4",
+         "status": "accepted",
+         "product_commit": product,
+         "run_id": run_id,

@@ -4,7 +4,9 @@
 
 ## 当前状态
 
-产品检查点为375dee45a54d22ce960429cf11f0f96d33ca28b8（整数数组常量名称与预算修正，已推送）。其自身CI38026598963全部成功，05:47 UTC root独立v2接受4jobs/52steps、两seed各354records/3374 passed/0 failed/97 ignored，tasks8/8。192b是已验收实例数组产品及本片CLI v2构建基线，不是整数片CI。当前工作区后续改动为CI/交接与独立审计记录，不含新产品实现。
+当前乘法产品已完成本地与完整类独立验收，tasks5/7，待提交并核自身CI。基线HEAD为977f761d9f68c6cb4de02f42b060de5290a1a947。06:48 UTC guarded build v5九条实际命令全部通过（CI同范围Clippy、Java层333、compound7、名称2、Facade8、reader178、fingerprint5且忽略1、CLI冻结）。06:56 UTC collector-v3实际40命令/165闭合文件，8份生成完整类原样重编及运行，16次fresh javap；07:03 UTC root独立verifier-v6接受全部raw、物理成员/owner/BCI与default/all相同正文和source-map。原形及溢出/null/除零/失败字段保留均通过；仅扩现有exact SSA字段更新证明，无新pass。
+
+上一产品375dee45a54d22ce960429cf11f0f96d33ca28b8的自身CI38026598963已独立接受4jobs/52steps、两seed3374 passed/0 failed/97 ignored。文档提交977f及其CI不能作为本乘法产品CI。
 
 非final静态阶段片已**7/7**：CI38019682442全部成功，root实际verify-ci-product-root-v12接受4jobs/52steps，两seed各354结果记录、3357 passed/0 failed/97 ignored；Temurin25.0.4+7所有完整类对照、MSRV/fuzz/supply通过。完整API/stable/supply及接受文件在preserve-nonfinal-static-initializer-phase/results/ci-product-v5。Unicode两条声明期望修复逐字核Git blob；30命令/6运行腿whole-family对照及独立verifier v4来源核对已接受。
 
@@ -12,7 +14,9 @@
 
 ## 立即接续
 
-**当前下一步：** recover-int-field-multiply-updates为2/7，两份旧CLI完整outer/A基线均已root独立接受。产品未应用；private-implementation-luna-v2已完整读审/dry-run，validation-build-luna-v2与candidate-full-family-luna-v2已审。先确认文档检查点干净并重核20GiB/1GiB守卫，再应用/格式化、传该HEAD运行构建脚本，冻结CLI v2并跑新8完整编译运行腿。根验收入口是本change的verification-root.md。
+**当前下一步：** 提交推送recover-int-field-multiply-updates确切产品，捕获自身CI/API/stable/supply并实际执行已审verify-field-multiply-ci-product-luna-v6.py；只有接受后完成3.2/3.3。新CLI /private/tmp/jarde-field-multiply-cli-v2 SHA b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59，metadata/source pins与接受文件均在本change/results。构建v2预算测试假设失败、v3/v4资源拒绝、collector-v2可选字段证据误判以及verifier-v5 helper结构KeyError均保留原始失败；最终接受是build-v5/collector-v3/verifier-v6，不能混用旧版本。
+
+06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 
 1. 实例共同数组prefix已8/8，精确192b自己的CI完成并独立接受。整数片Try resource/catch名称预算缺口已修正；新CLI v2、本地10命令与v7完整类重新验证通过，05:08 UTC独立v5已接受。当前8/8，产品375dee已提交推送，自身CI38026598963已独立接受；旧CLI v1/v6仅为修正前证据。
 2. recover-int-array-constant-names当前tasks8/8。private v4及root预算修正通过AST2/replay1/Facade8和全部相关回归；新CLI /private/tmp/jarde-int-array-names-cli-v2与30文件pins真实冻结。真实PriorAssert保留raw $assertionsDisabled guard，contains("assert")不是fold证明；直接数组VALUE合法，physical report仍数字7。staged-target对抗先证明未占用可投影，再验证同方法member_text占用不会覆盖。错误版本和raw保留，具体hash以candidate-cli-v2.json及verification-root.md为准。
@@ -59,3 +63,9 @@
 05:56 UTC root再次核全部14辅助worktree：均detached/干净/main祖先/无target，无剩余未合入或分支占用，证据int results/worktree-audit-root-v1.json。候选collector v2输入只读preflight用真实blake3核两组各126files和合计36physical methods来源全部通过，但new CLI/产品未应用、未构建。机器余量随后降至约18.7GiB，resource-preflight-root-v2记录守卫未满足；target不存在，保留全部历史证据，后续重核资源后继续。
 
 06:04 UTC controls独立v1实际接受126files/33commands/原2/JADX4完整源码成功及旧Jarde4编译拒绝，准确imul/idiv/putfield后post-read来源与完整溢出/null/divide异常raw均核；新候选尚未实跑，任务仍2/7。两组准备脚本/历史错误版本/真实raw将一起提交推送。
+
+06:11 UTC乘法private v2已由root实际应用和格式化，4文件diff（3产品+1测试），没有编译残留。06:15 UTC本change strict真实通过，当前tasks仍2/7；不能把静态源改动当作Rust或动态对照接受。root已并行派Luna准备新候选独立verifier/专属CI验收器，以及按JADX同组活动测试核最多两项下一候选；没有实施下一语法点。
+
+06:45 UTC当前乘法产品仅3生产文件+3永久测试，真实Clippy/Java层333通过，compound新预算前提修正后7/7通过；fmt/change strict/diff检查再次通过。guarded build v2失败raw保留；v3/v4预检资源拒绝均零Cargo命令，v5已root审全部窄delta、尚无validation输出或新冻结CLI。清理本仓497.2MiB后实际机器free19118002176bytes，根/fuzz target不存在。条件局部自增邻项独立v3实际接受31cmd/112files、原2/JADX4成功/Jarde4失败/零runtime与完整BCI来源。71账本新增精确缺口链接，不计EM23整体完成。
+
+07:03 UTC乘法完整候选独立v6接受；当前tasks5/7，尚无确切产品CI接受。源码仅ast/build/field三处扩展及三项永久测试；所有历史失败版本、原始证据保留。

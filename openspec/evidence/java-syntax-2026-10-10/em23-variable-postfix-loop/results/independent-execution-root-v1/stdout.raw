@@ -1,0 +1,138 @@
+{
+  "schema": "em23-variable-postfix-loop-independent-acceptance-luna-v3",
+  "verified": true,
+  "checks": [
+    "closed actual inventory, manifest pin, and every recorded file hash",
+    "frozen tool pins and actual 31 command/raw records",
+    "both original class files and javap physical method/BCI inventories",
+    "2 original and 4 JADX complete-source fresh classpath-isolated -Xverify runs match same-JDK raw oracle",
+    "4 Jarde reports preserve explanation fallback; all 4 unmodified full-source recompiles fail with missing return"
+  ],
+  "original_class_facts": {
+    "javac8": {
+      "class_sha256": "e143d3bf6a831ae39134930b6d74df404de5416147565a7c0be84f92d700e8b7",
+      "class_blake3": "2d808f22b634b1b5aa4fd5fa6b5bd5819691f7efc00f17fa227f204957495de7",
+      "class_bytes": 540,
+      "method_bcis": {
+        "<init>()V": [
+          0,
+          1,
+          4
+        ],
+        "countEmpty(Ljava/util/List;)I": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          12,
+          13,
+          14,
+          19,
+          22,
+          23,
+          28,
+          31,
+          32,
+          33,
+          36,
+          39,
+          42,
+          45,
+          46
+        ]
+      }
+    },
+    "javac23": {
+      "class_sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+      "class_blake3": "790d1a9b9ca2c5c0b71bd9121dff30f2756180e57bea3a4516942c482bbda730",
+      "class_bytes": 537,
+      "method_bcis": {
+        "<init>()V": [
+          0,
+          1,
+          4
+        ],
+        "countEmpty(Ljava/util/List;)I": [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7,
+          12,
+          13,
+          14,
+          19,
+          22,
+          23,
+          28,
+          31,
+          32,
+          33,
+          36,
+          39,
+          42,
+          45,
+          46
+        ]
+      }
+    }
+  },
+  "oracle": {
+    "successful_cases": [
+      "javac8-original",
+      "javac8-jadx-default",
+      "javac8-jadx-none",
+      "javac23-original",
+      "javac23-jadx-default",
+      "javac23-jadx-none"
+    ],
+    "original_raw_sha256": {
+      "javac8": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4",
+      "javac23": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+    },
+    "same_jdk_jadx_raw_match": true
+  },
+  "jarde_observed": {
+    "javac8-jarde-default": {
+      "render_exit": 0,
+      "compile_exit": 1,
+      "fallback": "jre_region_arms_do_not_meet",
+      "compile_error": "missing-return",
+      "generated_source_sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766",
+      "runtime": null
+    },
+    "javac8-jarde-all": {
+      "render_exit": 0,
+      "compile_exit": 1,
+      "fallback": "jre_region_arms_do_not_meet",
+      "compile_error": "missing-return",
+      "generated_source_sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766",
+      "runtime": null
+    },
+    "javac23-jarde-default": {
+      "render_exit": 0,
+      "compile_exit": 1,
+      "fallback": "jre_region_arms_do_not_meet",
+      "compile_error": "missing-return",
+      "generated_source_sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766",
+      "runtime": null
+    },
+    "javac23-jarde-all": {
+      "render_exit": 0,
+      "compile_exit": 1,
+      "fallback": "jre_region_arms_do_not_meet",
+      "compile_error": "missing-return",
+      "generated_source_sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766",
+      "runtime": null
+    }
+  },
+  "manifest_sha256": "e8aec7964455ab84ffb12d984140e18bffe94e5cc0cf7f1eb5de06c21cc23a2d",
+  "inventory_sha256": "89af5a986896541c5adb0dd8bed30c89d61038017f05d57634142e8416cce783",
+  "case_count": 10,
+  "command_count": 31,
+  "closed_file_count": 112,
+  "interpretation": "Verifier success means the baseline evidence and observed Jarde failures were independently verified; it does not mean the Jarde source compiled or the feature passed."
+}

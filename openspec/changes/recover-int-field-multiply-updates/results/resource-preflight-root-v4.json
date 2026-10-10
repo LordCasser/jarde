@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-10-10T06:44:59Z",
+  "free_bytes": 19118002176,
+  "minimum_free_bytes": 21474836480,
+  "root_target_exists": false,
+  "fuzz_target_exists": false,
+  "candidate_cli_frozen": false,
+  "validation_v5_output_exists": false,
+  "current_source_pins": {
+    "crates/jarde-java/src/ast.rs": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171",
+    "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+    "crates/jarde-java/src/field.rs": "68cb90ff3dc08d9ad8ccb834079f1e2590b1b2c145fc55cc4594b4259d377145",
+    "tests/p3_compound_lvalue_updates.rs": "ae4389a1d9296c86d8e9fb64de983d2ab316965e631f73a25477cffa8c09a9be"
+  },
+  "guard_satisfied": false
+}

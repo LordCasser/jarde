@@ -1,0 +1,98 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/prepare-candidate-full-family-luna-v2.py	2026-10-10 13:57:22
++++ openspec/changes/recover-int-field-multiply-updates/results/prepare-candidate-full-family-luna-v3.py	2026-10-10 14:55:45
+@@ -18,7 +18,7 @@
+ 
+ HERE = Path(__file__).resolve().parent
+ ROOT = HERE.parents[3]
+-OUT = HERE / "candidate-root-luna-v2"
++OUT = HERE / "candidate-root-luna-v3"
+ EM23_BASE = ROOT / "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2"
+ CONTROLS_BASE = ROOT / "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1"
+ BASELINES = {
+@@ -359,7 +359,8 @@
+         methods[identity] = {"text": report["text"], "source_map": report["source_map"],
+                              "mapped_bcis": sorted(mapped), "origins": origins,
+                              "content": report["content"], "fallbacks": report["fallbacks"],
+-                             "quality": report["quality"], "fields": report["fields"]}
++                             "quality": report["quality"], "fields": report["fields"],
++                             "evidence": report["evidence"]}
+     return {"fields": fields, "methods": methods}
+ 
+ 
+@@ -443,7 +444,7 @@
+     return sorted(root_methods)
+ 
+ 
+-def inspect_presentation(family_name: str, root_members: dict) -> dict:
++def inspect_presentation(family_name: str, root_members: dict, mode: str) -> dict:
+     bodies = {key: value["text"] for key, value in root_members["methods"].items()}
+     test1 = re.sub(r"\s+", "", bodies["test1(I)V"])
+     test2 = re.sub(r"\s+", "", bodies["test2(I)V"])
+@@ -458,13 +459,33 @@
+         divide = re.sub(r"\s+", "", method["text"])
+         require(method["quality"] == "structured" and method["content"] == "contains_statements"
+                 and method["fallbacks"] == [], "multiplyDivide is not structured and fallback-free")
+-        f_accesses = [access for access in method["fields"]
+-                      if access["owner"] == "em23/InputFieldMultiplyControls$A"
+-                      and access["name"] == "f" and access["descriptor"] == "I"]
+-        require(f_accesses and all(access["presented"] for access in f_accesses)
+-                and any(access["access"] == "read" for access in f_accesses)
+-                and any(access["access"] == "write" for access in f_accesses),
+-                "multiplyDivide does not present every nested f read/write")
++        read_details = [category["state"]["state"] for category in method["evidence"]["categories"]
++                        if category["kind"] == "read_details"]
++        require(len(read_details) == 1, "multiplyDivide read_details evidence category is not unique")
++        if mode == "default":
++            require(read_details == ["not_requested"] and method["fields"] == [],
++                    "default multiplyDivide must report unrequested read details with no field rows")
++            result["multiply_divide_read_details"] = "not_requested"
++        else:
++            require(read_details == ["complete"], "all multiplyDivide read_details are not complete")
++            expected_accesses = [
++                ("em23/InputFieldMultiplyControls", "a", "Lem23/InputFieldMultiplyControls$A;", "read", 1),
++                ("em23/InputFieldMultiplyControls$A", "f", "I", "read", 5),
++                ("em23/InputFieldMultiplyControls$A", "f", "I", "write", 13),
++                ("em23/InputFieldMultiplyControls", "a", "Lem23/InputFieldMultiplyControls$A;", "read", 17),
++                ("em23/InputFieldMultiplyControls$A", "f", "I", "read", 20),
++            ]
++            actual_accesses = [
++                (access["owner"], access["name"], access["descriptor"], access["access"], access["bci"])
++                for access in method["fields"]
++            ]
++            require(actual_accesses == expected_accesses
++                    and all(access["presented"] and access["refusal"] is None and not access["is_static"]
++                            for access in method["fields"]),
++                    "all multiplyDivide field access rows differ from the five exact javap accesses or are unpresented")
++            result["multiply_divide_read_details"] = "complete"
++            result["multiply_divide_all_f_accesses_presented"] = True
++            result["multiply_divide_field_accesses"] = len(actual_accesses)
+         assignment = re.search(r"this\.a\.f\*=([^;]+);", divide)
+         require(assignment is not None, "multiplyDivide *= assignment is missing")
+         rhs_tokens = re.findall(r"[A-Za-z_$][\w$]*|\d+|[/()]", assignment.group(1))
+@@ -507,7 +528,7 @@
+         copy_input(base / "file-inventory.json", OUT / f"inputs/{name}-baseline-file-inventory.json")
+     copy_input(METADATA, OUT / "inputs/candidate-cli-metadata.json")
+     candidate_binary = copy_input(CLI, OUT / "inputs/candidate-cli")
+-    prepared_script_copy = copy_input(Path(__file__), OUT / "inputs/prepare-candidate-full-family-luna-v2.py")
++    prepared_script_copy = copy_input(Path(__file__), OUT / "inputs/prepare-candidate-full-family-luna-v3.py")
+ 
+     jdk_manifest_path = ROOT / "openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json"
+     require(sha(jdk_manifest_path.read_bytes()) == JDK_MANIFEST_SHA256, "JDK manifest pin changed")
+@@ -596,7 +617,7 @@
+                         require([x["item"] for x in child_doc["fields"]] == [x["item"] for x in old_child["fields"]]
+                                 and [x["item"] for x in child_doc["methods"]] == [x["item"] for x in old_child["methods"]],
+                                 f"{label}: nested physical member records changed from frozen baseline")
+-                        presentation = inspect_presentation(family_name, root_members)
++                        presentation = inspect_presentation(family_name, root_members, mode)
+                         require(root_doc["text"].count("class ") >= 2,
+                                 f"{label}: generated source does not retain outer and nested class declarations")
+                         row.update({"success": True, "document": file_record(doc_path),
+@@ -725,7 +746,7 @@
+                     failures.append(f"{family_name}/{leg_name}: default/all full source differs")
+ 
+     manifest = {
+-        "schema": "em23-int-field-multiply-candidate-full-family-luna-v2",
++        "schema": "em23-int-field-multiply-candidate-full-family-luna-v3",
+         "status": "completed" if not failures else "candidate-with-failures",
+         "claim_boundary": "Two frozen Java 8 nested-field families; original/JADX evidence is imported and revalidated, while only candidate Jarde rendering and full-source compilation/runtime are fresh. No implementation conclusion beyond recorded checks.",
+         "input_baselines": {name: {"path": str(config["path"]),

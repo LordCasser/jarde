@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/private/tmp/jarde-int-array-names-cli-v2",
+    "class-source",
+    "--input",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+    "--class",
+    "VariablePostfixLoop",
+    "--policy",
+    "single-class",
+    "--release",
+    "8",
+    "--format",
+    "json",
+    "--evidence",
+    "all"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at_utc": "2026-10-10T06:53:58Z",
+  "duration_seconds": 0.015560083003947511,
+  "exit_code": 0,
+  "environment_overrides": {
+    "JRE_JOIN_PROBE": "1",
+    "JRE_PREFIX_PROBE": "1"
+  },
+  "cli_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+  "streams": {
+    "stdout": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/join-diagnostic-root-v1/stdout.raw",
+      "bytes": 28188,
+      "sha256": "1eed10759e877ddce563f3318998201d0f291704ae39029c13c1e2c9c0cbaec1"
+    },
+    "stderr": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/join-diagnostic-root-v1/stderr.raw",
+      "bytes": 128,
+      "sha256": "242eae6002b70d213d85956022ace420fb12d031e72c183cb36b5a48fde0c68c"
+    }
+  }
+}

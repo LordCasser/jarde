@@ -1,0 +1,23 @@
+{
+  "schema": "em23-int-field-multiply-candidate-summary-v2",
+  "status": "candidate-with-failures",
+  "render_counts": {
+    "increment": 4,
+    "multiply": 4
+  },
+  "candidate_case_counts": {
+    "increment": 4,
+    "multiply": 4
+  },
+  "candidate_success_counts": {
+    "increment": 4,
+    "multiply": 2
+  },
+  "failures": [
+    "multiply-javac23-jarde-default: RuntimeError: multiplyDivide does not present every nested f read/write",
+    "multiply-javac23-jarde-default: candidate compile/class-set/runtime differs",
+    "multiply-javac8-jarde-default: RuntimeError: multiplyDivide does not present every nested f read/write",
+    "multiply-javac8-jarde-default: candidate compile/class-set/runtime differs",
+    "not all eight Jarde candidate legs passed full-source replay"
+  ]
+}

@@ -1,0 +1,2870 @@
+{
+  "schema": "em23-variable-postfix-loop-baseline-luna-v1",
+  "status": "baseline-with-failures",
+  "claim_boundary": "One active TestVariablesDefinitions2.TestCls.test enhanced-for local postfix increment adapted to a standalone ordinary class; 2 original, 4 JADX, and 4 Jarde complete-source compile/run legs. No claim that Jarde must print `i++`, nor about all EM-23 cases, ECJ, or DEX.",
+  "oracle": "Fresh original complete class plus the same Runner on each fixed JDK; all reconstructed complete-source legs compare exit/stdout/stderr byte-for-byte to the same-JDK original. The original class runtime triple on each JDK is the oracle; no output bytes are hard-coded.",
+  "source": {
+    "path": "original-sources/VariablePostfixLoop.java",
+    "bytes": 241,
+    "sha256": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199"
+  },
+  "runner": {
+    "path": "original-sources/Runner.java",
+    "bytes": 703,
+    "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+  },
+  "prepared_input_sha256": {
+    "source": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199",
+    "runner": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+  },
+  "original_stdout_from_javac23_raw": "null=0\nempty=0\nmixed=2\nrepeat=1\nnull-element=NullPointerException\n",
+  "oracle_policy": "Compare each reconstructed leg against its same-JDK original runtime exit/stdout/stderr; no expected output is hard-coded.",
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "jdk_legs": {
+    "javac8": {
+      "home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      }
+    },
+    "javac23": {
+      "home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      }
+    }
+  },
+  "frozen_jarde_cli": {
+    "path": "/private/tmp/jarde-int-array-names-cli-v2",
+    "sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-cli-v2.json",
+    "metadata_sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282",
+    "metadata_copy": {
+      "path": "inputs/candidate-cli-metadata.json",
+      "bytes": 5084,
+      "sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282"
+    }
+  },
+  "jadx": {
+    "launcher": "/opt/homebrew/bin/jadx",
+    "resolved_launcher": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "expected_version": "1.5.6",
+    "version_command": {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:45.416234+00:00",
+      "duration_seconds": 0.20716558300773613,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-version.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "streams/jadx-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "input_jar": {
+      "path": "jadx-input/VariablePostfixLoop.class.jar",
+      "bytes": 685,
+      "sha256": "ddb81b622062030cf5ab39852d99d3b7e02143c951c0ddc86a79a1d53fc72b4a"
+    },
+    "jar_members": [
+      {
+        "name": "VariablePostfixLoop.class",
+        "bytes": 537,
+        "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+        "blake3": "790d1a9b9ca2c5c0b71bd9121dff30f2756180e57bea3a4516942c482bbda730"
+      }
+    ],
+    "input_jar_exact": true,
+    "profiles": [
+      {
+        "profile": "default",
+        "command": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:45.623947+00:00",
+          "duration_seconds": 0.9457760420045815,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-default-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-default-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/default/sources/defpackage/VariablePostfixLoop.java",
+            "bytes": 516,
+            "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          "defpackage"
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      {
+        "profile": "none",
+        "command": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:46.571238+00:00",
+          "duration_seconds": 0.9444772499846295,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-none-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-none-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/none/sources/VariablePostfixLoop.java",
+            "bytes": 515,
+            "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          null
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      }
+    ]
+  },
+  "javac8_and_javac23_original_class_facts": [
+    {
+      "path": "cases/javac8-original/classes/VariablePostfixLoop.class",
+      "bytes": 540,
+      "sha256": "e143d3bf6a831ae39134930b6d74df404de5416147565a7c0be84f92d700e8b7",
+      "blake3": "2d808f22b634b1b5aa4fd5fa6b5bd5819691f7efc00f17fa227f204957495de7"
+    },
+    {
+      "path": "cases/javac23-original/classes/VariablePostfixLoop.class",
+      "bytes": 537,
+      "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+      "blake3": "790d1a9b9ca2c5c0b71bd9121dff30f2756180e57bea3a4516942c482bbda730"
+    }
+  ],
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 0
+  },
+  "expected_case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "original_cross_jdk_raw_equal": true,
+  "preflight": [
+    {
+      "label": "fixture-source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/inputs-prepared-luna-v1/VariablePostfixLoop.java",
+      "expected_sha256": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199",
+      "actual_sha256": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199",
+      "ok": true
+    },
+    {
+      "label": "runner-source",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/inputs-prepared-luna-v1/Runner.java",
+      "expected_sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102",
+      "actual_sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102",
+      "ok": true
+    },
+    {
+      "label": "fixed-jdk-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "jdk-leg-set",
+      "expected": [
+        "javac8",
+        "javac23"
+      ],
+      "actual": [
+        "javac23",
+        "javac8"
+      ],
+      "ok": true
+    },
+    {
+      "label": "frozen-jarde-cli",
+      "path": "/private/tmp/jarde-int-array-names-cli-v2",
+      "expected_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+      "actual_sha256": "51e17991cbf7cb6cebb43d2ea3b66dfe655522e1f8c3da9a69b05ba47f698067",
+      "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-array-constant-names/results/candidate-cli-v2.json",
+      "metadata_sha256": "dd2a5a0d5731ca5fa5a12e87c9e344c6faaf269c82bc128f935b57e8681ec282",
+      "metadata_cli_matches": true,
+      "ok": true
+    },
+    {
+      "label": "fixed-jadx-launcher",
+      "path": "/opt/homebrew/bin/jadx",
+      "resolved_path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "expected_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "actual_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "ok": true
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:43.993245+00:00",
+      "duration_seconds": 0.09439604100771248,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-java-version.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-java-version.stderr.raw",
+          "bytes": 174,
+          "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+        }
+      }
+    },
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.088261+00:00",
+      "duration_seconds": 0.0818662499950733,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-javac-version.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-javac-version.stderr.raw",
+          "bytes": 16,
+          "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+        }
+      }
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.170597+00:00",
+      "duration_seconds": 0.07292187499115244,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-javap-version.stdout.raw",
+          "bytes": 10,
+          "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+        },
+        "stderr": {
+          "path": "streams/javac8-javap-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.244424+00:00",
+      "duration_seconds": 0.22654674999648705,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.471401+00:00",
+      "duration_seconds": 0.050433625001460314,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout.raw",
+          "bytes": 66,
+          "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes/VariablePostfixLoop.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.522719+00:00",
+      "duration_seconds": 0.1356708330276888,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-original-javap.stdout.raw",
+          "bytes": 3951,
+          "sha256": "abf9225f700a8fc6ba44449d3215b170cd87053df19f16ef8e5f5f65aa0ba901"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.659747+00:00",
+      "duration_seconds": 0.08884820900857449,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-java-version.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-java-version.stderr.raw",
+          "bytes": 152,
+          "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+        }
+      }
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.749094+00:00",
+      "duration_seconds": 0.11467391697806306,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-javac-version.stdout.raw",
+          "bytes": 13,
+          "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+        },
+        "stderr": {
+          "path": "streams/javac23-javac-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.864322+00:00",
+      "duration_seconds": 0.058932250016368926,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-javap-version.stdout.raw",
+          "bytes": 7,
+          "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+        },
+        "stderr": {
+          "path": "streams/javac23-javap-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:44.924136+00:00",
+      "duration_seconds": 0.2629652080067899,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:45.187554+00:00",
+      "duration_seconds": 0.06628070800798014,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout.raw",
+          "bytes": 66,
+          "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-original-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:45.254669+00:00",
+      "duration_seconds": 0.16006866600946523,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-original-javap.stdout.raw",
+          "bytes": 4139,
+          "sha256": "6377f30223500354dd62a1a6079a7665f306020793325d55ce4761d56c0de85c"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:45.416234+00:00",
+      "duration_seconds": 0.20716558300773613,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-version.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "streams/jadx-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "jadx-default-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/default",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:45.623947+00:00",
+      "duration_seconds": 0.9457760420045815,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-default-decompile.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/jadx-default-decompile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "jadx-none-decompile",
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/none",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:46.571238+00:00",
+      "duration_seconds": 0.9444772499846295,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/jadx-none-decompile.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "streams/jadx-none-decompile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:47.517854+00:00",
+      "duration_seconds": 0.218634333985392,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:47.737018+00:00",
+      "duration_seconds": 0.04539879199001007,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-default-run.stdout.raw",
+          "bytes": 66,
+          "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-default-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:47.783757+00:00",
+      "duration_seconds": 0.2268853329878766,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/classes",
+        "defpackage.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.011374+00:00",
+      "duration_seconds": 0.047047667001606897,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-default-run.stdout.raw",
+          "bytes": 66,
+          "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-default-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.059802+00:00",
+      "duration_seconds": 0.22081545801484026,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-none-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.281114+00:00",
+      "duration_seconds": 0.04750183300347999,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jadx-none-run.stdout.raw",
+          "bytes": 66,
+          "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+        },
+        "stderr": {
+          "path": "streams/javac8-jadx-none-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.330166+00:00",
+      "duration_seconds": 0.24390512498212047,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-none-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-compile.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/classes",
+        "Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.574665+00:00",
+      "duration_seconds": 0.0497449160029646,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jadx-none-run.stdout.raw",
+          "bytes": 66,
+          "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+        },
+        "stderr": {
+          "path": "streams/javac23-jadx-none-run.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-render-default",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes/VariablePostfixLoop.class",
+        "--class",
+        "VariablePostfixLoop",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.625417+00:00",
+      "duration_seconds": 0.015294124983483925,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-render-default.stdout.raw",
+          "bytes": 27255,
+          "sha256": "67d2456504ca40b53f4ed5630573d28046e95968825c02de51f3be2bd513bbed"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-render-all",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes/VariablePostfixLoop.class",
+        "--class",
+        "VariablePostfixLoop",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.641822+00:00",
+      "duration_seconds": 0.008136541990097612,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-render-all.stdout.raw",
+          "bytes": 28188,
+          "sha256": "ae71954515e81e2b81787e060ebde3ebe8b4e829021675f7acd4df0ccffcc44a"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-render-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.651283+00:00",
+      "duration_seconds": 0.20861074997810647,
+      "exit": 1,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-default-compile.stderr.raw",
+          "bytes": 235,
+          "sha256": "51e9b968ee76d05d15f5b6e41dff84cf1703acdada56d9396f39b5879409f652"
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "started_at": "2026-10-10T06:30:48.860993+00:00",
+      "duration_seconds": 0.19587070800480433,
+      "exit": 1,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac8-jarde-all-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-jarde-all-compile.stderr.raw",
+          "bytes": 231,
+          "sha256": "c07f9fd8df576a5c8c325d6e1a40e2f4c613f6f1698501ba4a2bac73375057ff"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-render-default",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "--class",
+        "VariablePostfixLoop",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:49.057850+00:00",
+      "duration_seconds": 0.007565417006844655,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-render-default.stdout.raw",
+          "bytes": 27255,
+          "sha256": "70a77b2a61c3bd65a78494e568f322002b470d6e00f70970eb584fc12846ec01"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render-default.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-render-all",
+      "argv": [
+        "/private/tmp/jarde-int-array-names-cli-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "--class",
+        "VariablePostfixLoop",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:49.066430+00:00",
+      "duration_seconds": 0.007303375023184344,
+      "exit": 0,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-render-all.stdout.raw",
+          "bytes": 28188,
+          "sha256": "82e560a54f6d473d561119a8776d5b5b481fc8ad630e2e0d85ab72caca64352e"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-render-all.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:49.074972+00:00",
+      "duration_seconds": 0.24734208299196325,
+      "exit": 1,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-default-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-default-compile.stderr.raw",
+          "bytes": 236,
+          "sha256": "5b07353f1f985a6125c49478a6f3f650abe50ebf1d313b20f0658402559e7f4e"
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/VariablePostfixLoop.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "started_at": "2026-10-10T06:30:49.323552+00:00",
+      "duration_seconds": 0.25107120801112615,
+      "exit": 1,
+      "streams": {
+        "stdout": {
+          "path": "streams/javac23-jarde-all-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-jarde-all-compile.stderr.raw",
+          "bytes": 232,
+          "sha256": "d1589bc964e8a2165ada0b030199c44bd17c97c74ba3bbad40722fcc13a4c145"
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:44.244424+00:00",
+        "duration_seconds": 0.22654674999648705,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-original-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-original-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:44.471401+00:00",
+        "duration_seconds": 0.050433625001460314,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-original-run.stdout.raw",
+            "bytes": 66,
+            "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+          },
+          "stderr": {
+            "path": "streams/javac8-original-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-original/VariablePostfixLoop.java",
+          "bytes": 241,
+          "sha256": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199"
+        },
+        {
+          "path": "cases/javac8-original/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/Runner.class",
+          "bytes": 1139,
+          "sha256": "23c699918ca8e519facd45d925436f979b5e0c454281c3b782f62177da65ba5e"
+        },
+        {
+          "path": "cases/javac8-original/classes/VariablePostfixLoop.class",
+          "bytes": 540,
+          "sha256": "e143d3bf6a831ae39134930b6d74df404de5416147565a7c0be84f92d700e8b7"
+        }
+      ],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "complete_class_set": true,
+      "javap": {
+        "command": {
+          "label": "javac8-original-javap",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes/VariablePostfixLoop.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "started_at": "2026-10-10T06:30:44.522719+00:00",
+          "duration_seconds": 0.1356708330276888,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac8-original-javap.stdout.raw",
+              "bytes": 3951,
+              "sha256": "abf9225f700a8fc6ba44449d3215b170cd87053df19f16ef8e5f5f65aa0ba901"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-javap.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "text": {
+          "path": "cases/javac8-original/javap.txt",
+          "bytes": 3951,
+          "sha256": "abf9225f700a8fc6ba44449d3215b170cd87053df19f16ef8e5f5f65aa0ba901"
+        },
+        "physical_fields": [],
+        "physical_methods": {
+          "<init>()V": [
+            0,
+            1,
+            4
+          ],
+          "countEmpty(Ljava/util/List;)I": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            12,
+            13,
+            14,
+            19,
+            22,
+            23,
+            28,
+            31,
+            32,
+            33,
+            36,
+            39,
+            42,
+            45,
+            46
+          ]
+        },
+        "physical_members_exact": true
+      },
+      "actual_class": {
+        "path": "cases/javac8-original/classes/VariablePostfixLoop.class",
+        "bytes": 540,
+        "sha256": "e143d3bf6a831ae39134930b6d74df404de5416147565a7c0be84f92d700e8b7",
+        "blake3": "2d808f22b634b1b5aa4fd5fa6b5bd5819691f7efc00f17fa227f204957495de7"
+      },
+      "success": true,
+      "runtime_raw": {
+        "exit": 0,
+        "stdout_sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:44.924136+00:00",
+        "duration_seconds": 0.2629652080067899,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-original-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-original-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:45.187554+00:00",
+        "duration_seconds": 0.06628070800798014,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-original-run.stdout.raw",
+            "bytes": 66,
+            "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+          },
+          "stderr": {
+            "path": "streams/javac23-original-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-original/VariablePostfixLoop.java",
+          "bytes": 241,
+          "sha256": "17147219c9e524d18d62063f932b1ebb3ae976cb6f3bd3fddd2bfd8a58889199"
+        },
+        {
+          "path": "cases/javac23-original/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/Runner.class",
+          "bytes": 1136,
+          "sha256": "2bc36b96e8690cc0a15ee33d64e07693fa0a1e8560ad95402883032908079549"
+        },
+        {
+          "path": "cases/javac23-original/classes/VariablePostfixLoop.class",
+          "bytes": 537,
+          "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b"
+        }
+      ],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "complete_class_set": true,
+      "javap": {
+        "command": {
+          "label": "javac23-original-javap",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:45.254669+00:00",
+          "duration_seconds": 0.16006866600946523,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac23-original-javap.stdout.raw",
+              "bytes": 4139,
+              "sha256": "6377f30223500354dd62a1a6079a7665f306020793325d55ce4761d56c0de85c"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-javap.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "text": {
+          "path": "cases/javac23-original/javap.txt",
+          "bytes": 4139,
+          "sha256": "6377f30223500354dd62a1a6079a7665f306020793325d55ce4761d56c0de85c"
+        },
+        "physical_fields": [],
+        "physical_methods": {
+          "<init>()V": [
+            0,
+            1,
+            4
+          ],
+          "countEmpty(Ljava/util/List;)I": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            12,
+            13,
+            14,
+            19,
+            22,
+            23,
+            28,
+            31,
+            32,
+            33,
+            36,
+            39,
+            42,
+            45,
+            46
+          ]
+        },
+        "physical_members_exact": true
+      },
+      "actual_class": {
+        "path": "cases/javac23-original/classes/VariablePostfixLoop.class",
+        "bytes": 537,
+        "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+        "blake3": "790d1a9b9ca2c5c0b71bd9121dff30f2756180e57bea3a4516942c482bbda730"
+      },
+      "success": true,
+      "runtime_raw": {
+        "exit": 0,
+        "stdout_sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile": {
+        "label": "javac8-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:47.517854+00:00",
+        "duration_seconds": 0.218634333985392,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-default-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:47.737018+00:00",
+        "duration_seconds": 0.04539879199001007,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-default-run.stdout.raw",
+            "bytes": 66,
+            "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-default-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-default/VariablePostfixLoop.java",
+          "bytes": 516,
+          "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+        },
+        {
+          "path": "cases/javac8-jadx-default/Runner.java",
+          "bytes": 724,
+          "sha256": "3103663829e5d83cafc305beb70495d16e04e8d18399d9550a47f0cc23df1783"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/Runner.class",
+          "bytes": 1161,
+          "sha256": "e030781273f034832de60e58b5ff2c77fca5ba46efa4555f81b067c088acfaa8"
+        },
+        {
+          "path": "cases/javac8-jadx-default/classes/defpackage/VariablePostfixLoop.class",
+          "bytes": 548,
+          "sha256": "b76f70cafc3e88a9ee8bbb7e01a636340ece957438b6ace5d3d32659cb47329a"
+        }
+      ],
+      "expected_class_paths": [
+        "defpackage/Runner.class",
+        "defpackage/VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [
+        "defpackage/Runner.class",
+        "defpackage/VariablePostfixLoop.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "generated_source": {
+        "path": "jadx-output/default/sources/defpackage/VariablePostfixLoop.java",
+        "bytes": 516,
+        "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac8-jadx-default/Runner.java",
+        "bytes": 724,
+        "sha256": "3103663829e5d83cafc305beb70495d16e04e8d18399d9550a47f0cc23df1783"
+      },
+      "runner_class": "defpackage.Runner",
+      "decompilation": {
+        "profile": "default",
+        "command": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:45.623947+00:00",
+          "duration_seconds": 0.9457760420045815,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-default-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-default-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/default/sources/defpackage/VariablePostfixLoop.java",
+            "bytes": 516,
+            "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          "defpackage"
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile": {
+        "label": "javac23-jadx-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:47.783757+00:00",
+        "duration_seconds": 0.2268853329878766,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-default-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-default-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/classes",
+          "defpackage.Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.011374+00:00",
+        "duration_seconds": 0.047047667001606897,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-default-run.stdout.raw",
+            "bytes": 66,
+            "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-default-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-default/VariablePostfixLoop.java",
+          "bytes": 516,
+          "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+        },
+        {
+          "path": "cases/javac23-jadx-default/Runner.java",
+          "bytes": 724,
+          "sha256": "3103663829e5d83cafc305beb70495d16e04e8d18399d9550a47f0cc23df1783"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/Runner.class",
+          "bytes": 1158,
+          "sha256": "152b85e202f0b73fa13173e97b1db743e5cde03cef26991f94955ba074cc8a45"
+        },
+        {
+          "path": "cases/javac23-jadx-default/classes/defpackage/VariablePostfixLoop.class",
+          "bytes": 545,
+          "sha256": "1ccf7eeef72cd130c4bb173f77a812f42cf01dfae471b1a3c2dc33b05b09a7e8"
+        }
+      ],
+      "expected_class_paths": [
+        "defpackage/Runner.class",
+        "defpackage/VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [
+        "defpackage/Runner.class",
+        "defpackage/VariablePostfixLoop.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-default/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "generated_source": {
+        "path": "jadx-output/default/sources/defpackage/VariablePostfixLoop.java",
+        "bytes": 516,
+        "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac23-jadx-default/Runner.java",
+        "bytes": 724,
+        "sha256": "3103663829e5d83cafc305beb70495d16e04e8d18399d9550a47f0cc23df1783"
+      },
+      "runner_class": "defpackage.Runner",
+      "decompilation": {
+        "profile": "default",
+        "command": {
+          "label": "jadx-default-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/default",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:45.623947+00:00",
+          "duration_seconds": 0.9457760420045815,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-default-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-default-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/default/sources/defpackage/VariablePostfixLoop.java",
+            "bytes": 516,
+            "sha256": "7a0e0c68a28682ce5e564ff905184cf566814ad44889873fdda92ca7943f1471"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          "defpackage"
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile": {
+        "label": "javac8-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.059802+00:00",
+        "duration_seconds": 0.22081545801484026,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-none-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-none-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac8-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.281114+00:00",
+        "duration_seconds": 0.04750183300347999,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jadx-none-run.stdout.raw",
+            "bytes": 66,
+            "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+          },
+          "stderr": {
+            "path": "streams/javac8-jadx-none-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac8-jadx-none/VariablePostfixLoop.java",
+          "bytes": 515,
+          "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+        },
+        {
+          "path": "cases/javac8-jadx-none/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-jadx-none/classes/Runner.class",
+          "bytes": 1139,
+          "sha256": "23c699918ca8e519facd45d925436f979b5e0c454281c3b782f62177da65ba5e"
+        },
+        {
+          "path": "cases/javac8-jadx-none/classes/VariablePostfixLoop.class",
+          "bytes": 537,
+          "sha256": "c698edd40af96985496052b0539e2100f9bf4d568e9c5857f340d05d0f3d86d7"
+        }
+      ],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac8",
+      "generated_source": {
+        "path": "jadx-output/none/sources/VariablePostfixLoop.java",
+        "bytes": 515,
+        "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac8-jadx-none/Runner.java",
+        "bytes": 703,
+        "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+      },
+      "runner_class": "Runner",
+      "decompilation": {
+        "profile": "none",
+        "command": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:46.571238+00:00",
+          "duration_seconds": 0.9444772499846295,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-none-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-none-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/none/sources/VariablePostfixLoop.java",
+            "bytes": 515,
+            "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          null
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile": {
+        "label": "javac23-jadx-none-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.330166+00:00",
+        "duration_seconds": 0.24390512498212047,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-none-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-none-compile.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "runtime": {
+        "label": "javac23-jadx-none-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/classes",
+          "Runner"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.574665+00:00",
+        "duration_seconds": 0.0497449160029646,
+        "exit": 0,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jadx-none-run.stdout.raw",
+            "bytes": 66,
+            "sha256": "3366b89f76c3d7dd1296f18f7b933bdf7ff1755bb03230d87db1a39a018e98c4"
+          },
+          "stderr": {
+            "path": "streams/javac23-jadx-none-run.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "source_files": [
+        {
+          "path": "cases/javac23-jadx-none/VariablePostfixLoop.java",
+          "bytes": 515,
+          "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+        },
+        {
+          "path": "cases/javac23-jadx-none/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-jadx-none/classes/Runner.class",
+          "bytes": 1136,
+          "sha256": "2bc36b96e8690cc0a15ee33d64e07693fa0a1e8560ad95402883032908079549"
+        },
+        {
+          "path": "cases/javac23-jadx-none/classes/VariablePostfixLoop.class",
+          "bytes": 534,
+          "sha256": "9a44859a0b6d292586c53b9afbecb3c5110c733852d460fe9e8d24664b0c4caa"
+        }
+      ],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "class_set_exact": true,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jadx-none/classes",
+      "compile_success": true,
+      "runtime_success": true,
+      "kind": "jadx",
+      "profile": "none",
+      "jdk_leg": "javac23",
+      "generated_source": {
+        "path": "jadx-output/none/sources/VariablePostfixLoop.java",
+        "bytes": 515,
+        "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+      },
+      "runner_adaptation": {
+        "path": "cases/javac23-jadx-none/Runner.java",
+        "bytes": 703,
+        "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+      },
+      "runner_class": "Runner",
+      "decompilation": {
+        "profile": "none",
+        "command": {
+          "label": "jadx-none-decompile",
+          "argv": [
+            "/opt/homebrew/bin/jadx",
+            "--no-res",
+            "--config",
+            "none",
+            "--threads-count",
+            "1",
+            "--rename-flags",
+            "none",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-output/none",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/jadx-input/VariablePostfixLoop.class.jar"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:46.571238+00:00",
+          "duration_seconds": 0.9444772499846295,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/jadx-none-decompile.stdout.raw",
+              "bytes": 148,
+              "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+            },
+            "stderr": {
+              "path": "streams/jadx-none-decompile.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "decompile_success": true,
+        "generated_sources": [
+          {
+            "path": "jadx-output/none/sources/VariablePostfixLoop.java",
+            "bytes": 515,
+            "sha256": "e7a5bb1ea82719ee8484ae84fcf6e6395d11afeafe5d373a30ea00fe93eef2f7"
+          }
+        ],
+        "source_name_set_exact": true,
+        "package_set": [
+          null
+        ],
+        "package_set_single": true,
+        "input_jar_exact": true
+      },
+      "complete_class_set": true,
+      "runtime_matches_same_jdk_original_raw": true,
+      "success": true
+    },
+    {
+      "label": "javac8-jarde-default",
+      "compile": {
+        "label": "javac8-jarde-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.651283+00:00",
+        "duration_seconds": 0.20861074997810647,
+        "exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jarde-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jarde-default-compile.stderr.raw",
+            "bytes": 235,
+            "sha256": "51e9b968ee76d05d15f5b6e41dff84cf1703acdada56d9396f39b5879409f652"
+          }
+        }
+      },
+      "runtime": null,
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde-default/VariablePostfixLoop.java",
+          "bytes": 1470,
+          "sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766"
+        },
+        {
+          "path": "cases/javac8-jarde-default/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [],
+      "class_set_exact": false,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-default/classes",
+      "compile_success": false,
+      "runtime_success": false,
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "evidence_mode": "default",
+      "rendered_profile": {
+        "mode": "default",
+        "command": {
+          "label": "javac8-jarde-render-default",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes/VariablePostfixLoop.class",
+            "--class",
+            "VariablePostfixLoop",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "started_at": "2026-10-10T06:30:48.625417+00:00",
+          "duration_seconds": 0.015294124983483925,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac8-jarde-render-default.stdout.raw",
+              "bytes": 27255,
+              "sha256": "67d2456504ca40b53f4ed5630573d28046e95968825c02de51f3be2bd513bbed"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-default.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": false,
+        "document_error": "AssertionError: "
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac8-jarde-default/Runner.java",
+        "bytes": 703,
+        "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": false,
+      "runtime_matches_same_jdk_original_raw": false,
+      "success": false
+    },
+    {
+      "label": "javac8-jarde-all",
+      "compile": {
+        "label": "javac8-jarde-all-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "started_at": "2026-10-10T06:30:48.860993+00:00",
+        "duration_seconds": 0.19587070800480433,
+        "exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac8-jarde-all-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-jarde-all-compile.stderr.raw",
+            "bytes": 231,
+            "sha256": "c07f9fd8df576a5c8c325d6e1a40e2f4c613f6f1698501ba4a2bac73375057ff"
+          }
+        }
+      },
+      "runtime": null,
+      "source_files": [
+        {
+          "path": "cases/javac8-jarde-all/VariablePostfixLoop.java",
+          "bytes": 1470,
+          "sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766"
+        },
+        {
+          "path": "cases/javac8-jarde-all/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [],
+      "class_set_exact": false,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-jarde-all/classes",
+      "compile_success": false,
+      "runtime_success": false,
+      "kind": "jarde",
+      "jdk_leg": "javac8",
+      "evidence_mode": "all",
+      "rendered_profile": {
+        "mode": "all",
+        "command": {
+          "label": "javac8-jarde-render-all",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac8-original/classes/VariablePostfixLoop.class",
+            "--class",
+            "VariablePostfixLoop",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "started_at": "2026-10-10T06:30:48.641822+00:00",
+          "duration_seconds": 0.008136541990097612,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac8-jarde-render-all.stdout.raw",
+              "bytes": 28188,
+              "sha256": "ae71954515e81e2b81787e060ebde3ebe8b4e829021675f7acd4df0ccffcc44a"
+            },
+            "stderr": {
+              "path": "streams/javac8-jarde-render-all.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": false,
+        "document_error": "AssertionError: "
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac8-jarde-all/Runner.java",
+        "bytes": 703,
+        "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": false,
+      "runtime_matches_same_jdk_original_raw": false,
+      "success": false
+    },
+    {
+      "label": "javac23-jarde-default",
+      "compile": {
+        "label": "javac23-jarde-default-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:49.074972+00:00",
+        "duration_seconds": 0.24734208299196325,
+        "exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jarde-default-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jarde-default-compile.stderr.raw",
+            "bytes": 236,
+            "sha256": "5b07353f1f985a6125c49478a6f3f650abe50ebf1d313b20f0658402559e7f4e"
+          }
+        }
+      },
+      "runtime": null,
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde-default/VariablePostfixLoop.java",
+          "bytes": 1470,
+          "sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766"
+        },
+        {
+          "path": "cases/javac23-jarde-default/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [],
+      "class_set_exact": false,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-default/classes",
+      "compile_success": false,
+      "runtime_success": false,
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "evidence_mode": "default",
+      "rendered_profile": {
+        "mode": "default",
+        "command": {
+          "label": "javac23-jarde-render-default",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+            "--class",
+            "VariablePostfixLoop",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:49.057850+00:00",
+          "duration_seconds": 0.007565417006844655,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac23-jarde-render-default.stdout.raw",
+              "bytes": 27255,
+              "sha256": "70a77b2a61c3bd65a78494e568f322002b470d6e00f70970eb584fc12846ec01"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-default.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": false,
+        "document_error": "AssertionError: "
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac23-jarde-default/Runner.java",
+        "bytes": 703,
+        "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": false,
+      "runtime_matches_same_jdk_original_raw": false,
+      "success": false
+    },
+    {
+      "label": "javac23-jarde-all",
+      "compile": {
+        "label": "javac23-jarde-all-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/VariablePostfixLoop.java",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/Runner.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "started_at": "2026-10-10T06:30:49.323552+00:00",
+        "duration_seconds": 0.25107120801112615,
+        "exit": 1,
+        "streams": {
+          "stdout": {
+            "path": "streams/javac23-jarde-all-compile.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-jarde-all-compile.stderr.raw",
+            "bytes": 232,
+            "sha256": "d1589bc964e8a2165ada0b030199c44bd17c97c74ba3bbad40722fcc13a4c145"
+          }
+        }
+      },
+      "runtime": null,
+      "source_files": [
+        {
+          "path": "cases/javac23-jarde-all/VariablePostfixLoop.java",
+          "bytes": 1470,
+          "sha256": "458f098738bce56419fdcc10225baf69e5130c89408289126188d56678f37766"
+        },
+        {
+          "path": "cases/javac23-jarde-all/Runner.java",
+          "bytes": 703,
+          "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+        }
+      ],
+      "classes": [],
+      "expected_class_paths": [
+        "Runner.class",
+        "VariablePostfixLoop.class"
+      ],
+      "actual_class_paths": [],
+      "class_set_exact": false,
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/empty-classpath-sourcepath",
+      "class_output": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-jarde-all/classes",
+      "compile_success": false,
+      "runtime_success": false,
+      "kind": "jarde",
+      "jdk_leg": "javac23",
+      "evidence_mode": "all",
+      "rendered_profile": {
+        "mode": "all",
+        "command": {
+          "label": "javac23-jarde-render-all",
+          "argv": [
+            "/private/tmp/jarde-int-array-names-cli-v2",
+            "class-source",
+            "--input",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+            "--class",
+            "VariablePostfixLoop",
+            "--policy",
+            "single-class",
+            "--release",
+            "8",
+            "--format",
+            "json",
+            "--evidence",
+            "all"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "started_at": "2026-10-10T06:30:49.066430+00:00",
+          "duration_seconds": 0.007303375023184344,
+          "exit": 0,
+          "streams": {
+            "stdout": {
+              "path": "streams/javac23-jarde-render-all.stdout.raw",
+              "bytes": 28188,
+              "sha256": "82e560a54f6d473d561119a8776d5b5b481fc8ad630e2e0d85ab72caca64352e"
+            },
+            "stderr": {
+              "path": "streams/javac23-jarde-render-all.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        "success": false,
+        "document_error": "AssertionError: "
+      },
+      "default_all_text_equal": true,
+      "runner_adaptation": {
+        "path": "cases/javac23-jarde-all/Runner.java",
+        "bytes": 703,
+        "sha256": "4408a0d8dea6b761b35546e314dc9961cf515ddeb31920eb5665524598f03102"
+      },
+      "runner_class": "Runner",
+      "complete_class_set": false,
+      "runtime_matches_same_jdk_original_raw": false,
+      "success": false
+    }
+  ],
+  "failures": [
+    "javac8-jarde-default",
+    "javac8-jarde-all",
+    "javac23-jarde-default",
+    "javac23-jarde-all",
+    "success counts differ: {'original': 2, 'jadx': 4, 'jarde': 0}"
+  ],
+  "execution_policy": {
+    "removed_environment": [
+      "JAVA_TOOL_OPTIONS",
+      "_JAVA_OPTIONS",
+      "JDK_JAVA_OPTIONS",
+      "CLASSPATH"
+    ],
+    "complete_class_compile": [
+      "-source",
+      "8",
+      "-target",
+      "8",
+      "-g:none"
+    ],
+    "empty_classpath_and_sourcepath": true,
+    "runtime_verifier": "-Xverify:all",
+    "all_generated_target_sources_compiled_unmodified": true,
+    "increment_presentation_is_recorded_not_assumed": true,
+    "both_jarde_default_and_all_texts_compiled_per_jdk": true,
+    "default_source_map_completeness_required": false,
+    "all_source_map_completeness_required": true
+  },
+  "prepared_script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/prepare-baseline-luna-v1.py",
+    "bytes": 35168,
+    "sha256": "2e35326ebe7b2b60bd47b60419375088bc36142e053ea41f086f3cf534743089"
+  },
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json",
+      "summary.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

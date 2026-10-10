@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/verify-baseline-luna-v3.py",
+    "--manifest-sha256",
+    "e8aec7964455ab84ffb12d984140e18bffe94e5cc0cf7f1eb5de06c21cc23a2d",
+    "--inventory-sha256",
+    "89af5a986896541c5adb0dd8bed30c89d61038017f05d57634142e8416cce783"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "duration_seconds": 0.4101040420064237,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/independent-execution-root-v1/stdout.raw",
+      "bytes": 4039,
+      "sha256": "946409416021061c868d671b929279937997efcf479da7c1bef7ab7ccabe49eb"
+    },
+    "stderr": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/independent-execution-root-v1/stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

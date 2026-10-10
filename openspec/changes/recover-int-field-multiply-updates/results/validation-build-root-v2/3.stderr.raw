@@ -1,0 +1,42 @@
+   Compiling libc v0.2.189
+   Compiling bitflags v2.13.2
+   Compiling noak v0.7.0
+   Compiling getrandom v0.3.4
+   Compiling rand_core v0.9.5
+   Compiling errno v0.3.14
+   Compiling rustix v1.1.4
+   Compiling jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+   Compiling getrandom v0.4.3
+   Compiling zerocopy v0.8.57
+   Compiling once_cell v1.21.4
+   Compiling fastrand v2.5.0
+   Compiling tempfile v3.27.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling wait-timeout v0.2.1
+   Compiling bit-vec v0.8.0
+   Compiling quick-error v1.2.3
+   Compiling fnv v1.0.7
+   Compiling rusty-fork v0.3.1
+   Compiling bit-set v0.8.0
+   Compiling num-traits v0.2.19
+   Compiling jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+   Compiling jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+   Compiling rand_chacha v0.9.0
+   Compiling zmij v1.0.23
+   Compiling rand_xorshift v0.4.0
+   Compiling rand v0.9.5
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling regex-syntax v0.8.11
+   Compiling jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+   Compiling unarray v0.1.4
+   Compiling proptest v1.11.0
+   Compiling serde_json v1.0.151
+   Compiling jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+    Finished `test` profile [unoptimized] target(s) in 18.31s
+     Running tests/p3_compound_lvalue_updates.rs (target/debug/deps/p3_compound_lvalue_updates-f77a2699bfff16ef)
+
+thread 'multiply_public_recovery_keeps_output_budget_and_cancellation_atomic' (17724433) panicked at tests/p3_compound_lvalue_updates.rs:633:5:
+assertion failed: complete_output > emitted
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `-p jarde --test p3_compound_lvalue_updates`

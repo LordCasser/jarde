@@ -1,0 +1,47 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/candidate-root-luna-v2/cases/multiply-javac23-jarde-default/classes/em23/InputFieldMultiplyControls$A.class
+  Last modified 2026年10月10日; size 251 bytes
+  SHA-256 checksum 8bb4762346ded92210f217fa77b90637feb48cb2fa788f4c2506237695488b27
+class em23.InputFieldMultiplyControls$A
+  minor version: 0
+  major version: 52
+  flags: (0x0020) ACC_SUPER
+  this_class: #8                          // em23/InputFieldMultiplyControls$A
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 1, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // em23/InputFieldMultiplyControls$A.f:I
+   #8 = Class              #10            // em23/InputFieldMultiplyControls$A
+   #9 = NameAndType        #11:#12        // f:I
+  #10 = Utf8               em23/InputFieldMultiplyControls$A
+  #11 = Utf8               f
+  #12 = Utf8               I
+  #13 = Utf8               Code
+  #14 = Utf8               InnerClasses
+  #15 = Class              #16            // em23/InputFieldMultiplyControls
+  #16 = Utf8               em23/InputFieldMultiplyControls
+  #17 = Utf8               A
+{
+  int f;
+    descriptor: I
+    flags: (0x0000)
+
+  private em23.InputFieldMultiplyControls$A();
+    descriptor: ()V
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: iconst_5
+         6: putfield      #7                  // Field f:I
+         9: return
+}
+InnerClasses:
+  private static #17= #8 of #15;          // A=class em23/InputFieldMultiplyControls$A of class em23/InputFieldMultiplyControls

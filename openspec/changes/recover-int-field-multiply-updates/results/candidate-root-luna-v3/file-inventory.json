@@ -1,0 +1,992 @@
+[
+  {
+    "path": "cases/increment-javac23-jarde-all/Runner.java",
+    "bytes": 1433,
+    "sha256": "5cd3b364b3e1c52242ecf11fc56d157da50957b7dff862cfbb0d6f735ad1359b",
+    "blake3": "89b71276bc8b04ed9f470ec2db0b08313a5b2e3c084abe4dc39a82759dfb3690"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-all/classes/em23/InputFieldIncrement2$A.class",
+    "bytes": 239,
+    "sha256": "e071bb8287ccc9a7106010dcf488ee612971807e21f178faaecb11c5791aff9e",
+    "blake3": "06a18e60fcf73d5eafb5259b7bf01df92493d987f120774d234148d617981106"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-all/classes/em23/InputFieldIncrement2.class",
+    "bytes": 386,
+    "sha256": "05e658eb292cca8d4b3f0fb7fdff0c299cc94d804020e3e498cb5b94d18896de",
+    "blake3": "e7d66171d57aa3970b1f1f38401f8453ec8fdb359faf4b642803ff652dcd0969"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-all/classes/em23/Runner.class",
+    "bytes": 1827,
+    "sha256": "9fbcd7f19ad65edd26587932d956618273f7f6df4eaa07b446c093b6bd656f5f",
+    "blake3": "cc3669bb7baaa9bf88835049d249237446473cbb3ba221bab5605e5098fd9898"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-all/javap/InputFieldIncrement2$A.class.txt",
+    "bytes": 2039,
+    "sha256": "59f18472f9119fd7de410d1443cc7b4386f38baf7457985cffcc76663a43daf9",
+    "blake3": "8107eec90805a5ea84c6499cefabfe2750e79fea7fd92ba8c5d70bc5406e2672"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-all/javap/InputFieldIncrement2.class.txt",
+    "bytes": 3431,
+    "sha256": "e65629397dbd8fd21c35d707b17723019034c6e6cd763bee1214b82d54f69a5b",
+    "blake3": "16a0c50c04394a449d518e361d6b39c9197d6744c6ca814855ce0e5ee0dc3ad0"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-all/product-sources/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/Runner.java",
+    "bytes": 1433,
+    "sha256": "5cd3b364b3e1c52242ecf11fc56d157da50957b7dff862cfbb0d6f735ad1359b",
+    "blake3": "89b71276bc8b04ed9f470ec2db0b08313a5b2e3c084abe4dc39a82759dfb3690"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/classes/em23/InputFieldIncrement2$A.class",
+    "bytes": 239,
+    "sha256": "e071bb8287ccc9a7106010dcf488ee612971807e21f178faaecb11c5791aff9e",
+    "blake3": "06a18e60fcf73d5eafb5259b7bf01df92493d987f120774d234148d617981106"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/classes/em23/InputFieldIncrement2.class",
+    "bytes": 386,
+    "sha256": "05e658eb292cca8d4b3f0fb7fdff0c299cc94d804020e3e498cb5b94d18896de",
+    "blake3": "e7d66171d57aa3970b1f1f38401f8453ec8fdb359faf4b642803ff652dcd0969"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/classes/em23/Runner.class",
+    "bytes": 1827,
+    "sha256": "9fbcd7f19ad65edd26587932d956618273f7f6df4eaa07b446c093b6bd656f5f",
+    "blake3": "cc3669bb7baaa9bf88835049d249237446473cbb3ba221bab5605e5098fd9898"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/javap/InputFieldIncrement2$A.class.txt",
+    "bytes": 2043,
+    "sha256": "f020541c8c86172e425468cb4648dc96bab80bed8f077e9c1886a9d1242806c1",
+    "blake3": "e3848be3250d02f54f90a858a888b5e29e97922ad66dd654b66f86a468409c16"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/javap/InputFieldIncrement2.class.txt",
+    "bytes": 3435,
+    "sha256": "36c7a719631522ffd6877845afe550fd0190249ee2ea8472a8bfe7d65f3bcc3a",
+    "blake3": "be8e76029bc5fb401befd518f136bd2d6dff975caaa0e076fd2a17b0af4b1b01"
+  },
+  {
+    "path": "cases/increment-javac23-jarde-default/product-sources/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/Runner.java",
+    "bytes": 1433,
+    "sha256": "5cd3b364b3e1c52242ecf11fc56d157da50957b7dff862cfbb0d6f735ad1359b",
+    "blake3": "89b71276bc8b04ed9f470ec2db0b08313a5b2e3c084abe4dc39a82759dfb3690"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/classes/em23/InputFieldIncrement2$A.class",
+    "bytes": 239,
+    "sha256": "76998a2a3ec03eab935f7c95883e18d66ff6669b4ad13c6421df01f1ce59524a",
+    "blake3": "c85f5a4a1b4b63a566c75dee2fc6092d275c7437e31c4d37496142955e70d5a2"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/classes/em23/InputFieldIncrement2.class",
+    "bytes": 386,
+    "sha256": "f44f35aabc8275d3c6bf24ae3e256000ae50ec1a73131bb890f0c66718fc9427",
+    "blake3": "43db9a02180b24a3077cc6b966782bbde5d772540131a51b7f87339abb93594b"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/classes/em23/Runner.class",
+    "bytes": 1830,
+    "sha256": "d50523cc4fb219165835ddaab2a9d5c8f94ba443fbb9a728bfacd5339abead69",
+    "blake3": "921264fa28d15c22051898a2240bd35a58620d2e7fda4f78b09fb9d306bb7d71"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/javap/InputFieldIncrement2$A.class.txt",
+    "bytes": 1772,
+    "sha256": "985cfc2867a964bdc25930374ab2928568ce8720a731dee8b33ba9fa6e68ba93",
+    "blake3": "b9bb7a89276b4f3bd4bf894818a52184428e49b1c5e19af6b5e93d1d0ee2f626"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/javap/InputFieldIncrement2.class.txt",
+    "bytes": 3146,
+    "sha256": "7a38fb371b2ce3d4fad50649150c1698d9f09bf9de7b3c7250669bb730044533",
+    "blake3": "afb1427d12bfa849685449bf06ddfbd1c56882805c8ed987a2c134b9299f4c11"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-all/product-sources/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/Runner.java",
+    "bytes": 1433,
+    "sha256": "5cd3b364b3e1c52242ecf11fc56d157da50957b7dff862cfbb0d6f735ad1359b",
+    "blake3": "89b71276bc8b04ed9f470ec2db0b08313a5b2e3c084abe4dc39a82759dfb3690"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/classes/em23/InputFieldIncrement2$A.class",
+    "bytes": 239,
+    "sha256": "76998a2a3ec03eab935f7c95883e18d66ff6669b4ad13c6421df01f1ce59524a",
+    "blake3": "c85f5a4a1b4b63a566c75dee2fc6092d275c7437e31c4d37496142955e70d5a2"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/classes/em23/InputFieldIncrement2.class",
+    "bytes": 386,
+    "sha256": "f44f35aabc8275d3c6bf24ae3e256000ae50ec1a73131bb890f0c66718fc9427",
+    "blake3": "43db9a02180b24a3077cc6b966782bbde5d772540131a51b7f87339abb93594b"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/classes/em23/Runner.class",
+    "bytes": 1830,
+    "sha256": "d50523cc4fb219165835ddaab2a9d5c8f94ba443fbb9a728bfacd5339abead69",
+    "blake3": "921264fa28d15c22051898a2240bd35a58620d2e7fda4f78b09fb9d306bb7d71"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/javap/InputFieldIncrement2$A.class.txt",
+    "bytes": 1776,
+    "sha256": "cebb9f28a219e17764a7a1cc1070b40792580ef5675e3b9f34af13135fe37981",
+    "blake3": "6f66a8af910c07c7c6b8242bf0ee6190bc1e261da03f77dc3157d04c631fbe5c"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/javap/InputFieldIncrement2.class.txt",
+    "bytes": 3150,
+    "sha256": "94c7e6479d6f016015800698ed72531dd0f4c801b240e2c21bff18839a478476",
+    "blake3": "7f5d02dbd79c8e2f9e5508f16533143be08e0c20f8925ba8542b1d42043c44a5"
+  },
+  {
+    "path": "cases/increment-javac8-jarde-default/product-sources/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/Runner.java",
+    "bytes": 3974,
+    "sha256": "940bb4d04c0d1f125e0ba3ad33d1abab6fb92bfbaa5ddcc918a8041aaeb9fd9e",
+    "blake3": "acae07bd84b50c097d184d5e375b36c54794e9bb9a1533a3256fceaa112c2b7d"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/classes/em23/InputFieldMultiplyControls$A.class",
+    "bytes": 251,
+    "sha256": "8bb4762346ded92210f217fa77b90637feb48cb2fa788f4c2506237695488b27",
+    "blake3": "43479daa442c1f43add0fc10824d56baac59b724875ec14c536afed5a233ba41"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/classes/em23/InputFieldMultiplyControls.class",
+    "bytes": 478,
+    "sha256": "e8a5e216c5f91c7987d0f9ed19517e0bd514a1b7eb7d69b3f1d42ea8a94843aa",
+    "blake3": "5e92b3c6289d28a247d5695cc18516897074ba8b4989631eaa00c76c709001a1"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/classes/em23/Runner.class",
+    "bytes": 4029,
+    "sha256": "cb4f0b3c3590ca13a39e71e8005947d63d2c31492cf078edbcd44361f199d3db",
+    "blake3": "9d030f0b81b6d907a605f9469ecc866e61a27b095f063c3cfe424c076b63ed0b"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/javap/InputFieldMultiplyControls$A.class.txt",
+    "bytes": 2104,
+    "sha256": "1aa9a94834802c07aa6c741b1fc979a7dc72e7d2aa8c375386eeae7460d4572d",
+    "blake3": "5886144a891f56a80c6ac09331768ba5d203e9bdb1b9d33d2a3b7ebf9433c8bd"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/javap/InputFieldMultiplyControls.class.txt",
+    "bytes": 4405,
+    "sha256": "8811ade5ddc1b0a20235964e53ef97702ea7fae49d72df9ec82e7ee0b9272529",
+    "blake3": "01f0b719e8ba6a64d4db3b4eb59298b8130699155b39cce765b1253dce076d80"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-all/product-sources/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/Runner.java",
+    "bytes": 3974,
+    "sha256": "940bb4d04c0d1f125e0ba3ad33d1abab6fb92bfbaa5ddcc918a8041aaeb9fd9e",
+    "blake3": "acae07bd84b50c097d184d5e375b36c54794e9bb9a1533a3256fceaa112c2b7d"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/classes/em23/InputFieldMultiplyControls$A.class",
+    "bytes": 251,
+    "sha256": "8bb4762346ded92210f217fa77b90637feb48cb2fa788f4c2506237695488b27",
+    "blake3": "43479daa442c1f43add0fc10824d56baac59b724875ec14c536afed5a233ba41"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/classes/em23/InputFieldMultiplyControls.class",
+    "bytes": 478,
+    "sha256": "e8a5e216c5f91c7987d0f9ed19517e0bd514a1b7eb7d69b3f1d42ea8a94843aa",
+    "blake3": "5e92b3c6289d28a247d5695cc18516897074ba8b4989631eaa00c76c709001a1"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/classes/em23/Runner.class",
+    "bytes": 4029,
+    "sha256": "cb4f0b3c3590ca13a39e71e8005947d63d2c31492cf078edbcd44361f199d3db",
+    "blake3": "9d030f0b81b6d907a605f9469ecc866e61a27b095f063c3cfe424c076b63ed0b"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/javap/InputFieldMultiplyControls$A.class.txt",
+    "bytes": 2108,
+    "sha256": "f73908ae6b38d752d7185fdabb1183d79cf26b920bdb5dbd8816405022b19d65",
+    "blake3": "74c9a9e3e2d9dfbbacc104ea071d63a849eadace2633aebcfff4c74dd7c3f962"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/javap/InputFieldMultiplyControls.class.txt",
+    "bytes": 4409,
+    "sha256": "4b18460ded7c976bb3fd92102bc2ae1bb51c253e907ed9e0f9cd7894733bc331",
+    "blake3": "05384fcda1c77bfb09995810a60a474b600f3e4f579f78d1d7b56bb4f4528215"
+  },
+  {
+    "path": "cases/multiply-javac23-jarde-default/product-sources/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/Runner.java",
+    "bytes": 3974,
+    "sha256": "940bb4d04c0d1f125e0ba3ad33d1abab6fb92bfbaa5ddcc918a8041aaeb9fd9e",
+    "blake3": "acae07bd84b50c097d184d5e375b36c54794e9bb9a1533a3256fceaa112c2b7d"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/classes/em23/InputFieldMultiplyControls$A.class",
+    "bytes": 251,
+    "sha256": "e1404cbccd14f551af9fc1ea95bd1c396c0ac50a8cf64e3ffdd7eb5e8f5de918",
+    "blake3": "49434396ab3fee58b5f622ae8a36351adcd5ffada9cffcebc7c041bfc1479f58"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/classes/em23/InputFieldMultiplyControls.class",
+    "bytes": 478,
+    "sha256": "e12d95a389d37e1f8395cd92468528ae2b89fc6cc0a57703c15bb7bd1fee1d1b",
+    "blake3": "93bcf0a83da3d43f05d5d0b0f11f8827a9e675e7544a69c3326b6507941b93a5"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/classes/em23/Runner.class",
+    "bytes": 4113,
+    "sha256": "09979092d82c1bd8324149b797f01b9e5f142bd0333f857e79de5b97234c9da2",
+    "blake3": "d3f52cd8502bbe384e1204a5bee397c9e568536e6a457f959396e68f88158239"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/javap/InputFieldMultiplyControls$A.class.txt",
+    "bytes": 1831,
+    "sha256": "b2f2fb1a3661af295f13bae4526d81928c9e8e34f97eb091d6933980125935fb",
+    "blake3": "c6a097bd154eaaf24c71de8df409bd7e3513868a3adb5c0b45828b805782275b"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/javap/InputFieldMultiplyControls.class.txt",
+    "bytes": 4105,
+    "sha256": "7344a7d63ee04dcd80b63c4bc1094bf94a54e0ad905f7d3361ce6ee50d1e6d5d",
+    "blake3": "3f4f80b6e650e337ed0f1ef9df3ed3a8522bda65ab39c44e58ddcbff206b91d2"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-all/product-sources/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/Runner.java",
+    "bytes": 3974,
+    "sha256": "940bb4d04c0d1f125e0ba3ad33d1abab6fb92bfbaa5ddcc918a8041aaeb9fd9e",
+    "blake3": "acae07bd84b50c097d184d5e375b36c54794e9bb9a1533a3256fceaa112c2b7d"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/classes/em23/InputFieldMultiplyControls$A.class",
+    "bytes": 251,
+    "sha256": "e1404cbccd14f551af9fc1ea95bd1c396c0ac50a8cf64e3ffdd7eb5e8f5de918",
+    "blake3": "49434396ab3fee58b5f622ae8a36351adcd5ffada9cffcebc7c041bfc1479f58"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/classes/em23/InputFieldMultiplyControls.class",
+    "bytes": 478,
+    "sha256": "e12d95a389d37e1f8395cd92468528ae2b89fc6cc0a57703c15bb7bd1fee1d1b",
+    "blake3": "93bcf0a83da3d43f05d5d0b0f11f8827a9e675e7544a69c3326b6507941b93a5"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/classes/em23/Runner.class",
+    "bytes": 4113,
+    "sha256": "09979092d82c1bd8324149b797f01b9e5f142bd0333f857e79de5b97234c9da2",
+    "blake3": "d3f52cd8502bbe384e1204a5bee397c9e568536e6a457f959396e68f88158239"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/javap/InputFieldMultiplyControls$A.class.txt",
+    "bytes": 1835,
+    "sha256": "0b1b0596e9c756488d14fce628df97f0eb973484b863a70c6f60feee8d92585f",
+    "blake3": "7804b4d1671c52f905cfa46422dcd8a611aee6aee863ec7f3176f380c786112d"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/javap/InputFieldMultiplyControls.class.txt",
+    "bytes": 4109,
+    "sha256": "5ed820036996f248546965835ed0720705c166fe44332dd137893675e29967d9",
+    "blake3": "a38584d698d35ec96375425e83661069ca65ba26679aea9cfdd4db09259e6eda"
+  },
+  {
+    "path": "cases/multiply-javac8-jarde-default/product-sources/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "inputs/candidate-cli",
+    "bytes": 59573040,
+    "sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "blake3": "98db6f0292fe8b7ad9a887bec96d789437e6d1a44d583e7ac40556589421c0da"
+  },
+  {
+    "path": "inputs/candidate-cli-metadata.json",
+    "bytes": 6657,
+    "sha256": "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8",
+    "blake3": "c4cbb6a620c96776f2b4738ffc2499dd176bed7b8ba8ac93307f77b8a44d0e1f"
+  },
+  {
+    "path": "inputs/increment-baseline-file-inventory.json",
+    "bytes": 31928,
+    "sha256": "669a1beddf5d90c5664ac371b0ad1a6b2c4180f35704119feefa79f05fa90bc7",
+    "blake3": "ba30778d18d6682994c4df07d08a349390ce73902f50347246494e1247aa4472"
+  },
+  {
+    "path": "inputs/increment-baseline-manifest.json",
+    "bytes": 1829215,
+    "sha256": "c0bb2a701f064966bba0576a72fca0f699763f22c79ba9676bf966db2e77a006",
+    "blake3": "1dbb8ad2b44ee135b049bf3139b2b9ead01f258efbb477d644465252ade115ab"
+  },
+  {
+    "path": "inputs/increment-javac23-original-family.jar",
+    "bytes": 927,
+    "sha256": "52673e77d3e84da3c4de1d4bb036bc7042c8f111d5c26539b9c55fe3aa22a7c4",
+    "blake3": "bfff3c5dc093665f1ef0d9c7c9428433e32ff29245281de717b9359aa7db1aab"
+  },
+  {
+    "path": "inputs/increment-javac8-original-family.jar",
+    "bytes": 927,
+    "sha256": "cd2f1c82acd91204af6a8ea9ae99ea209f93d21fbc27303428895ea6363dac0d",
+    "blake3": "d8b937368c92d75321c63722d7e6a5e72cb09cbfa2814138d0ea1cad2676b1b2"
+  },
+  {
+    "path": "inputs/multiply-baseline-file-inventory.json",
+    "bytes": 32201,
+    "sha256": "13528c4a32bfcf1d12d808c6a9d81f990d4bb7f2dfb989ed04bb94a854646ba9",
+    "blake3": "41416b06c4f44561a4107f7885085481b4dd684a91ae7691d4d9409c2d2b33d1"
+  },
+  {
+    "path": "inputs/multiply-baseline-manifest.json",
+    "bytes": 2547778,
+    "sha256": "7538e33c5b687efbba53bf6efcee55be9ae2668519fd96fbc7b46b4a85832b75",
+    "blake3": "5780eff99c19620e7c644e7b78dde75b069e22a1fcb20238724bea2e321ab5db"
+  },
+  {
+    "path": "inputs/multiply-javac23-original-family.jar",
+    "bytes": 1055,
+    "sha256": "4c97e8188edb6418511d3845308e0a46b8017ec50aecf165972bc93095900d9a",
+    "blake3": "1d0832a134cc6f7695cea6e987a10f568ad3c223ece9e5fd2e75f5c57b00dbb6"
+  },
+  {
+    "path": "inputs/multiply-javac8-original-family.jar",
+    "bytes": 1055,
+    "sha256": "a21d977f98ed0006acb47da04bbf547bdfd54f6f4c33b64b1ed64e41ee6433e1",
+    "blake3": "ed7ad9c8cb69703c741b9146da8c7cffc62b8a7a051daf71e031db36ce596236"
+  },
+  {
+    "path": "inputs/prepare-candidate-full-family-luna-v3.py",
+    "bytes": 48431,
+    "sha256": "d6e74e8bc09c163e23bed18d823f575514ae19da57b968e0d3a26245e6c8be69",
+    "blake3": "626d5149cb96410f48c8e1fd271f6a54c6db88d34ec7c630035d9df3566e3bea"
+  },
+  {
+    "path": "manifest.json",
+    "bytes": 1899707,
+    "sha256": "e3b7d548137772e0863a676b33fabf6740fce648dfed0ed044e5986fb0f1227b",
+    "blake3": "7cc786b5a8c6c9ba98195c052605ee3bae624015c36d21b73e78854b11b97634"
+  },
+  {
+    "path": "renders/increment-javac23-all/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "renders/increment-javac23-all/class-source.json",
+    "bytes": 59655,
+    "sha256": "46d4442ad4a99d305e4bedbfa7d4946c719de6eafa930cf0bf732da567c66c24",
+    "blake3": "a43dd602e14d4cc63ebbd68264d7d624583bac986035fc8899b1fd82f81a811e"
+  },
+  {
+    "path": "renders/increment-javac23-default/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "renders/increment-javac23-default/class-source.json",
+    "bytes": 56553,
+    "sha256": "e68aabec194b1221e72d76db1f6e2d677577acb97749837dce6a45060324c8ba",
+    "blake3": "bb0eaeabc99166f20f8033ab6efa1e0e3f0749880dc56c64d39787b873b4946f"
+  },
+  {
+    "path": "renders/increment-javac8-all/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "renders/increment-javac8-all/class-source.json",
+    "bytes": 59655,
+    "sha256": "87db0f7d316baaae7f32c7aad3f276a6a98d0052d64170fe98914b14ee145605",
+    "blake3": "e5e9f42c6a14c6bdf31ae6d415332caeb9d4fa98da0a71cc4e114b6cc33a4899"
+  },
+  {
+    "path": "renders/increment-javac8-default/InputFieldIncrement2.java",
+    "bytes": 1681,
+    "sha256": "2425a71b8ba9641429cc1b34411674e883ac5bb72381f462234c36ce49a93075",
+    "blake3": "00b6ce7d44f438fe3add024c58256e32182b1159ed433ccaf11c9a220716417b"
+  },
+  {
+    "path": "renders/increment-javac8-default/class-source.json",
+    "bytes": 56546,
+    "sha256": "95f6caa7cb029b529c714f4eb835db8382a1a8e32672d1b876e51073e8567709",
+    "blake3": "d7ddd02fccdd7ddfa94bcffc462aa52797b6460855de920187ab948e462e75f4"
+  },
+  {
+    "path": "renders/multiply-javac23-all/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "renders/multiply-javac23-all/class-source.json",
+    "bytes": 78119,
+    "sha256": "48644c9f9a1aa67717100d30c1c9b8fa3d049434d4f48411435f3da0e7f6a24a",
+    "blake3": "f8664f0c8c0eed96fd50b6c1a220de4b64ed00e7a2bc5dfd1d8e2402acade0ae"
+  },
+  {
+    "path": "renders/multiply-javac23-default/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "renders/multiply-javac23-default/class-source.json",
+    "bytes": 73674,
+    "sha256": "bd0b9b298552360180b9363a6dd5f1a4b8fe8ea8617c6745f8cd024b33f0fdd4",
+    "blake3": "8682b54ced38561a077f48176bbb75896b74a167771717e26226dddec979c75c"
+  },
+  {
+    "path": "renders/multiply-javac8-all/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "renders/multiply-javac8-all/class-source.json",
+    "bytes": 78119,
+    "sha256": "62417ad05dfcfac3c863cd77e5361670fcd1e4d0513b56c583089e6fa88a6168",
+    "blake3": "5fb93e75f17e0887acbcfce1f867e297202dbc9c3bed6c6ea12b8c7ca2f245bd"
+  },
+  {
+    "path": "renders/multiply-javac8-default/InputFieldMultiplyControls.java",
+    "bytes": 2041,
+    "sha256": "229e85f148a54c4b460839d93cdf2243498b49fdd3880e724f692863fd3c68d5",
+    "blake3": "be9c6cbc7a1ca90c97bdabe21bb8532668f4d4b8f1bc37c477d1297fb36eed2d"
+  },
+  {
+    "path": "renders/multiply-javac8-default/class-source.json",
+    "bytes": 73674,
+    "sha256": "e93bff478345cd3a8ef6526be957957a494a3e1b22c85e4a011fc3dfeebde8dc",
+    "blake3": "d6545d2fe5fe9b9f078b5c08d6137c28694edf97fb590da7f1728ce850ef6a1d"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-javap-InputFieldIncrement2$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-javap-InputFieldIncrement2$A.stdout.raw",
+    "bytes": 2039,
+    "sha256": "59f18472f9119fd7de410d1443cc7b4386f38baf7457985cffcc76663a43daf9",
+    "blake3": "8107eec90805a5ea84c6499cefabfe2750e79fea7fd92ba8c5d70bc5406e2672"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-javap-InputFieldIncrement2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-javap-InputFieldIncrement2.stdout.raw",
+    "bytes": 3431,
+    "sha256": "e65629397dbd8fd21c35d707b17723019034c6e6cd763bee1214b82d54f69a5b",
+    "blake3": "16a0c50c04394a449d518e361d6b39c9197d6744c6ca814855ce0e5ee0dc3ad0"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-render.stdout.raw",
+    "bytes": 59655,
+    "sha256": "46d4442ad4a99d305e4bedbfa7d4946c719de6eafa930cf0bf732da567c66c24",
+    "blake3": "a43dd602e14d4cc63ebbd68264d7d624583bac986035fc8899b1fd82f81a811e"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-all-run.stdout.raw",
+    "bytes": 18,
+    "sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+    "blake3": "5ddaac1d4537db0d53851f053476b382d7b8fdcaea9b9532a37aedabec937f08"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-javap-InputFieldIncrement2$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-javap-InputFieldIncrement2$A.stdout.raw",
+    "bytes": 2043,
+    "sha256": "f020541c8c86172e425468cb4648dc96bab80bed8f077e9c1886a9d1242806c1",
+    "blake3": "e3848be3250d02f54f90a858a888b5e29e97922ad66dd654b66f86a468409c16"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-javap-InputFieldIncrement2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-javap-InputFieldIncrement2.stdout.raw",
+    "bytes": 3435,
+    "sha256": "36c7a719631522ffd6877845afe550fd0190249ee2ea8472a8bfe7d65f3bcc3a",
+    "blake3": "be8e76029bc5fb401befd518f136bd2d6dff975caaa0e076fd2a17b0af4b1b01"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-render.stdout.raw",
+    "bytes": 56553,
+    "sha256": "e68aabec194b1221e72d76db1f6e2d677577acb97749837dce6a45060324c8ba",
+    "blake3": "bb0eaeabc99166f20f8033ab6efa1e0e3f0749880dc56c64d39787b873b4946f"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac23-jarde-default-run.stdout.raw",
+    "bytes": 18,
+    "sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+    "blake3": "5ddaac1d4537db0d53851f053476b382d7b8fdcaea9b9532a37aedabec937f08"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-javap-InputFieldIncrement2$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-javap-InputFieldIncrement2$A.stdout.raw",
+    "bytes": 1772,
+    "sha256": "985cfc2867a964bdc25930374ab2928568ce8720a731dee8b33ba9fa6e68ba93",
+    "blake3": "b9bb7a89276b4f3bd4bf894818a52184428e49b1c5e19af6b5e93d1d0ee2f626"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-javap-InputFieldIncrement2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-javap-InputFieldIncrement2.stdout.raw",
+    "bytes": 3146,
+    "sha256": "7a38fb371b2ce3d4fad50649150c1698d9f09bf9de7b3c7250669bb730044533",
+    "blake3": "afb1427d12bfa849685449bf06ddfbd1c56882805c8ed987a2c134b9299f4c11"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-render.stdout.raw",
+    "bytes": 59655,
+    "sha256": "87db0f7d316baaae7f32c7aad3f276a6a98d0052d64170fe98914b14ee145605",
+    "blake3": "e5e9f42c6a14c6bdf31ae6d415332caeb9d4fa98da0a71cc4e114b6cc33a4899"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-all-run.stdout.raw",
+    "bytes": 18,
+    "sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+    "blake3": "5ddaac1d4537db0d53851f053476b382d7b8fdcaea9b9532a37aedabec937f08"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-javap-InputFieldIncrement2$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-javap-InputFieldIncrement2$A.stdout.raw",
+    "bytes": 1776,
+    "sha256": "cebb9f28a219e17764a7a1cc1070b40792580ef5675e3b9f34af13135fe37981",
+    "blake3": "6f66a8af910c07c7c6b8242bf0ee6190bc1e261da03f77dc3157d04c631fbe5c"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-javap-InputFieldIncrement2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-javap-InputFieldIncrement2.stdout.raw",
+    "bytes": 3150,
+    "sha256": "94c7e6479d6f016015800698ed72531dd0f4c801b240e2c21bff18839a478476",
+    "blake3": "7f5d02dbd79c8e2f9e5508f16533143be08e0c20f8925ba8542b1d42043c44a5"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-render.stdout.raw",
+    "bytes": 56546,
+    "sha256": "95f6caa7cb029b529c714f4eb835db8382a1a8e32672d1b876e51073e8567709",
+    "blake3": "d7ddd02fccdd7ddfa94bcffc462aa52797b6460855de920187ab948e462e75f4"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/increment-javac8-jarde-default-run.stdout.raw",
+    "bytes": 18,
+    "sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+    "blake3": "5ddaac1d4537db0d53851f053476b382d7b8fdcaea9b9532a37aedabec937f08"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-javap-InputFieldMultiplyControls$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-javap-InputFieldMultiplyControls$A.stdout.raw",
+    "bytes": 2104,
+    "sha256": "1aa9a94834802c07aa6c741b1fc979a7dc72e7d2aa8c375386eeae7460d4572d",
+    "blake3": "5886144a891f56a80c6ac09331768ba5d203e9bdb1b9d33d2a3b7ebf9433c8bd"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-javap-InputFieldMultiplyControls.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-javap-InputFieldMultiplyControls.stdout.raw",
+    "bytes": 4405,
+    "sha256": "8811ade5ddc1b0a20235964e53ef97702ea7fae49d72df9ec82e7ee0b9272529",
+    "blake3": "01f0b719e8ba6a64d4db3b4eb59298b8130699155b39cce765b1253dce076d80"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-render.stdout.raw",
+    "bytes": 78119,
+    "sha256": "48644c9f9a1aa67717100d30c1c9b8fa3d049434d4f48411435f3da0e7f6a24a",
+    "blake3": "f8664f0c8c0eed96fd50b6c1a220de4b64ed00e7a2bc5dfd1d8e2402acade0ae"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-all-run.stdout.raw",
+    "bytes": 293,
+    "sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+    "blake3": "dffc3f60ca19a5c807f9091cc3a2df02d008f196dc5c61a38e9bb647e5c75ea2"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-javap-InputFieldMultiplyControls$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-javap-InputFieldMultiplyControls$A.stdout.raw",
+    "bytes": 2108,
+    "sha256": "f73908ae6b38d752d7185fdabb1183d79cf26b920bdb5dbd8816405022b19d65",
+    "blake3": "74c9a9e3e2d9dfbbacc104ea071d63a849eadace2633aebcfff4c74dd7c3f962"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-javap-InputFieldMultiplyControls.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-javap-InputFieldMultiplyControls.stdout.raw",
+    "bytes": 4409,
+    "sha256": "4b18460ded7c976bb3fd92102bc2ae1bb51c253e907ed9e0f9cd7894733bc331",
+    "blake3": "05384fcda1c77bfb09995810a60a474b600f3e4f579f78d1d7b56bb4f4528215"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-render.stdout.raw",
+    "bytes": 73674,
+    "sha256": "bd0b9b298552360180b9363a6dd5f1a4b8fe8ea8617c6745f8cd024b33f0fdd4",
+    "blake3": "8682b54ced38561a077f48176bbb75896b74a167771717e26226dddec979c75c"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac23-jarde-default-run.stdout.raw",
+    "bytes": 293,
+    "sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+    "blake3": "dffc3f60ca19a5c807f9091cc3a2df02d008f196dc5c61a38e9bb647e5c75ea2"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-javap-InputFieldMultiplyControls$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-javap-InputFieldMultiplyControls$A.stdout.raw",
+    "bytes": 1831,
+    "sha256": "b2f2fb1a3661af295f13bae4526d81928c9e8e34f97eb091d6933980125935fb",
+    "blake3": "c6a097bd154eaaf24c71de8df409bd7e3513868a3adb5c0b45828b805782275b"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-javap-InputFieldMultiplyControls.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-javap-InputFieldMultiplyControls.stdout.raw",
+    "bytes": 4105,
+    "sha256": "7344a7d63ee04dcd80b63c4bc1094bf94a54e0ad905f7d3361ce6ee50d1e6d5d",
+    "blake3": "3f4f80b6e650e337ed0f1ef9df3ed3a8522bda65ab39c44e58ddcbff206b91d2"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-render.stdout.raw",
+    "bytes": 78119,
+    "sha256": "62417ad05dfcfac3c863cd77e5361670fcd1e4d0513b56c583089e6fa88a6168",
+    "blake3": "5fb93e75f17e0887acbcfce1f867e297202dbc9c3bed6c6ea12b8c7ca2f245bd"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-all-run.stdout.raw",
+    "bytes": 293,
+    "sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+    "blake3": "dffc3f60ca19a5c807f9091cc3a2df02d008f196dc5c61a38e9bb647e5c75ea2"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-compile.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-compile.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-javap-InputFieldMultiplyControls$A.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-javap-InputFieldMultiplyControls$A.stdout.raw",
+    "bytes": 1835,
+    "sha256": "0b1b0596e9c756488d14fce628df97f0eb973484b863a70c6f60feee8d92585f",
+    "blake3": "7804b4d1671c52f905cfa46422dcd8a611aee6aee863ec7f3176f380c786112d"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-javap-InputFieldMultiplyControls.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-javap-InputFieldMultiplyControls.stdout.raw",
+    "bytes": 4109,
+    "sha256": "5ed820036996f248546965835ed0720705c166fe44332dd137893675e29967d9",
+    "blake3": "a38584d698d35ec96375425e83661069ca65ba26679aea9cfdd4db09259e6eda"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-render.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-render.stdout.raw",
+    "bytes": 73674,
+    "sha256": "e93bff478345cd3a8ef6526be957957a494a3e1b22c85e4a011fc3dfeebde8dc",
+    "blake3": "d6545d2fe5fe9b9f078b5c08d6137c28694edf97fb590da7f1728ce850ef6a1d"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-run.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+  },
+  {
+    "path": "streams/multiply-javac8-jarde-default-run.stdout.raw",
+    "bytes": 293,
+    "sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+    "blake3": "dffc3f60ca19a5c807f9091cc3a2df02d008f196dc5c61a38e9bb647e5c75ea2"
+  },
+  {
+    "path": "summary.json",
+    "bytes": 317,
+    "sha256": "b1cd535fd81b8e22ca139cf44f7d216150eb76b3ac3696b8342a601fb8ad15e9",
+    "blake3": "7c9c7d5222319b3959b7e25dad1177656f39341783448936f2ad15a34ae520fc"
+  }
+]

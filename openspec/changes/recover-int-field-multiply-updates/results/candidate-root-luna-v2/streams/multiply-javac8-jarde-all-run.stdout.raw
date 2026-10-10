@@ -1,0 +1,10 @@
+explicit-add=8
+multiply-normal=20
+multiply-max=2147483645
+multiply-min-neg1=-2147483648
+multiply-zero=0
+multiply-negative=-15
+multiply-null=NullPointerException
+multiply-divide-normal=12,field=12
+multiply-divide-zero=ArithmeticException,field=17
+multiply-divide-null-zero=NullPointerException

@@ -1,0 +1,11 @@
+{
+  "checked_at_utc": "2026-10-10T06:27:03Z",
+  "free_bytes": 23509880832,
+  "minimum_free_bytes": 21474836480,
+  "machine_guard_satisfied": true,
+  "root_target_exists": false,
+  "fuzz_target_exists": false,
+  "rust_compilation_started": false,
+  "current_product_source_applied": true,
+  "decision": "No Rust build below the existing guard; continue small Java baseline preparation and read-only script review."
+}

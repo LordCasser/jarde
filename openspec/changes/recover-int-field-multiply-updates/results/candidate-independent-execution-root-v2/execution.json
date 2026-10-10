@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-candidate-full-family-root-luna-v6.py",
+    "--cli",
+    "/private/tmp/jarde-field-multiply-cli-v2",
+    "--cli-sha256",
+    "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/candidate-cli-v2.json",
+    "--metadata-sha256",
+    "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_utc": "2026-10-10T07:03:21.926376+00:00",
+  "duration_seconds": 0.4420485419977922,
+  "exit_code": 0,
+  "streams": {
+    "stdout.raw": {
+      "bytes": 10963,
+      "sha256": "a476157dd2f40d6a2288e376f77be8a51df0d2b5ab572ee5ae18cc5e1a79ef5d"
+    },
+    "stderr.raw": {
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

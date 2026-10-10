@@ -1,0 +1,64 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v2.py	2026-10-10 14:27:02
++++ openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v3.py	2026-10-10 14:34:33
+@@ -18,7 +18,7 @@
+ HERE = Path(__file__).resolve().parent
+ ROOT = HERE.parents[3]
+ CI_EVIDENCE = HERE / "ci-product-v1"
+-RESULT = CI_EVIDENCE / "acceptance-field-multiply-v2.json"
++RESULT = CI_EVIDENCE / "acceptance-field-multiply-v3.json"
+ 
+ STATIC_HELPER = ROOT / "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py"
+ STATIC_HELPER_SHA256 = "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d"
+@@ -26,7 +26,9 @@
+ INTEGER_VERIFIER_SHA256 = "e5534e0b2acc6066ba518a1b55f5d0f79b9e5e25a1c4dc5db768040b6d47b425"
+ METADATA_PATH = HERE / "candidate-cli-v2.json"
+ CLI_PATH = Path("/private/tmp/jarde-field-multiply-cli-v2")
+-BUILD_PATH = HERE / "validation-build-root-v2" / "execution.json"
++BUILD_PATH = HERE / "validation-build-root-v3" / "execution.json"
++BUILD_RUNNER_PATH = HERE / "run-validation-build-luna-v3.py"
++BUILD_RUNNER_SHA256 = "0300873d8e7336c897e035f17fd87b0e9691fddfea99e2d42e93ce84ac8aeb95"
+ SOURCE_COMMIT_BASE = "977f761d9f68c6cb4de02f42b060de5290a1a947"
+ 
+ PRODUCT_SOURCES = {
+@@ -176,7 +178,11 @@
+     build_bytes = read(BUILD_PATH)
+     assert sha(build_bytes) == build_sha256
+     build = json.loads(build_bytes)
+-    assert build["schema"] == "int-field-multiply-validation-build-root-v2"
++    assert build["schema"] == "int-field-multiply-validation-build-root-v3"
++    assert sha(read(BUILD_RUNNER_PATH)) == BUILD_RUNNER_SHA256
++    assert build["validation_runner"] == {
++        "path": str(BUILD_RUNNER_PATH.resolve()), "sha256": BUILD_RUNNER_SHA256,
++    }
+     assert build["status"] == "validation-passed-cli-frozen"
+     assert build["source_commit_base_expected"] == SOURCE_COMMIT_BASE
+     assert build["uncommitted_field_multiply_product"] is True
+@@ -260,7 +266,10 @@
+                 assert actual == expected_summary[index], (index, actual, expected_summary[index])
+             recomputed_summaries[str(index)] = [list(record) for record in actual]
+         else:
+-            assert row["test_summary_check"] is None
++            assert row["test_summary_check"] == {
++                "expected": None, "actual": [], "required": False,
++                "ok": True, "failure_reason": None,
++            }, index
+     assert sum(len(row["streams"]) for row in commands) == 18
+ 
+     freeze = build["freeze"]
+@@ -278,6 +287,7 @@
+         "candidate_metadata_sha256": metadata_sha256,
+         "candidate_cli": {"path": str(CLI_PATH), "sha256": cli_sha256, "mode": oct(cli_mode)},
+         "candidate_build_sha256": build_sha256,
++        "validation_runner": {"path": str(BUILD_RUNNER_PATH), "sha256": BUILD_RUNNER_SHA256},
+         "product_commit_git_blob_pins_verified": len(git_pins),
+         "pin_counts": {"candidate_sources": len(PRODUCT_SOURCES),
+                         "test_sources": len(TEST_SOURCES), "canonical_files": len(expected_canonical)},
+@@ -362,7 +372,7 @@
+     workspace = verify_multiply_workspace_tests(helper, product, integer_verifier)
+ 
+     result = {
+-        "schema": "int-field-multiply-ci-product-luna-acceptance-v2",
++        "schema": "int-field-multiply-ci-product-luna-acceptance-v3",
+         "status": "accepted",
+         "product_commit": product,
+         "run_id": run_id,

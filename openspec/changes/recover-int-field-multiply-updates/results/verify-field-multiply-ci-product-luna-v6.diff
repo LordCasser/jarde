@@ -1,0 +1,31 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v5.py	2026-10-10 14:41:41
++++ openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py	2026-10-10 14:50:00
+@@ -18,7 +18,7 @@
+ HERE = Path(__file__).resolve().parent
+ ROOT = HERE.parents[3]
+ CI_EVIDENCE = HERE / "ci-product-v1"
+-RESULT = CI_EVIDENCE / "acceptance-field-multiply-v5.json"
++RESULT = CI_EVIDENCE / "acceptance-field-multiply-v6.json"
+ 
+ STATIC_HELPER = ROOT / "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py"
+ STATIC_HELPER_SHA256 = "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d"
+@@ -254,7 +254,9 @@
+         if index in expected_summary:
+             check = row["test_summary_check"]
+             assert check is not None and check["ok"] is True, index
+-            assert check["required"] is True and check["expected"] == expected_summary[index], index
++            assert check["required"] is True, index
++            recorded_expected = None if check["expected"] is None else [tuple(row) for row in check["expected"]]
++            assert recorded_expected == expected_summary[index], (index, recorded_expected, expected_summary[index])
+             assert "stdout" in captured_streams, index
+             stdout_text = captured_streams["stdout"].decode("utf-8", errors="strict")
+             actual = [tuple(map(int, match)) for match in SUMMARY_RE.findall(stdout_text)]
+@@ -372,7 +374,7 @@
+     workspace = verify_multiply_workspace_tests(helper, product, integer_verifier)
+ 
+     result = {
+-        "schema": "int-field-multiply-ci-product-luna-acceptance-v5",
++        "schema": "int-field-multiply-ci-product-luna-acceptance-v6",
+         "status": "accepted",
+         "product_commit": product,
+         "run_id": run_id,

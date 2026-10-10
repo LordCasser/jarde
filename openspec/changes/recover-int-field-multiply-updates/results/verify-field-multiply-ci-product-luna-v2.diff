@@ -1,0 +1,97 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v1.py	2026-10-10 14:16:21
++++ openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v2.py	2026-10-10 14:27:02
+@@ -18,7 +18,7 @@
+ HERE = Path(__file__).resolve().parent
+ ROOT = HERE.parents[3]
+ CI_EVIDENCE = HERE / "ci-product-v1"
+-RESULT = CI_EVIDENCE / "acceptance-field-multiply-v1.json"
++RESULT = CI_EVIDENCE / "acceptance-field-multiply-v2.json"
+ 
+ STATIC_HELPER = ROOT / "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py"
+ STATIC_HELPER_SHA256 = "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d"
+@@ -76,6 +76,7 @@
+ }
+ TARGET_LIMIT = 1024**3
+ FREE_LIMIT = 20 * 1024**3
++SUMMARY_RE = re.compile(r"test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;")
+ 
+ 
+ def sha(data: bytes) -> str:
+@@ -223,6 +224,7 @@
+         2: None, 3: [(7, 0, 0)], 4: [(2, 0, 0)], 5: [(8, 0, 0)],
+         6: [(178, 0, 0)], 7: [(5, 0, 1)],
+     }
++    recomputed_summaries = {}
+     for index, (row, argv) in enumerate(zip(commands, expected_commands)):
+         assert row["index"] == index and row["argv"] == argv, index
+         assert row["cwd"] == str(ROOT), index
+@@ -230,17 +232,7 @@
+         assert row["env_overrides"] == ENV_VALUES, index
+         assert row["peak_target_bytes"] <= TARGET_LIMIT
+         assert row["free_bytes_after"] >= FREE_LIMIT
+-        if index in expected_summary:
+-            check = row["test_summary_check"]
+-            assert check is not None and check["ok"] is True, index
+-            assert check["required"] is True and check["expected"] == expected_summary[index], index
+-            actual = [tuple(record) for record in check["actual"]]
+-            if expected_summary[index] is None:
+-                assert actual and any(sum(record) > 0 for record in actual), index
+-            else:
+-                assert actual == expected_summary[index], (index, actual)
+-        else:
+-            assert row["test_summary_check"] is None
++        captured_streams = {}
+         for stream_name, stream in row["streams"].items():
+             raw_path = Path(stream["path"])
+             if not raw_path.is_absolute():
+@@ -251,6 +243,24 @@
+                 raise AssertionError(f"command {index} {stream_name} path escapes the project root") from error
+             raw = read(raw_path)
+             assert len(raw) == stream["bytes"] and sha(raw) == stream["sha256"], (index, stream_name)
++            captured_streams[stream_name] = raw
++
++        if index in expected_summary:
++            check = row["test_summary_check"]
++            assert check is not None and check["ok"] is True, index
++            assert check["required"] is True and check["expected"] == expected_summary[index], index
++            assert "stdout" in captured_streams, index
++            stdout_text = captured_streams["stdout"].decode("utf-8", errors="strict")
++            actual = [tuple(map(int, match)) for match in SUMMARY_RE.findall(stdout_text)]
++            recorded = [tuple(record) for record in check["actual"]]
++            assert actual, f"command {index} stdout has no test result records"
++            assert all(failed == 0 for _, failed, _ in actual), (index, actual)
++            assert actual == recorded, (index, actual, recorded)
++            if expected_summary[index] is not None:
++                assert actual == expected_summary[index], (index, actual, expected_summary[index])
++            recomputed_summaries[str(index)] = [list(record) for record in actual]
++        else:
++            assert row["test_summary_check"] is None
+     assert sum(len(row["streams"]) for row in commands) == 18
+ 
+     freeze = build["freeze"]
+@@ -274,6 +284,7 @@
+         "source_commit_base": SOURCE_COMMIT_BASE,
+         "uncommitted_field_multiply_product": True,
+         "build_commands": len(commands), "build_streams_verified": 18,
++        "build_test_result_records_recomputed_from_stdout": recomputed_summaries,
+         "all_build_commands_exit_zero_no_guard_stop": True,
+         "workspace_source_bytes_used_as_acceptance_gate": False,
+     }
+@@ -351,7 +362,7 @@
+     workspace = verify_multiply_workspace_tests(helper, product, integer_verifier)
+ 
+     result = {
+-        "schema": "int-field-multiply-ci-product-luna-acceptance-v1",
++        "schema": "int-field-multiply-ci-product-luna-acceptance-v2",
+         "status": "accepted",
+         "product_commit": product,
+         "run_id": run_id,
+@@ -367,7 +378,7 @@
+         "ci": ci,
+         "workspace_regressions": workspace,
+         "frozen_cli_and_build": build,
+-        "acceptance_scope": "submitted product Git blobs, frozen candidate CLI/build, four successful CI jobs and all recorded steps, plus both fixed-seed multiply and prior integer regression tests",
++        "acceptance_scope": "submitted product Git blobs, frozen candidate CLI/build, four successful CI jobs and all recorded steps, and test-result counts independently parsed from frozen stdout, plus both fixed-seed multiply and prior integer regression tests",
+     }
+     RESULT.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+     print(json.dumps({"status": result["status"], "product_commit": product,

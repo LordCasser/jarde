@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/prepare-candidate-full-family-luna-v3.py",
+    "--cli",
+    "/private/tmp/jarde-field-multiply-cli-v2",
+    "--cli-sha256",
+    "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/candidate-cli-v2.json",
+    "--metadata-sha256",
+    "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at_utc": "2026-10-10T06:56:50Z",
+  "duration_seconds": 5.976110709016211,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-field-multiply-updates/results/candidate-collector-execution-root-v2/stdout.raw",
+      "bytes": 185,
+      "sha256": "d81796e593f4e38ed3c345e0ae57cc802df58ed71c8c789200a71d0433e45b26"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-field-multiply-updates/results/candidate-collector-execution-root-v2/stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

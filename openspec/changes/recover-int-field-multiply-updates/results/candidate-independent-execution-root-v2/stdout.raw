@@ -1,0 +1,345 @@
+{
+  "status": "accepted",
+  "schema": "candidate-full-family-independent-acceptance-v6",
+  "source_commit_base": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+  "candidate_product_uncommitted": true,
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-field-multiply-cli-v2",
+    "sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/candidate-cli-v2.json",
+    "metadata_sha256": "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8"
+  },
+  "candidate_manifest_sha256": "e3b7d548137772e0863a676b33fabf6740fce648dfed0ed044e5986fb0f1227b",
+  "candidate_inventory_file_count": 165,
+  "build": {
+    "execution_sha256": "9322060b2aba5dae02afcccd16489978a50187768822df8db7f480a77dea911c",
+    "command_count": 9,
+    "all_commands_exit_zero": true,
+    "guard_stops": 0,
+    "raw_test_summaries_reparsed": true,
+    "disk_and_environment_contracts_checked": true,
+    "recorded_head": "977f761d9f68c6cb4de02f42b060de5290a1a947"
+  },
+  "family_raw_and_physical_source_maps": {
+    "increment-javac23-jarde-default": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldIncrement2$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1302,
+          1351
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "full_access_presentation_checked_by_all_mode": true,
+        "read_details_state": "not_requested"
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "not_requested",
+          "methods_checked": 3,
+          "field_rows": 0
+        },
+        "child": {
+          "read_details_state": "not_requested",
+          "methods_checked": 1,
+          "field_rows": 0
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldIncrement2$A.class",
+        "em23/InputFieldIncrement2.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "increment-javac23-jarde-all": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldIncrement2$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1302,
+          1351
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "explicit_two_read_plus_assignment": true,
+        "test1_receiver_reads": 2,
+        "test1_value_reads": 1,
+        "test1_value_writes": 1,
+        "test2_multiply_assignment": true
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "complete",
+          "methods_checked": 3,
+          "field_rows": 7
+        },
+        "child": {
+          "read_details_state": "complete",
+          "methods_checked": 1,
+          "field_rows": 1
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldIncrement2$A.class",
+        "em23/InputFieldIncrement2.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "increment-javac8-jarde-default": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldIncrement2$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1302,
+          1351
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "full_access_presentation_checked_by_all_mode": true,
+        "read_details_state": "not_requested"
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "not_requested",
+          "methods_checked": 3,
+          "field_rows": 0
+        },
+        "child": {
+          "read_details_state": "not_requested",
+          "methods_checked": 1,
+          "field_rows": 0
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldIncrement2$A.class",
+        "em23/InputFieldIncrement2.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "increment-javac8-jarde-all": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldIncrement2$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1302,
+          1351
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "explicit_two_read_plus_assignment": true,
+        "test1_receiver_reads": 2,
+        "test1_value_reads": 1,
+        "test1_value_writes": 1,
+        "test2_multiply_assignment": true
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "complete",
+          "methods_checked": 3,
+          "field_rows": 7
+        },
+        "child": {
+          "read_details_state": "complete",
+          "methods_checked": 1,
+          "field_rows": 1
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldIncrement2$A.class",
+        "em23/InputFieldIncrement2.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "increment": {
+      "javac8": {
+        "full_source_equal": true,
+        "all_method_bodies_and_source_maps_equal": true
+      },
+      "javac23": {
+        "full_source_equal": true,
+        "all_method_bodies_and_source_maps_equal": true
+      }
+    },
+    "multiply-javac23-jarde-default": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldMultiplyControls$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1656,
+          1705
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "full_access_presentation_checked_by_all_mode": true,
+        "read_details_state": "not_requested"
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "not_requested",
+          "methods_checked": 4,
+          "field_rows": 0
+        },
+        "child": {
+          "read_details_state": "not_requested",
+          "methods_checked": 1,
+          "field_rows": 0
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldMultiplyControls$A.class",
+        "em23/InputFieldMultiplyControls.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "multiply-javac23-jarde-all": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldMultiplyControls$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1656,
+          1705
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "explicit_two_read_plus_assignment": true,
+        "test1_receiver_reads": 2,
+        "test1_value_reads": 1,
+        "test1_value_writes": 1,
+        "test2_multiply_assignment": true,
+        "multiply_divide_structured_no_fallbacks": true,
+        "multiply_divide_field_accesses": 5,
+        "multiply_divide_rhs_tokens": [
+          "8",
+          "/",
+          "arg1"
+        ],
+        "multiply_divide_post_update_field_read": true
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "complete",
+          "methods_checked": 4,
+          "field_rows": 12
+        },
+        "child": {
+          "read_details_state": "complete",
+          "methods_checked": 1,
+          "field_rows": 1
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldMultiplyControls$A.class",
+        "em23/InputFieldMultiplyControls.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "multiply-javac8-jarde-default": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldMultiplyControls$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1656,
+          1705
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "full_access_presentation_checked_by_all_mode": true,
+        "read_details_state": "not_requested"
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "not_requested",
+          "methods_checked": 4,
+          "field_rows": 0
+        },
+        "child": {
+          "read_details_state": "not_requested",
+          "methods_checked": 1,
+          "field_rows": 0
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldMultiplyControls$A.class",
+        "em23/InputFieldMultiplyControls.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "multiply-javac8-jarde-all": {
+      "class_family": {
+        "child_relation_exact": true,
+        "child_text_owner_header": "class InputFieldMultiplyControls$A extends java.lang.Object {",
+        "parent_declaration_span": [
+          1656,
+          1705
+        ],
+        "parent_declaration_bytes": "private static class A extends java.lang.Object {"
+      },
+      "presentation": {
+        "explicit_two_read_plus_assignment": true,
+        "test1_receiver_reads": 2,
+        "test1_value_reads": 1,
+        "test1_value_writes": 1,
+        "test2_multiply_assignment": true,
+        "multiply_divide_structured_no_fallbacks": true,
+        "multiply_divide_field_accesses": 5,
+        "multiply_divide_rhs_tokens": [
+          "8",
+          "/",
+          "arg1"
+        ],
+        "multiply_divide_post_update_field_read": true
+      },
+      "read_details": {
+        "outer": {
+          "read_details_state": "complete",
+          "methods_checked": 4,
+          "field_rows": 12
+        },
+        "child": {
+          "read_details_state": "complete",
+          "methods_checked": 1,
+          "field_rows": 1
+        }
+      },
+      "class_paths": [
+        "em23/InputFieldMultiplyControls$A.class",
+        "em23/InputFieldMultiplyControls.class",
+        "em23/Runner.class"
+      ],
+      "raw_match": true
+    },
+    "multiply": {
+      "javac8": {
+        "full_source_equal": true,
+        "all_method_bodies_and_source_maps_equal": true
+      },
+      "javac23": {
+        "full_source_equal": true,
+        "all_method_bodies_and_source_maps_equal": true
+      }
+    }
+  },
+  "matrix": {
+    "renders": 8,
+    "fresh_full_source_compiles": 8,
+    "fresh_physical_javap": 16,
+    "commands": 40,
+    "all_eight_same_jdk_raw_matches": true
+  },
+  "claim_boundary": "The candidate is checked against two previously accepted original Java baselines. This verifies replay, physical member/source-map fidelity, whole-source compilation, and runtime behavior; it does not imply a committed product or a broader semantic claim."
+}
