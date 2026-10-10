@@ -1,0 +1,119 @@
+{
+  "schema": "typed-full-replay-static-preflight-luna-v4",
+  "status": "static-inputs-and-accepted-control-read-no-candidate-execution",
+  "old_acceptance": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/observation-acceptance-root-v6.json",
+    "sha256": "1e8c457a5edea2bab276ba9c5f394a8a994e06853208c8abe8e5f0cb8de2b214",
+    "schema": "cf12-observation-verification-root-v6",
+    "status": "observations-verified-unit-not-accepted",
+    "inventory_count": 451,
+    "missing": [],
+    "changed": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/README.md"
+    ],
+    "changed_file_detail": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/README.md",
+      "accepted_bytes": 4914,
+      "accepted_sha256": "01f70422a7b864a829257c32b31c026de5f5605df70a67ac94456f052ab86c79",
+      "current_bytes": 5782,
+      "current_sha256": "6ddd43fcda8f646b70311d191717316686efdb4761ef47b9a156f359ca71ee8b"
+    }
+  },
+  "old_closed_input_inventory": {
+    "schema": "cf12-closed-input-inventory-root-v1",
+    "count": 429,
+    "missing": [],
+    "changed": [],
+    "read_only_sha256_check": "passed"
+  },
+  "old_full_replay": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/execution.json",
+    "sha256": "04ee982bad32e216dc1908fddeec588016b5c209f1d0b1f64e0683689501f16c",
+    "schema": "cf12-real-original-jadx-jarde-complete-source-runtime-root-v1",
+    "command_count": 39
+  },
+  "old_render": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/execution.json",
+    "sha256": "5c5b06683abb0141d157e97a31c9d6299355ba8cc9803e52f2b7808a64ecce3b",
+    "schema": "cf12-real-upstream-class-render-baseline-root-v1"
+  },
+  "sample_source_map": {
+    "source_map_type": "dict",
+    "keys": [
+      "segments"
+    ],
+    "segment_count": 37,
+    "segment_origin_roles": [
+      "derived",
+      "primary"
+    ],
+    "identity_name_type": "list",
+    "item_name_raw_type": "list",
+    "method_report_text_key": true
+  },
+  "postpop_accepted_baseline": {
+    "present": true,
+    "execution_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json",
+    "execution_sha256": "93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08",
+    "acceptance_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json",
+    "acceptance_sha256": "bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06",
+    "acceptance_schema": "recover-proved-local-source-types-post-pop-baseline-acceptance-v3",
+    "acceptance_status": "accepted-independent-control-baseline",
+    "execution_schema": "recover-proved-local-source-types-post-pop-baseline-root-v3",
+    "execution_status": "post-pop-baseline-observed-unaccepted",
+    "jdk_legs": [
+      "javac23"
+    ],
+    "commands": 48,
+    "cases": 6,
+    "classes": 8,
+    "reports": 16,
+    "method_profiles": 38,
+    "new_pop_origins": 9,
+    "source_map_sample": {
+      "report_count": 16,
+      "method_profiles": 38,
+      "segments_inspected": 382,
+      "primary_schema": "object",
+      "derived_schema": "array",
+      "member_ordinal_field": "item.index"
+    }
+  },
+  "python_ast": {
+    "prepare-local-source-types-replay-luna-v4.py": "parsed",
+    "verify-local-source-types-replay-luna-v4.py": "parsed"
+  },
+  "pinned_guard_template": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "expected_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "v6_inventory_policy": {
+    "copied_evidence_records": 451,
+    "all_records_rehashed": false,
+    "closed_inputs_rehashed": 429,
+    "consumed_historical_evidence_rehashed": true,
+    "README_drift_is_replay_input": false
+  },
+  "static_changes": [
+    "collector and verifier fail closed unless the explicit execution and separate acceptance SHA/path bindings match",
+    "post-pop matrix checked as JDK23-only 48 commands, 16 reports, 38 method profiles",
+    "verifier no longer treats every copied evidence entry as an input; the 429 closed inputs and consumed artifacts remain SHA-closed"
+  ],
+  "corrected_verifier_contracts": [
+    "generated class set is compared as package-relative paths only after successful compilation; the exact historically expected compile refusal does not require complete output classes",
+    "affected method identity compares identity.name/descriptor raw arrays with item.name/descriptor raw fields and includes item.index ordinal plus owner digest/snapshot",
+    "source-map origin primary is one object and derived is a list; origins are bound by exact raw name/descriptor and owner, with the enclosing report method ordinal pinned",
+    "javap parser recognizes numeric offset plus mnemonic instruction syntax and exact method name+descriptor; it excludes numeric switch table rows and constructors",
+    "candidate reports must cover every captured class exactly; successful compiles require exact full package-relative class set",
+    "fresh Java23 original anchors are tied to historical original/JADX raw; every claimed runtime pass requires exit code zero",
+    "control reports retain quality/outcome/refusal/diagnostics and all usage counters except permitted analysis_steps/elapsed_millis changes",
+    "boundary failures remain explicit observed stage classifications; only successful raw runtimes are compared, and failures never count as passes"
+  ],
+  "closed_input_inventory": {
+    "schema": "cf12-closed-input-inventory-root-v1",
+    "count": 429,
+    "sha256": "verified-all-entries",
+    "changed": []
+  }
+}

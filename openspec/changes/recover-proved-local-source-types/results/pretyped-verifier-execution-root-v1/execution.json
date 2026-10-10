@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-10T19:42:21.329327+00:00",
+  "duration_seconds": 0.2766277920163702,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v2/verify-root-v2.py",
+    "--execution",
+    "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json",
+    "--acceptance-out",
+    "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 139968,
+      "sha256": "bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

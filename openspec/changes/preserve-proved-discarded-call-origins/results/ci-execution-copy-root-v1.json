@@ -1,0 +1,107 @@
+{
+  "status": "original_bytes_copied",
+  "files": [
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-capture-execution-root-v1/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-capture-execution-root-v1/argv.json",
+      "bytes": 713,
+      "sha256": "fe55655081cc650cad5686dac729e0d6e4d2fd55a78b6d0769cb16d18cff8d29"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-capture-execution-root-v1/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-capture-execution-root-v1/execution.json",
+      "bytes": 1205,
+      "sha256": "fcf8b32d4e9ea21352e776de39656fbd5d1b2283525044368a110af7d9928093"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-capture-execution-root-v1/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-capture-execution-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-capture-execution-root-v1/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-capture-execution-root-v1/stdout.raw",
+      "bytes": 142,
+      "sha256": "8b1b990b6aad8947a31ca34f49b83eb2075125443e5e118fed483c4c587fbfa4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v1/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v1/argv.json",
+      "bytes": 703,
+      "sha256": "03de9a5e0e14689f4410a95e8ab52addeaad1f8837b52825f60418c4d2847a36"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v1/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v1/execution.json",
+      "bytes": 1194,
+      "sha256": "94e09ab0496af3a9ba0200970bb2b7db6cd9ee3a33bf63a955a73506d31e08c5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v1/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v1/stderr.raw",
+      "bytes": 735,
+      "sha256": "c137b9d56dfec8663702108533cd892d73ff81d3e84d29f3b782e36a894a098c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v1/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v2/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v2/argv.json",
+      "bytes": 703,
+      "sha256": "0fcc281fd9b6691145a442ff3cd76fd1e77add219a5b36cd2b73ef4b65a06e66"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v2/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v2/execution.json",
+      "bytes": 1193,
+      "sha256": "6ced2d0f1745a90facdd404a9de0f2ee8af028a7939877b1f309758a8dc6597c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v2/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v2/stderr.raw",
+      "bytes": 994,
+      "sha256": "df52d1d43acc37f6ebb4936689be8fdce9661a10932ea92abff1ea1f4162ca46"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v2/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v2/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v3/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v3/argv.json",
+      "bytes": 703,
+      "sha256": "db1f9b9c554780d079eef86242bde599802b675f5c2dfa8e5ea20204db7da15b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v3/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v3/execution.json",
+      "bytes": 1193,
+      "sha256": "6ddf9a0b70f951b2fb422dcf0fd669924429949aaa9df585d6639e8e39bf8976"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v3/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v3/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-ci-verifier-execution-root-v3/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/ci-verifier-execution-root-v3/stdout.raw",
+      "bytes": 183,
+      "sha256": "32a39737e4282a54e523e7e1afcb0d25066042cf37a5271d467710b8e44f51bd"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-product-clean-audit-root-v2.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-audit-root-v2.py",
+      "bytes": 3321,
+      "sha256": "ba6f4e22f06cc97f907865d70ac77662813b61c879fbc1a81e342b40fdba3fe0"
+    }
+  ]
+}

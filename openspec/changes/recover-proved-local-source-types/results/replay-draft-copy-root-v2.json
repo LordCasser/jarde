@@ -1,0 +1,113 @@
+{
+  "status": "private_drafts_copied_candidate_unrun",
+  "files": [
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v3/README.md",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v3/README.md",
+      "bytes": 5051,
+      "sha256": "548c051e81e004b922694181f0b63be14ba2f6e5f764a79a31357d206868dba9"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v3/prepare-local-source-types-replay-luna-v3.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v3/prepare-local-source-types-replay-luna-v3.py",
+      "bytes": 30037,
+      "sha256": "0c7fa8149674abef718bbd8e4d3fa276f952ce22b8be9f7deeba8adcc4991972"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v3/static-schema-preflight.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v3/static-schema-preflight.json",
+      "bytes": 3771,
+      "sha256": "50c6630dab99fd930b502f9b8261861019b0c9e448daba7b6d7b7c930bb20ff8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v3/verify-local-source-types-replay-luna-v3.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v3/verify-local-source-types-replay-luna-v3.py",
+      "bytes": 43066,
+      "sha256": "18384371d776dff47ca70f064a002efa86095fc8269402a8bcabfdcaa956180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v4/README.md",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v4/README.md",
+      "bytes": 4519,
+      "sha256": "0e1e564fe4ce8ae580fe4372151bb9685f2a46e55c69ce516083f2c5765af42b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v4/prepare-local-source-types-replay-luna-v4.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v4/prepare-local-source-types-replay-luna-v4.py",
+      "bytes": 30970,
+      "sha256": "5da7eb460c3fc1ad5803ebd4effa4c83e6b0bf361f5cbdba3c76ce533f7dc4f6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v4/static-schema-preflight.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v4/static-schema-preflight.json",
+      "bytes": 6027,
+      "sha256": "a15323154b52a7d738c6c0bcd63da2541c8f0a7a70940fc98a742fd6da1dccc3"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v4/v3-to-v4-collector.diff",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v4/v3-to-v4-collector.diff",
+      "bytes": 4831,
+      "sha256": "89dcebca2a23c18784e371c1a46c5363077cd1d89e1f3c78d2dba6cbd75ef659"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v4/v3-to-v4-verifier.diff",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v4/v3-to-v4-verifier.diff",
+      "bytes": 35380,
+      "sha256": "d2d0865e939458988aa33e12fceb5097bd24878d939b77e93f933e42e262cedf"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v4/verify-local-source-types-replay-luna-v4.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v4/verify-local-source-types-replay-luna-v4.py",
+      "bytes": 50925,
+      "sha256": "2a9214722395354db91f8f6b0f078dbe1c43f5a2aaf57923230ab98a70d0ea50"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/README.md",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/README.md",
+      "bytes": 4778,
+      "sha256": "3b95a5579b7bf40510758a65f6fa197b37269d157822441f6f25685d3206de7c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/prepare-local-source-types-replay-luna-v5.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/prepare-local-source-types-replay-luna-v5.py",
+      "bytes": 30966,
+      "sha256": "42bc0839902412f69c981e5ed7dc6a1b4265289d741bb7a9319a91bec914c156"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/static-schema-preflight.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/static-schema-preflight.json",
+      "bytes": 6822,
+      "sha256": "de33929ab23f0db3e4406c2f77b84895711c4c379254977bd259d005a46daa0a"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/v3-to-v4-collector.diff",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/v3-to-v4-collector.diff",
+      "bytes": 4831,
+      "sha256": "89dcebca2a23c18784e371c1a46c5363077cd1d89e1f3c78d2dba6cbd75ef659"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/v3-to-v4-verifier.diff",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/v3-to-v4-verifier.diff",
+      "bytes": 35380,
+      "sha256": "d2d0865e939458988aa33e12fceb5097bd24878d939b77e93f933e42e262cedf"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/v4-to-v5-collector.diff",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/v4-to-v5-collector.diff",
+      "bytes": 2291,
+      "sha256": "92657442585dc108dbc0e712d3c7838913045ec52c4eafd95c4c6ebaf7f68034"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/v4-to-v5-verifier.diff",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/v4-to-v5-verifier.diff",
+      "bytes": 1127,
+      "sha256": "2f1df388060990c353833f6a7c6112daf2613b2caa838f24b5575a964cce6d4f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-typed-full-replay-luna-v5/verify-local-source-types-replay-luna-v5.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/verify-local-source-types-replay-luna-v5.py",
+      "bytes": 50925,
+      "sha256": "4557a85ce1a8d461491e710249abcf14a0d8307ed9417e3f89199860338bd163"
+    }
+  ]
+}

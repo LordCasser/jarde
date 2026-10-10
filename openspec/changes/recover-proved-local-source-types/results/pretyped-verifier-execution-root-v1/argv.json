@@ -1,0 +1,14 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v2/verify-root-v2.py",
+  "--execution",
+  "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json",
+  "--acceptance-out",
+  "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json"
+]

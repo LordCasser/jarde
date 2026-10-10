@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-10T19:30:03.633036+00:00",
+  "duration_seconds": 0.22010170799330808,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/private/tmp/jarde-post-pop-baseline-preflight-root-v1.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 152,
+      "sha256": "eb19203fd0b86df1929eefed766569150ff7e9398b0acdc3f7f848d41a3fb4ad"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 875,
+      "sha256": "672e95ddcf78e17681a8b66f1f303e643cb0557728b345389200c42170df91e8"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "utc": "2026-10-10T19:57:43.935620+00:00",
+  "duration_seconds": 0.40131470799678937,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-discarded-call-origins/results/verify-ci-product-root-v1.py",
+    "--product-commit",
+    "c5941c890b352b281fc2bcf4102e45243691bddb",
+    "--run-id",
+    "38079005388",
+    "--source-base",
+    "7a1ca930fc6178613df5df86145fff846c79791c",
+    "--metadata-sha256",
+    "da278c04dab628ed5365c77901bed0843c02510cba56d40e58af9f7e1775ebb3",
+    "--cli-sha256",
+    "251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde",
+    "--build-sha256",
+    "6a2d86b1f35b14ff4aa62c88238a00c6a517df43554bf4ef320d224c03df187c",
+    "--runner-sha256",
+    "f6b855402ecd83304f91e934504f6174390c8368fc3f7161b71f4339318adbdd"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 735,
+      "sha256": "c137b9d56dfec8663702108533cd892d73ff81d3e84d29f3b782e36a894a098c"
+    }
+  }
+}

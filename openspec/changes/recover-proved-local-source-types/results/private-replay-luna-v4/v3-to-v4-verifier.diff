@@ -1,0 +1,345 @@
+--- /private/tmp/jarde-typed-full-replay-luna-v3/verify-local-source-types-replay-luna-v3.py	2026-10-11 03:42:01
++++ /private/tmp/jarde-typed-full-replay-luna-v4/verify-local-source-types-replay-luna-v4.py	2026-10-11 03:54:57
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Independent, read-only v3 verifier draft for the local-type full-class replay."""
++"""Independent, read-only v4 verifier draft for the local-type full-class replay."""
+ import argparse, hashlib, json, os, re, sys, zipfile
+ from pathlib import Path
+ from blake3 import blake3
+@@ -7,7 +7,7 @@
+ ROOT=Path('/Users/lordcasser/workspace/projects/jarde')
+ BASE=ROOT/'openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1'
+ RESULTS=ROOT/'openspec/changes/recover-proved-local-source-types/results'
+-SCHEMA='recover-proved-local-source-types-complete-class-replay-luna-v3'
++SCHEMA='recover-proved-local-source-types-complete-class-replay-luna-v4'
+ ANCHORS={'TestSwitch.test','TestSwitchNoDefault.test'}
+ CONTROLS={'TestSwitchFallThrough.test':'match','TestSwitchLabels.test':'match',
+           'TestSwitchLabels.testWithDisabledConstReplace':'match',
+@@ -15,6 +15,10 @@
+ BASELINE_ACCEPTANCE_SHA='1e8c457a5edea2bab276ba9c5f394a8a994e06853208c8abe8e5f0cb8de2b214'
+ BASELINE_FULL_SHA='04ee982bad32e216dc1908fddeec588016b5c209f1d0b1f64e0683689501f16c'
+ BASELINE_RENDER_SHA='5c5b06683abb0141d157e97a31c9d6299355ba8cc9803e52f2b7808a64ecce3b'
++PREPOP_EXECUTION=Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json')
++PREPOP_EXECUTION_SHA='93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08'
++PREPOP_ACCEPTANCE=Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json')
++PREPOP_ACCEPTANCE_SHA='bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06'
+ 
+ def sha(b): return hashlib.sha256(b).hexdigest()
+ def need(ok,msg):
+@@ -28,11 +32,38 @@
+     need(len(b)==rec['bytes'] and sha(b)==rec['sha256'],'raw stream mismatch: '+str(p))
+     return b
+ def raw(rec): return stream(rec['streams']['stdout']),stream(rec['streams']['stderr'])
++def usage_slots(doc):
++    slots={}
++    if isinstance(doc.get('usage'),dict): slots['$.usage']=doc['usage']
++    if isinstance(doc.get('execution'),dict) and isinstance(doc['execution'].get('usage'),dict): slots['$.execution.usage']=doc['execution']['usage']
++    for index,m in enumerate(doc.get('methods',[])):
++        report=m.get('outcome',{}).get('report')
++        usage=report.get('execution',{}).get('usage') if isinstance(report,dict) else None
++        if isinstance(usage,dict): slots[f'$.methods[{index}].outcome.report.execution.usage']=usage
++    return slots
++def without_maps_and_usage(value):
++    if isinstance(value,dict):
++        return {k:without_maps_and_usage(v) for k,v in value.items() if k not in ('source_map','usage')}
++    if isinstance(value,list): return [without_maps_and_usage(x) for x in value]
++    return value
++def verify_report_preserved(old_doc,new_doc,label):
++    old_usage=usage_slots(old_doc); new_usage=usage_slots(new_doc)
++    need(old_usage.keys()==new_usage.keys(),'resource usage locations changed '+label)
++    for path,old in old_usage.items():
++        new=new_usage[path]
++        need(old.keys()==new.keys(),'resource usage counter schema changed '+label+'/'+path)
++        for key,value in old.items():
++            if key=='analysis_steps': need(new[key]>=value,'analysis_steps unexpectedly decreased '+label+'/'+path)
++            elif key=='elapsed_millis': need(type(new[key]) is int and new[key]>=0,'elapsed_millis invalid '+label+'/'+path)
++            else: need(new[key]==value,'nonpermitted resource counter changed '+label+'/'+path+'/'+key)
++    need(without_maps_and_usage(old_doc)==without_maps_and_usage(new_doc),'quality/outcome/refusal/diagnostics changed '+label)
+ def method_key(m):
+     item=m['item']; ident=item['identity']; owner=ident['owner']
+     name=bytes(ident['name']).decode('ascii'); descriptor=bytes(ident['descriptor']).decode('ascii')
+     need(ident['name']==item['name']['raw'] and ident['descriptor']==item['descriptor']['raw'], 'method identity raw bytes differ from item raw bytes')
+-    return (name,descriptor,owner['class_bytes']['digest'],owner['location']['snapshot'],m.get('declaration'))
++    need(type(item.get('index')) is int and item['index']>=0,'physical member ordinal is missing/invalid')
++    need(owner.get('class_bytes',{}).get('digest') and owner.get('location',{}).get('snapshot'),'physical owner digest/snapshot is missing')
++    return (name,descriptor,owner['class_bytes']['digest'],owner['location']['snapshot'],item['index'],m.get('declaration'))
+ def method_maps(doc):
+     result={}
+     for m in doc.get('methods',[]):
+@@ -46,13 +77,18 @@
+     key=method_key(m)
+     for seg in segments:
+         origin=seg.get('origin',{})
+-        for role in ('primary','derived'):
+-            item=origin.get(role)
+-            if not item: continue
++        primary=origin.get('primary'); derived=origin.get('derived',[])
++        need(isinstance(primary,dict) and isinstance(derived,list),'source-map origin role schema mismatch')
++        for item in (primary,*derived):
++            need(isinstance(item,dict),'source-map origin entry is not an object')
+             im=item.get('method',{}); owner=im.get('owner',{})
+-            ident=(bytes(im.get('name',[])).decode('ascii'),bytes(im.get('descriptor',[])).decode('ascii'),owner.get('class_bytes',{}).get('digest'),owner.get('location',{}).get('snapshot'))
++            name=bytes(im.get('name',[])).decode('ascii'); descriptor=bytes(im.get('descriptor',[])).decode('ascii')
++            ident=(name,descriptor,owner.get('class_bytes',{}).get('digest'),owner.get('location',{}).get('snapshot'))
+             need(ident==key[:4],'origin is owned by a different physical method')
+-            if isinstance(item.get('bci'),int): result.add(item['bci'])
++            # Origin entries carry name/descriptor/owner but no ordinal in this schema.
++            # method_key pins the enclosing report member's exact item.index ordinal.
++            need(type(item.get('bci')) is int and item['bci']>=0,'source-map origin has invalid physical BCI')
++            result.add(item['bci'])
+     return result
+ def javap_method_bcis(path, method_name, descriptor):
+     lines=Path(path).read_text(errors='replace').splitlines(); headers=[]
+@@ -72,12 +108,12 @@
+         method_spelling=re.search(r'([^ .]+)\s*\([^)]*\);$',header)
+         if not method_spelling: continue
+         actual=method_spelling.group(1)
+-        if actual not in (method_name,'<init>') and not actual.endswith('.'+method_name): continue
++        if actual!=method_name: continue
+         code=next((j for j,x in enumerate(block) if x.strip()=='Code:'),None)
+         if code is None: continue
+         bcis=set()
+         for line in block[code+1:]:
+-            m=re.match(r'^\s*(\d+):',line)
++            m=re.match(r'^\s*(\d+):\s+([a-z][a-z0-9_]*)(?:\s|$)',line)
+             if m: bcis.add(int(m.group(1)))
+         found.append(bcis)
+     need(len(found)==1,'javap exact method name+descriptor must resolve once: '+method_name+descriptor)
+@@ -135,14 +171,14 @@
+     acceptance=load(accepted)
+     need(acceptance.get('status')=='observations-verified-unit-not-accepted' and acceptance.get('cf12_complete') is False,'historical CF12 evidence is not an observations-only accepted baseline')
+     pretyped_path=Path(a.pretyped_execution).resolve(); pretyped_acceptance_path=Path(a.pretyped_acceptance).resolve()
++    need(pretyped_path==PREPOP_EXECUTION and a.pretyped_execution_sha256==PREPOP_EXECUTION_SHA and pretyped_acceptance_path==PREPOP_ACCEPTANCE and a.pretyped_acceptance_sha256==PREPOP_ACCEPTANCE_SHA,'post-pop comparator must be the exact accepted root-v4 artifact')
+     need(pretyped_path.is_file() and sha(pretyped_path.read_bytes())==a.pretyped_execution_sha256,'explicit post-pop execution path/SHA mismatch')
+     need(pretyped_acceptance_path.is_file() and sha(pretyped_acceptance_path.read_bytes())==a.pretyped_acceptance_sha256,'explicit post-pop acceptance path/SHA mismatch')
+     pretyped=load(pretyped_path); preaccept=load(pretyped_acceptance_path)
+     need(pretyped.get('schema')=='recover-proved-local-source-types-post-pop-baseline-root-v3','post-pop execution schema mismatch')
+     need(preaccept.get('schema')=='recover-proved-local-source-types-post-pop-baseline-acceptance-v3' and preaccept.get('status')=='accepted-independent-control-baseline','post-pop baseline is not independently accepted')
+     need(preaccept.get('execution_path')==str(pretyped_path) and preaccept.get('execution_sha256')==a.pretyped_execution_sha256,'post-pop acceptance does not bind exact execution')
+-    historical_hash_values={v for k,v in preaccept.items() if 'cf12' in k.lower() and isinstance(v,str)}
+-    need({BASELINE_ACCEPTANCE_SHA,sha((BASE/'full-replay-root-v1/execution.json').read_bytes())}<=historical_hash_values,'post-pop acceptance historical CF12 hash bindings mismatch')
++    need(preaccept.get('historical_cf12_acceptance_sha256')==BASELINE_ACCEPTANCE_SHA and preaccept.get('historical_cf12_full_replay_sha256')==BASELINE_FULL_SHA,'post-pop acceptance historical CF12 hash bindings mismatch')
+     need(pretyped.get('status')=='post-pop-baseline-observed-unaccepted','post-pop execution is not the accepted completed observation')
+     need({x.get('case') for x in pretyped.get('cases',[])}==ANCHORS|set(CONTROLS) and len(pretyped.get('cases',[]))==6,'accepted post-pop CF12 case inventory mismatch')
+     need(sum(len(x.get('class_files',[])) for x in pretyped['cases'])==8,'accepted post-pop class inventory mismatch')
+@@ -156,6 +192,7 @@
+                     report_doc=load(report_row['report_path'])
+                     pretyped_report_count+=1; pretyped_method_count+=len(report_doc.get('methods',[]))
+     need((pretyped_report_count,pretyped_method_count)==(16,38),'accepted post-pop report/method inventory is not the reviewed 16/38 matrix')
++    need(preaccept.get('case_count')==6 and preaccept.get('class_instance_count')==8 and preaccept.get('fresh_jdk_legs')==['javac23'] and len(preaccept.get('new_pop_origins',[]))==9,'post-pop acceptance summary differs from actual root-v4 facts')
+     need(d.get('pretyped_baseline',{}).get('execution_path')==str(pretyped_path) and d['pretyped_baseline'].get('execution_sha256')==a.pretyped_execution_sha256 and d['pretyped_baseline'].get('acceptance_path')==str(pretyped_acceptance_path) and d['pretyped_baseline'].get('acceptance_sha256')==a.pretyped_acceptance_sha256,'replay does not bind exact accepted post-pop baseline')
+     inventory={x['path']:x for x in acceptance['copied_evidence_inventory']}
+     need(len(inventory)==451,'root-v6 copied-evidence closure count mismatch')
+@@ -198,7 +235,7 @@
+     old=load(BASE/'full-replay-root-v1/execution.json'); old_rows={}
+     for row in old['cases']: old_rows.setdefault(row['case'],{})[row['kind']]=row
+     need(set(old_rows)==ANCHORS|set(CONTROLS),'historical full-replay case set mismatch')
+-    old_commands=old['commands']
++    old_commands=old['commands']; historical_original_raw={}
+     def old_raw(cmd):
+         pair=[]
+         for rec in cmd['streams']:
+@@ -208,6 +245,7 @@
+         original_cmds=[c for c in old_commands if c['label']=='runtime' and c['exit_code']==0 and len(c['argv'])>4 and '/'+case+'/' in c['argv'][c['argv'].index('-cp')+1] and '/original/classes' in c['argv'][c['argv'].index('-cp')+1]]
+         jadx_cmds=[c for c in old_commands if c['label']=='runtime' and c['exit_code']==0 and len(c['argv'])>4 and '/'+case+'/jadx/classes' in c['argv'][c['argv'].index('-cp')+1]]
+         need(len(original_cmds)==1 and len(jadx_cmds)==1 and old_raw(original_cmds[0])==old_raw(jadx_cmds[0]),'historical original/JADX raw relationship does not close '+case)
++        historical_original_raw[case]=old_raw(original_cmds[0])
+     for case,expected in {**CONTROLS,'TestSwitch.test':'mismatch','TestSwitchNoDefault.test':'compile-fail'}.items():
+         need(set(old_rows[case])=={'jadx','jarde-default','jarde-all'},'historical source/profile matrix mismatch '+case)
+         for profile in ('jarde-default','jarde-all'):
+@@ -268,6 +306,7 @@
+             need(len(oldcp)>=3 and Path(oldcp[0]).is_dir() and Path(oldcp[1]).is_dir() and oldcp[2:]==runtime_entries,'original classpath structure mismatch')
+             helpercp=os.pathsep.join((oldcp[0],*oldcp[2:]))
+             oracle=raw(orig)
++            if leg=='jdk23': need(oracle==historical_original_raw[case],'fresh Java 23 original raw differs from historical original/JADX oracle '+case)
+             jadx=lr['jadx']; need(jadx and jadx['compile']['argv'][0]==str(jdkhome/'bin/javac') and jadx['compile']['exit_code']==0 and jadx['runtime'] and jadx['runtime']['argv'][0]==str(jdkhome/'bin/java') and jadx['runtime']['exit_code']==0,case+'/'+leg+' fresh JADX compile/runtime missing')
+             need(jadx['compile']['argv'][jadx['compile']['argv'].index('-classpath')+1]==helpercp,'JADX compile helper classpath mismatch')
+             jcp=jadx['runtime']['argv'][jadx['runtime']['argv'].index('-cp')+1].split(os.pathsep)
+@@ -283,6 +322,9 @@
+             docs_by_profile={}
+             for profile,pr in lr['profiles'].items():
+                 docs={}; docs_by_profile[profile]=docs
++                expected_stems={Path(x['path']).stem for x in row['class_files']}
++                need(len(pr['render_reports'])==len(expected_stems),'candidate profile does not have one report per captured class '+case+'/'+leg+'/'+profile)
++                need(len(pr['report_bindings'])==len(expected_stems) and {Path(x['input_path']).stem for x in pr['report_bindings']}==expected_stems,'candidate render bindings do not cover exact captured class set '+case+'/'+leg+'/'+profile)
+                 for report_path in pr['render_reports']:
+                     binding=next((x for x in pr['report_bindings'] if x['report_path']==report_path),None)
+                     need(binding is not None,case+'/'+leg+'/'+profile+' report lacks exact render binding')
+@@ -297,23 +339,28 @@
+                     need(doc['text']==next(Path(x).read_text(encoding='utf-8') for x in source_paths if Path(x).stem==stem),'saved source differs from exact report text '+stem)
+                     srcrow=next(x for x in pr['sources'] if Path(x['path']).stem==stem); sb=Path(srcrow['path']).read_bytes()
+                     need(len(sb)==srcrow['bytes'] and sha(sb)==srcrow['sha256'],'candidate source pin mismatch '+stem)
++                need(set(docs)==expected_stems,'candidate report rows do not cover exact captured class set '+case+'/'+leg+'/'+profile)
+                 comp=pr['compile']; need(comp['argv'][0]==str(jdkhome/'bin/javac'),case+'/'+leg+' javac pin')
+                 av=comp['argv']; need(av[av.index('-source')+1]=='8' and av[av.index('-target')+1]=='8' and '-proc:none' in av,case+'/'+leg+' Java8 source profile')
+                 need(av[av.index('-classpath')+1]==helpercp,'candidate compile classpath includes unexpected/original target class')
+                 source_args=[x['path'] for x in pr['sources']]; need(av[-len(source_args):]==source_args and len(source_args)==len(pr['render_reports']),case+'/'+leg+'/'+profile+' compile/source argv binding mismatch')
+                 expected_classes={'jadx/tests/integration/switches/'+Path(x['path']).name for x in row['class_files']}
+-                actual_classes={x.relative_to(Path(av[av.index('-d')+1])).as_posix().split('/')[-1] for x in Path(av[av.index('-d')+1]).rglob('*.class')}
+-                need(actual_classes==expected_classes,case+'/'+leg+'/'+profile+' generated complete class-file set differs from frozen original class set')
++                if comp['exit_code']==0:
++                    actual_classes={x.relative_to(Path(av[av.index('-d')+1])).as_posix() for x in Path(av[av.index('-d')+1]).rglob('*.class')}
++                    need(actual_classes==expected_classes,case+'/'+leg+'/'+profile+' generated complete class-file set differs from frozen original class set')
++                else:
++                    need(case=='TestSwitchWithFallThroughCase.test' and CONTROLS[case]=='compile-fail' and pr['runtime'] is None,case+'/'+leg+'/'+profile+' unexpected generated-source compilation refusal')
+                 for rp in pr['render_reports']:
+                     input_path=next(x['path'] for x in row['class_files'] if Path(x['path']).stem==Path(rp).stem)
+                     render_rec=next((x['render_command'] for x in pr['report_bindings'] if x['report_path']==rp),None)
+-                    need(render_rec is not None and render_rec['argv'][0]==a.cli and render_rec['argv'][render_rec['argv'].index('--input')+1]==input_path,case+'/'+leg+'/'+profile+' CLI render command missing')
+-                    expected_argv=[a.cli,'class-source','--input',input_path,'--class','jadx.tests.integration.switches.'+Path(input_path).stem,'--policy','single-class','--release','8','--format','json']
++                    need(render_rec is not None and render_rec['argv'][0]==str(cli) and render_rec['argv'][render_rec['argv'].index('--input')+1]==input_path,case+'/'+leg+'/'+profile+' CLI render command missing')
++                    expected_argv=[str(cli),'class-source','--input',input_path,'--class','jadx.tests.integration.switches.'+Path(input_path).stem,'--policy','single-class','--release','8','--format','json']
+                     if profile=='all': expected_argv += ['--evidence','all']
+                     need(render_rec['argv']==expected_argv,case+'/'+leg+'/'+profile+' CLI argv mismatch')
+                 if case in ANCHORS:
+                     need(comp['exit_code']==0 and pr['runtime'] is not None,case+'/'+leg+'/'+profile+' anchor did not compile/run')
+                     rr=pr['runtime']; need(rr['argv'][0]==str(jdkhome/'bin/java') and rr['argv'][1]=='-Xverify:all' and rr['argv'][-2:]==['jadx.tests.integration.switches.'+Path(next(x['path'] for x in rows[case]['class_files'] if '$Inner' not in x['path'])).stem,case.split('.')[0]],case+'/'+leg+'/'+profile+' candidate runtime argv mismatch')
++                    need(rr['exit_code']==0,case+'/'+leg+'/'+profile+' candidate runtime exited unsuccessfully')
+                     rcp=rr['argv'][rr['argv'].index('-cp')+1].split(os.pathsep); compile_out=av[av.index('-d')+1]
+                     need(rcp[0]==oldcp[0] and rcp[1]==compile_out and rcp[2:]==oldcp[2:],'candidate runtime classpath target binding mismatch')
+                     need(raw(pr['runtime'])==oracle,case+'/'+leg+'/'+profile+' anchor stdout/stderr differs from original')
+@@ -323,7 +370,7 @@
+                     if expected=='compile-fail':
+                         need(comp['exit_code']==1 and pr['runtime'] is None,case+'/'+leg+'/'+profile+' refusal classification changed')
+                     else:
+-                        need(comp['exit_code']==0 and pr['runtime'] is not None and raw(pr['runtime'])==oracle,case+'/'+leg+'/'+profile+' successful control behavior changed')
++                        need(comp['exit_code']==0 and pr['runtime'] is not None and pr['runtime']['exit_code']==0 and raw(pr['runtime'])==oracle,case+'/'+leg+'/'+profile+' successful control behavior changed')
+                     results['control_classifications_preserved']+=1
+             default_docs=docs_by_profile['default']; all_docs=docs_by_profile['all']
+             need(set(default_docs)==set(Path(p).stem for p in lr['profiles']['default']['render_reports']),case+'/'+leg+' default render inventory mismatch')
+@@ -337,6 +384,7 @@
+                     base=postpop_report(pretyped,case,'javac23',profile,next(x['path'] for x in row['class_files'] if Path(x['path']).stem==stem))
+                     if case in CONTROLS or stem.endswith('$Inner') or case not in ANCHORS:
+                         need(doc.get('text')==base.get('text') and method_maps(doc)==method_maps(base),case+'/'+leg+'/'+stem+' changed independently accepted post-pop body/map')
++                        verify_report_preserved(base,doc,case+'/'+leg+'/'+stem+'/'+profile)
+                     else:
+                         # Anchor changes are limited to the named test method; all other member bodies/maps remain frozen.
+                         old_methods={method_key(m):m for m in base.get('methods',[])}; new_methods={method_key(m):m for m in doc.get('methods',[])}
+@@ -346,60 +394,96 @@
+                             nm=new_methods[mk]
+                             if mk[0]=='test' and mk[1]==target_desc: continue
+                             need(method_source_text(bm)==method_source_text(nm) and method_maps({'methods':[bm]})==method_maps({'methods':[nm]}),case+'/'+leg+'/'+stem+' unrelated method changed against post-pop baseline')
++                            verify_report_preserved({'methods':[bm]},{'methods':[nm]},case+'/'+leg+'/'+stem+'/'+repr(mk))
+                 if case in ANCHORS and stem.endswith('$TestCls'):
+                     affected_name='test'; affected_descriptor='(Ljava/lang/String;)Ljava/lang/String;' if case=='TestSwitch.test' else '(I)V'
+                     for doc in (dm,am):
+                         matches=[m for m in doc.get('methods',[]) if m.get('item',{}).get('name',{}).get('escaped')==affected_name and m.get('item',{}).get('descriptor',{}).get('escaped')==affected_descriptor]
+                         need(len(matches)==1 and matches[0].get('outcome',{}).get('report',{}).get('source_map'),case+'/'+leg+'/'+stem+' exact affected name+descriptor method/source map missing')
+                         selected=matches[0]; item=selected['item']; ident=item.get('identity',{}); owner=ident.get('owner',{})
+-                        need(ident.get('name')==item.get('name') and ident.get('descriptor')==item.get('descriptor') and owner.get('class_bytes',{}).get('digest')==doc['class']['class_bytes']['digest'] and owner.get('location',{}).get('snapshot')==doc['class']['location']['snapshot'],case+'/'+leg+'/'+stem+' affected method owner/name/descriptor identity differs from rendered class')
++                        need(ident.get('name')==item.get('name',{}).get('raw') and ident.get('descriptor')==item.get('descriptor',{}).get('raw') and type(item.get('index')) is int and owner.get('class_bytes',{}).get('digest')==doc['class']['class_bytes']['digest'] and owner.get('location',{}).get('snapshot')==doc['class']['location']['snapshot'],case+'/'+leg+'/'+stem+' affected method owner/name/descriptor/ordinal identity differs from rendered class')
+                         owned=owned_method_bcis(selected)
+                         jp=BASE/'render-root-v1'/case/stem/'javap.stdout.raw'
+                         verify_baseline_inventory(jp,inventory)
+                         physical=javap_method_bcis(jp,affected_name,affected_descriptor)
+-                        need(physical and physical<=owned,case+'/'+leg+'/'+stem+' affected physical BCI coverage incomplete')
++                        need(physical and physical==owned,case+'/'+leg+'/'+stem+' source-map BCI set differs from exact physical method instructions')
+     b=d['boundary_rows']; need(len(b)==1,'standalone neighboring boundary fixture missing')
+     br=b[0]; src=Path(br['source']['path']); runner=Path(br['runner']['path'])
+     for p,key in ((src,'source'),(runner,'runner')): need(p.is_file() and len(p.read_bytes())==br[key]['bytes'] and sha(p.read_bytes())==br[key]['sha256'],'boundary source pin mismatch '+key)
+     need(src==preflight.parent/'LocalSourceTypesBoundaries.java' and runner==preflight.parent/'BoundaryRunner.java' and br['source']['sha256']==pre['source_files']['LocalSourceTypesBoundaries.java'] and br['runner']['sha256']==pre['source_files']['BoundaryRunner.java'],'boundary sources differ from root-corrected preflight source')
+     need(set(br['legs'])=={'jdk8','jdk23'},'boundary Java legs incomplete')
++    boundary_classifications={}
+     for leg,lr in br['legs'].items():
+         jdk=Path(a.jdk8_home if leg=='jdk8' else a.jdk23_home).resolve()
+         oc=lr['original_compile']; need(oc['exit_code']==0 and oc['argv'][0]==str(jdk/'bin/javac'),'boundary original Java8 compile failed')
+         need(oc['argv'][oc['argv'].index('-source')+1]=='8' and oc['argv'][oc['argv'].index('-target')+1]=='8' and '-g:none' in oc['argv'],'boundary compile profile mismatch')
+-        original_class=lr['original_class']; op=Path(original_class['path']); ob=op.read_bytes()
++        original_class=lr['original_class']; need(original_class is not None,'boundary original class missing after successful compile')
++        op=Path(original_class['path']); ob=op.read_bytes()
+         need(len(ob)==original_class['bytes'] and sha(ob)==original_class['sha256'],'boundary compiled class pin mismatch')
+-        original=lr['original_runtime']; need(original and original['exit_code']==0,'boundary original runtime absent')
+-        jax=lr['jadx']; need(jax and jax['compile']['exit_code']==0 and jax['runtime'] and jax['runtime']['exit_code']==0,'boundary JADX full-class replay failed')
+-        need(jax['compile']['argv'][0]==str(jdk/'bin/javac') and jax['runtime']['argv'][0]==str(jdk/'bin/java') and jax['runtime']['argv'][-1]=='BoundaryRunner','boundary JADX tool/entrypoint mismatch')
+-        need(raw(jax['runtime'])==raw(original),'boundary JADX output differs from original')
+-        for profile,cr in lr['candidate'].items():
+-            need(profile in ('default','all') and cr['compile']['exit_code']==0 and cr['runtime'] and cr['runtime']['exit_code']==0,'boundary candidate compile/runtime missing '+profile)
++        original=lr['original_runtime']; need(original and original['exit_code']==0,'boundary original runtime absent/failed')
++        oracle=raw(original); need(original['argv'][0]==str(jdk/'bin/java') and original['argv'][1]=='-Xverify:all' and original['argv'][-1]=='BoundaryRunner','boundary original runtime argv mismatch')
++        jax=lr['jadx']; need(isinstance(jax,dict) and isinstance(jax.get('decompile'),dict),'boundary JADX decompile command missing')
++        need(jax['decompile']['argv'][0]==str(Path(d['jadx']['path']).resolve()) and jax['decompile']['argv'][-1]==str(op),'boundary JADX input/tool mismatch')
++        if jax.get('compile') is not None:
++            jc=jax['compile']; need(jc['argv'][0]==str(jdk/'bin/javac'),'boundary JADX compiler mismatch')
++            if jc['exit_code']==0:
++                need(jax.get('runtime') is not None,'boundary JADX compile succeeded without attempted runtime')
++                jr=jax['runtime']; need(jr['argv'][0]==str(jdk/'bin/java') and jr['argv'][1]=='-Xverify:all' and jr['argv'][-1]=='BoundaryRunner','boundary JADX runtime argv mismatch')
++                if jr['exit_code']==0: need(raw(jr)==oracle,'successful boundary JADX runtime differs from original')
++            else:
++                need(jax.get('runtime') is None,'failed boundary JADX compile has runtime')
++        elif jax.get('runtime') is not None:
++            raise ValueError('boundary JADX runtime exists without a compile attempt')
++        boundary_classifications[leg]={'original':'passed','jadx':{'decompile_exit':jax['decompile']['exit_code'],'compile_exit':None if jax.get('compile') is None else jax['compile']['exit_code'],'runtime_exit':None if jax.get('runtime') is None else jax['runtime']['exit_code']},'candidate':{}}
++        for profile in ('default','all'):
++            cr=lr['candidate'].get(profile); need(isinstance(cr,dict),'boundary candidate profile missing '+leg+'/'+profile)
++            render=cr.get('render'); report_path=cr.get('report_path')
++            if render is None:
++                need(report_path is None and cr.get('compile') is None and cr.get('runtime') is None,'boundary report/compile exists without a render command')
++                boundary_classifications[leg]['candidate'][profile]={'render':'not-attempted','compile':'not-attempted','runtime':'not-attempted'}
++                continue
++            need(render['argv'][0]==str(cli) and render['argv'][render['argv'].index('--input')+1]==str(op),'boundary CLI input binding mismatch')
++            expected_render=[str(cli),'class-source','--input',str(op),'--class','LocalSourceTypesBoundaries','--policy','single-class','--release','8','--format','json']
++            if profile=='all': expected_render += ['--evidence','all']
++            need(render['argv']==expected_render,'boundary CLI argv/profile mismatch')
++            if render['exit_code']!=0:
++                need(report_path is None and cr.get('compile') is None and cr.get('runtime') is None,'failed boundary render has downstream artifacts')
++                boundary_classifications[leg]['candidate'][profile]={'render':'failed','compile':'not-attempted','runtime':'not-attempted'}
++                continue
++            need(report_path is not None,'successful boundary render has no report')
++            need(stream(render['streams']['stdout'])==Path(report_path).read_bytes(),'boundary report is not exact render-command stdout')
++            doc=load(report_path); need(doc['class']['class_bytes']['length']==len(ob) and doc['class']['class_bytes']['digest']==blake3(ob).hexdigest(),'boundary report class bytes mismatch')
++            source_paths=[x['path'] for x in cr.get('sources',[])]
++            need(source_paths and doc.get('text')==Path(source_paths[0]).read_text(encoding='utf-8'),'boundary candidate source differs from CLI report')
+             for item in cr['sources']:
+                 sb=Path(item['path']).read_bytes(); need(len(sb)==item['bytes'] and sha(sb)==item['sha256'],'boundary candidate source pin mismatch '+profile)
+             runner_copy=next((x for x in cr['sources'] if Path(x['path']).name=='BoundaryRunner.java'),None)
+             need(runner_copy is not None and runner_copy['sha256']==br['runner']['sha256'],'boundary Runner was edited or omitted '+profile)
+-            need(cr['render'] and cr['render']['argv'][0]==a.cli and cr['render']['argv'][cr['render']['argv'].index('--input')+1]==str(op),'boundary CLI input binding mismatch')
+-            need(stream(cr['render']['streams']['stdout'])==Path(cr['report_path']).read_bytes(),'boundary report is not exact render-command stdout')
+-            doc=load(cr['report_path']); need(doc['class']['class_bytes']['length']==len(ob) and doc['class']['class_bytes']['digest']==blake3(ob).hexdigest(),'boundary report class bytes mismatch')
+-            expected_render=[a.cli,'class-source','--input',str(op),'--class','LocalSourceTypesBoundaries','--policy','single-class','--release','8','--format','json']
+-            if profile=='all': expected_render += ['--evidence','all']
+-            need(cr['render']['argv']==expected_render,'boundary CLI argv/profile mismatch')
+-            source_paths=[x['path'] for x in cr['sources']]
+-            need(doc.get('text')==Path(source_paths[0]).read_text(encoding='utf-8'),'boundary candidate source differs from CLI report')
+-            comp=cr['compile']; need(comp['argv'][0]==str(jdk/'bin/javac') and comp['argv'][-2:]==source_paths and comp['argv'][comp['argv'].index('-source')+1]=='8' and comp['argv'][comp['argv'].index('-target')+1]=='8' and '-g:none' in comp['argv'],'boundary candidate javac argv mismatch')
+-            need(cr['runtime']['argv'][0]==str(jdk/'bin/java') and cr['runtime']['argv'][1]=='-Xverify:all' and cr['runtime']['argv'][-1]=='BoundaryRunner','boundary candidate runtime argv mismatch')
+-            out=raw(cr['runtime']); oracle=raw(original)
+-            need(out==oracle,leg+'/'+profile+' candidate boundary complete stdout/stderr differs from original')
+-            labels=('char-call-','char-field=','char-i2c-','char-entry=','string-no-default-','int-','reference-','slot-reuse-')
+-            stdout=out[0].decode('utf-8',errors='replace'); expected=oracle[0].decode('utf-8',errors='replace')
+-            for label in labels:
+-                def lines(text): return [x for x in text.splitlines() if x.startswith(label)]
+-                observed=lines(stdout)
+-                results['boundary_observed_outputs'][leg+'/'+profile+'/'+label]=observed
+-                need(observed==lines(expected),leg+'/'+profile+' changed boundary output '+label)
+-        dm=load(lr['candidate']['default']['report_path']); am=load(lr['candidate']['all']['report_path'])
+-        need(dm.get('text')==am.get('text') and method_maps(dm)==method_maps(am),'boundary default/all complete body/map differs')
++            comp=cr.get('compile'); need(comp is not None,'successful boundary render lacks full-source compile attempt')
++            need(comp['argv'][0]==str(jdk/'bin/javac') and comp['argv'][-len(source_paths):]==source_paths and comp['argv'][comp['argv'].index('-source')+1]=='8' and comp['argv'][comp['argv'].index('-target')+1]=='8' and '-g:none' in comp['argv'],'boundary candidate javac argv mismatch')
++            if comp['exit_code']!=0:
++                need(cr.get('runtime') is None,'failed boundary compile has runtime')
++                boundary_classifications[leg]['candidate'][profile]={'render':'passed','compile':'failed','runtime':'not-attempted'}
++                continue
++            runtime=cr.get('runtime'); need(runtime is not None,'successful boundary compile lacks runtime attempt')
++            need(runtime['argv'][0]==str(jdk/'bin/java') and runtime['argv'][1]=='-Xverify:all' and runtime['argv'][-1]=='BoundaryRunner','boundary candidate runtime argv mismatch')
++            classification='failed'
++            if runtime['exit_code']==0:
++                out=raw(runtime); need(out==oracle,leg+'/'+profile+' successful candidate boundary runtime differs from original')
++                labels=('char-call-','char-field=','char-i2c-','char-entry=','string-no-default-','int-','reference-','slot-reuse-')
++                stdout=out[0].decode('utf-8',errors='replace'); expected=oracle[0].decode('utf-8',errors='replace')
++                for label in labels:
++                    def lines(text): return [x for x in text.splitlines() if x.startswith(label)]
++                    observed=lines(stdout)
++                    results['boundary_observed_outputs'][leg+'/'+profile+'/'+label]=observed
++                    need(observed==lines(expected),leg+'/'+profile+' changed boundary output '+label)
++                classification='passed'
++            boundary_classifications[leg]['candidate'][profile]={'render':'passed','compile':'passed','runtime':classification}
++        dmrow=lr['candidate'].get('default',{}); amrow=lr['candidate'].get('all',{})
++        if dmrow.get('report_path') is not None and amrow.get('report_path') is not None:
++            dm=load(dmrow['report_path']); am=load(amrow['report_path'])
++            need(dm.get('text')==am.get('text') and method_maps(dm)==method_maps(am),'boundary default/all complete body/map differs')
++    results['boundary_classifications']=boundary_classifications
+     need(sum(c['label'] in ('render-default','render-all') for c in commands)==24,'expected 20 CF12 and 4 boundary CLI render commands for the JDK23-only controls matrix')
+     need(all(c.get('guard_stop') is None and c.get('exit_code') is not None for c in commands),'a guarded command failed, stopped, or timed out')
+     print(json.dumps({'schema':SCHEMA,'status':'verified-typed-replay-observations-only','cf12_complete':False,**results},indent=2))

@@ -1,0 +1,27 @@
+--- /private/tmp/jarde-typed-full-replay-luna-v4/prepare-local-source-types-replay-luna-v4.py	2026-10-11 03:52:41
++++ /private/tmp/jarde-typed-full-replay-luna-v5/prepare-local-source-types-replay-luna-v5.py	2026-10-11 03:56:17
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Private v4 draft: collect fresh CF12 complete-class and local-type boundary replays."""
++"""Private v5 draft: collect fresh CF12 complete-class and local-type boundary replays."""
+ import argparse, hashlib, json, os, runpy, shutil
+ from pathlib import Path
+ import zipfile
+@@ -13,7 +13,7 @@
+ PROBE = BASE / 'Cf12RuntimeProbe.java'
+ JDK_MANIFEST = ROOT / 'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
+ JDK_MANIFEST_SHA = 'ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
+-SCHEMA = 'recover-proved-local-source-types-complete-class-replay-luna-v4'
++SCHEMA = 'recover-proved-local-source-types-complete-class-replay-luna-v5'
+ PREPOP_EXECUTION = Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json')
+ PREPOP_EXECUTION_SHA256 = '93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08'
+ PREPOP_ACCEPTANCE = Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json')
+@@ -345,7 +345,7 @@
+             rt=None
+             if cr['exit_code']==0:
+                 rt=run([java,'-Xverify:all','-cp',classes,'BoundaryRunner'],ROOT,env,out/'raw'/'boundary'/leg/profile/'runtime','runtime')
+-                value={'decompile':jd if profile=='jadx' else None,'render':None if profile=='jadx' else rr,'report_path':None if profile=='jadx' else str(rp),'sources':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in [gen,srcdir/'BoundaryRunner.java']],'compile':cr,'runtime':rt}
++            value={'decompile':jd if profile=='jadx' else None,'render':None if profile=='jadx' else rr,'report_path':None if profile=='jadx' else str(rp),'sources':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in [gen,srcdir/'BoundaryRunner.java']],'compile':cr,'runtime':rt}
+             if profile=='jadx': row['legs'][leg]['jadx']=value
+             else: row['legs'][leg]['candidate'][profile]=value
+     record['boundary_rows'].append(row); write_json(out/'execution.json',record)

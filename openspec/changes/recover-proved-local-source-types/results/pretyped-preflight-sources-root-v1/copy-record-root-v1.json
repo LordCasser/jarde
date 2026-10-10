@@ -1,0 +1,17 @@
+{
+  "status": "original_bytes_copied",
+  "files": [
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-root-v1.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-sources-root-v1/jarde-post-pop-baseline-preflight-root-v1.py",
+      "bytes": 1646,
+      "sha256": "fe3eecc979c1e1e591a5c97610b64d7c07aff0eeab3a8987178ea907e90210e4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-root-v2.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-sources-root-v1/jarde-post-pop-baseline-preflight-root-v2.py",
+      "bytes": 1646,
+      "sha256": "9a579bd24240b5572a46160414437fa68ffa12ae89753156270f35fd4df97985"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "typed-full-replay-static-preflight-root-v1",
+  "status": "static-inputs-inspected-no-toolchain-run",
+  "old_acceptance": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/observation-acceptance-root-v6.json",
+    "sha256": "1e8c457a5edea2bab276ba9c5f394a8a994e06853208c8abe8e5f0cb8de2b214",
+    "schema": "cf12-observation-verification-root-v6",
+    "status": "observations-verified-unit-not-accepted",
+    "inventory_count": 451,
+    "missing": [],
+    "changed": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/README.md"
+    ],
+    "changed_file_detail": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/README.md",
+      "accepted_bytes": 4914,
+      "accepted_sha256": "01f70422a7b864a829257c32b31c026de5f5605df70a67ac94456f052ab86c79",
+      "current_bytes": 5782,
+      "current_sha256": "6ddd43fcda8f646b70311d191717316686efdb4761ef47b9a156f359ca71ee8b"
+    }
+  },
+  "old_closed_input_inventory": {
+    "schema": "cf12-closed-input-inventory-root-v1",
+    "count": 429,
+    "missing": [],
+    "changed": []
+  },
+  "old_full_replay": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/execution.json",
+    "sha256": "04ee982bad32e216dc1908fddeec588016b5c209f1d0b1f64e0683689501f16c",
+    "schema": "cf12-real-original-jadx-jarde-complete-source-runtime-root-v1",
+    "command_count": 39
+  },
+  "old_render": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/execution.json",
+    "sha256": "5c5b06683abb0141d157e97a31c9d6299355ba8cc9803e52f2b7808a64ecce3b",
+    "schema": "cf12-real-upstream-class-render-baseline-root-v1"
+  },
+  "sample_source_map": {
+    "source_map_type": "dict",
+    "keys": [
+      "segments"
+    ],
+    "segment_count": 37,
+    "segment_origin_roles": [
+      "derived",
+      "primary"
+    ],
+    "identity_name_type": "list",
+    "item_name_raw_type": "list",
+    "method_report_text_key": true
+  },
+  "postpop_accepted_baseline": {
+    "present": false,
+    "required_schema": "recover-proved-local-source-types-post-pop-baseline-root-v3",
+    "required_acceptance_schema": "recover-proved-local-source-types-post-pop-baseline-acceptance-v3",
+    "reviewed_expected_matrix": {
+      "jdk_legs": [
+        "javac23"
+      ],
+      "commands": 48,
+      "reports": 16,
+      "method_profiles": 38
+    }
+  },
+  "python_ast": {
+    "prepare-local-source-types-replay-luna-v3.py": "parsed",
+    "verify-local-source-types-replay-luna-v3.py": "parsed"
+  },
+  "pinned_guard_template": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "expected_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "v6_inventory_policy": {
+    "copied_evidence_records": 451,
+    "all_records_rehashed": false,
+    "closed_inputs_rehashed": 429,
+    "consumed_historical_evidence_rehashed": true,
+    "README_drift_is_replay_input": false
+  },
+  "static_changes": [
+    "collector and verifier fail closed unless the explicit execution and separate acceptance SHA/path bindings match",
+    "post-pop matrix checked as JDK23-only 48 commands, 16 reports, 38 method profiles",
+    "verifier no longer treats every copied evidence entry as an input; the 429 closed inputs and consumed artifacts remain SHA-closed"
+  ]
+}

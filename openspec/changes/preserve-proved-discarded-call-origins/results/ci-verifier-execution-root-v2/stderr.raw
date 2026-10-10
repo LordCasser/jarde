@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/verify-ci-product-root-v2.py", line 331, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/verify-ci-product-root-v2.py", line 320, in main
+    build=verify_build(args.product_commit,args.source_base,args.metadata_sha256,args.cli_sha256,args.build_sha256,args.runner_sha256)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/verify-ci-product-root-v2.py", line 160, in verify_build
+    assert len(PRODUCT_PATHS|TEST_PATHS|can)==72
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

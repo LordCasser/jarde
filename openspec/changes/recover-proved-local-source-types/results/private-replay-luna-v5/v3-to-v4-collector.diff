@@ -1,0 +1,59 @@
+--- /private/tmp/jarde-typed-full-replay-luna-v3/prepare-local-source-types-replay-luna-v3.py	2026-10-11 03:42:01
++++ /private/tmp/jarde-typed-full-replay-luna-v4/prepare-local-source-types-replay-luna-v4.py	2026-10-11 03:52:41
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Private v3 draft: collect fresh CF12 complete-class and local-type boundary replays."""
++"""Private v4 draft: collect fresh CF12 complete-class and local-type boundary replays."""
+ import argparse, hashlib, json, os, runpy, shutil
+ from pathlib import Path
+ import zipfile
+@@ -13,7 +13,11 @@
+ PROBE = BASE / 'Cf12RuntimeProbe.java'
+ JDK_MANIFEST = ROOT / 'openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json'
+ JDK_MANIFEST_SHA = 'ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec'
+-SCHEMA = 'recover-proved-local-source-types-complete-class-replay-luna-v3'
++SCHEMA = 'recover-proved-local-source-types-complete-class-replay-luna-v4'
++PREPOP_EXECUTION = Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json')
++PREPOP_EXECUTION_SHA256 = '93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08'
++PREPOP_ACCEPTANCE = Path('/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json')
++PREPOP_ACCEPTANCE_SHA256 = 'bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06'
+ GUARD_PATH = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+ GUARD_SHA256 = '51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'
+ BASELINE_ACCEPTANCE_SHA = '1e8c457a5edea2bab276ba9c5f394a8a994e06853208c8abe8e5f0cb8de2b214'
+@@ -130,6 +134,8 @@
+     return accepted,acceptance,inv
+ 
+ def verify_postpop(execution_path, execution_sha, acceptance_path, acceptance_sha):
++    if execution_path.resolve()!=PREPOP_EXECUTION or execution_sha!=PREPOP_EXECUTION_SHA256 or acceptance_path.resolve()!=PREPOP_ACCEPTANCE or acceptance_sha!=PREPOP_ACCEPTANCE_SHA256:
++        raise SystemExit('post-pop input must be the exact independently accepted root-v4 baseline')
+     for p,h in ((execution_path,execution_sha),(acceptance_path,acceptance_sha)):
+         if not p.is_file() or sha(p.read_bytes())!=h: raise SystemExit('explicit accepted post-pop baseline path/SHA mismatch: '+str(p))
+     ex=json.loads(execution_path.read_bytes()); ac=json.loads(acceptance_path.read_bytes())
+@@ -139,8 +145,7 @@
+         raise SystemExit('post-pop baseline is not the independently accepted v3 baseline')
+     if ac.get('execution_path')!=str(execution_path) or ac.get('execution_sha256')!=execution_sha:
+         raise SystemExit('post-pop acceptance does not bind exact execution path/SHA')
+-    historical_hash_values={v for k,v in ac.items() if 'cf12' in k.lower() and isinstance(v,str)}
+-    if not {BASELINE_ACCEPTANCE_SHA,BASELINE_FULL_SHA}<=historical_hash_values:
++    if ac.get('historical_cf12_acceptance_sha256')!=BASELINE_ACCEPTANCE_SHA or ac.get('historical_cf12_full_replay_sha256')!=BASELINE_FULL_SHA:
+         raise SystemExit('post-pop acceptance does not name both pinned historical CF12 hashes')
+     if ex.get('status')!='post-pop-baseline-observed-unaccepted':
+         raise SystemExit('post-pop execution is not the completed observation named by the accepted record')
+@@ -175,6 +180,8 @@
+                     report_count+=1; method_count+=len(doc.get('methods',[]))
+     if (report_count,method_count)!=(16,38):
+         raise SystemExit('accepted post-pop report/method inventory differs from the reviewed 16/38 matrix')
++    if ac.get('case_count')!=6 or ac.get('class_instance_count')!=8 or ac.get('fresh_jdk_legs')!=['javac23'] or len(ac.get('new_pop_origins',[]))!=9:
++        raise SystemExit('post-pop acceptance summary differs from the independently observed root-v4 facts')
+     return ex,ac
+ 
+ def main():
+@@ -338,7 +345,7 @@
+             rt=None
+             if cr['exit_code']==0:
+                 rt=run([java,'-Xverify:all','-cp',classes,'BoundaryRunner'],ROOT,env,out/'raw'/'boundary'/leg/profile/'runtime','runtime')
+-            value={'render':None if profile=='jadx' else rr,'report_path':None if profile=='jadx' else str(rp),'sources':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in [gen,srcdir/'BoundaryRunner.java']],'compile':cr,'runtime':rt}
++                value={'decompile':jd if profile=='jadx' else None,'render':None if profile=='jadx' else rr,'report_path':None if profile=='jadx' else str(rp),'sources':[{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in [gen,srcdir/'BoundaryRunner.java']],'compile':cr,'runtime':rt}
+             if profile=='jadx': row['legs'][leg]['jadx']=value
+             else: row['legs'][leg]['candidate'][profile]=value
+     record['boundary_rows'].append(row); write_json(out/'execution.json',record)

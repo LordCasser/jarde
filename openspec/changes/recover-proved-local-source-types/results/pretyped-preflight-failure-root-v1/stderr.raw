@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-post-pop-baseline-preflight-root-v1.py", line 34, in <module>
+    c.verify_pop_freeze(str(c.CLI_FIXED), str(c.META), str(c.BUILD), c.SOURCE_BASE)
+  File "/private/tmp/jarde-cf12-post-pop-baseline-luna-v2/collect-post-pop-baseline-v2.py", line 76, in verify_pop_freeze
+    require(valpath==Path('/private/tmp/jarde-discarded-call-validation-luna-v1/run-validation-build-root-v1.py') and val.get('sha256')=='f6b855402ecd83304f91e934504f6174390c8368fc3f7161b71f4339318adbdd' and sha_file(valpath)==val.get('sha256'), 'exact validation runner identity mismatch')
+  File "/private/tmp/jarde-cf12-post-pop-baseline-luna-v2/collect-post-pop-baseline-v2.py", line 41, in require
+    if not ok: raise RuntimeError(message)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: exact validation runner identity mismatch

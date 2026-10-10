@@ -1,0 +1,53 @@
+{
+  "status": "private_drafts_copied_uncompiled",
+  "files": [
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-boundaries-luna-v1/ConditionalSwitchBoundaries.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v1/ConditionalSwitchBoundaries.java",
+      "bytes": 2950,
+      "sha256": "f21b880475c81853b49069b3b220f343ddaaab6ecddcc6fd4071aaf45fa4366a"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-boundaries-luna-v1/ConditionalSwitchBoundariesRunner.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v1/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-boundaries-luna-v1/README.md",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v1/README.md",
+      "bytes": 2761,
+      "sha256": "7017d48cd41fa279d5630a72733762360d832ca196f4f3b12c6cee93a44b662b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundaries.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundaries.java",
+      "bytes": 3073,
+      "sha256": "72a8b7716d0867bf6c543baab64e24a2e8a1c3a4d6f3f64249c45d8c8784e636"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundariesRunner.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-boundaries-luna-v2/README.md",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-boundaries-luna-v2/README.md",
+      "bytes": 3087,
+      "sha256": "43eb566a1f5befcc30ad64e71200b2c5a56555ca6a7b0c009c34bba660ca0065"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-tests-luna-v4/README.md",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-tests-luna-v4/README.md",
+      "bytes": 5375,
+      "sha256": "61a9fb1439932efe45a5c33f3ba83935aae7b15342376796fe7df05a978dc427"
+    },
+    {
+      "original_path": "/private/tmp/jarde-conditional-switch-tests-luna-v4/p3_conditional_switch_fallthrough.rs",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/private-conditional-switch-tests-luna-v4/p3_conditional_switch_fallthrough.rs",
+      "bytes": 17062,
+      "sha256": "8daa733888276fc64c5c7c7e6d566a546871228a970eab809a93f51aa600f317"
+    }
+  ]
+}

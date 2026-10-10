@@ -1,0 +1,1415 @@
+{
+  "status": "exact-byte-copy-verified",
+  "files": [
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/acceptance.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/acceptance.json",
+      "bytes": 139968,
+      "sha256": "bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitch.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitch.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 991,
+      "sha256": "bacc10dc4650b4dc5bcb47d50990db55b76481b2f63704846d24729433fd36df"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitch.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitch.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 991,
+      "sha256": "bacc10dc4650b4dc5bcb47d50990db55b76481b2f63704846d24729433fd36df"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitch.test/javac23/original/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitch.test/javac23/original/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitch.test/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitch.test/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchFallThrough.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchFallThrough.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1443,
+      "sha256": "e22b6a94a9fce9751b956a901a289a91f0568c9a5ae001ebb96ad6e95fb89595"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchFallThrough.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchFallThrough.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1443,
+      "sha256": "e22b6a94a9fce9751b956a901a289a91f0568c9a5ae001ebb96ad6e95fb89595"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchFallThrough.test/javac23/original/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchFallThrough.test/javac23/original/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchFallThrough.test/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchFallThrough.test/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.test/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.test/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/original/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchLabels.testWithDisabledConstReplace/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchNoDefault.test/javac23/original/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchNoDefault.test/javac23/original/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 899,
+      "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchNoDefault.test/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchNoDefault.test/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchWithFallThroughCase.test/javac23/original/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchWithFallThroughCase.test/javac23/original/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1563,
+      "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/classes/TestSwitchWithFallThroughCase.test/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/classes/TestSwitchWithFallThroughCase.test/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/execution.json",
+      "bytes": 568542,
+      "sha256": "93dc97cf213358e94d56bfe52846db79ffe765a9fd187c5e5bad3ed56433bc08"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/0.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/0.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/0.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/1.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/1.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/1.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/10.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/10.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/10.stdout.raw",
+      "bytes": 64336,
+      "sha256": "d6d8b750f6359e60abf91878ed5bb718fe1bfca8a5ab9228efa6e9e7d1dddd1e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/11.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/11.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/11.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/12.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/12.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/12.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/13.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/13.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/13.stdout.raw",
+      "bytes": 68646,
+      "sha256": "90edff4fc20f86a4fc89d45d36df156a706c8abb61472df4ba873b2693449719"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/14.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/14.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/14.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/15.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/15.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/15.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/16.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/16.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/16.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/17.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/17.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/17.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/18.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/18.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/18.stdout.raw",
+      "bytes": 20818,
+      "sha256": "a08bd0697ff27e06a47cf56eb00c56106d352fd1f8632f54dc6a5ee7450ad4c8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/19.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/19.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/19.stdout.raw",
+      "bytes": 21419,
+      "sha256": "8a4883bdffa4d68f0fe50378432c8c91e2cc5e7d7ec3275fa4284d91507015a7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/2.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/2.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/2.stdout.raw",
+      "bytes": 46609,
+      "sha256": "7c5e209e45b367bdf2549734941928f7363ea0b144ff22178d3f85b5754e0343"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/20.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/20.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/20.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/20.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/21.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/21.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/21.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/22.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/22.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/22.stdout.raw",
+      "bytes": 21826,
+      "sha256": "6b837b671f78cc95b7a587b58063573e0c388998f06c63940bfbd15e4590de05"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/23.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/23.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/23.stdout.raw",
+      "bytes": 22407,
+      "sha256": "d9ade1a97367e4bbed0b7d14e7820ce51c17f47a197ed6cbeabe80df7ee0f1f6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/24.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/24.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/24.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/25.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/25.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/25.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/26.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/26.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/26.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/26.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/27.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/27.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/27.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/28.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/28.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/28.stdout.raw",
+      "bytes": 20818,
+      "sha256": "a08bd0697ff27e06a47cf56eb00c56106d352fd1f8632f54dc6a5ee7450ad4c8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/29.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/29.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/29.stdout.raw",
+      "bytes": 21419,
+      "sha256": "8a4883bdffa4d68f0fe50378432c8c91e2cc5e7d7ec3275fa4284d91507015a7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/3.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/3.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/3.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/30.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/30.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/30.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/30.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/31.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/31.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/31.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/31.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/32.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/32.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/32.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/32.stdout.raw",
+      "bytes": 21826,
+      "sha256": "6b837b671f78cc95b7a587b58063573e0c388998f06c63940bfbd15e4590de05"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/33.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/33.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/33.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/33.stdout.raw",
+      "bytes": 22407,
+      "sha256": "d9ade1a97367e4bbed0b7d14e7820ce51c17f47a197ed6cbeabe80df7ee0f1f6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/34.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/34.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/34.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/34.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/35.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/35.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/35.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/35.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/36.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/36.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/36.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/36.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/37.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/37.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/37.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/37.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/38.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/38.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/38.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/38.stdout.raw",
+      "bytes": 25308,
+      "sha256": "a404e1b653af171493e06fce250a661dd35a609fc79fb76bdd52488663a21f45"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/39.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/39.stderr.raw",
+      "bytes": 545,
+      "sha256": "dcc81c263d4f0d5decacc839fdb4c18f54ffdac274aa82c25e57d92cb8ba03c1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/39.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/39.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/4.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/4.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/4.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/40.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/40.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/40.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/40.stdout.raw",
+      "bytes": 26864,
+      "sha256": "abee3caad1146c519922039aa565ecfe252f87b543c9338cef9d02b14788b62b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/41.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/41.stderr.raw",
+      "bytes": 541,
+      "sha256": "84a3771dff4b037f7f8633c9feda77b6916a7479155f7820dd99e133fbe718f1"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/41.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/41.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/42.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/42.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/42.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/42.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/43.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/43.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/43.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/43.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/44.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/44.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/44.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/44.stdout.raw",
+      "bytes": 52644,
+      "sha256": "41c68792a9fd42532b4d7e6b06bd02fec894b9c2e949c130a790223ae528edcb"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/45.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/45.stderr.raw",
+      "bytes": 470,
+      "sha256": "58a94cb67075d9c0548ad30479245ec06a71e4b47a652e2b8f3b18221d5222ee"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/45.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/45.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/46.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/46.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/46.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/46.stdout.raw",
+      "bytes": 55739,
+      "sha256": "85d12b87462cd0a78d6c3b0454db1b8f0199b7d1ae598421ca13fe564b9b027d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/47.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/47.stderr.raw",
+      "bytes": 466,
+      "sha256": "c1f5949d69011465cd2789648611b1662521e49f43ad6788a6078ec8fa8c1390"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/47.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/47.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/5.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/5.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/5.stdout.raw",
+      "bytes": 48448,
+      "sha256": "faa2d388fd77bbb17dc2d7cce2173e4673d0e65dc93d63a7cabedfd62678794e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/6.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/6.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/6.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/7.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/7.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/7.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/8.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/8.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/8.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/9.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/raw/9.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/raw/9.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitch.test/javac23/all/TestSwitch$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitch.test/javac23/all/TestSwitch$TestCls.json",
+      "bytes": 48448,
+      "sha256": "faa2d388fd77bbb17dc2d7cce2173e4673d0e65dc93d63a7cabedfd62678794e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitch.test/javac23/default/TestSwitch$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitch.test/javac23/default/TestSwitch$TestCls.json",
+      "bytes": 46609,
+      "sha256": "7c5e209e45b367bdf2549734941928f7363ea0b144ff22178d3f85b5754e0343"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchFallThrough.test/javac23/all/TestSwitchFallThrough$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchFallThrough.test/javac23/all/TestSwitchFallThrough$TestCls.json",
+      "bytes": 68646,
+      "sha256": "90edff4fc20f86a4fc89d45d36df156a706c8abb61472df4ba873b2693449719"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchFallThrough.test/javac23/default/TestSwitchFallThrough$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchFallThrough.test/javac23/default/TestSwitchFallThrough$TestCls.json",
+      "bytes": 64336,
+      "sha256": "d6d8b750f6359e60abf91878ed5bb718fe1bfca8a5ab9228efa6e9e7d1dddd1e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.test/javac23/all/TestSwitchLabels$TestCls$Inner.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.test/javac23/all/TestSwitchLabels$TestCls$Inner.json",
+      "bytes": 21826,
+      "sha256": "6b837b671f78cc95b7a587b58063573e0c388998f06c63940bfbd15e4590de05"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.test/javac23/all/TestSwitchLabels$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.test/javac23/all/TestSwitchLabels$TestCls.json",
+      "bytes": 22407,
+      "sha256": "d9ade1a97367e4bbed0b7d14e7820ce51c17f47a197ed6cbeabe80df7ee0f1f6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.test/javac23/default/TestSwitchLabels$TestCls$Inner.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.test/javac23/default/TestSwitchLabels$TestCls$Inner.json",
+      "bytes": 20818,
+      "sha256": "a08bd0697ff27e06a47cf56eb00c56106d352fd1f8632f54dc6a5ee7450ad4c8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.test/javac23/default/TestSwitchLabels$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.test/javac23/default/TestSwitchLabels$TestCls.json",
+      "bytes": 21419,
+      "sha256": "8a4883bdffa4d68f0fe50378432c8c91e2cc5e7d7ec3275fa4284d91507015a7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/TestSwitchLabels$TestCls$Inner.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/TestSwitchLabels$TestCls$Inner.json",
+      "bytes": 21826,
+      "sha256": "6b837b671f78cc95b7a587b58063573e0c388998f06c63940bfbd15e4590de05"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/TestSwitchLabels$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/TestSwitchLabels$TestCls.json",
+      "bytes": 22407,
+      "sha256": "d9ade1a97367e4bbed0b7d14e7820ce51c17f47a197ed6cbeabe80df7ee0f1f6"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/TestSwitchLabels$TestCls$Inner.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/TestSwitchLabels$TestCls$Inner.json",
+      "bytes": 20818,
+      "sha256": "a08bd0697ff27e06a47cf56eb00c56106d352fd1f8632f54dc6a5ee7450ad4c8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/TestSwitchLabels$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/TestSwitchLabels$TestCls.json",
+      "bytes": 21419,
+      "sha256": "8a4883bdffa4d68f0fe50378432c8c91e2cc5e7d7ec3275fa4284d91507015a7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchNoDefault.test/javac23/all/TestSwitchNoDefault$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchNoDefault.test/javac23/all/TestSwitchNoDefault$TestCls.json",
+      "bytes": 26864,
+      "sha256": "abee3caad1146c519922039aa565ecfe252f87b543c9338cef9d02b14788b62b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchNoDefault.test/javac23/default/TestSwitchNoDefault$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchNoDefault.test/javac23/default/TestSwitchNoDefault$TestCls.json",
+      "bytes": 25308,
+      "sha256": "a404e1b653af171493e06fce250a661dd35a609fc79fb76bdd52488663a21f45"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchWithFallThroughCase.test/javac23/all/TestSwitchWithFallThroughCase$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchWithFallThroughCase.test/javac23/all/TestSwitchWithFallThroughCase$TestCls.json",
+      "bytes": 55739,
+      "sha256": "85d12b87462cd0a78d6c3b0454db1b8f0199b7d1ae598421ca13fe564b9b027d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/reports/TestSwitchWithFallThroughCase.test/javac23/default/TestSwitchWithFallThroughCase$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/reports/TestSwitchWithFallThroughCase.test/javac23/default/TestSwitchWithFallThroughCase$TestCls.json",
+      "bytes": 52644,
+      "sha256": "41c68792a9fd42532b4d7e6b06bd02fec894b9c2e949c130a790223ae528edcb"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitch.test/javac23/all/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitch.test/javac23/all/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitch.test/javac23/default/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitch.test/javac23/default/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchFallThrough.test/javac23/all/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchFallThrough.test/javac23/all/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchFallThrough.test/javac23/default/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchFallThrough.test/javac23/default/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.test/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.test/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.test/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.test/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.test/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.test/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.test/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.test/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/all/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchLabels.testWithDisabledConstReplace/javac23/default/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchNoDefault.test/javac23/all/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchNoDefault.test/javac23/all/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1548,
+      "sha256": "f0ee06a29fc205b1471b76b37f6e6908a8b44aaa0c715c6aaed43fd983f11a9d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchNoDefault.test/javac23/default/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchNoDefault.test/javac23/default/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1548,
+      "sha256": "f0ee06a29fc205b1471b76b37f6e6908a8b44aaa0c715c6aaed43fd983f11a9d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchWithFallThroughCase.test/javac23/all/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchWithFallThroughCase.test/javac23/all/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2313,
+      "sha256": "178407b6e0e436d31d4e189c3cfd6ea6c6be8cbcc9ea4aa64a2d4d80e5dc8b33"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v4/sources/TestSwitchWithFallThroughCase.test/javac23/default/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-root-v1/sources/TestSwitchWithFallThroughCase.test/javac23/default/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2313,
+      "sha256": "178407b6e0e436d31d4e189c3cfd6ea6c6be8cbcc9ea4aa64a2d4d80e5dc8b33"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac23/all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 991,
+      "sha256": "bacc10dc4650b4dc5bcb47d50990db55b76481b2f63704846d24729433fd36df"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac23/default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 991,
+      "sha256": "bacc10dc4650b4dc5bcb47d50990db55b76481b2f63704846d24729433fd36df"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac23/original/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac23/original/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac23/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac23/probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac8/all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac8/all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 994,
+      "sha256": "397578d2bd2058cc7212bd225855f29bd0618b4b64f864ea1f263c039761cc62"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac8/default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac8/default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 994,
+      "sha256": "397578d2bd2058cc7212bd225855f29bd0618b4b64f864ea1f263c039761cc62"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac8/original/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac8/original/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitch.test/javac8/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitch.test/javac8/probe/Cf12RuntimeProbe.class",
+      "bytes": 4377,
+      "sha256": "ef4f000f803b6cc1a81b11e3e414c4a3eef15515eb0f946e5424baf188287ac2"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitchFallThrough.test/javac8/original/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitchFallThrough.test/javac8/original/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/classes/TestSwitchFallThrough.test/javac8/probe/Cf12RuntimeProbe.class",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/classes/TestSwitchFallThrough.test/javac8/probe/Cf12RuntimeProbe.class",
+      "bytes": 4377,
+      "sha256": "ef4f000f803b6cc1a81b11e3e414c4a3eef15515eb0f946e5424baf188287ac2"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/execution.json",
+      "bytes": 226019,
+      "sha256": "4cc2622e9f96bc599b50058ff44bbd25a2286c1d3b8e829c9dd74ce4a6ccd5d3"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/0.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/0.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/1.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/1.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/1.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/10.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/10.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/10.stdout.raw",
+      "bytes": 46609,
+      "sha256": "b63002c2d6d9153aa739e68101b8acf3738cc379a07348ee0c9a115856034d22"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/11.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/11.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/11.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/12.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/12.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/12.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/13.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/13.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/13.stdout.raw",
+      "bytes": 48448,
+      "sha256": "6e575d98337943d1c30f70f8b69b9f5e74e78f3ce1c01ae148e9e327c445fbb5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/14.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/14.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/14.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/15.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/15.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/15.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/16.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/16.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/17.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/17.stderr.raw",
+      "bytes": 1590,
+      "sha256": "cbf3c8173768e47615dbff522ab16dbe10eb7806f58ba4ccf4b8209323199db4"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/17.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/17.stdout.raw",
+      "bytes": 17,
+      "sha256": "3dff6ae05782c501252be8dc18b5b046bfe30501004038fe6bde4d250be68dd0"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/2.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/2.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/2.stdout.raw",
+      "bytes": 46609,
+      "sha256": "7c5e209e45b367bdf2549734941928f7363ea0b144ff22178d3f85b5754e0343"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/3.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/3.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/4.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/4.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/4.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/5.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/5.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/5.stdout.raw",
+      "bytes": 48448,
+      "sha256": "faa2d388fd77bbb17dc2d7cce2173e4673d0e65dc93d63a7cabedfd62678794e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/6.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/6.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/7.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/7.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/7.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/8.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/8.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/8.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/9.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/raw/9.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/raw/9.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/reports/TestSwitch.test/javac23/all/TestSwitch$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/reports/TestSwitch.test/javac23/all/TestSwitch$TestCls.json",
+      "bytes": 48448,
+      "sha256": "6e575d98337943d1c30f70f8b69b9f5e74e78f3ce1c01ae148e9e327c445fbb5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/reports/TestSwitch.test/javac23/default/TestSwitch$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/reports/TestSwitch.test/javac23/default/TestSwitch$TestCls.json",
+      "bytes": 46609,
+      "sha256": "b63002c2d6d9153aa739e68101b8acf3738cc379a07348ee0c9a115856034d22"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/reports/TestSwitch.test/javac8/all/TestSwitch$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/reports/TestSwitch.test/javac8/all/TestSwitch$TestCls.json",
+      "bytes": 48448,
+      "sha256": "faa2d388fd77bbb17dc2d7cce2173e4673d0e65dc93d63a7cabedfd62678794e"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/reports/TestSwitch.test/javac8/default/TestSwitch$TestCls.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/reports/TestSwitch.test/javac8/default/TestSwitch$TestCls.json",
+      "bytes": 46609,
+      "sha256": "7c5e209e45b367bdf2549734941928f7363ea0b144ff22178d3f85b5754e0343"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/sources/TestSwitch.test/javac23/all/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/sources/TestSwitch.test/javac23/all/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/sources/TestSwitch.test/javac23/default/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/sources/TestSwitch.test/javac23/default/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/sources/TestSwitch.test/javac8/all/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/sources/TestSwitch.test/javac8/all/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-v3/sources/TestSwitch.test/javac8/default/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-failed-jdk8-root-v1/sources/TestSwitch.test/javac8/default/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v1/collect-root-v1.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-scripts-root-v1/collect-root-v1.py",
+      "bytes": 21939,
+      "sha256": "607a903416516aa9ccd70419259074edf2dbbcbd0c20e34cbd95fd82d3abfe8d"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v1/verify-root-v1.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-scripts-root-v1/verify-root-v1.py",
+      "bytes": 31819,
+      "sha256": "d4c8ec6b9e6dc9d600f90b9fa3268b8919f857b5a7349e557c98d65523dd34ce"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v2/collect-root-v2.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-scripts-root-v2/collect-root-v2.py",
+      "bytes": 21931,
+      "sha256": "0ed4ec01cd97f2c7cbd1cbb54591427c203efcba6cb1af2cf5896650a36862fe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v2/verify-root-v2.py",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-baseline-scripts-root-v2/verify-root-v2.py",
+      "bytes": 33312,
+      "sha256": "f357fcd1f1224d802c4e0ed90512e265025d5aeac747d49dff580fbbf42bfee2"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v1/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-failure-execution-root-v1/argv.json",
+      "bytes": 615,
+      "sha256": "c0909ad91c7fe7a93cf89256ac1aac246c905a8addfdb4db7c7e49b587c7b75a"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v1/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-failure-execution-root-v1/execution.json",
+      "bytes": 1087,
+      "sha256": "89d160de6e86811b13ec160c48aa747c0951769d3c7a38a2853aadf3ac11c1b7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v1/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-failure-execution-root-v1/stderr.raw",
+      "bytes": 743,
+      "sha256": "c6feb787eda913a076d6f03fc3dd3fe35747df4f6628041af9e594bbeecec7a5"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v1/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-failure-execution-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v2/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-execution-root-v2/argv.json",
+      "bytes": 615,
+      "sha256": "60f5be9bf056048e606bd9e120bc1ffceba2b8501072c8a709f556d6b7c63bbe"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v2/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-execution-root-v2/execution.json",
+      "bytes": 1084,
+      "sha256": "6802090503ea77336ee89183db2effec248035a61bb5d011f988064fbe6ac98b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v2/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-execution-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-collector-execution-root-v2/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-collector-execution-root-v2/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-verifier-execution-root-v1/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-verifier-execution-root-v1/argv.json",
+      "bytes": 340,
+      "sha256": "31e0effbde6c257252c5514737c183c37751a06ec0cbef1a86cc063d395643d7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-verifier-execution-root-v1/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-verifier-execution-root-v1/execution.json",
+      "bytes": 813,
+      "sha256": "5fdfd535ffa6acfc0af57938bfba3ace5d2a8fc788f0521b55d9ddf5a9b001fa"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-verifier-execution-root-v1/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-verifier-execution-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-verifier-execution-root-v1/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-verifier-execution-root-v1/stdout.raw",
+      "bytes": 139968,
+      "sha256": "bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v1/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-failure-root-v1/argv.json",
+      "bytes": 142,
+      "sha256": "e70328e7137e8f01af82da776e49f31d09b4bc819d215fbead2c5883cbf4bc94"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v1/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-failure-root-v1/execution.json",
+      "bytes": 607,
+      "sha256": "3825038ae4c7f863b10bddd2e66e3f26278bc623f5eb4fa09262f85ef7625b3c"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v1/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-failure-root-v1/stderr.raw",
+      "bytes": 875,
+      "sha256": "672e95ddcf78e17681a8b66f1f303e643cb0557728b345389200c42170df91e8"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v1/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-failure-root-v1/stdout.raw",
+      "bytes": 152,
+      "sha256": "eb19203fd0b86df1929eefed766569150ff7e9398b0acdc3f7f848d41a3fb4ad"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v2/argv.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-root-v2/argv.json",
+      "bytes": 142,
+      "sha256": "ba416687fcdf298b0eb888c84046ca3f0924cf2c38861b8749b8d1cec0c47c26"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v2/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-root-v2/execution.json",
+      "bytes": 605,
+      "sha256": "65253c8f3e6587534e55ca93982c8903bbc897b40da5c19eee786e1cfc46f7ca"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v2/stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-post-pop-baseline-preflight-execution-root-v2/stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/pretyped-preflight-root-v2/stdout.raw",
+      "bytes": 183,
+      "sha256": "9cedecfa39104cf8db8fdd775885a908bfc5d46c4080dd806d9c2147c056c4dc"
+    }
+  ]
+}

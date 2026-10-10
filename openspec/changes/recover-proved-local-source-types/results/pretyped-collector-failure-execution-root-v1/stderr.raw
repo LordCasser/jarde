@@ -1,0 +1,11 @@
+collector failed: fresh original input runtime failed: TestSwitchFallThrough.test/javac8
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v1/collect-root-v1.py", line 251, in <module>
+    try: main()
+         ^^^^^^
+  File "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v1/collect-root-v1.py", line 215, in main
+    require(original_run['exit_code']==0,'fresh original input runtime failed: '+case+'/'+leg)
+  File "/private/tmp/jarde-cf12-post-pop-baseline-root-scripts-v1/collect-root-v1.py", line 44, in require
+    if not ok: raise RuntimeError(message)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: fresh original input runtime failed: TestSwitchFallThrough.test/javac8
