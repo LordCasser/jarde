@@ -13358,7 +13358,14 @@ fn region_record(region: &Region) -> RegionRecord {
     let blocks: Vec<u32> = region.blocks().iter().map(|block| block.bci()).collect();
     let reasons = region.fallbacks();
     RegionRecord {
-        bci: blocks.first().copied().unwrap_or(0),
+        bci: blocks
+            .first()
+            .copied()
+            .or(match region {
+                Region::SwitchBreak { source_bci, .. } => Some(*source_bci),
+                _ => None,
+            })
+            .unwrap_or(0),
         structured: region.is_structured(),
         blocks,
         code: reasons.first().map(FallbackReason::code),

@@ -2086,7 +2086,8 @@ fn short_circuit_local_booleans(
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
-            | Region::LoopContinue { .. } => {}
+            | Region::LoopContinue { .. }
+            | Region::SwitchBreak { .. } => {}
         }
     }
     Ok(proved)
@@ -3504,7 +3505,8 @@ fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
         | Region::Straight { .. }
         | Region::Fallback { .. }
         | Region::LoopBreak { .. }
-        | Region::LoopContinue { .. } => {}
+        | Region::LoopContinue { .. }
+        | Region::SwitchBreak { .. } => {}
     }
 }
 
@@ -3599,7 +3601,8 @@ fn guard_return_ownership(
             | Region::SharedTailEarlyReturn { .. }
             | Region::Fallback { .. }
             | Region::LoopBreak { .. }
-            | Region::LoopContinue { .. } => {}
+            | Region::LoopContinue { .. }
+            | Region::SwitchBreak { .. } => {}
             Region::ShortCircuitValue { tail, .. } => pending.extend(tail),
         }
     }
@@ -4427,7 +4430,8 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
         | Region::Fallback { .. }
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
-        | Region::LoopContinue { .. } => {}
+        | Region::LoopContinue { .. }
+        | Region::SwitchBreak { .. } => {}
         // A composed continuation is this region's own statement sequence, so its blocks stand
         // at the same lexical path: the declaration the store consumer anchors and the reads the
         // continuation makes share one region path, which is what keeps a local's Boolean
@@ -4539,7 +4543,9 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
             );
             blocks
         }
-        Region::LoopBreak { .. } | Region::LoopContinue { .. } => Vec::new(),
+        Region::LoopBreak { .. } | Region::LoopContinue { .. } | Region::SwitchBreak { .. } => {
+            Vec::new()
+        }
         Region::Fallback { blocks, .. } => blocks.clone(),
         Region::ShortCircuitValue {
             prefix,
@@ -4654,7 +4660,8 @@ fn unaccounted_region_bcis(region: &Region) -> Vec<u32> {
         Region::Straight { .. }
         | Region::Guard { body: None, .. }
         | Region::LoopBreak { .. }
-        | Region::LoopContinue { .. } => {}
+        | Region::LoopContinue { .. }
+        | Region::SwitchBreak { .. } => {}
     }
     bcis
 }
@@ -8101,6 +8108,7 @@ pub(crate) fn build(
         labeled_loop_headers: BTreeSet::new(),
         loop_labels: BTreeMap::new(),
         switch_depth: 0,
+        switch_break_targets: Vec::new(),
         body_span: None,
         nested_pair: None,
         finally_return: None,
@@ -9302,6 +9310,8 @@ struct Builder<'a> {
     loop_labels: BTreeMap<u32, String>,
     /// A switch intercepts an unlabelled break, so a loop break from one of its arms is labeled.
     switch_depth: usize,
+    /// The active switch identities that may own a proved `SwitchBreak` leaf.
+    switch_break_targets: Vec<SwitchBreakTarget>,
     /// Physical slice of the structured guard body while its internal Region is written — a
     /// proved `finally`'s or a nested `synchronized`'s: instructions the block holds outside the
     /// slice produce no statement of their own, exactly the way the statement's header does not.
@@ -9408,6 +9418,15 @@ struct FinallyCheckpoint {
     loop_headers: Vec<u32>,
     labeled_loop_headers: BTreeSet<u32>,
     loop_labels: BTreeMap<u32, String>,
+    switch_depth: usize,
+    switch_break_targets: Vec<SwitchBreakTarget>,
+}
+
+#[derive(Clone, Debug)]
+struct SwitchBreakTarget {
+    branch_bci: u32,
+    join: Option<CanonicalBlockId>,
+    loop_depth: usize,
     switch_depth: usize,
 }
 
@@ -15532,6 +15551,7 @@ impl Builder<'_> {
             labeled_loop_headers: self.labeled_loop_headers.clone(),
             loop_labels: self.loop_labels.clone(),
             switch_depth: self.switch_depth,
+            switch_break_targets: self.switch_break_targets.clone(),
         }
     }
 
@@ -15560,6 +15580,7 @@ impl Builder<'_> {
         self.labeled_loop_headers = checkpoint.labeled_loop_headers;
         self.loop_labels = checkpoint.loop_labels;
         self.switch_depth = checkpoint.switch_depth;
+        self.switch_break_targets = checkpoint.switch_break_targets;
         self.body_span = None;
         self.finally_return = None;
         self.multi_return_finally = None;
@@ -16372,7 +16393,8 @@ impl Builder<'_> {
             | Region::Fallback { .. }
             | Region::Guard { body: None, .. }
             | Region::LoopBreak { .. }
-            | Region::LoopContinue { .. } => {}
+            | Region::LoopContinue { .. }
+            | Region::SwitchBreak { .. } => {}
         }
         Ok(())
     }
@@ -17916,6 +17938,12 @@ impl Builder<'_> {
                 let joined = self.switch_join(join.as_ref(), groups);
                 let mut arms = Vec::with_capacity(groups.len());
                 self.switch_depth += 1;
+                self.switch_break_targets.push(SwitchBreakTarget {
+                    branch_bci: proof.final_switch_bci,
+                    join: join.clone(),
+                    loop_depth: self.loop_headers.len(),
+                    switch_depth: self.switch_depth,
+                });
                 for (index, group) in groups.iter().enumerate() {
                     let mut body = Vec::new();
                     self.switch_arm(
@@ -17942,6 +17970,7 @@ impl Builder<'_> {
                         body,
                     });
                 }
+                self.switch_break_targets.pop();
                 self.switch_depth -= 1;
                 if let Some((join_bci, values)) = joined {
                     let mut returns = Vec::with_capacity(values.len());
@@ -18028,6 +18057,12 @@ impl Builder<'_> {
                 let joined = self.switch_join(join.as_ref(), groups);
                 let mut arms = Vec::with_capacity(groups.len());
                 self.switch_depth += 1;
+                self.switch_break_targets.push(SwitchBreakTarget {
+                    branch_bci: *branch_bci,
+                    join: join.clone(),
+                    loop_depth: self.loop_headers.len(),
+                    switch_depth: self.switch_depth,
+                });
                 for (index, group) in groups.iter().enumerate() {
                     let mut body = Vec::new();
                     self.switch_arm(
@@ -18043,6 +18078,7 @@ impl Builder<'_> {
                         body,
                     });
                 }
+                self.switch_break_targets.pop();
                 self.switch_depth -= 1;
                 // Render the `return`s only now, after all producer refusals and successful
                 // declarations from the arms are visible. An arm may declare the local the join's
@@ -18392,6 +18428,34 @@ impl Builder<'_> {
                     origin.plus_derived(Origin::derived(*bci))
                 });
                 self.push(Stmt::new(kind, origin))
+            }
+            Region::SwitchBreak {
+                source_bci,
+                switch_bci,
+                join,
+            } => {
+                let Some(target) = self.switch_break_targets.last() else {
+                    return self.fallback(
+                        vec![*source_bci],
+                        "a switch break targets no active switch proved by the region tree",
+                        *source_bci,
+                    );
+                };
+                if target.branch_bci != *switch_bci
+                    || target.join.as_ref() != Some(join)
+                    || target.loop_depth != self.loop_headers.len()
+                    || target.switch_depth != self.switch_depth
+                {
+                    return self.fallback(
+                        vec![*source_bci],
+                        "a switch break does not target the nearest active switch without crossing an inner loop or switch",
+                        *source_bci,
+                    );
+                }
+                self.push(Stmt::new(
+                    StmtKind::Break { label: None },
+                    OriginSet::new(Origin::direct(*source_bci)),
+                ))
             }
             Region::LoopBreak {
                 source_bci,
@@ -37696,5 +37760,699 @@ mod tests {
             &Expr::direct(ExprKind::Integer(1), 5),
             &Type::Reference("int[]".to_owned())
         ));
+    }
+
+    #[derive(Clone)]
+    struct Cf12SwitchScopeIds {
+        inner_switch_entry: CanonicalBlockId,
+        other_join: CanonicalBlockId,
+        join: CanonicalBlockId,
+    }
+
+    fn cf12_switch_scope_id(canonical: &CanonicalCfg, bci: u32) -> CanonicalBlockId {
+        let matches = canonical
+            .blocks()
+            .iter()
+            .filter(|block| block.id().bci() == bci && block.id().path().is_empty())
+            .map(|block| block.id().clone())
+            .collect::<Vec<_>>();
+        assert_eq!(matches.len(), 1, "CF12 canonical block ({bci}, [])");
+        matches.into_iter().next().expect("one checked match")
+    }
+
+    fn cf12_switch_scope_source_block<'a>(
+        ssa: &'a SsaTable,
+        source_bci: u32,
+    ) -> &'a CanonicalBlockId {
+        let mut matches = ssa
+            .blocks()
+            .iter()
+            .filter(|block| block.instructions().iter().any(|i| i.bci() == source_bci));
+        let block = matches
+            .next()
+            .unwrap_or_else(|| panic!("reader SSA must identify physical source BCI {source_bci}"));
+        assert!(
+            matches.next().is_none(),
+            "one SSA block contains source BCI"
+        );
+        assert!(block.block().path().is_empty());
+        block.block()
+    }
+
+    fn cf12_switch_break_mut<'a>(
+        region: &'a mut Region,
+        source_bci: u32,
+    ) -> Option<&'a mut Region> {
+        match region {
+            Region::SwitchBreak {
+                source_bci: found, ..
+            } if *found == source_bci => Some(region),
+            Region::Sequence { regions } | Region::Loop { body: regions, .. } => regions
+                .iter_mut()
+                .find_map(|region| cf12_switch_break_mut(region, source_bci)),
+            Region::If {
+                then_arm, else_arm, ..
+            } => cf12_switch_break_mut(then_arm, source_bci)
+                .or_else(|| cf12_switch_break_mut(else_arm, source_bci)),
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => groups
+                .iter_mut()
+                .find_map(|group| cf12_switch_break_mut(&mut group.arm, source_bci)),
+            Region::Guard {
+                body, finally_body, ..
+            } => body
+                .as_deref_mut()
+                .and_then(|body| cf12_switch_break_mut(body, source_bci))
+                .or_else(|| {
+                    finally_body
+                        .as_deref_mut()
+                        .and_then(|body| cf12_switch_break_mut(body, source_bci))
+                }),
+            Region::Try { body, .. } => cf12_switch_break_mut(body, source_bci),
+            Region::ShortCircuitValue { tail, .. } => tail
+                .iter_mut()
+                .find_map(|region| cf12_switch_break_mut(region, source_bci)),
+            Region::Straight { .. }
+            | Region::TwoExitReturn { .. }
+            | Region::SharedTailEarlyReturn { .. }
+            | Region::LoopBreak { .. }
+            | Region::LoopContinue { .. }
+            | Region::SwitchBreak { .. }
+            | Region::Fallback { .. } => None,
+        }
+    }
+
+    fn cf12_switch_break_in_regions<'a>(
+        regions: &'a mut [Region],
+        source_bci: u32,
+    ) -> Option<&'a mut Region> {
+        regions
+            .iter_mut()
+            .find_map(|region| cf12_switch_break_mut(region, source_bci))
+    }
+
+    fn take_cf12_switch_break(regions: &mut [Region], source_bci: u32) -> Option<Region> {
+        let leaf = regions
+            .iter_mut()
+            .find_map(|region| cf12_switch_break_mut(region, source_bci))?;
+        Some(std::mem::replace(
+            leaf,
+            Region::Straight { blocks: Vec::new() },
+        ))
+    }
+
+    fn cf12_region_blocks(regions: &[Region]) -> Vec<CanonicalBlockId> {
+        let mut blocks = regions
+            .iter()
+            .flat_map(Region::blocks)
+            .into_iter()
+            .cloned()
+            .collect::<Vec<_>>();
+        blocks.sort();
+        blocks
+    }
+
+    #[derive(Clone)]
+    enum Cf12ScopeWrapper {
+        InnerLoop {
+            header: CanonicalBlockId,
+        },
+        InnerSwitch {
+            branch: CanonicalBlockId,
+            branch_bci: u32,
+            join: CanonicalBlockId,
+        },
+    }
+
+    impl Cf12ScopeWrapper {
+        fn header(&self) -> &CanonicalBlockId {
+            match self {
+                Self::InnerLoop { header } => header,
+                Self::InnerSwitch { branch, .. } => branch,
+            }
+        }
+    }
+
+    fn wrap_cf12_switch_break(
+        regions: &mut Vec<Region>,
+        source_bci: u32,
+        wrapper: &Cf12ScopeWrapper,
+    ) -> bool {
+        for index in 0..regions.len() {
+            let adjacent = index + 1 < regions.len()
+                && matches!(
+                    &regions[index],
+                    Region::Straight { blocks }
+                        if blocks.len() == 1 && &blocks[0] == wrapper.header()
+                )
+                && matches!(
+                    &regions[index + 1],
+                    Region::SwitchBreak { source_bci: found, .. } if *found == source_bci
+                );
+            if adjacent {
+                let leaf = regions.remove(index + 1);
+                regions[index] = match wrapper {
+                    Cf12ScopeWrapper::InnerLoop { header } => Region::Loop {
+                        header: header.clone(),
+                        tests: Vec::new(),
+                        test_operator: None,
+                        form: crate::region::LoopForm::Endless,
+                        for_header: None,
+                        body: vec![
+                            Region::Straight {
+                                blocks: vec![header.clone()],
+                            },
+                            leaf,
+                        ],
+                        exit: None,
+                        gateway_origins: Vec::new(),
+                    },
+                    Cf12ScopeWrapper::InnerSwitch {
+                        branch,
+                        branch_bci,
+                        join,
+                    } => Region::Switch {
+                        prefix: Vec::new(),
+                        branch: branch.clone(),
+                        branch_bci: *branch_bci,
+                        groups: vec![crate::region::SwitchGroup {
+                            keys: Vec::new(),
+                            default: true,
+                            fall_through: false,
+                            arm: Box::new(leaf),
+                        }],
+                        join: Some(join.clone()),
+                    },
+                };
+                return true;
+            }
+            if wrap_cf12_switch_break_region(&mut regions[index], source_bci, wrapper) {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn wrap_cf12_switch_break_region(
+        region: &mut Region,
+        source_bci: u32,
+        wrapper: &Cf12ScopeWrapper,
+    ) -> bool {
+        match region {
+            Region::Sequence { regions } | Region::Loop { body: regions, .. } => {
+                wrap_cf12_switch_break(regions, source_bci, wrapper)
+            }
+            Region::If {
+                then_arm, else_arm, ..
+            } => {
+                wrap_cf12_switch_break_region(then_arm, source_bci, wrapper)
+                    || wrap_cf12_switch_break_region(else_arm, source_bci, wrapper)
+            }
+            Region::Switch { groups, .. } | Region::StringSwitch { groups, .. } => groups
+                .iter_mut()
+                .any(|group| wrap_cf12_switch_break_region(&mut group.arm, source_bci, wrapper)),
+            Region::Guard {
+                body, finally_body, ..
+            } => {
+                body.as_deref_mut()
+                    .is_some_and(|body| wrap_cf12_switch_break_region(body, source_bci, wrapper))
+                    || finally_body.as_deref_mut().is_some_and(|body| {
+                        wrap_cf12_switch_break_region(body, source_bci, wrapper)
+                    })
+            }
+            Region::Try { body, .. } => wrap_cf12_switch_break_region(body, source_bci, wrapper),
+            Region::ShortCircuitValue { tail, .. } => {
+                wrap_cf12_switch_break(tail, source_bci, wrapper)
+            }
+            Region::Straight { .. }
+            | Region::TwoExitReturn { .. }
+            | Region::SharedTailEarlyReturn { .. }
+            | Region::LoopBreak { .. }
+            | Region::LoopContinue { .. }
+            | Region::SwitchBreak { .. }
+            | Region::Fallback { .. } => false,
+        }
+    }
+
+    /// Reads the frozen full CF12 class, recovers its complete Region tree with the production
+    /// normal-flow/concat/site path, applies a caller-supplied leaf mutation, then calls private `build`.
+    /// All identities, SSA, decode facts and plans come from this one reader analysis. Metamorphic
+    /// wrappers preserve the Region block multiset and test consumer refusal only; they are not evidence
+    /// for physical CFG admission.
+    fn build_cf12_switch_scope(
+        source_bci: u32,
+        mutate_regions: impl FnOnce(&mut Vec<Region>, &Cf12SwitchScopeIds, u32),
+    ) -> (Program, Cf12SwitchScopeIds) {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class"
+        );
+        assert_eq!(CLASS.len(), 1563);
+        assert_eq!(
+            blake3::hash(CLASS).to_hex().to_string(),
+            "92a103230cd6cbb8ccc535ca33a838ad3c91265b1b784d5ad5a69db824b17edd"
+        );
+
+        // Reuse the existing private test budget helper; do not create a parallel test framework.
+        let mut budget = child_array_test_budget();
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
+            .expect("the frozen complete CF12 class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                length: u64::try_from(CLASS.len()).expect("fixture length fits u64"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_owned()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let method = PhysicalMethodId {
+            owner: definition,
+            name: JvmBytes(b"test".to_vec()),
+            descriptor: JvmBytes(b"(IZZ)Ljava/lang/String;".to_vec()),
+        };
+        let analysis = analyze_method_ir(
+            &[snapshot.clone()],
+            &MethodAnalysisRequest {
+                environment: ResolutionEnvironment {
+                    runtime: RuntimeView {
+                        physical: PhysicalView {
+                            snapshot: snapshot.id().clone(),
+                            scope: PhysicalScope::SnapshotAll,
+                        },
+                        profile: RuntimeProfile {
+                            java_release: 8,
+                            multi_release: MultiReleasePolicy::Disabled,
+                            layout: LayoutMode::Generic,
+                        },
+                        load_domain: domain.clone(),
+                    },
+                    domains: vec![domain],
+                    providers: Vec::new(),
+                },
+                method,
+                stages: AnalysisStage::ALL.to_vec(),
+            },
+            &mut budget,
+        )
+        .expect("the public reader completes the exact method analysis");
+        let ir = analysis.ir();
+        let declaration = ir.declaration().expect("reader states method declaration");
+        let canonical = ir.canonical().expect("reader publishes canonical CFG");
+        let ssa = ir.ssa().expect("reader publishes SSA");
+        let code = ir.code().expect("reader publishes decoded instructions");
+        assert_eq!(declaration.name().0.as_slice(), b"test");
+        assert_eq!(
+            declaration.descriptor().0.as_slice(),
+            b"(IZZ)Ljava/lang/String;"
+        );
+
+        let operations = Operations::of(code, ir.constant_pool());
+        assert!(operations.get(7).and_then(Operation::switch).is_some());
+        let inner_switch_entry = cf12_switch_scope_id(canonical, 67);
+        let other_join = cf12_switch_scope_id(canonical, 32);
+        let join = cf12_switch_scope_id(canonical, 171);
+        let ids = Cf12SwitchScopeIds {
+            inner_switch_entry,
+            other_join,
+            join,
+        };
+
+        // Pin each recovered leaf to a real transfer instruction whose canonical Normal edge reaches
+        // the same real join. This checks the fixture identity, not a new proof of Region admission.
+        for source_bci in [89, 114] {
+            assert_eq!(operations.get(source_bci), Some(&Operation::Transfer));
+            let source = cf12_switch_scope_source_block(ssa, source_bci);
+            assert!(canonical.edges().iter().any(|edge| {
+                edge.from() == source
+                    && edge.to() == &ids.join
+                    && edge.kind() == jarde_jvm::method_ir::CanonicalEdgeKind::Normal
+            }));
+        }
+
+        let descriptor = String::from_utf8_lossy(&declaration.descriptor().0).into_owned();
+        let method_facts = crate::facts::MethodFacts::new(
+            String::from_utf8_lossy(&declaration.name().0).into_owned(),
+            descriptor.clone(),
+            declaration.parameter_slots(),
+        )
+        .with_access_flags(declaration.access_flags());
+        let parameter_types = method_facts.parameter_types();
+        let parameter_count = method_facts.parameters();
+        let has_receiver = method_facts.has_receiver();
+        let return_type = return_type(&descriptor);
+        let declaring_class = String::from_utf8_lossy(&declaration.class_name().0).into_owned();
+        let fields = crate::field::Plan::empty();
+        let field_copies = FieldCopies::prove(
+            ssa,
+            canonical,
+            &operations,
+            &fields,
+            has_receiver,
+            &mut budget,
+        )
+        .expect("the reader-backed field-copy plan completes");
+        let chains = crate::concat::plan_conditional_cut_chains(
+            ssa,
+            canonical,
+            &operations,
+            &field_copies,
+            &mut budget,
+        )
+        .expect("the reader-backed concat plan completes");
+        let array_context = crate::init::ArrayCompositionContext {
+            chains: &chains,
+            reserved: chains.owned(),
+            java_release: 8,
+            member_targets: &[],
+            method: &method_facts,
+            code,
+        };
+        let mut array_initializers = ArrayInitializers::prove_with_composition(
+            ssa,
+            &operations,
+            &fields,
+            Some(&array_context),
+            &mut budget,
+        )
+        .expect("the reader-backed array plan completes");
+        let sites = crate::init::sites_after_array_composition(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &mut array_initializers,
+            8,
+            &[],
+            &method_facts,
+            code,
+            &mut budget,
+        )
+        .expect("the reader-backed constructor-site plan completes");
+        let normal = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
+            .expect("the reader-backed normal-flow view builds");
+        let mut recovered = crate::region::recover(
+            canonical,
+            &normal,
+            ssa,
+            &operations,
+            ir.constant_pool(),
+            &chains,
+            &sites,
+            code,
+            Some(declaration.access_flags() & 0x0020 != 0),
+            matches!(return_type.as_ref(), Some(crate::ast::Type::Boolean)),
+            &crate::pass::JAVA_8,
+            &mut budget,
+        )
+        .expect("the full reader-backed Region tree recovers");
+        crate::region::project_string_switches(&mut recovered, ir, &mut budget)
+            .expect("any reader-backed string switch projection completes");
+        let mut regions = recovered.regions;
+        assert!(
+            cf12_switch_break_in_regions(&mut regions, source_bci).is_some(),
+            "the full recovered tree contains the reader leaf",
+        );
+        let recovered_blocks = cf12_region_blocks(&regions);
+        let resources = resource_slots(&regions);
+        let reuse = crate::reuse::plan(
+            ssa,
+            canonical,
+            &operations,
+            &regions,
+            code.max_locals,
+            parameter_count,
+            &[],
+            &resources,
+            &mut budget,
+        )
+        .expect("the reader-backed local-reuse plan completes");
+        let names = if has_receiver {
+            crate::names::NameTable::build_with_receiver(
+                parameter_count,
+                code.max_locals,
+                reuse.evidence(),
+            )
+        } else {
+            crate::names::NameTable::build(parameter_count, code.max_locals, reuse.evidence())
+        };
+        mutate_regions(&mut regions, &ids, source_bci);
+        assert_eq!(
+            cf12_region_blocks(&regions),
+            recovered_blocks,
+            "metamorphic leaf changes preserve the full Region block multiset",
+        );
+        let members = None;
+        let member_inner_targets = [];
+        let interface_super_calls = [];
+        let reference_overload_calls = [];
+        let snapshot_hierarchy_widenings = [];
+        let captured_outer_reads = [];
+        let outer_super_calls = [];
+        let nested_class_members = Vec::<String>::new();
+        let prologues = crate::init::Prologues::none();
+        let enums = crate::enumswitch::Plan::empty();
+
+        let program = build(
+            canonical,
+            ssa,
+            &operations,
+            Inputs {
+                code,
+                pool: ir.constant_pool(),
+                bootstrap: ir.bootstrap_methods(),
+                profile: crate::pass::JAVA_8.clone(),
+                parameters: parameter_count,
+                has_receiver,
+                parameter_types: &parameter_types,
+                return_type,
+                method_access_flags: Some(declaration.access_flags()),
+                debug_locals: &[],
+                names: &names,
+                reuse: &reuse,
+                chains: &chains,
+                field_copies: &field_copies,
+                members,
+                member_inner_targets: &member_inner_targets,
+                typed_functional_target: None,
+                interface_super_calls: &interface_super_calls,
+                reference_overload_calls: &reference_overload_calls,
+                snapshot_hierarchy_widenings: &snapshot_hierarchy_widenings,
+                captured_outer_reads: &captured_outer_reads,
+                outer_super_calls: &outer_super_calls,
+                nested_class_members: &nested_class_members,
+                pool_spelled_members: false,
+                physical_method: Some(declaration.identity()),
+                declaring_class: Some(&declaring_class),
+                direct_super_class: ir.direct_super_class(),
+                direct_interfaces: ir.direct_interfaces(),
+                class_methods: ir.class_methods(),
+                class_fields: ir.class_fields(),
+                bridge: None,
+                sites: &sites,
+                prologues: &prologues,
+                fields: &fields,
+                array_initializers,
+                enums: &enums,
+                allow_array_constructor_method_references: false,
+            },
+            &regions,
+            &mut budget,
+        )
+        .expect("the Builder runs to completion for a scope-consumer fixture");
+        (program, ids)
+    }
+
+    #[derive(Clone, Copy)]
+    enum Cf12OutputKind {
+        Break,
+        Fallback,
+    }
+
+    fn find_cf12_output<'a>(
+        statements: &'a [Stmt],
+        source_bci: u32,
+        wanted: Cf12OutputKind,
+    ) -> Option<&'a Stmt> {
+        for statement in statements {
+            let matches = match (&statement.kind, wanted) {
+                (StmtKind::Break { label: None }, Cf12OutputKind::Break) => {
+                    statement.origin.primary().bci() == source_bci
+                }
+                (StmtKind::Fallback { bcis, .. }, Cf12OutputKind::Fallback) => {
+                    bcis.contains(&source_bci)
+                }
+                _ => false,
+            };
+            if matches {
+                return Some(statement);
+            }
+            let nested = match &statement.kind {
+                StmtKind::If {
+                    then_body,
+                    else_body,
+                    ..
+                } => find_cf12_output(then_body, source_bci, wanted)
+                    .or_else(|| find_cf12_output(else_body, source_bci, wanted)),
+                StmtKind::While { body, .. }
+                | StmtKind::ForEach { body, .. }
+                | StmtKind::DoWhile { body, .. }
+                | StmtKind::Synchronized { body, .. } => find_cf12_output(body, source_bci, wanted),
+                StmtKind::For { body, .. } => find_cf12_output(body, source_bci, wanted),
+                StmtKind::Switch { arms, .. } => arms
+                    .iter()
+                    .find_map(|arm| find_cf12_output(&arm.body, source_bci, wanted)),
+                StmtKind::Try {
+                    catches,
+                    body,
+                    finally_body,
+                    ..
+                } => find_cf12_output(body, source_bci, wanted)
+                    .or_else(|| {
+                        catches
+                            .iter()
+                            .find_map(|clause| find_cf12_output(&clause.body, source_bci, wanted))
+                    })
+                    .or_else(|| {
+                        finally_body
+                            .as_deref()
+                            .and_then(|body| find_cf12_output(body, source_bci, wanted))
+                    }),
+                _ => None,
+            };
+            if nested.is_some() {
+                return nested;
+            }
+        }
+        None
+    }
+
+    #[track_caller]
+    fn assert_cf12_fallback(program: &Program, source_bci: u32, expected_reason: &str) {
+        let Some(statement) =
+            find_cf12_output(&program.stmts, source_bci, Cf12OutputKind::Fallback)
+        else {
+            panic!("expected fallback at {source_bci}: {:#?}", program.stmts);
+        };
+        let StmtKind::Fallback { reason, bcis } = &statement.kind else {
+            unreachable!()
+        };
+        assert!(bcis.contains(&source_bci));
+        assert!(reason.contains(expected_reason), "{reason}");
+        assert_eq!(statement.origin.primary().bci(), source_bci);
+    }
+
+    #[test]
+    fn cf12_switch_break_builder_consumes_only_the_reader_leaf_it_proves() {
+        // Use the recovered full method tree. The exact SwitchBreak leaf has no physical blocks, so
+        // changing its stated target or moving that zero-block control leaf cannot omit or duplicate a
+        // local-access owner. Assert only the output at this leaf; unrelated regions may conservatively
+        // fall back for their own independent reasons.
+        for source_bci in [89, 114] {
+            let (program, _) = build_cf12_switch_scope(source_bci, |regions, _, _| {
+                assert!(cf12_switch_break_in_regions(regions, source_bci).is_some());
+            });
+            let statement = find_cf12_output(&program.stmts, source_bci, Cf12OutputKind::Break)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "expected the exact Break at {source_bci}: {:#?}",
+                        program.stmts
+                    )
+                });
+            assert!(matches!(statement.kind, StmtKind::Break { label: None }));
+            assert_eq!(statement.origin.primary().bci(), source_bci);
+            assert!(
+                find_cf12_output(&program.stmts, source_bci, Cf12OutputKind::Fallback).is_none()
+            );
+        }
+
+        // Move the existing zero-block leaf to the method's end. All recovered physical regions remain
+        // intact and the leaf now runs after its switch scope has popped, exercising no-active fallback.
+        let (no_active, _) = build_cf12_switch_scope(89, |regions, _, source| {
+            let leaf =
+                take_cf12_switch_break(regions, source).expect("reader recovered source leaf");
+            regions.push(leaf);
+        });
+        assert_cf12_fallback(&no_active, 89, "no active switch");
+
+        // Mutating only the leaf's identity preserves every recovered physical owner and makes the
+        // existing nearest-switch guard refuse the reader-backed source transfer.
+        let (wrong_branch, _) = build_cf12_switch_scope(89, |regions, _, source| {
+            let leaf = cf12_switch_break_in_regions(regions, source)
+                .expect("reader recovered source leaf");
+            let Region::SwitchBreak { switch_bci, .. } = leaf else {
+                unreachable!()
+            };
+            *switch_bci = 0;
+        });
+        assert_cf12_fallback(&wrong_branch, 89, "nearest active switch");
+
+        let (wrong_join, ids) = build_cf12_switch_scope(89, |regions, ids, source| {
+            let leaf = cf12_switch_break_in_regions(regions, source)
+                .expect("reader recovered source leaf");
+            let Region::SwitchBreak { join, .. } = leaf else {
+                unreachable!()
+            };
+            *join = ids.other_join.clone();
+        });
+        assert_ne!(ids.other_join, ids.join);
+        assert_cf12_fallback(&wrong_join, 89, "nearest active switch");
+
+        // Replace the actual adjacent Straight((67, [])) + SwitchBreak(89) with an endless Loop whose
+        // header is that same real block. The body retains Straight owner 67 (Endless headers are
+        // body-owned) and the zero-block leaf, so the full Region block multiset is unchanged. This synthetic tree tests
+        // only the Builder's loop-depth refusal, not physical loop admission.
+        let (inner_loop, _) = build_cf12_switch_scope(89, |regions, ids, source| {
+            assert!(wrap_cf12_switch_break(
+                regions,
+                source,
+                &Cf12ScopeWrapper::InnerLoop {
+                    header: ids.inner_switch_entry.clone(),
+                },
+            ));
+        });
+        assert_cf12_fallback(&inner_loop, 89, "nearest active switch");
+
+        // Move the same real owner 67 into a child switch. The selector instruction at BCI 7 and child
+        // join (32, []) are reader facts; the parent leaf retains (7,171), so the nearest-target guard
+        // refuses it. The exact block multiset assertion proves no physical owner was duplicated.
+        let (inner_switch, ids) = build_cf12_switch_scope(89, |regions, ids, source| {
+            assert!(wrap_cf12_switch_break(
+                regions,
+                source,
+                &Cf12ScopeWrapper::InnerSwitch {
+                    branch: ids.inner_switch_entry.clone(),
+                    branch_bci: 7,
+                    join: ids.other_join.clone(),
+                },
+            ));
+        });
+        assert_ne!(ids.other_join, ids.join);
+        assert_cf12_fallback(&inner_switch, 89, "nearest active switch");
     }
 }

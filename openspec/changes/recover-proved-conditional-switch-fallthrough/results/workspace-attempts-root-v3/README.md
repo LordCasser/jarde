@@ -1,0 +1,1 @@
+v4 从头完成90批，reader库177/1/0因新增六fixture造成旧普查tuple失配，exit101；守卫未中止，pins恒同。不能用于全量验收。独立javap六文件delta=6class/31Code/5handler/167target/2jsr，恰好解释旧1087/4830/463/2715/8到新1093/4861/468/2882/10。另保存private README误写及恢复的准确字节证据；项目README已经恢复原HEAD。v5重新从头运行，未借旧执行。
