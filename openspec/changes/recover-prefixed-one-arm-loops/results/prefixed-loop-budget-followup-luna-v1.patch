@@ -1,0 +1,68 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -13376,6 +13376,13 @@
+     fn prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners() {
+         use jarde_reader::budget::Limits;
+ 
++        let test_budget = || {
++            Budget::new(Limits {
++                analysis_steps: 16,
++                elapsed_millis: u64::MAX,
++                ..Limits::default()
++            })
++        };
+         let chain = [2_u32, 3];
+         let valid = vec![
+             (CanonicalEdgeKind::Normal, 1, 2),
+@@ -13388,10 +13395,32 @@
+             &1,
+             &4,
+             valid,
+-            &mut Budget::new(Limits::default()),
++            &mut test_budget(),
+             Some(2),
+         )
+         .unwrap());
++        assert!(matches!(
++            exact_straight_chain_edges(
++                &chain,
++                &1,
++                &4,
++                vec![
++                    (CanonicalEdgeKind::Normal, 1, 2),
++                    (CanonicalEdgeKind::Normal, 2, 3),
++                    (CanonicalEdgeKind::Normal, 3, 4),
++                ],
++                &mut Budget::new(Limits {
++                    analysis_steps: 0,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                }),
++                Some(2),
++            ),
++            Err(StopReason::Budget {
++                dimension: CountedBudgetDimension::AnalysisSteps,
++                ..
++            })
++        ));
+ 
+         for edges in [
+             vec![
+@@ -13417,7 +13446,7 @@
+                 &1,
+                 &4,
+                 edges,
+-                &mut Budget::new(Limits::default()),
++                &mut test_budget(),
+                 Some(2),
+             )
+             .unwrap());
+@@ -13430,7 +13459,7 @@
+                 (CanonicalEdgeKind::Normal, 1, 2),
+                 (CanonicalEdgeKind::Normal, 2, 4),
+             ],
+-            &mut Budget::new(Limits::default()),
++            &mut test_budget(),
+             Some(2),
+         )
+         .unwrap());

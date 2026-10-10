@@ -1,0 +1,18 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v2.py",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v1.py",
+  "404b422e141e200f0eea000f64937becedbad664",
+  "38045578457",
+  "--metadata-sha256",
+  "6b0c59d452d8d5a1fb157c60e81a6602f9cc78c26479f2638e98bdfda54df9e3",
+  "--build-path",
+  "openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/execution.json",
+  "--build-schema",
+  "preserve-proved-loop-latch-validation-build-root-v9"
+]

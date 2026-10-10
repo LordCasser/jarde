@@ -1,0 +1,53 @@
+{
+  "status": "applied-for-validation",
+  "private_followup_apply_check_failed": "rustfmt expanded assertion context; root applied the reviewed exact semantic delta",
+  "patch_sha256": "1414c94874b1684765ca285b3fec1f606403d4c1aba4d96f73989fffedb4ecd7",
+  "commands": [
+    {
+      "index": 90,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T11:04:42.663115+00:00",
+      "duration_seconds": 3.1249012910120655,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 110946332,
+      "free_bytes_after": 11399065600,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/patch-application-root-v2/90.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/patch-application-root-v2/90.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ]
+}

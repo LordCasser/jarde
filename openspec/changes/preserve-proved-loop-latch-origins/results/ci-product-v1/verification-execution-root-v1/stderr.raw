@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v1.py", line 415, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v1.py", line 383, in main
+    ci = helper.verify_ci(product, run_id)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py", line 1033, in verify_ci
+    _, counts = binary_group(text.splitlines(), binary, expected)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py", line 778, in binary_group
+    assert counts == [(expected_count, 0, expected_ignored)], (binary, counts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('tests/interface_initializer_proof.rs', [])

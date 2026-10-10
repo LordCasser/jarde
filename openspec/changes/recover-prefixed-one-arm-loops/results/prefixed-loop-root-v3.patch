@@ -1,0 +1,748 @@
+diff --git a/crates/jarde-java/src/region.rs b/crates/jarde-java/src/region.rs
+index ac96e506d..ce4c7a5ef 100644
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -3444,16 +3444,30 @@ impl Walker<'_> {
+                         if shared_join.is_some() && frame.shared_tail.is_none() {
+                             arm_frame.shared_tail = Some(join_node);
+                         }
++                        let arm_before = self.visited.clone();
+                         let (mut arm_run, arm_next) = self.region_at(walk, &arm_frame)?;
+                         if let Some(next) = arm_next.as_ref()
+                             && self.view.index_of(next) != Some(join_node)
+-                            && !self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?
+                         {
+-                            self.unclosed_tail_at.get_or_insert(branch.bci());
+-                            let reason = FallbackReason::ArmsDoNotMeet {
+-                                block_bci: branch.bci(),
+-                            };
+-                            return Ok(gap(prefix, vec![branch], reason, None));
++                            let mut continued =
++                                self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?;
++                            if !continued {
++                                continued = self.continue_prefixed_loop_arm(
++                                    &mut arm_run,
++                                    next,
++                                    walk,
++                                    &branch,
++                                    &arm_frame,
++                                    &arm_before,
++                                )?;
++                            }
++                            if !continued {
++                                self.unclosed_tail_at.get_or_insert(branch.bci());
++                                let reason = FallbackReason::ArmsDoNotMeet {
++                                    block_bci: branch.bci(),
++                                };
++                                return Ok(gap(prefix, vec![branch], reason, None));
++                            }
+                         }
+                         let arm = sequence_region(arm_run);
+                         // A one-armed `if` normally has an empty arm because that edge is the
+@@ -4058,6 +4072,7 @@ impl Walker<'_> {
+         &mut self,
+         arm: &Region,
+         branch: &CanonicalBlockId,
++        entry_source: &CanonicalBlockId,
+         join: &CanonicalBlockId,
+         frame: &Frame,
+     ) -> Result<Option<CanonicalBlockId>, StopReason> {
+@@ -4106,8 +4121,8 @@ impl Walker<'_> {
+             || owner_nodes != *natural_loop.blocks()
+             || owners.iter().any(|block| {
+                 block.path() != branch.path()
+-                    || block.bci() <= branch.bci()
+-                    || block.bci() >= join.bci()
++                    || (entry_source == branch
++                        && (block.bci() <= branch.bci() || block.bci() >= join.bci()))
+                     || self.view.index_of(block).is_none_or(|node| {
+                         !self.visited.contains(&node)
+                             || frame
+@@ -4150,7 +4165,7 @@ impl Walker<'_> {
+                 return Ok(None);
+             }
+             if !from_loop {
+-                if edge.from() != branch || edge.to() != header {
++                if edge.from() != entry_source || edge.to() != header {
+                     return Ok(None);
+                 }
+                 entry_count += 1;
+@@ -4172,6 +4187,171 @@ impl Walker<'_> {
+         Ok(exit_source)
+     }
+ 
++    /// Resume the direct arm's straight prefix at one fresh natural-loop header. The loop may
++    /// leave directly at the arm join or through one exclusive straight tail. Every participant
++    /// is checked against the canonical normal edges before it is attached to the branch.
++    fn continue_prefixed_loop_arm(
++        &mut self,
++        run: &mut Vec<Region>,
++        next: &CanonicalBlockId,
++        entry: &CanonicalBlockId,
++        branch: &CanonicalBlockId,
++        frame: &Frame,
++        visited_before: &BTreeSet<usize>,
++    ) -> Result<bool, StopReason> {
++        let [Region::Straight { blocks: prefix }] = run.as_slice() else {
++            return Ok(false);
++        };
++        let (Some(join_node), Some(header_node)) = (frame.boundary, self.view.index_of(next))
++        else {
++            return Ok(false);
++        };
++        if prefix.is_empty()
++            || prefix.first() != Some(entry)
++            || !self.view.is_loop_header(header_node)
++            || !prefixed_loop_header_is_fresh(header_node, frame, &self.visited)
++            || prefix.iter().any(|block| block.path() != branch.path())
++        {
++            return Ok(false);
++        }
++        let prefix = prefix.clone();
++        let boundary = self.view.id_of(join_node).cloned();
++        let Some(boundary) = boundary else {
++            return Ok(false);
++        };
++
++        if !self.closed_straight_chain(&prefix, branch, next, branch, frame)? {
++            return Ok(false);
++        }
++        let (loop_run, loop_next) = self.region_at(next, frame)?;
++        let [
++            loop_region @ Region::Loop {
++                exit: Some(exit), ..
++            },
++        ] = loop_run.as_slice()
++        else {
++            return Ok(false);
++        };
++        if loop_next.as_ref() != Some(exit) {
++            return Ok(false);
++        }
++        let Some(exit_source) = self.loop_arm_join_source(
++            loop_region,
++            branch,
++            prefix.last().expect("nonempty straight prefix"),
++            exit,
++            frame,
++        )?
++        else {
++            return Ok(false);
++        };
++        let mut tail = Vec::new();
++        let mut participants = prefix.clone();
++        participants.extend(loop_region.blocks().into_iter().cloned());
++        if exit != &boundary {
++            let before_tail = self.visited.clone();
++            let (tail_run, tail_next) = self.region_at(exit, frame)?;
++            let [
++                Region::Straight {
++                    blocks: tail_blocks,
++                },
++            ] = tail_run.as_slice()
++            else {
++                return Ok(false);
++            };
++            if tail_blocks.is_empty()
++                || tail_next.as_ref() != Some(&boundary)
++                || !self.closed_straight_chain(
++                    tail_blocks,
++                    &exit_source,
++                    &boundary,
++                    branch,
++                    frame,
++                )?
++            {
++                return Ok(false);
++            }
++            let newly_visited = self
++                .visited
++                .difference(&before_tail)
++                .copied()
++                .collect::<BTreeSet<_>>();
++            let tail_nodes = tail_blocks
++                .iter()
++                .filter_map(|block| self.view.index_of(block))
++                .collect::<Vec<_>>();
++            if !continuation_claims_are_exact(&tail_nodes, &newly_visited) {
++                return Ok(false);
++            }
++            participants.extend(tail_blocks.iter().cloned());
++            tail = tail_run;
++        }
++        let newly_visited = self
++            .visited
++            .difference(visited_before)
++            .copied()
++            .collect::<BTreeSet<_>>();
++        let participant_nodes = participants
++            .iter()
++            .filter_map(|block| self.view.index_of(block))
++            .collect::<Vec<_>>();
++        if !continuation_claims_are_exact(&participant_nodes, &newly_visited) {
++            return Ok(false);
++        }
++        run.extend(loop_run);
++        run.extend(tail);
++        Ok(true)
++    }
++
++    /// Prove one straight chain from an exact predecessor to an exact successor. This is a
++    /// bounded local edge scan: every inspected canonical edge and owned block is charged, and
++    /// any side entry, exit, exceptional edge, or repeated owner refuses the chain.
++    fn closed_straight_chain(
++        &mut self,
++        blocks: &[CanonicalBlockId],
++        entry_source: &CanonicalBlockId,
++        exit_target: &CanonicalBlockId,
++        branch: &CanonicalBlockId,
++        frame: &Frame,
++    ) -> Result<bool, StopReason> {
++        let Some(first) = blocks.first() else {
++            return Ok(false);
++        };
++        let edges = self
++            .canonical
++            .edges()
++            .iter()
++            .map(|edge| (edge.kind(), edge.from().clone(), edge.to().clone()));
++        if !exact_straight_chain_edges(
++            blocks,
++            entry_source,
++            exit_target,
++            edges,
++            self.budget,
++            Some(first.bci()),
++        )? {
++            return Ok(false);
++        }
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(blocks.len()).unwrap_or(u64::MAX),
++            Some(first.bci()),
++        )?;
++        for block in blocks {
++            poll(self.budget, Some(block.bci()))?;
++            if block.path() != branch.path()
++                || self
++                    .view
++                    .index_of(block)
++                    .is_none_or(|node| !self.visited.contains(&node) || frame.stops_at(node))
++            {
++                return Ok(false);
++            }
++        }
++        Ok(true)
++    }
++
+     fn continue_multi_return_loop_arm(
+         &mut self,
+         run: &mut Vec<Region>,
+@@ -4366,12 +4546,12 @@ impl Walker<'_> {
+                 vec![straight_end(then_arm)]
+             }
+             (Region::Loop { .. }, Region::Straight { .. }) => vec![
+-                self.loop_arm_join_source(then_arm, branch, next, frame)?,
++                self.loop_arm_join_source(then_arm, branch, branch, next, frame)?,
+                 straight_end(else_arm),
+             ],
+             (Region::Straight { .. }, Region::Loop { .. }) => vec![
+                 straight_end(then_arm),
+-                self.loop_arm_join_source(else_arm, branch, next, frame)?,
++                self.loop_arm_join_source(else_arm, branch, branch, next, frame)?,
+             ],
+             (Region::Sequence { .. }, Region::Straight { .. }) => {
+                 let Some(sources) = self.two_level_loop_join_sources(then_arm, branch, next)?
+@@ -13070,6 +13250,71 @@ fn unique_first_common(
+     first
+ }
+ 
++fn prefixed_loop_header_is_fresh(header: usize, frame: &Frame, visited: &BTreeSet<usize>) -> bool {
++    !visited.contains(&header)
++        && !frame.stops_at(header)
++        && !frame
++            .loop_targets
++            .iter()
++            .any(|target| target.header == header || target.continue_target == header)
++}
++
++fn exact_straight_chain_edges<T, I>(
++    blocks: &[T],
++    entry_source: &T,
++    exit_target: &T,
++    edges: I,
++    budget: &mut Budget,
++    at: Option<u32>,
++) -> Result<bool, StopReason>
++where
++    T: Ord + Clone,
++    I: IntoIterator<Item = (CanonicalEdgeKind, T, T)>,
++    I::IntoIter: ExactSizeIterator,
++{
++    if blocks.is_empty() {
++        return Ok(false);
++    }
++    let edges = edges.into_iter();
++    let edge_count = edges.len();
++    charge(
++        budget,
++        CountedBudgetDimension::AnalysisSteps,
++        u64::try_from(edge_count.saturating_add(blocks.len())).unwrap_or(u64::MAX),
++        at,
++    )?;
++
++    let mut owners = BTreeSet::new();
++    let mut expected = BTreeSet::new();
++    if !expected.insert((entry_source.clone(), blocks[0].clone())) {
++        return Ok(false);
++    }
++    for (index, block) in blocks.iter().enumerate() {
++        poll(budget, at)?;
++        if !owners.insert(block.clone()) {
++            return Ok(false);
++        }
++        let target = blocks.get(index + 1).unwrap_or(exit_target);
++        if !expected.insert((block.clone(), target.clone())) {
++            return Ok(false);
++        }
++    }
++    if owners.contains(entry_source) || owners.contains(exit_target) {
++        return Ok(false);
++    }
++
++    for (kind, from, to) in edges {
++        poll(budget, at)?;
++        if !owners.contains(&from) && !owners.contains(&to) {
++            continue;
++        }
++        if kind != CanonicalEdgeKind::Normal || !expected.remove(&(from, to)) {
++            return Ok(false);
++        }
++    }
++    Ok(expected.is_empty())
++}
++
+ fn exact_normal_predecessors<T: Ord>(actual: &[(CanonicalEdgeKind, T)], expected: &[T]) -> bool {
+     actual.len() == expected.len()
+         && expected.iter().collect::<BTreeSet<_>>().len() == expected.len()
+@@ -13133,6 +13378,163 @@ mod tests {
+         );
+     }
+ 
++    #[test]
++    fn prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners() {
++        use jarde_reader::budget::Limits;
++
++        let test_budget = || {
++            Budget::new(Limits {
++                analysis_steps: 16,
++                elapsed_millis: u64::MAX,
++                ..Limits::default()
++            })
++        };
++        let chain = [2_u32, 3];
++        let valid = vec![
++            (CanonicalEdgeKind::Normal, 1, 2),
++            (CanonicalEdgeKind::Normal, 2, 3),
++            (CanonicalEdgeKind::Normal, 3, 4),
++            (CanonicalEdgeKind::Normal, 40, 41),
++        ];
++        assert!(
++            exact_straight_chain_edges(&chain, &1, &4, valid, &mut test_budget(), Some(2),)
++                .unwrap()
++        );
++
++        assert!(matches!(
++            exact_straight_chain_edges(
++                &chain,
++                &1,
++                &4,
++                vec![
++                    (CanonicalEdgeKind::Normal, 1, 2),
++                    (CanonicalEdgeKind::Normal, 2, 3),
++                    (CanonicalEdgeKind::Normal, 3, 4)
++                ],
++                &mut Budget::new(Limits {
++                    analysis_steps: 0,
++                    elapsed_millis: u64::MAX,
++                    ..Limits::default()
++                }),
++                Some(2),
++            ),
++            Err(StopReason::Budget {
++                dimension: CountedBudgetDimension::AnalysisSteps,
++                ..
++            })
++        ));
++        for edges in [
++            vec![
++                (CanonicalEdgeKind::Normal, 1, 2),
++                (CanonicalEdgeKind::Normal, 9, 2),
++                (CanonicalEdgeKind::Normal, 2, 3),
++                (CanonicalEdgeKind::Normal, 3, 4),
++            ],
++            vec![
++                (CanonicalEdgeKind::Normal, 1, 2),
++                (CanonicalEdgeKind::Normal, 2, 3),
++                (CanonicalEdgeKind::Normal, 3, 4),
++                (CanonicalEdgeKind::Normal, 3, 8),
++            ],
++            vec![
++                (CanonicalEdgeKind::Normal, 1, 2),
++                (CanonicalEdgeKind::Exception { handler_ordinal: 0 }, 2, 3),
++                (CanonicalEdgeKind::Normal, 3, 4),
++            ],
++        ] {
++            assert!(
++                !exact_straight_chain_edges(&chain, &1, &4, edges, &mut test_budget(), Some(2),)
++                    .unwrap()
++            );
++        }
++        assert!(
++            !exact_straight_chain_edges(
++                &[2_u32, 2],
++                &1,
++                &4,
++                vec![
++                    (CanonicalEdgeKind::Normal, 1, 2),
++                    (CanonicalEdgeKind::Normal, 2, 4),
++                ],
++                &mut test_budget(),
++                Some(2),
++            )
++            .unwrap()
++        );
++        assert!(!continuation_claims_are_exact(
++            &[2_u32, 3],
++            &BTreeSet::from([2, 3, 5]),
++        ));
++        assert!(!continuation_claims_are_exact(
++            &[2_u32, 2],
++            &BTreeSet::from([2]),
++        ));
++    }
++
++    #[test]
++    fn prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope() {
++        let header = 7;
++        let empty = BTreeSet::new();
++        assert!(prefixed_loop_header_is_fresh(
++            header,
++            &Frame::default(),
++            &empty
++        ));
++        assert!(!prefixed_loop_header_is_fresh(
++            header,
++            &Frame::default(),
++            &BTreeSet::from([header]),
++        ));
++
++        let outer_header = Frame {
++            loop_targets: vec![LoopTarget {
++                header,
++                exits: BTreeSet::new(),
++                break_target: None,
++                continue_target: 2,
++            }],
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(
++            header,
++            &outer_header,
++            &empty
++        ));
++        let outer_continue = Frame {
++            loop_targets: vec![LoopTarget {
++                header: 2,
++                exits: BTreeSet::new(),
++                break_target: None,
++                continue_target: header,
++            }],
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(
++            header,
++            &outer_continue,
++            &empty
++        ));
++
++        let parent_scope = Frame {
++            scope: Some(BTreeSet::from([3, 5])),
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(
++            header,
++            &parent_scope,
++            &empty
++        ));
++        let parent_boundary = Frame {
++            boundary: Some(header),
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(
++            header,
++            &parent_boundary,
++            &empty
++        ));
++    }
++
+     #[test]
+     fn cf02_tail_requires_both_distinct_normal_predecessors() {
+         // CF-02's inner value joins at BCI 28 after producers 23 and 27. A path from
+diff --git a/crates/jarde-java/tests/p3_loop_exit_gateways.rs b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+index bae5a0cf8..507bd43c6 100644
+--- a/crates/jarde-java/tests/p3_loop_exit_gateways.rs
++++ b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+@@ -31,6 +31,9 @@ const NO_PREFIX: &[u8] = include_bytes!(
+     "../../../openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+ );
+ const NO_PREFIX_BCIS: [u32; 11] = [0, 1, 2, 3, 6, 7, 8, 11, 14, 17, 18];
++const ITERATOR_PREFIX: &[u8] = include_bytes!(
++    "../../../openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
++);
+ 
+ fn limits() -> Limits {
+     Limits {
+@@ -156,6 +159,87 @@ fn recover_class_method_with_budget(
+     )
+ }
+ 
++fn braced_body(source: &str, marker: &str) -> std::ops::Range<usize> {
++    let marker_at = source
++        .find(marker)
++        .unwrap_or_else(|| panic!("missing {marker}: {source}"));
++    let open = source[marker_at..]
++        .find('{')
++        .map(|offset| marker_at + offset)
++        .unwrap_or_else(|| panic!("missing opening brace after {marker}: {source}"));
++    let mut depth = 0usize;
++    for (offset, byte) in source.as_bytes().iter().enumerate().skip(open) {
++        match *byte {
++            b'{' => depth += 1,
++            b'}' => {
++                depth -= 1;
++                if depth == 0 {
++                    return open + 1..offset;
++                }
++            }
++            _ => {}
++        }
++    }
++    panic!("unclosed body after {marker}: {source}");
++}
++
++fn assert_one_structured_owner_in(
++    report: &jarde_java::RecoveryReport,
++    range: std::ops::Range<usize>,
++    expected_blocks: &[u32],
++    entry_text: &str,
++    entry_bcis: &[u32],
++) {
++    assert!(!expected_blocks.is_empty());
++    let owners: Vec<_> = report
++        .regions
++        .iter()
++        .filter(|region| {
++            expected_blocks
++                .iter()
++                .all(|bci| region.blocks.contains(bci))
++        })
++        .collect();
++    assert_eq!(
++        owners.len(),
++        1,
++        "expected block starts {expected_blocks:?} lack one common owner: {:?}",
++        report.regions
++    );
++    assert!(
++        owners[0].structured,
++        "selected arm is not structured: {:?}",
++        owners[0]
++    );
++    for bci in expected_blocks {
++        let matching: Vec<_> = report
++            .regions
++            .iter()
++            .filter(|region| region.blocks.contains(bci))
++            .collect();
++        assert_eq!(
++            matching.len(),
++            1,
++            "block {bci} owners: {:?}",
++            report.regions
++        );
++        assert!(matching[0].structured, "block {bci}: {:?}", matching[0]);
++    }
++    let entry_anchor = report.source_map.segments().iter().any(|segment| {
++        segment.start() >= range.start
++            && segment.end() <= range.end
++            && segment.text(&report.text).contains(entry_text)
++            && std::iter::once(segment.origin().primary())
++                .chain(segment.origin().derived())
++                .any(|origin| entry_bcis.contains(&origin.bci()))
++    });
++    assert!(
++        entry_anchor,
++        "prefix source anchor is outside the selected if arm: {}",
++        report.text
++    );
++}
++
+ #[test]
+ fn cf08_two_gateways_have_one_loop_owner_and_complete_sources() {
+     let report = recover_method("find", "(I)I", RecoveryEvidenceRequest::all());
+@@ -349,6 +433,153 @@ fn no_prefix_while_latch_keeps_physical_source_and_one_owner() {
+     }
+ }
+ 
++#[test]
++fn one_arm_straight_prefix_loop_and_optional_tail_are_closed() {
++    // Block starts are frozen from javac23-original/javap.txt: prefix 6, loop
++    // header 8, loop body 13, and loopAndTail's exclusive tail 23.
++    for (name, guard, tail, blocks) in [
++        ("prefixWhile", "if (arg0) {", None, &[6, 8, 13][..]),
++        ("takenArm", "if (!arg0) {", None, &[6, 8, 13][..]),
++        (
++            "loopAndTail",
++            "if (arg0) {",
++            Some("local2 = local2 + 100;"),
++            &[6, 8, 13, 23][..],
++        ),
++    ] {
++        let default = recover_class_method_with_budget(
++            NO_PREFIX,
++            "PlainOneArmLoops",
++            name,
++            "(ZI)I",
++            RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
++            None,
++        );
++        let all = recover_class_method_with_budget(
++            NO_PREFIX,
++            "PlainOneArmLoops",
++            name,
++            "(ZI)I",
++            RecoveryEvidenceRequest::all(),
++            None,
++        );
++        assert!(default.produced(), "{name}: {:?}", default.outcome);
++        assert!(all.produced(), "{name}: {:?}", all.outcome);
++        assert_eq!(default.text, all.text, "{name}");
++        assert_eq!(default.source_map, all.source_map, "{name}");
++        assert!(!all.text.contains("@bytecode"), "{name}: {}", all.text);
++
++        let arm = braced_body(&all.text, guard);
++        let arm_text = &all.text[arm.clone()];
++        let prefix_at = arm_text
++            .find("local3 = 0;")
++            .unwrap_or_else(|| panic!("{name} prefix outside selected arm: {}", all.text));
++        let loop_at = arm_text
++            .find("while (")
++            .unwrap_or_else(|| panic!("{name} loop outside selected arm: {}", all.text));
++        assert!(
++            prefix_at < loop_at,
++            "{name} prefix is not before loop: {}",
++            all.text
++        );
++        if let Some(tail) = tail {
++            let tail_at = arm_text
++                .find(tail)
++                .unwrap_or_else(|| panic!("{name} tail outside selected arm: {}", all.text));
++            assert!(
++                loop_at < tail_at,
++                "{name} tail is not after loop: {}",
++                all.text
++            );
++        }
++        assert_one_structured_owner_in(&all, arm, blocks, "local3 = 0;", &[6, 7]);
++    }
++
++    let iterator_default = recover_class_method_with_budget(
++        ITERATOR_PREFIX,
++        "VariablePostfixLoop",
++        "countEmpty",
++        "(Ljava/util/List;)I",
++        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
++        None,
++    );
++    let iterator = recover_class_method_with_budget(
++        ITERATOR_PREFIX,
++        "VariablePostfixLoop",
++        "countEmpty",
++        "(Ljava/util/List;)I",
++        RecoveryEvidenceRequest::all(),
++        None,
++    );
++    assert!(
++        iterator_default.produced(),
++        "iterator default: {:?}",
++        iterator_default.outcome
++    );
++    assert!(iterator.produced(), "iterator: {:?}", iterator.outcome);
++    assert_eq!(iterator_default.text, iterator.text);
++    assert_eq!(iterator_default.source_map, iterator.source_map);
++    assert!(!iterator.text.contains("@bytecode"), "{}", iterator.text);
++    assert!(iterator.text.contains("while ("), "{}", iterator.text);
++    assert!(iterator.text.contains("hasNext"), "{}", iterator.text);
++    assert!(iterator.text.contains(".next"), "{}", iterator.text);
++    let arm = braced_body(&iterator.text, "if (arg0 != null) {");
++    // Frozen javac23 branch targets/fallthrough give arm blocks 6, 13, 22,
++    // 39, 42; 45 is the shared exit and is deliberately outside the arm.
++    assert_one_structured_owner_in(&iterator, arm, &[6, 13, 22, 39, 42], ".iterator()", &[6, 7]);
++}
++
++#[test]
++fn prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source() {
++    use jarde_java::StopReason;
++    use jarde_reader::model::ExecutionReport;
++
++    let full = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "prefixWhile",
++        "(ZI)I",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::new(limits())),
++    );
++    let ExecutionReport::Complete { usage } = full.execution else {
++        panic!("full candidate did not complete: {:?}", full.outcome);
++    };
++    let mut late = limits();
++    late.analysis_steps = usage.analysis_steps.saturating_sub(1);
++    let stopped = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "prefixWhile",
++        "(ZI)I",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::new(late)),
++    );
++    assert!(!stopped.produced());
++    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
++    assert!(matches!(
++        stopped.stop(),
++        Some(StopReason::Budget {
++            dimension: CountedBudgetDimension::AnalysisSteps,
++            ..
++        })
++    ));
++
++    let token = CancellationToken::new();
++    token.cancel();
++    let cancelled = recover_class_method_with_budget(
++        NO_PREFIX,
++        "PlainOneArmLoops",
++        "prefixWhile",
++        "(ZI)I",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::with_cancellation_token(limits(), token)),
++    );
++    assert!(!cancelled.produced());
++    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
++    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
++}
++
+ #[test]
+ fn no_prefix_latch_budget_and_cancellation_publish_no_partial_source() {
+     use jarde_java::StopReason;

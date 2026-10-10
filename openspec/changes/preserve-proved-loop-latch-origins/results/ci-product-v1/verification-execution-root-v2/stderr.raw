@@ -1,0 +1,5 @@
+usage: verify-ci-product-luna-v2.py [-h] --metadata-sha256 METADATA_SHA256
+                                    --build-path BUILD_PATH --build-schema
+                                    BUILD_SCHEMA
+                                    product_sha run_id
+verify-ci-product-luna-v2.py: error: unrecognized arguments: 38045578457

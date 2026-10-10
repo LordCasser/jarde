@@ -3444,16 +3444,30 @@ impl Walker<'_> {
                         if shared_join.is_some() && frame.shared_tail.is_none() {
                             arm_frame.shared_tail = Some(join_node);
                         }
+                        let arm_before = self.visited.clone();
                         let (mut arm_run, arm_next) = self.region_at(walk, &arm_frame)?;
                         if let Some(next) = arm_next.as_ref()
                             && self.view.index_of(next) != Some(join_node)
-                            && !self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?
                         {
-                            self.unclosed_tail_at.get_or_insert(branch.bci());
-                            let reason = FallbackReason::ArmsDoNotMeet {
-                                block_bci: branch.bci(),
-                            };
-                            return Ok(gap(prefix, vec![branch], reason, None));
+                            let mut continued =
+                                self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?;
+                            if !continued {
+                                continued = self.continue_prefixed_loop_arm(
+                                    &mut arm_run,
+                                    next,
+                                    walk,
+                                    &branch,
+                                    &arm_frame,
+                                    &arm_before,
+                                )?;
+                            }
+                            if !continued {
+                                self.unclosed_tail_at.get_or_insert(branch.bci());
+                                let reason = FallbackReason::ArmsDoNotMeet {
+                                    block_bci: branch.bci(),
+                                };
+                                return Ok(gap(prefix, vec![branch], reason, None));
+                            }
                         }
                         let arm = sequence_region(arm_run);
                         // A one-armed `if` normally has an empty arm because that edge is the
@@ -4058,6 +4072,7 @@ impl Walker<'_> {
         &mut self,
         arm: &Region,
         branch: &CanonicalBlockId,
+        entry_source: &CanonicalBlockId,
         join: &CanonicalBlockId,
         frame: &Frame,
     ) -> Result<Option<CanonicalBlockId>, StopReason> {
@@ -4106,8 +4121,8 @@ impl Walker<'_> {
             || owner_nodes != *natural_loop.blocks()
             || owners.iter().any(|block| {
                 block.path() != branch.path()
-                    || block.bci() <= branch.bci()
-                    || block.bci() >= join.bci()
+                    || (entry_source == branch
+                        && (block.bci() <= branch.bci() || block.bci() >= join.bci()))
                     || self.view.index_of(block).is_none_or(|node| {
                         !self.visited.contains(&node)
                             || frame
@@ -4150,7 +4165,7 @@ impl Walker<'_> {
                 return Ok(None);
             }
             if !from_loop {
-                if edge.from() != branch || edge.to() != header {
+                if edge.from() != entry_source || edge.to() != header {
                     return Ok(None);
                 }
                 entry_count += 1;
@@ -4170,6 +4185,171 @@ impl Walker<'_> {
             }
         }
         Ok(exit_source)
+    }
+
+    /// Resume the direct arm's straight prefix at one fresh natural-loop header. The loop may
+    /// leave directly at the arm join or through one exclusive straight tail. Every participant
+    /// is checked against the canonical normal edges before it is attached to the branch.
+    fn continue_prefixed_loop_arm(
+        &mut self,
+        run: &mut Vec<Region>,
+        next: &CanonicalBlockId,
+        entry: &CanonicalBlockId,
+        branch: &CanonicalBlockId,
+        frame: &Frame,
+        visited_before: &BTreeSet<usize>,
+    ) -> Result<bool, StopReason> {
+        let [Region::Straight { blocks: prefix }] = run.as_slice() else {
+            return Ok(false);
+        };
+        let (Some(join_node), Some(header_node)) = (frame.boundary, self.view.index_of(next))
+        else {
+            return Ok(false);
+        };
+        if prefix.is_empty()
+            || prefix.first() != Some(entry)
+            || !self.view.is_loop_header(header_node)
+            || !prefixed_loop_header_is_fresh(header_node, frame, &self.visited)
+            || prefix.iter().any(|block| block.path() != branch.path())
+        {
+            return Ok(false);
+        }
+        let prefix = prefix.clone();
+        let boundary = self.view.id_of(join_node).cloned();
+        let Some(boundary) = boundary else {
+            return Ok(false);
+        };
+
+        if !self.closed_straight_chain(&prefix, branch, next, branch, frame)? {
+            return Ok(false);
+        }
+        let (loop_run, loop_next) = self.region_at(next, frame)?;
+        let [
+            loop_region @ Region::Loop {
+                exit: Some(exit), ..
+            },
+        ] = loop_run.as_slice()
+        else {
+            return Ok(false);
+        };
+        if loop_next.as_ref() != Some(exit) {
+            return Ok(false);
+        }
+        let Some(exit_source) = self.loop_arm_join_source(
+            loop_region,
+            branch,
+            prefix.last().expect("nonempty straight prefix"),
+            exit,
+            frame,
+        )?
+        else {
+            return Ok(false);
+        };
+        let mut tail = Vec::new();
+        let mut participants = prefix.clone();
+        participants.extend(loop_region.blocks().into_iter().cloned());
+        if exit != &boundary {
+            let before_tail = self.visited.clone();
+            let (tail_run, tail_next) = self.region_at(exit, frame)?;
+            let [
+                Region::Straight {
+                    blocks: tail_blocks,
+                },
+            ] = tail_run.as_slice()
+            else {
+                return Ok(false);
+            };
+            if tail_blocks.is_empty()
+                || tail_next.is_some()
+                || !self.closed_straight_chain(
+                    tail_blocks,
+                    &exit_source,
+                    &boundary,
+                    branch,
+                    frame,
+                )?
+            {
+                return Ok(false);
+            }
+            let newly_visited = self
+                .visited
+                .difference(&before_tail)
+                .copied()
+                .collect::<BTreeSet<_>>();
+            let tail_nodes = tail_blocks
+                .iter()
+                .filter_map(|block| self.view.index_of(block))
+                .collect::<Vec<_>>();
+            if !continuation_claims_are_exact(&tail_nodes, &newly_visited) {
+                return Ok(false);
+            }
+            participants.extend(tail_blocks.iter().cloned());
+            tail = tail_run;
+        }
+        let newly_visited = self
+            .visited
+            .difference(visited_before)
+            .copied()
+            .collect::<BTreeSet<_>>();
+        let participant_nodes = participants
+            .iter()
+            .filter_map(|block| self.view.index_of(block))
+            .collect::<Vec<_>>();
+        if !continuation_claims_are_exact(&participant_nodes, &newly_visited) {
+            return Ok(false);
+        }
+        run.extend(loop_run);
+        run.extend(tail);
+        Ok(true)
+    }
+
+    /// Prove one straight chain from an exact predecessor to an exact successor. This is a
+    /// bounded local edge scan: every inspected canonical edge and owned block is charged, and
+    /// any side entry, exit, exceptional edge, or repeated owner refuses the chain.
+    fn closed_straight_chain(
+        &mut self,
+        blocks: &[CanonicalBlockId],
+        entry_source: &CanonicalBlockId,
+        exit_target: &CanonicalBlockId,
+        branch: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<bool, StopReason> {
+        let Some(first) = blocks.first() else {
+            return Ok(false);
+        };
+        let edges = self
+            .canonical
+            .edges()
+            .iter()
+            .map(|edge| (edge.kind(), edge.from().clone(), edge.to().clone()));
+        if !exact_straight_chain_edges(
+            blocks,
+            entry_source,
+            exit_target,
+            edges,
+            self.budget,
+            Some(first.bci()),
+        )? {
+            return Ok(false);
+        }
+        charge(
+            self.budget,
+            CountedBudgetDimension::AnalysisSteps,
+            u64::try_from(blocks.len()).unwrap_or(u64::MAX),
+            Some(first.bci()),
+        )?;
+        for block in blocks {
+            poll(self.budget, Some(block.bci()))?;
+            if block.path() != branch.path()
+                || self
+                    .view
+                    .index_of(block)
+                    .is_none_or(|node| !self.visited.contains(&node) || frame.stops_at(node))
+            {
+                return Ok(false);
+            }
+        }
+        Ok(true)
     }
 
     fn continue_multi_return_loop_arm(
@@ -4366,12 +4546,12 @@ impl Walker<'_> {
                 vec![straight_end(then_arm)]
             }
             (Region::Loop { .. }, Region::Straight { .. }) => vec![
-                self.loop_arm_join_source(then_arm, branch, next, frame)?,
+                self.loop_arm_join_source(then_arm, branch, branch, next, frame)?,
                 straight_end(else_arm),
             ],
             (Region::Straight { .. }, Region::Loop { .. }) => vec![
                 straight_end(then_arm),
-                self.loop_arm_join_source(else_arm, branch, next, frame)?,
+                self.loop_arm_join_source(else_arm, branch, branch, next, frame)?,
             ],
             (Region::Sequence { .. }, Region::Straight { .. }) => {
                 let Some(sources) = self.two_level_loop_join_sources(then_arm, branch, next)?
@@ -13070,6 +13250,71 @@ fn unique_first_common(
     first
 }
 
+fn prefixed_loop_header_is_fresh(header: usize, frame: &Frame, visited: &BTreeSet<usize>) -> bool {
+    !visited.contains(&header)
+        && !frame.stops_at(header)
+        && !frame
+            .loop_targets
+            .iter()
+            .any(|target| target.header == header || target.continue_target == header)
+}
+
+fn exact_straight_chain_edges<T, I>(
+    blocks: &[T],
+    entry_source: &T,
+    exit_target: &T,
+    edges: I,
+    budget: &mut Budget,
+    at: Option<u32>,
+) -> Result<bool, StopReason>
+where
+    T: Ord + Clone,
+    I: IntoIterator<Item = (CanonicalEdgeKind, T, T)>,
+    I::IntoIter: ExactSizeIterator,
+{
+    if blocks.is_empty() {
+        return Ok(false);
+    }
+    let edges = edges.into_iter();
+    let edge_count = edges.len();
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(edge_count.saturating_add(blocks.len())).unwrap_or(u64::MAX),
+        at,
+    )?;
+
+    let mut owners = BTreeSet::new();
+    let mut expected = BTreeSet::new();
+    if !expected.insert((entry_source.clone(), blocks[0].clone())) {
+        return Ok(false);
+    }
+    for (index, block) in blocks.iter().enumerate() {
+        poll(budget, at)?;
+        if !owners.insert(block.clone()) {
+            return Ok(false);
+        }
+        let target = blocks.get(index + 1).unwrap_or(exit_target);
+        if !expected.insert((block.clone(), target.clone())) {
+            return Ok(false);
+        }
+    }
+    if owners.contains(entry_source) || owners.contains(exit_target) {
+        return Ok(false);
+    }
+
+    for (kind, from, to) in edges {
+        poll(budget, at)?;
+        if !owners.contains(&from) && !owners.contains(&to) {
+            continue;
+        }
+        if kind != CanonicalEdgeKind::Normal || !expected.remove(&(from, to)) {
+            return Ok(false);
+        }
+    }
+    Ok(expected.is_empty())
+}
+
 fn exact_normal_predecessors<T: Ord>(actual: &[(CanonicalEdgeKind, T)], expected: &[T]) -> bool {
     actual.len() == expected.len()
         && expected.iter().collect::<BTreeSet<_>>().len() == expected.len()
@@ -13131,6 +13376,163 @@ mod tests {
             unique_first_common(&incomparable, |node| BTreeSet::from([node])),
             None
         );
+    }
+
+    #[test]
+    fn prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners() {
+        use jarde_reader::budget::Limits;
+
+        let test_budget = || {
+            Budget::new(Limits {
+                analysis_steps: 16,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            })
+        };
+        let chain = [2_u32, 3];
+        let valid = vec![
+            (CanonicalEdgeKind::Normal, 1, 2),
+            (CanonicalEdgeKind::Normal, 2, 3),
+            (CanonicalEdgeKind::Normal, 3, 4),
+            (CanonicalEdgeKind::Normal, 40, 41),
+        ];
+        assert!(
+            exact_straight_chain_edges(&chain, &1, &4, valid, &mut test_budget(), Some(2),)
+                .unwrap()
+        );
+
+        assert!(matches!(
+            exact_straight_chain_edges(
+                &chain,
+                &1,
+                &4,
+                vec![
+                    (CanonicalEdgeKind::Normal, 1, 2),
+                    (CanonicalEdgeKind::Normal, 2, 3),
+                    (CanonicalEdgeKind::Normal, 3, 4)
+                ],
+                &mut Budget::new(Limits {
+                    analysis_steps: 0,
+                    elapsed_millis: u64::MAX,
+                    ..Limits::default()
+                }),
+                Some(2),
+            ),
+            Err(StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                ..
+            })
+        ));
+        for edges in [
+            vec![
+                (CanonicalEdgeKind::Normal, 1, 2),
+                (CanonicalEdgeKind::Normal, 9, 2),
+                (CanonicalEdgeKind::Normal, 2, 3),
+                (CanonicalEdgeKind::Normal, 3, 4),
+            ],
+            vec![
+                (CanonicalEdgeKind::Normal, 1, 2),
+                (CanonicalEdgeKind::Normal, 2, 3),
+                (CanonicalEdgeKind::Normal, 3, 4),
+                (CanonicalEdgeKind::Normal, 3, 8),
+            ],
+            vec![
+                (CanonicalEdgeKind::Normal, 1, 2),
+                (CanonicalEdgeKind::Exception { handler_ordinal: 0 }, 2, 3),
+                (CanonicalEdgeKind::Normal, 3, 4),
+            ],
+        ] {
+            assert!(
+                !exact_straight_chain_edges(&chain, &1, &4, edges, &mut test_budget(), Some(2),)
+                    .unwrap()
+            );
+        }
+        assert!(
+            !exact_straight_chain_edges(
+                &[2_u32, 2],
+                &1,
+                &4,
+                vec![
+                    (CanonicalEdgeKind::Normal, 1, 2),
+                    (CanonicalEdgeKind::Normal, 2, 4),
+                ],
+                &mut test_budget(),
+                Some(2),
+            )
+            .unwrap()
+        );
+        assert!(!continuation_claims_are_exact(
+            &[2_u32, 3],
+            &BTreeSet::from([2, 3, 5]),
+        ));
+        assert!(!continuation_claims_are_exact(
+            &[2_u32, 2],
+            &BTreeSet::from([2]),
+        ));
+    }
+
+    #[test]
+    fn prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope() {
+        let header = 7;
+        let empty = BTreeSet::new();
+        assert!(prefixed_loop_header_is_fresh(
+            header,
+            &Frame::default(),
+            &empty
+        ));
+        assert!(!prefixed_loop_header_is_fresh(
+            header,
+            &Frame::default(),
+            &BTreeSet::from([header]),
+        ));
+
+        let outer_header = Frame {
+            loop_targets: vec![LoopTarget {
+                header,
+                exits: BTreeSet::new(),
+                break_target: None,
+                continue_target: 2,
+            }],
+            ..Frame::default()
+        };
+        assert!(!prefixed_loop_header_is_fresh(
+            header,
+            &outer_header,
+            &empty
+        ));
+        let outer_continue = Frame {
+            loop_targets: vec![LoopTarget {
+                header: 2,
+                exits: BTreeSet::new(),
+                break_target: None,
+                continue_target: header,
+            }],
+            ..Frame::default()
+        };
+        assert!(!prefixed_loop_header_is_fresh(
+            header,
+            &outer_continue,
+            &empty
+        ));
+
+        let parent_scope = Frame {
+            scope: Some(BTreeSet::from([3, 5])),
+            ..Frame::default()
+        };
+        assert!(!prefixed_loop_header_is_fresh(
+            header,
+            &parent_scope,
+            &empty
+        ));
+        let parent_boundary = Frame {
+            boundary: Some(header),
+            ..Frame::default()
+        };
+        assert!(!prefixed_loop_header_is_fresh(
+            header,
+            &parent_boundary,
+            &empty
+        ));
     }
 
     #[test]

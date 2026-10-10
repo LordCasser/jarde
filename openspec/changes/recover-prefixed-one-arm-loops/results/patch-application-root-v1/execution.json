@@ -1,0 +1,87 @@
+{
+  "source_base": "404b422e141e200f0eea000f64937becedbad664",
+  "started_at": "2026-10-10T11:01:34.901144+00:00",
+  "patch": {
+    "path": "openspec/changes/recover-prefixed-one-arm-loops/results/prefixed-loop-private-luna-v1.patch",
+    "sha256": "c3113241867fa00deafedd12fe21efd5588c3b48de2c89198ea5eac9f742b5c3"
+  },
+  "product_pins_before": {
+    "crates/jarde-java/src/region.rs": "27ebf41fdd43a4c071cebfb4de824e3dd8528f9884139ed628c158f9416f3492",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "54ea3f311408b453870dc5ef176d2606a2749b6c5eb138d15547bdb23eba9b79"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prefixed-loop-private-luna-v1.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prefixed-loop-private-luna-v1.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 90,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T11:01:34.934958+00:00",
+      "duration_seconds": 4.042811040999368,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 12131540992,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/patch-application-root-v1/90.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/patch-application-root-v1/90.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "root_static_test_fact_correction": "BCI32 aload is inside canonical block22; it is not a new block leader",
+  "product_pins_after": {
+    "crates/jarde-java/src/region.rs": "26d163288e5bdb570d5fe0c05473f032d404943991eacaa90b3f69d9e36dc409",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "449f0fe32e42ca1537de4c76d23acebcce9f7abc5488d0cada5f5a02487db269"
+  },
+  "status": "applied-for-validation"
+}

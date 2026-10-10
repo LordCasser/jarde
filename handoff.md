@@ -16,9 +16,9 @@
 
 **最新用户授权：** 机器余量下限20GiB改为5GiB，保留本仓target1GiB上限、实时中止与完成清理。后文20GiB均为历史记录。
 
-**当前下一步（10:35 UTC）：** 普通循环来源片 `preserve-proved-loop-latch-origins` 已实际实现并通过完整12命令/552测试及fresh双JDK对照，tasks **5/6**，剩精确产品自己的CI与交付。root独立verifier-v5接受Plain31命令/111files（仅noPrefix@14来源增加，四整类仍失败/零runtime）和CF-07 29命令/119files（原2/JADX4/Jarde4完整类运行全部一致，andWhile@15、counted@30来源增加）。准确入口 `openspec/changes/preserve-proved-loop-latch-origins/verification-root.md`，CLI/meta/source pins在results/candidate-cli-v1.json；旧失败版本均保留。
+**上一片（11:34 UTC）：** 普通循环来源片 `preserve-proved-loop-latch-origins` 本地12命令/552测试、fresh双JDK和精确404b自身CI38045578457已由root独立验收。CI4jobs/52steps、双seed各3379/0/97和354records成功；接受文件results/ci-product-v1/acceptance-loop-latch-v3.json。tasks5/6只剩主线检查点交付，单臂恢复仍是另一片，不冒增整单元完成数。
 
-**再下一片：** `recover-prefixed-one-arm-loops` 仍1/7；只准备了method-aware probe与独立guarded runner，未应用或构建。先动态核prefix/header/Frame/join实际停止点、撤销probe，再由Luna沿现有region_at和Frame提交局部续接private patch。loop来源已接受不能代替单臂完整类恢复，71/612和整单元完成数不变。
+**下一片（11:30 UTC）：** `recover-prefixed-one-arm-loops` 当前4/7；root实际12命令556测试通过并独立重核24raw/50pins，已冻结fresh CLI。修复loopAndTail真实Frame完成契约错误，永久普通三种极性/尾部及iterator原形通过。完整类v2在第17条前因5GiB余量守卫中止，v3已准备、未完整类接受；机器耗盘来自本仓以外，已cargo clean本仓669.1MiB，target不存在。准确入口为该change/verification-root.md；71/612与EM23整单元计数不变。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 
@@ -46,7 +46,7 @@
 
 只有main；14辅助worktree均detached、干净、main祖先、无target/剩余待合入，保护副本保留，无分支占用。root专有Git/Cargo/rustfmt/JDK/JADX/CLI串行执行，Luna只读或private patch/script。
 
-持续20GiB机器余量/1GiB本仓target守卫，不降低线强跑；截至03:58 UTCtarget峰值904167534 bytes，04:00 UTC已仅cargo clean本仓target，删除4989 files/864.1MiB，target不存在；准确记录results/root-clean-v1。其它进程实时耗盘，Rust前需重新核资源。04:13 UTC再次仅清本仓target，删除697 files/383.8MiB，target不存在；int results/root-clean-v1保留实际记录，可用20999315456 bytes，仍低于20GiB，当时继续读审而未强跑编译；04:16后机器空间恢复，04:24实际Facade8/8、04:25启动guarded validation/build，持续保持双守卫。保留所有源/class/raw、canonical与冻结CLI。实例CLI /private/tmp/jarde-instance-array-cli-v1（SHA5abb4bc...）；静态CLI /private/tmp/jarde-nonfinal-static-cli-v1（SHAdda51122...）；旧returnedCLI /private/tmp/jarde-returned-array-cli-v2（SHA71f0a864...），完整hash以metadata为准。
+当前按用户明确授权执行5GiB机器余量/1GiB本仓target守卫；以下20GiB为旧历史守卫。截至03:58 UTCtarget峰值904167534 bytes，04:00 UTC已仅cargo clean本仓target，删除4989 files/864.1MiB，target不存在；准确记录results/root-clean-v1。其它进程实时耗盘，Rust前需重新核资源。04:13 UTC再次仅清本仓target，删除697 files/383.8MiB，target不存在；int results/root-clean-v1保留实际记录，可用20999315456 bytes，仍低于20GiB，当时继续读审而未强跑编译；04:16后机器空间恢复，04:24实际Facade8/8、04:25启动guarded validation/build，持续保持双守卫。保留所有源/class/raw、canonical与冻结CLI。实例CLI /private/tmp/jarde-instance-array-cli-v1（SHA5abb4bc...）；静态CLI /private/tmp/jarde-nonfinal-static-cli-v1（SHAdda51122...）；旧returnedCLI /private/tmp/jarde-returned-array-cli-v2（SHA71f0a864...），完整hash以metadata为准。
 
 独立债务：Arithmetic producer iadd@5来源缺失、flat Signature generic arity、receiver-tail预算、CF16默认小栈、handler两ctor双JDK goto@19来源缺口。只记录拆分，不混入当前实现。
 

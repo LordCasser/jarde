@@ -1,6 +1,6 @@
 # 普通 while 隐式回跳来源：root 验收入口
 
-当前 tasks **5/6**。局部来源实现、永久正反例和 fresh CLI 对照已由 root 实际验收；剩余 3.2 为提交推送后的精确产品 CI 与主线交付。单臂续接仍是另一项工作，不计 CF-07/EM-23 整单元完成。
+当前 tasks **5/6**。局部来源实现、永久正反例、fresh CLI 对照与精确产品CI均由root实际独立验收；剩余3.2的主线检查点交付。单臂续接仍是另一项工作，不计 CF-07/EM-23 整单元完成。
 
 2026-10-10 10:31 UTC，root 完整执行 `results/run-validation-build-root-v9.py` 的12条命令，fmt、CI同范围Clippy及552 passed/0 failed/1 ignored全部通过。根 arm-join 4项、double-jumps 7项、Boolean-loop 3项均实跑，gateway 5项含 noPrefix 来源和预算/取消。源前后49个pins恒同，target峰值760681447 bytes；机器5GiB/target1GiB守卫全程未触发。fresh CLI `/private/tmp/jarde-loop-latch-cli-v1` SHA-256 `1728ef3fa1a3a9e8ed56d6f4384a1c54c3e63400e6495c750a0bd139d7623b5c`，metadata SHA `6b0c59d452d8d5a1fb157c60e81a6602f9cc78c26479f2638e98bdfda54df9e3`，准确身份以 `results/candidate-cli-v1.json` 为准。
 
@@ -11,6 +11,10 @@
 资源下限由用户明确授权20→5GiB，实时中止与完成清理保留。v4/v6真实因机器余量不足中止；v5因测试facts错误失败；v7摘要tuple/list假阴性及v8清理后空target错误均保存，未冒称接受。v9从空target重新完整执行，没有借旧成功行补齐结果。v4独立verifier的BLAKE3 callable/module类型错误raw保留，v5仅修调用形式后重新完整验收。CF首次root调用缺SHA参数在任何重放前拒绝，修正调用后实际完成。所有历史版本和原始证据保留。
 
 10:37 UTC root仅cargo clean本仓，释放725.4MiB/3436files，target不存在，冻结CLI保留；记录results/root-clean-five-gib-v2。OpenSpec全量strict实际337 passed/0 failed，git diff --check通过。辅助14工作树仍detached，无分支占用，受应用固定保护的副本保留。
+
+11:34 UTC root独立CI verifier-v3退出0，准确接受404b422e141e200f0eea000f64937becedbad664自己的CI38045578457：4jobs/52steps，双固定seed各3379 passed/0 failed/97 ignored、354记录；每seed核2个来源测试与11个旧整数回归，Temurin25完整类/MSRV/fuzz/supply全部成功。API、完整GH stable/supply日志、raw/hash与acceptance-loop-latch-v3.json均在results/ci-product-v1。验收时root逐字恢复两文件到404b Git blobs、重新核49live pins；完成后逐字恢复下一片candidate并重新核50pins，执行记录verification-execution-root-v4。
+
+CI verifier-v1实际因stdout/stderr交错把interface summary截断而失败；v2只局部以stdout running marker至首summary并核四个exact test names，旧SHA-pinned helper文件未改。首次v2调用argv索引错误及随后gateway路径采用仓库路径而非Cargo实际tests/路径的失败均保留。root v3只修两处日志label后重新完整验收；总计数、精确产品blob、工具及每seed门禁未豁免。
 
 ## 历史分析和准备（以下状态由上面的实际验收结果更新）
 

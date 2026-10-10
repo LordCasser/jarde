@@ -1,0 +1,96 @@
+{
+  "schema": "recover-prefixed-one-arm-loops-validation-acceptance-root-v1",
+  "status": "accepted",
+  "execution": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/validation-build-root-v5/execution.json",
+  "execution_sha256": "3a05abafc302794861b5d0318cfe6dfe6fdca52cf62a31530cfcd581b4f99ec2",
+  "acceptance_runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/verify-validation-build-root-v1.py",
+    "sha256": "ed1ba4c46a49d02ebfa48ee1a666ad6558230a66bfeed9ae483a2f52fe9eddd6"
+  },
+  "source_commit_base": "404b422e141e200f0eea000f64937becedbad664",
+  "pin_counts": {
+    "product": 17,
+    "tests": 8,
+    "canonical": 25,
+    "total": 50
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-prefixed-loop-cli-v1",
+    "sha256": "472c5f957470671252649da688287895596bb8008342fb5d35e7e51d40d1e18a",
+    "mode": "0o555"
+  },
+  "metadata_sha256": "fe55d6aa49d1fc7bbe2b56f23e92df998acc6bee69d5f9ba07ccc23eda58d555",
+  "commands": 12,
+  "raw_streams_recomputed": 24,
+  "test_results_recomputed_from_raw_stdout": {
+    "2": [
+      [
+        335,
+        0,
+        0
+      ]
+    ],
+    "3": [
+      [
+        7,
+        0,
+        0
+      ]
+    ],
+    "4": [
+      [
+        4,
+        0,
+        0
+      ]
+    ],
+    "5": [
+      [
+        7,
+        0,
+        0
+      ]
+    ],
+    "6": [
+      [
+        5,
+        0,
+        0
+      ]
+    ],
+    "7": [
+      [
+        12,
+        0,
+        0
+      ]
+    ],
+    "8": [
+      [
+        178,
+        0,
+        0
+      ]
+    ],
+    "9": [
+      [
+        5,
+        0,
+        1
+      ]
+    ],
+    "10": [
+      [
+        3,
+        0,
+        0
+      ]
+    ]
+  },
+  "new_tests_present": [
+    "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+    "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope",
+    "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+    "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source"
+  ]
+}

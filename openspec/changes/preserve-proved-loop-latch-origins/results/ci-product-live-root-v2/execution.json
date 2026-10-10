@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-10T10:39:20.981179+00:00",
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "38045578457",
+    "--json",
+    "headSha,status,conclusion,jobs"
+  ],
+  "exit_code": 0
+}

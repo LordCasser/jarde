@@ -1,0 +1,57 @@
+{
+  "schema": "one-arm-diagnostic-root-acceptance-v1",
+  "status": "accepted-diagnostic-only",
+  "utc": "2026-10-10T10:43:14.014110+00:00",
+  "source_head": "404b422e141e200f0eea000f64937becedbad664",
+  "commands": 5,
+  "same_default_probe_method_text_and_source_map": true,
+  "product_sources_restored": true,
+  "latch_product_all_49_pins_retained": true,
+  "stopping_points": [
+    {
+      "physical_method": "VariablePostfixLoop/countEmpty(Ljava/util/List;)I",
+      "branch_transfer_bci": 3,
+      "prefix_blocks": [
+        6
+      ],
+      "next_loop_header_bci": 13,
+      "frame_boundary_bci": 45,
+      "frame_scope": null,
+      "frame_own_loop": null
+    },
+    {
+      "physical_method": "PlainOneArmLoops/prefixWhile(ZI)I",
+      "branch_transfer_bci": 3,
+      "prefix_blocks": [
+        6
+      ],
+      "next_loop_header_bci": 8,
+      "frame_boundary_bci": 23,
+      "frame_scope": null,
+      "frame_own_loop": null
+    },
+    {
+      "physical_method": "PlainOneArmLoops/loopAndTail(ZI)I",
+      "branch_transfer_bci": 3,
+      "prefix_blocks": [
+        6
+      ],
+      "next_loop_header_bci": 8,
+      "frame_boundary_bci": 26,
+      "frame_scope": null,
+      "frame_own_loop": null
+    },
+    {
+      "physical_method": "PlainOneArmLoops/takenArm(ZI)I",
+      "branch_transfer_bci": 3,
+      "prefix_blocks": [
+        6
+      ],
+      "next_loop_header_bci": 8,
+      "frame_boundary_bci": 23,
+      "frame_scope": null,
+      "frame_own_loop": null
+    }
+  ],
+  "claim": "Only the prefix/header return and one-arm caller stopping point have been observed; the continuation loop/tail implementation and whole-class success remain untested."
+}

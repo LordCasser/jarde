@@ -1,0 +1,414 @@
+{
+  "schema": "recover-prefixed-one-arm-loops-arm-loop-diagnostic-luna-v1",
+  "status": "diagnostic-captured",
+  "validation_runner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/run-arm-loop-diagnostic-luna-v1.py",
+  "preflight": {
+    "patch": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/arm-loop-diagnostic-luna-v1.patch",
+      "sha256": "6cc3c5d1ec610c0c6c493ee685d401e5ca5e34f2ecba41439cca9788def48812",
+      "marker": "JRE_ARM_LOOP_PROBE"
+    },
+    "baseline_classes": [
+      {
+        "manifest": {
+          "path": "openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/manifest.json",
+          "sha256": "e8aec7964455ab84ffb12d984140e18bffe94e5cc0cf7f1eb5de06c21cc23a2d"
+        },
+        "schema": "em23-variable-postfix-loop-baseline-luna-v1",
+        "class": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+          "name": "VariablePostfixLoop",
+          "bytes": 537,
+          "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b"
+        }
+      },
+      {
+        "manifest": {
+          "path": "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/manifest.json",
+          "sha256": "6dfccb5ceeb854edf41b90e4136c23ce503699bb83bb17767444cd6fd6cfc18d"
+        },
+        "schema": "em23-one-arm-loop-controls-baseline-luna-v1",
+        "class": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+          "name": "PlainOneArmLoops",
+          "bytes": 468,
+          "sha256": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989"
+        }
+      }
+    ],
+    "stripped_environment_keys": [],
+    "source_pins_before": {
+      "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+      "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+      "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+      "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+      "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+      "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+      "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+      "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+      "crates/jarde-java/src/region.rs": "749251c3bd138e2273dd4c45dbe66f865960922f4052dbb1b26d913cbe950f48",
+      "crates/jarde-java/src/report.rs": "9fbe4a46908294bf32b0416071d5bd35bb0c2ad76cddbb0edf660f8482bb69c8",
+      "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+      "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+      "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+      "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+      "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+      "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+    },
+    "source_pins_after": {
+      "Cargo.lock": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "Cargo.toml": "20eb9b1ee52f7229b1e6a8ceb0e4db39b7e888987bd157cc503cd02f3d9502e1",
+      "crates/jarde-cli/Cargo.toml": "b85621d77159a5106927808d76872812d22898e018749d49d606e2ecfe3d85c8",
+      "crates/jarde-cli/src/main.rs": "e33bbb15fe4154780a868f092e207cd14d3604da459a54fdfb0407afa2c19e63",
+      "crates/jarde-cli/src/task.rs": "3e60775444304a0ecc870b269cc2afa0b7a1bacaf18c16e1fef6fe4e86e9061e",
+      "crates/jarde-java/Cargo.toml": "b0be1ab50fb44513523937d3274f3efd322b93502e0de99d958397442b9c14c2",
+      "crates/jarde-java/src/build.rs": "e9747325c0575e086b1a5a2426a465a56e6a376f718466969e9828e00251622b",
+      "crates/jarde-java/src/emit.rs": "bdd334bc93fdf23d13f92b727df34e8ec3633b6f6ac331c5ace11874e5c967a3",
+      "crates/jarde-java/src/lib.rs": "c57dcfbfed1a91593c580106595c4dcbb1fb9a59e040e81f5f4fb6ed65c029a8",
+      "crates/jarde-java/src/region.rs": "749251c3bd138e2273dd4c45dbe66f865960922f4052dbb1b26d913cbe950f48",
+      "crates/jarde-java/src/report.rs": "9fbe4a46908294bf32b0416071d5bd35bb0c2ad76cddbb0edf660f8482bb69c8",
+      "crates/jarde-jvm/Cargo.toml": "b56158e6502d90b67fd7fe3b88389802eb4d9bcf26c2df8cf8a849a567f99378",
+      "crates/jarde-query/Cargo.toml": "2fdd8b0d68dd5237433ac49ca13d62f60bd125451258b3b3bb0cf09c5c41609b",
+      "crates/jarde-reader/Cargo.toml": "39602f47de656cb69761c6128ec7ed17a8d587b04c01c0b27662fa995e2d8257",
+      "src/class_source.rs": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f",
+      "src/facade.rs": "a19e842d5cb1b46d83f6d1963b37ee1bb82615e5c6357224565609e4bd8333f3",
+      "src/lib.rs": "11e6e9f4eb274bd794e23e85bc36b28e953e1888de05229802166f8586df4734"
+    },
+    "guards": {
+      "minimum_free_bytes": 5368709120,
+      "maximum_target_bytes": 1073741824
+    },
+    "jdk23": {
+      "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tools": {
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      }
+    }
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--locked"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T10:39:01.045578+00:00",
+      "duration_seconds": 40.52131112499046,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 356496381,
+      "free_bytes_after": 12074323968,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/build/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/build/0.stderr.raw",
+          "bytes": 2768,
+          "sha256": "d8ec98549a28472993954e04453a12f7d530eb661d0c3a9690ad23af24e6ba1a"
+        }
+      }
+    },
+    {
+      "index": 101,
+      "argv": [
+        "/private/tmp/jarde-arm-loop-probe-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "--class",
+        "VariablePostfixLoop",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T10:39:41.642834+00:00",
+      "duration_seconds": 1.0230175409815274,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 356496381,
+      "free_bytes_after": 12014456832,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/101.stdout.raw",
+          "bytes": 27255,
+          "sha256": "23a49d0c754d594fcf1fd963bd60a4925d0f2239085b96d34795a70ea1f55b25"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/101.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "input_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "name": "VariablePostfixLoop",
+        "bytes": 537,
+        "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b"
+      },
+      "diagnostic_mode": "default",
+      "extra_env_overrides": {}
+    },
+    {
+      "index": 102,
+      "argv": [
+        "/private/tmp/jarde-arm-loop-probe-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "--class",
+        "VariablePostfixLoop",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T10:39:42.670885+00:00",
+      "duration_seconds": 1.0225870829890482,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 356496381,
+      "free_bytes_after": 12014460928,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/102.stdout.raw",
+          "bytes": 27255,
+          "sha256": "92bb43126383ded75a0c0e437d216e988433d9be26b76e4041cb080b23515987"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/102.stderr.raw",
+          "bytes": 812,
+          "sha256": "e3984ebf905dd4fa0535ab431e8f08cf6e5997aed1891d5773965df3d573a680"
+        }
+      },
+      "input_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
+        "name": "VariablePostfixLoop",
+        "bytes": 537,
+        "sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b"
+      },
+      "diagnostic_mode": "JRE_ARM_LOOP_PROBE=1",
+      "extra_env_overrides": {
+        "JRE_ARM_LOOP_PROBE": "1"
+      }
+    },
+    {
+      "index": 103,
+      "argv": [
+        "/private/tmp/jarde-arm-loop-probe-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+        "--class",
+        "PlainOneArmLoops",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T10:39:43.698140+00:00",
+      "duration_seconds": 1.0224697919911705,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 356496381,
+      "free_bytes_after": 12014190592,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/103.stdout.raw",
+          "bytes": 63688,
+          "sha256": "cb1eff58ebd83c8c760ab394dd3c793f3fc638843fd052bb00eae95f3108a2f3"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/103.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "input_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+        "name": "PlainOneArmLoops",
+        "bytes": 468,
+        "sha256": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989"
+      },
+      "diagnostic_mode": "default",
+      "extra_env_overrides": {}
+    },
+    {
+      "index": 104,
+      "argv": [
+        "/private/tmp/jarde-arm-loop-probe-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+        "--class",
+        "PlainOneArmLoops",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T10:39:44.725416+00:00",
+      "duration_seconds": 1.0147771670017391,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 356496381,
+      "free_bytes_after": 12014034944,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/104.stdout.raw",
+          "bytes": 63688,
+          "sha256": "d7286f3f5429615153365c86dd69488e1f90c19fb9c18591fff24d13c08393a5"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/arm-loop-diagnostic-luna-v1/commands/104.stderr.raw",
+          "bytes": 3246,
+          "sha256": "d69fb03951c4afcab11420347928b35538e0c12e71730637e0082635e1d19f98"
+        }
+      },
+      "input_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/baseline-root-v1/cases/javac23-original/classes/PlainOneArmLoops.class",
+        "name": "PlainOneArmLoops",
+        "bytes": 468,
+        "sha256": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989"
+      },
+      "diagnostic_mode": "JRE_ARM_LOOP_PROBE=1",
+      "extra_env_overrides": {
+        "JRE_ARM_LOOP_PROBE": "1"
+      }
+    }
+  ],
+  "frozen_cli": {
+    "path": "/private/tmp/jarde-arm-loop-probe-cli-v1",
+    "sha256": "5ef3fd07b554448f39f6339e516f302aac9c997b65d09759ed0045af2b888cd5",
+    "bytes": 59818144,
+    "mode": "0555"
+  }
+}

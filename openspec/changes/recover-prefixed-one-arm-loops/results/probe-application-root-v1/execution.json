@@ -1,0 +1,107 @@
+{
+  "schema": "one-arm-probe-application-root-v1",
+  "status": "diagnostic-captured-probe-restored",
+  "started_at": "2026-10-10T10:38:57.616176+00:00",
+  "finished_at": "2026-10-10T10:39:45.754762+00:00",
+  "source_head": "404b422e141e200f0eea000f64937becedbad664",
+  "patch_sha256": "6cc3c5d1ec610c0c6c493ee685d401e5ca5e34f2ecba41439cca9788def48812",
+  "commands": [
+    {
+      "label": "apply-check",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/arm-loop-diagnostic-luna-v1.patch"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/apply-check.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/apply-check.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "apply",
+      "argv": [
+        "git",
+        "apply",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/arm-loop-diagnostic-luna-v1.patch"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/apply.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/apply.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/format.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/format.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "diagnostic",
+      "argv": [
+        "python3",
+        "-B",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/run-arm-loop-diagnostic-luna-v1.py"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/diagnostic.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/recover-prefixed-one-arm-loops/results/probe-application-root-v1/diagnostic.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "restored_sources": {
+    "crates/jarde-java/src/report.rs": {
+      "before_sha256": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+      "after_sha256": "32eaf279ab2b8cfe648a7f61e3ce8a7a59351d1994184dff5a4a31aaf5a3dee5",
+      "equal": true
+    },
+    "crates/jarde-java/src/region.rs": {
+      "before_sha256": "27ebf41fdd43a4c071cebfb4de824e3dd8528f9884139ed628c158f9416f3492",
+      "after_sha256": "27ebf41fdd43a4c071cebfb4de824e3dd8528f9884139ed628c158f9416f3492",
+      "equal": true
+    }
+  }
+}

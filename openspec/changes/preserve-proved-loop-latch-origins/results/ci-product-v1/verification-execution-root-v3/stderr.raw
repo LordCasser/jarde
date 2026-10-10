@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v2.py", line 453, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v2.py", line 418, in main
+    workspace = verify_loop_workspace_tests(helper, product, integer_verifier)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v2.py", line 359, in verify_loop_workspace_tests
+    block, counts = helper.binary_group(lines, "crates/jarde-java/tests/p3_loop_exit_gateways.rs", 5)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-ci-product-luna-v2.py", line 98, in binary_group
+    return original_binary_group(lines, binary, expected_count, expected_ignored)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py", line 772, in binary_group
+    assert len(starts) == 1, (binary, len(starts))
+           ^^^^^^^^^^^^^^^^
+AssertionError: ('crates/jarde-java/tests/p3_loop_exit_gateways.rs', 0)

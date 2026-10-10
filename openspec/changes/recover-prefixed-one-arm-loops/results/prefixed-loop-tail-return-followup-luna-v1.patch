@@ -1,0 +1,11 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -4260,7 +4260,7 @@
+                 return Ok(false);
+             };
+             if tail_blocks.is_empty()
+-                || tail_next.as_ref() != Some(&boundary)
++                || tail_next.is_some()
+                 || !self.closed_straight_chain(
+                     tail_blocks,
+                     &exit_source,

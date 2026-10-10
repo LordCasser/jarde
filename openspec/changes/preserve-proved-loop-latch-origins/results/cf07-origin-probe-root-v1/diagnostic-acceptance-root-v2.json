@@ -1,0 +1,72 @@
+{
+  "schema": "cf07-remaining-origin-diagnostic-acceptance-root-v2",
+  "status": "accepted-diagnostic-only",
+  "execution_sha256": "a69dad8ac369bc64503108f1caa439476a4db56c8d07cd72a7639d10139d8486",
+  "capture_status_preserved": "failed",
+  "raw_stdout_equal": false,
+  "only_elapsed_usage_differs": true,
+  "elapsed_usage_differences": [
+    {
+      "path": "/execution/usage/elapsed_millis",
+      "default": 10,
+      "probe": 5
+    },
+    {
+      "path": "/methods/0/outcome/analysis/execution/usage/elapsed_millis",
+      "default": 3,
+      "probe": 0
+    },
+    {
+      "path": "/methods/0/outcome/report/execution/usage/elapsed_millis",
+      "default": 6,
+      "probe": 1
+    },
+    {
+      "path": "/methods/1/outcome/analysis/execution/usage/elapsed_millis",
+      "default": 7,
+      "probe": 1
+    },
+    {
+      "path": "/methods/1/outcome/report/execution/usage/elapsed_millis",
+      "default": 8,
+      "probe": 2
+    },
+    {
+      "path": "/methods/2/outcome/analysis/execution/usage/elapsed_millis",
+      "default": 8,
+      "probe": 2
+    },
+    {
+      "path": "/methods/2/outcome/report/execution/usage/elapsed_millis",
+      "default": 9,
+      "probe": 3
+    },
+    {
+      "path": "/methods/3/outcome/analysis/execution/usage/elapsed_millis",
+      "default": 10,
+      "probe": 4
+    },
+    {
+      "path": "/methods/3/outcome/report/execution/usage/elapsed_millis",
+      "default": 10,
+      "probe": 5
+    },
+    {
+      "path": "/usage/elapsed_millis",
+      "default": 10,
+      "probe": 5
+    }
+  ],
+  "method_facts": {
+    "cf07/LoopCases/counted(II)I": {
+      "loop_header": 6,
+      "raw_loop_return": "JRE_ARM_LOOP_PROBE stage=loop-region-return header=6 regions=[Loop { header: CanonicalBlockId { bci: 6, path: [] }, tests: [(CanonicalBlockId { bci: 6, path: [] }, 8, FallThrough)], test_operator: None, form: While, for_header: None, body: [If { prefix: [], branch: CanonicalBlockId { bci: 11, path: [] }, branch_bci: 14, then_arm: Straight { blocks: [CanonicalBlockId { bci: 17, path: [] }] }, else_arm: Straight { blocks: [CanonicalBlockId { bci: 23, path: [] }] }, join: Some(CanonicalBlockId { bci: 27, path: [] }) }, Straight { blocks: [CanonicalBlockId { bci: 27, path: [] }] }], exit: Some(CanonicalBlockId { bci: 33, path: [] }), gateway_origins: [30] }] region_bcis=[[6, 11, 17, 23, 27]] next=Some(CanonicalBlockId { bci: 33, path: [] }) frame_boundary=None frame_scope=None frame_own_loop=None loop_targets=[]"
+    },
+    "cf07/LoopCases/lastIndexOf([IIII)I": {
+      "loop_header": 5,
+      "raw_loop_return": "JRE_ARM_LOOP_PROBE stage=loop-region-return header=5 regions=[Loop { header: CanonicalBlockId { bci: 5, path: [] }, tests: [(CanonicalBlockId { bci: 5, path: [] }, 8, FallThrough)], test_operator: None, form: While, for_header: None, body: [If { prefix: [], branch: CanonicalBlockId { bci: 11, path: [] }, branch_bci: 16, then_arm: Straight { blocks: [CanonicalBlockId { bci: 19, path: [] }] }, else_arm: Straight { blocks: [CanonicalBlockId { bci: 22, path: [] }] }, join: None }], exit: Some(CanonicalBlockId { bci: 28, path: [] }), gateway_origins: [] }] region_bcis=[[5, 11, 19, 22]] next=Some(CanonicalBlockId { bci: 28, path: [] }) frame_boundary=None frame_scope=None frame_own_loop=None loop_targets=[]"
+    }
+  },
+  "product_pins_current_equal": true,
+  "scope": "Recorded Region trees and unchanged non-timing class-source JSON; no new syntax or complete source-map acceptance"
+}

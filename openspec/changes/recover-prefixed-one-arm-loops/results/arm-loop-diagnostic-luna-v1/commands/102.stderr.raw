@@ -1,0 +1,6 @@
+JRE_ARM_LOOP_PROBE method=VariablePostfixLoop/<init>()V stage=recover-begin
+JRE_ARM_LOOP_PROBE method=VariablePostfixLoop/<init>()V stage=recover-end outcome=ok
+JRE_ARM_LOOP_PROBE method=VariablePostfixLoop/countEmpty(Ljava/util/List;)I stage=recover-begin
+JRE_ARM_LOOP_PROBE stage=loop-header-prefix-return header=13 prefix=[6] next=13 frame_boundary=Some(45) frame_scope=None frame_own_loop=None loop_targets=[]
+JRE_ARM_LOOP_PROBE stage=one-arm-return branch=3 start=6 join=Some(45) regions=[Straight { blocks: [CanonicalBlockId { bci: 6, path: [] }] }] region_bcis=[[6]] next=Some(CanonicalBlockId { bci: 13, path: [] }) frame_boundary=Some(45) frame_scope=None frame_own_loop=None frame_loop_targets=[]
+JRE_ARM_LOOP_PROBE method=VariablePostfixLoop/countEmpty(Ljava/util/List;)I stage=recover-end outcome=ok

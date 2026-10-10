@@ -1,0 +1,63 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -13250,7 +13250,7 @@
+         && !frame
+             .loop_targets
+             .iter()
+-            .any(|target| target.continue_target == header)
++            .any(|target| target.header == header || target.continue_target == header)
+ }
+ 
+ fn exact_straight_chain_edges<T, I>(
+@@ -13455,21 +13455,37 @@
+             &BTreeSet::from([header]),
+         ));
+ 
+-        let mut outer = Frame::default();
+-        outer.loop_targets.push(LoopTarget {
+-            header: 2,
+-            exits: BTreeSet::new(),
+-            break_target: None,
+-            continue_target: header,
+-        });
+-        assert!(!prefixed_loop_header_is_fresh(header, &outer, &empty));
+-
+-        let mut parent_scope = Frame::default();
+-        parent_scope.scope = Some(BTreeSet::from([3, 5]));
++        let outer_header = Frame {
++            loop_targets: vec![LoopTarget {
++                header,
++                exits: BTreeSet::new(),
++                break_target: None,
++                continue_target: 2,
++            }],
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(header, &outer_header, &empty));
++        let outer_continue = Frame {
++            loop_targets: vec![LoopTarget {
++                header: 2,
++                exits: BTreeSet::new(),
++                break_target: None,
++                continue_target: header,
++            }],
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(header, &outer_continue, &empty));
++
++        let parent_scope = Frame {
++            scope: Some(BTreeSet::from([3, 5])),
++            ..Frame::default()
++        };
+         assert!(!prefixed_loop_header_is_fresh(header, &parent_scope, &empty));
+-        parent_scope.scope = None;
+-        parent_scope.boundary = Some(header);
+-        assert!(!prefixed_loop_header_is_fresh(header, &parent_scope, &empty));
++        let parent_boundary = Frame {
++            boundary: Some(header),
++            ..Frame::default()
++        };
++        assert!(!prefixed_loop_header_is_fresh(header, &parent_boundary, &empty));
+     }
+ 
+     #[test]

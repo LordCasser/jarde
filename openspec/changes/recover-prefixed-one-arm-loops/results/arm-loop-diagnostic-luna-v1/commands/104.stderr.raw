@@ -1,0 +1,18 @@
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/<init>()V stage=recover-begin
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/<init>()V stage=recover-end outcome=ok
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/prefixWhile(ZI)I stage=recover-begin
+JRE_ARM_LOOP_PROBE stage=loop-header-prefix-return header=8 prefix=[6] next=8 frame_boundary=Some(23) frame_scope=None frame_own_loop=None loop_targets=[]
+JRE_ARM_LOOP_PROBE stage=one-arm-return branch=3 start=6 join=Some(23) regions=[Straight { blocks: [CanonicalBlockId { bci: 6, path: [] }] }] region_bcis=[[6]] next=Some(CanonicalBlockId { bci: 8, path: [] }) frame_boundary=Some(23) frame_scope=None frame_own_loop=None frame_loop_targets=[]
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/prefixWhile(ZI)I stage=recover-end outcome=ok
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/noPrefix(ZI)I stage=recover-begin
+JRE_ARM_LOOP_PROBE stage=loop-region-return header=6 regions=[Loop { header: CanonicalBlockId { bci: 6, path: [] }, tests: [(CanonicalBlockId { bci: 6, path: [] }, 8, FallThrough)], test_operator: None, form: While, for_header: None, body: [Straight { blocks: [CanonicalBlockId { bci: 11, path: [] }] }], exit: Some(CanonicalBlockId { bci: 17, path: [] }), gateway_origins: [14] }] region_bcis=[[6, 11]] next=Some(CanonicalBlockId { bci: 17, path: [] }) frame_boundary=Some(17) frame_scope=None frame_own_loop=None loop_targets=[]
+JRE_ARM_LOOP_PROBE stage=one-arm-return branch=3 start=6 join=Some(17) regions=[Loop { header: CanonicalBlockId { bci: 6, path: [] }, tests: [(CanonicalBlockId { bci: 6, path: [] }, 8, FallThrough)], test_operator: None, form: While, for_header: None, body: [Straight { blocks: [CanonicalBlockId { bci: 11, path: [] }] }], exit: Some(CanonicalBlockId { bci: 17, path: [] }), gateway_origins: [14] }] region_bcis=[[6, 11]] next=Some(CanonicalBlockId { bci: 17, path: [] }) frame_boundary=Some(17) frame_scope=None frame_own_loop=None frame_loop_targets=[]
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/noPrefix(ZI)I stage=recover-end outcome=ok
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/loopAndTail(ZI)I stage=recover-begin
+JRE_ARM_LOOP_PROBE stage=loop-header-prefix-return header=8 prefix=[6] next=8 frame_boundary=Some(26) frame_scope=None frame_own_loop=None loop_targets=[]
+JRE_ARM_LOOP_PROBE stage=one-arm-return branch=3 start=6 join=Some(26) regions=[Straight { blocks: [CanonicalBlockId { bci: 6, path: [] }] }] region_bcis=[[6]] next=Some(CanonicalBlockId { bci: 8, path: [] }) frame_boundary=Some(26) frame_scope=None frame_own_loop=None frame_loop_targets=[]
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/loopAndTail(ZI)I stage=recover-end outcome=ok
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/takenArm(ZI)I stage=recover-begin
+JRE_ARM_LOOP_PROBE stage=loop-header-prefix-return header=8 prefix=[6] next=8 frame_boundary=Some(23) frame_scope=None frame_own_loop=None loop_targets=[]
+JRE_ARM_LOOP_PROBE stage=one-arm-return branch=3 start=6 join=Some(23) regions=[Straight { blocks: [CanonicalBlockId { bci: 6, path: [] }] }] region_bcis=[[6]] next=Some(CanonicalBlockId { bci: 8, path: [] }) frame_boundary=Some(23) frame_scope=None frame_own_loop=None frame_loop_targets=[]
+JRE_ARM_LOOP_PROBE method=PlainOneArmLoops/takenArm(ZI)I stage=recover-end outcome=ok

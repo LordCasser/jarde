@@ -1,0 +1,114 @@
+{
+  "schema": "recover-prefixed-one-arm-loops-helper-schema-preflight-root-v1",
+  "tools_invoked": [],
+  "suites": {
+    "postfix": {
+      "collector_sha256": "2e35326ebe7b2b60bd47b60419375088bc36142e053ea41f086f3cf534743089",
+      "class_file_sha256": "9dfdf58eac27e0c66251d263097764ff3455f4aae20bafc7f2293bd6cbd6060b",
+      "method_parser_schema": "dict",
+      "parsed_method_count": 2,
+      "package_of_text_present": false,
+      "historical_method_outcomes": {
+        "('<init>', '()V')": {
+          "outcome": "recovered",
+          "quality": "structured"
+        },
+        "('countEmpty', '(Ljava/util/List;)I')": {
+          "outcome": "recovered",
+          "quality": "fallback"
+        }
+      },
+      "map_helper_result": "AssertionError at helper structured-report gate; historical outcomes={\"('<init>', '()V')\": {'outcome': 'recovered', 'quality': 'structured'}, \"('countEmpty', '(Ljava/util/List;)I')\": {'outcome': 'recovered', 'quality': 'fallback'}}",
+      "expected_fallback_rejection": true
+    },
+    "plain": {
+      "collector_sha256": "a1ed035789f96f2a945bc9e8499bb4d1d089639082ccb59ce61933c97660879c",
+      "class_file_sha256": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989",
+      "method_parser_schema": "dict",
+      "parsed_method_count": 2,
+      "package_of_text_present": true,
+      "map_helper_result_keys": [
+        "all_method_origins_bind_to_physical_bcis",
+        "all_method_source_map_categories_complete",
+        "all_methods_bci_coverage_complete",
+        "all_methods_structured_java_statements_without_fallback",
+        "all_profile_requires_complete_bci_coverage",
+        "input_owner_exact_b3_length_location_variant",
+        "method_presentation_facts",
+        "physical_field_count",
+        "physical_method_count",
+        "physical_methods",
+        "source_map_facts"
+      ],
+      "method_fact_keys": [
+        "access_flags",
+        "bci_coverage_complete",
+        "content",
+        "declaration",
+        "expected_javap_bcis",
+        "fallbacks",
+        "mapped_bcis",
+        "method",
+        "method_index",
+        "origin_bindings_and_bcis_valid",
+        "outcome_kind",
+        "quality",
+        "report_present",
+        "representation",
+        "source_map_origins",
+        "source_map_segments",
+        "source_map_state",
+        "text_sha256",
+        "validation_errors"
+      ],
+      "historical_map_facts": [
+        {
+          "method": [
+            "<init>",
+            "()V"
+          ],
+          "outcome_kind": "recovered",
+          "bci_coverage_complete": true,
+          "origins_valid": true
+        },
+        {
+          "method": [
+            "prefixWhile",
+            "(ZI)I"
+          ],
+          "outcome_kind": "recovered",
+          "bci_coverage_complete": true,
+          "origins_valid": true
+        },
+        {
+          "method": [
+            "noPrefix",
+            "(ZI)I"
+          ],
+          "outcome_kind": "recovered",
+          "bci_coverage_complete": false,
+          "origins_valid": true
+        },
+        {
+          "method": [
+            "loopAndTail",
+            "(ZI)I"
+          ],
+          "outcome_kind": "recovered",
+          "bci_coverage_complete": true,
+          "origins_valid": true
+        },
+        {
+          "method": [
+            "takenArm",
+            "(ZI)I"
+          ],
+          "outcome_kind": "recovered",
+          "bci_coverage_complete": true,
+          "origins_valid": true
+        }
+      ]
+    }
+  },
+  "blake3_boundary": "frozen source-map class digest is injected only to exercise pure helper schema because this Python runtime has no blake3 module"
+}

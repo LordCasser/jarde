@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prepare-candidate-root-v2.py", line 218, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prepare-candidate-root-v2.py", line 168, in main
+    runner_class=(pkg+'.' if pkg else '')+'Runner'; row,rt,outs=h['compile_run'](recorder,f'{suite}-{legname}-jadx-{profile}',[sc,rc],legs[legname],runner_class)
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/results/prepare-baseline-luna-v1.py", line 150, in compile_run
+    run_code, stdout, stderr, runtime_cmd = recorder.run(label + "-run", [
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prepare-candidate-root-v2.py", line 128, in run
+    row=guard_run(counter,[str(v) for v in argv],env)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", line 311, in run_command
+    raise RuntimeError(f"5 GiB free-space guard before command {index}: {free_start}")
+RuntimeError: 5 GiB free-space guard before command 17: 5178011648

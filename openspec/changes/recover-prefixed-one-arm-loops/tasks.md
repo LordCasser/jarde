@@ -1,12 +1,12 @@
 ## 1. Baseline and stopping point
 
 - [x] 1.1 独立验收原形及普通 while 对照基线；核原形31命令/112文件、控制31命令/111文件闭合，原2/JADX4成功、旧Jarde4整类编译失败且零runtime，并准确记录 noPrefix 缺 goto@14 来源；以 root 实跑独立 verifier 的不可变接受文件验证。
-- [ ] 1.2 资源守卫满足后执行带 method 身份的临时诊断，核实际 arm 的 prefix、header、next、Frame boundary 与 join 停止点；保存原始 stdout/stderr，撤销 probe 后核生产 diff。若链与 design 假设不同，先修订 design，不据静态猜测实施。
+- [x] 1.2 资源守卫满足后执行带 method 身份的临时诊断，核实际 arm 的 prefix、header、next、Frame boundary 与 join 停止点；保存原始 stdout/stderr，撤销 probe 后核生产 diff。若链与 design 假设不同，先修订 design，不据静态猜测实施。
 
 ## 2. Local one-arm continuation
 
-- [ ] 2.1 在 1.2 定位后由 Luna 提交 private patch，root 读审并应用；复用统一 region_at/Frame/自然循环证明，完成独占 Straight prefix、一个普通 Loop 及可选 Straight tail 的准确 join 组合；用 prefixWhile/takenArm/loopAndTail 与 iterator 原形永久正例核完整结构、唯一 owner 和尾部位置，无新 pass/Frame 字段/公共 IR。
-- [ ] 2.2 验证 prefix/header/tail 外部入口、不同出口、已认领块、外层 loop 回边与父 scope 不闭合反例继续拒绝；预算/取消/递归 Stop 传播且不发表部分正文或来源。root 实跑相关永久测试和相邻单臂/双臂/loop-tail 回归，以真实结果验证。
+- [x] 2.1 在 1.2 定位后由 Luna 提交 private patch，root 读审并应用；复用统一 region_at/Frame/自然循环证明，完成独占 Straight prefix、一个普通 Loop 及可选 Straight tail 的准确 join 组合；用 prefixWhile/takenArm/loopAndTail 与 iterator 原形永久正例核完整结构、唯一 owner 和尾部位置，无新 pass/Frame 字段/公共 IR。
+- [x] 2.2 验证 prefix/header/tail 外部入口、不同出口、已认领块、外层 loop 回边与父 scope 不闭合反例继续拒绝；预算/取消/递归 Stop 传播且不发表部分正文或来源。root 实跑相关永久测试和相邻单臂/双臂/loop-tail 回归，以真实结果验证。
 
 ## 3. Whole-class acceptance and delivery
 

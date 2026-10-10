@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prepare-candidate-root-v1.py", line 218, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-prefixed-one-arm-loops/results/prepare-candidate-root-v1.py", line 108, in main
+    if sha(jraw)!=JDK_MANIFEST_SHA256: raise RuntimeError('JDK manifest pin mismatch')
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: JDK manifest pin mismatch

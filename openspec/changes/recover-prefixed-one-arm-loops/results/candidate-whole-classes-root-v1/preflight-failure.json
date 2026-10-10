@@ -1,0 +1,1 @@
+{"status": "preflight-failed-no-toolchain-commands", "reason": "private collector JDK pin contained transcription error", "correct_pin_bound_by": "SHA-pinned accepted postfix and Plain baseline collectors", "actual_jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"}

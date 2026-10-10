@@ -1,0 +1,98 @@
+--- a/crates/jarde-java/tests/p3_loop_exit_gateways.rs
++++ b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+@@ -183,6 +183,19 @@
+     panic!("unclosed body after {marker}: {source}");
+ }
+ 
++fn loop_form_header_and_body(source: &str) -> (&'static str, &str, std::ops::Range<usize>) {
++    let (form, start, marker) = if let Some(start) = source.find("for (") {
++        ("for", start, "for (")
++    } else if let Some(start) = source.find("while (") {
++        ("while", start, "while (")
++    } else {
++        panic!("selected arm has no for/while loop: {source}");
++    };
++    let body = braced_body(source, marker);
++    let open = body.start - 1;
++    (form, &source[start..open], body)
++}
++
+ fn assert_one_structured_owner_in(
+     report: &jarde_java::RecoveryReport,
+     range: std::ops::Range<usize>,
+@@ -467,23 +480,45 @@
+         let arm = braced_body(&all.text, guard);
+         let arm_text = &all.text[arm.clone()];
+         let prefix_at = arm_text
+-            .find("local3 = 0;")
++            .find("local3 = 0")
+             .unwrap_or_else(|| panic!("{name} prefix outside selected arm: {}", all.text));
+-        let loop_at = arm_text
+-            .find("while (")
+-            .unwrap_or_else(|| panic!("{name} loop outside selected arm: {}", all.text));
+-        assert!(
+-            prefix_at < loop_at,
+-            "{name} prefix is not before loop: {}",
+-            all.text
+-        );
++        let (form, header, loop_body) = loop_form_header_and_body(arm_text);
++        if form == "for" {
++            assert!(header.contains("local3 = 0;"), "{name} for-init is wrong: {header}");
++            assert!(header.contains("local3 < arg1;"), "{name} for-condition is wrong: {header}");
++            assert!(
++                header.contains("local3 = local3 + 1"),
++                "{name} for-update is wrong: {header}"
++            );
++            let for_at = arm_text.find("for (").expect("for marker was just found");
++            assert!(
++                prefix_at >= for_at && prefix_at < for_at + header.len(),
++                "{name} init is not in the selected arm's for header: {}",
++                all.text
++            );
++        } else {
++            let loop_at = arm_text.find("while (").expect("while marker was just found");
++            assert!(
++                prefix_at < loop_at,
++                "{name} prefix is not before loop: {}",
++                all.text
++            );
++            assert!(
++                header.contains("local3 < arg1"),
++                "{name} while-condition is wrong: {header}"
++            );
++        }
+         if let Some(tail) = tail {
+-            let tail_at = arm_text
+-                .find(tail)
+-                .unwrap_or_else(|| panic!("{name} tail outside selected arm: {}", all.text));
+-            assert!(loop_at < tail_at, "{name} tail is not after loop: {}", all.text);
++            let tail_after_loop = arm_text
++                .get(loop_body.end..)
++                .expect("loop closing brace is within the selected arm");
++            assert!(
++                tail_after_loop.contains(tail),
++                "{name} tail is not after the complete loop and inside the selected arm: {}",
++                all.text
++            );
+         }
+-        assert_one_structured_owner_in(&all, arm, blocks, "local3 = 0;", &[6, 7]);
++        assert_one_structured_owner_in(&all, arm, blocks, "local3 = 0", &[6, 7]);
+     }
+ 
+     let iterator_default = recover_class_method_with_budget(
+@@ -515,12 +550,12 @@
+     assert!(iterator.text.contains("hasNext"), "{}", iterator.text);
+     assert!(iterator.text.contains(".next"), "{}", iterator.text);
+     let arm = braced_body(&iterator.text, "if (arg0 != null) {");
+-    // Frozen javac23 javap starts in this selected arm: 6, 13, 22, 32,
+-    // 39, 42; 45 is the shared exit and is deliberately outside the arm.
++    // Frozen javac23 javap starts in this selected arm: 6, 13, 22, 39,
++    // 42; 45 is the shared exit and is deliberately outside the arm.
+     assert_one_structured_owner_in(
+         &iterator,
+         arm,
+-        &[6, 13, 22, 32, 39, 42],
++        &[6, 13, 22, 39, 42],
+         ".iterator()",
+         &[6, 7],
+     );
