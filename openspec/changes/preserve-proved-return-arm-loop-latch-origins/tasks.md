@@ -1,7 +1,7 @@
 ## 1. Actual shape and prerequisite
 
 - [x] 1.1 root 独立核前片新 CF07 完整类基线唯一 lastIndexOf25 缺口；实跑同一次 IR 临时诊断 v2 为 1/0/0，保存 v1 编译失败和 v2 全 raw，证明无 join 末尾 If/return19/latch22/SSA22,25/唯一 Normal→5/自然唯一 latch/唯一 owner，恢复全部52pins并 cargo clean。
-- [ ] 1.2 独立接受前片产品1f386686c6a31813254a85fed48d2af0af84a61c自身CI38068627541及最终clean交付，才由root应用本片生产改动；不得借后续文档CI。
+- [x] 1.2 独立接受前片产品1f386686c6a31813254a85fed48d2af0af84a61c自身CI38068627541及最终clean交付，才由root应用本片生产改动；不得借后续文档CI。
 
 ## 2. Existing loop source proof
 
