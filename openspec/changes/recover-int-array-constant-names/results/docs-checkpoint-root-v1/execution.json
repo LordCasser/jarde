@@ -1,0 +1,49 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at": "2026-10-10T05:49:26.136783+00:00",
+      "duration_seconds": 0.5697764999931678,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "--all",
+        "--strict"
+      ],
+      "started_at": "2026-10-10T05:49:26.706727+00:00",
+      "duration_seconds": 0.4729685829952359,
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "1.stdout.raw",
+          "bytes": 15342,
+          "sha256": "103b6cc43a3f580b9b78802dc862f6ac623ae701e94ea1b3cabd6d02a9a00332"
+        },
+        "stderr": {
+          "path": "1.stderr.raw",
+          "bytes": 16,
+          "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+        }
+      }
+    }
+  ]
+}

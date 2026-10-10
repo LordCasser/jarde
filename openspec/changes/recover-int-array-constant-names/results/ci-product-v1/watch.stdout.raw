@@ -1,0 +1,1510 @@
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 1 minute ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  * Install cargo-fuzz 0.13.2
+  * Prepare the C++ and sanitizer toolchain
+  * Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+* MSRV 1.88.0 (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  * Check workspace on MSRV
+  * Post Run actions/checkout@v7.0.1
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  * Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* supply chain (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  * Install cargo-deny 0.20.2
+  * Check root workspace advisories, licenses, bans, and sources
+  * Check fuzz workspace advisories, licenses, bans, and sources
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 2 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  * Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* supply chain (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  * Install cargo-deny 0.20.2
+  * Check root workspace advisories, licenses, bans, and sources
+  * Check fuzz workspace advisories, licenses, bans, and sources
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 2 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  * Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+* supply chain (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  * Install cargo-deny 0.20.2
+  * Check root workspace advisories, licenses, bans, and sources
+  * Check fuzz workspace advisories, licenses, bans, and sources
+  * Post Run actions/checkout@v7.0.1
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 3 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 4 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 5 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 6 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 7 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 8 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 8 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 9 minutes ago
+
+JOBS
+* fuzz smoke (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  * Run the bounded query smoke
+  * Run the bounded artifact-tree smoke
+  * Run the bounded method-analysis smoke
+  * Ensure the smoke runs left the tracked tree unchanged
+  * Post Run actions/checkout@v7.0.1
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 10 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 11 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 12 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 12 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 13 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 14 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 15 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 16 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  * Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 16 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 17 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 18 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 19 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 20 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+Refreshing run status every 45 seconds. Press Ctrl+C to quit.
+
+* main CI · 38026598963
+Triggered via push about 20 minutes ago
+
+JOBS
+✓ fuzz smoke in 10m25s (ID 114138641931)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install nightly-2026-07-20
+  ✓ Install cargo-fuzz 0.13.2
+  ✓ Prepare the C++ and sanitizer toolchain
+  ✓ Check the committed corpus against the targets
+  ✓ Run the bounded query smoke
+  ✓ Run the bounded artifact-tree smoke
+  ✓ Run the bounded method-analysis smoke
+  ✓ Ensure the smoke runs left the tracked tree unchanged
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+✓ MSRV 1.88.0 in 1m26s (ID 114138642017)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install Rust 1.88.0
+  ✓ Check workspace on MSRV
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job
+* stable / test and specification (ID 114138642050)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust with lint components
+  ✓ Install Temurin 25.0.4+7
+  ✓ Install Node.js 22
+  ✓ Check formatting
+  ✓ Run Clippy
+  ✓ Run workspace tests with two fixed independent seeds (pass 1)
+  * Run workspace tests with two fixed independent seeds (pass 2)
+  * Run ignored JDK 25 instruction-boundary oracle
+  * Run the ignored P3 Java 8 compile-and-execute comparison
+  * Run the functional-constructor full-class comparison
+  * Run the BigDecimal Number full-class comparisons
+  * Run the nested int array full-class comparisons
+  * Run the returned int array full-class comparison
+  * Run public API example
+  * Check resolved feature tree
+  * Check normal dependency tree boundary
+  * Check layered crate dependency closure
+  * Install OpenSpec 1.11.0
+  * Validate OpenSpec strictly
+  * Ensure tracked files remain unchanged
+  * Post Install Node.js 22
+  * Post Install Temurin 25.0.4+7
+  * Post Run actions/checkout@v7.0.1
+✓ supply chain in 3m30s (ID 114138642153)
+  ✓ Set up job
+  ✓ Run actions/checkout@v7.0.1
+  ✓ Install stable Rust for cargo-deny
+  ✓ Install cargo-deny 0.20.2
+  ✓ Check root workspace advisories, licenses, bans, and sources
+  ✓ Check fuzz workspace advisories, licenses, bans, and sources
+  ✓ Post Run actions/checkout@v7.0.1
+  ✓ Complete job

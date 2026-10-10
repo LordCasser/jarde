@@ -1,0 +1,472 @@
+--- a/crates/jarde-java/src/ast.rs
++++ b/crates/jarde-java/src/ast.rs
+@@ -732,6 +732,8 @@
+     Add,
+     /// `-=`
+     Subtract,
++    /// `*=`
++    Multiply,
+ }
+ 
+ impl AssignOp {
+@@ -741,6 +743,7 @@
+             Self::Assign => "=",
+             Self::Add => "+=",
+             Self::Subtract => "-=",
++            Self::Multiply => "*=",
+         }
+     }
+ }
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -13961,8 +13961,8 @@
+     let Some(add) = instruction_in_block(block, add_bci) else {
+         return Ok(None);
+     };
+-    // The read-modify-write's one arithmetic step: `+=` adds, `-=` subtracts. Both spellings
+-    // name the same single read and single write the rest of this proof pins down.
++    // The read-modify-write's one arithmetic step. Each spelling names the same single read and
++    // single write the rest of this proof pins down.
+     let update_op = match (add.opcode(), operations.get(add_bci)) {
+         (
+             0x60,
+@@ -13976,6 +13976,12 @@
+                 op: ArithmeticOp::Subtract,
+             }),
+         ) => ArithmeticOp::Subtract,
++        (
++            0x68,
++            Some(Operation::Arithmetic {
++                op: ArithmeticOp::Multiply,
++            }),
++        ) => ArithmeticOp::Multiply,
+         _ => return Ok(None),
+     };
+     let Some((old, rhs)) = two_stack_values(add) else {
+@@ -27242,11 +27248,12 @@
+             let op = match update_op {
+                 ArithmeticOp::Add => AssignOp::Add,
+                 ArithmeticOp::Subtract => AssignOp::Subtract,
++                ArithmeticOp::Multiply => AssignOp::Multiply,
+                 _ => {
+                     let bcis = self.quoted_bcis(at);
+                     return self.fallback(
+                         bcis,
+-                        format!("the proved int field update at BCI {at} does not add or subtract"),
++                        format!("the proved int field update at BCI {at} uses an unsupported operator"),
+                         at,
+                     );
+                 }
+--- a/crates/jarde-java/src/field.rs
++++ b/crates/jarde-java/src/field.rs
+@@ -324,7 +324,7 @@
+                     if stmt.origin.primary().method().is_none() {
+                         record(at, FieldAccess::Write, name);
+                     }
+-                    if matches!(op, AssignOp::Add | AssignOp::Subtract) {
++                    if matches!(op, AssignOp::Add | AssignOp::Subtract | AssignOp::Multiply) {
+                         for origin in stmt.origin.derived() {
+                             stop::charge(
+                                 budget,
+--- a/tests/p3_compound_lvalue_updates.rs
++++ b/tests/p3_compound_lvalue_updates.rs
+@@ -1,7 +1,30 @@
+-//! P3: only a proved same-block `int` field/array update becomes `+=`.
++//! P3: proved same-block `int` field/array updates and the exact receiver-copy field `*=` shape.
+ 
+ use jarde::*;
++use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
++use std::io::{Cursor, Write};
+ use std::slice;
++
++const STORE: u16 = 0;
++
++const NESTED_MULTIPLY_ROOT: &[u8] = include_bytes!(
++    "../openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2.class"
++);
++const NESTED_MULTIPLY_CHILD: &[u8] = include_bytes!(
++    "../openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class"
++);
++const BOUNDARY_PROBE: &[u8] = include_bytes!(
++    "fixtures/p3-compound-lvalue-updates/boundaries/v8/CompoundBoundaryProbe.class"
++);
++const BOUNDARY_BOX: &[u8] = include_bytes!(
++    "fixtures/p3-compound-lvalue-updates/boundaries/v8/BoundaryBox.class"
++);
++const FIELD_DIFFERENT_MEMBER: &[u8] = include_bytes!(
++    "fixtures/p3-compound-lvalue-updates/boundaries/patched/field-different-member/CompoundBoundaryProbe.class"
++);
++const FIELD_MULTI_CONSUMER: &[u8] = include_bytes!(
++    "fixtures/p3-compound-lvalue-updates/boundaries/patched/field-multi-consumer/CompoundBoundaryProbe.class"
++);
+ 
+ const PROBE: &[u8] = include_bytes!("fixtures/p3-compound-lvalue-updates/v8/CompoundProbe.class");
+ const BOUNDARY_GAPS: [(&str, &[u8], &[u32]); 6] = [
+@@ -102,6 +125,14 @@
+ }
+ 
+ fn request(snapshot: &ArtifactSnapshot, class: &str) -> ClassSourceRequest {
++    request_with_policy(snapshot, class, EnvironmentPolicy::SingleClass)
++}
++
++fn request_with_policy(
++    snapshot: &ArtifactSnapshot,
++    class: &str,
++    policy: EnvironmentPolicy,
++) -> ClassSourceRequest {
+     ClassSourceRequest {
+         class: ClassRef::Name {
+             class: ClassNameQuery::internal(class),
+@@ -109,7 +140,7 @@
+         environment: EnvironmentRequest {
+             snapshot: snapshot.id().clone(),
+             scope: PhysicalScope::SnapshotAll,
+-            policy: EnvironmentPolicy::SingleClass,
++            policy,
+             profile: RuntimeProfile {
+                 java_release: 8,
+                 multi_release: MultiReleasePolicy::Disabled,
+@@ -125,10 +156,19 @@
+     class: &str,
+     evidence: &RecoveryEvidenceRequest,
+ ) -> ClassSourceReport {
++    class_source_with_policy(snapshot, class, evidence, EnvironmentPolicy::SingleClass)
++}
++
++fn class_source_with_policy(
++    snapshot: &ArtifactSnapshot,
++    class: &str,
++    evidence: &RecoveryEvidenceRequest,
++    policy: EnvironmentPolicy,
++) -> ClassSourceReport {
+     match Engine::new()
+         .class_source_with_evidence(
+             slice::from_ref(snapshot),
+-            &request(snapshot, class),
++            &request_with_policy(snapshot, class, policy),
+             evidence,
+             &mut budget(),
+         )
+@@ -137,6 +177,80 @@
+         OperationOutcome::Performed(report) => report,
+         other => panic!("one frozen class resolves uniquely: {other:?}"),
+     }
++}
++
++fn jar_of(entries: &[(&[u8], &[u8])]) -> Vec<u8> {
++    let mut output = Cursor::new(Vec::new());
++    {
++        let mut archive = ZipArchiveWriter::new(&mut output);
++        for (name, data) in entries {
++            let (mut entry, config) = archive
++                .new_file(EntryPath::verbatim(name.to_vec()))
++                .compression_method(CompressionMethod::new(STORE))
++                .start()
++                .expect("the fixture entry starts");
++            let mut writer = config.wrap(&mut entry);
++            writer.write_all(data).expect("the fixture entry writes");
++            let (_, descriptor) = writer.finish().expect("the fixture entry closes");
++            entry.finish(descriptor).expect("the fixture entry finishes");
++        }
++        archive.finish().expect("the fixture archive finishes");
++    }
++    output.into_inner()
++}
++
++/// Change one unique arithmetic opcode in a committed class file. Code lengths, exception tables,
++/// stack maps and every other byte remain untouched; the selected opcodes share the same operand
++/// stack shape, so this creates proof-boundary variants without a JDK test-time dependency.
++fn replace_unique_opcode(
++    class: &[u8],
++    name: &[u8],
++    descriptor: &[u8],
++    old_opcode: u8,
++    new_opcode: u8,
++) -> Vec<u8> {
++    let mut budget = budget();
++    let header = jarde_reader::classfile::class_facts(class, &mut budget)
++        .expect("the committed boundary class parses");
++    let member = header
++        .methods
++        .iter()
++        .find(|member| member.name.raw().0 == name && member.descriptor.raw().0 == descriptor)
++        .expect("the selected method is physically declared");
++    let code = jarde_reader::classfile::method_code_facts(class, member, &mut budget)
++        .expect("the selected method's instructions decode");
++    let instructions = code
++        .instructions
++        .iter()
++        .filter(|instruction| instruction.opcode == old_opcode)
++        .collect::<Vec<_>>();
++    assert_eq!(instructions.len(), 1, "the target opcode is unique in this method");
++    let instruction = instructions[0];
++    let class_offset = usize::try_from(code.code_span.start)
++        .expect("class code offset fits usize")
++        .checked_add(usize::try_from(instruction.bci).expect("BCI fits usize"))
++        .expect("instruction byte offset does not overflow");
++    let mut patched = class.to_vec();
++    assert_eq!(patched[class_offset], old_opcode, "the decoded opcode is in place");
++    patched[class_offset] = new_opcode;
++    patched
++}
++
++fn method_bcis(class: &[u8], name: &[u8], descriptor: &[u8]) -> Vec<u32> {
++    let mut budget = budget();
++    let header = jarde_reader::classfile::class_facts(class, &mut budget)
++        .expect("the committed class parses");
++    let member = header
++        .methods
++        .iter()
++        .find(|member| member.name.raw().0 == name && member.descriptor.raw().0 == descriptor)
++        .expect("the selected method is physically declared");
++    jarde_reader::classfile::method_code_facts(class, member, &mut budget)
++        .expect("the selected method's instructions decode")
++        .instructions
++        .into_iter()
++        .map(|instruction| instruction.bci)
++        .collect()
+ }
+ 
+ fn recovery_request(
+@@ -307,6 +421,241 @@
+             );
+         }
+     }
++}
++
++#[test]
++fn nested_int_field_multiply_keeps_every_instruction_and_field_read_presented() {
++    let snapshot = open(jar_of(&[
++        (b"em23/InputFieldIncrement2.class", NESTED_MULTIPLY_ROOT),
++        (b"em23/InputFieldIncrement2$A.class", NESTED_MULTIPLY_CHILD),
++    ]));
++    let essential = class_source_with_policy(
++        &snapshot,
++        "em23/InputFieldIncrement2",
++        &RecoveryEvidenceRequest::essential(),
++        EnvironmentPolicy::PlainJar,
++    );
++    let complete = class_source_with_policy(
++        &snapshot,
++        "em23/InputFieldIncrement2",
++        &RecoveryEvidenceRequest::all(),
++        EnvironmentPolicy::PlainJar,
++    );
++    assert_eq!(essential.text, complete.text, "evidence selection changes no text");
++
++    let method = method(&complete, "test2");
++    let report = recovered(method);
++    assert!(method.text.contains("this.a.f *= "), "{}", method.text);
++    assert!(!method.text.contains("jarde_refused_body"), "{}", method.text);
++    for bci in [0, 1, 4, 5, 8, 9, 10, 13] {
++        assert!(
++            !report.source_map.text_of_bci(&report.text, bci).is_empty(),
++            "multiply update lost BCI {bci}: {:?}\n{}",
++            report.source_map.segments(),
++            method.text
++        );
++    }
++    for (bci, access, name) in [
++        (1, "read", "a"),
++        (5, "read", "f"),
++        (10, "write", "f"),
++    ] {
++        assert!(
++            report.fields.iter().any(|field| {
++                field.bci == bci && field.access == access && field.name == name && field.presented
++            }),
++            "field access {access} {name}@{bci} was not presented: {:?}\n{}",
++            report.fields,
++            method.text
++        );
++    }
++    assert!(!essential.text.is_empty());
++}
++
++#[test]
++fn multiply_does_not_merge_two_reads_or_cross_field_width_or_consumer_boundaries() {
++    // Keep the actual explicit two-read shape, but change only iadd to imul. The source reads
++    // `this.a` independently for the store and the old value, so it must remain ordinary `=`.
++    let explicit_two_reads = replace_unique_opcode(
++        NESTED_MULTIPLY_ROOT,
++        b"test1",
++        b"(I)V",
++        0x60,
++        0x68,
++    );
++    let snapshot = open(jar_of(&[
++        (b"em23/InputFieldIncrement2.class", &explicit_two_reads),
++        (b"em23/InputFieldIncrement2$A.class", NESTED_MULTIPLY_CHILD),
++    ]));
++    let report = class_source_with_policy(
++        &snapshot,
++        "em23/InputFieldIncrement2",
++        &RecoveryEvidenceRequest::all(),
++        EnvironmentPolicy::PlainJar,
++    );
++    let method = method(&report, "test1");
++    let recovery = recovered(method);
++    assert!(method.text.contains("this.a.f = this.a.f * "), "{}", method.text);
++    assert!(!method.text.contains("*="), "{}", method.text);
++    for bci in method_bcis(&explicit_two_reads, b"test1", b"(I)V") {
++        assert!(
++            !recovery.source_map.text_of_bci(&recovery.text, bci).is_empty(),
++            "two-read control lost BCI {bci}: {:?}\n{}",
++            recovery.source_map.segments(),
++            method.text
++        );
++    }
++    for bci in [1, 5] {
++        assert!(
++            recovery.fields.iter().any(|field| {
++                field.bci == bci && field.access == "read" && field.name == "a" && field.presented
++            }),
++            "independent receiver read a@{bci} was lost: {:?}",
++            recovery.fields
++        );
++    }
++
++    for (label, class, method_name, descriptor, arithmetic, replacement) in [
++        (
++            "field-member-mismatch",
++            FIELD_DIFFERENT_MEMBER,
++            b"fieldDifferentMember".as_slice(),
++            b"()V".as_slice(),
++            0x60,
++            0x68,
++        ),
++        (
++            "field-extra-consumer",
++            FIELD_MULTI_CONSUMER,
++            b"fieldMultiConsumer".as_slice(),
++            b"()V".as_slice(),
++            0x60,
++            0x68,
++        ),
++        (
++            "wide-field",
++            BOUNDARY_PROBE,
++            b"wideField".as_slice(),
++            b"()V".as_slice(),
++            0x61,
++            0x69,
++        ),
++    ] {
++        let patched = replace_unique_opcode(class, method_name, descriptor, arithmetic, replacement);
++        let archive = jar_of(&[
++            (b"CompoundBoundaryProbe.class", &patched),
++            (b"BoundaryBox.class", BOUNDARY_BOX),
++        ]);
++        let snapshot = open(archive);
++        let report = class_source_with_policy(
++            &snapshot,
++            "CompoundBoundaryProbe",
++            &RecoveryEvidenceRequest::all(),
++            EnvironmentPolicy::PlainJar,
++        );
++        let method = method(&report, std::str::from_utf8(method_name).unwrap());
++        let recovery = recovered(method);
++        assert!(
++            !method.text.contains("*="),
++            "{label} was presented as multiplication assignment:\n{}",
++            method.text
++        );
++        for bci in method_bcis(&patched, method_name, descriptor) {
++            assert!(
++                !recovery.source_map.text_of_bci(&recovery.text, bci).is_empty(),
++                "{label} lost BCI {bci}: {:?}\n{}",
++                recovery.source_map.segments(),
++                method.text
++            );
++        }
++    }
++}
++
++#[test]
++fn multiply_public_recovery_keeps_output_budget_and_cancellation_atomic() {
++    let snapshot = open(jar_of(&[
++        (b"em23/InputFieldIncrement2.class", NESTED_MULTIPLY_ROOT),
++        (b"em23/InputFieldIncrement2$A.class", NESTED_MULTIPLY_CHILD),
++    ]));
++    let complete = class_source_with_policy(
++        &snapshot,
++        "em23/InputFieldIncrement2",
++        &RecoveryEvidenceRequest::all(),
++        EnvironmentPolicy::PlainJar,
++    );
++    let member = method(&complete, "test2");
++    let environment = request_with_policy(
++        &snapshot,
++        "em23/InputFieldIncrement2",
++        EnvironmentPolicy::PlainJar,
++    )
++    .environment
++    .build(slice::from_ref(&snapshot))
++    .expect("the same two-class family builds its request environment");
++    let request = jarde::ir::MethodAnalysisRequest {
++        environment,
++        method: member.item.identity.clone(),
++        stages: jarde::ir::AnalysisStage::ALL.to_vec(),
++    };
++    let engine = Engine::new();
++    let evidence = RecoveryEvidenceRequest::all();
++    let mut full_budget = budget();
++    let full = engine
++        .recover_method_with_evidence(slice::from_ref(&snapshot), &request, &evidence, &mut full_budget)
++        .expect("the proved multiply body recovers");
++    let full_report = full.recovery();
++    assert!(full_report.produced());
++    assert!(full_report.text.contains("this.a.f *= "));
++
++    let emitted = u64::try_from(full_report.text.len()).expect("the body length fits u64");
++    let complete_output = full_budget.usage().output_bytes;
++    assert!(complete_output > emitted);
++    let mut output_budget = Budget::new(Limits {
++        output_bytes: complete_output - emitted,
++        ..task_limits(&[]).expect("the task limits are bounded")
++    });
++    let stopped = engine
++        .recover_method_with_evidence(
++            slice::from_ref(&snapshot),
++            &request,
++            &evidence,
++            &mut output_budget,
++        )
++        .expect("output exhaustion is reported");
++    let stopped_report = stopped.recovery();
++    assert!(!stopped_report.produced());
++    assert!(stopped_report.text.is_empty());
++    assert!(stopped_report.source_map.is_empty());
++    assert!(matches!(
++        stopped_report.stop(),
++        Some(StopReason::Budget {
++            dimension: jarde::budget::CountedBudgetDimension::OutputBytes,
++            ..
++        })
++    ));
++
++    let token = jarde::budget::CancellationToken::new();
++    token.cancel();
++    let mut cancelled_budget = Budget::with_cancellation_token(
++        task_limits(&[]).expect("the task limits are bounded"),
++        token,
++    );
++    let cancelled = engine
++        .recover_method_with_evidence(
++            slice::from_ref(&snapshot),
++            &request,
++            &evidence,
++            &mut cancelled_budget,
++        )
++        .expect("cancellation is reported");
++    assert!(matches!(
++        cancelled.analysis().execution,
++        ExecutionReport::Cancelled { .. }
++    ));
++    let cancelled_report = cancelled.recovery();
++    assert!(!cancelled_report.produced());
++    assert!(cancelled_report.text.is_empty());
++    assert!(cancelled_report.source_map.is_empty());
+ }
+ 
+ #[test]

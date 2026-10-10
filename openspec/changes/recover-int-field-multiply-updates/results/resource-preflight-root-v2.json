@@ -1,0 +1,9 @@
+{
+  "recorded_at": "2026-10-10T05:57:50.771685+00:00",
+  "free_bytes": 20092465152,
+  "minimum_free_bytes": 21474836480,
+  "free_guard_passed": false,
+  "target_exists": false,
+  "target_bytes": 0,
+  "rust_started": false
+}

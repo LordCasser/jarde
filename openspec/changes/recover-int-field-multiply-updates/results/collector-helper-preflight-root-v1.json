@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-10T05:58:31.866596+00:00",
+  "script_sha256": "c619ae92b5b52f36ee7a8bc1976559c641a43a3c9fb0e7612c8c034be218a7ed",
+  "real_blake3_used": true,
+  "collector_main_called": false,
+  "tools_executed": false,
+  "rows": [
+    {
+      "family": "increment",
+      "closed_files": 126,
+      "original_oracles": 2,
+      "old_jarde_modes": 4,
+      "physical_methods_with_complete_origins": 16
+    },
+    {
+      "family": "multiply",
+      "closed_files": 126,
+      "original_oracles": 2,
+      "old_jarde_modes": 4,
+      "physical_methods_with_complete_origins": 20
+    }
+  ]
+}

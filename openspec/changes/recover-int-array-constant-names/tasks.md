@@ -15,5 +15,5 @@
 
 ## 4. 主线验收
 
-- [ ] 4.1 资源守卫满足后root相关fmt/Clippy/OpenSpec strict/reader与fingerprint通过，提交产品后独立确切CI双seed/JDK25/MSRV/fuzz/supply验收，不能借实例片CI。
-- [ ] 4.2 提交推送main并更新handoff/71账本实际范围与任务；只清本仓编译残留，保留历史失败、源/class/raw及冻结CLI，不冒称EM18整单元完成。
+- [x] 4.1 资源守卫满足后root相关fmt/Clippy/OpenSpec strict/reader与fingerprint通过，提交产品后独立确切CI双seed/JDK25/MSRV/fuzz/supply验收，不能借实例片CI。
+- [x] 4.2 提交推送main并更新handoff/71账本实际范围与任务；只清本仓编译残留，保留历史失败、源/class/raw及冻结CLI，不冒称EM18整单元完成。

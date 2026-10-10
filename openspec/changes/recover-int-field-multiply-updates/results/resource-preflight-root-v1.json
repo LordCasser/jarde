@@ -1,0 +1,10 @@
+{
+  "free_bytes": 21486755840,
+  "minimum_free_bytes": 21474836480,
+  "target_exists": false,
+  "target_bytes": 0,
+  "rust_started": false,
+  "reason": "No Rust execution yet: documentation checkpoint is pending. This isolated free-space reading passes by only about 11 MiB; before and during build it must be remeasured.",
+  "recorded_at": "2026-10-10T05:55:05.828490+00:00",
+  "free_guard_passed": true
+}

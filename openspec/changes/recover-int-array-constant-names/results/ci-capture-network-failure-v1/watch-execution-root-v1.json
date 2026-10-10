@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "watch",
+    "38026598963",
+    "--exit-status",
+    "--interval",
+    "45"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T05:11:28.613064+00:00",
+  "duration_seconds": 1234.9141633750114,
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "watch.stdout.raw",
+      "bytes": 55564,
+      "sha256": "f0ee1f2a6a81e281fcb50352198f9c479c0fc8fe3f9b3b1a37a481700062b986"
+    },
+    "stderr": {
+      "path": "watch.stderr.raw",
+      "bytes": 156,
+      "sha256": "2219e786ac32d0547b05531b766f1c71b3a18c0a067ef3de27f02b557c116dd4"
+    }
+  }
+}

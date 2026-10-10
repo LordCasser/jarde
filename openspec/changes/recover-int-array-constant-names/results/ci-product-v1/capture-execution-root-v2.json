@@ -1,0 +1,78 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38026598963",
+        "--json",
+        "status,conclusion,headSha,jobs,url,createdAt,updatedAt,event,name,number,databaseId"
+      ],
+      "started_at": "2026-10-10T05:47:18.566437+00:00",
+      "duration_seconds": 1.7878556250070687,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-run-v1.json",
+        "bytes": 10249,
+        "uncompressed_bytes": 10249,
+        "sha256": "35cc60d3677de02c5950a977e15334da2ca38856cede4d6c733433a8589a0c39"
+      },
+      "stderr": {
+        "path": "ci-run-v1.json.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38026598963",
+        "--job",
+        "114138642050",
+        "--log"
+      ],
+      "started_at": "2026-10-10T05:47:20.354521+00:00",
+      "duration_seconds": 11.997527875006199,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-stable-job-v1.log.gz",
+        "bytes": 274975,
+        "uncompressed_bytes": 1758327,
+        "sha256": "446ab62e3e0e90826e240a82c2ae0a3035737717b82b1c08eaa936911a4ab4ef"
+      },
+      "stderr": {
+        "path": "ci-stable-job-v1.log.gz.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38026598963",
+        "--job",
+        "114138642153",
+        "--log"
+      ],
+      "started_at": "2026-10-10T05:47:32.352280+00:00",
+      "duration_seconds": 2.718587082985323,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-supply-job-v1.log.gz",
+        "bytes": 15050,
+        "uncompressed_bytes": 115386,
+        "sha256": "a7fb525d3858ffbfb38dcfaf104860bbc3e58487b5721007c9fafdc2b2991c5b"
+      },
+      "stderr": {
+        "path": "ci-supply-job-v1.log.gz.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

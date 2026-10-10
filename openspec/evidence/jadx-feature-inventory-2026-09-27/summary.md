@@ -316,3 +316,9 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 2026-10-10 04:47 UTC：实例共同数组prefix的精确192b自己的CI38022628853已由root独立v3实际接受，4jobs/52steps、两seed各3368/0/97，任务8/8。TestArrayInit未使用局部byte数组另实际35命令/10完整源码编译运行腿与127文件独立v3验收（保留collector错误descriptor导致的原success=false）；Jarde分配及全部元素保留，仅显式new byte与JADX声明简写不同，未新增机制。见[unused local对照](../java-syntax-2026-10-10/unused-byte-array-init-next/README.md)。71/612分母及EM18整单元状态不变。
 
 2026-10-10 05:08 UTC：整数数组同类常量名称片预算修正后重新冻结CLI v2，本地10命令及完整类v7全部成功，root实际独立v5接受417闭合文件/75命令/32渲染/10新完整编译腿/18运行/80物理方法完整OriginSet BCI，tasks6/8，自身产品CI待执行。EM-22活动TestRedundantBrackets.method3完整双if的新三方对照35命令/10腿通过，root独立v2接受128文件；无新产品机制。else-if闭括号缩进不齐单列后续格式审计，不混入本片。71分母及整单元计数不变。
+
+2026-10-10 05:47 UTC：整数数组同类常量名称确切产品375dee45a54d22ce960429cf11f0f96d33ca28b8的自身CI38026598963已root独立v2接受，4jobs/52steps、两seed各354records/3374 passed/0 failed/97 ignored，任务8/8；全部11项新tests及真JDK25/MSRV/fuzz/supply通过。EM23 TestFieldIncrement2活动 +=/*= 两方法完整outer/A基线root实际33命令126files，original2/JADX4成功，Jarde四份在test2 refusal处编译失败。recover-int-field-multiply-updates已有4/4严格有效规划，复用精确receiver dup/SSA更新证明，尚未应用产品；独立baseline verifier的javap解析失败与raw保留。71/612分母及EM18/EM23整单元状态不变。
+
+05:51 UTC EM23原形baseline已root独立v3接受126闭合files/33命令及全部成员/来源/BCI；原2/JADX4成功、旧Jarde4完整编译拒绝，Multiply最小change任务2/7。失败v2与实际raw保留，不改变71/612或整单元分类。
+
+06:04 UTC multiply controls历史基线独立v1已实际接受：126闭合files/33命令、原2/JADX4完整源码raw成功、旧Jarde4编译拒绝且零运行。乘法最小change仍2/7、产品未应用；private v2/validation runner v2/candidate collector v2全部root读审，等待资源守卫满足后实跑。71/612及EM23整单元计数不变。

@@ -1,0 +1,241 @@
+{
+  "schema": "em23-receiver-chain-independent-acceptance-luna-v3",
+  "status": "accepted-baseline-with-recorded-product-gap",
+  "manifest_sha256": "c0bb2a701f064966bba0576a72fca0f699763f22c79ba9676bf966db2e77a006",
+  "inventory_sha256": "669a1beddf5d90c5664ac371b0ad1a6b2c4180f35704119feefa79f05fa90bc7",
+  "closed_file_count": 126,
+  "command_count": 33,
+  "cases": {
+    "original": [
+      {
+        "label": "javac23-original",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_class_set_verified": true
+      },
+      {
+        "label": "javac8-original",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_class_set_verified": true
+      }
+    ],
+    "jadx": [
+      {
+        "label": "javac23-jadx-default",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_class_set_verified": true
+      },
+      {
+        "label": "javac23-jadx-none",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_class_set_verified": true
+      },
+      {
+        "label": "javac8-jadx-default",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_class_set_verified": true
+      },
+      {
+        "label": "javac8-jadx-none",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_class_set_verified": true
+      }
+    ],
+    "jarde_compile_failures": {
+      "javac23-jarde-all": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "compiler_stderr_sha256": "cc8e8a6f0616efa5d71d289c5ce96da6e82db97ca225acd700b083f1dfd6f0e2",
+        "fallback_symbol_unresolved": true,
+        "claim": "compile failure is recorded as a product gap, never as a successful runtime comparison"
+      },
+      "javac23-jarde-default": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "compiler_stderr_sha256": "204ae0904ccf0573e57dc266a60775f8bf6b9e9faec5012d5f959a576841ba1c",
+        "fallback_symbol_unresolved": true,
+        "claim": "compile failure is recorded as a product gap, never as a successful runtime comparison"
+      },
+      "javac8-jarde-all": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "compiler_stderr_sha256": "9690951bce352f1eee8eaa59a649edb5635678579e475b76ead33c6a0cb5e44c",
+        "fallback_symbol_unresolved": true,
+        "claim": "compile failure is recorded as a product gap, never as a successful runtime comparison"
+      },
+      "javac8-jarde-default": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "compiler_stderr_sha256": "ef8d45e47b14a4783ccd20d83dce5d8807c71f8d98f4e7588e326b7d133c7eb9",
+        "fallback_symbol_unresolved": true,
+        "claim": "compile failure is recorded as a product gap, never as a successful runtime comparison"
+      }
+    }
+  },
+  "original_oracle": {
+    "javac8": {
+      "exit": 0,
+      "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "javac23": {
+      "exit": 0,
+      "stdout_sha256": "1927cfd26c96f790797f5e00687ffe938d055cedffd240e3ea5a5ff36e559a11",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "jadx_input": {
+    "jar_sha256": "52673e77d3e84da3c4de1d4bb036bc7042c8f111d5c26539b9c55fe3aa22a7c4",
+    "members": [
+      "em23/InputFieldIncrement2$A.class",
+      "em23/InputFieldIncrement2.class"
+    ],
+    "runner_included": false,
+    "profiles_identical_source": true
+  },
+  "jarde_reports": {
+    "javac8": {
+      "default_all_root_and_child_text_equal": true,
+      "default_all_method_text_and_maps_equal": true,
+      "outer_methods": {
+        "<init>()V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4
+          ],
+          "content": "contains_statements"
+        },
+        "test1(I)V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4,
+            5,
+            8,
+            11,
+            12,
+            13,
+            16
+          ],
+          "content": "contains_statements"
+        },
+        "test2(I)V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4,
+            5,
+            8,
+            9,
+            10,
+            13
+          ],
+          "content": "explanation_only"
+        }
+      },
+      "child_methods": {
+        "<init>()V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            9
+          ],
+          "content": "contains_statements"
+        }
+      },
+      "test2_product_gap": {
+        "content": "explanation_only",
+        "fallback_source_present": true,
+        "physical_method_bcIs_kept": true
+      }
+    },
+    "javac23": {
+      "default_all_root_and_child_text_equal": true,
+      "default_all_method_text_and_maps_equal": true,
+      "outer_methods": {
+        "<init>()V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4
+          ],
+          "content": "contains_statements"
+        },
+        "test1(I)V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4,
+            5,
+            8,
+            11,
+            12,
+            13,
+            16
+          ],
+          "content": "contains_statements"
+        },
+        "test2(I)V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4,
+            5,
+            8,
+            9,
+            10,
+            13
+          ],
+          "content": "explanation_only"
+        }
+      },
+      "child_methods": {
+        "<init>()V": {
+          "mapped_bcis": [
+            0,
+            1,
+            4,
+            5,
+            6,
+            9
+          ],
+          "content": "contains_statements"
+        }
+      },
+      "test2_product_gap": {
+        "content": "explanation_only",
+        "fallback_source_present": true,
+        "physical_method_bcIs_kept": true
+      }
+    }
+  },
+  "product_gap": {
+    "jarde_full_class_legs_compiled": 0,
+    "jarde_full_class_legs_expected": 4,
+    "jarde_runtime_legs": 0,
+    "fallback": "test2(I)V retains jarde_refused_body() with the explanation that the copy at BCI 4 has no proved local assignment",
+    "javac_rejects_unresolved_fallback_symbol": true
+  },
+  "claim_boundary": "This accepts the authenticity and interpretation of the recorded baseline. The four Jarde fresh whole-class compilations failed; no Jarde runtime success is claimed."
+}

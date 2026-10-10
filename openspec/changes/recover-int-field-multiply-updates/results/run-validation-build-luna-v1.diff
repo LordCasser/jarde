@@ -1,0 +1,231 @@
+--- openspec/changes/recover-int-array-constant-names/results/run-validation-build-root-v2.py
++++ openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v1.py
+@@ -1,8 +1,9 @@
+ #!/usr/bin/env python3
+-"""Run guarded integer-array validation and freeze candidate CLI v2."""
++"""Run guarded multiply-slice validation and freeze its candidate CLI v1."""
+ 
+ from __future__ import annotations
+ 
++import argparse
+ import datetime
+ import hashlib
+ import json
+@@ -17,12 +18,13 @@
+ import time
+ 
+ 
++HERE = Path(__file__).resolve().parent
+ ROOT = Path(__file__).resolve().parents[4]
+-RESULTS = Path(__file__).resolve().parent
+-OUT = RESULTS / "validation-build-root-v2"
+-CLI_PATH = Path("/private/tmp/jarde-int-array-names-cli-v2")
+-METADATA_PATH = RESULTS / "candidate-cli-v2.json"
+-SOURCE_COMMIT_BASE = "192b0bc13eca631f44ebaf28a998db52d4f14040"
++RESULTS = HERE
++OUT = RESULTS / "validation-build-root-v1"
++CLI_PATH = Path("/private/tmp/jarde-field-multiply-cli-v1")
++METADATA_PATH = RESULTS / "candidate-cli-v1.json"
++SOURCE_COMMIT_BASE: str | None = None
+ TARGET_LIMIT = 1024**3
+ FREE_LIMIT = 20 * 1024**3
+ ENV_KEYS = ("CARGO_BUILD_JOBS", "CARGO_INCREMENTAL", "CARGO_PROFILE_DEV_DEBUG", "CARGO_PROFILE_TEST_DEBUG")
+@@ -30,84 +32,73 @@
+               "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0"}
+ 
+ PRODUCT_PATHS = {
+-    "Cargo.lock",
+-    "crates/jarde-java/src/asserts.rs",
+     "crates/jarde-java/src/ast.rs",
+     "crates/jarde-java/src/build.rs",
+-    "crates/jarde-java/src/emit.rs",
+     "crates/jarde-java/src/field.rs",
+-    "crates/jarde-java/src/init.rs",
+-    "crates/jarde-java/src/report.rs",
+-    "src/class_source.rs",
+-    "src/facade.rs",
+ }
+ TEST_PATHS = {
++    "Cargo.lock",
+     ".github/workflows/ci.yml",
+-    "crates/jarde-java/tests/p3_patterns.rs",
+-    "tests/class_static_initializer_projection.rs",
+-    "tests/interface_initializer_proof.rs",
++    "tests/p3_compound_lvalue_updates.rs",
+ }
++EM23_BASE = "openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2"
++MULTIPLY_BASE = "openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1"
+ CANONICAL_PATHS = {
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java",
+-    "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java",
++    f"{EM23_BASE}/manifest.json",
++    f"{EM23_BASE}/file-inventory.json",
++    f"{EM23_BASE}/original-sources/InputFieldIncrement2.java",
++    f"{EM23_BASE}/original-sources/Runner.java",
++    f"{EM23_BASE}/cases/javac23-original/classes/em23/InputFieldIncrement2.class",
++    f"{EM23_BASE}/cases/javac23-original/classes/em23/InputFieldIncrement2$A.class",
++    f"{MULTIPLY_BASE}/manifest.json",
++    f"{MULTIPLY_BASE}/file-inventory.json",
++    f"{MULTIPLY_BASE}/original-sources/InputFieldMultiplyControls.java",
++    f"{MULTIPLY_BASE}/original-sources/Runner.java",
++    f"{MULTIPLY_BASE}/cases/javac23-original/classes/em23/InputFieldMultiplyControls.class",
++    f"{MULTIPLY_BASE}/cases/javac23-original/classes/em23/InputFieldMultiplyControls$A.class",
+ }
+ 
+-CLIPPY_ALLOW_LINTS = (
++# Pin every literal source/class fixture included by the focused integration test, in addition
++# to the two family baselines above. This closes the byte inputs without hand-maintained drift.
++INCLUDE_RE = re.compile(r"(?:include_bytes|include_str)!\s*\(\s*\"([^\"]+)\"\s*\)")
++for included in INCLUDE_RE.findall((ROOT / "tests/p3_compound_lvalue_updates.rs").read_text()):
++    resolved = (ROOT / "tests" / included).resolve()
++    CANONICAL_PATHS.add(resolved.relative_to(ROOT).as_posix())
++
++CI_CLIPPY_ALLOW_LINTS = (
+     "too_many_arguments", "cloned_ref_to_slice_refs", "collapsible_if", "type_complexity",
+     "len_zero", "needless_option_as_deref", "needless_borrow", "useless_conversion",
+     "large_enum_variant", "question_mark", "comparison_to_empty", "op_ref",
+-    "manual_range_patterns", "if_same_then_else", "filter_map_bool_then", "filter_next",
+-    "unneeded_struct_pattern", "redundant_guards", "map_identity", "redundant_slicing",
+-    "unnecessary_get_then_check", "unnecessary_unwrap", "redundant_locals", "replace_box",
+-    "map_clone", "unnecessary_mut_passed", "single_element_loop", "unnecessary_to_owned",
+-    "needless_lifetimes",
++    "manual_range_patterns", "if_same_then_else", "needless_lifetimes",
+ )
+ 
+ COMMANDS = [
+-    ["cargo", "clippy", "-p", "jarde", "-p", "jarde-java", "--lib", "--tests",
+-     "--all-features", "--locked", "--", *sum((["-A", f"clippy::{name}"] for name in CLIPPY_ALLOW_LINTS), []),
+-     "-D", "warnings"],
+-    ["cargo", "test", "-p", "jarde-java", "--lib", "integer_array_name_projection_tests",
+-     "--locked", "--", "--nocapture"],
+-    ["cargo", "test", "-p", "jarde-java", "--lib", "class_source_body_replay",
+-     "--locked", "--", "--nocapture"],
+-    ["cargo", "test", "-p", "jarde", "--lib", "integer_constant_name_tests",
+-     "--locked", "--", "--nocapture"],
+-    ["cargo", "test", "-p", "jarde-java", "--lib", "instance_array", "--locked", "--", "--nocapture"],
+-    ["cargo", "test", "-p", "jarde", "--lib", "common_instance_array_initializer_tests",
+-     "--locked", "--", "--nocapture"],
+-    ["cargo", "test", "-p", "jarde", "--test", "class_static_initializer_projection",
+-     "--test", "interface_initializer_proof", "--locked"],
++    ["cargo", "fmt", "--all", "--", "--check"],
++    ["cargo", "clippy", "--workspace", "--all-targets", "--all-features", "--locked", "--",
++     *sum((["-A", f"clippy::{name}"] for name in CI_CLIPPY_ALLOW_LINTS), []), "-D", "warnings"],
++    # Whole library run proves field/build unit tests execute; avoid a filter that could match zero.
++    ["cargo", "test", "-p", "jarde-java", "--lib", "--locked"],
++    # Runs all four prior lvalue tests plus the three new multiply tests.
++    ["cargo", "test", "-p", "jarde", "--test", "p3_compound_lvalue_updates", "--locked", "--", "--nocapture"],
++    # Regressions from the immediately preceding integer-array names slice.
++    ["cargo", "test", "-p", "jarde-java", "--lib", "integer_array_name_projection_tests", "--locked", "--", "--nocapture"],
++    ["cargo", "test", "-p", "jarde", "--lib", "integer_constant_name_tests", "--locked", "--", "--nocapture"],
+     ["cargo", "test", "-p", "jarde-reader", "--lib", "--locked"],
+     ["cargo", "test", "-p", "jarde", "--test", "p5_corpus_fingerprint", "--locked"],
+     ["cargo", "build", "-p", "jarde-cli", "--locked"],
+ ]
+-assert len(COMMANDS) == 10
++assert len(COMMANDS) == 9
+ 
+ EXPECTED_SUMMARIES = {
+-    1: [(2, 0, 0)],
+-    2: [(1, 0, 0)],
+-    3: [(8, 0, 0)],
+-    4: [(5, 0, 0)],
+-    5: [(6, 0, 0)],
+-    6: [(6, 0, 0), (4, 0, 0)],
++    2: None,                 # all jarde-java library tests; nonempty successful summary required
++    3: [(7, 0, 0)],          # four preexisting + three multiply tests
++    4: [(2, 0, 0)],          # integer array name projection regression
++    5: [(8, 0, 0)],          # integer constant name regression
++    6: [(178, 0, 0)],        # accepted reader baseline
++    7: [(5, 0, 1)],          # corpus fingerprint tests, one intentionally ignored
+ }
++TEST_COMMANDS = {2, 3, 4, 5, 6, 7}
+ SUMMARY_RE = re.compile(r"test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored")
+-
+ 
+ def sha_bytes(data: bytes) -> str:
+     return hashlib.sha256(data).hexdigest()
+@@ -147,22 +138,24 @@
+ def expected_test_summaries(index: int, stdout: bytes) -> dict:
+     actual = [tuple(map(int, match)) for match in SUMMARY_RE.findall(stdout.decode("utf-8", errors="replace"))]
+     expected = EXPECTED_SUMMARIES.get(index)
+-    required = index in (7, 8)
+-    ok = (expected is None or actual == expected) and (not required or bool(actual))
++    required = index in TEST_COMMANDS
++    has_nonzero_total = any(sum(summary) > 0 for summary in actual)
++    ok = (expected is None or actual == expected) and (not required or has_nonzero_total)
+     reason = None
+     if expected is not None and actual != expected:
+         reason = f"expected summaries {expected}, got {actual}"
+     elif required and not actual:
+-        reason = "required successful test summary was absent"
++        reason = "required successful test summary was absent; command may have matched no tests"
+     return {"expected": expected, "actual": actual, "required": required,
+             "ok": ok, "failure_reason": reason}
+ 
+ 
+ def write_execution(status: str, rows: list[dict], preflight: dict, freeze: dict | None = None) -> None:
+     write_json(OUT / "execution.json", {
+-        "schema": "int-array-constant-names-validation-build-root-v2",
++        "schema": "int-field-multiply-validation-build-root-v1",
+         "status": status,
+         "source_commit_base_expected": SOURCE_COMMIT_BASE,
++        "uncommitted_field_multiply_product": True,
+         "environment_overrides": ENV_VALUES,
+         "guards": {"minimum_free_bytes": FREE_LIMIT, "maximum_target_bytes": TARGET_LIMIT},
+         "preflight": preflight,
+@@ -220,6 +213,14 @@
+ 
+ 
+ def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--source-base", required=True,
++                        help="exact expected HEAD commit after the root documentation checkpoint")
++    args = parser.parse_args()
++    global SOURCE_COMMIT_BASE
++    SOURCE_COMMIT_BASE = args.source_base.lower()
++    if not re.fullmatch(r"[0-9a-f]{40}", SOURCE_COMMIT_BASE):
++        raise SystemExit("--source-base must be an exact 40-character commit SHA")
+     if OUT.exists():
+         raise SystemExit(f"refusing to overwrite validation evidence: {OUT}")
+     if CLI_PATH.exists() or METADATA_PATH.exists():
+@@ -245,7 +246,7 @@
+             "matches_expected": git_result.returncode == 0 and head == SOURCE_COMMIT_BASE,
+         }
+         if not preflight["git_head"]["matches_expected"]:
+-            raise RuntimeError("base HEAD does not match pinned instance product commit")
++            raise RuntimeError("HEAD does not exactly match the supplied --source-base documentation checkpoint")
+         preflight["source_pins_before"] = {
+             "candidate_sources": source_pins(PRODUCT_PATHS),
+             "test_sources": source_pins(TEST_PATHS),
+@@ -296,7 +297,7 @@
+             "built_binary": str(built_binary), "cli_path": str(CLI_PATH),
+             "cli_sha256": cli_sha256, "cli_mode": oct(cli_mode),
+             "metadata_path": str(METADATA_PATH),
+-            "source_commit_base": SOURCE_COMMIT_BASE, "uncommitted_int_product": True,
++            "source_commit_base": SOURCE_COMMIT_BASE, "uncommitted_field_multiply_product": True,
+             "product_path_sets": {"candidate_sources": sorted(PRODUCT_PATHS),
+                                   "test_sources": sorted(TEST_PATHS),
+                                   "canonical_files": sorted(CANONICAL_PATHS)},
+@@ -311,7 +312,7 @@
+             "build_result_sha256": execution_sha256,
+             "canonical_files": preflight["source_pins_after"]["canonical_files"],
+             "source_commit_base": SOURCE_COMMIT_BASE,
+-            "uncommitted_int_product": True,
++            "uncommitted_field_multiply_product": True,
+         }
+         with METADATA_PATH.open("x", encoding="utf-8") as stream:
+             stream.write(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")

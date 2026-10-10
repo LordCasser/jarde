@@ -1,0 +1,174 @@
+{
+  "recorded_at": "2026-10-10T05:56:48.949789+00:00",
+  "rows": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "375dee45a54d22ce960429cf11f0f96d33ca28b8",
+      "primary": true,
+      "detached": false,
+      "clean": false,
+      "status_bytes": 768,
+      "status_sha256": "37113a6d24ab23f8c5c6666f564339b812aab175752b3aa62c26cd5f7653ac07",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "primary": false,
+      "detached": true,
+      "clean": true,
+      "status_bytes": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "main_ancestor": true,
+      "target_exists": false
+    }
+  ],
+  "non_primary_count": 14,
+  "remaining_branch_occupancy": 0,
+  "pending_non_primary_work": 0,
+  "non_primary_preserved": true
+}

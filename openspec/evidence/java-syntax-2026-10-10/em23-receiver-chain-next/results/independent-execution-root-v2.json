@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/results/verify-baseline-luna-v3.py"
+  ],
+  "started_at": "2026-10-10T05:51:00.765855+00:00",
+  "duration_seconds": 0.22250091601745225,
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "independent-root-v2.stdout.raw",
+      "bytes": 171,
+      "sha256": "703dc08de366d389fa318943902b70964d2623c6d8c9e9aea9f896c7e03e545b"
+    },
+    "stderr": {
+      "path": "independent-root-v2.stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

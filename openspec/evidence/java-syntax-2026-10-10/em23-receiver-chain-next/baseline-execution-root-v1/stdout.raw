@@ -1,0 +1,20 @@
+{
+  "status": "baseline-with-failures",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "success_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 0
+  },
+  "failures": [
+    "javac8-jarde-default",
+    "javac8-jarde-all",
+    "javac23-jarde-default",
+    "javac23-jarde-all",
+    "success counts differ: {'original': 2, 'jadx': 4, 'jarde': 0}"
+  ]
+}

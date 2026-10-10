@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/em23-receiver-chain-next/baseline-root-v2/cases/javac23-jarde-default/product-sources/InputFieldIncrement2.java:33: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 InputFieldIncrement2
+1 个错误

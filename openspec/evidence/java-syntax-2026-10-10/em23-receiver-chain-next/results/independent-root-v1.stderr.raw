@@ -1,0 +1,2 @@
+WARN `--no-project` was provided, but no project was found
+baseline acceptance failed: AssertionError: javap member missing descriptor: #10 = Utf8               Lem23/InputFieldIncrement2$A

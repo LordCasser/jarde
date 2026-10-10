@@ -1,0 +1,6 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/controls-prepared-luna-v1/baseline-root-v1/cases/javac23-jarde-default/product-sources/InputFieldMultiplyControls.java:33: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 InputFieldMultiplyControls
+1 个错误

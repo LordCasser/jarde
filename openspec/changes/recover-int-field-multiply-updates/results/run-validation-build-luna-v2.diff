@@ -1,0 +1,57 @@
+--- openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v1.py
++++ openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v2.py
+@@ -21,9 +21,9 @@
+ HERE = Path(__file__).resolve().parent
+ ROOT = Path(__file__).resolve().parents[4]
+ RESULTS = HERE
+-OUT = RESULTS / "validation-build-root-v1"
+-CLI_PATH = Path("/private/tmp/jarde-field-multiply-cli-v1")
+-METADATA_PATH = RESULTS / "candidate-cli-v1.json"
++OUT = RESULTS / "validation-build-root-v2"
++CLI_PATH = Path("/private/tmp/jarde-field-multiply-cli-v2")
++METADATA_PATH = RESULTS / "candidate-cli-v2.json"
+ SOURCE_COMMIT_BASE: str | None = None
+ TARGET_LIMIT = 1024**3
+ FREE_LIMIT = 20 * 1024**3
+@@ -32,12 +32,18 @@
+               "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0"}
+ 
+ PRODUCT_PATHS = {
++    "Cargo.lock",
++    "crates/jarde-java/src/asserts.rs",
+     "crates/jarde-java/src/ast.rs",
+     "crates/jarde-java/src/build.rs",
++    "crates/jarde-java/src/emit.rs",
+     "crates/jarde-java/src/field.rs",
++    "crates/jarde-java/src/init.rs",
++    "crates/jarde-java/src/report.rs",
++    "src/class_source.rs",
++    "src/facade.rs",
+ }
+ TEST_PATHS = {
+-    "Cargo.lock",
+     ".github/workflows/ci.yml",
+     "tests/p3_compound_lvalue_updates.rs",
+ }
+@@ -69,7 +75,11 @@
+     "too_many_arguments", "cloned_ref_to_slice_refs", "collapsible_if", "type_complexity",
+     "len_zero", "needless_option_as_deref", "needless_borrow", "useless_conversion",
+     "large_enum_variant", "question_mark", "comparison_to_empty", "op_ref",
+-    "manual_range_patterns", "if_same_then_else", "needless_lifetimes",
++    "manual_range_patterns", "if_same_then_else", "filter_map_bool_then", "filter_next",
++    "unneeded_struct_pattern", "redundant_guards", "map_identity", "redundant_slicing",
++    "unnecessary_get_then_check", "unnecessary_unwrap", "redundant_locals", "replace_box",
++    "map_clone", "unnecessary_mut_passed", "single_element_loop", "unnecessary_to_owned",
++    "needless_lifetimes",
+ )
+ 
+ COMMANDS = [
+@@ -152,7 +162,7 @@
+ 
+ def write_execution(status: str, rows: list[dict], preflight: dict, freeze: dict | None = None) -> None:
+     write_json(OUT / "execution.json", {
+-        "schema": "int-field-multiply-validation-build-root-v1",
++        "schema": "int-field-multiply-validation-build-root-v2",
+         "status": status,
+         "source_commit_base_expected": SOURCE_COMMIT_BASE,
+         "uncommitted_field_multiply_product": True,

@@ -1,0 +1,196 @@
+{
+  "schema": "em23-nested-field-multiply-controls-independent-acceptance-luna-v1",
+  "status": "accepted-baseline-with-recorded-product-gap",
+  "manifest_sha256": "7538e33c5b687efbba53bf6efcee55be9ae2668519fd96fbc7b46b4a85832b75",
+  "inventory_sha256": "13528c4a32bfcf1d12d808c6a9d81f990d4bb7f2dfb989ed04bb94a854646ba9",
+  "closed_file_count": 126,
+  "command_count": 33,
+  "cases": {
+    "original": [
+      {
+        "label": "javac8-original",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_source_class_set": true,
+        "raw_oracle_equal": true
+      },
+      {
+        "label": "javac23-original",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_source_class_set": true,
+        "raw_oracle_equal": true
+      }
+    ],
+    "jadx": [
+      {
+        "label": "javac23-jadx-default",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_source_class_set": true,
+        "raw_oracle_equal": true
+      },
+      {
+        "label": "javac23-jadx-none",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_source_class_set": true,
+        "raw_oracle_equal": true
+      },
+      {
+        "label": "javac8-jadx-default",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_source_class_set": true,
+        "raw_oracle_equal": true
+      },
+      {
+        "label": "javac8-jadx-none",
+        "compile_exit": 0,
+        "runtime_exit": 0,
+        "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "whole_source_class_set": true,
+        "raw_oracle_equal": true
+      }
+    ],
+    "jarde_compile_failures": {
+      "javac23-jarde-all": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "stderr_sha256": "c53dd9b10a10a0b051860db0de441477fc970d63ac1b48123dc5374acb66349d",
+        "fallback_symbol_unresolved": true
+      },
+      "javac23-jarde-default": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "stderr_sha256": "c22dd0d838bfb3178162ac0b85e095bd8dfe6aaa198c1a272a61ed00866752cc",
+        "fallback_symbol_unresolved": true
+      },
+      "javac8-jarde-all": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "stderr_sha256": "a54b489e7bcbabedfb450c7604d7c367598d2421c476778b2e73d09d02de63c0",
+        "fallback_symbol_unresolved": true
+      },
+      "javac8-jarde-default": {
+        "compile_exit": 1,
+        "runtime_attempted": false,
+        "stderr_sha256": "75983bc08d58fe9e979ec0189cbfd264d4d79cd3d4f20edf057a60fff7d724c9",
+        "fallback_symbol_unresolved": true
+      }
+    }
+  },
+  "original_runner_oracle": {
+    "javac8": {
+      "exit": 0,
+      "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "javac23": {
+      "exit": 0,
+      "stdout_sha256": "044c2d0cf05e0b3e43319a8994159462d0ffa1c66ee8c2cd09bca4bd4131cddc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "exception_and_overflow_boundary": {
+    "negative_multiply_overflow": "2147483645",
+    "minimum_times_negative_one": "-2147483648",
+    "divide_zero_mutation_preserves_field": "ArithmeticException,field=17",
+    "null_receiver_precedes_zero_division": "NullPointerException"
+  },
+  "multiplyDivide_physical_method": {
+    "descriptor": "(I)I",
+    "flags": "ACC_PUBLIC",
+    "bci_20": "getfield nested receiver field after putfield",
+    "bci_23": "ireturn",
+    "source_maps_cover_all_physical_instruction_bcis": true,
+    "default_all_maps_equal": true
+  },
+  "jarde_reports": {
+    "javac8": {
+      "default_all_root_child_text_and_method_maps_equal": true,
+      "outer_physical_members": [
+        "<init>()V",
+        "multiplyDivide(I)I",
+        "test1(I)V",
+        "test2(I)V"
+      ],
+      "child_physical_members": [
+        "<init>()V"
+      ],
+      "multiplyDivide": {
+        "content": "explanation_only",
+        "mapped_bcis": [
+          0,
+          1,
+          4,
+          5,
+          8,
+          10,
+          11,
+          12,
+          13,
+          16,
+          17,
+          20,
+          23
+        ],
+        "post_write_getfield_bci": 20,
+        "ireturn_bci": 23,
+        "runtime_claim": "none; all Jarde whole-class compiles failed"
+      }
+    },
+    "javac23": {
+      "default_all_root_child_text_and_method_maps_equal": true,
+      "outer_physical_members": [
+        "<init>()V",
+        "multiplyDivide(I)I",
+        "test1(I)V",
+        "test2(I)V"
+      ],
+      "child_physical_members": [
+        "<init>()V"
+      ],
+      "multiplyDivide": {
+        "content": "explanation_only",
+        "mapped_bcis": [
+          0,
+          1,
+          4,
+          5,
+          8,
+          10,
+          11,
+          12,
+          13,
+          16,
+          17,
+          20,
+          23
+        ],
+        "post_write_getfield_bci": 20,
+        "ireturn_bci": 23,
+        "runtime_claim": "none; all Jarde whole-class compiles failed"
+      }
+    }
+  },
+  "product_gap": {
+    "whole_class_compile_legs": 0,
+    "expected_legs": 4,
+    "runtime_legs": 0,
+    "test2_refused_copy_remains_unresolved": true,
+    "multiplyDivide_explanation_only_and_return_postread_evidence_preserved": true
+  },
+  "claim_boundary": "This accepts the recorded controls baseline evidence. All four Jarde whole-class compiles failed; no Jarde runtime comparison is claimed."
+}
