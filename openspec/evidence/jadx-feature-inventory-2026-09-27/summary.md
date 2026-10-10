@@ -379,3 +379,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-11：typed产品43dffc9b8本地全workspace94命令/356目标已root独立接受3408/0/97，86Git/live pins恒同；旧失败与carry原raw保留，target峰值799452287bytes且已清理。自身CI38087978610第一seed已成功、第二seed运行，仍6/8。conditional新增A/B完整物理class负例：双JDK JVM验证及36行执行通过，四同次public reader profiles独立核6 canonical块/8 Normal、A两个case exits/B唯一非相邻exit；仅观察，不计helper/caller准入或条件片任务完成。TestSwitchLabels同类投影caller门与Inner跨类绑定已拆清方向，未开新机制或实现。71/612和整单元完成数不变。
 
 2026-10-11：typed精确产品43dffc9b8自身CI38087978610已root v7独立接受，4jobs/52steps全部成功、双seed各356摘要和3408/0/97，86Git/live pins闭合。任务7/8待新增证据clean交付；仅局部类型窄片，不增加CF12/71整单元完成数。v6日志解析失败及v7成功原样保留。
+
+2026-10-11：typed证据已随9d6d51570提交推送，实际audit v4确认15worktrees全clean/14辅助detached祖先/仅main与origin同/无target/冻结CLI完整，任务8/8。关闭文档后仍实核最终HEAD；整CF12与71单元状态不变。

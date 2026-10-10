@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-10T22:18:44.522588+00:00",
+  "duration_seconds": 4.9009832910087425,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-typed-clean-delivery-audit-root-v1.py",
+    "/private/tmp/jarde-typed-clean-checkpoint-root-v3"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 188,
+      "sha256": "d2fb2b5f6de9fcf7f925dcbfb954be9f09b5352a9dec0649d840f0394acb3084"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
