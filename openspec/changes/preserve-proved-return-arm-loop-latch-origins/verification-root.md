@@ -1,6 +1,6 @@
 # 直接 return/latch If 的循环来源：root 验收
 
-当前 **6/7**。最小生产改动、永久边界回归、本地验证、新CLI完整源码独立对照及自身精确产品CI均已接受；最终主线交付待实际核对。71单元/612测试文件和整CF07计数不变。
+当前 **7/7**。最小生产改动、永久边界回归、本地验证、新CLI完整源码独立对照、自身精确产品CI和干净主线交付均已接受。71单元/612测试文件和整CF07计数不变。
 
 ## 实际证明和产品
 
@@ -31,3 +31,5 @@ results/old-controls-exact-acceptance-root-v1.json：新CLI **57命令/20完整�
 computed-init for债务见results/computed-init-for-debt-root-v1.md：preheader Push(Int)+Store门不支持end-1的load/sub初值。本片物理来源补全不修改while为for，不代表整CF07追平。下一项从已冻结CF12真实原上游差距推进局部类型完整写集合证明，须先完成本片自身CI和clean交付。
 
 CF12前置诊断在等待CI时临时运行：两个真实IR测试各1/0/0；全部52pins恢复后实际cargo clean341files/145.0MiB，target不存在。wrapper v1真实失败与v2成功、独立诊断验收都保留在openspec/evidence/java-syntax-2026-10-11/cf12-real-ir-diagnostics-root-v1；观察不算下一片产品实现。
+
+实际clean checkpoint `6118e5657471f2c5b8b45429c7e091374098e605` 已提交推送并审计接受：HEAD/main/origin完全相同，仅main分支，15worktrees全部clean，14辅助detached且都是main祖先，无待合入/分支占用/target/fuzz target，free68,071,964,672 bytes，冻结CLI 0555且SHA恒同。见results/clean-main-checkpoint-root-v1；关闭记录提交推送后root再次在private目录实核同样条件，再应用下一片。
