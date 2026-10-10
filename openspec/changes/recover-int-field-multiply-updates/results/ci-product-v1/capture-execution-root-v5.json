@@ -1,0 +1,70 @@
+{
+  "commands": [
+    {
+      "kind": "imported-api-capture",
+      "source": "openspec/changes/recover-int-field-multiply-updates/results/ci-product-direct-logs-root-v1/ci-run-v1.json",
+      "capture_source": "openspec/changes/recover-int-field-multiply-updates/results/ci-product-direct-logs-root-v1/capture-execution-root-v4.json",
+      "sha256": "4e7e58a6e145105c3a7393233988a5da1247fd75bc78296e56d98fc2029f0731"
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38033367666",
+        "--job",
+        "114158696862",
+        "--log"
+      ],
+      "environment_override": {
+        "NO_PROXY": "localhost,127.0.0.1,::1,results-receiver.actions.githubusercontent.com,productionresultssa1.blob.core.windows.net",
+        "no_proxy": "localhost,127.0.0.1,::1,results-receiver.actions.githubusercontent.com,productionresultssa1.blob.core.windows.net"
+      },
+      "started_at": "2026-10-10T07:55:35.931654+00:00",
+      "duration_seconds": 7.882468499999959,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-stable-job-v1.log.gz",
+        "bytes": 275770,
+        "uncompressed_bytes": 1759633,
+        "sha256": "6fc2dfdfe0dc040d0ea623ab3a59bbfb8aea7169e5b69dbdd5fc8ba45735be77",
+        "raw_sha256": "4ab0b748e9182ec6e69b84eabf84d1bce791d05847b9f171393cff06738e3790"
+      },
+      "stderr": {
+        "path": "ci-stable-job-v1.log.gz.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38033367666",
+        "--job",
+        "114158696784",
+        "--log"
+      ],
+      "environment_override": {
+        "NO_PROXY": "localhost,127.0.0.1,::1,results-receiver.actions.githubusercontent.com,productionresultssa1.blob.core.windows.net",
+        "no_proxy": "localhost,127.0.0.1,::1,results-receiver.actions.githubusercontent.com,productionresultssa1.blob.core.windows.net"
+      },
+      "started_at": "2026-10-10T07:55:43.815310+00:00",
+      "duration_seconds": 8.992165000003297,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-supply-job-v1.log.gz",
+        "bytes": 15133,
+        "uncompressed_bytes": 115920,
+        "sha256": "945aa1da697dfb95b5385071bfbf4529cc9c44c5c040e0dea23de39c4f7b63b6",
+        "raw_sha256": "5077190efda2ed1c55b2edd627dff11654bd844cf30606b63bb0eaa853f9348a"
+      },
+      "stderr": {
+        "path": "ci-supply-job-v1.log.gz.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

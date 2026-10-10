@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://api.github.com/repos/LordCasser/jarde/actions/jobs/114158696862/logs",
+  "error_type": "AssertionError",
+  "message": "",
+  "started_at": "2026-10-10T07:48:42.320893+00:00",
+  "duration_seconds": 8.883638041996164
+}

@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/results/verify-baseline-root-luna-v3.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "script_sha256": "871604cb886c23ea78171abb53092021bdf293faf56ba157a8b7ea6b1bfbe4cb",
+  "started_at": "2026-10-10T07:47:38.081201+00:00",
+  "finished_at": "2026-10-10T07:47:38.404690+00:00",
+  "exit": 1,
+  "streams": {
+    "stdout": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/results/independent-execution-root-v3/stdout.raw",
+      "bytes": 230,
+      "sha256": "f50b7a93b1aaaeaadcd70bfc776fe003ebfbb9032b1c620fe5c4d66b601da4a7"
+    },
+    "stderr": {
+      "path": "openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/results/independent-execution-root-v3/stderr.raw",
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

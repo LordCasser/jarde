@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py", line 403, in <module>
+    main()
+    ~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py", line 368, in main
+    helper, integer_verifier = load_fixed_helpers()
+                               ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py", line 108, in load_fixed_helpers
+    helper = load_module("fixed_static_ci_verifier_v12_multiply", STATIC_HELPER)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py", line 101, in load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py", line 18, in <module>
+    import blake3
+ModuleNotFoundError: No module named 'blake3'

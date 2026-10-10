@@ -1,0 +1,722 @@
+{
+  "schema": "em23-one-arm-loop-controls-independent-acceptance-luna-v5",
+  "status": "accepted-baseline-with-recorded-product-gap",
+  "verified": true,
+  "manifest_sha256": "6dfccb5ceeb854edf41b90e4136c23ce503699bb83bb17767444cd6fd6cfc18d",
+  "inventory_sha256": "96d487211c0bcbb71b6fb06a19894fb3a8d0b59a44b5376f8a5a3a48aa7c1b96",
+  "closed_file_count": 111,
+  "command_count": 31,
+  "tool_pins": {
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "cli_sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "metadata_sha256": "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+  },
+  "original_physical_facts": {
+    "javac23": {
+      "class_sha256": "a94a7af3f6258765adac1161d02d76b77f0de3ba69ab2fa3b74327b9819d0989",
+      "class_blake3": "dc9ffc1b22f48afee5efe37214db97e6b7c712d95e16ee961fb32f352b714183",
+      "class_bytes": 468,
+      "methods": {
+        "<init>()V": {
+          "flags": 1,
+          "instructions": {
+            "0": "aload_0",
+            "1": "invokespecial",
+            "4": "return"
+          }
+        },
+        "prefixWhile(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifeq",
+            "6": "iconst_0",
+            "7": "istore_3",
+            "8": "iload_3",
+            "9": "iload_1",
+            "10": "if_icmpge",
+            "13": "iload_2",
+            "14": "iload_3",
+            "15": "iadd",
+            "16": "istore_2",
+            "17": "iinc",
+            "20": "goto",
+            "23": "iload_2",
+            "24": "ireturn"
+          }
+        },
+        "noPrefix(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifeq",
+            "6": "iload_2",
+            "7": "iload_1",
+            "8": "if_icmpge",
+            "11": "iinc",
+            "14": "goto",
+            "17": "iload_2",
+            "18": "ireturn"
+          }
+        },
+        "loopAndTail(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifeq",
+            "6": "iconst_0",
+            "7": "istore_3",
+            "8": "iload_3",
+            "9": "iload_1",
+            "10": "if_icmpge",
+            "13": "iload_2",
+            "14": "iload_3",
+            "15": "iadd",
+            "16": "istore_2",
+            "17": "iinc",
+            "20": "goto",
+            "23": "iinc",
+            "26": "iload_2",
+            "27": "ireturn"
+          }
+        },
+        "takenArm(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifne",
+            "6": "iconst_0",
+            "7": "istore_3",
+            "8": "iload_3",
+            "9": "iload_1",
+            "10": "if_icmpge",
+            "13": "iload_2",
+            "14": "iload_3",
+            "15": "iadd",
+            "16": "istore_2",
+            "17": "iinc",
+            "20": "goto",
+            "23": "iload_2",
+            "24": "ireturn"
+          }
+        }
+      }
+    },
+    "javac8": {
+      "class_sha256": "ae13cd44a6d9fc5e690cb7383be74803d53e9bcf615697a641bb6ff4ec9f784b",
+      "class_blake3": "c38961a82305bddb1cc6a0597e3e590755dca3467509baaa303cecb44422ac56",
+      "class_bytes": 468,
+      "methods": {
+        "<init>()V": {
+          "flags": 1,
+          "instructions": {
+            "0": "aload_0",
+            "1": "invokespecial",
+            "4": "return"
+          }
+        },
+        "prefixWhile(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifeq",
+            "6": "iconst_0",
+            "7": "istore_3",
+            "8": "iload_3",
+            "9": "iload_1",
+            "10": "if_icmpge",
+            "13": "iload_2",
+            "14": "iload_3",
+            "15": "iadd",
+            "16": "istore_2",
+            "17": "iinc",
+            "20": "goto",
+            "23": "iload_2",
+            "24": "ireturn"
+          }
+        },
+        "noPrefix(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifeq",
+            "6": "iload_2",
+            "7": "iload_1",
+            "8": "if_icmpge",
+            "11": "iinc",
+            "14": "goto",
+            "17": "iload_2",
+            "18": "ireturn"
+          }
+        },
+        "loopAndTail(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifeq",
+            "6": "iconst_0",
+            "7": "istore_3",
+            "8": "iload_3",
+            "9": "iload_1",
+            "10": "if_icmpge",
+            "13": "iload_2",
+            "14": "iload_3",
+            "15": "iadd",
+            "16": "istore_2",
+            "17": "iinc",
+            "20": "goto",
+            "23": "iinc",
+            "26": "iload_2",
+            "27": "ireturn"
+          }
+        },
+        "takenArm(ZI)I": {
+          "flags": 9,
+          "instructions": {
+            "0": "iconst_0",
+            "1": "istore_2",
+            "2": "iload_0",
+            "3": "ifne",
+            "6": "iconst_0",
+            "7": "istore_3",
+            "8": "iload_3",
+            "9": "iload_1",
+            "10": "if_icmpge",
+            "13": "iload_2",
+            "14": "iload_3",
+            "15": "iadd",
+            "16": "istore_2",
+            "17": "iinc",
+            "20": "goto",
+            "23": "iload_2",
+            "24": "ireturn"
+          }
+        }
+      }
+    }
+  },
+  "original_jvm_raw_sha256": {
+    "javac23": {
+      "stdout": "be7aa5d42d61a952e4a917806d4ce26cec68977870fcba27c1f9875660caa54b",
+      "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "javac8": {
+      "stdout": "be7aa5d42d61a952e4a917806d4ce26cec68977870fcba27c1f9875660caa54b",
+      "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "jadx_complete_source_runs": {
+    "successful_full_class_legs": [
+      "javac23-jadx-default",
+      "javac23-jadx-none",
+      "javac8-jadx-default",
+      "javac8-jadx-none"
+    ],
+    "same_jdk_raw_match": true
+  },
+  "jarde_observed_per_method": {
+    "javac23-jarde-default": {
+      "compile_exit": 1,
+      "runtime": null,
+      "method_states": {
+        "<init>()V": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            4
+          ],
+          "known_missing_bci": []
+        },
+        "prefixWhile(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        },
+        "noPrefix(ZI)I": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            11,
+            17,
+            18
+          ],
+          "known_missing_bci": [
+            14
+          ]
+        },
+        "loopAndTail(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            26,
+            27
+          ],
+          "known_missing_bci": []
+        },
+        "takenArm(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        }
+      }
+    },
+    "javac23-jarde-all": {
+      "compile_exit": 1,
+      "runtime": null,
+      "method_states": {
+        "<init>()V": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            4
+          ],
+          "known_missing_bci": []
+        },
+        "prefixWhile(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        },
+        "noPrefix(ZI)I": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            11,
+            17,
+            18
+          ],
+          "known_missing_bci": [
+            14
+          ]
+        },
+        "loopAndTail(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            26,
+            27
+          ],
+          "known_missing_bci": []
+        },
+        "takenArm(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        }
+      }
+    },
+    "javac8-jarde-default": {
+      "compile_exit": 1,
+      "runtime": null,
+      "method_states": {
+        "<init>()V": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            4
+          ],
+          "known_missing_bci": []
+        },
+        "prefixWhile(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        },
+        "noPrefix(ZI)I": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            11,
+            17,
+            18
+          ],
+          "known_missing_bci": [
+            14
+          ]
+        },
+        "loopAndTail(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            26,
+            27
+          ],
+          "known_missing_bci": []
+        },
+        "takenArm(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        }
+      }
+    },
+    "javac8-jarde-all": {
+      "compile_exit": 1,
+      "runtime": null,
+      "method_states": {
+        "<init>()V": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            4
+          ],
+          "known_missing_bci": []
+        },
+        "prefixWhile(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        },
+        "noPrefix(ZI)I": {
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            11,
+            17,
+            18
+          ],
+          "known_missing_bci": [
+            14
+          ]
+        },
+        "loopAndTail(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            26,
+            27
+          ],
+          "known_missing_bci": []
+        },
+        "takenArm(ZI)I": {
+          "quality": "fallback",
+          "content": "explanation_only",
+          "fallbacks": [
+            "jre_region_arms_do_not_meet"
+          ],
+          "mapped_bcis": [
+            0,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            15,
+            16,
+            17,
+            20,
+            23,
+            24
+          ],
+          "known_missing_bci": []
+        }
+      }
+    }
+  },
+  "product_gap": {
+    "method": "noPrefix(ZI)I",
+    "physical_missing_instruction": {
+      "bci": 14,
+      "opcode": "goto"
+    },
+    "mapped_bcis_equal_physical_minus": [
+      14
+    ],
+    "severity": "recorded source-map coverage gap; not treated as full coverage"
+  },
+  "claim_boundary": "This accepts the closed baseline evidence and its observed outcomes. It does not claim all Jarde methods recover or the generated whole-class source compiles. Three loop methods retain explanation-only fallbacks, the whole-class javac legs fail with missing return statements, and no Jarde runtime is recorded. noPrefix is structured but its source-map omits the physical goto at BCI 14; that known product gap is preserved explicitly."
+}

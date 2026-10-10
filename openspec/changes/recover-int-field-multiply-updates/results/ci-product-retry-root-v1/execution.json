@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "view",
+    "38033367666",
+    "--json",
+    "status,conclusion,headSha,jobs,url,createdAt,updatedAt,event,name,number,databaseId"
+  ],
+  "started_at": "2026-10-10T07:36:40.822658+00:00",
+  "finished_at": "2026-10-10T07:36:42.924295+00:00",
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "exit": 0,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-field-multiply-updates/results/ci-product-retry-root-v1/stdout.raw",
+      "bytes": 9956,
+      "sha256": "2a371da8b6258cbe1893e1acc52cef8e9de638c63a7f3ac78b41979150ad8cbf"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-field-multiply-updates/results/ci-product-retry-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "status": "accepted-no-occupied-branches-or-unmerged-worktree-work",
+  "observed_at_utc": "2026-10-10T08:04:46.815852+00:00",
+  "main_head": "2f96f1a39f23b89c0a3e81ab5c1da0be5bb47b67",
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status_stdout": "",
+      "status_exit_code": 0,
+      "main_ancestor_exit_code": 0,
+      "target_exists": false,
+      "fuzz_target_exists": false
+    }
+  ],
+  "free_bytes": 15415889920,
+  "root_target_exists": false,
+  "root_fuzz_target_exists": false,
+  "new_evidence_pyc_files": [],
+  "production_diff": ""
+}

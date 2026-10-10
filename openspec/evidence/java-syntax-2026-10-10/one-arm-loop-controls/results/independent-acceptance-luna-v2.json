@@ -1,0 +1,6 @@
+{
+  "schema": "em23-one-arm-loop-controls-independent-acceptance-luna-v2",
+  "status": "rejected",
+  "verified": false,
+  "failure": "KeyError: 'home'"
+}

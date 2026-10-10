@@ -1,0 +1,356 @@
+{
+  "schema": "int-field-multiply-ci-product-luna-acceptance-v6",
+  "status": "accepted",
+  "product_commit": "1ee7c42e1be2b244733e04653b31d092addf0238",
+  "run_id": 38033367666,
+  "source_commit_base": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+  "shared_ci_verification": {
+    "static_helper": {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py",
+      "sha256": "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d",
+      "verify_ci_called": true,
+      "main_called": false
+    },
+    "accepted_integer_verifier": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/verify-int-array-ci-product-luna-v2.py",
+      "sha256": "e5534e0b2acc6066ba518a1b55f5d0f79b9e5e25a1c4dc5db768040b6d47b425",
+      "integer_test_helper_called": true
+    }
+  },
+  "ci": {
+    "ci_json_sha256": "4e7e58a6e145105c3a7393233988a5da1247fd75bc78296e56d98fc2029f0731",
+    "stable_gzip_sha256": "6fc2dfdfe0dc040d0ea623ab3a59bbfb8aea7169e5b69dbdd5fc8ba45735be77",
+    "stable_raw_sha256": "4ab0b748e9182ec6e69b84eabf84d1bce791d05847b9f171393cff06738e3790",
+    "supply_gzip_sha256": "945aa1da697dfb95b5385071bfbf4529cc9c44c5c040e0dea23de39c4f7b63b6",
+    "supply_raw_sha256": "5077190efda2ed1c55b2edd627dff11654bd844cf30606b63bb0eaa853f9348a",
+    "jobs": 4,
+    "step_count": 52,
+    "all_jobs_and_steps_success": true,
+    "installed_jdk": "25.0.4+7.0.LTS",
+    "workspace_seed_runs": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "seed": "5350648285461741569",
+        "binaries": {
+          "tests/class_static_initializer_projection.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/interface_initializer_proof.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_patterns.rs": {
+            "passed": 85,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_array_slot_retype_locals.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/recover_unicode_identifiers.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p5_corpus_fingerprint.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          },
+          "tests/p5_bulk_corpus.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          }
+        },
+        "test_result_records": 354,
+        "passed": 3377,
+        "failed": 0,
+        "ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "seed": "5350648285461741570",
+        "binaries": {
+          "tests/class_static_initializer_projection.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/interface_initializer_proof.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_patterns.rs": {
+            "passed": 85,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_array_slot_retype_locals.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/recover_unicode_identifiers.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p5_corpus_fingerprint.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          },
+          "tests/p5_bulk_corpus.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          }
+        },
+        "test_result_records": 354,
+        "passed": 3377,
+        "failed": 0,
+        "ignored": 97
+      }
+    ],
+    "workspace_seeds": [
+      "5350648285461741569",
+      "5350648285461741570"
+    ],
+    "ignored_comparisons": {
+      "jdk25_instruction_boundaries": {
+        "command": "cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "p3_execution": {
+        "command": "cargo test --test p3_execution_comparison --locked -- --ignored",
+        "records": 1,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      "functional_constructor": {
+        "command": "cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "bigdecimal": {
+        "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+        "records": 1,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      "nested": {
+        "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "returned": {
+        "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    "cargo_deny": {
+      "version": "0.20.2",
+      "commands": [
+        "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+        "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+      ]
+    },
+    "workflow_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a"
+  },
+  "workspace_regressions": {
+    "multiply_workspace_tests": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "seed": "5350648285461741569",
+        "command_group_index": 702,
+        "focused_binary": "tests/p3_compound_lvalue_updates.rs",
+        "focused_test_counts": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "multiply_tests": [
+          "nested_int_field_multiply_keeps_every_instruction_and_field_read_presented",
+          "multiply_does_not_merge_two_reads_or_cross_field_width_or_consumer_boundaries",
+          "multiply_public_recovery_keeps_output_budget_and_cancellation_atomic"
+        ],
+        "multiply_test_results": {
+          "nested_int_field_multiply_keeps_every_instruction_and_field_read_presented": "ok",
+          "multiply_does_not_merge_two_reads_or_cross_field_width_or_consumer_boundaries": "ok",
+          "multiply_public_recovery_keeps_output_budget_and_cancellation_atomic": "ok"
+        },
+        "workspace_result_records": 354,
+        "workspace_passed": 3377,
+        "workspace_failed": 0,
+        "workspace_ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "seed": "5350648285461741570",
+        "command_group_index": 6383,
+        "focused_binary": "tests/p3_compound_lvalue_updates.rs",
+        "focused_test_counts": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "multiply_tests": [
+          "nested_int_field_multiply_keeps_every_instruction_and_field_read_presented",
+          "multiply_does_not_merge_two_reads_or_cross_field_width_or_consumer_boundaries",
+          "multiply_public_recovery_keeps_output_budget_and_cancellation_atomic"
+        ],
+        "multiply_test_results": {
+          "nested_int_field_multiply_keeps_every_instruction_and_field_read_presented": "ok",
+          "multiply_does_not_merge_two_reads_or_cross_field_width_or_consumer_boundaries": "ok",
+          "multiply_public_recovery_keeps_output_budget_and_cancellation_atomic": "ok"
+        },
+        "workspace_result_records": 354,
+        "workspace_passed": 3377,
+        "workspace_failed": 0,
+        "workspace_ignored": 97
+      }
+    ],
+    "prior_integer_array_tests": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "command_group_index": 702,
+        "seed": "5350648285461741569",
+        "required_tests": [
+          "facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name",
+          "facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins",
+          "facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection",
+          "facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection",
+          "facade::integer_constant_name_tests::staged_same_method_text_is_not_overwritten_after_a_valid_replay",
+          "facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key",
+          "facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body",
+          "facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals",
+          "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+          "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+          "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop"
+        ],
+        "required_tests_ok": 11,
+        "actual_test_result_records": 354,
+        "actual_passed": 3377,
+        "actual_failed": 0,
+        "actual_ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "command_group_index": 6383,
+        "seed": "5350648285461741570",
+        "required_tests": [
+          "facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name",
+          "facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins",
+          "facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection",
+          "facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection",
+          "facade::integer_constant_name_tests::staged_same_method_text_is_not_overwritten_after_a_valid_replay",
+          "facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key",
+          "facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body",
+          "facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals",
+          "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+          "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+          "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop"
+        ],
+        "required_tests_ok": 11,
+        "actual_test_result_records": 354,
+        "actual_passed": 3377,
+        "actual_failed": 0,
+        "actual_ignored": 97
+      }
+    ],
+    "prior_integer_array_test_count": 11
+  },
+  "frozen_cli_and_build": {
+    "candidate_metadata_sha256": "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8",
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-field-multiply-cli-v2",
+      "sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+      "mode": "0o555"
+    },
+    "candidate_build_sha256": "9322060b2aba5dae02afcccd16489978a50187768822df8db7f480a77dea911c",
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v5.py",
+      "sha256": "93f22e0bccf4459563a0bd4d8274fbf28d85d483ba63a2ac609aae95ad2bdb56"
+    },
+    "product_commit_git_blob_pins_verified": 38,
+    "pin_counts": {
+      "candidate_sources": 10,
+      "test_sources": 2,
+      "canonical_files": 26
+    },
+    "source_commit_base": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+    "uncommitted_field_multiply_product": true,
+    "build_commands": 9,
+    "build_streams_verified": 18,
+    "build_test_result_records_recomputed_from_stdout": {
+      "2": [
+        [
+          333,
+          0,
+          0
+        ]
+      ],
+      "3": [
+        [
+          7,
+          0,
+          0
+        ]
+      ],
+      "4": [
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "5": [
+        [
+          8,
+          0,
+          0
+        ]
+      ],
+      "6": [
+        [
+          178,
+          0,
+          0
+        ]
+      ],
+      "7": [
+        [
+          5,
+          0,
+          1
+        ]
+      ]
+    },
+    "all_build_commands_exit_zero_no_guard_stop": true,
+    "workspace_source_bytes_used_as_acceptance_gate": false
+  },
+  "acceptance_scope": "submitted product Git blobs, frozen candidate CLI/build, four successful CI jobs and all recorded steps, and test-result counts independently parsed from frozen stdout, plus both fixed-seed multiply and prior integer regression tests"
+}

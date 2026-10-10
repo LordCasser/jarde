@@ -1,0 +1,55 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38033367666",
+        "--json",
+        "status,conclusion,headSha,jobs,url,createdAt,updatedAt,event,name,number,databaseId"
+      ],
+      "started_at": "2026-10-10T07:48:39.931650+00:00",
+      "duration_seconds": 2.301545750000514,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-run-v1.json",
+        "bytes": 10249,
+        "sha256": "4e7e58a6e145105c3a7393233988a5da1247fd75bc78296e56d98fc2029f0731"
+      },
+      "stderr": {
+        "path": "ci-run-v1.json.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "official_job_logs_endpoint": "https://api.github.com/repos/LordCasser/jarde/actions/jobs/114158696862/logs",
+      "redirect_received": 302,
+      "auth_header_scope": "api.github.com only; omitted from redirected curl",
+      "transport_argv": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--fail",
+        "--max-time",
+        "45",
+        "<official signed redirect>"
+      ],
+      "started_at": "2026-10-10T07:48:42.320893+00:00",
+      "duration_seconds": 8.883422291983152,
+      "exit_code": 35,
+      "stdout": {
+        "path": "ci-stable-job-v1.log.gz",
+        "uncompressed_bytes": 0,
+        "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+      },
+      "stderr": {
+        "path": "ci-stable-job-v1.log.gz.stderr.raw",
+        "bytes": 116,
+        "sha256": "10a3c6c21bfc326d82b601fc9887c84a979c3a00640bd52a5b0196075beceb55"
+      }
+    }
+  ]
+}

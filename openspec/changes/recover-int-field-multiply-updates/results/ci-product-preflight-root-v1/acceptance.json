@@ -1,0 +1,81 @@
+{
+  "status": "build-and-product-pins-accepted-ci-not-verified",
+  "started_utc": "2026-10-10T07:23:32.003403+00:00",
+  "duration_seconds": 0.4709758329845499,
+  "verifier": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py",
+    "sha256": "d2e451703724c3908a10bebc57730b4459c3c595381a9b0266bd6dfaebd6a0fe",
+    "entrypoint": "verify_build_and_candidate"
+  },
+  "product_commit": "1ee7c42e1be2b244733e04653b31d092addf0238",
+  "claim_boundary": "This invokes only the frozen build and Git blob gate. No CI API, job logs, or final CI acceptance was verified.",
+  "result": {
+    "candidate_metadata_sha256": "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8",
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-field-multiply-cli-v2",
+      "sha256": "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+      "mode": "0o555"
+    },
+    "candidate_build_sha256": "9322060b2aba5dae02afcccd16489978a50187768822df8db7f480a77dea911c",
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/run-validation-build-luna-v5.py",
+      "sha256": "93f22e0bccf4459563a0bd4d8274fbf28d85d483ba63a2ac609aae95ad2bdb56"
+    },
+    "product_commit_git_blob_pins_verified": 38,
+    "pin_counts": {
+      "candidate_sources": 10,
+      "test_sources": 2,
+      "canonical_files": 26
+    },
+    "source_commit_base": "977f761d9f68c6cb4de02f42b060de5290a1a947",
+    "uncommitted_field_multiply_product": true,
+    "build_commands": 9,
+    "build_streams_verified": 18,
+    "build_test_result_records_recomputed_from_stdout": {
+      "2": [
+        [
+          333,
+          0,
+          0
+        ]
+      ],
+      "3": [
+        [
+          7,
+          0,
+          0
+        ]
+      ],
+      "4": [
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "5": [
+        [
+          8,
+          0,
+          0
+        ]
+      ],
+      "6": [
+        [
+          178,
+          0,
+          0
+        ]
+      ],
+      "7": [
+        [
+          5,
+          0,
+          1
+        ]
+      ]
+    },
+    "all_build_commands_exit_zero_no_guard_stop": true,
+    "workspace_source_bytes_used_as_acceptance_gate": false
+  }
+}

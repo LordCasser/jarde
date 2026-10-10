@@ -1,0 +1,6 @@
+{
+  "schema": "em23-one-arm-loop-controls-independent-acceptance-luna-v3",
+  "status": "rejected",
+  "verified": false,
+  "failure": "AssertionError: source-map BCI absent from physical javap: javac23-jarde-default/<init>()V/1"
+}

@@ -1,0 +1,36 @@
+{
+  "reviewed_at": "2026-10-10T07:59:15.670543+00:00",
+  "patch_sha256": "8ea53a8db72f126b46b21d622be908b7d6c443460499f7458c40f00770dfdd7a",
+  "apply_check": {
+    "argv": [
+      "git",
+      "apply",
+      "--check",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/loop-latch-origins-luna-v2.patch"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "shared_production_unchanged": {
+    "argv": [
+      "git",
+      "diff",
+      "--exit-code",
+      "--",
+      "crates/jarde-java/src/region.rs",
+      "crates/jarde-java/tests/p3_loop_exit_gateways.rs"
+    ],
+    "exit": 0
+  },
+  "applied": false,
+  "compiled": false,
+  "tests_run": false,
+  "resolved_loop_arm_join_regression": "crates/jarde-java/tests/p3_effectful_exits.rs",
+  "readme_collision_resolution": {
+    "candidate_readme_renamed_to": "README-candidate-replay-luna-v2.md",
+    "candidate_readme_sha256": "ea73da3f7e688f8516489232e121bade2f41605f98df32bec7dc4453a07b5db9",
+    "patch_readme_restored_from_root_full_read": "README-loop-latch-origins-luna-v2.md",
+    "patch_readme_sha256": "90e2e3789d1e42705295080594801a6a29bcf9579b41005f4e4c2f5ae2592b35"
+  }
+}

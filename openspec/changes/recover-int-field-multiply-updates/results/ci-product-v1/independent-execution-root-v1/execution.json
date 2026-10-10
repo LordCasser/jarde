@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-int-field-multiply-updates/results/verify-field-multiply-ci-product-luna-v6.py",
+    "1ee7c42e1be2b244733e04653b31d092addf0238",
+    "38033367666",
+    "--metadata-sha256",
+    "f0dcf85e67539e9f91a3cd2a089536c55405482af53924e01438832b6a515db8",
+    "--cli-sha256",
+    "b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59",
+    "--build-sha256",
+    "9322060b2aba5dae02afcccd16489978a50187768822df8db7f480a77dea911c"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "script_sha256": "d2e451703724c3908a10bebc57730b4459c3c595381a9b0266bd6dfaebd6a0fe",
+  "started_at": "2026-10-10T07:56:26.046322+00:00",
+  "finished_at": "2026-10-10T07:56:26.110539+00:00",
+  "exit": 1,
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/recover-int-field-multiply-updates/results/ci-product-v1/independent-execution-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "openspec/changes/recover-int-field-multiply-updates/results/ci-product-v1/independent-execution-root-v1/stderr.raw",
+      "bytes": 1428,
+      "sha256": "4700981a228b237435d8967eecca70e5f1de412a5525134a547ef2347b495d8b"
+    }
+  }
+}

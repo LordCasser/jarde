@@ -1,0 +1,6 @@
+{
+  "schema": "em23-one-arm-loop-controls-independent-acceptance-luna-v1",
+  "status": "rejected",
+  "verified": false,
+  "failure": "KeyError: 'default_source_map_completeness_required'"
+}

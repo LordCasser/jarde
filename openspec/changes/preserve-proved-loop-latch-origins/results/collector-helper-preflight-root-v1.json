@@ -1,0 +1,76 @@
+{
+  "status": "readonly-helper-preflight-accepted-no-new-cli-run",
+  "executed_at": "2026-10-10T07:59:53.408548+00:00",
+  "script_sha256": "ad212129fc2ad72ed322d300e1eb25c51fc49940a39336f1a79f03a39d6ec22b",
+  "baseline_integrity": {
+    "manifest_sha256": "6dfccb5ceeb854edf41b90e4136c23ce503699bb83bb17767444cd6fd6cfc18d",
+    "inventory_sha256": "96d487211c0bcbb71b6fb06a19894fb3a8d0b59a44b5376f8a5a3a48aa7c1b96",
+    "file_count": 111,
+    "closed": true
+  },
+  "planning_pins": {
+    "proposal.md": "401e0d2536b6c075b9aee46eb7df6dfe7afccc00f78a7401108d3ee79f5c5148",
+    "design.md": "f349387ffb6c4333ae7825c0a4740dfc1c8e56863486e7f890f00e74176cea8b",
+    "specs/java8-recovery/spec.md": "c5562e9bccbbe98e17af231038ab3814c469a8988c05fad44c55a0e8f51e2858"
+  },
+  "negative_old_cli_observations": [
+    {
+      "leg": "javac8",
+      "mode": "default",
+      "old_baseline_is_rejected_as_new_candidate": true,
+      "errors": [
+        "<init>: candidate reports do not cover every physical method BCI",
+        "prefixWhile: candidate reports do not cover every physical method BCI",
+        "noPrefix: noPrefix source-map delta is not exactly one physical origin",
+        "noPrefix: noPrefix does not cover all physical BCIs including goto@14",
+        "noPrefix: candidate reports do not cover every physical method BCI",
+        "loopAndTail: candidate reports do not cover every physical method BCI",
+        "takenArm: candidate reports do not cover every physical method BCI"
+      ]
+    },
+    {
+      "leg": "javac8",
+      "mode": "all",
+      "old_baseline_is_rejected_as_new_candidate": true,
+      "errors": [
+        "<init>: candidate reports do not cover every physical method BCI",
+        "prefixWhile: candidate reports do not cover every physical method BCI",
+        "noPrefix: noPrefix source-map delta is not exactly one physical origin",
+        "noPrefix: noPrefix does not cover all physical BCIs including goto@14",
+        "noPrefix: candidate reports do not cover every physical method BCI",
+        "loopAndTail: candidate reports do not cover every physical method BCI",
+        "takenArm: candidate reports do not cover every physical method BCI"
+      ]
+    },
+    {
+      "leg": "javac23",
+      "mode": "default",
+      "old_baseline_is_rejected_as_new_candidate": true,
+      "errors": [
+        "<init>: candidate reports do not cover every physical method BCI",
+        "prefixWhile: candidate reports do not cover every physical method BCI",
+        "noPrefix: noPrefix source-map delta is not exactly one physical origin",
+        "noPrefix: noPrefix does not cover all physical BCIs including goto@14",
+        "noPrefix: candidate reports do not cover every physical method BCI",
+        "loopAndTail: candidate reports do not cover every physical method BCI",
+        "takenArm: candidate reports do not cover every physical method BCI"
+      ]
+    },
+    {
+      "leg": "javac23",
+      "mode": "all",
+      "old_baseline_is_rejected_as_new_candidate": true,
+      "errors": [
+        "<init>: candidate reports do not cover every physical method BCI",
+        "prefixWhile: candidate reports do not cover every physical method BCI",
+        "noPrefix: noPrefix source-map delta is not exactly one physical origin",
+        "noPrefix: noPrefix does not cover all physical BCIs including goto@14",
+        "noPrefix: candidate reports do not cover every physical method BCI",
+        "loopAndTail: candidate reports do not cover every physical method BCI",
+        "takenArm: candidate reports do not cover every physical method BCI"
+      ]
+    }
+  ],
+  "main_called": false,
+  "cli_jdk_jadx_executed": false
+}

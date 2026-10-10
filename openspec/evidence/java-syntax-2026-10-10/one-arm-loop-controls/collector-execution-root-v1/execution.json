@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--no-project",
+    "--with",
+    "blake3==1.0.11",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/one-arm-loop-controls/prepare-baseline-luna-v1.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_utc": "2026-10-10T07:25:55.044863+00:00",
+  "duration_seconds": 6.139719583996339,
+  "exit_code": 0,
+  "script_sha256": "a1ed035789f96f2a945bc9e8499bb4d1d089639082ccb59ce61933c97660879c",
+  "streams": {
+    "stdout.raw": {
+      "bytes": 293,
+      "sha256": "9e5a9c49543f7f5ea2e4e03e625f14e7fb20a223a4fde8eaf9efa1266356a421"
+    },
+    "stderr.raw": {
+      "bytes": 59,
+      "sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "schema": "em23-one-arm-loop-controls-independent-acceptance-luna-v4",
+  "status": "rejected",
+  "verified": false,
+  "failure": "AssertionError: Jarde recorded physical-member/owner facts differ: javac23-jarde-default"
+}

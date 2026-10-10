@@ -1,0 +1,160 @@
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -11153,7 +11153,20 @@
+         Ok(sites) => sites,
+         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+     };
+-    let mut recovered: Recovered = match crate::region::recover(
++    let arm_loop_probe = std::env::var_os("JRE_ARM_LOOP_PROBE").is_some();
++    let method_facts = request.facts.method();
++    if arm_loop_probe {
++        eprintln!(
++            "JRE_ARM_LOOP_PROBE method={}/{}{} stage=recover-begin",
++            method_facts
++                .declaring_class()
++                .map(|class| class.name())
++                .unwrap_or("<unknown>"),
++            method_facts.name(),
++            method_facts.descriptor(),
++        );
++    }
++    let region_result = crate::region::recover(
+         canonical,
+         &view,
+         ssa,
+@@ -11166,7 +11179,14 @@
+         return_is_boolean,
+         &request.profile,
+         budget,
+-    ) {
++    );
++    if arm_loop_probe {
++        match &region_result {
++            Ok(_) => eprintln!("JRE_ARM_LOOP_PROBE method={}/{}{} stage=recover-end outcome=ok", method_facts.declaring_class().map(|class| class.name()).unwrap_or("<unknown>"), method_facts.name(), method_facts.descriptor()),
++            Err(stop) => eprintln!("JRE_ARM_LOOP_PROBE method={}/{}{} stage=recover-end outcome=stop reason={stop:?}", method_facts.declaring_class().map(|class| class.name()).unwrap_or("<unknown>"), method_facts.name(), method_facts.descriptor()),
++        }
++    }
++    let mut recovered: Recovered = match region_result {
+         Ok(recovered) => recovered,
+         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+     };
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -2736,7 +2736,69 @@
+                     .last()
+                     .is_some_and(|target| target.header == node);
+                 if prefix.is_empty() && !latch_edge_of_own_loop {
+-                    return self.loop_region(&current, node, frame);
++                    let result = self.loop_region(&current, node, frame)?;
++                    if std::env::var_os("JRE_ARM_LOOP_PROBE").is_some() {
++                        let (regions, next) = &result;
++                        let region_bcis: Vec<Vec<u32>> = regions
++                            .iter()
++                            .map(|region| {
++                                region
++                                    .blocks()
++                                    .into_iter()
++                                    .map(|block| block.bci())
++                                    .collect()
++                            })
++                            .collect();
++                        let scope_bcis: Option<Vec<u32>> = frame.scope.as_ref().map(|scope| {
++                            scope
++                                .iter()
++                                .filter_map(|node| self.view.id_of(*node).map(|id| id.bci()))
++                                .collect()
++                        });
++                        let boundary_bci = frame
++                            .boundary
++                            .and_then(|node| self.view.id_of(node).map(|id| id.bci()));
++                        let own_loop_bci = frame
++                            .own_loop
++                            .and_then(|node| self.view.id_of(node).map(|id| id.bci()));
++                        eprintln!(
++                            "JRE_ARM_LOOP_PROBE stage=loop-region-return header={} regions={regions:?} region_bcis={region_bcis:?} next={next:?} frame_boundary={boundary_bci:?} frame_scope={scope_bcis:?} frame_own_loop={own_loop_bci:?} loop_targets={:?}",
++                            current.bci(),
++                            frame.loop_targets.iter().map(|target| (
++                                self.view.id_of(target.header).map(|id| id.bci()),
++                                target.exits.iter().filter_map(|node| self.view.id_of(*node).map(|id| id.bci())).collect::<Vec<_>>(),
++                                target.break_target.and_then(|node| self.view.id_of(node).map(|id| id.bci())),
++                                self.view.id_of(target.continue_target).map(|id| id.bci()),
++                            )).collect::<Vec<_>>(),
++                        );
++                    }
++                    return Ok(result);
++                }
++                if std::env::var_os("JRE_ARM_LOOP_PROBE").is_some() {
++                    let prefix_bcis: Vec<u32> = prefix.iter().map(CanonicalBlockId::bci).collect();
++                    let scope_bcis: Option<Vec<u32>> = frame.scope.as_ref().map(|scope| {
++                        scope
++                            .iter()
++                            .filter_map(|node| self.view.id_of(*node).map(|id| id.bci()))
++                            .collect()
++                    });
++                    let boundary_bci = frame
++                        .boundary
++                        .and_then(|node| self.view.id_of(node).map(|id| id.bci()));
++                    let own_loop_bci = frame
++                        .own_loop
++                        .and_then(|node| self.view.id_of(node).map(|id| id.bci()));
++                    eprintln!(
++                        "JRE_ARM_LOOP_PROBE stage=loop-header-prefix-return header={} prefix={prefix_bcis:?} next={} frame_boundary={boundary_bci:?} frame_scope={scope_bcis:?} frame_own_loop={own_loop_bci:?} loop_targets={:?}",
++                        current.bci(),
++                        current.bci(),
++                        frame.loop_targets.iter().map(|target| (
++                            self.view.id_of(target.header).map(|id| id.bci()),
++                            target.exits.iter().filter_map(|node| self.view.id_of(*node).map(|id| id.bci())).collect::<Vec<_>>(),
++                            target.break_target.and_then(|node| self.view.id_of(node).map(|id| id.bci())),
++                            self.view.id_of(target.continue_target).map(|id| id.bci()),
++                        )).collect::<Vec<_>>(),
++                    );
+                 }
+                 return Ok(one(Region::Straight { blocks: prefix }, Some(current)));
+             }
+@@ -3445,6 +3507,46 @@
+                             arm_frame.shared_tail = Some(join_node);
+                         }
+                         let (mut arm_run, arm_next) = self.region_at(walk, &arm_frame)?;
++                        if std::env::var_os("JRE_ARM_LOOP_PROBE").is_some() {
++                            let region_bcis: Vec<Vec<u32>> = arm_run
++                                .iter()
++                                .map(|region| {
++                                    region
++                                        .blocks()
++                                        .into_iter()
++                                        .map(|block| block.bci())
++                                        .collect()
++                                })
++                                .collect();
++                            let scope_bcis: Option<Vec<u32>> = arm_frame.scope.as_ref().map(|scope| {
++                                scope
++                                    .iter()
++                                    .filter_map(|node| self.view.id_of(*node).map(|id| id.bci()))
++                                    .collect()
++                            });
++                            let boundary_bci = arm_frame
++                                .boundary
++                                .and_then(|node| self.view.id_of(node).map(|id| id.bci()));
++                            let own_loop_bci = arm_frame
++                                .own_loop
++                                .and_then(|node| self.view.id_of(node).map(|id| id.bci()));
++                            let loop_targets: Vec<_> = arm_frame
++                                .loop_targets
++                                .iter()
++                                .map(|target| (
++                                    self.view.id_of(target.header).map(|id| id.bci()),
++                                    target.exits.iter().filter_map(|node| self.view.id_of(*node).map(|id| id.bci())).collect::<Vec<_>>(),
++                                    target.break_target.and_then(|node| self.view.id_of(node).map(|id| id.bci())),
++                                    self.view.id_of(target.continue_target).map(|id| id.bci()),
++                                ))
++                                .collect();
++                            eprintln!(
++                                "JRE_ARM_LOOP_PROBE stage=one-arm-return branch={} start={} join={:?} regions={arm_run:?} region_bcis={region_bcis:?} next={arm_next:?} frame_boundary={boundary_bci:?} frame_scope={scope_bcis:?} frame_own_loop={own_loop_bci:?} frame_loop_targets={loop_targets:?}",
++                                branch_bci,
++                                walk.bci(),
++                                self.view.id_of(join_node).map(|id| id.bci()),
++                            );
++                        }
+                         if let Some(next) = arm_next.as_ref()
+                             && self.view.index_of(next) != Some(join_node)
+                             && !self.continue_early_return_arm(&mut arm_run, next, &arm_frame)?

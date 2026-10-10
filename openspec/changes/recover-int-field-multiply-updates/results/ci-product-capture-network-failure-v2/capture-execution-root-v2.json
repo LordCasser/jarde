@@ -1,0 +1,55 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38033367666",
+        "--json",
+        "status,conclusion,headSha,jobs,url,createdAt,updatedAt,event,name,number,databaseId"
+      ],
+      "started_at": "2026-10-10T07:46:22.386140+00:00",
+      "duration_seconds": 4.851921749999747,
+      "exit_code": 0,
+      "stdout": {
+        "path": "ci-run-v1.json",
+        "bytes": 10249,
+        "uncompressed_bytes": 10249,
+        "sha256": "4e7e58a6e145105c3a7393233988a5da1247fd75bc78296e56d98fc2029f0731",
+        "raw_sha256": "4e7e58a6e145105c3a7393233988a5da1247fd75bc78296e56d98fc2029f0731"
+      },
+      "stderr": {
+        "path": "ci-run-v1.json.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38033367666",
+        "--job",
+        "114158696862",
+        "--log"
+      ],
+      "started_at": "2026-10-10T07:46:27.238560+00:00",
+      "duration_seconds": 12.025405792024685,
+      "exit_code": 1,
+      "stdout": {
+        "path": "ci-stable-job-v1.log.gz",
+        "bytes": 20,
+        "uncompressed_bytes": 0,
+        "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+        "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "ci-stable-job-v1.log.gz.stderr.raw",
+        "bytes": 286,
+        "sha256": "50bdd2ad0669ec7ef33e71a19e4560212bc1f078fa176b751a9a512c6aef102e"
+      }
+    }
+  ]
+}
