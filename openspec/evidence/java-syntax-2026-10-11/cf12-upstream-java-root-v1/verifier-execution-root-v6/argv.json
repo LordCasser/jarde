@@ -1,0 +1,10 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v6.py"
+]

@@ -1,0 +1,705 @@
+{
+  "schema": "cf12-fresh-official-upstream-harness-root-v1",
+  "utc": "2026-10-10T17:04:48.481089+00:00",
+  "runner": {
+    "path": "/private/tmp/jarde-cf12-direct-harness-root-v1.py",
+    "bytes": 5665,
+    "sha256": "b026601a0364206a53b4c1c8815965aa90e624c86400baf827fc32bdab97df26"
+  },
+  "source_files": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+      "bytes": 740,
+      "sha256": "b931ab6747698a410ea07b7bf798499eabb0525e8a2f22d7e2018ede7683b60d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+      "bytes": 1397,
+      "sha256": "81bc96dade42fb3840db41dcc567091ee4280228e931825110701cfb1273d07d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+      "bytes": 23241,
+      "sha256": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+      "bytes": 1342,
+      "sha256": "5dc6ca167a4a36f689fe6b55f4a7a9a8cfecd5f650391dff7fb2d3ffc6b69b2e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+      "bytes": 1246,
+      "sha256": "7cced13b40d1b582ec953b672fbf6af78c6b20a5e4e548e5fff10f64d5aa7ae0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+      "bytes": 1422,
+      "sha256": "26c8dfffc58d86d25cb1817ad0d38f09489aaa9b27113455cf630ea4795aad9b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+      "bytes": 542,
+      "sha256": "3da3d559e47e6d9065b6273aaaeb71c6c5e6ea86034253193cd6e2c80cb60409"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+      "bytes": 673,
+      "sha256": "667fe20e0fe3926be4b3c02a5e40cdbedcf7541a45b3e333d1aa363f8d2b4fc5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+      "bytes": 825,
+      "sha256": "c76d673620691ea64e8f03845ff46843f0ce382e35c04431b69c33dead39cd7d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+      "bytes": 495,
+      "sha256": "a6cd4013b05546c39b9370feb7cd3c317fbcc7637ceb77f75bf64ef6a8f6ae2f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+      "bytes": 5006,
+      "sha256": "a0f4f4e4017546279d7bd0e32276bb43b2d968b82c4d0f37880728524825a60b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+      "bytes": 645,
+      "sha256": "1a7272556007a4166b1e6a6770a55388efc0118b2497270ffee9269fc4c991d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+      "bytes": 2526,
+      "sha256": "697077c8188a04505d89861ffa20d9a9c1fbcbd050de02bc5c15a8fd3f60af82"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+      "bytes": 823,
+      "sha256": "8b7d50aca9ec2ac8dd861444bd1854fa6d43adac4d8d9d3c12195c6544bc4d5e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+      "bytes": 2651,
+      "sha256": "688a3c650aa3cb7177a7598799009b5a1d3f90e37e55f6de2aa5f0a4907e8802"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+      "bytes": 4262,
+      "sha256": "f0ddf91660e72ab461bdcfb1996f4881adf187931733d20449a784d2b8d7e417"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+      "bytes": 1114,
+      "sha256": "82ea32586a4cf216c3b880153087a67c28e1782fc62e6be08388aebc5f7fbde0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+      "bytes": 571,
+      "sha256": "ae50a57880a4910ce185c7c5f7eeef1c3cd34d1743242ba5c09e1d99092e1d75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+      "bytes": 939,
+      "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+      "bytes": 697,
+      "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+      "bytes": 1305,
+      "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+      "bytes": 1077,
+      "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+      "bytes": 1257,
+      "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+    }
+  ],
+  "product_runtime_jars": [
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar",
+      "bytes": 239543,
+      "sha256": "58caabc40c9f74b0b5993fd868e0f64a50c0759094e6a251aaafad98edfc7a3b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar",
+      "bytes": 721157,
+      "sha256": "2335bab7fd8269ee98d3843410c4a5553d31dd71f9a22f49b21a676d3139c882"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar",
+      "bytes": 17536,
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar",
+      "bytes": 445288,
+      "sha256": "88fbda4b912596b9f56e8e12e580cc954bacfb51776ecfddd3e18fc1cf56dc4c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar",
+      "bytes": 1153819,
+      "sha256": "5ac36c2acfb0a0f3d37dafe20b5b570f2643e2d000c648d44503c2738be643df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar",
+      "bytes": 167761,
+      "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar",
+      "bytes": 126151,
+      "sha256": "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar",
+      "bytes": 13371507,
+      "sha256": "ccad18514fd97db010856b2bbed40f481f8ba9349368c97ae54d72e3567d0171"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar",
+      "bytes": 208835,
+      "sha256": "ff10785ac2a357ec5de9c293cb982a2cbb605c0309ea4cc1cb9b9bc6dbe7f3cb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar",
+      "bytes": 609182,
+      "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar",
+      "bytes": 1039009,
+      "sha256": "1e4b645628e3bdb097b5331d669e177ef235a551582a8c646dbe36865e541907"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar",
+      "bytes": 25886,
+      "sha256": "8fcced97ce6a4126841bbfe3fd1905c0857df17a8261606477ded16404ecb218"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar",
+      "bytes": 2020,
+      "sha256": "d42a03703e94c17518ef0c36a295a4aef03e977b5b4d8d7c276fe4ab17387c76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar",
+      "bytes": 20255,
+      "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar",
+      "bytes": 4617,
+      "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar",
+      "bytes": 313604,
+      "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar",
+      "bytes": 2785359,
+      "sha256": "32ac2ed709d96d278b5d2e3e5cea178fa4939939c525fb647532f013308db309"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar",
+      "bytes": 8781,
+      "sha256": "21af30c92267bd6122c0e0b4d20cccb6641a37eaf956c6540ec471d584e64a7b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar",
+      "bytes": 23547,
+      "sha256": "f30806220f2a88adb380361e916d56ab570b0f71b966de122438f06ecdde8e68"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar",
+      "bytes": 16590,
+      "sha256": "5da6268acead5b759109f661000f90552c7ddc8d63f567f3204d24b9d462693e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar",
+      "bytes": 11946,
+      "sha256": "850dcc38e02553c2fe0bb0656da7b7fee3daa764b446ac557010d101c06522c9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar",
+      "bytes": 8282,
+      "sha256": "1a38d2c9e661f740d4a5e03c7f6b53b5c0dc8e0dec0059df17a251a9e2df8e3a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar",
+      "bytes": 6769,
+      "sha256": "05831884105a25dd70407af9d0c20f3d52417169713527ac5b60c742b4e83dc2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar",
+      "bytes": 65020,
+      "sha256": "d56d54d7fd2317f21a2fc79ee295afb4144bdbb8354d591f51253beb814fd3bd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar",
+      "bytes": 2400805,
+      "sha256": "96fd84c2af69221c5e5fb436d17f7bf82b3d341cd8e5945b4fb1511d7b210c07"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar",
+      "bytes": 107404,
+      "sha256": "c2f001b559454cf60a91e8271ce4e9bf36a27da00c9e34024e5cad0fe5350350"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar",
+      "bytes": 54158,
+      "sha256": "99de1970d3a09078b70bea67435db86ecf445b1e2fb70c2151365573019fd861"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar",
+      "bytes": 19973,
+      "sha256": "684bc9196734c33cc1ed27c0d9e2d3f8fb3d43157185ed840a28f1b3e60ceef6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar",
+      "bytes": 115864,
+      "sha256": "8dcb1b51ba1df4d0411f42231f9678909bc0c78278ba56f991278f446c3d8b88"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar",
+      "bytes": 56006,
+      "sha256": "b82cd7287befd7b2e7a4c40b284e419d19c0833845ba316af9b1d3603d73be0f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar",
+      "bytes": 33989,
+      "sha256": "c17d6e9be1dff38a989e4da2d90e416c5acfa0db5a84f507b184c4aa76cb7790"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar",
+      "bytes": 43273,
+      "sha256": "5cdc695eaf8ee890d3289a006486114b7eb9c26b0e443633542d562c70b22f2d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar",
+      "bytes": 25907,
+      "sha256": "c19ef20e1d472ebfe9e2584fafc4deae09d24f0d64f85d4ce48e8c95cfcb28b9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar",
+      "bytes": 10711,
+      "sha256": "9acfdc3d06957dbdf69a7c246b0df63721185e13a04416621998d3aa234ecb81"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar",
+      "bytes": 10470,
+      "sha256": "a6172bac0b632bc0b6f177209fbdf4305a5365e33b47cd6513c83e71670db73e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar",
+      "bytes": 27061,
+      "sha256": "4fb876aa38250f57e9afe0562aa6811fe7a152f57b1f098aaed80e63e2333d48"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar",
+      "bytes": 2497,
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar",
+      "bytes": 94038,
+      "sha256": "62fc1edc0ac44b033d70698443750e36ffeb87386cb1d7b294b0ea34384e122c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar",
+      "bytes": 19936,
+      "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar",
+      "bytes": 910795,
+      "sha256": "233aaa84ca268e26d6d3a99ce30401e6dc111a7ae10e0a0b4794ce6351d7adc4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar",
+      "bytes": 3750100,
+      "sha256": "25a1aef7454d46548ecaaf51021b0e52e38141a62ed75af124da109b7324c4e5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar",
+      "bytes": 1841933,
+      "sha256": "4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "bytes": 2199,
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar",
+      "bytes": 293273,
+      "sha256": "beebede8db065fe1b72909ecc66bb49acda618901635d86c25fce14a5915e37e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar",
+      "bytes": 650132,
+      "sha256": "a6967a28c8b086dee75a694d2f6fb8830c71153539866d7d8af065c9b6df91e0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar",
+      "bytes": 262096,
+      "sha256": "aedc94b25a2fe7c09c898144ce33a1ef396680e984b07525d34916922d6ee3f4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar",
+      "bytes": 1876598,
+      "sha256": "df18b719cd0c5a11e569013216cc9de47a0a954adeede685c0f98ce4c42d4d1a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar",
+      "bytes": 20603304,
+      "sha256": "2100511344497f041644a4d63fb7be8a516ce9bace30b7d17ab27cc93a0e58d4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar",
+      "bytes": 32614,
+      "sha256": "6edf3a349db9fdebb5fbb67560be1f70497666c350ec3eaf54d7fcb00de7a481"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar",
+      "bytes": 43019,
+      "sha256": "f26401bc7159c301ebfd818699ea104d3affba79d2397e882d0fba29bcfbd2f3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar",
+      "bytes": 69982,
+      "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar",
+      "bytes": 313205,
+      "sha256": "98e917b1b1e4f5aa48e74c97fee786645725e9b79e9842e3d7e50f65896553f1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar",
+      "bytes": 132972,
+      "sha256": "e7d0166945565a87f3997d1aea8779202dbb6cb0585a39ee20bab8a2f5ba87f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar",
+      "bytes": 1194123,
+      "sha256": "8b547506f62f91d74b70f4beb4989b99e1ff61fc50b2525e9796ca35f0a351dc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar",
+      "bytes": 33331,
+      "sha256": "4673762894ba4156081fc5c642f74d6e78aef8b1a9c7702d691e3171d8cc1153"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar",
+      "bytes": 148627,
+      "sha256": "f66ce72e965e5301cb0f020e54d2ba6ad76feb91b3cbfc30dbbf00c06a6df6d7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar",
+      "bytes": 82498,
+      "sha256": "ab68efcf162355e20007b238d8108b7ffec0c06b467ee44cbb44ec3f8ac3a7e6"
+    }
+  ],
+  "test_sdk_jars": [
+    {
+      "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar",
+      "bytes": 31094,
+      "sha256": "ebc7aec252ed0c7d2d04c039d7f00e69f7b86b1f493c741d67b3ef31b986b054"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar",
+      "bytes": 1399383,
+      "sha256": "c4a445426c3c2861666863b842cc4ec7bbb1c4226fefd370b6d2fe83d6c4ff0f"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar",
+      "bytes": 9223908,
+      "sha256": "d78396e3c5bce3f2865c9186647481e5589d34cacc632484715b686108d17c66"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar",
+      "bytes": 713862,
+      "sha256": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar",
+      "bytes": 3160927,
+      "sha256": "f7686c4960cf70c2ebc5c500a73a8cfc04541b730c18f1c5c21329889b137f45"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+      "bytes": 3178851,
+      "sha256": "7c6968cbcaf4301c729f202b23b7d736c5d88be625fc7d27ad5d746146a8bc28"
+    }
+  ],
+  "jdk_tools": [
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    }
+  ],
+  "environment": {
+    "JAVA_HOME": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "PATH": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.local/bin:/Users/lordcasser/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/Wireshark.app/Contents/MacOS:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Users/lordcasser/.codex/tmp/arg0/codex-arg0Gu94RU:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/lordcasser/.local/bin:/Users/lordcasser/.jenv/shims:/Users/lordcasser/.jenv/bin:/Users/lordcasser/.pyenv/shims:/Users/lordcasser/Library/npm-global/bin:/Users/lordcasser/.pyenv/versions/3.12.12/bin:/Users/lordcasser/Applications/jb-tools:/Users/lordcasser/go/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/nix/var/nix/profiles/default/bin:/Users/lordcasser/.grok/bin:/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/openjdk@17/bin:/Users/lordcasser/.cargo/bin:/Users/lordcasser/.orbstack/bin:/Users/lordcasser/.lmstudio/bin:/Users/lordcasser/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/lordcasser/Library/Application Support/JetBrains/Toolbox/scripts:/Applications/\u6781\u7a7a\u95f4.app/Contents/Resources/app.asar.unpacked/bin/platform-tools:/Users/lordcasser/.lmstudio/bin"
+  },
+  "cwd": "/Users/lordcasser/workspace/testzone/jadx",
+  "commands": [
+    {
+      "label": "javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/testzone/jadx",
+      "utc": "2026-10-10T17:04:48.530564+00:00",
+      "guard": {
+        "machine_floor_bytes": 5368709120,
+        "root_target_limit_bytes": 1073741824,
+        "private_output_limit_bytes": 1073741824,
+        "poll_seconds": 1,
+        "abort": null,
+        "peak_output_bytes": 54796,
+        "peak_target_bytes": 0
+      },
+      "exit_code": 0,
+      "duration_seconds": 1.0162163329951,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/javac-version.stdout.raw",
+          "bytes": 13,
+          "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/javac-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "fresh-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "11",
+        "-target",
+        "11",
+        "-proc:none",
+        "-implicit:none",
+        "-sourcepath",
+        "/private/tmp/jarde-cf12-direct-harness-root-v1/empty-sourcepath",
+        "-classpath",
+        "/private/tmp/jarde-cf12-direct-harness-root-v1/fresh-classes:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/ST4-4.0.8.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/aapt2-proto-9.2.1-15009934.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/annotations-13.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-2.7.7.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/antlr-runtime-3.5.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/asm-9.10.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/bundletool-1.18.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/checker-qual-3.12.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/commons-io-2.22.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/dalvik-dx-16.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/directories-jni-0.1.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/error_prone_annotations-2.48.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/failureaccess-1.0.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/gson-2.14.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/guava-31.1-android.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/j2objc-annotations-1.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-aab-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-analysis-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apkm-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-apks-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-app-commons-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-core-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-dex-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-input-api-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-convert-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-java-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-metadata-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-kotlin-source-debug-extension-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-plugins-tools-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-rename-mappings-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-smali-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-xapk-input-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-zip-dev.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/javax.inject-1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jcommander-2.0.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jsr305-3.0.2.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-metadata-jvm-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-reflect-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/kotlin-stdlib-2.4.10.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-classic-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/logback-core-1.6.3.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/mapping-io-0.9.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/protobuf-java-3.25.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/r8-9.4.17.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-common-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/raung-disasm-0.1.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/slf4j-api-2.0.18.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-baksmali-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-dexlib2-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/smali-util-3.0.9.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/stringtemplate-3.2.1.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/windows-jni-utils-0.3.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar:/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar:/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/resources",
+        "-d",
+        "/private/tmp/jarde-cf12-direct-harness-root-v1/fresh-classes",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+        "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/testzone/jadx",
+      "utc": "2026-10-10T17:04:49.547398+00:00",
+      "guard": {
+        "machine_floor_bytes": 5368709120,
+        "root_target_limit_bytes": 1073741824,
+        "private_output_limit_bytes": 1073741824,
+        "poll_seconds": 1,
+        "abort": null,
+        "peak_output_bytes": 78950,
+        "peak_target_bytes": 0
+      },
+      "exit_code": 1,
+      "duration_seconds": 1.0105585420096759,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/fresh-compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/fresh-compile.stderr.raw",
+          "bytes": 1434,
+          "sha256": "3611ac8374b48185702ea83eab5178b0ddf7d8bc908ded1b328091d34fe0115e"
+        }
+      ]
+    }
+  ],
+  "result": "failed",
+  "error": "Traceback (most recent call last):\n  File \"/private/tmp/jarde-cf12-direct-harness-root-v1.py\", line 48, in <module>\n    run('fresh-compile',[JDK/'bin/javac','-encoding','UTF-8','-source','11','-target','11','-proc:none','-implicit:none','-sourcepath',OUT/'empty-sourcepath','-classpath',CP,'-d',OUT/'fresh-classes',*SOURCE])\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/jarde-cf12-direct-harness-root-v1.py\", line 45, in run\n    assert rec['exit_code']==0 and rec['guard']['abort'] is None,label\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: fresh-compile\n",
+  "source_unchanged": true,
+  "generated_files": [
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/javac-version.stdout.raw",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/fresh-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/javac-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/fresh-compile.stderr.raw",
+      "bytes": 1434,
+      "sha256": "3611ac8374b48185702ea83eab5178b0ddf7d8bc908ded1b328091d34fe0115e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+      "bytes": 1397,
+      "sha256": "81bc96dade42fb3840db41dcc567091ee4280228e931825110701cfb1273d07d"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+      "bytes": 740,
+      "sha256": "b931ab6747698a410ea07b7bf798499eabb0525e8a2f22d7e2018ede7683b60d"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+      "bytes": 23241,
+      "sha256": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+      "bytes": 2526,
+      "sha256": "697077c8188a04505d89861ffa20d9a9c1fbcbd050de02bc5c15a8fd3f60af82"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+      "bytes": 645,
+      "sha256": "1a7272556007a4166b1e6a6770a55388efc0118b2497270ffee9269fc4c991d2"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+      "bytes": 673,
+      "sha256": "667fe20e0fe3926be4b3c02a5e40cdbedcf7541a45b3e333d1aa363f8d2b4fc5"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+      "bytes": 1422,
+      "sha256": "26c8dfffc58d86d25cb1817ad0d38f09489aaa9b27113455cf630ea4795aad9b"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+      "bytes": 542,
+      "sha256": "3da3d559e47e6d9065b6273aaaeb71c6c5e6ea86034253193cd6e2c80cb60409"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+      "bytes": 825,
+      "sha256": "c76d673620691ea64e8f03845ff46843f0ce382e35c04431b69c33dead39cd7d"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+      "bytes": 5006,
+      "sha256": "a0f4f4e4017546279d7bd0e32276bb43b2d968b82c4d0f37880728524825a60b"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+      "bytes": 1342,
+      "sha256": "5dc6ca167a4a36f689fe6b55f4a7a9a8cfecd5f650391dff7fb2d3ffc6b69b2e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+      "bytes": 1246,
+      "sha256": "7cced13b40d1b582ec953b672fbf6af78c6b20a5e4e548e5fff10f64d5aa7ae0"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+      "bytes": 495,
+      "sha256": "a6cd4013b05546c39b9370feb7cd3c317fbcc7637ceb77f75bf64ef6a8f6ae2f"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+      "bytes": 2651,
+      "sha256": "688a3c650aa3cb7177a7598799009b5a1d3f90e37e55f6de2aa5f0a4907e8802"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+      "bytes": 4262,
+      "sha256": "f0ddf91660e72ab461bdcfb1996f4881adf187931733d20449a784d2b8d7e417"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+      "bytes": 571,
+      "sha256": "ae50a57880a4910ce185c7c5f7eeef1c3cd34d1743242ba5c09e1d99092e1d75"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+      "bytes": 1114,
+      "sha256": "82ea32586a4cf216c3b880153087a67c28e1782fc62e6be08388aebc5f7fbde0"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+      "bytes": 823,
+      "sha256": "8b7d50aca9ec2ac8dd861444bd1854fa6d43adac4d8d9d3c12195c6544bc4d5e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+      "bytes": 1077,
+      "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+      "bytes": 697,
+      "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+      "bytes": 1257,
+      "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+      "bytes": 939,
+      "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-direct-harness-root-v1/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+      "bytes": 1305,
+      "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+    }
+  ],
+  "free_bytes_after": 59863654400
+}

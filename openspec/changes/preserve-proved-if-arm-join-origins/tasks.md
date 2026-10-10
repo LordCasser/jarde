@@ -11,5 +11,5 @@
 ## 3. Full source and delivery
 
 - [x] 3.1 root实跑fmt、CI同范围Clippy与相关永久回归，在5GiB/1GiB守卫下冻结本片新CLI/meta/source pins；双JDK/default-all完整CF07原/JADX/Jarde源码原样重编运行同原raw，独立接受counted全部BCI/If@20准确来源及旧for/while控制，lastIndexOf25保留独立缺口。
-- [ ] 3.2 提交推送本片产品，捕获精确headSha自身CI/API/raw并由root独立接受全部jobs/steps、双seed与测试名/pins；实跑OpenSpec strict，不能借前片或文档CI。
+- [x] 3.2 提交推送本片产品，捕获精确headSha自身CI/API/raw并由root独立接受全部jobs/steps、双seed与测试名/pins；实跑OpenSpec strict，不能借前片或文档CI。
 - [ ] 3.3 root更新verification-root、71单元账本和根handoff，提交推送全部授权修改；实际核main/origin相等、工作区clean、仅main及无待合入/分支占用、cargo clean本仓target，保留冻结CLI/raw/源/class，不冒称CF07整单元或持续目标完成。

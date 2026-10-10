@@ -1,0 +1,171 @@
+Classfile /private/tmp/jarde-cf12-direct-harness-root-v3/capture/TestSwitch.test/input/TestSwitch$TestCls.class
+  Last modified 2026年10月11日; size 1083 bytes
+  SHA-256 checksum f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18
+  Compiled from "TestSwitch.java"
+public class jadx.tests.integration.switches.TestSwitch$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #30                         // jadx/tests/integration/switches/TestSwitch$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Methodref          #8.#9          // java/lang/String.length:()I
+   #8 = Class              #10            // java/lang/String
+   #9 = NameAndType        #11:#12        // length:()I
+  #10 = Utf8               java/lang/String
+  #11 = Utf8               length
+  #12 = Utf8               ()I
+  #13 = Class              #14            // java/lang/StringBuilder
+  #14 = Utf8               java/lang/StringBuilder
+  #15 = Methodref          #13.#16        // java/lang/StringBuilder."<init>":(I)V
+  #16 = NameAndType        #5:#17         // "<init>":(I)V
+  #17 = Utf8               (I)V
+  #18 = Methodref          #8.#19         // java/lang/String.charAt:(I)C
+  #19 = NameAndType        #20:#21        // charAt:(I)C
+  #20 = Utf8               charAt
+  #21 = Utf8               (I)C
+  #22 = Methodref          #13.#23        // java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+  #23 = NameAndType        #24:#25        // append:(C)Ljava/lang/StringBuilder;
+  #24 = Utf8               append
+  #25 = Utf8               (C)Ljava/lang/StringBuilder;
+  #26 = Methodref          #13.#27        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #27 = NameAndType        #28:#29        // toString:()Ljava/lang/String;
+  #28 = Utf8               toString
+  #29 = Utf8               ()Ljava/lang/String;
+  #30 = Class              #31            // jadx/tests/integration/switches/TestSwitch$TestCls
+  #31 = Utf8               jadx/tests/integration/switches/TestSwitch$TestCls
+  #32 = Utf8               Code
+  #33 = Utf8               LineNumberTable
+  #34 = Utf8               LocalVariableTable
+  #35 = Utf8               this
+  #36 = Utf8               Ljadx/tests/integration/switches/TestSwitch$TestCls;
+  #37 = Utf8               test
+  #38 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #39 = Utf8               c
+  #40 = Utf8               C
+  #41 = Utf8               i
+  #42 = Utf8               I
+  #43 = Utf8               str
+  #44 = Utf8               Ljava/lang/String;
+  #45 = Utf8               len
+  #46 = Utf8               sb
+  #47 = Utf8               Ljava/lang/StringBuilder;
+  #48 = Utf8               StackMapTable
+  #49 = Utf8               SourceFile
+  #50 = Utf8               TestSwitch.java
+  #51 = Utf8               InnerClasses
+  #52 = Class              #53            // jadx/tests/integration/switches/TestSwitch
+  #53 = Utf8               jadx/tests/integration/switches/TestSwitch
+  #54 = Utf8               TestCls
+{
+  public jadx.tests.integration.switches.TestSwitch$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 10: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitch$TestCls;
+
+  public java.lang.String test(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=6, args_size=2
+         0: aload_1
+         1: invokevirtual #7                  // Method java/lang/String.length:()I
+         4: istore_2
+         5: new           #13                 // class java/lang/StringBuilder
+         8: dup
+         9: iload_2
+        10: invokespecial #15                 // Method java/lang/StringBuilder."<init>":(I)V
+        13: astore_3
+        14: iconst_0
+        15: istore        4
+        17: iload         4
+        19: iload_2
+        20: if_icmpge     112
+        23: aload_1
+        24: iload         4
+        26: invokevirtual #18                 // Method java/lang/String.charAt:(I)C
+        29: istore        5
+        31: iload         5
+        33: lookupswitch  { // 4
+                      46: 76
+                      47: 76
+                      63: 96
+                      93: 86
+                 default: 99
+            }
+        76: aload_3
+        77: bipush        95
+        79: invokevirtual #22                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        82: pop
+        83: goto          106
+        86: aload_3
+        87: bipush        65
+        89: invokevirtual #22                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+        92: pop
+        93: goto          106
+        96: goto          106
+        99: aload_3
+       100: iload         5
+       102: invokevirtual #22                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+       105: pop
+       106: iinc          4, 1
+       109: goto          17
+       112: aload_3
+       113: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       116: areturn
+      LineNumberTable:
+        line 12: 0
+        line 13: 5
+        line 14: 14
+        line 15: 23
+        line 16: 31
+        line 19: 76
+        line 20: 83
+        line 23: 86
+        line 24: 93
+        line 27: 96
+        line 30: 99
+        line 14: 106
+        line 34: 112
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           31      75     5     c   C
+           17      95     4     i   I
+            0     117     0  this   Ljadx/tests/integration/switches/TestSwitch$TestCls;
+            0     117     1   str   Ljava/lang/String;
+            5     112     2   len   I
+           14     103     3    sb   Ljava/lang/StringBuilder;
+      StackMapTable: number_of_entries = 7
+        frame_type = 254 /* append */
+          offset_delta = 17
+          locals = [ int, class java/lang/StringBuilder, int ]
+        frame_type = 252 /* append */
+          offset_delta = 58
+          locals = [ int ]
+        frame_type = 9 /* same */
+        frame_type = 9 /* same */
+        frame_type = 2 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 6
+        frame_type = 250 /* chop */
+          offset_delta = 5
+}
+SourceFile: "TestSwitch.java"
+InnerClasses:
+  public static #54= #30 of #52;          // TestCls=class jadx/tests/integration/switches/TestSwitch$TestCls of class jadx/tests/integration/switches/TestSwitch

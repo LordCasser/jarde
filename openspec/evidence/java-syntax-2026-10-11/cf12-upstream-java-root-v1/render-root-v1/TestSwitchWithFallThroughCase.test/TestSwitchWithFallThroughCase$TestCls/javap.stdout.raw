@@ -1,0 +1,275 @@
+Classfile /private/tmp/jarde-cf12-direct-harness-root-v3/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class
+  Last modified 2026年10月11日; size 1563 bytes
+  SHA-256 checksum 5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034
+  Compiled from "TestSwitchWithFallThroughCase.java"
+public class jadx.tests.integration.switches.TestSwitchWithFallThroughCase$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #33                         // jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             //
+   #8 = Utf8
+   #9 = Class              #10            // java/lang/StringBuilder
+  #10 = Utf8               java/lang/StringBuilder
+  #11 = Methodref          #9.#3          // java/lang/StringBuilder."<init>":()V
+  #12 = Methodref          #9.#13         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #13 = NameAndType        #14:#15        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #14 = Utf8               append
+  #15 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #16 = String             #17            // >
+  #17 = Utf8               >
+  #18 = Methodref          #9.#19         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #19 = NameAndType        #20:#21        // toString:()Ljava/lang/String;
+  #20 = Utf8               toString
+  #21 = Utf8               ()Ljava/lang/String;
+  #22 = String             #23            // 1
+  #23 = Utf8               1
+  #24 = String             #25            // !c
+  #25 = Utf8               !c
+  #26 = String             #27            // 2
+  #27 = Utf8               2
+  #28 = String             #29            // default
+  #29 = Utf8               default
+  #30 = String             #31            // ;
+  #31 = Utf8               ;
+  #32 = Methodref          #33.#34        // jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.test:(IZZ)Ljava/lang/String;
+  #33 = Class              #35            // jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls
+  #34 = NameAndType        #36:#37        // test:(IZZ)Ljava/lang/String;
+  #35 = Utf8               jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls
+  #36 = Utf8               test
+  #37 = Utf8               (IZZ)Ljava/lang/String;
+  #38 = Methodref          #39.#40        // org/assertj/core/api/Assertions.assertThat:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+  #39 = Class              #41            // org/assertj/core/api/Assertions
+  #40 = NameAndType        #42:#43        // assertThat:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+  #41 = Utf8               org/assertj/core/api/Assertions
+  #42 = Utf8               assertThat
+  #43 = Utf8               (Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+  #44 = String             #45            // >1;
+  #45 = Utf8               >1;
+  #46 = Methodref          #47.#48        // org/assertj/core/api/AbstractStringAssert.isEqualTo:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+  #47 = Class              #49            // org/assertj/core/api/AbstractStringAssert
+  #48 = NameAndType        #50:#43        // isEqualTo:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+  #49 = Utf8               org/assertj/core/api/AbstractStringAssert
+  #50 = Utf8               isEqualTo
+  #51 = String             #52            // >2;
+  #52 = Utf8               >2;
+  #53 = String             #54            // default;
+  #54 = Utf8               default;
+  #55 = Utf8               Code
+  #56 = Utf8               LineNumberTable
+  #57 = Utf8               LocalVariableTable
+  #58 = Utf8               this
+  #59 = Utf8               Ljadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls;
+  #60 = Utf8               a
+  #61 = Utf8               I
+  #62 = Utf8               b
+  #63 = Utf8               Z
+  #64 = Utf8               c
+  #65 = Utf8               str
+  #66 = Utf8               Ljava/lang/String;
+  #67 = Utf8               StackMapTable
+  #68 = Class              #69            // java/lang/String
+  #69 = Utf8               java/lang/String
+  #70 = Utf8               check
+  #71 = Utf8               SourceFile
+  #72 = Utf8               TestSwitchWithFallThroughCase.java
+  #73 = Utf8               InnerClasses
+  #74 = Class              #75            // jadx/tests/integration/switches/TestSwitchWithFallThroughCase
+  #75 = Utf8               jadx/tests/integration/switches/TestSwitchWithFallThroughCase
+  #76 = Utf8               TestCls
+{
+  public jadx.tests.integration.switches.TestSwitchWithFallThroughCase$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 13: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls;
+
+  public java.lang.String test(int, boolean, boolean);
+    descriptor: (IZZ)Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=5, args_size=4
+         0: ldc           #7                  // String
+         2: astore        4
+         4: iload_1
+         5: iconst_4
+         6: irem
+         7: tableswitch   { // 1 to 3
+                       1: 32
+                       2: 117
+                       3: 146
+                 default: 149
+            }
+        32: new           #9                  // class java/lang/StringBuilder
+        35: dup
+        36: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+        39: aload         4
+        41: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        44: ldc           #16                 // String >
+        46: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        49: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        52: astore        4
+        54: iload_1
+        55: iconst_5
+        56: if_icmpne     117
+        59: iload_2
+        60: ifeq          117
+        63: iload_3
+        64: ifeq          92
+        67: new           #9                  // class java/lang/StringBuilder
+        70: dup
+        71: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+        74: aload         4
+        76: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        79: ldc           #22                 // String 1
+        81: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        84: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        87: astore        4
+        89: goto          171
+        92: new           #9                  // class java/lang/StringBuilder
+        95: dup
+        96: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+        99: aload         4
+       101: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       104: ldc           #24                 // String !c
+       106: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       109: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       112: astore        4
+       114: goto          171
+       117: iload_2
+       118: ifeq          171
+       121: new           #9                  // class java/lang/StringBuilder
+       124: dup
+       125: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+       128: aload         4
+       130: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       133: ldc           #26                 // String 2
+       135: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       138: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       141: astore        4
+       143: goto          171
+       146: goto          171
+       149: new           #9                  // class java/lang/StringBuilder
+       152: dup
+       153: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+       156: aload         4
+       158: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       161: ldc           #28                 // String default
+       163: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       166: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       169: astore        4
+       171: new           #9                  // class java/lang/StringBuilder
+       174: dup
+       175: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+       178: aload         4
+       180: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       183: ldc           #30                 // String ;
+       185: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       188: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       191: astore        4
+       193: aload         4
+       195: areturn
+      LineNumberTable:
+        line 15: 0
+        line 16: 4
+        line 18: 32
+        line 19: 54
+        line 20: 63
+        line 21: 67
+        line 23: 92
+        line 25: 114
+        line 29: 117
+        line 30: 121
+        line 34: 146
+        line 36: 149
+        line 39: 171
+        line 40: 193
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0     196     0  this   Ljadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls;
+            0     196     1     a   I
+            0     196     2     b   Z
+            0     196     3     c   Z
+            4     192     4   str   Ljava/lang/String;
+      StackMapTable: number_of_entries = 6
+        frame_type = 252 /* append */
+          offset_delta = 32
+          locals = [ class java/lang/String ]
+        frame_type = 59 /* same */
+        frame_type = 24 /* same */
+        frame_type = 28 /* same */
+        frame_type = 2 /* same */
+        frame_type = 21 /* same */
+
+  public void check();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=4, locals=1, args_size=1
+         0: aload_0
+         1: iconst_5
+         2: iconst_1
+         3: iconst_1
+         4: invokevirtual #32                 // Method test:(IZZ)Ljava/lang/String;
+         7: invokestatic  #38                 // Method org/assertj/core/api/Assertions.assertThat:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        10: ldc           #44                 // String >1;
+        12: invokevirtual #46                 // Method org/assertj/core/api/AbstractStringAssert.isEqualTo:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        15: pop
+        16: aload_0
+        17: iconst_1
+        18: iconst_1
+        19: iconst_1
+        20: invokevirtual #32                 // Method test:(IZZ)Ljava/lang/String;
+        23: invokestatic  #38                 // Method org/assertj/core/api/Assertions.assertThat:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        26: ldc           #51                 // String >2;
+        28: invokevirtual #46                 // Method org/assertj/core/api/AbstractStringAssert.isEqualTo:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        31: pop
+        32: aload_0
+        33: iconst_3
+        34: iconst_1
+        35: iconst_1
+        36: invokevirtual #32                 // Method test:(IZZ)Ljava/lang/String;
+        39: invokestatic  #38                 // Method org/assertj/core/api/Assertions.assertThat:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        42: ldc           #30                 // String ;
+        44: invokevirtual #46                 // Method org/assertj/core/api/AbstractStringAssert.isEqualTo:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        47: pop
+        48: aload_0
+        49: iconst_0
+        50: iconst_1
+        51: iconst_1
+        52: invokevirtual #32                 // Method test:(IZZ)Ljava/lang/String;
+        55: invokestatic  #38                 // Method org/assertj/core/api/Assertions.assertThat:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        58: ldc           #53                 // String default;
+        60: invokevirtual #46                 // Method org/assertj/core/api/AbstractStringAssert.isEqualTo:(Ljava/lang/String;)Lorg/assertj/core/api/AbstractStringAssert;
+        63: pop
+        64: return
+      LineNumberTable:
+        line 44: 0
+        line 45: 16
+        line 46: 32
+        line 47: 48
+        line 48: 64
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      65     0  this   Ljadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls;
+}
+SourceFile: "TestSwitchWithFallThroughCase.java"
+InnerClasses:
+  public static #76= #33 of #74;          // TestCls=class jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls of class jadx/tests/integration/switches/TestSwitchWithFallThroughCase

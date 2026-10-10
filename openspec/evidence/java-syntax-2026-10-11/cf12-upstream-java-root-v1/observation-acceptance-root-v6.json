@@ -1,0 +1,2438 @@
+{
+  "schema": "cf12-observation-verification-root-v6",
+  "status": "observations-verified-unit-not-accepted",
+  "cf12_complete": false,
+  "direct_harness": {
+    "tests": 6,
+    "passed": 5,
+    "failed": 1,
+    "skipped": 0,
+    "errors": 0,
+    "compiled_sources": 24,
+    "captured_class_files": 8,
+    "generated_inventory": 102,
+    "source_checks": 1,
+    "decompiled_checks": 1,
+    "verified_sdk_jars": 6
+  },
+  "render_baseline": {
+    "commands": 24,
+    "javap": 8,
+    "jarde_json": 16,
+    "class_instances": 8,
+    "unique_classes": 6,
+    "method_source_map_pairs_compared": 19
+  },
+  "full_replay": {
+    "generated_case_rows": 18,
+    "original_runtime_commands": 6,
+    "jadx_compile_and_runtime_passes": 6,
+    "jarde_matches": 6,
+    "jarde_mismatches": 2,
+    "jarde_compile_failures": 4
+  },
+  "official_sdk": {
+    "jars": 6,
+    "jar_bytes": 17708025,
+    "manifest": "official-test-sdk/manifest.json",
+    "artifacts": [
+      {
+        "coordinate": "org.junit.platform:junit-platform-console-standalone:1.14.4",
+        "jar": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+          "resolved_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar",
+          "bytes": 3178851,
+          "sha256": "7c6968cbcaf4301c729f202b23b7d736c5d88be625fc7d27ad5d746146a8bc28"
+        },
+        "pom": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.pom",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/junit-platform-console-standalone-1.14.4.pom",
+          "bytes": 2370,
+          "sha256": "85cde188a8fd9b177d451edcc10b1e554608907d2a29a580a8f75112cff78849"
+        },
+        "sha1": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/junit-platform-console-standalone-1.14.4.jar.sha1",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/junit-platform-console-standalone-1.14.4.jar.sha1",
+          "bytes": 40,
+          "sha256": "0ee621894de7e19819526db90ad3931dc73304bcbfe3e0373b99fedbd68eef79"
+        }
+      },
+      {
+        "coordinate": "org.assertj:assertj-core:3.27.7",
+        "jar": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar",
+          "resolved_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar",
+          "bytes": 1399383,
+          "sha256": "c4a445426c3c2861666863b842cc4ec7bbb1c4226fefd370b6d2fe83d6c4ff0f"
+        },
+        "pom": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.pom",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/assertj-core-3.27.7.pom",
+          "bytes": 3804,
+          "sha256": "95a10dcfb3ba9aad4d0b5e9c523a8d583377bee5ecd4ba37e19e55a34667f079"
+        },
+        "sha1": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/assertj-core-3.27.7.jar.sha1",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/assertj-core-3.27.7.jar.sha1",
+          "bytes": 40,
+          "sha256": "7ac817107a84f6f0f718db82d2728785b774b2663db01829170f2897ebe96c12"
+        }
+      },
+      {
+        "coordinate": "net.bytebuddy:byte-buddy:1.18.3",
+        "jar": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar",
+          "resolved_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar",
+          "bytes": 9223908,
+          "sha256": "d78396e3c5bce3f2865c9186647481e5589d34cacc632484715b686108d17c66"
+        },
+        "pom": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.pom",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/byte-buddy-1.18.3.pom",
+          "bytes": 19432,
+          "sha256": "7157b622a0d6885cb5526a10f1220ddf090dbb52ca2fe38c32cc69c4f1530788"
+        },
+        "sha1": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/byte-buddy-1.18.3.jar.sha1",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/byte-buddy-1.18.3.jar.sha1",
+          "bytes": 40,
+          "sha256": "5559dc82f001fc19544b45572d5e25969a52cab0796b6d80f6546634113df89b"
+        }
+      },
+      {
+        "coordinate": "org.apache.commons:commons-lang3:3.20.0",
+        "jar": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar",
+          "resolved_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar",
+          "bytes": 713862,
+          "sha256": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+        },
+        "pom": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.pom",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/commons-lang3-3.20.0.pom",
+          "bytes": 32571,
+          "sha256": "7ca83b2709c1e7a9e03b576cd41422190379489a80866e542f8c8b955411a2aa"
+        },
+        "sha1": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/commons-lang3-3.20.0.jar.sha1",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/commons-lang3-3.20.0.jar.sha1",
+          "bytes": 40,
+          "sha256": "f19da58c794bf52a343f7be8ca2c5780c4268fa562862dd29852861dd414338b"
+        }
+      },
+      {
+        "coordinate": "org.jetbrains:annotations:26.1.0",
+        "jar": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar",
+          "resolved_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar",
+          "bytes": 31094,
+          "sha256": "ebc7aec252ed0c7d2d04c039d7f00e69f7b86b1f493c741d67b3ef31b986b054"
+        },
+        "pom": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.pom",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/annotations-26.1.0.pom",
+          "bytes": 1686,
+          "sha256": "f8dc50cf3aac4bcec740a90955f2800e41251e9c403630b75b752d3b6ef5bee2"
+        },
+        "sha1": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/annotations-26.1.0.jar.sha1",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/annotations-26.1.0.jar.sha1",
+          "bytes": 40,
+          "sha256": "e2ec1083a01f1bfa5ea3a0ff1d5d4e32c47c479097e9687dcfdfd6c31248a244"
+        }
+      },
+      {
+        "coordinate": "org.eclipse.jdt:ecj:3.33.0",
+        "jar": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar",
+          "resolved_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar",
+          "bytes": 3160927,
+          "sha256": "f7686c4960cf70c2ebc5c500a73a8cfc04541b730c18f1c5c21329889b137f45"
+        },
+        "pom": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.pom",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/ecj-3.33.0.pom",
+          "bytes": 1316,
+          "sha256": "266c17d4f1cbd10b71bdec390e1f64acdc95e61d618cf4a2ea86ea903337bf88"
+        },
+        "sha1": {
+          "recorded_path": "/private/tmp/jarde-cf12-test-sdk-root-v1/ecj-3.33.0.jar.sha1",
+          "resolved_path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/ecj-3.33.0.jar.sha1",
+          "bytes": 40,
+          "sha256": "283e49cffb218a33e246da5f4d83150bbf1106d5fa2ff3c86e68028f515a80c6"
+        }
+      }
+    ]
+  },
+  "closed_input_inventory": {
+    "files": 429,
+    "bytes": 1860833,
+    "top_level_subdirs": [
+      "full-replay-root-v1",
+      "harness-v1-compile-failure",
+      "harness-v2-dex",
+      "harness-v3-java",
+      "official-test-sdk",
+      "render-root-v1"
+    ]
+  },
+  "copied_evidence_inventory_count": 451,
+  "copied_evidence_inventory": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/Cf12CaptureExtension.java",
+      "bytes": 2498,
+      "sha256": "2f900cb846b78ed1ceb1523f7b01105873777394625a90c2058e1330534f295c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/README.md",
+      "bytes": 4914,
+      "sha256": "01f70422a7b864a829257c32b31c026de5f5605df70a67ac94456f052ab86c79"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jadx/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1002,
+      "sha256": "da35e0994387021d304b8b2b0bc4b84a0a8bc2a5c7ce875ce002f108405f9671"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jadx/runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jadx/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 756,
+      "sha256": "3bb9f72c9b6941b4ddf54c1d9eacc5f874eb98ef933e6adcca5727475394df18"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 991,
+      "sha256": "bacc10dc4650b4dc5bcb47d50990db55b76481b2f63704846d24729433fd36df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-all/runtime.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 991,
+      "sha256": "bacc10dc4650b4dc5bcb47d50990db55b76481b2f63704846d24729433fd36df"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-default/runtime.stdout.raw",
+      "bytes": 217,
+      "sha256": "8e59c917a0239903121471760adc5af788523f1c819509a60f9b2dc45536180f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitch.test/original/runtime.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jadx/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1439,
+      "sha256": "0f4fc6ba3bf5da0bb4981a4afa359c6faa2d13295bfabb6985d8151b2f4a2a4d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jadx/runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jadx/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 906,
+      "sha256": "6404c52b5300d9bb6491675e3f11a7022297fad188fb37689121811976aa8659"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1443,
+      "sha256": "e22b6a94a9fce9751b956a901a289a91f0568c9a5ae001ebb96ad6e95fb89595"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-all/runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1443,
+      "sha256": "e22b6a94a9fce9751b956a901a289a91f0568c9a5ae001ebb96ad6e95fb89595"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-default/runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/original/classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchFallThrough.test/original/runtime.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "ca4b07b06d47c4c67d95b81d79d818224f4b8d3edb7b4b9ae85068fbca46535f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "5f9fad0d18c28bafa397fd0b0ea07f37b5a463a7c2354a483122bd9aed0366fa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.test/original/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "60dec3cfcdb214b83205a0f8ea9976fbc450f931f271068529cc80c6c99528b2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "5f9fad0d18c28bafa397fd0b0ea07f37b5a463a7c2354a483122bd9aed0366fa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 784,
+      "sha256": "82375bbf2c9403456735429818965535d48a05c77e2f22a3c02817960f7dd691"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-all/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/jarde-default/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchLabels.testWithDisabledConstReplace/original/runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jadx/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 809,
+      "sha256": "00a2489ee4a730f4c87f35aab8adcf879525f01657056439dd0d8e03b4b4cad1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jadx/runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jadx/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 545,
+      "sha256": "b07040f1c51941ad98b59a5c693534a273c3fdd2bd4015b1d5e3964248dccb9c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jarde-all/compile.stderr.raw",
+      "bytes": 797,
+      "sha256": "5e303ed53624898e2aef254905ddb0a33a85b42b6a59ba1c3fd1afde927ccc49"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1548,
+      "sha256": "f0ee06a29fc205b1471b76b37f6e6908a8b44aaa0c715c6aaed43fd983f11a9d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jarde-default/compile.stderr.raw",
+      "bytes": 801,
+      "sha256": "232417bc4787e54d28b367314f74cafda7e5b032a654c8055f4a8880cd0664d5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 1548,
+      "sha256": "f0ee06a29fc205b1471b76b37f6e6908a8b44aaa0c715c6aaed43fd983f11a9d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 899,
+      "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchNoDefault.test/original/runtime.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jadx/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1489,
+      "sha256": "72fc1a71b5867239d157ff940dfa4f455f77a9f30c6dc23806ffe973483e53b2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jadx/compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jadx/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jadx/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jadx/runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jadx/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 1337,
+      "sha256": "2ede155c84885e61612ed2e667610a242898ee84990f48874f9f564b2d907992"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jarde-all/compile.stderr.raw",
+      "bytes": 710,
+      "sha256": "84c4a8d0194ddc2954c6fe1e1dd1e8bc135984fe95f84783e498a7a5b5766edc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jarde-all/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jarde-all/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2313,
+      "sha256": "178407b6e0e436d31d4e189c3cfd6ea6c6be8cbcc9ea4aa64a2d4d80e5dc8b33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jarde-default/compile.stderr.raw",
+      "bytes": 714,
+      "sha256": "1e5ea6525407ee90ee5c0bda8dd0fa38fda8cc25044e9c27233a9d904cf2a84c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jarde-default/compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/jarde-default/sources/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 2313,
+      "sha256": "178407b6e0e436d31d4e189c3cfd6ea6c6be8cbcc9ea4aa64a2d4d80e5dc8b33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/original/classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1563,
+      "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/original/runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/TestSwitchWithFallThroughCase.test/original/runtime.stdout.raw",
+      "bytes": 2500,
+      "sha256": "4c82039962610acce63c001401ec5279abe7cab66afb235447820bc3b3ad5329"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/execution.json",
+      "bytes": 288964,
+      "sha256": "04ee982bad32e216dc1908fddeec588016b5c209f1d0b1f64e0683689501f16c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/NotYetImplemented.class",
+      "bytes": 467,
+      "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/NotYetImplementedExtension.class",
+      "bytes": 2379,
+      "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/api/JadxInternalAccess.class",
+      "bytes": 1041,
+      "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest$1.class",
+      "bytes": 1361,
+      "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest$2.class",
+      "bytes": 1409,
+      "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/IntegrationTest.class",
+      "bytes": 30020,
+      "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/ClassFileManager.class",
+      "bytes": 2187,
+      "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/CompilerOptions.class",
+      "bytes": 1569,
+      "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/DynamicClassLoader.class",
+      "bytes": 1874,
+      "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+      "bytes": 1111,
+      "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/JavaClassObject.class",
+      "bytes": 1528,
+      "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/JavaUtils.class",
+      "bytes": 1145,
+      "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/StringJavaFileObject.class",
+      "bytes": 1298,
+      "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/compiler/TestCompiler.class",
+      "bytes": 9527,
+      "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/TestFilesGetter.class",
+      "bytes": 817,
+      "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/TestUtils.class",
+      "bytes": 4786,
+      "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+      "bytes": 3982,
+      "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+      "bytes": 7050,
+      "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+      "bytes": 3636,
+      "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/helpers/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+      "bytes": 1178,
+      "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/runtime-probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/runtime-probe/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/runtime-probe/probe-compile.stderr.raw",
+      "bytes": 483,
+      "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/runtime-probe/probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/execution.json",
+      "bytes": 42305,
+      "sha256": "f2312afb2022cc8386b78b170068330e405270cff6558c2d23247f42f4bbe404"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/fresh-compile.stderr.raw",
+      "bytes": 1434,
+      "sha256": "3611ac8374b48185702ea83eab5178b0ddf7d8bc908ded1b328091d34fe0115e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/fresh-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/javac-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/javac-version.stdout.raw",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+      "bytes": 740,
+      "sha256": "b931ab6747698a410ea07b7bf798499eabb0525e8a2f22d7e2018ede7683b60d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+      "bytes": 1397,
+      "sha256": "81bc96dade42fb3840db41dcc567091ee4280228e931825110701cfb1273d07d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+      "bytes": 23241,
+      "sha256": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+      "bytes": 1342,
+      "sha256": "5dc6ca167a4a36f689fe6b55f4a7a9a8cfecd5f650391dff7fb2d3ffc6b69b2e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+      "bytes": 1246,
+      "sha256": "7cced13b40d1b582ec953b672fbf6af78c6b20a5e4e548e5fff10f64d5aa7ae0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+      "bytes": 1422,
+      "sha256": "26c8dfffc58d86d25cb1817ad0d38f09489aaa9b27113455cf630ea4795aad9b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+      "bytes": 542,
+      "sha256": "3da3d559e47e6d9065b6273aaaeb71c6c5e6ea86034253193cd6e2c80cb60409"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+      "bytes": 673,
+      "sha256": "667fe20e0fe3926be4b3c02a5e40cdbedcf7541a45b3e333d1aa363f8d2b4fc5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+      "bytes": 825,
+      "sha256": "c76d673620691ea64e8f03845ff46843f0ce382e35c04431b69c33dead39cd7d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+      "bytes": 495,
+      "sha256": "a6cd4013b05546c39b9370feb7cd3c317fbcc7637ceb77f75bf64ef6a8f6ae2f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+      "bytes": 5006,
+      "sha256": "a0f4f4e4017546279d7bd0e32276bb43b2d968b82c4d0f37880728524825a60b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+      "bytes": 645,
+      "sha256": "1a7272556007a4166b1e6a6770a55388efc0118b2497270ffee9269fc4c991d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+      "bytes": 2526,
+      "sha256": "697077c8188a04505d89861ffa20d9a9c1fbcbd050de02bc5c15a8fd3f60af82"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+      "bytes": 823,
+      "sha256": "8b7d50aca9ec2ac8dd861444bd1854fa6d43adac4d8d9d3c12195c6544bc4d5e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+      "bytes": 2651,
+      "sha256": "688a3c650aa3cb7177a7598799009b5a1d3f90e37e55f6de2aa5f0a4907e8802"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+      "bytes": 4262,
+      "sha256": "f0ddf91660e72ab461bdcfb1996f4881adf187931733d20449a784d2b8d7e417"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+      "bytes": 1114,
+      "sha256": "82ea32586a4cf216c3b880153087a67c28e1782fc62e6be08388aebc5f7fbde0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+      "bytes": 571,
+      "sha256": "ae50a57880a4910ce185c7c5f7eeef1c3cd34d1743242ba5c09e1d99092e1d75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+      "bytes": 939,
+      "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+      "bytes": 1077,
+      "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+      "bytes": 1305,
+      "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+      "bytes": 697,
+      "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v1-compile-failure/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+      "bytes": 1257,
+      "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/execution.json",
+      "bytes": 59806,
+      "sha256": "098f5c94fd63ca7041cdbce8458cde2f5cc0834cd57f16aec0a535829f6f1546"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/NotYetImplemented.class",
+      "bytes": 467,
+      "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/NotYetImplementedExtension.class",
+      "bytes": 2379,
+      "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/api/JadxInternalAccess.class",
+      "bytes": 1041,
+      "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/IntegrationTest$1.class",
+      "bytes": 1361,
+      "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/IntegrationTest$2.class",
+      "bytes": 1409,
+      "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/IntegrationTest.class",
+      "bytes": 30020,
+      "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/ClassFileManager.class",
+      "bytes": 2187,
+      "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/CompilerOptions.class",
+      "bytes": 1569,
+      "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/DynamicClassLoader.class",
+      "bytes": 1874,
+      "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+      "bytes": 1111,
+      "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/JavaClassObject.class",
+      "bytes": 1528,
+      "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/JavaUtils.class",
+      "bytes": 1145,
+      "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/StringJavaFileObject.class",
+      "bytes": 1298,
+      "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/compiler/TestCompiler.class",
+      "bytes": 9527,
+      "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/TestFilesGetter.class",
+      "bytes": 817,
+      "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/TestUtils.class",
+      "bytes": 4786,
+      "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+      "bytes": 3982,
+      "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+      "bytes": 7050,
+      "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+      "bytes": 3636,
+      "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+      "bytes": 1178,
+      "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 851,
+      "sha256": "fe5cd1e60133adc308fa9eaf34b21ede285f80c6d78c26eed607480cbc6c8ef6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitch.class",
+      "bytes": 1867,
+      "sha256": "0107bfe60ba4d22b83645ad19d18217ee17224ddc529e8163bfb4454410302d5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1536,
+      "sha256": "18241a516333d711c8d78afd857dfe141e18ec95ab19c162ca1ab655ac948780"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchFallThrough.class",
+      "bytes": 1239,
+      "sha256": "d5e60c1dae2bb42aec694107145ccf00e5da3b103b858b43e6c145c2309a8a8c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 615,
+      "sha256": "cd65d1c60dcf73f17e94f66dcb11f6281920648a13211faa9792f18d048792b6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 640,
+      "sha256": "1ea3c8298137ddf539fd10656cc57141771e3d19993da64f8319b1adfa3c0d79"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchLabels.class",
+      "bytes": 1703,
+      "sha256": "c1aa830b3b3b6aa84268ac2540f723aa57ed49e1e6f4a17f3c5bd261c2fef892"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 737,
+      "sha256": "e374f4d269e47d105865b4bb98bb50146127c2074512b860dc6b0ae292c5d0d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchNoDefault.class",
+      "bytes": 1200,
+      "sha256": "cccd438c6a45a29150f575f43e244159dc274ba02ef9fb8d6605e79a06024f4d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1601,
+      "sha256": "953b383988881c48e49a83a834e6e254a52a9e5c970be3050a545b03a266dc58"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.class",
+      "bytes": 1161,
+      "sha256": "c9467ee04d5f6dc0b1f0678a5479122d09e264ea7c244b3603d103295d8bbfc9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-compile.stderr.raw",
+      "bytes": 275,
+      "sha256": "432aa11c9c84c38f11ea8e077fa26f1537a63a79656b6401b390410146ff4823"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/fresh-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/javac-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/javac-version.stdout.raw",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/reports/TEST-junit-jupiter.xml",
+      "bytes": 13504,
+      "sha256": "323ea3956eb543e9e19c9ddd220c24438997177d2edc86d6a875b91b3fc38c10"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/reports/TEST-junit-platform-suite.xml",
+      "bytes": 11529,
+      "sha256": "24b992d6955501808c55ede27e9043b95d1ae30309c61305c2bb71e4ac5c512f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/reports/TEST-junit-vintage.xml",
+      "bytes": 11508,
+      "sha256": "2de4c21af45246ebc573d459eb132f595e8927216763d98342b6c5400948eb64"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+      "bytes": 740,
+      "sha256": "b931ab6747698a410ea07b7bf798499eabb0525e8a2f22d7e2018ede7683b60d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+      "bytes": 1397,
+      "sha256": "81bc96dade42fb3840db41dcc567091ee4280228e931825110701cfb1273d07d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/api/JadxInternalAccess.java",
+      "bytes": 659,
+      "sha256": "b48e05cc08fc887c0abd9037f00caa96fc32502c0cc812a0ab984be21fedf051"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+      "bytes": 23241,
+      "sha256": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+      "bytes": 1342,
+      "sha256": "5dc6ca167a4a36f689fe6b55f4a7a9a8cfecd5f650391dff7fb2d3ffc6b69b2e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+      "bytes": 1246,
+      "sha256": "7cced13b40d1b582ec953b672fbf6af78c6b20a5e4e548e5fff10f64d5aa7ae0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+      "bytes": 1422,
+      "sha256": "26c8dfffc58d86d25cb1817ad0d38f09489aaa9b27113455cf630ea4795aad9b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+      "bytes": 542,
+      "sha256": "3da3d559e47e6d9065b6273aaaeb71c6c5e6ea86034253193cd6e2c80cb60409"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+      "bytes": 673,
+      "sha256": "667fe20e0fe3926be4b3c02a5e40cdbedcf7541a45b3e333d1aa363f8d2b4fc5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+      "bytes": 825,
+      "sha256": "c76d673620691ea64e8f03845ff46843f0ce382e35c04431b69c33dead39cd7d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+      "bytes": 495,
+      "sha256": "a6cd4013b05546c39b9370feb7cd3c317fbcc7637ceb77f75bf64ef6a8f6ae2f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+      "bytes": 5006,
+      "sha256": "a0f4f4e4017546279d7bd0e32276bb43b2d968b82c4d0f37880728524825a60b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+      "bytes": 645,
+      "sha256": "1a7272556007a4166b1e6a6770a55388efc0118b2497270ffee9269fc4c991d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+      "bytes": 2526,
+      "sha256": "697077c8188a04505d89861ffa20d9a9c1fbcbd050de02bc5c15a8fd3f60af82"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+      "bytes": 823,
+      "sha256": "8b7d50aca9ec2ac8dd861444bd1854fa6d43adac4d8d9d3c12195c6544bc4d5e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+      "bytes": 2651,
+      "sha256": "688a3c650aa3cb7177a7598799009b5a1d3f90e37e55f6de2aa5f0a4907e8802"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+      "bytes": 4262,
+      "sha256": "f0ddf91660e72ab461bdcfb1996f4881adf187931733d20449a784d2b8d7e417"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+      "bytes": 1114,
+      "sha256": "82ea32586a4cf216c3b880153087a67c28e1782fc62e6be08388aebc5f7fbde0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+      "bytes": 571,
+      "sha256": "ae50a57880a4910ce185c7c5f7eeef1c3cd34d1743242ba5c09e1d99092e1d75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+      "bytes": 939,
+      "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+      "bytes": 1077,
+      "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+      "bytes": 1305,
+      "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+      "bytes": 697,
+      "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+      "bytes": 1257,
+      "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/test-stderr.raw",
+      "bytes": 1674,
+      "sha256": "9b4ca73c986e9bac8768a7e3d70b5706afbecba48ec1ebc45a689c0f7d89b8a7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/test-stdout.raw",
+      "bytes": 13970,
+      "sha256": "a1de366ef6eac4fee0b3089a6775e7aceba48a73a0ae9058dc58d481e19d7fbf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/upstream-junit.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v2-dex/upstream-junit.stdout.raw",
+      "bytes": 922,
+      "sha256": "4e5546c170fece7f49d70ec3632c9d48c450ea9483258c14d32becbe7cfba9ce"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/Cf12CaptureExtension.java",
+      "bytes": 2498,
+      "sha256": "2f900cb846b78ed1ceb1523f7b01105873777394625a90c2058e1330534f295c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/actual-input-paths.tsv",
+      "bytes": 278,
+      "sha256": "a30380b2ccbc7c7a9d9fff0bca9daa5a6439aef2bb8d2c2496537caedef02cd9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/actual-jadx-args.txt",
+      "bytes": 1669,
+      "sha256": "0fd0d67fda52ec81162c6a774172acbed2a8a73993f16ed8aba9daed21060d1c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class",
+      "bytes": 1083,
+      "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/jadx-source/jadx/tests/integration/switches/TestSwitch$TestCls.java",
+      "bytes": 756,
+      "sha256": "3bb9f72c9b6941b4ddf54c1d9eacc5f874eb98ef933e6adcca5727475394df18"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/actual-input-paths.tsv",
+      "bytes": 312,
+      "sha256": "b8db54c7fb59f3cd9c847f51ccf5744dffbf26c353399d43917a5419dad45493"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/actual-jadx-args.txt",
+      "bytes": 1684,
+      "sha256": "2bce9530536848a99b82fd5e1ff898ba0ae75897a281578f3cd5bf8e2adbf4e7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1531,
+      "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/jadx-source/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.java",
+      "bytes": 906,
+      "sha256": "6404c52b5300d9bb6491675e3f11a7022297fad188fb37689121811976aa8659"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/actual-input-paths.tsv",
+      "bytes": 608,
+      "sha256": "a3ef76ab850df4c0f278abc5562ea13f28c8c1f15afc5ce345bfeb18b6f6cdd3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/actual-jadx-args.txt",
+      "bytes": 1871,
+      "sha256": "4f2cefbfdd07165ea55063af7eea5fb8db33fd2c79e53e76ed816f1f5be7d012"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/jadx-source/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.testWithDisabledConstReplace/actual-input-paths.tsv",
+      "bytes": 654,
+      "sha256": "e1e7b7be5e101610594c1b9e2245244f5199cad8055cd3c99978a49a74911c55"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.testWithDisabledConstReplace/actual-jadx-args.txt",
+      "bytes": 1870,
+      "sha256": "03949b5af41843fa977c61362c5386522ff8e958b1894cc9ca8fb29186be00fe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.testWithDisabledConstReplace/input/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.testWithDisabledConstReplace/input/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.testWithDisabledConstReplace/jadx-source/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 784,
+      "sha256": "82375bbf2c9403456735429818965535d48a05c77e2f22a3c02817960f7dd691"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.testWithDisabledConstReplace/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/actual-input-paths.tsv",
+      "bytes": 305,
+      "sha256": "09ce4c20b5f8400544e90a98ca0c8631c0f8badf892225ff2356cc5fd78e4edc"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/actual-jadx-args.txt",
+      "bytes": 1678,
+      "sha256": "80e1e76010b60b0ae86cb668a818d6501dd5dd660e35e42b47196652f1180f03"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class",
+      "bytes": 899,
+      "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/jadx-source/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.java",
+      "bytes": 545,
+      "sha256": "b07040f1c51941ad98b59a5c693534a273c3fdd2bd4015b1d5e3964248dccb9c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "945e979857a00aeaae461be449d6470c978d71fdd37495dd6df7d6c47f8b6662"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/actual-input-paths.tsv",
+      "bytes": 336,
+      "sha256": "49b8979663cb35b7fa0417d3e8b2553c86aa0860b1c19a4d36f86dc3750e175c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/actual-jadx-args.txt",
+      "bytes": 1689,
+      "sha256": "058dcedd46cc69e893143531403a946d79d67c9e8a436d390dce1ac8b4611f3d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1563,
+      "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/jadx-source/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.java",
+      "bytes": 1337,
+      "sha256": "2ede155c84885e61612ed2e667610a242898ee84990f48874f9f564b2d907992"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/test-status.txt",
+      "bytes": 7,
+      "sha256": "03cbb6c52e522ce55e217e3f9d66dbd66d21ef6bf85024016a3b7f3080c7944f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/execution.json",
+      "bytes": 70641,
+      "sha256": "5ffa56c72b2df664d21cb7e9afa30c819cf4a5071cb009c9839e3ae17724f281"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/META-INF/services/org.junit.jupiter.api.extension.Extension",
+      "bytes": 33,
+      "sha256": "094127c998f9e6316353a3041e592dcec69bb224212daa686a6fd5e06831d41c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/cf12capture/Cf12CaptureExtension.class",
+      "bytes": 4359,
+      "sha256": "f10d73bde00cdc4d2bcdb40c7dab03402e721ee5b54890d6a25cac97b0ea3bb1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/NotYetImplemented.class",
+      "bytes": 467,
+      "sha256": "7c6ad7738d71c1eb3aed3f11961fd9df834e273f49529dcac43ee460940a01ef"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/NotYetImplementedExtension.class",
+      "bytes": 2379,
+      "sha256": "be9f14cdcba2b77aa549482c928a45419e51a2dddf1abcb0ba74a652796994ab"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/api/JadxInternalAccess.class",
+      "bytes": 1041,
+      "sha256": "98a8b473b23fe33b1ee63b8f105b883edf25314b2da57807265f5fecc1a6ce28"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/IntegrationTest$1.class",
+      "bytes": 1361,
+      "sha256": "691575ecd8c6b7fedb16b0074b3f393454b422771c5f2067c2563e1208f569cf"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/IntegrationTest$2.class",
+      "bytes": 1409,
+      "sha256": "3debda5022682ce0eb6a6a6e11de21e715c409105ba804e1c5a0e5b7061002e0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/IntegrationTest.class",
+      "bytes": 30020,
+      "sha256": "fa05357b2981911028362db88875a79432cf3559b023ba6e0147517f6d909cdb"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/ClassFileManager.class",
+      "bytes": 2187,
+      "sha256": "798e86daeba3dfec4316b6b31fe9de16ef4892d037fe995b4c41870cf7cb52f9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/CompilerOptions.class",
+      "bytes": 1569,
+      "sha256": "b4f8d860ad497bd55cb2090f5cd2189f38cf995b4a0ac87dbef6c6fcfb22b4e7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/DynamicClassLoader.class",
+      "bytes": 1874,
+      "sha256": "294154792c193c87d894e489ddabd533d96425f7fdb0d288080dcea8fff00a23"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/EclipseCompilerUtils.class",
+      "bytes": 1111,
+      "sha256": "c74936f9cb359964508e9798a05435a7a4ae89f9cd2b0c2f03f762739d1d95a3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/JavaClassObject.class",
+      "bytes": 1528,
+      "sha256": "888b54320eb93239f6746e633c4392b2db477dee33c9800611965443bfa8d4aa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/JavaUtils.class",
+      "bytes": 1145,
+      "sha256": "b30debc99a9bd660a8673627b20e5c222d16c1e7de96e7a8ec2c8d21d8fa7e9a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/StringJavaFileObject.class",
+      "bytes": 1298,
+      "sha256": "93b9ca72aa833347c95717b9d0a96594c3974fdc313c774f25e60835c6d78807"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/compiler/TestCompiler.class",
+      "bytes": 9527,
+      "sha256": "ad19089aebdb5670d235a9c7a014460c23bb5b00ef072fca1d95f9cef72aec56"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/TestFilesGetter.class",
+      "bytes": 817,
+      "sha256": "273807018330a937ad5d25b04b6c2147029fe15bafe57ca675aa2aa1c7fa2f75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/TestUtils.class",
+      "bytes": 4786,
+      "sha256": "d41458c2755dccd4ef419760f30a4ce6b396b4ecc223d6c73cf5fd916cc86d46"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/assertj/JadxAssertions.class",
+      "bytes": 1518,
+      "sha256": "151c60d3e453d9cf2cfef3f98e86e409f7a0b0782a9cb8b591fbd075fef5080c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.class",
+      "bytes": 3982,
+      "sha256": "e401323090e642a1b7f59c5f8bb851dd38b1f6f980e5821c9ecd4bd0e4034a5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/assertj/JadxCodeAssertions.class",
+      "bytes": 7050,
+      "sha256": "7631bc229e1293a013b7a6cf0740f23c612e656b9121385d8bbfb1ddca645225"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.class",
+      "bytes": 3636,
+      "sha256": "703ef9729411d8753beea995955a2b53d2ae444d81fd07a68ad5ece07440d1c2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.class",
+      "bytes": 1178,
+      "sha256": "286951a3b20bf73a9f7acddb5f84af7bc53f91a66dd64e9888554b27d68a5bed"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitch$TestCls.class",
+      "bytes": 851,
+      "sha256": "fe5cd1e60133adc308fa9eaf34b21ede285f80c6d78c26eed607480cbc6c8ef6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitch.class",
+      "bytes": 1867,
+      "sha256": "0107bfe60ba4d22b83645ad19d18217ee17224ddc529e8163bfb4454410302d5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.class",
+      "bytes": 1536,
+      "sha256": "18241a516333d711c8d78afd857dfe141e18ec95ab19c162ca1ab655ac948780"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchFallThrough.class",
+      "bytes": 1239,
+      "sha256": "d5e60c1dae2bb42aec694107145ccf00e5da3b103b858b43e6c145c2309a8a8c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 615,
+      "sha256": "cd65d1c60dcf73f17e94f66dcb11f6281920648a13211faa9792f18d048792b6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 640,
+      "sha256": "1ea3c8298137ddf539fd10656cc57141771e3d19993da64f8319b1adfa3c0d79"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchLabels.class",
+      "bytes": 1703,
+      "sha256": "c1aa830b3b3b6aa84268ac2540f723aa57ed49e1e6f4a17f3c5bd261c2fef892"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchNoDefault$TestCls.class",
+      "bytes": 737,
+      "sha256": "e374f4d269e47d105865b4bb98bb50146127c2074512b860dc6b0ae292c5d0d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchNoDefault.class",
+      "bytes": 1200,
+      "sha256": "cccd438c6a45a29150f575f43e244159dc274ba02ef9fb8d6605e79a06024f4d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase$TestCls.class",
+      "bytes": 1601,
+      "sha256": "953b383988881c48e49a83a834e6e254a52a9e5c970be3050a545b03a266dc58"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-classes/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.class",
+      "bytes": 1161,
+      "sha256": "c9467ee04d5f6dc0b1f0678a5479122d09e264ea7c244b3603d103295d8bbfc9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-compile.stderr.raw",
+      "bytes": 275,
+      "sha256": "432aa11c9c84c38f11ea8e077fa26f1537a63a79656b6401b390410146ff4823"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/fresh-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/javac-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/javac-version.stdout.raw",
+      "bytes": 13,
+      "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/reports/TEST-junit-jupiter.xml",
+      "bytes": 15919,
+      "sha256": "8d770a92de732e00920a693d837c4b3a9cddfbfce1a2ed41d46b9efc4ba8b553"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/reports/TEST-junit-platform-suite.xml",
+      "bytes": 11689,
+      "sha256": "2dde4ecefb48040dc636922863a3cde3fafc2b959f9be16dc1e7c88c6ebfbc84"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/reports/TEST-junit-vintage.xml",
+      "bytes": 11668,
+      "sha256": "cf5aad11d0fdc6ea20d1ad1c7590cb6afdcb12de15500a4050ea46515b60d498"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/NotYetImplemented.java",
+      "bytes": 740,
+      "sha256": "b931ab6747698a410ea07b7bf798499eabb0525e8a2f22d7e2018ede7683b60d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/NotYetImplementedExtension.java",
+      "bytes": 1397,
+      "sha256": "81bc96dade42fb3840db41dcc567091ee4280228e931825110701cfb1273d07d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/api/JadxInternalAccess.java",
+      "bytes": 659,
+      "sha256": "b48e05cc08fc887c0abd9037f00caa96fc32502c0cc812a0ab984be21fedf051"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java",
+      "bytes": 23241,
+      "sha256": "13fc172963c7a12b97ce500cb17fe1e893802ec227dc4ca3ac0955e5a0bd325c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/ClassFileManager.java",
+      "bytes": 1342,
+      "sha256": "5dc6ca167a4a36f689fe6b55f4a7a9a8cfecd5f650391dff7fb2d3ffc6b69b2e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/CompilerOptions.java",
+      "bytes": 1246,
+      "sha256": "7cced13b40d1b582ec953b672fbf6af78c6b20a5e4e548e5fff10f64d5aa7ae0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/DynamicClassLoader.java",
+      "bytes": 1422,
+      "sha256": "26c8dfffc58d86d25cb1817ad0d38f09489aaa9b27113455cf630ea4795aad9b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/EclipseCompilerUtils.java",
+      "bytes": 542,
+      "sha256": "3da3d559e47e6d9065b6273aaaeb71c6c5e6ea86034253193cd6e2c80cb60409"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaClassObject.java",
+      "bytes": 673,
+      "sha256": "667fe20e0fe3926be4b3c02a5e40cdbedcf7541a45b3e333d1aa363f8d2b4fc5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/JavaUtils.java",
+      "bytes": 825,
+      "sha256": "c76d673620691ea64e8f03845ff46843f0ce382e35c04431b69c33dead39cd7d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/StringJavaFileObject.java",
+      "bytes": 495,
+      "sha256": "a6cd4013b05546c39b9370feb7cd3c317fbcc7637ceb77f75bf64ef6a8f6ae2f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/compiler/TestCompiler.java",
+      "bytes": 5006,
+      "sha256": "a0f4f4e4017546279d7bd0e32276bb43b2d968b82c4d0f37880728524825a60b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestFilesGetter.java",
+      "bytes": 645,
+      "sha256": "1a7272556007a4166b1e6a6770a55388efc0118b2497270ffee9269fc4c991d2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/TestUtils.java",
+      "bytes": 2526,
+      "sha256": "697077c8188a04505d89861ffa20d9a9c1fbcbd050de02bc5c15a8fd3f60af82"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxAssertions.java",
+      "bytes": 823,
+      "sha256": "8b7d50aca9ec2ac8dd861444bd1854fa6d43adac4d8d9d3c12195c6544bc4d5e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxClassNodeAssertions.java",
+      "bytes": 2651,
+      "sha256": "688a3c650aa3cb7177a7598799009b5a1d3f90e37e55f6de2aa5f0a4907e8802"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeAssertions.java",
+      "bytes": 4262,
+      "sha256": "f0ddf91660e72ab461bdcfb1996f4881adf187931733d20449a784d2b8d7e417"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxCodeInfoAssertions.java",
+      "bytes": 1114,
+      "sha256": "82ea32586a4cf216c3b880153087a67c28e1782fc62e6be08388aebc5f7fbde0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/api/utils/assertj/JadxMethodNodeAssertions.java",
+      "bytes": 571,
+      "sha256": "ae50a57880a4910ce185c7c5f7eeef1c3cd34d1743242ba5c09e1d99092e1d75"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitch.java",
+      "bytes": 939,
+      "sha256": "36848c105c3b6647a3b1a2e3a9aa3c185beb8819faa5a9b285932c082e4f3ba6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchFallThrough.java",
+      "bytes": 1077,
+      "sha256": "09923ba8927401aeda55ab857a61c0297298ee9bfd88c853c585e10e800d8501"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+      "bytes": 1305,
+      "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchNoDefault.java",
+      "bytes": 697,
+      "sha256": "f3681c9b7864e8991a01a060d7e6acb28114143f9b7221cb41a50fa5bc164f76"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchWithFallThroughCase.java",
+      "bytes": 1257,
+      "sha256": "2d8274e36ca18118ca94554c0d5afd1f9ddf21441c2fff304d242454cc409d54"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/test-stderr.raw",
+      "bytes": 1677,
+      "sha256": "0d9ed20d6aea10dfe36c227d038a52a0669a64f5e3b4a13f4c663f4a79d9d113"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/test-stdout.raw",
+      "bytes": 13792,
+      "sha256": "bc884cb4fa7169790d7db9f69e4d21f4e5cc31b7f9e80472725ea52e00ee1d1a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/upstream-junit.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/upstream-junit.stdout.raw",
+      "bytes": 3343,
+      "sha256": "a5e8a9a0f78f9e0931021ef997efe3382609226a6b5111ad0a3d05069490fc4c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-direct-harness-root-v1.py",
+      "bytes": 5665,
+      "sha256": "b026601a0364206a53b4c1c8815965aa90e624c86400baf827fc32bdab97df26"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-direct-harness-root-v2.py",
+      "bytes": 5709,
+      "sha256": "44ac48cf058abc33daa18f5bae8a558748c6846b5adc60bda17029902ec8e22f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-direct-harness-root-v3.py",
+      "bytes": 6214,
+      "sha256": "7b0fdd758dee03b42d696eddf079a8d57ec3edda69a53772ca08b5b988aeacfe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-full-replay-root-v1.py",
+      "bytes": 4384,
+      "sha256": "64a7b25a50800d158f509ce87c8e3cf84fdb34261d6fe233a920084a0e3d195c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-render-baseline-root-v1.py",
+      "bytes": 3075,
+      "sha256": "21ba6aa495974bc155f794ebb8b5968fa1ff6328ce53a4e1d4f66469bf4e11ea"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/jarde-cf12-sdk-fetch-root-v1.py",
+      "bytes": 1688,
+      "sha256": "81ebffbaf2b69bcb5cccda3fdac6eba7c8451d181e9b4574f1d888e1ebe613a8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/observation-input-inventory-root-v1.json",
+      "bytes": 94507,
+      "sha256": "d46f23c9f2bef614fee0d9f77efcfca561ebd5d986ad3b85d5ba2a70a609789e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/observation-verifier-private-draft-v3.py",
+      "bytes": 18807,
+      "sha256": "862a2079471395efc80b05a1a72d2d4351544091ca1b4592c0dee7ec49affafd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/annotations-26.1.0.jar.sha1",
+      "bytes": 40,
+      "sha256": "e2ec1083a01f1bfa5ea3a0ff1d5d4e32c47c479097e9687dcfdfd6c31248a244"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/annotations-26.1.0.pom",
+      "bytes": 1686,
+      "sha256": "f8dc50cf3aac4bcec740a90955f2800e41251e9c403630b75b752d3b6ef5bee2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/assertj-core-3.27.7.jar.sha1",
+      "bytes": 40,
+      "sha256": "7ac817107a84f6f0f718db82d2728785b774b2663db01829170f2897ebe96c12"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/assertj-core-3.27.7.pom",
+      "bytes": 3804,
+      "sha256": "95a10dcfb3ba9aad4d0b5e9c523a8d583377bee5ecd4ba37e19e55a34667f079"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/byte-buddy-1.18.3.jar.sha1",
+      "bytes": 40,
+      "sha256": "5559dc82f001fc19544b45572d5e25969a52cab0796b6d80f6546634113df89b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/byte-buddy-1.18.3.pom",
+      "bytes": 19432,
+      "sha256": "7157b622a0d6885cb5526a10f1220ddf090dbb52ca2fe38c32cc69c4f1530788"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/commons-lang3-3.20.0.jar.sha1",
+      "bytes": 40,
+      "sha256": "f19da58c794bf52a343f7be8ca2c5780c4268fa562862dd29852861dd414338b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/commons-lang3-3.20.0.pom",
+      "bytes": 32571,
+      "sha256": "7ca83b2709c1e7a9e03b576cd41422190379489a80866e542f8c8b955411a2aa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/ecj-3.33.0.jar.sha1",
+      "bytes": 40,
+      "sha256": "283e49cffb218a33e246da5f4d83150bbf1106d5fa2ff3c86e68028f515a80c6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/ecj-3.33.0.pom",
+      "bytes": 1316,
+      "sha256": "266c17d4f1cbd10b71bdec390e1f64acdc95e61d618cf4a2ea86ea903337bf88"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/junit-platform-console-standalone-1.14.4.jar.sha1",
+      "bytes": 40,
+      "sha256": "0ee621894de7e19819526db90ad3931dc73304bcbfe3e0373b99fedbd68eef79"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/junit-platform-console-standalone-1.14.4.pom",
+      "bytes": 2370,
+      "sha256": "85cde188a8fd9b177d451edcc10b1e554608907d2a29a580a8f75112cff78849"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/official-test-sdk/manifest.json",
+      "bytes": 7756,
+      "sha256": "12905aba7b0b6c96e31aa3e1e228a6b91141fd17c9d73ebfec35b11a351b47c6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/jarde-all.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/jarde-all.stdout.raw",
+      "bytes": 47476,
+      "sha256": "beb4ac661721834bb05eab8fa770a2d070d075b73b3feec1b8962e797c8db538"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/jarde-default.java",
+      "bytes": 1906,
+      "sha256": "20234ac24ad59603edf69855e16675a9238dae89e8e71b3e0e7ec95f452e2114"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/jarde-default.stdout.raw",
+      "bytes": 45637,
+      "sha256": "c9b049dac3d7a79dfa920ab39712e370dfd7e1379b592eaeef561af2ee614f21"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitch.test/TestSwitch$TestCls/javap.stdout.raw",
+      "bytes": 7203,
+      "sha256": "0ac0f7d076c38ba0405cdfad1c2475ed0faaa2b07b8093441d833ca8696033c3"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/jarde-all.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/jarde-all.stdout.raw",
+      "bytes": 67557,
+      "sha256": "5f0073154e4fbaf77eb37d5259995374cebe6975c9c6e45166c3d72ab337b8d8"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/jarde-default.java",
+      "bytes": 2466,
+      "sha256": "47ba3ef97a165c173946e3e21ec23b2d913c5f7a758333343c54d471f9c8dcd4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/jarde-default.stdout.raw",
+      "bytes": 63247,
+      "sha256": "a6c64ad17cd217e337e747a179dffed79d686fec64600f07bcfd4a0456b8436e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchFallThrough.test/TestSwitchFallThrough$TestCls/javap.stdout.raw",
+      "bytes": 11613,
+      "sha256": "697575fcd90cf398172a7a605ccdc85782a74a373d5931f9e10222d87f829574"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/jarde-all.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/jarde-all.stdout.raw",
+      "bytes": 22407,
+      "sha256": "d9ade1a97367e4bbed0b7d14e7820ce51c17f47a197ed6cbeabe80df7ee0f1f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/jarde-default.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/jarde-default.stdout.raw",
+      "bytes": 21419,
+      "sha256": "8a4883bdffa4d68f0fe50378432c8c91e2cc5e7d7ec3275fa4284d91507015a7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls/javap.stdout.raw",
+      "bytes": 4168,
+      "sha256": "18bfc0db2f0aed38f209335add7acd4d4e6e42b28297fde06c05cce573102736"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/jarde-all.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/jarde-all.stdout.raw",
+      "bytes": 21826,
+      "sha256": "34f71fbcc064d8bb27682091c701d2e35781ea9d2cb3ccdefc227e9059c72448"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/jarde-default.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/jarde-default.stdout.raw",
+      "bytes": 20818,
+      "sha256": "3a3c9abd7f9b9bc55916447e7d913262066b049767934484682e4ac74c1b735f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.test/TestSwitchLabels$TestCls$Inner/javap.stdout.raw",
+      "bytes": 4097,
+      "sha256": "04286f729b0063b42477b314a75a91963d3bfabff4048e288a081670421d5f07"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/jarde-all.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/jarde-all.stdout.raw",
+      "bytes": 22407,
+      "sha256": "d9ade1a97367e4bbed0b7d14e7820ce51c17f47a197ed6cbeabe80df7ee0f1f6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/jarde-default.java",
+      "bytes": 1300,
+      "sha256": "e7021c922a4e12ee7698d36c721bda97307c04fb0ef91c7c75998eb2c869d32f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/jarde-default.stdout.raw",
+      "bytes": 21419,
+      "sha256": "8a4883bdffa4d68f0fe50378432c8c91e2cc5e7d7ec3275fa4284d91507015a7"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls/javap.stdout.raw",
+      "bytes": 4192,
+      "sha256": "7ebec3863e473bc9aa03f01e0729a1622c920dd16e7dc73a68cb8fd63b4f65da"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/jarde-all.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/jarde-all.stdout.raw",
+      "bytes": 21826,
+      "sha256": "6b837b671f78cc95b7a587b58063573e0c388998f06c63940bfbd15e4590de05"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/jarde-default.java",
+      "bytes": 1288,
+      "sha256": "00fc8b107455390a818a1ef55884dadef24d6717c69fe8ec475d98dbd4c08b0d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/jarde-default.stdout.raw",
+      "bytes": 20818,
+      "sha256": "3a3c9abd7f9b9bc55916447e7d913262066b049767934484682e4ac74c1b735f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchLabels.testWithDisabledConstReplace/TestSwitchLabels$TestCls$Inner/javap.stdout.raw",
+      "bytes": 4121,
+      "sha256": "cdbf47758a9b13a996931317704702c372dc35d11239687552e9fdc39b3468a9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/jarde-all.java",
+      "bytes": 1548,
+      "sha256": "f0ee06a29fc205b1471b76b37f6e6908a8b44aaa0c715c6aaed43fd983f11a9d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/jarde-all.stdout.raw",
+      "bytes": 26864,
+      "sha256": "abee3caad1146c519922039aa565ecfe252f87b543c9338cef9d02b14788b62b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/jarde-default.java",
+      "bytes": 1548,
+      "sha256": "f0ee06a29fc205b1471b76b37f6e6908a8b44aaa0c715c6aaed43fd983f11a9d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/jarde-default.stdout.raw",
+      "bytes": 25308,
+      "sha256": "a404e1b653af171493e06fce250a661dd35a609fc79fb76bdd52488663a21f45"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchNoDefault.test/TestSwitchNoDefault$TestCls/javap.stdout.raw",
+      "bytes": 5705,
+      "sha256": "44eceb183bcff2c78e471d2b2c6b91d7629e26180a555f2662e9f117558697ec"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/jarde-all.java",
+      "bytes": 2313,
+      "sha256": "178407b6e0e436d31d4e189c3cfd6ea6c6be8cbcc9ea4aa64a2d4d80e5dc8b33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/jarde-all.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/jarde-all.stdout.raw",
+      "bytes": 54287,
+      "sha256": "d761e91eee5394af340849d1b205d366bb44be3d42b0d7b99d1462a6d417e354"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/jarde-default.java",
+      "bytes": 2313,
+      "sha256": "178407b6e0e436d31d4e189c3cfd6ea6c6be8cbcc9ea4aa64a2d4d80e5dc8b33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/jarde-default.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/jarde-default.stdout.raw",
+      "bytes": 51192,
+      "sha256": "6630131abb27b2e433e69a296285f5de7b73f0d424012e5a0405063d95352e81"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/javap.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/TestSwitchWithFallThroughCase.test/TestSwitchWithFallThroughCase$TestCls/javap.stdout.raw",
+      "bytes": 14655,
+      "sha256": "ec26bfb75a70a956191029b12d3a226b6bce42667e6d84111ef8cbf2876048e4"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/render-root-v1/execution.json",
+      "bytes": 30195,
+      "sha256": "5c5b06683abb0141d157e97a31c9d6299355ba8cc9803e52f2b7808a64ecce3b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v4/argv.json",
+      "bytes": 183,
+      "sha256": "c382d570d790b191fdbb20fc35f38ecd1a54d0c6a25587750108751164125379"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v4/execution.json",
+      "bytes": 645,
+      "sha256": "6ec8ea9720efbe50b14a7f5d470cb9ba1f334d742b084ff388d05751093916cd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v4/stderr.raw",
+      "bytes": 862,
+      "sha256": "538dd41b9df9310f4e1cf7fea11aca8f43ef340dd6c27abb3780145fe826cc51"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v4/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v5/argv.json",
+      "bytes": 183,
+      "sha256": "68b94f196c90c80f5fd4f3b4463564b864354e0c7937a7938ae64d90659bd018"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v5/execution.json",
+      "bytes": 647,
+      "sha256": "f1e8d12126ad02d336349ab9905f33674bc616a6d0de621bed187e59e133c5e5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v5/stderr.raw",
+      "bytes": 1333,
+      "sha256": "640bf15dbf40675d1c2d10172845dd09ddfd51d9dd7dcc322f3d50cd8fa01a92"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verifier-failure-root-v5/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v4.py",
+      "bytes": 22071,
+      "sha256": "9b84d0a9b65614fbb8fabae0c9b0af100a87b75d7d60c560a14e188c693742c5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v5.py",
+      "bytes": 22226,
+      "sha256": "721336dd8332d19183c15c81f93f6d43b55179e78313a0e4f998ae8c50af4c9b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v6.py",
+      "bytes": 22234,
+      "sha256": "4ad0243fae57225040e5543bcbf216cdd5b35c346ad3ad44ba4d772bd7de8d7c"
+    }
+  ],
+  "note": "Checks the three copied repository evidence directories and external pinned inputs. It verifies recorded observations only; no full CF-12 or multi-JDK completion claim is made."
+}

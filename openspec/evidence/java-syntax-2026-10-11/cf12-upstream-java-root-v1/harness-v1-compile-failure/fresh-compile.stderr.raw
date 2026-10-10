@@ -1,0 +1,25 @@
+警告: [options] 未与 -source 11 一起设置系统模块的位置
+  不设置系统模块的位置可能会导致类文件无法在 JDK 11 上运行
+    建议使用 --release 11 而不是 -source 11 -target 11，因为它会自动设置系统模块的位置
+/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java:44: 错误: 找不到符号
+import jadx.api.JadxInternalAccess;
+               ^
+  符号:   类 JadxInternalAccess
+  位置: 程序包 jadx.api
+/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java:215: 错误: 找不到符号
+		RootNode root = JadxInternalAccess.getRoot(jadxDecompiler);
+		                ^
+  符号:   变量 JadxInternalAccess
+  位置: 类 IntegrationTest
+/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java:731: 错误: 找不到符号
+		JavaClass javaClass = JadxInternalAccess.convertClassNode(jadxDecompiler, cls);
+		                      ^
+  符号:   变量 JadxInternalAccess
+  位置: 类 IntegrationTest
+/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/api/IntegrationTest.java:737: 错误: 找不到符号
+		JavaMethod javaMethod = JadxInternalAccess.convertMethodNode(jadxDecompiler, mth);
+		                        ^
+  符号:   变量 JadxInternalAccess
+  位置: 类 IntegrationTest
+4 个错误
+1 个警告

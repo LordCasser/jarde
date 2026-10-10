@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-ci-product-root-v2.py", line 580, in <module>
+    main()
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-ci-product-root-v2.py", line 542, in main
+    workspace = verify_loop_workspace_tests(helper, product, integer_verifier,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-ci-product-root-v2.py", line 465, in verify_loop_workspace_tests
+    assert re.search(r"(?m)^test " + re.escape(test_name) + r" \.\.\. ok$", block), (step, test_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('Run workspace tests with two fixed independent seeds (pass 1)', 'cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals')

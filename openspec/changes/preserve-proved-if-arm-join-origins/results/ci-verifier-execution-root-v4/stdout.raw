@@ -1,0 +1,1 @@
+{"status": "accepted", "product_commit": "1f386686c6a31813254a85fed48d2af0af84a61c", "run_id": 38068627541, "jobs": 4, "steps": 52, "proved_if_arm_join_tests_per_seed": 3, "prior_integer_tests_per_seed": 11}

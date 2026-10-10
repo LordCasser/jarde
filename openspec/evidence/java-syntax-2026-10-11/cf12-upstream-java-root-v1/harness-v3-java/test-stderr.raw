@@ -1,0 +1,12 @@
+10月 11, 2026 1:07:06 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-direct-harness-root-v3/junit-tmp/junit-8755191981834941358 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 1:07:06 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-direct-harness-root-v3/junit-tmp/junit-6763733506130684988 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 1:07:06 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-direct-harness-root-v3/junit-tmp/junit-12116352125798480166 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 1:07:06 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-direct-harness-root-v3/junit-tmp/junit-15032358048091648931 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 1:07:06 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-direct-harness-root-v3/junit-tmp/junit-15080411971592466159 for field IntegrationTest.testDir due to CleanupMode.NEVER.
+10月 11, 2026 1:07:07 上午 org.junit.jupiter.engine.extension.TempDirectory$CloseablePath close
+信息: Skipping cleanup of temp dir /private/tmp/jarde-cf12-direct-harness-root-v3/junit-tmp/junit-2754807707987954329 for field IntegrationTest.testDir due to CleanupMode.NEVER.

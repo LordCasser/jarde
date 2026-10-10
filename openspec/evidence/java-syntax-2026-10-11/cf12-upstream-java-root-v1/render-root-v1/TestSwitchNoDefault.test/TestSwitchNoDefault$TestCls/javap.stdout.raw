@@ -1,0 +1,134 @@
+Classfile /private/tmp/jarde-cf12-direct-harness-root-v3/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class
+  Last modified 2026年10月11日; size 899 bytes
+  SHA-256 checksum a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834
+  Compiled from "TestSwitchNoDefault.java"
+public class jadx.tests.integration.switches.TestSwitchNoDefault$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #27                         // jadx/tests/integration/switches/TestSwitchNoDefault$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = String             #8             // 1
+   #8 = Utf8               1
+   #9 = String             #10            // 2
+  #10 = Utf8               2
+  #11 = String             #12            // 3
+  #12 = Utf8               3
+  #13 = String             #14            // 4
+  #14 = Utf8               4
+  #15 = Fieldref           #16.#17        // java/lang/System.out:Ljava/io/PrintStream;
+  #16 = Class              #18            // java/lang/System
+  #17 = NameAndType        #19:#20        // out:Ljava/io/PrintStream;
+  #18 = Utf8               java/lang/System
+  #19 = Utf8               out
+  #20 = Utf8               Ljava/io/PrintStream;
+  #21 = Methodref          #22.#23        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #22 = Class              #24            // java/io/PrintStream
+  #23 = NameAndType        #25:#26        // println:(Ljava/lang/String;)V
+  #24 = Utf8               java/io/PrintStream
+  #25 = Utf8               println
+  #26 = Utf8               (Ljava/lang/String;)V
+  #27 = Class              #28            // jadx/tests/integration/switches/TestSwitchNoDefault$TestCls
+  #28 = Utf8               jadx/tests/integration/switches/TestSwitchNoDefault$TestCls
+  #29 = Utf8               Code
+  #30 = Utf8               LineNumberTable
+  #31 = Utf8               LocalVariableTable
+  #32 = Utf8               this
+  #33 = Utf8               Ljadx/tests/integration/switches/TestSwitchNoDefault$TestCls;
+  #34 = Utf8               test
+  #35 = Utf8               (I)V
+  #36 = Utf8               a
+  #37 = Utf8               I
+  #38 = Utf8               s
+  #39 = Utf8               Ljava/lang/String;
+  #40 = Utf8               StackMapTable
+  #41 = Class              #42            // java/lang/String
+  #42 = Utf8               java/lang/String
+  #43 = Utf8               SourceFile
+  #44 = Utf8               TestSwitchNoDefault.java
+  #45 = Utf8               InnerClasses
+  #46 = Class              #47            // jadx/tests/integration/switches/TestSwitchNoDefault
+  #47 = Utf8               jadx/tests/integration/switches/TestSwitchNoDefault
+  #48 = Utf8               TestCls
+{
+  public jadx.tests.integration.switches.TestSwitchNoDefault$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 11: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitchNoDefault$TestCls;
+
+  public void test(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: aconst_null
+         1: astore_2
+         2: iload_1
+         3: tableswitch   { // 1 to 4
+                       1: 32
+                       2: 38
+                       3: 44
+                       4: 50
+                 default: 53
+            }
+        32: ldc           #7                  // String 1
+        34: astore_2
+        35: goto          53
+        38: ldc           #9                  // String 2
+        40: astore_2
+        41: goto          53
+        44: ldc           #11                 // String 3
+        46: astore_2
+        47: goto          53
+        50: ldc           #13                 // String 4
+        52: astore_2
+        53: getstatic     #15                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        56: aload_2
+        57: invokevirtual #21                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        60: return
+      LineNumberTable:
+        line 13: 0
+        line 14: 2
+        line 16: 32
+        line 17: 35
+        line 19: 38
+        line 20: 41
+        line 22: 44
+        line 23: 47
+        line 25: 50
+        line 28: 53
+        line 29: 60
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      61     0  this   Ljadx/tests/integration/switches/TestSwitchNoDefault$TestCls;
+            0      61     1     a   I
+            2      59     2     s   Ljava/lang/String;
+      StackMapTable: number_of_entries = 5
+        frame_type = 252 /* append */
+          offset_delta = 32
+          locals = [ class java/lang/String ]
+        frame_type = 5 /* same */
+        frame_type = 5 /* same */
+        frame_type = 5 /* same */
+        frame_type = 2 /* same */
+}
+SourceFile: "TestSwitchNoDefault.java"
+InnerClasses:
+  public static #48= #27 of #46;          // TestCls=class jadx/tests/integration/switches/TestSwitchNoDefault$TestCls of class jadx/tests/integration/switches/TestSwitchNoDefault

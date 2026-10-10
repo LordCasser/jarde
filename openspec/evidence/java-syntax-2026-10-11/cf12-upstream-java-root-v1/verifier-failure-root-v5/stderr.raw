@@ -1,0 +1,16 @@
+verification failed: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'dict'
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v5.py", line 332, in <module>
+    try: main()
+         ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v5.py", line 321, in main
+    inventory=verify_closed_inventory(a.evidence_root)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v5.py", line 119, in verify_closed_inventory
+    allowed=sorted({Path(x).parts[0] for x in inv['files']})
+                    ^^^^^^^
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/pathlib.py", line 1162, in __init__
+    super().__init__(*args)
+  File "/Users/lordcasser/.local/share/uv/python/cpython-3.12.9-macos-aarch64-none/lib/python3.12/pathlib.py", line 373, in __init__
+    raise TypeError(
+TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'dict'

@@ -1,0 +1,626 @@
+{
+  "schema": "preserve-proved-if-arm-join-origins-ci-capture-root-v2",
+  "status": "captured",
+  "run_id": "38068627541",
+  "expected_head_sha": "1f386686c6a31813254a85fed48d2af0af84a61c",
+  "expected_test_counts": {
+    "lib": 336,
+    "gateway": 12,
+    "workspace_passed": 3389
+  },
+  "validated_run_summary": {
+    "conclusion": "success",
+    "headSha": "1f386686c6a31813254a85fed48d2af0af84a61c",
+    "jobs": [
+      {
+        "completedAt": "2026-10-10T16:43:53Z",
+        "conclusion": "success",
+        "databaseId": 114261290735,
+        "name": "supply chain",
+        "startedAt": "2026-10-10T16:40:36Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T16:40:38Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T16:40:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:40:58Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7.0.1",
+            "number": 2,
+            "startedAt": "2026-10-10T16:40:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:00Z",
+            "conclusion": "success",
+            "name": "Install stable Rust for cargo-deny",
+            "number": 3,
+            "startedAt": "2026-10-10T16:40:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:43:49Z",
+            "conclusion": "success",
+            "name": "Install cargo-deny 0.20.2",
+            "number": 4,
+            "startedAt": "2026-10-10T16:41:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:43:49Z",
+            "conclusion": "success",
+            "name": "Check root workspace advisories, licenses, bans, and sources",
+            "number": 5,
+            "startedAt": "2026-10-10T16:43:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:43:50Z",
+            "conclusion": "success",
+            "name": "Check fuzz workspace advisories, licenses, bans, and sources",
+            "number": 6,
+            "startedAt": "2026-10-10T16:43:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:43:50Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7.0.1",
+            "number": 12,
+            "startedAt": "2026-10-10T16:43:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:43:50Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "startedAt": "2026-10-10T16:43:50Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/LordCasser/jarde/actions/runs/38068627541/job/114261290735"
+      },
+      {
+        "completedAt": "2026-10-10T16:42:12Z",
+        "conclusion": "success",
+        "databaseId": 114261290861,
+        "name": "MSRV 1.88.0",
+        "startedAt": "2026-10-10T16:40:36Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T16:40:37Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T16:40:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:40:54Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7.0.1",
+            "number": 2,
+            "startedAt": "2026-10-10T16:40:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:02Z",
+            "conclusion": "success",
+            "name": "Install Rust 1.88.0",
+            "number": 3,
+            "startedAt": "2026-10-10T16:40:54Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:42:11Z",
+            "conclusion": "success",
+            "name": "Check workspace on MSRV",
+            "number": 4,
+            "startedAt": "2026-10-10T16:41:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:42:11Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7.0.1",
+            "number": 8,
+            "startedAt": "2026-10-10T16:42:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:42:11Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "startedAt": "2026-10-10T16:42:11Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/LordCasser/jarde/actions/runs/38068627541/job/114261290861"
+      },
+      {
+        "completedAt": "2026-10-10T16:50:30Z",
+        "conclusion": "success",
+        "databaseId": 114261290869,
+        "name": "fuzz smoke",
+        "startedAt": "2026-10-10T16:40:36Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T16:40:37Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T16:40:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:40:54Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7.0.1",
+            "number": 2,
+            "startedAt": "2026-10-10T16:40:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:03Z",
+            "conclusion": "success",
+            "name": "Install nightly-2026-07-20",
+            "number": 3,
+            "startedAt": "2026-10-10T16:40:54Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:49Z",
+            "conclusion": "success",
+            "name": "Install cargo-fuzz 0.13.2",
+            "number": 4,
+            "startedAt": "2026-10-10T16:41:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:50Z",
+            "conclusion": "success",
+            "name": "Prepare the C++ and sanitizer toolchain",
+            "number": 5,
+            "startedAt": "2026-10-10T16:41:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:43:16Z",
+            "conclusion": "success",
+            "name": "Check the committed corpus against the targets",
+            "number": 6,
+            "startedAt": "2026-10-10T16:41:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:49:44Z",
+            "conclusion": "success",
+            "name": "Run the bounded query smoke",
+            "number": 7,
+            "startedAt": "2026-10-10T16:43:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:50:06Z",
+            "conclusion": "success",
+            "name": "Run the bounded artifact-tree smoke",
+            "number": 8,
+            "startedAt": "2026-10-10T16:49:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:50:27Z",
+            "conclusion": "success",
+            "name": "Run the bounded method-analysis smoke",
+            "number": 9,
+            "startedAt": "2026-10-10T16:50:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:50:29Z",
+            "conclusion": "success",
+            "name": "Ensure the smoke runs left the tracked tree unchanged",
+            "number": 10,
+            "startedAt": "2026-10-10T16:50:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:50:29Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7.0.1",
+            "number": 20,
+            "startedAt": "2026-10-10T16:50:29Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:50:29Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "startedAt": "2026-10-10T16:50:29Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/LordCasser/jarde/actions/runs/38068627541/job/114261290869"
+      },
+      {
+        "completedAt": "2026-10-10T17:20:36Z",
+        "conclusion": "success",
+        "databaseId": 114261290870,
+        "name": "stable / test and specification",
+        "startedAt": "2026-10-10T16:40:36Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-10T16:40:37Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-10T16:40:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:40:55Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7.0.1",
+            "number": 2,
+            "startedAt": "2026-10-10T16:40:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:40:56Z",
+            "conclusion": "success",
+            "name": "Install stable Rust with lint components",
+            "number": 3,
+            "startedAt": "2026-10-10T16:40:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:40:59Z",
+            "conclusion": "success",
+            "name": "Install Temurin 25.0.4+7",
+            "number": 4,
+            "startedAt": "2026-10-10T16:40:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:00Z",
+            "conclusion": "success",
+            "name": "Install Node.js 22",
+            "number": 5,
+            "startedAt": "2026-10-10T16:40:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:41:07Z",
+            "conclusion": "success",
+            "name": "Check formatting",
+            "number": 6,
+            "startedAt": "2026-10-10T16:41:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T16:42:43Z",
+            "conclusion": "success",
+            "name": "Run Clippy",
+            "number": 7,
+            "startedAt": "2026-10-10T16:41:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:03:04Z",
+            "conclusion": "success",
+            "name": "Run workspace tests with two fixed independent seeds (pass 1)",
+            "number": 8,
+            "startedAt": "2026-10-10T16:42:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:15:16Z",
+            "conclusion": "success",
+            "name": "Run workspace tests with two fixed independent seeds (pass 2)",
+            "number": 9,
+            "startedAt": "2026-10-10T17:03:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:16:14Z",
+            "conclusion": "success",
+            "name": "Run ignored JDK 25 instruction-boundary oracle",
+            "number": 10,
+            "startedAt": "2026-10-10T17:15:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:19:17Z",
+            "conclusion": "success",
+            "name": "Run the ignored P3 Java 8 compile-and-execute comparison",
+            "number": 11,
+            "startedAt": "2026-10-10T17:16:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:17Z",
+            "conclusion": "success",
+            "name": "Run the functional-constructor full-class comparison",
+            "number": 12,
+            "startedAt": "2026-10-10T17:19:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:20Z",
+            "conclusion": "success",
+            "name": "Run the BigDecimal Number full-class comparisons",
+            "number": 13,
+            "startedAt": "2026-10-10T17:20:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:22Z",
+            "conclusion": "success",
+            "name": "Run the nested int array full-class comparisons",
+            "number": 14,
+            "startedAt": "2026-10-10T17:20:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:24Z",
+            "conclusion": "success",
+            "name": "Run the returned int array full-class comparison",
+            "number": 15,
+            "startedAt": "2026-10-10T17:20:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:25Z",
+            "conclusion": "success",
+            "name": "Run public API example",
+            "number": 16,
+            "startedAt": "2026-10-10T17:20:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:25Z",
+            "conclusion": "success",
+            "name": "Check resolved feature tree",
+            "number": 17,
+            "startedAt": "2026-10-10T17:20:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:25Z",
+            "conclusion": "success",
+            "name": "Check normal dependency tree boundary",
+            "number": 18,
+            "startedAt": "2026-10-10T17:20:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:26Z",
+            "conclusion": "success",
+            "name": "Check layered crate dependency closure",
+            "number": 19,
+            "startedAt": "2026-10-10T17:20:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:30Z",
+            "conclusion": "success",
+            "name": "Install OpenSpec 1.11.0",
+            "number": 20,
+            "startedAt": "2026-10-10T17:20:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:31Z",
+            "conclusion": "success",
+            "name": "Validate OpenSpec strictly",
+            "number": 21,
+            "startedAt": "2026-10-10T17:20:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:34Z",
+            "conclusion": "success",
+            "name": "Ensure tracked files remain unchanged",
+            "number": 22,
+            "startedAt": "2026-10-10T17:20:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:34Z",
+            "conclusion": "success",
+            "name": "Post Install Node.js 22",
+            "number": 42,
+            "startedAt": "2026-10-10T17:20:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:34Z",
+            "conclusion": "success",
+            "name": "Post Install Temurin 25.0.4+7",
+            "number": 43,
+            "startedAt": "2026-10-10T17:20:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:35Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7.0.1",
+            "number": 44,
+            "startedAt": "2026-10-10T17:20:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-10T17:20:35Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 45,
+            "startedAt": "2026-10-10T17:20:35Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/LordCasser/jarde/actions/runs/38068627541/job/114261290870"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/LordCasser/jarde/actions/runs/38068627541"
+  },
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38068627541",
+        "--json",
+        "headSha,status,conclusion,jobs,url"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T17:26:19.434292+00:00",
+      "duration_seconds": 5.04533841702505,
+      "timeout_seconds": 35,
+      "timed_out": false,
+      "exit_code": 0,
+      "spawn_error": null,
+      "environment_override": {
+        "NO_PROXY": {
+          "appended": [
+            "results-receiver.actions.githubusercontent.com",
+            "productionresultssa1.blob.core.windows.net"
+          ],
+          "final_value_sha256": "ac7d797a1728a7d015c3eed81547678f958593f8f313358112e47c726e2dc6b8"
+        },
+        "no_proxy": {
+          "appended": [
+            "results-receiver.actions.githubusercontent.com",
+            "productionresultssa1.blob.core.windows.net"
+          ],
+          "final_value_sha256": "3a6c6b14864d7cdb6282036faab8933f95238b71b4c51296939676245ab47190"
+        }
+      },
+      "stdout": {
+        "path": "ci-run-v1.json",
+        "bytes": 10113,
+        "sha256": "3c0466a28c18cde9e3333aed22629751c221a5b3b84f38a3705a5c110df32005"
+      },
+      "stderr": {
+        "path": "ci-run-v1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38068627541",
+        "--job",
+        "114261290870",
+        "--log"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T17:26:24.480278+00:00",
+      "duration_seconds": 12.548128459020518,
+      "timeout_seconds": 35,
+      "timed_out": false,
+      "exit_code": 0,
+      "spawn_error": null,
+      "environment_override": {
+        "NO_PROXY": {
+          "appended": [
+            "results-receiver.actions.githubusercontent.com",
+            "productionresultssa1.blob.core.windows.net"
+          ],
+          "final_value_sha256": "ac7d797a1728a7d015c3eed81547678f958593f8f313358112e47c726e2dc6b8"
+        },
+        "no_proxy": {
+          "appended": [
+            "results-receiver.actions.githubusercontent.com",
+            "productionresultssa1.blob.core.windows.net"
+          ],
+          "final_value_sha256": "3a6c6b14864d7cdb6282036faab8933f95238b71b4c51296939676245ab47190"
+        }
+      },
+      "stdout": {
+        "path": "ci-stable-job-v1.log.gz",
+        "bytes": 277745,
+        "uncompressed_bytes": 1764453,
+        "sha256": "7cf8154311c39e002b9472dd1613b72543ebb9534266a79196d1ab994eec84a0",
+        "raw_sha256": "f9537b5ccf4a0ecf2783463da3e20f6bb3964ad5d0884be9b7d512d1387216d0"
+      },
+      "stdout_raw": {
+        "path": "ci-stable-job-v1.log.stdout.raw",
+        "bytes": 1764453,
+        "sha256": "f9537b5ccf4a0ecf2783463da3e20f6bb3964ad5d0884be9b7d512d1387216d0"
+      },
+      "stderr": {
+        "path": "ci-stable-job-v1.log.gz.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38068627541",
+        "--job",
+        "114261290735",
+        "--log"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T17:26:37.075429+00:00",
+      "duration_seconds": 1.984947207994992,
+      "timeout_seconds": 35,
+      "timed_out": false,
+      "exit_code": 0,
+      "spawn_error": null,
+      "environment_override": {
+        "NO_PROXY": {
+          "appended": [
+            "results-receiver.actions.githubusercontent.com",
+            "productionresultssa1.blob.core.windows.net"
+          ],
+          "final_value_sha256": "ac7d797a1728a7d015c3eed81547678f958593f8f313358112e47c726e2dc6b8"
+        },
+        "no_proxy": {
+          "appended": [
+            "results-receiver.actions.githubusercontent.com",
+            "productionresultssa1.blob.core.windows.net"
+          ],
+          "final_value_sha256": "3a6c6b14864d7cdb6282036faab8933f95238b71b4c51296939676245ab47190"
+        }
+      },
+      "stdout": {
+        "path": "ci-supply-job-v1.log.gz",
+        "bytes": 15119,
+        "uncompressed_bytes": 115815,
+        "sha256": "56e7a855b2aede9e1c65a6e29e214928ff38fa44c10ffd89c229e5ab3320227a",
+        "raw_sha256": "14033bb730dca9d440780e7c279b0a45dba89279dd518314ea67a34b50d3a3fc"
+      },
+      "stdout_raw": {
+        "path": "ci-supply-job-v1.log.stdout.raw",
+        "bytes": 115815,
+        "sha256": "14033bb730dca9d440780e7c279b0a45dba89279dd518314ea67a34b50d3a3fc"
+      },
+      "stderr": {
+        "path": "ci-supply-job-v1.log.gz.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

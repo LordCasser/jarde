@@ -1,0 +1,290 @@
+01:07:05,612 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-core version 1.6.3
+01:07:05,612 |-INFO in ch.qos.logback.classic.util.ContextInitializer@44e3760b - No custom configurators were discovered as a service.
+01:07:05,612 |-INFO in ch.qos.logback.classic.util.ContextInitializer@44e3760b - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+01:07:05,612 |-INFO in ch.qos.logback.classic.util.ContextInitializer@44e3760b - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+01:07:05,614 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+01:07:05,615 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [jar:file:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar!/logback.xml]
+01:07:05,615 |-WARN in ch.qos.logback.classic.util.DefaultJoranConfigurator@6a66a204 - Resource [logback.xml] occurs multiple times on the classpath.
+01:07:05,615 |-WARN in ch.qos.logback.classic.util.DefaultJoranConfigurator@6a66a204 - Resource [logback.xml] occurs at [file:/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/resources/logback.xml]
+01:07:05,615 |-WARN in ch.qos.logback.classic.util.DefaultJoranConfigurator@6a66a204 - Resource [logback.xml] occurs at [jar:file:/Users/lordcasser/workspace/testzone/jadx/jadx-cli/build/install/jadx/lib/jadx-cli-dev.jar!/logback.xml]
+01:07:05,641 |-INFO in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Scan attribute not set or set to unrecognized value.
+01:07:05,643 |-INFO in ch.qos.logback.classic.model.processor.CallerInstructionLogic@5860f3d7 - No contradictions in caller extraction instruction were detected
+01:07:05,644 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [STDOUT]
+01:07:05,644 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+01:07:05,646 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+01:07:05,652 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+01:07:05,652 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - console in production environments, especially in high volume systems.
+01:07:05,652 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - See also https://logback.qos.ch/codes.html#slowConsole
+01:07:05,653 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.pinterest.ktlint] to INFO
+01:07:05,653 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [guru.nidi.graphviz] to WARN
+01:07:05,653 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+01:07:05,653 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [STDOUT] to Logger[ROOT]
+01:07:05,653 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@1d7f7be7 - End of configuration.
+01:07:05,653 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@42f3156d - Registering current configuration as safe fallback point
+01:07:05,655 |-INFO in ch.qos.logback.classic.util.ContextInitializer@44e3760b - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 41 milliseconds. ExecutionStatus=DO_NOT_INVOKE_NEXT_IF_ANY
+
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+INFO  - Using java input, current java version: 23
+INFO  - loading ...
+INFO  - Loaded classes: 1, methods: 2, instructions: 122
+-----------------------------------------------------------
+package jadx.tests.integration.switches;
+
+/* JADX INFO: loaded from: TestSwitch$TestCls.class */
+public class TestSwitch$TestCls {
+    public String test(String str) {
+        int len = str.length();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            switch (c) {
+                case '.':
+                case '/':
+                    sb.append('_');
+                    break;
+                case '?':
+                    break;
+                case ']':
+                    sb.append('A');
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+}
+-----------------------------------------------------------
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+Compilation: PASSED
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+INFO  - Using java input, current java version: 23
+INFO  - loading ...
+INFO  - Loaded classes: 1, methods: 2, instructions: 66
+-----------------------------------------------------------
+package jadx.tests.integration.switches;
+
+/* JADX INFO: loaded from: TestSwitchNoDefault$TestCls.class */
+public class TestSwitchNoDefault$TestCls {
+    public void test(int a) {
+        String s = null;
+        switch (a) {
+            case 1:
+                s = "1";
+                break;
+            case 2:
+                s = "2";
+                break;
+            case 3:
+                s = "3";
+                break;
+            case 4:
+                s = "4";
+                break;
+        }
+        System.out.println(s);
+    }
+}
+-----------------------------------------------------------
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+Compilation: PASSED
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+INFO  - Using java input, current java version: 23
+INFO  - loading ...
+INFO  - Loaded classes: 2, methods: 4, instructions: 62
+-----------------------------------------------------------
+package jadx.tests.integration.switches;
+
+/* JADX INFO: loaded from: TestSwitchLabels$TestCls.class */
+public class TestSwitchLabels$TestCls {
+    public static final int CONST_ABC = 2748;
+    public static final int CONST_CDE = 3294;
+
+    /* JADX INFO: loaded from: TestSwitchLabels$TestCls$Inner.class */
+    public static class Inner {
+        private static final int CONST_CDE_PRIVATE = 3294;
+
+        public int f1(int arg0) {
+            switch (arg0) {
+                case 3294:
+                    return 2748;
+                default:
+                    return 0;
+            }
+        }
+    }
+
+    public static int f1(int arg0) {
+        switch (arg0) {
+            case 2748:
+                return 3294;
+            default:
+                return 0;
+        }
+    }
+}
+-----------------------------------------------------------
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+Compilation: PASSED
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+INFO  - Using java input, current java version: 23
+INFO  - loading ...
+INFO  - Loaded classes: 2, methods: 4, instructions: 62
+-----------------------------------------------------------
+package jadx.tests.integration.switches;
+
+/* JADX INFO: loaded from: TestSwitchLabels$TestCls.class */
+public class TestSwitchLabels$TestCls {
+    public static final int CONST_ABC = 2748;
+    public static final int CONST_CDE = 3294;
+
+    /* JADX INFO: loaded from: TestSwitchLabels$TestCls$Inner.class */
+    public static class Inner {
+        private static final int CONST_CDE_PRIVATE = 3294;
+
+        public int f1(int arg0) {
+            switch (arg0) {
+                case 3294:
+                    return TestSwitchLabels$TestCls.CONST_ABC;
+                default:
+                    return 0;
+            }
+        }
+    }
+
+    public static int f1(int arg0) {
+        switch (arg0) {
+            case CONST_ABC /* 2748 */:
+                return CONST_CDE;
+            default:
+                return 0;
+        }
+    }
+}
+-----------------------------------------------------------
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+Compilation: PASSED
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+INFO  - Using java input, current java version: 23
+INFO  - loading ...
+INFO  - Loaded classes: 1, methods: 4, instructions: 161
+-----------------------------------------------------------
+package jadx.tests.integration.switches;
+
+import jadx.tests.api.utils.assertj.JadxAssertions;
+
+/* JADX INFO: loaded from: TestSwitchFallThrough$TestCls.class */
+public class TestSwitchFallThrough$TestCls {
+    public int r;
+
+    public void test(int a) {
+        int i = 10;
+        switch (a) {
+            case 1:
+                i = 1000;
+            case 2:
+                this.r = i;
+                break;
+            default:
+                this.r = -1;
+                break;
+        }
+        this.r *= 2;
+        System.out.println("in: " + a + ", out: " + this.r);
+    }
+
+    public int testWrap(int a) {
+        this.r = 0;
+        test(a);
+        return this.r;
+    }
+
+    public void check() {
+        JadxAssertions.assertThat(testWrap(1)).isEqualTo(2000);
+        JadxAssertions.assertThat(testWrap(2)).isEqualTo(20);
+        JadxAssertions.assertThat(testWrap(0)).isEqualTo(-2);
+    }
+}
+-----------------------------------------------------------
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+Compilation: PASSED
+in: 1, out: 2000
+in: 2, out: 20
+in: 0, out: -2
+Source check: PASSED
+in: 1, out: 2000
+in: 2, out: 20
+in: 0, out: -2
+Decompiled check: PASSED
+Compiler diagnostic: 警告: [options] 源值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 目标值 8 已过时，将在未来发行版中删除
+Compiler diagnostic: 警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+INFO  - Using java input, current java version: 23
+INFO  - loading ...
+INFO  - Loaded classes: 1, methods: 3, instructions: 266
+-----------------------------------------------------------
+package jadx.tests.integration.switches;
+
+import org.assertj.core.api.Assertions;
+
+/* JADX INFO: loaded from: TestSwitchWithFallThroughCase$TestCls.class */
+public class TestSwitchWithFallThroughCase$TestCls {
+    /* JADX WARN: Code duplicated, block: B:14:0x0079  */
+    public String test(int a, boolean b, boolean c) {
+        String str = "";
+        switch (a % 4) {
+            case 1:
+                str = str + ">";
+                if (a == 5 && b) {
+                    if (c) {
+                        str = str + "1";
+                    } else {
+                        str = str + "!c";
+                    }
+                } else if (b) {
+                    str = str + "2";
+                }
+                break;
+            case 2:
+                if (b) {
+                    str = str + "2";
+                }
+                break;
+            case 3:
+                break;
+            default:
+                str = str + "default";
+                break;
+        }
+        return str + ";";
+    }
+
+    public void check() {
+        Assertions.assertThat(test(5, true, true)).isEqualTo(">1;");
+        Assertions.assertThat(test(1, true, true)).isEqualTo(">2;");
+        Assertions.assertThat(test(3, true, true)).isEqualTo(";");
+        Assertions.assertThat(test(0, true, true)).isEqualTo("default;");
+    }
+}
+-----------------------------------------------------------

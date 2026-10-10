@@ -1,0 +1,20 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/verify-ci-product-root-v4.py",
+  "--product-commit",
+  "1f386686c6a31813254a85fed48d2af0af84a61c",
+  "--run-id",
+  "38068627541",
+  "--expected-lib-count",
+  "336",
+  "--expected-gateway-count",
+  "12",
+  "--expected-total-passed",
+  "3389"
+]

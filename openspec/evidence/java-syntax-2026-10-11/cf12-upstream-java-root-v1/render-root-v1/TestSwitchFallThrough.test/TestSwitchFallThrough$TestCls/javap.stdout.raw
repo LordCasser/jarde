@@ -1,0 +1,236 @@
+Classfile /private/tmp/jarde-cf12-direct-harness-root-v3/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class
+  Last modified 2026年10月11日; size 1531 bytes
+  SHA-256 checksum 610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f
+  Compiled from "TestSwitchFallThrough.java"
+public class jadx.tests.integration.switches.TestSwitchFallThrough$TestCls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // jadx/tests/integration/switches/TestSwitchFallThrough$TestCls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 4, attributes: 2
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.r:I
+   #8 = Class              #10            // jadx/tests/integration/switches/TestSwitchFallThrough$TestCls
+   #9 = NameAndType        #11:#12        // r:I
+  #10 = Utf8               jadx/tests/integration/switches/TestSwitchFallThrough$TestCls
+  #11 = Utf8               r
+  #12 = Utf8               I
+  #13 = Fieldref           #14.#15        // java/lang/System.out:Ljava/io/PrintStream;
+  #14 = Class              #16            // java/lang/System
+  #15 = NameAndType        #17:#18        // out:Ljava/io/PrintStream;
+  #16 = Utf8               java/lang/System
+  #17 = Utf8               out
+  #18 = Utf8               Ljava/io/PrintStream;
+  #19 = Class              #20            // java/lang/StringBuilder
+  #20 = Utf8               java/lang/StringBuilder
+  #21 = Methodref          #19.#3         // java/lang/StringBuilder."<init>":()V
+  #22 = String             #23            // in:
+  #23 = Utf8               in:
+  #24 = Methodref          #19.#25        // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #25 = NameAndType        #26:#27        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #26 = Utf8               append
+  #27 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #28 = Methodref          #19.#29        // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #29 = NameAndType        #26:#30        // append:(I)Ljava/lang/StringBuilder;
+  #30 = Utf8               (I)Ljava/lang/StringBuilder;
+  #31 = String             #32            // , out:
+  #32 = Utf8               , out:
+  #33 = Methodref          #19.#34        // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #34 = NameAndType        #35:#36        // toString:()Ljava/lang/String;
+  #35 = Utf8               toString
+  #36 = Utf8               ()Ljava/lang/String;
+  #37 = Methodref          #38.#39        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #38 = Class              #40            // java/io/PrintStream
+  #39 = NameAndType        #41:#42        // println:(Ljava/lang/String;)V
+  #40 = Utf8               java/io/PrintStream
+  #41 = Utf8               println
+  #42 = Utf8               (Ljava/lang/String;)V
+  #43 = Methodref          #8.#44         // jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.test:(I)V
+  #44 = NameAndType        #45:#46        // test:(I)V
+  #45 = Utf8               test
+  #46 = Utf8               (I)V
+  #47 = Methodref          #8.#48         // jadx/tests/integration/switches/TestSwitchFallThrough$TestCls.testWrap:(I)I
+  #48 = NameAndType        #49:#50        // testWrap:(I)I
+  #49 = Utf8               testWrap
+  #50 = Utf8               (I)I
+  #51 = Methodref          #52.#53        // jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+  #52 = Class              #54            // jadx/tests/api/utils/assertj/JadxAssertions
+  #53 = NameAndType        #55:#56        // assertThat:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+  #54 = Utf8               jadx/tests/api/utils/assertj/JadxAssertions
+  #55 = Utf8               assertThat
+  #56 = Utf8               (I)Lorg/assertj/core/api/AbstractIntegerAssert;
+  #57 = Methodref          #58.#59        // org/assertj/core/api/AbstractIntegerAssert.isEqualTo:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+  #58 = Class              #60            // org/assertj/core/api/AbstractIntegerAssert
+  #59 = NameAndType        #61:#56        // isEqualTo:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+  #60 = Utf8               org/assertj/core/api/AbstractIntegerAssert
+  #61 = Utf8               isEqualTo
+  #62 = Utf8               Code
+  #63 = Utf8               LineNumberTable
+  #64 = Utf8               LocalVariableTable
+  #65 = Utf8               this
+  #66 = Utf8               Ljadx/tests/integration/switches/TestSwitchFallThrough$TestCls;
+  #67 = Utf8               a
+  #68 = Utf8               i
+  #69 = Utf8               StackMapTable
+  #70 = Utf8               check
+  #71 = Utf8               SourceFile
+  #72 = Utf8               TestSwitchFallThrough.java
+  #73 = Utf8               InnerClasses
+  #74 = Class              #75            // jadx/tests/integration/switches/TestSwitchFallThrough
+  #75 = Utf8               jadx/tests/integration/switches/TestSwitchFallThrough
+  #76 = Utf8               TestCls
+{
+  public int r;
+    descriptor: I
+    flags: (0x0001) ACC_PUBLIC
+
+  public jadx.tests.integration.switches.TestSwitchFallThrough$TestCls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 11: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitchFallThrough$TestCls;
+
+  public void test(int);
+    descriptor: (I)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=3, args_size=2
+         0: bipush        10
+         2: istore_2
+         3: iload_1
+         4: lookupswitch  { // 2
+                       1: 32
+                       2: 36
+                 default: 44
+            }
+        32: sipush        1000
+        35: istore_2
+        36: aload_0
+        37: iload_2
+        38: putfield      #7                  // Field r:I
+        41: goto          49
+        44: aload_0
+        45: iconst_m1
+        46: putfield      #7                  // Field r:I
+        49: aload_0
+        50: dup
+        51: getfield      #7                  // Field r:I
+        54: iconst_2
+        55: imul
+        56: putfield      #7                  // Field r:I
+        59: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+        62: new           #19                 // class java/lang/StringBuilder
+        65: dup
+        66: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+        69: ldc           #22                 // String in:
+        71: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        74: iload_1
+        75: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        78: ldc           #31                 // String , out:
+        80: invokevirtual #24                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        83: aload_0
+        84: getfield      #7                  // Field r:I
+        87: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        90: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        93: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        96: return
+      LineNumberTable:
+        line 16: 0
+        line 17: 3
+        line 19: 32
+        line 22: 36
+        line 23: 41
+        line 26: 44
+        line 29: 49
+        line 30: 59
+        line 31: 96
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      97     0  this   Ljadx/tests/integration/switches/TestSwitchFallThrough$TestCls;
+            0      97     1     a   I
+            3      94     2     i   I
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 32
+          locals = [ int ]
+        frame_type = 3 /* same */
+        frame_type = 7 /* same */
+        frame_type = 4 /* same */
+
+  public int testWrap(int);
+    descriptor: (I)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_0
+         1: iconst_0
+         2: putfield      #7                  // Field r:I
+         5: aload_0
+         6: iload_1
+         7: invokevirtual #43                 // Method test:(I)V
+        10: aload_0
+        11: getfield      #7                  // Field r:I
+        14: ireturn
+      LineNumberTable:
+        line 34: 0
+        line 35: 5
+        line 36: 10
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      15     0  this   Ljadx/tests/integration/switches/TestSwitchFallThrough$TestCls;
+            0      15     1     a   I
+
+  public void check();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: aload_0
+         1: iconst_1
+         2: invokevirtual #47                 // Method testWrap:(I)I
+         5: invokestatic  #51                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+         8: sipush        2000
+        11: invokevirtual #57                 // Method org/assertj/core/api/AbstractIntegerAssert.isEqualTo:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+        14: pop
+        15: aload_0
+        16: iconst_2
+        17: invokevirtual #47                 // Method testWrap:(I)I
+        20: invokestatic  #51                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+        23: bipush        20
+        25: invokevirtual #57                 // Method org/assertj/core/api/AbstractIntegerAssert.isEqualTo:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+        28: pop
+        29: aload_0
+        30: iconst_0
+        31: invokevirtual #47                 // Method testWrap:(I)I
+        34: invokestatic  #51                 // Method jadx/tests/api/utils/assertj/JadxAssertions.assertThat:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+        37: bipush        -2
+        39: invokevirtual #57                 // Method org/assertj/core/api/AbstractIntegerAssert.isEqualTo:(I)Lorg/assertj/core/api/AbstractIntegerAssert;
+        42: pop
+        43: return
+      LineNumberTable:
+        line 40: 0
+        line 41: 15
+        line 42: 29
+        line 43: 43
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      44     0  this   Ljadx/tests/integration/switches/TestSwitchFallThrough$TestCls;
+}
+SourceFile: "TestSwitchFallThrough.java"
+InnerClasses:
+  public static #76= #8 of #74;           // TestCls=class jadx/tests/integration/switches/TestSwitchFallThrough$TestCls of class jadx/tests/integration/switches/TestSwitchFallThrough

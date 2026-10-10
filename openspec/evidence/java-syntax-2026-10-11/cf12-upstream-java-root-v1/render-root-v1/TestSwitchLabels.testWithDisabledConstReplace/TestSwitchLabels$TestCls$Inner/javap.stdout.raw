@@ -1,0 +1,92 @@
+Classfile /private/tmp/jarde-cf12-direct-harness-root-v3/capture/TestSwitchLabels.testWithDisabledConstReplace/input/TestSwitchLabels$TestCls$Inner.class
+  Last modified 2026年10月11日; size 744 bytes
+  SHA-256 checksum 2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99
+  Compiled from "TestSwitchLabels.java"
+public class jadx.tests.integration.switches.TestSwitchLabels$TestCls$Inner
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #9                          // jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner
+  super_class: #4                         // java/lang/Object
+  interfaces: 0, fields: 1, methods: 2, attributes: 2
+Constant pool:
+   #1 = Class              #2             // jadx/tests/integration/switches/TestSwitchLabels$TestCls
+   #2 = Utf8               jadx/tests/integration/switches/TestSwitchLabels$TestCls
+   #3 = Methodref          #4.#5          // java/lang/Object."<init>":()V
+   #4 = Class              #6             // java/lang/Object
+   #5 = NameAndType        #7:#8          // "<init>":()V
+   #6 = Utf8               java/lang/Object
+   #7 = Utf8               <init>
+   #8 = Utf8               ()V
+   #9 = Class              #10            // jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner
+  #10 = Utf8               jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner
+  #11 = Utf8               CONST_CDE_PRIVATE
+  #12 = Utf8               I
+  #13 = Utf8               ConstantValue
+  #14 = Integer            3294
+  #15 = Utf8               Code
+  #16 = Utf8               LineNumberTable
+  #17 = Utf8               LocalVariableTable
+  #18 = Utf8               this
+  #19 = Utf8               Ljadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner;
+  #20 = Utf8               f1
+  #21 = Utf8               (I)I
+  #22 = Utf8               arg0
+  #23 = Utf8               StackMapTable
+  #24 = Utf8               SourceFile
+  #25 = Utf8               TestSwitchLabels.java
+  #26 = Utf8               InnerClasses
+  #27 = Class              #28            // jadx/tests/integration/switches/TestSwitchLabels
+  #28 = Utf8               jadx/tests/integration/switches/TestSwitchLabels
+  #29 = Utf8               TestCls
+  #30 = Utf8               Inner
+{
+  private static final int CONST_CDE_PRIVATE;
+    descriptor: I
+    flags: (0x001a) ACC_PRIVATE, ACC_STATIC, ACC_FINAL
+    ConstantValue: int 3294
+
+  public jadx.tests.integration.switches.TestSwitchLabels$TestCls$Inner();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 14: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Ljadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner;
+
+  public int f1(int);
+    descriptor: (I)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=2, args_size=2
+         0: iload_1
+         1: lookupswitch  { // 1
+                    3294: 20
+                 default: 24
+            }
+        20: sipush        2748
+        23: ireturn
+        24: iconst_0
+        25: ireturn
+      LineNumberTable:
+        line 18: 0
+        line 20: 20
+        line 22: 24
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      26     0  this   Ljadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner;
+            0      26     1  arg0   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 20 /* same */
+        frame_type = 3 /* same */
+}
+SourceFile: "TestSwitchLabels.java"
+InnerClasses:
+  public static #29= #1 of #27;           // TestCls=class jadx/tests/integration/switches/TestSwitchLabels$TestCls of class jadx/tests/integration/switches/TestSwitchLabels
+  public static #30= #9 of #1;            // Inner=class jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner of class jadx/tests/integration/switches/TestSwitchLabels$TestCls

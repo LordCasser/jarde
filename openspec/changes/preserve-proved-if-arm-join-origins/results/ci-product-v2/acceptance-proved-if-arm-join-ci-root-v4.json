@@ -1,0 +1,468 @@
+{
+  "schema": "preserve-proved-if-arm-join-origins-ci-product-root-acceptance-v4",
+  "status": "accepted",
+  "product_commit": "1f386686c6a31813254a85fed48d2af0af84a61c",
+  "run_id": 38068627541,
+  "source_commit_base": "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+  "shared_ci_verification": {
+    "static_helper": {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/verify-ci-product-root-v12.py",
+      "sha256": "806547956c91e1213b3549ea641497018b97970a5a7796c91c06d345f362d55d",
+      "verify_ci_called": true,
+      "main_called": false
+    },
+    "accepted_integer_verifier": {
+      "path": "openspec/changes/recover-int-array-constant-names/results/verify-int-array-ci-product-luna-v2.py",
+      "sha256": "e5534e0b2acc6066ba518a1b55f5d0f79b9e5e25a1c4dc5db768040b6d47b425",
+      "integer_test_helper_called": true
+    }
+  },
+  "binary_group_adaptation": {
+    "target": "tests/p3_loop_exit_gateways.rs",
+    "method": "derive all 12 gateway names from the product Git blob, require all 12 raw gateway names, with only the three new If-join tests required by build summary, and retain exact fingerprint output checks",
+    "all_test_names_and_exact_summary_rechecked": true
+  },
+  "ci": {
+    "ci_json_sha256": "3c0466a28c18cde9e3333aed22629751c221a5b3b84f38a3705a5c110df32005",
+    "stable_gzip_sha256": "7cf8154311c39e002b9472dd1613b72543ebb9534266a79196d1ab994eec84a0",
+    "stable_raw_sha256": "f9537b5ccf4a0ecf2783463da3e20f6bb3964ad5d0884be9b7d512d1387216d0",
+    "supply_gzip_sha256": "56e7a855b2aede9e1c65a6e29e214928ff38fa44c10ffd89c229e5ab3320227a",
+    "supply_raw_sha256": "14033bb730dca9d440780e7c279b0a45dba89279dd518314ea67a34b50d3a3fc",
+    "jobs": 4,
+    "step_count": 52,
+    "all_jobs_and_steps_success": true,
+    "installed_jdk": "25.0.4+7.0.LTS",
+    "workspace_seed_runs": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "seed": "5350648285461741569",
+        "binaries": {
+          "tests/class_static_initializer_projection.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/interface_initializer_proof.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_patterns.rs": {
+            "passed": 85,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_array_slot_retype_locals.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/recover_unicode_identifiers.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p5_corpus_fingerprint.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          },
+          "tests/p5_bulk_corpus.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          }
+        },
+        "test_result_records": 354,
+        "passed": 3389,
+        "failed": 0,
+        "ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "seed": "5350648285461741570",
+        "binaries": {
+          "tests/class_static_initializer_projection.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/interface_initializer_proof.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_patterns.rs": {
+            "passed": 85,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p3_array_slot_retype_locals.rs": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/recover_unicode_identifiers.rs": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0
+          },
+          "tests/p5_corpus_fingerprint.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          },
+          "tests/p5_bulk_corpus.rs": {
+            "passed": 5,
+            "failed": 0,
+            "ignored": 1
+          }
+        },
+        "test_result_records": 354,
+        "passed": 3389,
+        "failed": 0,
+        "ignored": 97
+      }
+    ],
+    "workspace_seeds": [
+      "5350648285461741569",
+      "5350648285461741570"
+    ],
+    "ignored_comparisons": {
+      "jdk25_instruction_boundaries": {
+        "command": "cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "p3_execution": {
+        "command": "cargo test --test p3_execution_comparison --locked -- --ignored",
+        "records": 1,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      "functional_constructor": {
+        "command": "cargo test -p jarde-cli --test json_cli --locked -- --ignored --exact functional_constructor_arguments_replay_the_complete_class_on_both_jdks",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "bigdecimal": {
+        "command": "cargo test --test p3_bigdecimal_number_widening --locked -- --ignored",
+        "records": 1,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      "nested": {
+        "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact nested_int_array_updates_match_the_frozen_runner_oracle",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "returned": {
+        "command": "cargo test --test p3_nested_int_array_compound_updates --locked -- --ignored --exact returned_int_array_updates_compile_and_execute_as_a_complete_class",
+        "records": 1,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    "cargo_deny": {
+      "version": "0.20.2",
+      "commands": [
+        "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./Cargo.toml check",
+        "cargo deny --all-features --workspace --locked --config ./deny.toml --manifest-path ./fuzz/Cargo.toml check"
+      ]
+    },
+    "workflow_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a"
+  },
+  "workspace_regressions": {
+    "proved_if_arm_join_workspace_tests": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "seed": "5350648285461741569",
+        "command_group_index": 708,
+        "focused_binary": "tests/p3_loop_exit_gateways.rs",
+        "focused_test_counts": [
+          [
+            12,
+            0,
+            0
+          ]
+        ],
+        "gateway_test_names": [
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source",
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources",
+          "cf08_unproved_gateways_keep_physical_quotes",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "non_backedge_transfer_does_not_gain_a_loop_latch_origin",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source",
+          "rejected_for_update_slot_keeps_the_independent_while_latch"
+        ],
+        "gateway_test_results": {
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals": "ok",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source": "ok",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if": "ok",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source": "ok",
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources": "ok",
+          "cf08_unproved_gateways_keep_physical_quotes": "ok",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source": "ok",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner": "ok",
+          "non_backedge_transfer_does_not_gain_a_loop_latch_origin": "ok",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed": "ok",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source": "ok",
+          "rejected_for_update_slot_keeps_the_independent_while_latch": "ok"
+        },
+        "region_test_names": [
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope"
+        ],
+        "region_test_results": {
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners": "ok",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope": "ok"
+        },
+        "proved_if_arm_join_tests": [
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if"
+        ],
+        "proved_if_arm_join_test_results": {
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals": "ok",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source": "ok",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if": "ok"
+        },
+        "workspace_result_records": 354,
+        "workspace_expected_totals": [
+          3389,
+          0,
+          97
+        ],
+        "workspace_passed": 3389,
+        "workspace_failed": 0,
+        "workspace_ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "seed": "5350648285461741570",
+        "command_group_index": 6401,
+        "focused_binary": "tests/p3_loop_exit_gateways.rs",
+        "focused_test_counts": [
+          [
+            12,
+            0,
+            0
+          ]
+        ],
+        "gateway_test_names": [
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source",
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources",
+          "cf08_unproved_gateways_keep_physical_quotes",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "non_backedge_transfer_does_not_gain_a_loop_latch_origin",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source",
+          "rejected_for_update_slot_keeps_the_independent_while_latch"
+        ],
+        "gateway_test_results": {
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals": "ok",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source": "ok",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if": "ok",
+          "cf08_gateway_budget_and_cancellation_publish_no_partial_source": "ok",
+          "cf08_two_gateways_have_one_loop_owner_and_complete_sources": "ok",
+          "cf08_unproved_gateways_keep_physical_quotes": "ok",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source": "ok",
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner": "ok",
+          "non_backedge_transfer_does_not_gain_a_loop_latch_origin": "ok",
+          "one_arm_straight_prefix_loop_and_optional_tail_are_closed": "ok",
+          "prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source": "ok",
+          "rejected_for_update_slot_keeps_the_independent_while_latch": "ok"
+        },
+        "region_test_names": [
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope"
+        ],
+        "region_test_results": {
+          "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners": "ok",
+          "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope": "ok"
+        },
+        "proved_if_arm_join_tests": [
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if"
+        ],
+        "proved_if_arm_join_test_results": {
+          "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals": "ok",
+          "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source": "ok",
+          "cf07_nonempty_if_join_goto_is_derived_from_complete_if": "ok"
+        },
+        "workspace_result_records": 354,
+        "workspace_expected_totals": [
+          3389,
+          0,
+          97
+        ],
+        "workspace_passed": 3389,
+        "workspace_failed": 0,
+        "workspace_ignored": 97
+      }
+    ],
+    "prior_integer_array_tests": [
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 1)",
+        "command_group_index": 708,
+        "seed": "5350648285461741569",
+        "required_tests": [
+          "facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name",
+          "facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins",
+          "facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection",
+          "facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection",
+          "facade::integer_constant_name_tests::staged_same_method_text_is_not_overwritten_after_a_valid_replay",
+          "facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key",
+          "facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body",
+          "facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals",
+          "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+          "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+          "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop"
+        ],
+        "required_tests_ok": 11,
+        "actual_test_result_records": 354,
+        "actual_passed": 3389,
+        "actual_failed": 0,
+        "actual_ignored": 97
+      },
+      {
+        "step": "Run workspace tests with two fixed independent seeds (pass 2)",
+        "command_group_index": 6401,
+        "seed": "5350648285461741570",
+        "required_tests": [
+          "facade::integer_constant_name_tests::incomplete_field_table_never_proves_an_integer_name",
+          "facade::integer_constant_name_tests::fixed_switch_names_keep_physical_keys_returns_and_origins",
+          "facade::integer_constant_name_tests::output_limit_or_cancellation_never_publishes_partial_name_projection",
+          "facade::integer_constant_name_tests::direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection",
+          "facade::integer_constant_name_tests::staged_same_method_text_is_not_overwritten_after_a_valid_replay",
+          "facade::integer_constant_name_tests::direct_integer_return_names_independently_of_a_numeric_case_key",
+          "facade::integer_constant_name_tests::direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body",
+          "facade::integer_constant_name_tests::case_and_return_candidates_are_independent_with_narrow_refusals",
+          "report::integer_array_name_projection_tests::array_leaf_ranges_are_exact_and_same_bci_ambiguity_refuses",
+          "report::integer_array_name_projection_tests::array_try_resource_and_catch_names_are_charged_before_occupying_them",
+          "emit::tests::class_source_body_replay_propagates_an_evidence_budget_stop"
+        ],
+        "required_tests_ok": 11,
+        "actual_test_result_records": 354,
+        "actual_passed": 3389,
+        "actual_failed": 0,
+        "actual_ignored": 97
+      }
+    ],
+    "prior_integer_array_test_count": 11
+  },
+  "frozen_cli_and_build": {
+    "candidate_metadata_sha256": "6f785a03e50565bc5d90bd6a6ae85f1bb789e31647811421e5f21d41ee7030ca",
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-proved-if-join-cli-v1",
+      "sha256": "7b751758ee7f0b49bd61332a1a78412b36ecef898e43171ecf6af620d65cc9a6",
+      "mode": "0o555"
+    },
+    "candidate_build_sha256": "7f0ac81bd57faa67082bdc1f0231650a96c9d2658d00690f086c4039c49d6458",
+    "validation_runner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/run-validation-build-root-v1.py",
+      "sha256": "f139f117354f4b96762737190c03a025f3a02d3efc078062b715c63d83518f6b"
+    },
+    "guarded_runner_template": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "product_commit_git_blob_pins_verified": 52,
+    "current_files_match_build_pins": 52,
+    "pin_counts": {
+      "candidate_sources": 17,
+      "test_sources": 8,
+      "canonical_files": 27
+    },
+    "source_commit_base": "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+    "uncommitted_if_arm_join_product": true,
+    "build_commands": 12,
+    "build_streams_verified": 24,
+    "build_test_result_records_recomputed_from_stdout": {
+      "2": [
+        [
+          336,
+          0,
+          0
+        ]
+      ],
+      "3": [
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "4": [
+        [
+          4,
+          0,
+          0
+        ]
+      ],
+      "5": [
+        [
+          7,
+          0,
+          0
+        ]
+      ],
+      "6": [
+        [
+          5,
+          0,
+          0
+        ]
+      ],
+      "7": [
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "8": [
+        [
+          178,
+          0,
+          0
+        ]
+      ],
+      "9": [
+        [
+          5,
+          0,
+          1
+        ]
+      ],
+      "10": [
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    "all_build_commands_exit_zero_no_guard_stop": true
+  },
+  "acceptance_scope": "the submitted product commit supplied at invocation, its Git blobs and current 52 source/test/include pins, frozen If candidate CLI/build, four successful CI jobs and all recorded steps, caller-supplied exact test totals and proved-If plus prior integer regression names from both fixed seeds"
+}

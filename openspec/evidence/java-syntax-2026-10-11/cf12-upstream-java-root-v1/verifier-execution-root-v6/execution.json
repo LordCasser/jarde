@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-10T17:34:04.096485+00:00",
+  "duration_seconds": 0.2760255000030156,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v6.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 147,
+      "sha256": "99d6009c4a1fcb208105e6585eab6ebb313b2235d0fcd944f1d549ec46222ce1"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

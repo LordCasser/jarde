@@ -1,0 +1,37 @@
+{
+  "utc": "2026-10-10T17:27:48.295816+00:00",
+  "duration_seconds": 1.0547726670047268,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/verify-ci-product-root-v2.py",
+    "--product-commit",
+    "1f386686c6a31813254a85fed48d2af0af84a61c",
+    "--run-id",
+    "38068627541",
+    "--expected-lib-count",
+    "336",
+    "--expected-gateway-count",
+    "12",
+    "--expected-total-passed",
+    "3389"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 1046,
+      "sha256": "8a30d41c47283dffdf0a9e5da9c899a10eb4046ae9c703933493ee738ec64287"
+    }
+  }
+}

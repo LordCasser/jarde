@@ -1,0 +1,11 @@
+verification failed: 'javap'
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v4.py", line 330, in <module>
+    try: main()
+         ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v4.py", line 317, in main
+    verify_command_bindings(direct_dir,render_dir,full_dir,mapping)
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/verify-observations-root-v4.py", line 281, in verify_command_bindings
+    if c['label']=='javap': need(c['argv'][0]==tools['javap'],'javap tool mismatch')
+                                               ~~~~~^^^^^^^^^
+KeyError: 'javap'
