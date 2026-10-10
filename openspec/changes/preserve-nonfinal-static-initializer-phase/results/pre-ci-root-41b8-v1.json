@@ -1,0 +1,547 @@
+{
+  "scope": "pre-CI candidate/local/fingerprint only; not full CI acceptance",
+  "product_commit": "41b8e17516b21091e68f3c9f03fa5bd6d041cea6",
+  "verifier_sha256": "4f8af03b1637ecc5dab03387449a0a07f4f35d2691c1e3eb3485b7449b44d63b",
+  "candidate": {
+    "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+    "candidate_cli_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "current_frozen_source_identity": {
+      "crates/jarde-java/src/init.rs": {
+        "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+      },
+      "crates/jarde-java/src/report.rs": {
+        "sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745"
+      },
+      "crates/jarde-java/src/build.rs": {
+        "sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476"
+      },
+      "crates/jarde-java/src/ast.rs": {
+        "sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377"
+      },
+      "crates/jarde-java/src/emit.rs": {
+        "sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6"
+      },
+      "crates/jarde-java/src/asserts.rs": {
+        "sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd"
+      },
+      "crates/jarde-java/src/field.rs": {
+        "sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672"
+      },
+      "src/facade.rs": {
+        "sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d"
+      },
+      "src/class_source.rs": {
+        "sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51"
+      },
+      "Cargo.lock": {
+        "sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363"
+      },
+      "tests/class_static_initializer_projection.rs": {
+        "sha256": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d"
+      },
+      "tests/interface_initializer_proof.rs": {
+        "sha256": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4"
+      },
+      "crates/jarde-java/tests/p3_patterns.rs": {
+        "sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e"
+      },
+      ".github/workflows/ci.yml": {
+        "sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+        "git_matches_pin": true,
+        "current_matches_pin": true,
+        "current_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a"
+      }
+    },
+    "canonical_git_blobs": [
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java",
+        "bytes": 450,
+        "sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+        "current_sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java",
+        "bytes": 132,
+        "sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+        "current_sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+        "bytes": 907,
+        "sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+        "current_sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+        "bytes": 262,
+        "sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+        "current_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+        "bytes": 916,
+        "sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+        "current_sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+        "bytes": 262,
+        "sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+        "current_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+        "bytes": 82621,
+        "sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+        "current_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json",
+        "bytes": 15477,
+        "sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+        "current_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java",
+        "bytes": 378,
+        "sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+        "current_sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java",
+        "bytes": 627,
+        "sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+        "current_sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+        "bytes": 457,
+        "sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+        "current_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+        "bytes": 891,
+        "sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+        "current_sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+        "bytes": 457,
+        "sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+        "current_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+        "bytes": 891,
+        "sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+        "current_sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+        "bytes": 81970,
+        "sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+        "current_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+        "current_matches_product": true
+      },
+      {
+        "path": "openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json",
+        "bytes": 15554,
+        "sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+        "current_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+        "current_matches_product": true
+      }
+    ],
+    "candidate_manifest_sha256": "d809cea43b8e0748226280265cec70b1b55b5bdfebd8e8ccae04c585f22011ac",
+    "candidate_inventory_sha256": "8d0dc4783538eb69a6f86f54c18e9c5090e418f782872303053b62def4de749f",
+    "candidate_file_count": 53,
+    "candidate_case_count": 4,
+    "candidate_root_verification": {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-root-verification-v1.json",
+      "sha256": "b70e779c0ee718083d53cff8a310b3807e89f04f7dbbd1d9043d7ee6272e09b4",
+      "manifest_sha256": "d809cea43b8e0748226280265cec70b1b55b5bdfebd8e8ccae04c585f22011ac",
+      "inventory_sha256": "8d0dc4783538eb69a6f86f54c18e9c5090e418f782872303053b62def4de749f"
+    }
+  },
+  "local": [
+    {
+      "name": "root-static-tests-v2",
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-static-tests-v2/result.json",
+      "result_sha256": "75567ddaee7a9fe046ad6318093fb2f50b97bf328fc7336c597df100b48c26de",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "class_static_initializer_projection",
+        "--locked"
+      ],
+      "exit": 0,
+      "stdout_sha256": "791d041aaac35a8b20cf1e757d6476836c7751039755d9eb3f33df6332fc41fb",
+      "stderr_sha256": "cfa327041dbfff6a0ad871003fbf8f61673bbfabd88ce433a1b2b219f92961ae",
+      "source_before_count": 16,
+      "source_before_matches_product": true,
+      "test_counts": {
+        "class_static_initializer_projection": [
+          6,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "root-interface-tests-v1",
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-interface-tests-v1/result.json",
+      "result_sha256": "423e078c1676065ad655e610a24ee11e24ca4d26e351481cbf195fb6bd66fe0c",
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "interface_initializer_proof",
+        "--locked"
+      ],
+      "exit": 0,
+      "stdout_sha256": "b6eef173adcd13e650095c3d27db6b17ee34346e24483592bd20a377f5d61f4a",
+      "stderr_sha256": "fa8fafbe1df6a1ab50a53a4933bb1b52d42abdeb7267bb74d99dfbf7008e92a6",
+      "source_before_count": 16,
+      "source_before_matches_product": true,
+      "test_counts": {
+        "interface_initializer_proof": [
+          4,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "root-scoped-clippy-v1",
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-scoped-clippy-v1/result.json",
+      "result_sha256": "639120ed49d60c75ddf0c760852b364a6f4a344762ed82a06de43a400e74f4d1",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "jarde",
+        "--test",
+        "class_static_initializer_projection",
+        "--test",
+        "interface_initializer_proof",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::too_many_arguments",
+        "-A",
+        "clippy::cloned_ref_to_slice_refs",
+        "-A",
+        "clippy::collapsible_if",
+        "-A",
+        "clippy::type_complexity",
+        "-A",
+        "clippy::len_zero",
+        "-A",
+        "clippy::needless_option_as_deref",
+        "-A",
+        "clippy::needless_borrow",
+        "-A",
+        "clippy::useless_conversion",
+        "-A",
+        "clippy::large_enum_variant",
+        "-A",
+        "clippy::question_mark",
+        "-A",
+        "clippy::comparison_to_empty",
+        "-A",
+        "clippy::op_ref",
+        "-A",
+        "clippy::manual_range_patterns",
+        "-A",
+        "clippy::if_same_then_else",
+        "-A",
+        "clippy::filter_map_bool_then",
+        "-A",
+        "clippy::filter_next",
+        "-A",
+        "clippy::unneeded_struct_pattern",
+        "-A",
+        "clippy::redundant_guards",
+        "-A",
+        "clippy::map_identity",
+        "-A",
+        "clippy::redundant_slicing",
+        "-A",
+        "clippy::unnecessary_get_then_check",
+        "-A",
+        "clippy::unnecessary_unwrap",
+        "-A",
+        "clippy::redundant_locals",
+        "-A",
+        "clippy::replace_box",
+        "-A",
+        "clippy::map_clone",
+        "-A",
+        "clippy::unnecessary_mut_passed",
+        "-A",
+        "clippy::single_element_loop",
+        "-A",
+        "clippy::unnecessary_to_owned",
+        "-A",
+        "clippy::needless_lifetimes",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c5621dd716b64e1a2d6f1185e77a4fda5a808f58516c84aa5e586bb51dc5f12d",
+      "source_before_count": 16,
+      "source_before_matches_product": true
+    },
+    {
+      "name": "root-cli-build-v1",
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-cli-build-v1/result.json",
+      "result_sha256": "e86fd8c2427f317c1c0203ed7224218d68e38bb6b0dd1e6150bcfb0aa6626074",
+      "argv": [
+        "cargo",
+        "build",
+        "-p",
+        "jarde-cli",
+        "--bin",
+        "jarde-cli",
+        "--locked"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8ff0c51852ecddbc7da145d11374884624196de3b660cad9730d2c8438729711",
+      "source_before_count": 16,
+      "source_before_matches_product": true
+    },
+    {
+      "name": "root-ordinary-static-test-v1",
+      "product_blob_sha256": "e08766db22e14e5e7496492de38242af04dacb78c78652ae2de0995dc3aafa6d",
+      "current_source_sha256": "e08766db22e14e5e7496492de38242af04dacb78c78652ae2de0995dc3aafa6d",
+      "previous_product": "7196a3653f7b8d5b6b285970c3b41b59adf84e55",
+      "change_confined_to_target_test": true,
+      "local_gate": {
+        "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-ordinary-static-test-v1/result.json",
+        "result_sha256": "26f2e2393492163daa0b6e4af37b74aae6ee067ff12828b65fb388892348d959",
+        "argv": [
+          "cargo",
+          "test",
+          "--lib",
+          "enum_constants::tests::ordinary_class_fields_and_static_initializer_keep_the_existing_projection",
+          "--",
+          "--exact",
+          "--nocapture"
+        ],
+        "exit": 0,
+        "disk_stop_reason": null,
+        "test_counts": [
+          1,
+          0,
+          0
+        ],
+        "stdout_sha256": "52bff3fe6cc5e2f95ce1a37a4e272bb109062ab5a9cd9ca1388d3ac7192aa84b",
+        "stderr_sha256": "9907b2e1f0de681ba3421961f1ae2615e0fafb23072e144effb83c5f0f698426"
+      }
+    },
+    {
+      "name": "root-a1-static-tests-v1",
+      "test_source": {
+        "path": "tests/p3_array_slot_retype_locals.rs",
+        "current_sha256": "3fbfffe99a89ab76821d3158401ee5477cac3d0bff52beddf55072b53795bef5",
+        "submitted_blob_sha256": "3fbfffe99a89ab76821d3158401ee5477cac3d0bff52beddf55072b53795bef5",
+        "current_equals_submitted": true,
+        "change_from_25c5": "removed A1_BASELINE constant and replaced only final A1 test"
+      },
+      "old_golden": {
+        "path": "tests/fixtures/p3-array-slot-retype-locals/baseline/A1.jarde.java",
+        "sha256": "ca9109e99a8f8e97dec77739ba66d41f5650699468284f0bd2753363a3aba1a2",
+        "byte_identical_to_25c5": true
+      },
+      "expected_and_cli_output": {
+        "expected_path": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java",
+        "expected_sha256": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca",
+        "cli_output_path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/a1-static-regression-root-v1/A1.current.jarde.java",
+        "cli_output_sha256": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca",
+        "byte_equal": true,
+        "cli_result_sha256": "e9e43c85fc04a34f8fd545eb5118c5aaac75fb07f282285e4869592f9f953d40",
+        "cli_stdout_sha256": "d20339ff123c147c14aa16827a3bead854a0f414f079ccb6149e9a3d5005aff6",
+        "cli_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "submitted_expected_sha256": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca"
+      },
+      "local_gate": {
+        "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-a1-static-tests-v1/result.json",
+        "result_sha256": "ea08d5dde49e3b52322ddad98c6e6a0c6a36737f7156dba77c0b1454c78b4c6a",
+        "argv": [
+          "cargo",
+          "test",
+          "--test",
+          "p3_array_slot_retype_locals",
+          "--",
+          "--nocapture"
+        ],
+        "exit": 0,
+        "disk_stop_reason": null,
+        "test_counts": [
+          6,
+          0,
+          0
+        ],
+        "target_test": "the_dynamic_dimension_control_projects_the_proven_static_field_initializer",
+        "stdout_sha256": "def9d47b892952a8fd12462cbd4d9d6cd144ad30e9a7543d4a9fa6ce4c0a4602",
+        "stderr_sha256": "109cbd6e4578096774ba7b2f8818ddd3c3448815b03950e1cb85f5240805db8c",
+        "before_source_count": 20,
+        "before_sources_match_submitted": true
+      }
+    },
+    {
+      "name": "root-validation-v1",
+      "result_sha256": "23b13741b446aaa13ab71f802569af8c2fe94244117d7e8393fc2b8836947ecc",
+      "commands": [
+        {
+          "argv": [
+            "cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "openspec",
+            "validate",
+            "--all",
+            "--strict",
+            "--no-interactive"
+          ],
+          "exit": 0,
+          "stdout_sha256": "3c5e196246aedc91f6ad32a62bac21ee6bb0f8ec9b810972e00812bdac2e6f74",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "exit": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "root-clean-v1",
+      "result_sha256": "2bba1a9f527157674b22cb397c092394fdafda7790ca020b7215d7b30f2608ba",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8b338377146e6ecabe3ba48d9ff61720f6b8a499f8dd77c495ced056239b8acb",
+      "exit": 0
+    }
+  ],
+  "fingerprint": {
+    "old_failure": {
+      "run_id": 38014660202,
+      "head_sha": "2daa21c99db7e126d91b5ccbe3d016208fd54aba",
+      "api_capture_sha256": "ef9f582799f57c55eda9410b370fdd85fc91e98ab69d516d1ae255ff3931cab8",
+      "stable_gzip_sha256": "7f0612a254d2f7328d28412c0b150f5891845b30e733001990cac4d5fd51e3f7",
+      "stable_raw_sha256": "419b737ddfe392fdca70e73a2d65e03e0a36b6e2a5c0840c01eb6612b6a04dfd",
+      "failed_seed_step": "Run workspace tests with two fixed independent seeds (pass 1)",
+      "p5_fingerprint_tests": {
+        "passed": 4,
+        "failed": 1,
+        "ignored": 1,
+        "only_failed_test": "corpus_files_match_the_recorded_fingerprint",
+        "only_unlisted_file": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java"
+      }
+    },
+    "registration": {
+      "path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/register-a1-fingerprint-root-v1.json",
+      "sha256": "44474df4f4a73809e4f0152745708c0d504b4fd60addbb70923ffa366d79eb4c",
+      "execution_path": "openspec/changes/preserve-nonfinal-static-initializer-phase/results/root-a1-fingerprint-registration-execution-v1/execution.json",
+      "execution_sha256": "db1e6418aa41a94bcb85219c064b55f1696f84f164e0fa1c152a0f384b0312e3",
+      "registrar_sha256": "e6480a9dbc0bae6a3ba9d267e566a3422f067d6d02a41138f43c08849aa86b12",
+      "registration_stdout_sha256": "44474df4f4a73809e4f0152745708c0d504b4fd60addbb70923ffa366d79eb4c",
+      "registration_stderr_sha256": "dd7241fb9634d51d4b90a8782d9a26dd3fe2ada28ad873374b2d9b28b76827ef"
+    },
+    "manifest_transition": {
+      "old_sha256": "b7c86f74349da1ee12f13fa0d2c1b9e89765e1deef9343eec51d2fa457542f14",
+      "new_sha256": "6f7eac52f10e231cd45666438a31e9807bd4ba442c8ac4abfb83d56f51a38147",
+      "old_files": 2061,
+      "new_files": 2062,
+      "existing_2061_rows_byte_identical": true,
+      "only_added_row": {
+        "blake3": "eaac73c5450923dadab849829f1dc2ca1e9503b0c5c3aa14fbd7ab39df6cc7b4",
+        "bytes": 2210,
+        "path": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java"
+      },
+      "non_files_classification_identical": true
+    },
+    "independent_python_b3_scan": {
+      "files": 2062,
+      "rows_sha256": "9c60e2c918b231f2f789a78354d84d6526342608cd9aaf12c9f8a85ca062f068",
+      "matches_submitted_manifest": true,
+      "rust_generator_executed": false
+    },
+    "new_fixture": {
+      "path": "tests/fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java",
+      "bytes": 2210,
+      "sha256": "a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca",
+      "blake3": "eaac73c5450923dadab849829f1dc2ca1e9503b0c5c3aa14fbd7ab39df6cc7b4"
+    }
+  }
+}

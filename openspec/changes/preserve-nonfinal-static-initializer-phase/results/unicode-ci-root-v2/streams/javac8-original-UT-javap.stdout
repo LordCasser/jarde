@@ -1,0 +1,161 @@
+Classfile /Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes/UT.class
+  Last modified 2026-10-10; size 955 bytes
+  MD5 checksum 6517755f7da5e6e787ec68ff90c8b520
+  Compiled from "UT.java"
+public class UT
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #18.#36        // java/lang/Object."<init>":()V
+   #2 = Class              #37            // UT$内部类
+   #3 = Methodref          #2.#36         // UT$内部类."<init>":()V
+   #4 = Fieldref           #38.#39        // java/lang/System.out:Ljava/io/PrintStream;
+   #5 = Class              #40            // java/lang/StringBuilder
+   #6 = Methodref          #5.#36         // java/lang/StringBuilder."<init>":()V
+   #7 = Fieldref           #17.#41        // UT.描述:Ljava/lang/String;
+   #8 = Methodref          #5.#42         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #9 = String             #43            // /
+  #10 = Methodref          #17.#44        // UT.方法:(I)I
+  #11 = Methodref          #5.#45         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+  #12 = Fieldref           #2.#46         // UT$内部类.名字:Ljava/lang/String;
+  #13 = Methodref          #5.#47         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #14 = Methodref          #48.#49        // java/io/PrintStream.println:(Ljava/lang/String;)V
+  #15 = Fieldref           #17.#50        // UT.变量:I
+  #16 = String             #51            // 变量=
+  #17 = Class              #52            // UT
+  #18 = Class              #53            // java/lang/Object
+  #19 = Utf8               内部类
+  #20 = Utf8               InnerClasses
+  #21 = Utf8               变量
+  #22 = Utf8               I
+  #23 = Utf8               描述
+  #24 = Utf8               Ljava/lang/String;
+  #25 = Utf8               <init>
+  #26 = Utf8               ()V
+  #27 = Utf8               Code
+  #28 = Utf8               LineNumberTable
+  #29 = Utf8               方法
+  #30 = Utf8               (I)I
+  #31 = Utf8               main
+  #32 = Utf8               ([Ljava/lang/String;)V
+  #33 = Utf8               <clinit>
+  #34 = Utf8               SourceFile
+  #35 = Utf8               UT.java
+  #36 = NameAndType        #25:#26        // "<init>":()V
+  #37 = Utf8               UT$内部类
+  #38 = Class              #54            // java/lang/System
+  #39 = NameAndType        #55:#56        // out:Ljava/io/PrintStream;
+  #40 = Utf8               java/lang/StringBuilder
+  #41 = NameAndType        #23:#24        // 描述:Ljava/lang/String;
+  #42 = NameAndType        #57:#58        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #43 = Utf8               /
+  #44 = NameAndType        #29:#30        // 方法:(I)I
+  #45 = NameAndType        #57:#59        // append:(I)Ljava/lang/StringBuilder;
+  #46 = NameAndType        #60:#24        // 名字:Ljava/lang/String;
+  #47 = NameAndType        #61:#62        // toString:()Ljava/lang/String;
+  #48 = Class              #63            // java/io/PrintStream
+  #49 = NameAndType        #64:#65        // println:(Ljava/lang/String;)V
+  #50 = NameAndType        #21:#22        // 变量:I
+  #51 = Utf8               变量=
+  #52 = Utf8               UT
+  #53 = Utf8               java/lang/Object
+  #54 = Utf8               java/lang/System
+  #55 = Utf8               out
+  #56 = Utf8               Ljava/io/PrintStream;
+  #57 = Utf8               append
+  #58 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #59 = Utf8               (I)Ljava/lang/StringBuilder;
+  #60 = Utf8               名字
+  #61 = Utf8               toString
+  #62 = Utf8               ()Ljava/lang/String;
+  #63 = Utf8               java/io/PrintStream
+  #64 = Utf8               println
+  #65 = Utf8               (Ljava/lang/String;)V
+{
+  static int 变量;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static java.lang.String 描述;
+    descriptor: Ljava/lang/String;
+    flags: ACC_STATIC
+
+  public UT();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+
+  static int 方法(int);
+    descriptor: (I)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: iconst_2
+         2: imul
+         3: ireturn
+      LineNumberTable:
+        line 3: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: new           #2                  // class UT$内部类
+         3: dup
+         4: invokespecial #3                  // Method UT$内部类."<init>":()V
+         7: astore_1
+         8: getstatic     #4                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: new           #5                  // class java/lang/StringBuilder
+        14: dup
+        15: invokespecial #6                  // Method java/lang/StringBuilder."<init>":()V
+        18: getstatic     #7                  // Field 描述:Ljava/lang/String;
+        21: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        24: ldc           #9                  // String /
+        26: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        29: bipush        21
+        31: invokestatic  #10                 // Method 方法:(I)I
+        34: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        37: ldc           #9                  // String /
+        39: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        42: aload_1
+        43: getfield      #12                 // Field UT$内部类.名字:Ljava/lang/String;
+        46: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        49: invokevirtual #13                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        52: invokevirtual #14                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        55: return
+      LineNumberTable:
+        line 6: 0
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: iconst_1
+         1: putstatic     #15                 // Field 变量:I
+         4: new           #5                  // class java/lang/StringBuilder
+         7: dup
+         8: invokespecial #6                  // Method java/lang/StringBuilder."<init>":()V
+        11: ldc           #16                 // String 变量=
+        13: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        16: getstatic     #15                 // Field 变量:I
+        19: invokevirtual #11                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+        22: invokevirtual #13                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        25: putstatic     #7                  // Field 描述:Ljava/lang/String;
+        28: return
+      LineNumberTable:
+        line 2: 0
+        line 5: 4
+}
+SourceFile: "UT.java"
+InnerClasses:
+     static #19= #2 of #17; //内部类=class UT$内部类 of class UT

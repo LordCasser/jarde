@@ -49,3 +49,13 @@ A1相关Clippy实际exit0（root-a1-clippy-v1），fmt/all OpenSpec strict/diffc
 root实际执行register-a1-fingerprint-luna-v1.py，以Python blake3 1.0.11独立扫描与Rust测试相同的两root/排除规则，2062文件全部核对：原2061条字节/digest恒同，唯一新增2210字节A1 expected SHA a8b84e8cfd3fa4610a05ecd9ef3f1204eb267a063aa3fcd0d28dcc6d73cc96ca，BLAKE3 eaac73c5450923dadab849829f1dc2ca1e9503b0c5c3aa14fbd7ab39df6cc7b4与真实CI相同。manifest仅增加这条sorted entry，classification/原数据不改；新manifest SHA6f7eac52f10e231cd45666438a31e9807bd4ba442c8ac4abfb83d56f51a38147。真实结果register-a1-fingerprint-root-v1.json及wrapper raw完整保留。
 
 本机空间低于20GiB且target已不存在，因此此次未执行官方Rust generator或P5 Rust测试；独立Python全量核验不冒称Rust门禁通过，下一修复提交须再次验收自己的双seed全仓/P5完整CI。本片仍6/7。生产/测试逻辑、原fixture和冻结CLI/metadata不变。
+
+## 41b8 CI 的 Unicode 声明旧断言
+
+41b8e17516b21091e68f3c9f03fa5bd6d041cea6 的确切 CI38017574260 已失败：stable job114111169840第一seed在 `the_cjk_declarations_are_presented_as_the_pool_states_them` 要求 `static int 变量;`，实际为 `static int 变量 = 1;`；下一字段也已正确恢复为StringBuilder表达式。原UT.java本就初始化两字段；同一CI中双腿整类编译/运行、ASCII逐字控制、标识符别名测试均通过（Unicode 3pass/1fail）。这不是全仓成功，MSRV/supply/fuzz三个成功也不能代替stable。
+
+root实际捕获完整API及stable stdout644954字节，原hash c5d670659f233c87c42a71099a5119fff5bc7181f66608aee2c1ca9136bc9d18，gzip hash0f368d61fe91c5fa3eaa45ef09c154b0f348908bef6293c9ef080e401288b497；真实argv/exit/stderr/hash在results/ci-41b8-failure-v1/capture.json。私有test-only两字符串修复已准备，root未以此声称Rust测试通过；v7完整CI verifier不得对失败run执行验收。后续修复须自己的完整CI，本片仍6/7。
+
+root随后只应用这两字符串，独立git blob比较确认其余文件文字恒同，source新SHA9776f2f52eb7324fd83e5f5e389181c0577098b419d8773a7b0212e62dfb0890；10产品/4test/16canonical冻结pins逐一仍恒同，详unicode-test-only-root-audit-v1.json。本机约14GiB，未执行Rust测试；fmt/all334 OpenSpec strict/diffcheck实际exit0，raw在root-unicode-validation-v1。
+
+Unicode collector v1使用single-class及两个独立源码输入，不能证明实际两class family，root完整读审拒绝、未执行，原script保留。v2改为原两class恰一PlainJar、只重编outer完整源码（包含nested member）；root完整读delta后实际执行exit0，3.286秒，wrapper在root-unicode-ci-execution-v2。unicode-ci-root-v2保留30命令/60raw streams：原程序双JDK2/2及default/all四完整生成类family4/4全成功，原样源码、空CP/SP、fresh恰UT与UT$内部类两class、-Xverify/UTF8 exit/stdout/stderr等于各自原oracle；8份CLI outer/child完整JSON用于物理表核对。原UT 2fields/4methods（含clinit）、child1field/1ctor，Proved2 writebci1/25，default/all正文相同。独立closed-inventory/source-map verifier尚在准备，不能将collector success替代独立验收；新提交必须自己的完整CI。

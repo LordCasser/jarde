@@ -1,0 +1,285 @@
+[
+  {
+    "label": "unicode-fixture:UT.java",
+    "expected_sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85",
+    "actual_sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85",
+    "ok": true
+  },
+  {
+    "label": "unicode-fixture:UT.class",
+    "expected_sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c",
+    "actual_sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c",
+    "ok": true
+  },
+  {
+    "label": "unicode-fixture:UT$内部类.class",
+    "expected_sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3",
+    "actual_sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3",
+    "ok": true
+  },
+  {
+    "label": "frozen-cli-metadata",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "expected_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+    "actual_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+    "ok": true
+  },
+  {
+    "label": "metadata-category:candidate_sources",
+    "expected_count": 10,
+    "actual_count": 10,
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/init.rs",
+    "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/report.rs",
+    "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/build.rs",
+    "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/ast.rs",
+    "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/emit.rs",
+    "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/asserts.rs",
+    "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:crates/jarde-java/src/field.rs",
+    "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:src/facade.rs",
+    "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:src/class_source.rs",
+    "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+    "ok": true
+  },
+  {
+    "label": "candidate_sources:Cargo.lock",
+    "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+    "ok": true
+  },
+  {
+    "label": "metadata-category:test_sources",
+    "expected_count": 4,
+    "actual_count": 4,
+    "ok": true
+  },
+  {
+    "label": "test_sources:tests/class_static_initializer_projection.rs",
+    "expected_sha256": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+    "actual_sha256": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+    "ok": true
+  },
+  {
+    "label": "test_sources:tests/interface_initializer_proof.rs",
+    "expected_sha256": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4",
+    "actual_sha256": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4",
+    "ok": true
+  },
+  {
+    "label": "test_sources:crates/jarde-java/tests/p3_patterns.rs",
+    "expected_sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+    "actual_sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+    "ok": true
+  },
+  {
+    "label": "test_sources:.github/workflows/ci.yml",
+    "expected_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+    "actual_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+    "ok": true
+  },
+  {
+    "label": "metadata-category:canonical_files",
+    "expected_count": 16,
+    "actual_count": 16,
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java",
+    "expected_sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+    "actual_sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java",
+    "expected_sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+    "actual_sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+    "expected_sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+    "actual_sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+    "expected_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+    "actual_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+    "expected_sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+    "actual_sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+    "expected_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+    "actual_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+    "expected_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+    "actual_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json",
+    "expected_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+    "actual_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java",
+    "expected_sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+    "actual_sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java",
+    "expected_sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+    "actual_sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+    "expected_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+    "actual_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+    "expected_sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+    "actual_sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+    "expected_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+    "actual_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+    "expected_sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+    "actual_sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+    "expected_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+    "actual_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+    "ok": true
+  },
+  {
+    "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json",
+    "expected_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+    "actual_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+    "ok": true
+  },
+  {
+    "label": "frozen-cli",
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "ok": true
+  },
+  {
+    "label": "fixed-jdk-manifest",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "ok": true
+  },
+  {
+    "label": "javac8:javac",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+    "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "ok": true
+  },
+  {
+    "label": "javac8:java",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+    "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "ok": true
+  },
+  {
+    "label": "javac8:javap",
+    "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+    "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+    "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+    "ok": true
+  },
+  {
+    "label": "javac23:javac",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+    "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+    "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+    "ok": true
+  },
+  {
+    "label": "javac23:java",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+    "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "ok": true
+  },
+  {
+    "label": "javac23:javap",
+    "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+    "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+    "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+    "ok": true
+  },
+  {
+    "label": "two-required-jdk-legs",
+    "ok": true
+  }
+]

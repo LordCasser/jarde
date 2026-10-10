@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/prepare-unicode-ci-root-v2.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T03:09:12.972115+00:00",
+  "elapsed_seconds": 3.2860019999934593,
+  "exit": 0,
+  "script_sha256": "26257e6ca1b41823d69faeed58b6a31ed0677d7f6cd2243310e0cba9c86829c5",
+  "stdout": {
+    "path": "stdout",
+    "bytes": 193,
+    "sha256": "4cc0fc4c393b579413af4e8a63c72fd562d982bcb8c913702fe07ce7827c3755"
+  },
+  "stderr": {
+    "path": "stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

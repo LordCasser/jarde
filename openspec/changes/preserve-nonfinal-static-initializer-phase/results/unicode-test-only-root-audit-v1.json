@@ -1,0 +1,14 @@
+{
+  "base": "41b8e17516b21091e68f3c9f03fa5bd6d041cea6",
+  "source": "tests/recover_unicode_identifiers.rs",
+  "previous_sha256": "b4e241e04a0b15dce5421edebd83cb3928d17291008f25c95e020ebd86e78ca5",
+  "current_sha256": "9776f2f52eb7324fd83e5f5e389181c0577098b419d8773a7b0212e62dfb0890",
+  "exactly_two_expected_strings_changed": true,
+  "product_and_frozen_pins_unchanged": {
+    "candidate_sources": 10,
+    "test_sources": 4,
+    "canonical_files": 16
+  },
+  "local_rust_tests_run": false,
+  "reason": "available disk below20GiB compile guard; exact future CI required"
+}

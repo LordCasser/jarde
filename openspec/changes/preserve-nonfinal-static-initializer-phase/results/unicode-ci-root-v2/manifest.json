@@ -1,0 +1,4762 @@
+{
+  "schema": "unicode-ci-root-v2",
+  "status": "completed",
+  "scope": "Frozen UT Unicode fixture, exact two-class PlainJar family; javac 8/23 source-target 8 UTF-8; class-source default/all",
+  "claim_boundary": "Public source rendering, compile checks, class-family runtime raw comparison; no internal rollback claim.",
+  "preparation_script": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/prepare-unicode-ci-root-v2.py",
+    "bytes": 28776,
+    "sha256": "26257e6ca1b41823d69faeed58b6a31ed0677d7f6cd2243310e0cba9c86829c5"
+  },
+  "fixture_source": {
+    "path": "original-sources/UT.java",
+    "bytes": 435,
+    "sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85"
+  },
+  "frozen_fixture_classes": [
+    {
+      "path": "frozen-inputs/UT$内部类.class",
+      "bytes": 305,
+      "sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3"
+    },
+    {
+      "path": "frozen-inputs/UT.class",
+      "bytes": 955,
+      "sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c"
+    }
+  ],
+  "cli": {
+    "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+    "sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+    "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+    "metadata_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "preflight": [
+    {
+      "label": "unicode-fixture:UT.java",
+      "expected_sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85",
+      "actual_sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85",
+      "ok": true
+    },
+    {
+      "label": "unicode-fixture:UT.class",
+      "expected_sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c",
+      "actual_sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c",
+      "ok": true
+    },
+    {
+      "label": "unicode-fixture:UT$内部类.class",
+      "expected_sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3",
+      "actual_sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3",
+      "ok": true
+    },
+    {
+      "label": "frozen-cli-metadata",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/candidate-cli-v1.json",
+      "expected_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "actual_sha256": "d5cfcd4f60eb3f241dc913cd56a2aefa3740e167ee3cfca98150b8a9c2416c5a",
+      "ok": true
+    },
+    {
+      "label": "metadata-category:candidate_sources",
+      "expected_count": 10,
+      "actual_count": 10,
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/init.rs",
+      "expected_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "actual_sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/report.rs",
+      "expected_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "actual_sha256": "e5f0f8de05356a9fa273057cc08b54deb51672a0ca4be8cb8d814c6688cf2745",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/build.rs",
+      "expected_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "actual_sha256": "a52294825acdbb084af4709bebc2cdc43540c41e481b7d0dcb6c6a1260890476",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/ast.rs",
+      "expected_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "actual_sha256": "8e966300f510bb7a0eacf54c505de71b65a216f0c030cc7233d3776f11dd6377",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/emit.rs",
+      "expected_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "actual_sha256": "2885f9a8d18a9ffcf755eabdf943f44ee08ab0dda8090f693ac3e183eabeb9f6",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/asserts.rs",
+      "expected_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "actual_sha256": "41fd9e88e92adf13f6eb0bfee63a448080a800649c4164afe6acedd9b68b8abd",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:crates/jarde-java/src/field.rs",
+      "expected_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "actual_sha256": "656d6e1aa22d3edadb492dc7676e73cb9b8d0dba27015076675cb1776a1b7672",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:src/facade.rs",
+      "expected_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "actual_sha256": "d8ec9195faa8bbd81f89654c3cd03af633eb1c13220ff1ba9e52b6bd3b68810d",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:src/class_source.rs",
+      "expected_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "actual_sha256": "7f9807eeb1fd3ae9982e272c3fa17ab24ce617023885d855407fddea023afa51",
+      "ok": true
+    },
+    {
+      "label": "candidate_sources:Cargo.lock",
+      "expected_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "actual_sha256": "35cfeb18d481c129e849611f9eefbe931c3fec6df4a67a36e683fb072df77363",
+      "ok": true
+    },
+    {
+      "label": "metadata-category:test_sources",
+      "expected_count": 4,
+      "actual_count": 4,
+      "ok": true
+    },
+    {
+      "label": "test_sources:tests/class_static_initializer_projection.rs",
+      "expected_sha256": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+      "actual_sha256": "36e839a484e1bec6c4cb0ad58a835e2c5c0ddf5b4af9a726727eeb89fc16568d",
+      "ok": true
+    },
+    {
+      "label": "test_sources:tests/interface_initializer_proof.rs",
+      "expected_sha256": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4",
+      "actual_sha256": "6516963d963d28143ab8843a35e592bca080402172583392d09c82eb4194a5f4",
+      "ok": true
+    },
+    {
+      "label": "test_sources:crates/jarde-java/tests/p3_patterns.rs",
+      "expected_sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+      "actual_sha256": "0f386a50ecce4e8b174b88be9437af940faf9e8da611b6024342d757214c829e",
+      "ok": true
+    },
+    {
+      "label": "test_sources:.github/workflows/ci.yml",
+      "expected_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+      "actual_sha256": "b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a",
+      "ok": true
+    },
+    {
+      "label": "metadata-category:canonical_files",
+      "expected_count": 16,
+      "actual_count": 16,
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/Runner.java",
+      "expected_sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+      "actual_sha256": "fd69838bf2a372d1bceb27b83fffc3b24b23a2ba1967bb51038e4473b1d4e163",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/original-sources/ArrayFieldLiteral.java",
+      "expected_sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+      "actual_sha256": "184d4d068f785c75d5db8a30579284ed42817eaf91b012e55681581ab145a67b",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+      "expected_sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+      "actual_sha256": "e3aba1937a0bd16cc625587efb0cec30d66b0fbaaedb56e46672dfa66bb8a9ca",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac23-original/classes/ArrayFieldLiteral.class",
+      "expected_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+      "actual_sha256": "dc388f1ed9c0a44c9b87f9d61057b7a3f6c09fa1387b50d8f992a049e8544827",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+      "expected_sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+      "actual_sha256": "85face41cf483045e81f383545c13370cbd13d69e44ee8ad0f6ba0636f75bfff",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/cases/javac8-original/classes/ArrayFieldLiteral.class",
+      "expected_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+      "actual_sha256": "6ead8bb0f3c466ba4dc10958a4cb349699f587bc9d5115f0656d0e2df60aa891",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/manifest.json",
+      "expected_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+      "actual_sha256": "a021eedcde975dcb7bf7b7821d5097141b93292181015a45415752b21ddbafe1",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers-literal/baseline-root-v1/file-inventory.json",
+      "expected_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+      "actual_sha256": "1a47eb7179fd7539ee07d03467b54968acf2564e90e6d7d133c32ba50c1de762",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/ArrayFieldInitializers.java",
+      "expected_sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+      "actual_sha256": "8ed268bad1dff3025b1d02e3c95a26b06889c02a1c14f52cc953f8e944e61650",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/original-sources/Runner.java",
+      "expected_sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+      "actual_sha256": "b6541a755e1e9b6c2c4b7d601b14fcc2a27f820650ec968fe0f2d150f79a28cd",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/ArrayFieldInitializers.class",
+      "expected_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+      "actual_sha256": "3660a28f19cb7304ddc9c952a89f1b43378834faf0251f0910770ba9f89a6789",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac23-original/classes/Runner.class",
+      "expected_sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+      "actual_sha256": "4f99d252d69f295a824535e5c060a543ebdf5419e008036a8df1d63e8ac27e75",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/ArrayFieldInitializers.class",
+      "expected_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+      "actual_sha256": "5bd4b86f40a268640dd391df54a050f44056918928ae240232ebed6671fa24ee",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/cases/javac8-original/classes/Runner.class",
+      "expected_sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+      "actual_sha256": "7352c2a7a7e6135ff475329f006f2850014733f0acb61e015327e49b993c2dae",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/manifest.json",
+      "expected_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+      "actual_sha256": "93f14c0b125a738378c18a7a1a1f63dc6fb8c86c8c349c879b8e0e567c7c89d5",
+      "ok": true
+    },
+    {
+      "label": "canonical_files:openspec/evidence/java-syntax-2026-10-10/array-field-initializers/baseline-root-v1/file-inventory.json",
+      "expected_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+      "actual_sha256": "4c6999337f865c44f1bf43c309d364bab87981158eb0e356fee9f70de3aedf6e",
+      "ok": true
+    },
+    {
+      "label": "frozen-cli",
+      "path": "/private/tmp/jarde-nonfinal-static-cli-v1",
+      "expected_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "actual_sha256": "dda511224111d8f7fe3e22b6e2800e5b2e1311dd75f899a69233f19fe6f2b36e",
+      "ok": true
+    },
+    {
+      "label": "fixed-jdk-manifest",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "expected_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "ok": true
+    },
+    {
+      "label": "javac8:javac",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "expected_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "actual_sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+      "ok": true
+    },
+    {
+      "label": "javac8:java",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "expected_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "actual_sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+      "ok": true
+    },
+    {
+      "label": "javac8:javap",
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "expected_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "actual_sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javac",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "expected_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "actual_sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8",
+      "ok": true
+    },
+    {
+      "label": "javac23:java",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "expected_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "actual_sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+      "ok": true
+    },
+    {
+      "label": "javac23:javap",
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "expected_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "actual_sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e",
+      "ok": true
+    },
+    {
+      "label": "two-required-jdk-legs",
+      "ok": true
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javac-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-javac-version.stderr",
+        "bytes": 16,
+        "sha256": "b78c3d234842235ae1b53dd6405da54b3af2b02047c45858b595870662803db8"
+      }
+    },
+    {
+      "label": "javac8-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-java-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-java-version.stderr",
+        "bytes": 174,
+        "sha256": "faab3c8a678f056adf83280dbda6950d4d51a39eaf84b2136be0a1812b62e22d"
+      }
+    },
+    {
+      "label": "javac8-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-javap-version.stdout",
+        "bytes": 10,
+        "sha256": "6a282b7b9e5da8c1d9ecd31367d3828a20d54da2205390fd0c9529a48b3be713"
+      },
+      "stderr": {
+        "path": "streams/javac8-javap-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/original-sources/UT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-Dfile.encoding=UTF-8",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes",
+        "UT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-run.stdout",
+        "bytes": 19,
+        "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-UT-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes/UT.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-UT-javap.stdout",
+        "bytes": 7732,
+        "sha256": "05009430605e4c0c822cabfed768d2e5e6ae286bab58706c876233e7eb7bfcff"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-UT-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-original-UT$内部类-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes/UT$内部类.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-original-UT$内部类-javap.stdout",
+        "bytes": 2035,
+        "sha256": "b546cee9117755e464cf0156dd29ecd7ed5e602430b13ce7da06595887764c65"
+      },
+      "stderr": {
+        "path": "streams/javac8-original-UT$内部类-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-javac-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javac-version.stdout",
+        "bytes": 13,
+        "sha256": "8b08d363e50e3d8f80fe38c5910e7f52b3e267b192efacb74878c7103361d3cd"
+      },
+      "stderr": {
+        "path": "streams/javac23-javac-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-java-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-java-version.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-java-version.stderr",
+        "bytes": 152,
+        "sha256": "11d9a1559a3f4fab380e536f54e14acacdbd9fb56e147f04a9cc4723e3c229f7"
+      }
+    },
+    {
+      "label": "javac23-javap-version",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-javap-version.stdout",
+        "bytes": 7,
+        "sha256": "93012e27a4b9c01457ab2e4cc367a8dd4f4f42e6db886be6030d542771338bfb"
+      },
+      "stderr": {
+        "path": "streams/javac23-javap-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/original-sources/UT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-compile.stderr",
+        "bytes": 483,
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      }
+    },
+    {
+      "label": "javac23-original-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-Dfile.encoding=UTF-8",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes",
+        "UT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-run.stdout",
+        "bytes": 19,
+        "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-UT-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes/UT.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-UT-javap.stdout",
+        "bytes": 8018,
+        "sha256": "de1329b6d1cb428a0b22d1095b1874cd2309695b118beae52bf88d29e2a29f16"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-UT-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-original-UT$内部类-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes/UT$内部类.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-original-UT$内部类-javap.stdout",
+        "bytes": 2295,
+        "sha256": "23d221d230b7f6fdcea061a80e2e5313ca17478a33bb4f1534274962f84f3cff"
+      },
+      "stderr": {
+        "path": "streams/javac23-original-UT$内部类-javap.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-UT-default-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+        "--class",
+        "UT",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-UT-default-render.stdout",
+        "bytes": 79692,
+        "sha256": "251d8690621b9981ec3bf0f07532869429745327938e59a3a3fcbcc64bdb10f5"
+      },
+      "stderr": {
+        "path": "streams/javac8-UT-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-UT-all-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+        "--class",
+        "UT",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-UT-all-render.stdout",
+        "bytes": 84553,
+        "sha256": "7ce9af6781d886d004067bfa3b7a57968ee3faf7cda79e9610a3ae027aa4fee7"
+      },
+      "stderr": {
+        "path": "streams/javac8-UT-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-UT-inner-内部类-default-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+        "--class",
+        "UT$内部类",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-UT-inner-内部类-default-render.stdout",
+        "bytes": 14794,
+        "sha256": "45c701dd341f5b4a89a3b949a91ac657a7801d9e660dc9a214dead4d2bfcd6e6"
+      },
+      "stderr": {
+        "path": "streams/javac8-UT-inner-内部类-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-UT-inner-内部类-all-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+        "--class",
+        "UT$内部类",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-UT-inner-内部类-all-render.stdout",
+        "bytes": 15470,
+        "sha256": "489e946c02ddd1bcc9cde49c8e2fb05f1f0624f7337a01e3e110e5d0bbdea62d"
+      },
+      "stderr": {
+        "path": "streams/javac8-UT-inner-内部类-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-default-two-class-family-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/UT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-default-two-class-family-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-default-two-class-family-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-default-two-class-family-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-Dfile.encoding=UTF-8",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/classes",
+        "UT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-default-two-class-family-run.stdout",
+        "bytes": 19,
+        "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+      },
+      "stderr": {
+        "path": "streams/javac8-default-two-class-family-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-all-two-class-family-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/UT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-all-two-class-family-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac8-all-two-class-family-compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac8-all-two-class-family-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-Dfile.encoding=UTF-8",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/classes",
+        "UT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac8-all-two-class-family-run.stdout",
+        "bytes": 19,
+        "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+      },
+      "stderr": {
+        "path": "streams/javac8-all-two-class-family-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-UT-default-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+        "--class",
+        "UT",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-UT-default-render.stdout",
+        "bytes": 79683,
+        "sha256": "19c93fcb04457c0a110b2ed30daba51dc38467cd212546050db7e530cd3dcd2a"
+      },
+      "stderr": {
+        "path": "streams/javac23-UT-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-UT-all-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+        "--class",
+        "UT",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-UT-all-render.stdout",
+        "bytes": 84553,
+        "sha256": "d5d710b84d47d7208c497436c44daa2f19c588bc51a4dae00f9d2ce3c029f44c"
+      },
+      "stderr": {
+        "path": "streams/javac23-UT-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-UT-inner-内部类-default-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+        "--class",
+        "UT$内部类",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-UT-inner-内部类-default-render.stdout",
+        "bytes": 14794,
+        "sha256": "131df9f9cd1f48df346db78da65e01c026ba510895592e887162781b1e3a08f0"
+      },
+      "stderr": {
+        "path": "streams/javac23-UT-inner-内部类-default-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-UT-inner-内部类-all-render",
+      "argv": [
+        "/private/tmp/jarde-nonfinal-static-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+        "--class",
+        "UT$内部类",
+        "--policy",
+        "plain-jar",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": null,
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-UT-inner-内部类-all-render.stdout",
+        "bytes": 15470,
+        "sha256": "7246abfa62f40f3a7f96118fc657992205f8f2c49771a57181669d8379be6987"
+      },
+      "stderr": {
+        "path": "streams/javac23-UT-inner-内部类-all-render.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-default-two-class-family-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/UT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-default-two-class-family-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-default-two-class-family-compile.stderr",
+        "bytes": 483,
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      }
+    },
+    {
+      "label": "javac23-default-two-class-family-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-Dfile.encoding=UTF-8",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/classes",
+        "UT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-default-two-class-family-run.stdout",
+        "bytes": 19,
+        "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+      },
+      "stderr": {
+        "path": "streams/javac23-default-two-class-family-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "javac23-all-two-class-family-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/empty-classpath-sourcepath",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/empty-classpath-sourcepath",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/UT.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-all-two-class-family-compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "streams/javac23-all-two-class-family-compile.stderr",
+        "bytes": 483,
+        "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+      }
+    },
+    {
+      "label": "javac23-all-two-class-family-run",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-Dfile.encoding=UTF-8",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/classes",
+        "UT"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "exit": 0,
+      "stdout": {
+        "path": "streams/javac23-all-two-class-family-run.stdout",
+        "bytes": 19,
+        "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+      },
+      "stderr": {
+        "path": "streams/javac23-all-two-class-family-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "label": "javac8-original",
+      "kind": "original",
+      "jdk_leg": "javac8",
+      "compile": {
+        "label": "javac8-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-encoding",
+          "UTF-8",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/original-sources/UT.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-compile.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "runtime": {
+        "label": "javac8-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-Dfile.encoding=UTF-8",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes",
+          "UT"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-original-run.stdout",
+          "bytes": 19,
+          "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+        },
+        "stderr": {
+          "path": "streams/javac8-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/UT.java",
+          "bytes": 435,
+          "sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac8-original/classes/UT$内部类.class",
+          "bytes": 305,
+          "sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3"
+        },
+        {
+          "path": "cases/javac8-original/classes/UT.class",
+          "bytes": 955,
+          "sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "success": true,
+      "expected_utf8_stdout": true,
+      "complete_two_class_output": true,
+      "javac8_frozen_class_identity": true,
+      "javap": {
+        "UT": {
+          "record": {
+            "label": "javac8-original-UT-javap",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes/UT.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-UT-javap.stdout",
+              "bytes": 7732,
+              "sha256": "05009430605e4c0c822cabfed768d2e5e6ae286bab58706c876233e7eb7bfcff"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-UT-javap.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "physical_clinit": {
+            "present": true,
+            "descriptor": "()V",
+            "has_code": true
+          }
+        },
+        "UT$内部类": {
+          "record": {
+            "label": "javac8-original-UT$内部类-javap",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-original/classes/UT$内部类.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac8-original-UT$内部类-javap.stdout",
+              "bytes": 2035,
+              "sha256": "b546cee9117755e464cf0156dd29ecd7ed5e602430b13ce7da06595887764c65"
+            },
+            "stderr": {
+              "path": "streams/javac8-original-UT$内部类-javap.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "physical_clinit": {
+            "present": false,
+            "descriptor": null,
+            "has_code": false
+          }
+        }
+      },
+      "outer_physical_clinit_contract": true,
+      "plain_jar": {
+        "file": {
+          "path": "input-jars/javac8/UT.jar",
+          "bytes": 1486,
+          "sha256": "3296766c31528de56148c92246bbfd7a31daa3e0a92530c1a81cece8726cd1fd"
+        },
+        "entries": [
+          {
+            "name": "UT.class",
+            "bytes": 955,
+            "sha256": "00557f2a5007ad47a9d60839339c94de481e3cb5ee47da6e6255c92823a49d5c",
+            "compression": 0,
+            "date_time": [
+              1980,
+              1,
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "UT$内部类.class",
+            "bytes": 305,
+            "sha256": "cda8bae084dac3852d7ce1ede1cde654041e452f4567a7047809f876a0b13de3",
+            "compression": 0,
+            "date_time": [
+              1980,
+              1,
+              1,
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "exact_entry_names": true
+      }
+    },
+    {
+      "label": "javac23-original",
+      "kind": "original",
+      "jdk_leg": "javac23",
+      "compile": {
+        "label": "javac23-original-compile",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-encoding",
+          "UTF-8",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/empty-classpath-sourcepath",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/original-sources/UT.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-compile.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-compile.stderr",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+        }
+      },
+      "runtime": {
+        "label": "javac23-original-run",
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-Dfile.encoding=UTF-8",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes",
+          "UT"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-original-run.stdout",
+          "bytes": 19,
+          "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+        },
+        "stderr": {
+          "path": "streams/javac23-original-run.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "source_files": [
+        {
+          "path": "original-sources/UT.java",
+          "bytes": 435,
+          "sha256": "2b122dce339956497a1e3ccef1b6152977cb6f44bf34fb59afa0076f13010d85"
+        }
+      ],
+      "classes": [
+        {
+          "path": "cases/javac23-original/classes/UT$内部类.class",
+          "bytes": 305,
+          "sha256": "9b050d71f9da38c803a15e4f2ac2694b3ccf2dc89ab5606678f96d8aae45b22a"
+        },
+        {
+          "path": "cases/javac23-original/classes/UT.class",
+          "bytes": 955,
+          "sha256": "740d710fa40d72c37989e3a31390ea69a381747eef9c24c13a96ed35214b739d"
+        }
+      ],
+      "compile_success": true,
+      "runtime_success": true,
+      "success": true,
+      "expected_utf8_stdout": true,
+      "complete_two_class_output": true,
+      "javac8_frozen_class_identity": null,
+      "javap": {
+        "UT": {
+          "record": {
+            "label": "javac23-original-UT-javap",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes/UT.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-UT-javap.stdout",
+              "bytes": 8018,
+              "sha256": "de1329b6d1cb428a0b22d1095b1874cd2309695b118beae52bf88d29e2a29f16"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-UT-javap.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "physical_clinit": {
+            "present": true,
+            "descriptor": "()V",
+            "has_code": true
+          }
+        },
+        "UT$内部类": {
+          "record": {
+            "label": "javac23-original-UT$内部类-javap",
+            "argv": [
+              "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+              "-p",
+              "-c",
+              "-s",
+              "-v",
+              "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-original/classes/UT$内部类.class"
+            ],
+            "cwd": "/Users/lordcasser/workspace/projects/jarde",
+            "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+            "exit": 0,
+            "stdout": {
+              "path": "streams/javac23-original-UT$内部类-javap.stdout",
+              "bytes": 2295,
+              "sha256": "23d221d230b7f6fdcea061a80e2e5313ca17478a33bb4f1534274962f84f3cff"
+            },
+            "stderr": {
+              "path": "streams/javac23-original-UT$内部类-javap.stderr",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "success": true,
+          "physical_clinit": {
+            "present": false,
+            "descriptor": null,
+            "has_code": false
+          }
+        }
+      },
+      "outer_physical_clinit_contract": true,
+      "plain_jar": {
+        "file": {
+          "path": "input-jars/javac23/UT.jar",
+          "bytes": 1486,
+          "sha256": "272cbc5444aeb1afeb9c321b37ea8a871332b18e0315b9fd137ee4b860f3b130"
+        },
+        "entries": [
+          {
+            "name": "UT.class",
+            "bytes": 955,
+            "sha256": "740d710fa40d72c37989e3a31390ea69a381747eef9c24c13a96ed35214b739d",
+            "compression": 0,
+            "date_time": [
+              1980,
+              1,
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "UT$内部类.class",
+            "bytes": 305,
+            "sha256": "9b050d71f9da38c803a15e4f2ac2694b3ccf2dc89ab5606678f96d8aae45b22a",
+            "compression": 0,
+            "date_time": [
+              1980,
+              1,
+              1,
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "exact_entry_names": true
+      }
+    },
+    {
+      "label": "javac8-UT-default",
+      "kind": "rendered",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "class": "UT",
+      "render": {
+        "label": "javac8-UT-default-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+          "--class",
+          "UT",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-UT-default-render.stdout",
+          "bytes": 79692,
+          "sha256": "251d8690621b9981ec3bf0f07532869429745327938e59a3a3fcbcc64bdb10f5"
+        },
+        "stderr": {
+          "path": "streams/javac8-UT-default-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac8-UT-default/class-source.json",
+        "bytes": 79692,
+        "sha256": "251d8690621b9981ec3bf0f07532869429745327938e59a3a3fcbcc64bdb10f5"
+      },
+      "inspection": {
+        "class_source_text_sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "变量",
+            "descriptor": "I",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  73
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  143,
+                  152,
+                  233,
+                  135,
+                  143
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static int 变量 = 1;",
+            "text_has_initializer": true
+          },
+          {
+            "name": "描述",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  230,
+                  143,
+                  143,
+                  232,
+                  191,
+                  176
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static java.lang.String 描述 = new java.lang.StringBuilder().append(\"变量=\").append(UT.变量).toString();",
+            "text_has_initializer": true
+          }
+        ],
+        "field_projection_count": 2,
+        "initializer_proof": {
+          "fields": [
+            {
+              "field_index": 0,
+              "write_bci": 1,
+              "write_order": 0
+            },
+            {
+              "field_index": 1,
+              "write_bci": 25,
+              "write_order": 1
+            }
+          ],
+          "kind": "proved"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 2,
+            "source_map_origin_count": 2
+          },
+          {
+            "index": 1,
+            "name": "方法",
+            "descriptor": "(I)I",
+            "identity": {
+              "descriptor": [
+                40,
+                73,
+                41,
+                73
+              ],
+              "name": [
+                230,
+                150,
+                185,
+                230,
+                179,
+                149
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 4,
+            "source_map_origin_count": 4
+          },
+          {
+            "index": 2,
+            "name": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "identity": {
+              "descriptor": [
+                40,
+                91,
+                76,
+                106,
+                97,
+                118,
+                97,
+                47,
+                108,
+                97,
+                110,
+                103,
+                47,
+                83,
+                116,
+                114,
+                105,
+                110,
+                103,
+                59,
+                41,
+                86
+              ],
+              "name": [
+                109,
+                97,
+                105,
+                110
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 23,
+            "source_map_origin_count": 23
+          },
+          {
+            "index": 3,
+            "name": "<clinit>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                99,
+                108,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 13,
+            "source_map_origin_count": 13
+          }
+        ],
+        "full_method_count": 4,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac8-UT-default/UT.java",
+        "bytes": 1886,
+        "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 2,
+          "origin_count": 2
+        },
+        {
+          "method_index": 1,
+          "name": "方法",
+          "descriptor": "(I)I",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 4,
+          "origin_count": 4
+        },
+        {
+          "method_index": 2,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 23,
+          "origin_count": 23
+        },
+        {
+          "method_index": 3,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 13,
+          "origin_count": 13
+        }
+      ],
+      "inspection_checks_are_authoritative": true
+    },
+    {
+      "label": "javac8-UT-all",
+      "kind": "rendered",
+      "profile": "all",
+      "jdk_leg": "javac8",
+      "class": "UT",
+      "render": {
+        "label": "javac8-UT-all-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+          "--class",
+          "UT",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-UT-all-render.stdout",
+          "bytes": 84553,
+          "sha256": "7ce9af6781d886d004067bfa3b7a57968ee3faf7cda79e9610a3ae027aa4fee7"
+        },
+        "stderr": {
+          "path": "streams/javac8-UT-all-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac8-UT-all/class-source.json",
+        "bytes": 84553,
+        "sha256": "7ce9af6781d886d004067bfa3b7a57968ee3faf7cda79e9610a3ae027aa4fee7"
+      },
+      "inspection": {
+        "class_source_text_sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "变量",
+            "descriptor": "I",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  73
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  143,
+                  152,
+                  233,
+                  135,
+                  143
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static int 变量 = 1;",
+            "text_has_initializer": true
+          },
+          {
+            "name": "描述",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  230,
+                  143,
+                  143,
+                  232,
+                  191,
+                  176
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static java.lang.String 描述 = new java.lang.StringBuilder().append(\"变量=\").append(UT.变量).toString();",
+            "text_has_initializer": true
+          }
+        ],
+        "field_projection_count": 2,
+        "initializer_proof": {
+          "fields": [
+            {
+              "field_index": 0,
+              "write_bci": 1,
+              "write_order": 0
+            },
+            {
+              "field_index": 1,
+              "write_bci": 25,
+              "write_order": 1
+            }
+          ],
+          "kind": "proved"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 2,
+            "source_map_origin_count": 2
+          },
+          {
+            "index": 1,
+            "name": "方法",
+            "descriptor": "(I)I",
+            "identity": {
+              "descriptor": [
+                40,
+                73,
+                41,
+                73
+              ],
+              "name": [
+                230,
+                150,
+                185,
+                230,
+                179,
+                149
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 4,
+            "source_map_origin_count": 4
+          },
+          {
+            "index": 2,
+            "name": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "identity": {
+              "descriptor": [
+                40,
+                91,
+                76,
+                106,
+                97,
+                118,
+                97,
+                47,
+                108,
+                97,
+                110,
+                103,
+                47,
+                83,
+                116,
+                114,
+                105,
+                110,
+                103,
+                59,
+                41,
+                86
+              ],
+              "name": [
+                109,
+                97,
+                105,
+                110
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 23,
+            "source_map_origin_count": 23
+          },
+          {
+            "index": 3,
+            "name": "<clinit>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                99,
+                108,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "1668c25ae79374ff7f09a8a67e9c7efc807be4ec95cb0492399dbd853dbe52fe",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 13,
+            "source_map_origin_count": 13
+          }
+        ],
+        "full_method_count": 4,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac8-UT-all/UT.java",
+        "bytes": 1886,
+        "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 2,
+          "origin_count": 2
+        },
+        {
+          "method_index": 1,
+          "name": "方法",
+          "descriptor": "(I)I",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 4,
+          "origin_count": 4
+        },
+        {
+          "method_index": 2,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 23,
+          "origin_count": 23
+        },
+        {
+          "method_index": 3,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 13,
+          "origin_count": 13
+        }
+      ],
+      "inspection_checks_are_authoritative": true
+    },
+    {
+      "label": "javac8-UT-inner-内部类-default",
+      "kind": "rendered",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "class": "UT$内部类",
+      "render": {
+        "label": "javac8-UT-inner-内部类-default-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+          "--class",
+          "UT$内部类",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-UT-inner-内部类-default-render.stdout",
+          "bytes": 14794,
+          "sha256": "45c701dd341f5b4a89a3b949a91ac657a7801d9e660dc9a214dead4d2bfcd6e6"
+        },
+        "stderr": {
+          "path": "streams/javac8-UT-inner-内部类-default-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac8-UT-inner-内部类-default/class-source.json",
+        "bytes": 14794,
+        "sha256": "45c701dd341f5b4a89a3b949a91ac657a7801d9e660dc9a214dead4d2bfcd6e6"
+      },
+      "inspection": {
+        "class_source_text_sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "名字",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  144,
+                  141,
+                  229,
+                  173,
+                  151
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "79c03850380318ac3da6aba385e0fe42c07f955f18f815a847c3ab8d3703776e",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 0,
+            "rendered_declaration": "    java.lang.String 名字;",
+            "text_has_initializer": false
+          }
+        ],
+        "field_projection_count": 1,
+        "initializer_proof": {
+          "kind": "not_applicable"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "79c03850380318ac3da6aba385e0fe42c07f955f18f815a847c3ab8d3703776e",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 5,
+            "source_map_origin_count": 5
+          }
+        ],
+        "full_method_count": 1,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac8-UT-inner-内部类-default/UT$内部类.java",
+        "bytes": 708,
+        "sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 5,
+          "origin_count": 5
+        }
+      ],
+      "inspection_checks_are_authoritative": false
+    },
+    {
+      "label": "javac8-UT-inner-内部类-all",
+      "kind": "rendered",
+      "profile": "all",
+      "jdk_leg": "javac8",
+      "class": "UT$内部类",
+      "render": {
+        "label": "javac8-UT-inner-内部类-all-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac8/UT.jar",
+          "--class",
+          "UT$内部类",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac8-UT-inner-内部类-all-render.stdout",
+          "bytes": 15470,
+          "sha256": "489e946c02ddd1bcc9cde49c8e2fb05f1f0624f7337a01e3e110e5d0bbdea62d"
+        },
+        "stderr": {
+          "path": "streams/javac8-UT-inner-内部类-all-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac8-UT-inner-内部类-all/class-source.json",
+        "bytes": 15470,
+        "sha256": "489e946c02ddd1bcc9cde49c8e2fb05f1f0624f7337a01e3e110e5d0bbdea62d"
+      },
+      "inspection": {
+        "class_source_text_sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "名字",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  144,
+                  141,
+                  229,
+                  173,
+                  151
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "79c03850380318ac3da6aba385e0fe42c07f955f18f815a847c3ab8d3703776e",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 0,
+            "rendered_declaration": "    java.lang.String 名字;",
+            "text_has_initializer": false
+          }
+        ],
+        "field_projection_count": 1,
+        "initializer_proof": {
+          "kind": "not_applicable"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "79c03850380318ac3da6aba385e0fe42c07f955f18f815a847c3ab8d3703776e",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "ad31ce3722a82e9495134ca2b868f3cc6ff5ee65eae6d5d75fe5d7f12d40b2d8",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 5,
+            "source_map_origin_count": 5
+          }
+        ],
+        "full_method_count": 1,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac8-UT-inner-内部类-all/UT$内部类.java",
+        "bytes": 708,
+        "sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 5,
+          "origin_count": 5
+        }
+      ],
+      "inspection_checks_are_authoritative": false
+    },
+    {
+      "label": "javac8-default-two-class-family",
+      "kind": "outer-source-complete-class-family",
+      "profile": "default",
+      "jdk_leg": "javac8",
+      "generated_source_is_exact_outer_report": true,
+      "generated_compile": {
+        "compile": {
+          "label": "javac8-default-two-class-family-compile",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-encoding",
+            "UTF-8",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/empty-classpath-sourcepath",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/empty-classpath-sourcepath",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/classes",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/UT.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac8-default-two-class-family-compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-default-two-class-family-compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "runtime": {
+          "label": "javac8-default-two-class-family-run",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-Dfile.encoding=UTF-8",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-default-two-class-family/classes",
+            "UT"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac8-default-two-class-family-run.stdout",
+            "bytes": 19,
+            "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+          },
+          "stderr": {
+            "path": "streams/javac8-default-two-class-family-run.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "source_files": [
+          {
+            "path": "cases/javac8-default-two-class-family/UT.java",
+            "bytes": 1886,
+            "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+          }
+        ],
+        "classes": [
+          {
+            "path": "cases/javac8-default-two-class-family/classes/UT$内部类.class",
+            "bytes": 313,
+            "sha256": "ef341d6a3e47970398a90df929bd0b079a73cd23c6257590ae15a983cc9d45ec"
+          },
+          {
+            "path": "cases/javac8-default-two-class-family/classes/UT.class",
+            "bytes": 967,
+            "sha256": "c09df66c7eb122f7186215dd1c18ca61c2161d15e5b91e8e92e0f0c6180453f6"
+          }
+        ],
+        "compile_success": true,
+        "runtime_success": true
+      },
+      "complete_two_class_output": true,
+      "runtime_matches_original_raw": true,
+      "expected_utf8_stdout": true,
+      "success": true
+    },
+    {
+      "label": "javac8-all-two-class-family",
+      "kind": "outer-source-complete-class-family",
+      "profile": "all",
+      "jdk_leg": "javac8",
+      "generated_source_is_exact_outer_report": true,
+      "generated_compile": {
+        "compile": {
+          "label": "javac8-all-two-class-family-compile",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-encoding",
+            "UTF-8",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/empty-classpath-sourcepath",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/empty-classpath-sourcepath",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/classes",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/UT.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac8-all-two-class-family-compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac8-all-two-class-family-compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "runtime": {
+          "label": "javac8-all-two-class-family-run",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-Dfile.encoding=UTF-8",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac8-all-two-class-family/classes",
+            "UT"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac8-all-two-class-family-run.stdout",
+            "bytes": 19,
+            "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+          },
+          "stderr": {
+            "path": "streams/javac8-all-two-class-family-run.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "source_files": [
+          {
+            "path": "cases/javac8-all-two-class-family/UT.java",
+            "bytes": 1886,
+            "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+          }
+        ],
+        "classes": [
+          {
+            "path": "cases/javac8-all-two-class-family/classes/UT$内部类.class",
+            "bytes": 313,
+            "sha256": "ef341d6a3e47970398a90df929bd0b079a73cd23c6257590ae15a983cc9d45ec"
+          },
+          {
+            "path": "cases/javac8-all-two-class-family/classes/UT.class",
+            "bytes": 967,
+            "sha256": "c09df66c7eb122f7186215dd1c18ca61c2161d15e5b91e8e92e0f0c6180453f6"
+          }
+        ],
+        "compile_success": true,
+        "runtime_success": true
+      },
+      "complete_two_class_output": true,
+      "runtime_matches_original_raw": true,
+      "expected_utf8_stdout": true,
+      "success": true
+    },
+    {
+      "label": "javac23-UT-default",
+      "kind": "rendered",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "class": "UT",
+      "render": {
+        "label": "javac23-UT-default-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+          "--class",
+          "UT",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-UT-default-render.stdout",
+          "bytes": 79683,
+          "sha256": "19c93fcb04457c0a110b2ed30daba51dc38467cd212546050db7e530cd3dcd2a"
+        },
+        "stderr": {
+          "path": "streams/javac23-UT-default-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac23-UT-default/class-source.json",
+        "bytes": 79683,
+        "sha256": "19c93fcb04457c0a110b2ed30daba51dc38467cd212546050db7e530cd3dcd2a"
+      },
+      "inspection": {
+        "class_source_text_sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "变量",
+            "descriptor": "I",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  73
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  143,
+                  152,
+                  233,
+                  135,
+                  143
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static int 变量 = 1;",
+            "text_has_initializer": true
+          },
+          {
+            "name": "描述",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  230,
+                  143,
+                  143,
+                  232,
+                  191,
+                  176
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static java.lang.String 描述 = new java.lang.StringBuilder().append(\"变量=\").append(UT.变量).toString();",
+            "text_has_initializer": true
+          }
+        ],
+        "field_projection_count": 2,
+        "initializer_proof": {
+          "fields": [
+            {
+              "field_index": 0,
+              "write_bci": 1,
+              "write_order": 0
+            },
+            {
+              "field_index": 1,
+              "write_bci": 25,
+              "write_order": 1
+            }
+          ],
+          "kind": "proved"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 2,
+            "source_map_origin_count": 2
+          },
+          {
+            "index": 1,
+            "name": "方法",
+            "descriptor": "(I)I",
+            "identity": {
+              "descriptor": [
+                40,
+                73,
+                41,
+                73
+              ],
+              "name": [
+                230,
+                150,
+                185,
+                230,
+                179,
+                149
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 4,
+            "source_map_origin_count": 4
+          },
+          {
+            "index": 2,
+            "name": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "identity": {
+              "descriptor": [
+                40,
+                91,
+                76,
+                106,
+                97,
+                118,
+                97,
+                47,
+                108,
+                97,
+                110,
+                103,
+                47,
+                83,
+                116,
+                114,
+                105,
+                110,
+                103,
+                59,
+                41,
+                86
+              ],
+              "name": [
+                109,
+                97,
+                105,
+                110
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 23,
+            "source_map_origin_count": 23
+          },
+          {
+            "index": 3,
+            "name": "<clinit>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                99,
+                108,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 13,
+            "source_map_origin_count": 13
+          }
+        ],
+        "full_method_count": 4,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac23-UT-default/UT.java",
+        "bytes": 1886,
+        "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 2,
+          "origin_count": 2
+        },
+        {
+          "method_index": 1,
+          "name": "方法",
+          "descriptor": "(I)I",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 4,
+          "origin_count": 4
+        },
+        {
+          "method_index": 2,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 23,
+          "origin_count": 23
+        },
+        {
+          "method_index": 3,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 13,
+          "origin_count": 13
+        }
+      ],
+      "inspection_checks_are_authoritative": true
+    },
+    {
+      "label": "javac23-UT-all",
+      "kind": "rendered",
+      "profile": "all",
+      "jdk_leg": "javac23",
+      "class": "UT",
+      "render": {
+        "label": "javac23-UT-all-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+          "--class",
+          "UT",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-UT-all-render.stdout",
+          "bytes": 84553,
+          "sha256": "d5d710b84d47d7208c497436c44daa2f19c588bc51a4dae00f9d2ce3c029f44c"
+        },
+        "stderr": {
+          "path": "streams/javac23-UT-all-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac23-UT-all/class-source.json",
+        "bytes": 84553,
+        "sha256": "d5d710b84d47d7208c497436c44daa2f19c588bc51a4dae00f9d2ce3c029f44c"
+      },
+      "inspection": {
+        "class_source_text_sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "变量",
+            "descriptor": "I",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  73
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  143,
+                  152,
+                  233,
+                  135,
+                  143
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static int 变量 = 1;",
+            "text_has_initializer": true
+          },
+          {
+            "name": "描述",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  230,
+                  143,
+                  143,
+                  232,
+                  191,
+                  176
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 8,
+            "rendered_declaration": "    static java.lang.String 描述 = new java.lang.StringBuilder().append(\"变量=\").append(UT.变量).toString();",
+            "text_has_initializer": true
+          }
+        ],
+        "field_projection_count": 2,
+        "initializer_proof": {
+          "fields": [
+            {
+              "field_index": 0,
+              "write_bci": 1,
+              "write_order": 0
+            },
+            {
+              "field_index": 1,
+              "write_bci": 25,
+              "write_order": 1
+            }
+          ],
+          "kind": "proved"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 2,
+            "source_map_origin_count": 2
+          },
+          {
+            "index": 1,
+            "name": "方法",
+            "descriptor": "(I)I",
+            "identity": {
+              "descriptor": [
+                40,
+                73,
+                41,
+                73
+              ],
+              "name": [
+                230,
+                150,
+                185,
+                230,
+                179,
+                149
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 4,
+            "source_map_origin_count": 4
+          },
+          {
+            "index": 2,
+            "name": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "identity": {
+              "descriptor": [
+                40,
+                91,
+                76,
+                106,
+                97,
+                118,
+                97,
+                47,
+                108,
+                97,
+                110,
+                103,
+                47,
+                83,
+                116,
+                114,
+                105,
+                110,
+                103,
+                59,
+                41,
+                86
+              ],
+              "name": [
+                109,
+                97,
+                105,
+                110
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 23,
+            "source_map_origin_count": 23
+          },
+          {
+            "index": 3,
+            "name": "<clinit>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                99,
+                108,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "9977f2070e95957c390fce1d1b081be8bd68b53f38dbc5f8241099ee2c57d53b",
+                  "length": 955
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 13,
+            "source_map_origin_count": 13
+          }
+        ],
+        "full_method_count": 4,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac23-UT-all/UT.java",
+        "bytes": 1886,
+        "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 2,
+          "origin_count": 2
+        },
+        {
+          "method_index": 1,
+          "name": "方法",
+          "descriptor": "(I)I",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 4,
+          "origin_count": 4
+        },
+        {
+          "method_index": 2,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 23,
+          "origin_count": 23
+        },
+        {
+          "method_index": 3,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 13,
+          "origin_count": 13
+        }
+      ],
+      "inspection_checks_are_authoritative": true
+    },
+    {
+      "label": "javac23-UT-inner-内部类-default",
+      "kind": "rendered",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "class": "UT$内部类",
+      "render": {
+        "label": "javac23-UT-inner-内部类-default-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+          "--class",
+          "UT$内部类",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-UT-inner-内部类-default-render.stdout",
+          "bytes": 14794,
+          "sha256": "131df9f9cd1f48df346db78da65e01c026ba510895592e887162781b1e3a08f0"
+        },
+        "stderr": {
+          "path": "streams/javac23-UT-inner-内部类-default-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac23-UT-inner-内部类-default/class-source.json",
+        "bytes": 14794,
+        "sha256": "131df9f9cd1f48df346db78da65e01c026ba510895592e887162781b1e3a08f0"
+      },
+      "inspection": {
+        "class_source_text_sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "名字",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  144,
+                  141,
+                  229,
+                  173,
+                  151
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "3b6c8120fc6740f5ad0f492b38cf0fdb940654a8874c019a7c0b7a4e2f45f59f",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 0,
+            "rendered_declaration": "    java.lang.String 名字;",
+            "text_has_initializer": false
+          }
+        ],
+        "field_projection_count": 1,
+        "initializer_proof": {
+          "kind": "not_applicable"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "3b6c8120fc6740f5ad0f492b38cf0fdb940654a8874c019a7c0b7a4e2f45f59f",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 5,
+            "source_map_origin_count": 5
+          }
+        ],
+        "full_method_count": 1,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac23-UT-inner-内部类-default/UT$内部类.java",
+        "bytes": 708,
+        "sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 5,
+          "origin_count": 5
+        }
+      ],
+      "inspection_checks_are_authoritative": false
+    },
+    {
+      "label": "javac23-UT-inner-内部类-all",
+      "kind": "rendered",
+      "profile": "all",
+      "jdk_leg": "javac23",
+      "class": "UT$内部类",
+      "render": {
+        "label": "javac23-UT-inner-内部类-all-render",
+        "argv": [
+          "/private/tmp/jarde-nonfinal-static-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/input-jars/javac23/UT.jar",
+          "--class",
+          "UT$内部类",
+          "--policy",
+          "plain-jar",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "java_home": null,
+        "exit": 0,
+        "stdout": {
+          "path": "streams/javac23-UT-inner-内部类-all-render.stdout",
+          "bytes": 15470,
+          "sha256": "7246abfa62f40f3a7f96118fc657992205f8f2c49771a57181669d8379be6987"
+        },
+        "stderr": {
+          "path": "streams/javac23-UT-inner-内部类-all-render.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "render_success": true,
+      "success": true,
+      "document": {
+        "path": "cases/javac23-UT-inner-内部类-all/class-source.json",
+        "bytes": 15470,
+        "sha256": "7246abfa62f40f3a7f96118fc657992205f8f2c49771a57181669d8379be6987"
+      },
+      "inspection": {
+        "class_source_text_sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e",
+        "package": null,
+        "field_projection": [
+          {
+            "name": "名字",
+            "descriptor": "Ljava/lang/String;",
+            "identity": {
+              "member": {
+                "descriptor": [
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  59
+                ],
+                "kind": "field",
+                "name": [
+                  229,
+                  144,
+                  141,
+                  229,
+                  173,
+                  151
+                ]
+              },
+              "owner": {
+                "class_bytes": {
+                  "digest": "3b6c8120fc6740f5ad0f492b38cf0fdb940654a8874c019a7c0b7a4e2f45f59f",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "access_flags": 0,
+            "rendered_declaration": "    java.lang.String 名字;",
+            "text_has_initializer": false
+          }
+        ],
+        "field_projection_count": 1,
+        "initializer_proof": {
+          "kind": "not_applicable"
+        },
+        "methods": [
+          {
+            "index": 0,
+            "name": "<init>",
+            "descriptor": "()V",
+            "identity": {
+              "descriptor": [
+                40,
+                41,
+                86
+              ],
+              "name": [
+                60,
+                105,
+                110,
+                105,
+                116,
+                62
+              ],
+              "owner": {
+                "class_bytes": {
+                  "digest": "3b6c8120fc6740f5ad0f492b38cf0fdb940654a8874c019a7c0b7a4e2f45f59f",
+                  "length": 305
+                },
+                "location": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "34d75fb09bf05f75bcc7ff383713a77f695801b318fc3d1739d782c81d2b02b1",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      85,
+                      84,
+                      36,
+                      229,
+                      134,
+                      133,
+                      233,
+                      131,
+                      168,
+                      231,
+                      177,
+                      187,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "archive_entry"
+                },
+                "variant": {
+                  "kind": "base"
+                }
+              }
+            },
+            "outcome_kind": "recovered",
+            "quality": "structured",
+            "representation": "java",
+            "source_map_segment_count": 5,
+            "source_map_origin_count": 5
+          }
+        ],
+        "full_method_count": 1,
+        "checks": {
+          "source_class_name_matches_request": true,
+          "all_expected_fields_present": true,
+          "text_contains_unicode_declarations": true,
+          "exact_expected_unicode_and_identity_strings": true,
+          "no_unicode_alias_marker": true,
+          "no_identifier_rejection_marker": true,
+          "no_fallback_marker": true
+        }
+      },
+      "generated_source": {
+        "path": "cases/javac23-UT-inner-内部类-all/UT$内部类.java",
+        "bytes": 708,
+        "sha256": "2352911fac4325b96d2e351fdf385bf9d873a3223c364d7fd6b13e8288a56d6e"
+      },
+      "generated_source_bytes_unchanged": true,
+      "source_map_inventory": [
+        {
+          "method_index": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "quality": "structured",
+          "representation": "java",
+          "segment_count": 5,
+          "origin_count": 5
+        }
+      ],
+      "inspection_checks_are_authoritative": false
+    },
+    {
+      "label": "javac23-default-two-class-family",
+      "kind": "outer-source-complete-class-family",
+      "profile": "default",
+      "jdk_leg": "javac23",
+      "generated_source_is_exact_outer_report": true,
+      "generated_compile": {
+        "compile": {
+          "label": "javac23-default-two-class-family-compile",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-encoding",
+            "UTF-8",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/empty-classpath-sourcepath",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/empty-classpath-sourcepath",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/classes",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/UT.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac23-default-two-class-family-compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-default-two-class-family-compile.stderr",
+            "bytes": 483,
+            "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+          }
+        },
+        "runtime": {
+          "label": "javac23-default-two-class-family-run",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-Dfile.encoding=UTF-8",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-default-two-class-family/classes",
+            "UT"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac23-default-two-class-family-run.stdout",
+            "bytes": 19,
+            "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+          },
+          "stderr": {
+            "path": "streams/javac23-default-two-class-family-run.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "source_files": [
+          {
+            "path": "cases/javac23-default-two-class-family/UT.java",
+            "bytes": 1886,
+            "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+          }
+        ],
+        "classes": [
+          {
+            "path": "cases/javac23-default-two-class-family/classes/UT$内部类.class",
+            "bytes": 313,
+            "sha256": "56e0b715f23aa04834fc0db367c50ee9f87562a515247016a8458aaa607d42e0"
+          },
+          {
+            "path": "cases/javac23-default-two-class-family/classes/UT.class",
+            "bytes": 967,
+            "sha256": "c58fd845f6888202a7e528db6ae607dd7eb1386fcf3f219ba0a08c975023c731"
+          }
+        ],
+        "compile_success": true,
+        "runtime_success": true
+      },
+      "complete_two_class_output": true,
+      "runtime_matches_original_raw": true,
+      "expected_utf8_stdout": true,
+      "success": true
+    },
+    {
+      "label": "javac23-all-two-class-family",
+      "kind": "outer-source-complete-class-family",
+      "profile": "all",
+      "jdk_leg": "javac23",
+      "generated_source_is_exact_outer_report": true,
+      "generated_compile": {
+        "compile": {
+          "label": "javac23-all-two-class-family-compile",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-encoding",
+            "UTF-8",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/empty-classpath-sourcepath",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/empty-classpath-sourcepath",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/classes",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/UT.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac23-all-two-class-family-compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "streams/javac23-all-two-class-family-compile.stderr",
+            "bytes": 483,
+            "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+          }
+        },
+        "runtime": {
+          "label": "javac23-all-two-class-family-run",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-Dfile.encoding=UTF-8",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-nonfinal-static-initializer-phase/results/unicode-ci-root-v2/cases/javac23-all-two-class-family/classes",
+            "UT"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+          "exit": 0,
+          "stdout": {
+            "path": "streams/javac23-all-two-class-family-run.stdout",
+            "bytes": 19,
+            "sha256": "cb4ef2e15334b8420c32d749846fa1aa7e56e537339f5bd707564faaab4b5f3c"
+          },
+          "stderr": {
+            "path": "streams/javac23-all-two-class-family-run.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "source_files": [
+          {
+            "path": "cases/javac23-all-two-class-family/UT.java",
+            "bytes": 1886,
+            "sha256": "5eb702f8ec6acd346f89bc20f8c5213962375a40f914390940870b0ed9402525"
+          }
+        ],
+        "classes": [
+          {
+            "path": "cases/javac23-all-two-class-family/classes/UT$内部类.class",
+            "bytes": 313,
+            "sha256": "56e0b715f23aa04834fc0db367c50ee9f87562a515247016a8458aaa607d42e0"
+          },
+          {
+            "path": "cases/javac23-all-two-class-family/classes/UT.class",
+            "bytes": 967,
+            "sha256": "c58fd845f6888202a7e528db6ae607dd7eb1386fcf3f219ba0a08c975023c731"
+          }
+        ],
+        "compile_success": true,
+        "runtime_success": true
+      },
+      "complete_two_class_output": true,
+      "runtime_matches_original_raw": true,
+      "expected_utf8_stdout": true,
+      "success": true
+    }
+  ],
+  "expected_utf8_stdout": "变量=1/42/中文\n",
+  "raw_oracle_is_authoritative": true,
+  "default_all_text_equal": {
+    "javac8:UT": true,
+    "javac8:UT$内部类": true,
+    "javac23:UT": true,
+    "javac23:UT$内部类": true
+  },
+  "cross_jdk_text_equal_observed": {
+    "UT:default": true,
+    "UT:all": true,
+    "UT$内部类:default": true,
+    "UT$内部类:all": true
+  },
+  "failures": [],
+  "file_inventory": {
+    "path": "file-inventory.json",
+    "includes": [
+      "manifest.json",
+      "preflight.json"
+    ],
+    "excludes": [
+      "file-inventory.json"
+    ]
+  }
+}

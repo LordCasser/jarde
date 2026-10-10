@@ -1,0 +1,41 @@
+[
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "38017574260",
+      "--json",
+      "headSha,status,conclusion,url,jobs"
+    ],
+    "exit": 0,
+    "captured_at": "2026-10-10T02:57:29.813262+00:00",
+    "path": "ci-run.json",
+    "bytes": 10113,
+    "sha256": "a3b5af9a2d1d6d67f975f3da01747217aa5240345e0aee53231480f026276257",
+    "raw_stdout_bytes": 10113,
+    "raw_stdout_sha256": "a3b5af9a2d1d6d67f975f3da01747217aa5240345e0aee53231480f026276257",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "38017574260",
+      "--job",
+      "114111169840",
+      "--log"
+    ],
+    "exit": 0,
+    "captured_at": "2026-10-10T02:57:41.220971+00:00",
+    "path": "stable.log.gz",
+    "bytes": 99622,
+    "sha256": "0f368d61fe91c5fa3eaa45ef09c154b0f348908bef6293c9ef080e401288b497",
+    "raw_stdout_bytes": 644954,
+    "raw_stdout_sha256": "c5d670659f233c87c42a71099a5119fff5bc7181f66608aee2c1ca9136bc9d18",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

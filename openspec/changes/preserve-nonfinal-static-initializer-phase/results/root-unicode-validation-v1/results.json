@@ -1,0 +1,69 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "captured_at": "2026-10-10T03:10:06.875577+00:00",
+    "elapsed_seconds": 3.286228333003237,
+    "exit": 0,
+    "stdout": {
+      "path": "fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "argv": [
+      "openspec",
+      "validate",
+      "--all",
+      "--strict",
+      "--no-interactive"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "captured_at": "2026-10-10T03:10:07.485237+00:00",
+    "elapsed_seconds": 0.6091721249977127,
+    "exit": 0,
+    "stdout": {
+      "path": "openspec.stdout",
+      "bytes": 15296,
+      "sha256": "2717d130c42fb0febca775426d95c672eea0f8880be68878a444e3d2a55a15a2"
+    },
+    "stderr": {
+      "path": "openspec.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "captured_at": "2026-10-10T03:10:07.731267+00:00",
+    "elapsed_seconds": 0.2457172080030432,
+    "exit": 0,
+    "stdout": {
+      "path": "diff.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "diff.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+]
