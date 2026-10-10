@@ -8,6 +8,6 @@ root 完整读审 verifier-v1 及 v2–v5 全部 delta 后实际执行正式入�
 
 下一片拆为 recover-prefixed-one-arm-loops 与 preserve-proved-loop-latch-origins，两套 OpenSpec 均4/4规划完整并 strict 有效，不代表实现已完成。前者1/7：原形和本控制基线已接受，带 method 身份的临时诊断未应用/编译。后者2/6：基线接受、Luna private-v2 已全文读审与 git apply --check 通过，仅 region.rs 局部 latch proof/双臂 origin gate 与既有 gateway 测试的候选；生产源码仍与 main 恒同，未应用或实跑。原始审计的“源码正确”措辞只指结构观察。
 
-root 相邻读审确认 loop_arm_join_source 的非空 origin 拒绝需精确区分已证单一 latch 与未知/exit gateway；保留原自然循环 owner、closed body、入口/出口和 Frame 门禁。当前不存在 p3_loop_arm_join 测试 target；相关已完成 loop-join/inner-tail 证明回归在 p3_effectful_exits，后续实际执行该 target 与 p3_loop_exit_gateways、p3_loop_body_double_jumps、p3_loop_terminal_return，不能把不存在的 target 算通过。
+root 相邻读审确认 loop_arm_join_source 的非空 origin 拒绝需精确区分已证单一 latch 与未知/exit gateway；保留原自然循环 owner、closed body、入口/出口和 Frame 门禁。专门 loop-arm-join 回归实际位于根 tests/p3_loop_arm_join.rs，属于 jarde 包；后续必跑 cargo test -p jarde --test p3_loop_arm_join --locked。此前只查 jarde-java crate 而误记不存在的结论已撤回；p3_effectful_exits 仅是相邻 effectful 回归，不能代替根 LoopIfJoin 正反例。其它相关 target 是 jarde-java 的 p3_loop_exit_gateways、p3_loop_body_double_jumps、p3_loop_terminal_return。
 
 本仓 target 不存在；机器空间低于既定20GiB守卫，未执行新的 Rust 工具链。候选来源重放脚本准备与未运行范围分开记录，后续冻结 fresh CLI 才能执行。EM23 仍部分完成，JADX 71 单元/612 测试文件分母与整单元完成数不变。
