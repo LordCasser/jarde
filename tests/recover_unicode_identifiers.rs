@@ -280,8 +280,8 @@ fn the_cjk_declarations_are_presented_as_the_pool_states_them() {
     ] {
         let report = source_of(&jar, "UT");
         for expected in [
-            "static int 变量;",
-            "static java.lang.String 描述;",
+            "static int 变量 = 1;",
+            "static java.lang.String 描述 = new java.lang.StringBuilder().append(\"变量=\").append(UT.变量).toString();",
             "static int 方法(int arg0)",
             "static class 内部类 extends java.lang.Object",
             "java.lang.String 名字;",
