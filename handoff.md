@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前乘法产品1ee7c42e1be2b244733e04653b31d092addf0238已提交推送main；本地与完整类独立验收完成，tasks5/7，待核自身CI38033367666（https://github.com/LordCasser/jarde/actions/runs/38033367666）。基线HEAD为977f761d9f68c6cb4de02f42b060de5290a1a947。06:48 UTC guarded build v5九条实际命令全部通过（CI同范围Clippy、Java层333、compound7、名称2、Facade8、reader178、fingerprint5且忽略1、CLI冻结）。06:56 UTC collector-v3实际40命令/165闭合文件，8份生成完整类原样重编及运行，16次fresh javap；07:03 UTC root独立verifier-v6接受全部raw、物理成员/owner/BCI与default/all相同正文和source-map。原形及溢出/null/除零/失败字段保留均通过；仅扩现有exact SSA字段更新证明，无新pass。
+乘法片当前6/7：产品1ee7c42e1be2b244733e04653b31d092addf0238已提交推送main，本地9命令与40命令/8完整类腿独立验收均完成。07:54 UTC root实际独立CI verifier-v6接受该确切产品自己的CI38033367666：4jobs/52steps，两seed各3377 passed/0 failed/97 ignored、354结果记录，3条新乘法及11条旧整数回归逐seed接受；Temurin25完整类/MSRV/fuzz/supply通过。完整API/GH日志与接受文件在recover-int-field-multiply-updates/results/ci-product-v1；最后待本检查点文档提交推送后关闭3.3。
 
 上一产品375dee45a54d22ce960429cf11f0f96d33ca28b8的自身CI38026598963已独立接受4jobs/52steps、两seed3374 passed/0 failed/97 ignored。文档提交977f及其CI不能作为本乘法产品CI。
 
@@ -14,7 +14,7 @@
 
 ## 立即接续
 
-**当前下一步：** 等待已推送乘法产品1ee7c42e1的自身CI38033367666完成，捕获自身CI/API/stable/supply并实际执行已审verify-field-multiply-ci-product-luna-v6.py；只有接受后完成3.2/3.3。新CLI /private/tmp/jarde-field-multiply-cli-v2 SHA b518c7ae311a86ce43d9fe88492fcfbdb7d114f3b701d21ad6bec8ebc6859a59，metadata/source pins与接受文件均在本change/results。构建v2预算测试假设失败、v3/v4资源拒绝、collector-v2可选字段证据误判以及verifier-v5 helper结构KeyError均保留原始失败；最终接受是build-v5/collector-v3/verifier-v6，不能混用旧版本。
+**当前下一步：** 按两套已strict有效的OpenSpec推进普通循环。recover-prefixed-one-arm-loops当前1/7：原形与四方法控制基线独立接受，method-aware临时诊断patch已备而未应用/编译，先动态核arm分段停止点。preserve-proved-loop-latch-origins当前2/6：基线接受、Luna private-v2全文审查/apply-check通过，局部末尾latch来源与相邻双臂origin gate已有最小候选，生产源码仍与main恒同；待20GiB资源守卫满足后root应用/编译/正反例与fresh CLI接受。只有method来源修复不能冒称四份整类运行成功。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 
@@ -73,3 +73,8 @@
 07:13 UTC root捕获本乘法产品自身CI38033367666的live状态，headSha精确1ee7c42e1：MSRV已success，stable通过Clippy并进入双seed pass1，fuzz与supply进行中。准确live raw/results/ci-product-live-root-v1，不作为最终CI接受。工作区仅main，14辅助worktree仍detached，无分支占用。机器free12830236672bytes且root/fuzz target不存在，不启动Rust。条件分支循环private架构草案v3已root读审，动态site定位仍待资源恢复；现有region_at/Frame/loop proof足以承载局部续接，无新全局机制依据。
 
 循环下一片root已读architecture-audit-luna-v3/v4。continue_multi_return_loop_arm仅是特殊finally证书下两步续走先例，不能全局启用；Region blocks唯一ownership与source-map可重复anchors分开核。失败若直接设置unclosed_tail并整方法quote，无需通用事务/回滚实体；仅继续尝试其它结构时才按现有visited snapshot复原。诊断定位、新OpenSpec及实现均尚未开始。
+
+
+07:58 UTC 普通控制基线独立v5实际接受111闭合files/31commands：原2/JADX4成功，Jarde4完整源缺return而编译失败、零runtime；prefixWhile/loopAndTail/takenArm在branch0拒绝，noPrefix structured但准确缺goto@14→6来源。两OpenSpec规划4/4/strict，root控制报告在one-arm-loop-controls/verification-root.md；private-v2与候选重放v2均已全文读审，后者root只读helper preflight接受111files/4旧profile仍准确拒为新candidate，未执行main/新CLI。两项分开，不增机制/整单元完成数。无p3_loop_arm_join target，loop-join证明相邻回归使用p3_effectful_exits。
+
+CI下载三次TLS/代理失败及原始字节保存；官方API/direct logs成功后，以NO_PROXY仅绕过两个实际job-log域名取得完整GH日志，未修改系统代理。最终CI独立root执行v2用缓存blake3环境，首次普通Python缺blake3的raw保留；接受精确1ee7，不借文档提交CI。所有新脚本失败/错误私有版本保留。当前root/fuzz target不存在、机器余量约18GB仍低20GiB，不执行新的Rust构建。
