@@ -330,3 +330,5 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 15:29 UTC下一明确CF07来源窄片preserve-proved-if-arm-join-origins规划4/4、strict有效、tasks1/7。普通If来源构造只支持空arm隐藏goto，本片拟复用现有If.join/OriginSet为非空arm末尾精确goto20→27加完整If来源；尚无产品/新CLI/内部diagnostic。公开RegionRecord为扁平摘要，须临时内部测试核实际嵌套Region与canonical block17/terminal20及全出边，不新增生产诊断hook。前片自身CI接受为生产应用前置，lastIndexOf25不混入。
 
 15:54 UTC For来源确切产品d714a6bcc自身CI38062706229独立v2接受，4jobs/52steps全部成功、双seed354records/3385/0/97、50pins及冻结CLI/build绑定；v1日志交错解析失败和raw保留，v2精确fingerprint六个名字/5ok+1ignored接受。For片5/6、单臂片6/7，最终clean交付待实跑；全量strict339/0。71/612与整单元计数不变。
+
+15:55 UTC真实clean主线交付：8784e2f07 main/origin相等、15worktrees全部clean/main祖先、14辅助全部detached、仅main且无target/待合入/分支占用；冻结CLI/raw保留，free68989394944 bytes。审计For/results/delivery-clean-root-v1，For6/6、prefixed-one-arm7/7正式关闭。下一If片1/7规划和未执行诊断准备已提交，持续目标继续；71/612及整单元计数不变。

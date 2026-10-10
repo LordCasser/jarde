@@ -42,3 +42,5 @@ candidate-whole-classes-root-v3 已真实完成57命令，原4/JADX8/Jarde8共20
 15:16 UTC依赖来源门禁完成：preserve-proved-for-latch-origins新CLI已实际执行57命令/20完整类腿、八份Jarde原样完整源码与28方法profile全部BCI独立接受，且CF07新29命令/10完整腿由root v2独立接受scoped observations。新旧正文和既有来源全部保留，只有三方法四profile的derived for@20新增。故本片3.1现关闭，旧v3 full失败不改写。当前6/7，3.3待来源产品d714a6bcc自身CI与最终main干净交付，不能把旧ca43 CI当新来源产品CI。
 
 15:54 UTC依赖来源产品d714a6bcc自身CI38062706229已root独立v2接受4jobs/52steps、双seed3385/0/97与50pins。当前6/7，最后3.3只待本次文档/账本/handoff实际干净main交付，旧ca43自身CI及历史失败不回写。
+
+最终7/7：当前依赖来源已全BCI及自身CI闭合，8784e2f07 clean主线实际交付审计见For/results/delivery-clean-root-v1/execution.json；所有14辅助worktrees clean detached main祖先，仅main无待合入/分支占用，无target。历史ca43/旧CLI失败及observations-only记录仍保留，不冒增整单元。
