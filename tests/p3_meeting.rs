@@ -5,7 +5,7 @@
 //!
 //! * **P3 2c.29** — a `char`, a `byte` and a `short` share one slot shape with an `int`, so a
 //!   compiler writes **no instruction** when a position widens one of them, and the position itself
-//!   performs the conversion: `return arg0.charAt(arg1);`, `int local1 = arg0;` and
+//!   performs the conversion: `return arg0.charAt(arg1);`, a char local returned as `int`, and
 //!   `pass(arg0.charAt(0))` are the same programs the bytecode ran, where the `(int)` this layer
 //!   used to invent is a cast the source does not have. A conversion with a **real** instruction
 //!   (`i2l`, `i2b`) is written as its explicit cast when the conversion is proved.
@@ -138,7 +138,7 @@ fn refused<'a>(report: &'a ClassSourceReport, name: &str) -> &'a str {
 // ---------------------------------------------------------------------------------------------
 
 /// The three positions one implicit `char` → `int` widening reaches in this sample: a `return`, a
-/// declaration and an invocation's argument. Return and assignment positions perform their own
+/// stored local and an invocation's argument. Return and assignment positions perform their own
 /// widening; an invocation states its parameter type so overload resolution keeps the target.
 #[test]
 fn a_position_performs_its_own_widening() {
@@ -152,11 +152,13 @@ fn a_position_performs_its_own_widening() {
         at.contains("return arg0.charAt(arg1);"),
         "the `return` widens the value itself:\n{at}"
     );
-    // `viaStore(C)I`: the `char` parameter is stored into a slot whose own declaration says `int`.
+    // `viaStore(C)I`: all writes prove a char local; its int return position widens it implicitly.
     let via_store = presented(&report, "viaStore");
     assert!(
-        via_store.contains("int local1 = arg0;"),
-        "the declaration's own type widens the value:\n{via_store}"
+        via_store.contains("static int viaStore(char arg0)")
+            && via_store.contains("char local1 = arg0;")
+            && via_store.contains("return local1;"),
+        "the proved char local widens at the member's int return position:\n{via_store}"
     );
     // `fieldArg(Ljava/lang/String;)I`: the `char` the `charAt` produced is passed to `pass(int)`.
     let field_arg = presented(&report, "fieldArg");

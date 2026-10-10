@@ -43,3 +43,11 @@ root 已全文读 replay v2、v3，均有静态缺陷，未执行候选。v3仍�
 准确int重载 [int-overload-root-v1](results/int-overload-root-v1/acceptance.json) 实际9命令独立通过：char producer与46常量局部恢复后，两profile完整类编译/运行仍输出46\n，fresh javap准确append(I)、无append(C)，完整物理来源和default/all body/map相同。private verifier误将原符号工具路径/relative classpath当成resolved absolute，root按原record及SHA修正路径口径；第二次仅javap file-date中文在LC_ALL=C中变问号，root核raw diff仅该一行，其他每行/class SHA均相同。两次失败raw保留，最终root v2 verifier返回0。
 
 收集器两处独立问题与一次root执行错误都已保留：原boundary tools keys实际javac8/javac23；runpy返回mapping不是执行函数globals，OUT未生效，root中止后将146条raw按byte-exact relocation manifest归档；另一次cargo clean与guard target扫描并行导致FileNotFoundError，未接受，顺序纠正后全矩阵重跑。没有修改冻结产品来通过这些脚本检查。cargo clean实际3042files/669.3MiB，target已移除。
+
+## 自身 CI 的旧断言与完整 char 对照
+
+产品 `8b899778118ca51ecd7b02d59c95465028dd9847` 已提交推送，但自身 CI `38084415019` 的 stable 第一 seed 在 `tests/p3_meeting.rs::a_position_performs_its_own_widening` 失败，第二 seed 被跳过，MSRV/fuzz/supply 成功；不能接受任务3.2。失败原始日志在 [ci-repair-evidence-root-v1](results/ci-repair-evidence-root-v1/jarde-typed-ci-failure-capture-root-v1/execution.json)。旧断言要求 `int local1 = arg0;`，新全写 char 证明准确输出 `char local1 = arg0;`，由方法 `(C)I` 的 int 返回位置隐式扩宽。生产代码无需修订；断言现在同时约束 char 参数、char 局部、int 返回和无多余转换，准确 `pass(int)` 转换、真实 i2l/i2b 及 pop2 控制保持。
+
+追加独立 [focused repair](results/ci-repair-evidence-root-v1/jarde-typed-ci-repair-root-v2/execution.json) 实际 fmt 与6/0/0通过。完整 Meet 类全部12成员保留，[char 全范围接受](results/ci-repair-evidence-root-v1/jarde-meet-char-root-v2/acceptance-root-v1.json) 实际19命令/38raw，两JDK8/23 × 原源码/JADX/Jarde default/all 共8腿，每腿逐值检查0..65535，输出均 `chars=65536,sum=2147450880`，正文/全部方法身份/既有来源map在default/all相同。root独立verifier退出0。首次CLI参数误写debug而非evidence、首次verifier过度比较debug报告计数的失败均保留，未修改任何生成源码来通过。
+
+追加 repair inputs 与原17/10/50冻结构建闭包分开核，不回写历史meta/build或重建未改的生产CLI。新CI adapter沿用完整冻结核验，每seed额外核六项p3_meeting准确测试名、原class/源码/测试的Git与live SHA。任务仍6/8，修复提交自身CI待实测接受。本地一次全workspace编译触发1GiB target守卫，真实中止/清理保留；小批全量验证正在执行，不能把中止算测试通过。
