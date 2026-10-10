@@ -1,6 +1,6 @@
 # 非空 If arm 汇合来源：root 验收与接续
 
-当前 **6/7**。实际内部诊断、最小产品、永久边界回归、新 CLI 完整源码对照及精确自身 CI 已独立接受；最终 clean main 交付正在关闭。71 单元/612 测试文件和 CF07 整单元计数不变。
+当前 **7/7**。实际内部诊断、最小产品、永久边界回归、新 CLI 完整源码对照及精确自身 CI 已独立接受；最终 clean main checkpoint 已实际接受。71 单元/612 测试文件和 CF07 整单元计数不变。
 
 ## 产品与证明
 
@@ -31,3 +31,7 @@ root提交推送本片全部代码/class/源码/raw后，核提交head自身CI�
 ## 精确自身 CI 已接受（2026-10-11）
 
 产品 `1f386686c6a31813254a85fed48d2af0af84a61c` / run38068627541 经 root v4 独立接受：4 jobs/52 steps 全成功，两 fixed seed 各3389 passed/0 failed/97 ignored、354结果记录；每seed完整12 gateway名、新If三名、内部Exception名与旧integer11名准确存在，52 live+Git pins恒同。接受记录为 results/ci-product-v2/acceptance-proved-if-arm-join-ci-root-v4.json。v2因gh日志job/step前缀失败、v3因去时间戳吞掉Rust缩进导致binary边界失败；两次真实raw保留，v4仅移除传输前缀和一个时间戳分隔符，保留indent并重核全部计数，不放宽验收。
+
+## 干净主线交付
+
+证据与CF12基线规划均已提交推送8cbc468a515230e3a27ca5b76f8a51d055d7da1c，root实跑clean audit：main/origin一致，15worktrees全部clean，唯一main分支、14辅助detached main祖先，无target/fuzz target/待合入/分支占用；冻结CLI0555/hash正确，free65,230,618,624 bytes。见 results/clean-delivery-root-v1/execution.json。此条与7/7状态记录随后提交推送，并再次实核clean，下一片生产才可应用。
