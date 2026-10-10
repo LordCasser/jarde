@@ -33,3 +33,11 @@ Luna patch v1上下文遗漏既有unknown-static拒绝分支，apply check失败
 同一SOURCE以-g重新编译双JDK，默认/完整证据4份全生成源码原样重编、fresh-Xverify/raw等于原程序，24命令/76闭合文件，root实际独立验收results/ordinary-static-regression-root-acceptance-v1.json。CLI并不serialize Engine enum_constant_proof；首轮v1仅因错误要求此JSON键而判失败，实际四运行均正确，raw保留；rootv3脚本修正视图边界并重新执行v2采集接受。该Engine断言由准确Rust测试验证。冻结CLI产品10pins未变化，cfg(test)的enum断言修复另pin，不改历史metadata。
 
 已清本仓target286902139字节，raw/CLI/pins保留，见results/root-clean-v2。新CI verifier v3已准备额外测试pin/差异仅限目标函数和双seed确切测试名，尚未执行；本片仍6/7，须待修复提交自己的全仓CI。CF16的acd检查点已独立11/11验收，不借其绿灯。
+
+## 25c5 CI 第二个历史整类断言
+
+25c5a6fd09ed8603dbbbf3d217469432f27e5c40确切CI38012927864的MSRV/fuzz/supply成功，stable seed1失败于tests/p3_array_slot_retype_locals.rs旧A1整类golden。API原始JSON在results/ci-25c5-failure-v1；首次日志网络EOF/零byte失败保留，第二次实际完整日志357068 byte在ci-25c5-failure-v2/stable.log.gz。不是新数组正文回退：root冻结CLI实际A1整类结果与oldbaseline仅差static calls=0提升及删除冗余static块，物理6methods/1field、Proved1/fieldindex0/writebci1/order0保留，见a1-static-regression-root-v1。
+
+仅最后A1 test与其已unused const更新；历史baseline/A1.jarde.java不变，新增expected/A1.static-init.jarde.java逐字等于root实际CLI输出。保留整类原/恢复编译运行，补proof顺序、无重复根static块、物理clinit及source-map BCI断言，其余五项原断言不变。root-a1-static-tests-v1实际6/6，通过20GiB/1GiB守卫，最低22362042368字节。本产品仍6/7，必须待再次修复提交自己的完整CI。
+
+A1相关Clippy实际exit0（root-a1-clippy-v1），fmt/all OpenSpec strict/diffcheck通过（root-validation-v3）。只清本仓target362.4MiB（root-clean-v3实际stderr），10产品pins/CLI/meta不变；未声称本机全仓测试通过。

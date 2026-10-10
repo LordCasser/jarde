@@ -19,8 +19,6 @@ const V2: &[u8] = include_bytes!("fixtures/p3-array-slot-retype-locals/v8/V2.cla
 const V3: &[u8] = include_bytes!("fixtures/p3-array-slot-retype-locals/v8/V3.class");
 const V4: &[u8] = include_bytes!("fixtures/p3-array-slot-retype-locals/v8/V4.class");
 
-const A1_BASELINE: &str =
-    include_str!("fixtures/p3-array-slot-retype-locals/baseline/A1.jarde.java");
 const V2_BASELINE: &str =
     include_str!("fixtures/p3-array-slot-retype-locals/baseline/V2.jarde.java");
 const V3_BASELINE: &str =
@@ -251,7 +249,75 @@ fn a_loop_that_merges_two_definitions_keeps_one_variable_verbatim() {
 }
 
 #[test]
-fn the_dynamic_dimension_control_keeps_its_text_verbatim() {
-    assert_verbatim("A1", A1, A1_BASELINE, A1_EXPECTED);
-    assert_complete("A1", A1, A1_EXPECTED);
+fn the_dynamic_dimension_control_projects_the_proven_static_field_initializer() {
+    let text = assert_complete("A1", A1, A1_EXPECTED);
+    let report = recover(A1, "A1");
+    assert_eq!(
+        report.fields.len(),
+        1,
+        "the physical field remains in the report"
+    );
+    assert_eq!(
+        report.methods.len(),
+        6,
+        "all six physical methods remain in the report"
+    );
+    assert_eq!(
+        text,
+        include_str!("fixtures/p3-array-slot-retype-locals/expected/A1.static-init.jarde.java"),
+        "every physical method keeps its baseline body while the proved field moves to its declaration"
+    );
+
+    let ClassSourceInitializerProof::Proved { fields } = &report.initializer_proof else {
+        panic!(
+            "A1's complete static initializer group is proved: {:?}",
+            report.initializer_proof
+        );
+    };
+    assert_eq!(
+        fields.len(),
+        1,
+        "one runtime static field write is projected"
+    );
+    assert_eq!(
+        fields[0].field_index, 0,
+        "proof retains physical field order"
+    );
+    assert_eq!(
+        fields[0].write_order, 0,
+        "proof retains initializer execution order"
+    );
+    assert_eq!(
+        fields[0].write_bci, 1,
+        "proof points at the physical putstatic"
+    );
+    assert_eq!(text.matches("static int calls = 0;").count(), 1);
+    assert!(
+        !text.lines().any(|line| line.trim() == "static {"),
+        "the assembled class does not duplicate the projected initializer block:\n{text}"
+    );
+
+    let clinit = report
+        .methods
+        .iter()
+        .find(|method| method.item.identity.name.0 == b"<clinit>")
+        .expect("the original physical <clinit> remains in the report");
+    let ClassSourceOutcome::Recovered { report: body, .. } = &clinit.outcome else {
+        panic!(
+            "the original <clinit> remains recovered: {:?}",
+            clinit.outcome
+        );
+    };
+    assert!(
+        body.produced(),
+        "the physical <clinit> still has a recovered body"
+    );
+    assert!(
+        !body.source_map.of_bci(fields[0].write_bci).is_empty(),
+        "the projected field write remains anchored to physical <clinit> source"
+    );
+    assert!(
+        clinit.text.lines().any(|line| line.trim() == "static {"),
+        "the original method-local initializer spelling remains auditable"
+    );
 }
