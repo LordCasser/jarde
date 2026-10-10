@@ -1,0 +1,19 @@
+{
+  "failed_invocation": "complete-source-invocation-root-v1/execution.json",
+  "root_correction": "original boundary preflight tool keys are javac8/javac23; fix collector/verifier exact expected schema, do not alter historical evidence",
+  "candidate_commands_executed": 0,
+  "scripts": [
+    {
+      "draft_path": "openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/prepare-local-source-types-replay-luna-v5.py",
+      "draft_sha256": "42bc0839902412f69c981e5ed7dc6a1b4265289d741bb7a9319a91bec914c156",
+      "root_path": "openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v1.py",
+      "root_sha256": "1bfce1eb863cbc5351972bd0c30db718166c95748a2ae6f993a873711cd979e8"
+    },
+    {
+      "draft_path": "openspec/changes/recover-proved-local-source-types/results/private-replay-luna-v5/verify-local-source-types-replay-luna-v5.py",
+      "draft_sha256": "4557a85ce1a8d461491e710249abcf14a0d8307ed9417e3f89199860338bd163",
+      "root_path": "openspec/changes/recover-proved-local-source-types/results/verify-local-source-types-replay-root-v1.py",
+      "root_sha256": "cda8a371a140110ecae27186773f95121d0408ff59ba153b4b2911cd52006929"
+    }
+  ]
+}

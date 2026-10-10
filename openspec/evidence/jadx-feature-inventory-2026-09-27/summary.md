@@ -366,3 +366,6 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-11：pop产品c5941c890b352b281fc2bcf4102e45243691bddb的准确自身CI38079005388已root独立接受，4jobs/52steps成功、两seed各355summary/3398通过0失败97忽略；lib337/gateway15及五新增测试直接原日志核实。全部17product/8test/47canonical的72分类条目、71唯一路径Git/live SHA通过，唯一交集为p3_patterns.rs。接受记录SHA16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2，verifier日期格式与唯一路径计数的两次失败原样保存后v3真实通过。任务5/6，等待文档提交推送和15worktree实际clean交付；typed仍2/8且未重新应用，不增加整CF12/71计数。
 
 2026-10-11：preserve-proved-discarded-call-origins已6/6关闭。全部本片CI/独立pretyped基线/失败raw及审查随35cdf3cb8531e70744e3c893e2c2e1128ad2a0e0真实提交推送；root准确pop CLI audit退出0，main=origin、本地/实际远端仅main、15worktrees全clean/14辅助detached main祖先、全部无target/fuzz target，free59346087936bytes。checkpoint SHA14a484971f83886fcc9df9a2c62fd38035f75fe08a674557436823191c5e8594。后续类型片2/8与条件switch1/7均未重新应用；从关闭后的当前main继续，不改71/612或整CF12分类。
+
+
+2026-10-11：局部类型片已6/8；真实class9永久tests、22个debug/no-debug结构边界profile全物理来源与default/all一致，char来源及null-first同型String在既有类型决策中恢复。14cmd645/0/2本地验证、新CLI冻结；完整99cmd两锚8条双JDK/profile运行同原/JADX，其他8控制profile保持独立post-pop基线；另9cmd准确append(I)重载完整类运行46\n通过。slot-conflict组合类仍拒绝；JADX全null println歧义经Runner仅package适配后双JDK独立编译确认。产品自身CI及最终clean待完成，不增加CF12/71整单元完成数。见[类型root验收](../../changes/recover-proved-local-source-types/verification-root.md)。

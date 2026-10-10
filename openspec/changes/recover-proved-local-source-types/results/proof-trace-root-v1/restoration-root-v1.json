@@ -1,0 +1,19 @@
+{
+  "status": "restored-exact-pretrace-product",
+  "sources": [
+    {
+      "path": "crates/jarde-java/src/build.rs",
+      "temporary_sha256": "15d408276e47bc9784f9a37373afafd60fbc8da37f3a42aa9a471eb9f799188c",
+      "restored_sha256": "36dacbc59b5a021aba8f3679e981beaf35045702dd62db94352ffbbc1db0a4db",
+      "instrumentation_diff": "openspec/changes/recover-proved-local-source-types/results/proof-trace-root-v1/before-build.rs.temporary.diff",
+      "instrumentation_diff_sha256": "caa3a9f8d515d4ef48b912c053aaa735b220735c84dc6b7758e66d6844c41272"
+    },
+    {
+      "path": "crates/jarde-java/tests/cf12_proved_local_source_types.rs",
+      "temporary_sha256": "769f1900773ef78c2bd18f973150d4b9de6ad28730a7c1bc4c83c67db8ed605a",
+      "restored_sha256": "3d86585e5fe4fc502896426a2bbf11af07f1c03ad318ead0a45d3f4200a9f4e7",
+      "instrumentation_diff": "openspec/changes/recover-proved-local-source-types/results/proof-trace-root-v1/before-test.rs.temporary.diff",
+      "instrumentation_diff_sha256": "29b8178f9294915b7973a57a0bab8112f31f557cc9795193e8e7356bc377a1d9"
+    }
+  ]
+}

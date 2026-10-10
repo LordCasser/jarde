@@ -1,0 +1,8 @@
+
+running 3 tests
+test every_declared_member_is_covered_by_this_file ... ok
+test the_declaration_and_the_body_name_one_slot_one_way ... ok
+test the_presented_class_answers_what_the_committed_class_does ... ignored, needs a JDK on PATH: it compiles the presentation's own text with `javac --release 8` and runs it beside the committed class, so it is run explicitly (`cargo test --test p3_parameter_slots --locked -- --ignored`)
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

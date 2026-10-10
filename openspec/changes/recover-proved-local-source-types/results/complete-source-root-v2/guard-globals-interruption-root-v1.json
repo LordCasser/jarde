@@ -1,0 +1,884 @@
+{
+  "status": "root-interrupted-unaccepted-replay",
+  "reason": "runpy returned mapping was not the run_command function globals; OUT mutations did not reach executed guard",
+  "failed_invocation": "complete-source-invocation-root-v2/execution.json",
+  "raw_byte_exact_relocation": [
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1001.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1001.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1001.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1001.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1002.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1002.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1002.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1002.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1003.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1003.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1003.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1003.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1004.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1004.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1004.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1004.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1005.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1005.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1005.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1005.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1006.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1006.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1006.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1006.stdout.raw",
+      "bytes": 46790,
+      "sha256": "a089899c42576db6a62d03e722876978d7ab9f83f7a55a4ea514a1e8bb0b28a6"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1007.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1007.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1007.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1007.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1008.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1008.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1008.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1008.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1009.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1009.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1009.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1009.stdout.raw",
+      "bytes": 48627,
+      "sha256": "f9b7fc2f184f120109ebee406b8f8e774bfd707d9c15faf6439572aa1e1abd20"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1010.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1010.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1010.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1010.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1011.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1011.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1011.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1011.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1012.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1012.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1012.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1012.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1013.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1013.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1013.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1013.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1014.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1014.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1014.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1014.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1015.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1015.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1015.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1015.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1016.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1016.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1016.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1016.stdout.raw",
+      "bytes": 46788,
+      "sha256": "c86387d10181d5a140b43907c91e71bec0c11c2abd78b057cb23f5db13cfc3e2"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1017.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1017.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1017.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1017.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1018.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1018.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1018.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1018.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1019.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1019.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1019.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1019.stdout.raw",
+      "bytes": 48633,
+      "sha256": "c640e0d224b297e5dbb43bc445c6c91d8e8b0f4f81aa9a1d21ffe80f0b25caad"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1020.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1020.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1020.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1020.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1021.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1021.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1021.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1021.stdout.raw",
+      "bytes": 261,
+      "sha256": "8c3cbccf86d692f6166374a07b92729800530e2f1fd242426a4a5a860e43d729"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1022.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1022.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1022.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1022.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1023.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1023.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1023.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1023.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1024.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1024.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1024.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1024.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1025.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1025.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1025.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1025.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1026.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1026.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1026.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1026.stdout.raw",
+      "bytes": 64337,
+      "sha256": "8a9b0b3d7b787094d88a0507ad5538ddca99c7ba312eb3977264bc8ff3501147"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1027.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1027.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1027.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1027.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1028.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1028.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1028.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1028.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1029.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1029.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1029.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1029.stdout.raw",
+      "bytes": 68647,
+      "sha256": "c1edad91e79e706ea9ed8ddfff3abdf35c98820678bd73e37735e800880b17de"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1030.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1030.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1030.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1030.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1031.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1031.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1031.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1031.stdout.raw",
+      "bytes": 322,
+      "sha256": "b9f3bf89319917d609594f6e3f0f8683f3e39d955611aa2738edc346cc84b770"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1032.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1032.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1032.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1032.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1033.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1033.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1033.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1033.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1034.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1034.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1034.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1034.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1035.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1035.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1035.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1035.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1036.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1036.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1036.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1036.stdout.raw",
+      "bytes": 20818,
+      "sha256": "cfb635dfd5596ad721297a9423ec1e935db222602dd791b68c225bc66c3b5710"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1037.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1037.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1037.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1037.stdout.raw",
+      "bytes": 21419,
+      "sha256": "a72df25c598b39379e807611180cb783ef2f81fb004369841df14757738e1739"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1038.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1038.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1038.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1038.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1039.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1039.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1039.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1039.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1040.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1040.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1040.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1040.stdout.raw",
+      "bytes": 21826,
+      "sha256": "159a23ef89332dccd4b4da3415b58645c79aa2d1ad28ddc0104c97552141d3ff"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1041.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1041.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1041.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1041.stdout.raw",
+      "bytes": 22407,
+      "sha256": "e3e6afe7354aa09882acbddc491913bce1a2ebf077179c788e0d7617791b19ba"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1042.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1042.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1042.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1042.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1043.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1043.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1043.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1043.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1044.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1044.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1044.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1044.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1045.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1045.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1045.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1045.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1046.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1046.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1046.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1046.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1047.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1047.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1047.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1047.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1048.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1048.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1048.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1048.stdout.raw",
+      "bytes": 20818,
+      "sha256": "cfb635dfd5596ad721297a9423ec1e935db222602dd791b68c225bc66c3b5710"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1049.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1049.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1049.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1049.stdout.raw",
+      "bytes": 21419,
+      "sha256": "a72df25c598b39379e807611180cb783ef2f81fb004369841df14757738e1739"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1050.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1050.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1050.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1050.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1051.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1051.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1051.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1051.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1052.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1052.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1052.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1052.stdout.raw",
+      "bytes": 21826,
+      "sha256": "159a23ef89332dccd4b4da3415b58645c79aa2d1ad28ddc0104c97552141d3ff"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1053.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1053.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1053.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1053.stdout.raw",
+      "bytes": 22407,
+      "sha256": "e3e6afe7354aa09882acbddc491913bce1a2ebf077179c788e0d7617791b19ba"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1054.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1054.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1054.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1054.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1055.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1055.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1055.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1055.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1056.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1056.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1056.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1056.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1057.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1057.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1057.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1057.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1058.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1058.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1058.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1058.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1059.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1059.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1059.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1059.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1060.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1060.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1060.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1060.stdout.raw",
+      "bytes": 27432,
+      "sha256": "af576ca127007d6a791409341ceb107df274d07cdfd84286f9c1dc582607ec8f"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1061.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1061.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1061.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1061.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1062.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1062.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1062.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1062.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1063.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1063.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1063.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1063.stdout.raw",
+      "bytes": 28767,
+      "sha256": "4060ff1efb439cc4aa762179e8bb07e2bf6eabaa957be65a94a54d4f34f8c9c1"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1064.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1064.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1064.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1064.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1065.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1065.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1065.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1065.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1066.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1066.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1066.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1066.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1067.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1067.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1067.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1067.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1068.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1068.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1068.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1068.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1069.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1069.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1069.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1069.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1070.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1070.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1070.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1070.stdout.raw",
+      "bytes": 27432,
+      "sha256": "af576ca127007d6a791409341ceb107df274d07cdfd84286f9c1dc582607ec8f"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1071.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1071.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1071.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1071.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1072.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1072.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1072.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1072.stdout.raw",
+      "bytes": 170,
+      "sha256": "88db2dfc362b2aefc534dac985c4bb729e256715fdef2c100017a58df8ab3c38"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1073.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1073.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v9/1073.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v2/raw-failed-guard-globals/1073.stdout.raw",
+      "bytes": 28767,
+      "sha256": "4060ff1efb439cc4aa762179e8bb07e2bf6eabaa957be65a94a54d4f34f8c9c1"
+    }
+  ],
+  "unrecorded_last_command_raw_retained": true
+}

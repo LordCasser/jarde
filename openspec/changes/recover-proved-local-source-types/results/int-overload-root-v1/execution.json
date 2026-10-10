@@ -1,0 +1,930 @@
+{
+  "schema": "recover-proved-local-source-types-int-overload-replay-luna-v2",
+  "status": "candidate-replay-recorded",
+  "candidate": {
+    "cli": "/private/tmp/jarde-proved-local-source-types-cli-v1",
+    "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+    "metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/candidate-cli-typed-root-v1.json",
+    "metadata_sha256": "6295d4cc0c65bd5b5c476f71e44cf3abf513f77d854854bfdea777cbaf2be943",
+    "build_execution": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/validation-build-root-v2/execution.json",
+    "build_sha256": "18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413",
+    "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02"
+  },
+  "source_base_and_pins": {
+    "original_source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/CharProducerIntOverload.java",
+    "original_source_sha256": "983fa4b49f8662f7c1736792ba1a840799e792dad36b6f705d00cd6ef43ccaf6",
+    "original_class_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class",
+    "original_class_bytes": 632,
+    "original_class_sha256": "18098c9d7257fabb8497107e42e86695be956dba666598ebd82daa2512722cd8",
+    "original_observations_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/original-observations-root-v1.json",
+    "original_observations_sha256": "f2d68dfa3dd1e7b6f56d7ebc04f4e356e41993f8e690bb2f002f487e9993a704"
+  },
+  "guard": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824
+  },
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "environment": {
+    "stripped": [],
+    "overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "LC_ALL": "C",
+    "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty"
+  },
+  "original_javap": {
+    "index": 0,
+    "argv": [
+      "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "-p",
+      "-c",
+      "-s",
+      "-v",
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T20:29:36.293048+00:00",
+    "duration_seconds": 1.0109477920050267,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 0,
+    "free_bytes_after": 66631598080,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": null,
+    "streams": {
+      "stdout": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/0.stdout.raw",
+        "bytes": 4971,
+        "sha256": "3ec6831655ec2a5c904311d1f5a3f98cb579ede4b800dbdedc3db342e5f269ff"
+      },
+      "stderr": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/0.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "label": "original-javap"
+  },
+  "profiles": [
+    {
+      "profile": "default",
+      "render": {
+        "index": 1,
+        "argv": [
+          "/private/tmp/jarde-proved-local-source-types-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class",
+          "--class",
+          "CharProducerIntOverload",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:37.305661+00:00",
+        "duration_seconds": 1.0094718329783063,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631548928,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/1.stdout.raw",
+            "bytes": 36037,
+            "sha256": "5b13cb1665454aa8faa54f2cfae8881a781d152f292be535f6677b700622d13e"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/1.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "render-default"
+      },
+      "source": null,
+      "compile": {
+        "index": 2,
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-proc:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/sources/default/CharProducerIntOverload.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:38.319008+00:00",
+        "duration_seconds": 1.0053198750247248,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631421952,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/2.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/2.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "compile-default"
+      },
+      "runtime": {
+        "index": 3,
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default",
+          "CharProducerIntOverload"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:39.329232+00:00",
+        "duration_seconds": 1.0123212500184309,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631405568,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/3.stdout.raw",
+            "bytes": 3,
+            "sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/3.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "runtime-default"
+      },
+      "javap": {
+        "index": 4,
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default/CharProducerIntOverload.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:40.343184+00:00",
+        "duration_seconds": 1.012980958999833,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631397376,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/4.stdout.raw",
+            "bytes": 4970,
+            "sha256": "dcfd5a356dc31c7504014729d26733e82a00829e2319d7f6c4e4344e3ebc49e3"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/4.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "javap-default"
+      },
+      "report_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/reports/default/class-source.json",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/sources/default/CharProducerIntOverload.java",
+      "report_sha256": "5b13cb1665454aa8faa54f2cfae8881a781d152f292be535f6677b700622d13e",
+      "source_sha256": "4d0e39f47bd707d1a89aac79d1a6e302c362cd189deb34ffce773219d4555a31",
+      "render_class_identity": {
+        "class_bytes": {
+          "digest": "20fab4c1c98a49eb622eec81f4f4117a30908df301da96a25dc4d2c80b71e0c0",
+          "length": 632
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "20fab4c1c98a49eb622eec81f4f4117a30908df301da96a25dc4d2c80b71e0c0"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "rendered_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome": "recovered"
+        },
+        {
+          "name": "render",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "outcome": "recovered"
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome": "recovered"
+        }
+      ],
+      "candidate_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default/CharProducerIntOverload.class",
+        "bytes": 632,
+        "sha256": "18098c9d7257fabb8497107e42e86695be956dba666598ebd82daa2512722cd8"
+      }
+    },
+    {
+      "profile": "all",
+      "render": {
+        "index": 5,
+        "argv": [
+          "/private/tmp/jarde-proved-local-source-types-cli-v1",
+          "class-source",
+          "--input",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class",
+          "--class",
+          "CharProducerIntOverload",
+          "--policy",
+          "single-class",
+          "--release",
+          "8",
+          "--format",
+          "json",
+          "--evidence",
+          "all"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:41.360011+00:00",
+        "duration_seconds": 1.0150275840132963,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631335936,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/5.stdout.raw",
+            "bytes": 38143,
+            "sha256": "90da6ccab5b3b4814d6454d44ed7f1efbf054bb86f42b046ba45638fa6cb4eb1"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/5.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "render-all"
+      },
+      "source": null,
+      "compile": {
+        "index": 6,
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "-source",
+          "8",
+          "-target",
+          "8",
+          "-g:none",
+          "-proc:none",
+          "-Xlint:-options",
+          "-classpath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+          "-sourcepath",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+          "-d",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/sources/all/CharProducerIntOverload.java"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:42.378329+00:00",
+        "duration_seconds": 1.0113528330111876,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631716864,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/6.stdout.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/6.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "compile-all"
+      },
+      "runtime": {
+        "index": 7,
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all",
+          "CharProducerIntOverload"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:43.391103+00:00",
+        "duration_seconds": 1.020026374986628,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66618802176,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/7.stdout.raw",
+            "bytes": 3,
+            "sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/7.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "runtime-all"
+      },
+      "javap": {
+        "index": 8,
+        "argv": [
+          "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "-p",
+          "-c",
+          "-s",
+          "-v",
+          "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all/CharProducerIntOverload.class"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "started_at": "2026-10-10T20:29:44.414796+00:00",
+        "duration_seconds": 1.0111102090158965,
+        "exit_code": 0,
+        "guard_stop": null,
+        "peak_target_bytes": 0,
+        "free_bytes_after": 66631598080,
+        "env_overrides": {
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUST_TEST_THREADS": "1",
+          "CARGO_TERM_COLOR": "always"
+        },
+        "test_summary_check": null,
+        "streams": {
+          "stdout": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/8.stdout.raw",
+            "bytes": 4966,
+            "sha256": "7f7ecb7c68b2f960a1eadbf21c156dc322ea2471f89613d41fc2d8f38c3f4295"
+          },
+          "stderr": {
+            "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/8.stderr.raw",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "label": "javap-all"
+      },
+      "report_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/reports/all/class-source.json",
+      "source_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/sources/all/CharProducerIntOverload.java",
+      "report_sha256": "90da6ccab5b3b4814d6454d44ed7f1efbf054bb86f42b046ba45638fa6cb4eb1",
+      "source_sha256": "4d0e39f47bd707d1a89aac79d1a6e302c362cd189deb34ffce773219d4555a31",
+      "render_class_identity": {
+        "class_bytes": {
+          "digest": "20fab4c1c98a49eb622eec81f4f4117a30908df301da96a25dc4d2c80b71e0c0",
+          "length": 632
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "20fab4c1c98a49eb622eec81f4f4117a30908df301da96a25dc4d2c80b71e0c0"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "rendered_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "outcome": "recovered"
+        },
+        {
+          "name": "render",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "outcome": "recovered"
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "outcome": "recovered"
+        }
+      ],
+      "candidate_class": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all/CharProducerIntOverload.class",
+        "bytes": 632,
+        "sha256": "18098c9d7257fabb8497107e42e86695be956dba666598ebd82daa2512722cd8"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:36.293048+00:00",
+      "duration_seconds": 1.0109477920050267,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631598080,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/0.stdout.raw",
+          "bytes": 4971,
+          "sha256": "3ec6831655ec2a5c904311d1f5a3f98cb579ede4b800dbdedc3db342e5f269ff"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "original-javap"
+    },
+    {
+      "index": 1,
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class",
+        "--class",
+        "CharProducerIntOverload",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:37.305661+00:00",
+      "duration_seconds": 1.0094718329783063,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631548928,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/1.stdout.raw",
+          "bytes": 36037,
+          "sha256": "5b13cb1665454aa8faa54f2cfae8881a781d152f292be535f6677b700622d13e"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "render-default"
+    },
+    {
+      "index": 2,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/sources/default/CharProducerIntOverload.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:38.319008+00:00",
+      "duration_seconds": 1.0053198750247248,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631421952,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/2.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "compile-default"
+    },
+    {
+      "index": 3,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default",
+        "CharProducerIntOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:39.329232+00:00",
+      "duration_seconds": 1.0123212500184309,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631405568,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/3.stdout.raw",
+          "bytes": 3,
+          "sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "runtime-default"
+    },
+    {
+      "index": 4,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/default/CharProducerIntOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:40.343184+00:00",
+      "duration_seconds": 1.012980958999833,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631397376,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/4.stdout.raw",
+          "bytes": 4970,
+          "sha256": "dcfd5a356dc31c7504014729d26733e82a00829e2319d7f6c4e4344e3ebc49e3"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javap-default"
+    },
+    {
+      "index": 5,
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/classes/CharProducerIntOverload.class",
+        "--class",
+        "CharProducerIntOverload",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:41.360011+00:00",
+      "duration_seconds": 1.0150275840132963,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631335936,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/5.stdout.raw",
+          "bytes": 38143,
+          "sha256": "90da6ccab5b3b4814d6454d44ed7f1efbf054bb86f42b046ba45638fa6cb4eb1"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "render-all"
+    },
+    {
+      "index": 6,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-original-root-v1/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/sources/all/CharProducerIntOverload.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:42.378329+00:00",
+      "duration_seconds": 1.0113528330111876,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631716864,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/6.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "compile-all"
+    },
+    {
+      "index": 7,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all",
+        "CharProducerIntOverload"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:43.391103+00:00",
+      "duration_seconds": 1.020026374986628,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66618802176,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/7.stdout.raw",
+          "bytes": 3,
+          "sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "runtime-all"
+    },
+    {
+      "index": 8,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/classes/all/CharProducerIntOverload.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:29:44.414796+00:00",
+      "duration_seconds": 1.0111102090158965,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 66631598080,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/8.stdout.raw",
+          "bytes": 4966,
+          "sha256": "7f7ecb7c68b2f960a1eadbf21c156dc322ea2471f89613d41fc2d8f38c3f4295"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/raw/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javap-all"
+    }
+  ]
+}

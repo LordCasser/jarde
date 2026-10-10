@@ -1,0 +1,15 @@
+verification failed: original javac flags changed
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-int-overload-luna-v2/verify.py", line 195, in <module>
+    try:main()
+        ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-int-overload-luna-v2/verify.py", line 136, in main
+    original,source,tools,physical,baseline=verify_original(d['jdk23'])
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-int-overload-luna-v2/verify.py", line 103, in verify_original
+    ca=c['argv'];need(ca[0]==str(toolpaths['javac']) and ca[ca.index('-source')+1]=='8' and ca[ca.index('-target')+1]=='8' and '-g:none' in ca and '-proc:none' in ca and '-Xlint:-options' in ca,'original javac flags changed')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/private-int-overload-luna-v2/verify.py", line 22, in need
+    if not ok:raise ValueError(msg)
+              ^^^^^^^^^^^^^^^^^^^^^
+ValueError: original javac flags changed

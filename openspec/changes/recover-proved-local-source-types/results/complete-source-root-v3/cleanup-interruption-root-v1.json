@@ -1,0 +1,8 @@
+{
+  "status": "unaccepted-interrupted",
+  "reason": "root mistakenly ran cargo clean concurrently with active guard target stat scan; FileNotFoundError at final target_bytes; frozen product unchanged",
+  "failure_invocation": "complete-source-invocation-root-v3/execution.json",
+  "target_now_exists": false,
+  "retry": "run-complete-source-root-v4.py",
+  "retry_policy": "no target mutations while guarded replay runs"
+}

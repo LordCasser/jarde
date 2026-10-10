@@ -1,0 +1,11 @@
+{
+  "draft_sha256": "d35997c531f8f5a97d9fbfdcf79acd6e3a468b5cdb3fc44a65bd480c7671aa19",
+  "runner_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/run-validation-build-root-v1.py",
+  "runner_sha256": "7d095c1eace3532cd31a64e589be9306f2fb93d4e7e9d25a4a7097556eb23abe",
+  "changes": [
+    "bind output under this change results as required by reviewed full replay",
+    "record actual git HEAD argv",
+    "resolve runner parent at execution"
+  ],
+  "status": "root-reviewed-unrun"
+}

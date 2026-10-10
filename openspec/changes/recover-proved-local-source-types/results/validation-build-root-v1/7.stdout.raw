@@ -1,0 +1,18 @@
+
+running 13 tests
+test a_close_the_exception_path_lacks_is_refused ... ok
+test a_finally_copy_is_refused_and_the_refusal_says_which_code_it_copies ... ok
+test a_guarded_body_that_branches_is_refused ... ok
+test a_handler_range_that_swallows_the_initialisation_is_refused ... ok
+test a_monitor_whose_exception_path_does_not_exit_is_refused ... ok
+test a_profile_that_does_not_admit_the_header_refuses_it ... ok
+test a_resource_initialised_after_an_earlier_one_is_inside_the_region_that_closes_it ... ok
+test a_second_entry_into_a_monitor_region_is_refused ... ok
+test a_single_resource_is_declared_in_the_header_and_closed_by_the_compiler ... ok
+test a_suppression_that_is_the_other_way_round_is_refused ... ok
+test a_synchronized_block_is_written_only_where_every_path_leaves_the_monitor ... ok
+test a_try_with_a_catch_beside_it_presents_the_statement_and_its_clause ... ok
+test three_resources_are_declared_in_the_order_whose_closes_run_backwards ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

@@ -1,0 +1,17 @@
+{
+  "source": "/private/tmp/jarde-typed-int-overload-replay-luna-v2",
+  "byte_exact": [
+    {
+      "file": "collect.py",
+      "sha256": "778a3873e473441c3efbd11c886198685d5ef3359cb3428cfe508a3b0e189a88"
+    },
+    {
+      "file": "verify.py",
+      "sha256": "1da0c2477aae8944db2b8caa50fa56f596121da739e1b1180c8dc3fb1834a404"
+    },
+    {
+      "file": "README.md",
+      "sha256": "d0337b5870ffc3a94a20295e1239d82240e45512c85ae2be6585a7c180778ccb"
+    }
+  ]
+}

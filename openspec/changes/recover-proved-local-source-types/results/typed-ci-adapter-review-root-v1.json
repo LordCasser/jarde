@@ -1,0 +1,20 @@
+{
+  "status": "root-reviewed-unrun",
+  "corrections": [
+    "parenthesize file-name suffix before Path join; private capture/verifier had Path+str static errors"
+  ],
+  "scripts": [
+    {
+      "draft": "/private/tmp/jarde-typed-ci-luna-v1/capture-typed-ci-luna-v1.py",
+      "draft_sha256": "c76f09da24a2bd8276d93cf5282a4a935a96411efcff5e56e0a3d030aa38a846",
+      "root_script": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/capture-typed-ci-root-v1.py",
+      "root_sha256": "1e559daed2feb6060031f48fdc6a855659e9c95198c6d1141d70f30e3f264aa5"
+    },
+    {
+      "draft": "/private/tmp/jarde-typed-ci-luna-v1/verify-typed-ci-luna-v1.py",
+      "draft_sha256": "552ad0c2ce034403fcd55b89e3e1619168fcd4a232d4e88356f6b1d16291e457",
+      "root_script": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-typed-ci-root-v1.py",
+      "root_sha256": "f5a652b19c8ae9303f2e49ac6d1371cc120a640f327cfc7215a8e474c1b1434f"
+    }
+  ]
+}

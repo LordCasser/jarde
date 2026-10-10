@@ -1,0 +1,5 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk8/LocalSourceTypesBoundaries.java:107: error: reference to println is ambiguous
+        System.out.println(z ? null : null);
+                  ^
+  both method println(char[]) in PrintStream and method println(String) in PrintStream match
+1 error

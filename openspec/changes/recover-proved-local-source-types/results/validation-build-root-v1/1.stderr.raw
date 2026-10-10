@@ -1,0 +1,74 @@
+[1m[92m    Checking[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m    Checking[0m bitflags v2.13.2
+[1m[92m    Checking[0m hashbrown v0.17.1
+[1m[92m    Checking[0m equivalent v1.0.2
+[1m[92m    Checking[0m indexmap v2.14.2
+[1m[92m    Checking[0m serde_core v1.0.229
+[1m[92m    Checking[0m simd-adler32 v0.3.10
+[1m[92m    Checking[0m adler2 v2.0.1
+[1m[92m    Checking[0m miniz_oxide v0.9.1
+[1m[92m    Checking[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m    Checking[0m arrayvec v0.7.8
+[1m[92m    Checking[0m constant_time_eq v0.4.2
+[1m[92m    Checking[0m blake3 v1.8.7
+[1m[92m    Checking[0m thiserror v2.0.20
+[1m[92m    Checking[0m serde v1.0.229
+[1m[92m    Checking[0m flate2 v1.1.10
+[1m[92m    Checking[0m noak v0.7.0
+[1m[92m    Checking[0m rawzip v0.5.1
+[1m[92m    Checking[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m    Checking[0m foldhash v0.1.5
+[1m[92m    Checking[0m hashbrown v0.15.5
+[1m[92m    Checking[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m    Checking[0m fixedbitset v0.5.7
+[1m[92m    Checking[0m petgraph v0.8.3
+[1m[92m    Checking[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m    Checking[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m libc v0.2.189
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m    Checking[0m memchr v2.8.3
+[1m[92m    Checking[0m itoa v1.0.18
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m rustix v1.1.4
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m zerocopy v0.8.57
+[1m[92m    Checking[0m rand_core v0.9.5
+[1m[92m    Checking[0m errno v0.3.14
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m    Checking[0m once_cell v1.21.4
+[1m[92m    Checking[0m fastrand v2.5.0
+[1m[92m    Checking[0m tempfile v3.27.0
+[1m[92m    Checking[0m ppv-lite86 v0.2.21
+[1m[92m    Checking[0m wait-timeout v0.2.1
+[1m[92m    Checking[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Checking[0m bit-vec v0.8.0
+[1m[92m    Checking[0m fnv v1.0.7
+[1m[92m    Checking[0m quick-error v1.2.3
+[1m[92m    Checking[0m rusty-fork v0.3.1
+[1m[92m    Checking[0m bit-set v0.8.0
+[1m[92m    Checking[0m rand_chacha v0.9.0
+[1m[92m    Checking[0m rand_xorshift v0.4.0
+[1m[92m    Checking[0m rand v0.9.5
+[1m[92m    Checking[0m regex-syntax v0.8.11
+[1m[92m    Checking[0m unarray v0.1.4
+[1m[92m    Checking[0m proptest v1.11.0
+[1m[92m    Checking[0m utf8parse v0.2.2
+[1m[92m    Checking[0m anstyle-parse v1.0.0
+[1m[92m    Checking[0m anstyle-query v1.1.5
+[1m[92m    Checking[0m is_terminal_polyfill v1.70.2
+[1m[92m    Checking[0m colorchoice v1.0.5
+[1m[92m    Checking[0m anstyle v1.0.14
+[1m[92m    Checking[0m anstream v1.0.0
+[1m[92m    Checking[0m clap_lex v1.1.1
+[1m[92m   Compiling[0m heck v0.5.0
+[1m[92m    Checking[0m strsim v0.11.1
+[1m[92m    Checking[0m clap_builder v4.6.7
+[1m[92m   Compiling[0m clap_derive v4.6.7
+[1m[92m    Checking[0m clap v4.6.7
+[1m[92m    Checking[0m jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+[1m[92m    Finished[0m `dev` profile [unoptimized] target(s) in 1m 01s

@@ -1,0 +1,140 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/sources/defpackage/LocalSourceTypesBoundaries.java:107: ??: ?println??????
+        System.out.println(z ? null : null);
+                  ^
+  PrintStream ???? println(char[]) ? PrintStream ???? println(String) ???
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:7: ??: ?????
+        System.out.println("char-call-dot=" + LocalSourceTypesBoundaries.charCallAndLiteralWrites(0, false, false));
+                                              ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:8: ??: ?????
+        System.out.println("char-call-zero=" + LocalSourceTypesBoundaries.charCallAndLiteralWrites(2, true, false));
+                                               ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:9: ??: ?????
+        System.out.println("char-call-max=" + LocalSourceTypesBoundaries.charCallAndLiteralWrites(0, false, true));
+                                              ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:10: ??: ?????
+        System.out.println("char-field=" + LocalSourceTypesBoundaries.charFieldSeed());
+                                           ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:11: ??: ?????
+        System.out.println("char-i2c-low=" + LocalSourceTypesBoundaries.charI2cSeed(-1));
+                                             ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:12: ??: ?????
+        System.out.println("char-i2c-high=" + LocalSourceTypesBoundaries.charI2cSeed(65536));
+                                              ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:13: ??: ?????
+        System.out.println("char-entry=" + LocalSourceTypesBoundaries.charEntryParameterSeed('?', false));
+                                           ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:14: ??: ?????
+        System.out.println("char-entry-max=" + LocalSourceTypesBoundaries.charEntryParameterSeed('.', true));
+                                               ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:16: ??: ?????
+        System.out.println("int-low=" + LocalSourceTypesBoundaries.intWithOutOfRangeWrites(0, 7));
+                                        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:17: ??: ?????
+        System.out.println("int-high=" + LocalSourceTypesBoundaries.intWithOutOfRangeWrites(1, 7));
+                                         ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:18: ??: ?????
+        System.out.println("int-input=" + LocalSourceTypesBoundaries.intWithOutOfRangeWrites(2, 65536));
+                                          ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:19: ??: ?????
+        System.out.println("int-arithmetic=" + LocalSourceTypesBoundaries.intWithArithmeticWrite(true));
+                                               ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:20: ??: ?????
+        System.out.println("int-arithmetic-other=" + LocalSourceTypesBoundaries.intWithArithmeticWrite(false));
+                                                     ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:21: ??: ?????
+        System.out.println("int-copy=" + LocalSourceTypesBoundaries.intWithUnknownCopyMerge(true, 65536));
+                                         ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:22: ??: ?????
+        System.out.println("int-merge-literal=" + LocalSourceTypesBoundaries.intWithUnknownCopyMerge(false, 9));
+                                                  ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:25: ??: ?????
+        LocalSourceTypesBoundaries.exactStringWritesAfterNull(1);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:27: ??: ?????
+        LocalSourceTypesBoundaries.exactStringWritesAfterNull(2);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:29: ??: ?????
+        LocalSourceTypesBoundaries.exactStringWritesAfterNull(9);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:32: ??: ?????
+        LocalSourceTypesBoundaries.mixedReferenceWrites(true);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:34: ??: ?????
+        LocalSourceTypesBoundaries.mixedReferenceWrites(false);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:36: ??: ?????
+        LocalSourceTypesBoundaries.allNullWrites(true);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:38: ??: ?????
+        LocalSourceTypesBoundaries.allNullWrites(false);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:40: ??: ?????
+        LocalSourceTypesBoundaries.unknownReferenceCopy(true, null);
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:42: ??: ?????
+        LocalSourceTypesBoundaries.unknownReferenceCopy(true, "input");
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:44: ??: ?????
+        LocalSourceTypesBoundaries.unknownReferenceCopy(false, "ignored");
+        ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:46: ??: ?????
+        System.out.println("slot-reuse-int-string=" + LocalSourceTypesBoundaries.possibleSlotReuse(true));
+                                                      ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/complete-source-root-v4/classes/boundary/jdk8/jadx/src/BoundaryRunner.java:47: ??: ?????
+        System.out.println("slot-reuse-int-copy=" + LocalSourceTypesBoundaries.possibleSlotReuse(false));
+                                                    ^
+  ??:   ?? LocalSourceTypesBoundaries
+  ??: ? BoundaryRunner
+28 ???

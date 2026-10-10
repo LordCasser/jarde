@@ -1,0 +1,8 @@
+
+running 3 tests
+test boolean_projection_stops_atomically_on_output_budget_or_cancellation ... ok
+test exact_boolean_merges_keep_the_test_polarity_and_all_origins ... ok
+test non_boolean_integer_phi_keeps_the_low_bit_conversion ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

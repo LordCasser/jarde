@@ -1,0 +1,11 @@
+verification failed: fresh original javap differs from frozen original javap
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-int-overload-root-v1.py", line 195, in <module>
+    try:main()
+        ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-int-overload-root-v1.py", line 152, in main
+    need(stream(orig_j,'stdout')==read(BASE/'javap/stdout.raw'),'fresh original javap differs from frozen original javap')
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-int-overload-root-v1.py", line 22, in need
+    if not ok:raise ValueError(msg)
+              ^^^^^^^^^^^^^^^^^^^^^
+ValueError: fresh original javap differs from frozen original javap

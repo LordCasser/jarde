@@ -5257,8 +5257,8 @@ fn straight_finally_reuses_its_guard_verdict_with_a_tight_budget() {
     assert!(full.produced(), "{}", full.text);
     let steps = full_budget.usage().analysis_steps;
     assert_eq!(
-        steps, 61,
-        "the ordinary Site census charges each SSA instruction"
+        steps, 63,
+        "the Site census and local type proof charge the two physical local writes"
     );
     let mut tight_limits = limits();
     tight_limits.analysis_steps = steps;

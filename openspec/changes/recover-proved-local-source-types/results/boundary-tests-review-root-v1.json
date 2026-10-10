@@ -1,0 +1,13 @@
+{
+  "status": "root-reviewed-applied-unrun",
+  "draft_path": "/private/tmp/jarde-typed-boundary-tests-luna-v2/append-tests.rs",
+  "draft_sha256": "c22fce5a434ced1b7b96f9d2b7dfd8d6f6670f2d12a810d4c57429defa2f7458",
+  "corrections": [
+    "assert full physical coverage in structured helper, not just declaration",
+    "tie measured proof limits to exact CHAR/NULL anchor bytes and owners, not different boundary methods",
+    "use actual no-debug slot-reuse number local1 spelling"
+  ],
+  "new_tests": 6,
+  "typed_total_tests": 9,
+  "applied_sha256_before_fmt": "2364faaaab56225faf941c83a0c743835e9730c7af262d5008ef8629da77801f"
+}

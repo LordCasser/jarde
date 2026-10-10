@@ -1,0 +1,3 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.59s
+[1m[92m     Running[0m tests/p3_array_slot_retype_locals.rs (target/debug/deps/p3_array_slot_retype_locals-763d8f5ad989c74e)

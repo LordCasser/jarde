@@ -1,0 +1,14 @@
+
+running 9 tests
+test cf12_charat_stored_value_drives_char_source_type_and_full_origins ... ok
+test cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins ... ok
+test cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source ... ok
+test typed_boundary_four_char_seeds_have_specific_types_and_full_origins_in_both_debug_profiles ... ok
+test typed_boundary_mixed_all_null_and_unknown_reference_stay_object_in_both_debug_profiles ... ok
+test typed_boundary_null_first_exact_string_stays_string_in_both_debug_profiles ... ok
+test typed_boundary_proof_budget_stops_before_publication_at_observed_sites ... ok
+test typed_boundary_range_arithmetic_and_input_copy_remain_int_in_both_debug_profiles ... ok
+test typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+

@@ -1,0 +1,9 @@
+{
+  "failed_execution": "validation-build-root-v1/execution.json",
+  "failed_command": 11,
+  "reason": "straight-finally exact budget 61 now63 due two billed physical local writes",
+  "production_changed_after_failure": false,
+  "test_change": "p3_patterns cost and explanation updated; exact-cost tight recovery comparison retained",
+  "retry_runner": "openspec/changes/recover-proved-local-source-types/results/run-validation-build-root-v2.py",
+  "retry_runner_sha256": "75e3b3494bf6a2f3179fc1d61e01865382cbdcb4bcefc527f9bc97f012687b87"
+}

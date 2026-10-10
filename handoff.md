@@ -10,9 +10,9 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 
 ## 当前推进：局部类型恢复
 
-`recover-proved-local-source-types` **2/8**：第一次两轮真实2/1，null/String全来源与atomic Stop通过；char正文正确但仍缺append后pop82/92/105。已完整保存实际patch/test/失败raw并恢复build.rs及自动测试目录，生产尚未再次应用。独立post-pop/pretyped基线已实际48cmd/16整类报告/38方法profile接受，只有九处准确完整Stmt pop来源新增，旧正文/maps恒同。完整上游控制为JDK23/Java8 source-target；ORIGINAL JDK8 helper版本失败18cmd/raw保留，无stub或删check。详见[typed root验收](openspec/changes/recover-proved-local-source-types/verification-root.md)。下一步从关闭后的当前main重新应用typed，先运行永久真实class focused测试，再取得证明预算前缀并核边界；保留全部physical BCI断言，原rootv6 raw不覆盖，不能让候选充当预期。
+`recover-proved-local-source-types` **6/8**。在关闭后的5c2c06f main重新应用类型决策扩展，无新IR/Frame/pass。真实class永久9/0/0，char pop82/92/105完整物理来源闭合；debug/no-debug 22个structured边界方法profile全来源与default/all正文/map相同。真实slot-conflict精确fallback不放宽。证明内Stop@29/1无content/binding/text/map，公开预取消保持原子性；临时trace已移除。完整本地14cmd645/0/2、target峰值701852711bytes；p3_patterns旧预算61→63两物理写成本修正，失败保留。新CLI `/private/tmp/jarde-proved-local-source-types-cli-v1`0555，SHAe6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403；meta/results和validation-build-root-v2已冻结。
 
-类型saved实际patch/永久测试已root全文读；replay v2/v3已全文审查发现身份/路径/物理BCI和拒绝分类缺陷，v5已root审读修正，仓库results/private-replay-luna-v5保留，尚无候选执行。原边界12cmd/4腿只能算original验收。root已全文读预算observer草稿，因4个test-only实体/thread-local+生产cfg分支过重而不应用；使用临时实际trace保存prefix后移除、已有trusted真实IR永久测试准确Stop/public cancel即可。
+完整源码实际99cmd、两锚8条双JDK/profile runtime与原/JADX一致，8其他控制profile保持独立post-pop基线，全部class/check/Inner/SDK保持；9cmd准确append(I)重载完整类对照通过。组合边界类仍slot-conflict缺return，不计运行通过；JADX全null println重载歧义已在仅改Runner package的实际双JDK编译中独立确认。收集器schema/globals及root并行清理错误、verifier路径/日期表示失败均保留，最终接受在complete-source-root-v4和int-overload-root-v1。cargo clean3042files/669.3MiB，target不存在。自身产品CI及最终clean交付待完成，整CF12未接受。[详细验收](openspec/changes/recover-proved-local-source-types/verification-root.md)。
 
 `recover-proved-conditional-switch-fallthrough` **1/7**：实际11canonical块/17Normal edge诊断已独立接受，group fall_through不能表达case局部分支break；需要有限Region::SwitchBreak证据叶及最近switch作用域准确消费现有AST Break，不重扫CFG修AST。root已全文读private实现v2及真实positive永久测试草稿v4，但未应用或工具链/API接受；scope/预算/完整canonical边及所有权反例待实测。另有五个条件/内层loop/内层switch/terminal/exception源码私有草稿，无实际CFG或拒绝结论。常量名门与computed-init for等保持独立债务，不扩大当前片。
 

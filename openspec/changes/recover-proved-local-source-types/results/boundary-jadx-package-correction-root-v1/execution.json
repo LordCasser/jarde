@@ -1,0 +1,125 @@
+{
+  "status": "observed-jadx-source-compile-failure-after-package-only-runner-adaptation",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk8/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk8/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk8/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk8/LocalSourceTypesBoundaries.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk8/BoundaryRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:30:27.481141+00:00",
+      "duration_seconds": 1.0072989580221474,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 67259928576,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/0.stderr.raw",
+          "bytes": 392,
+          "sha256": "0ac1fff978f3984cf773dcdd7014df214849cc3480ee1d9dd23f7d23184d7fc4"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-Xlint:-options",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk23/empty",
+        "-sourcepath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk23/empty",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk23/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk23/LocalSourceTypesBoundaries.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/jdk23/BoundaryRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T20:30:28.489437+00:00",
+      "duration_seconds": 1.010201249999227,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 67246915584,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/boundary-jadx-package-correction-root-v1/1.stderr.raw",
+          "bytes": 393,
+          "sha256": "c5758acd461c1cbbe1aeef89d0025ac99ace3c6032d0ac74f427fdff729bdcef"
+        }
+      }
+    }
+  ],
+  "source_pins": [
+    {
+      "leg": "jdk8",
+      "jadx_source_unchanged_sha256": "af6816ce11e0c91c60d4bd343efec644820eabf4a8167af15fb4b4c79e93c1e2",
+      "runner_original_sha256": "180dbfc77c2c6e03249337f285af73ca3eab3a5b38599976256651c1c9a931a3",
+      "runner_package_adapted_sha256": "c3e1c118af408c12164231112d6545883cf293740440d0c9e43ebfff925de416"
+    },
+    {
+      "leg": "jdk23",
+      "jadx_source_unchanged_sha256": "af6816ce11e0c91c60d4bd343efec644820eabf4a8167af15fb4b4c79e93c1e2",
+      "runner_original_sha256": "180dbfc77c2c6e03249337f285af73ca3eab3a5b38599976256651c1c9a931a3",
+      "runner_package_adapted_sha256": "c3e1c118af408c12164231112d6545883cf293740440d0c9e43ebfff925de416"
+    }
+  ]
+}

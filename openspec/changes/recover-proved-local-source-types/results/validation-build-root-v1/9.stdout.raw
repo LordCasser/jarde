@@ -1,0 +1,9 @@
+
+running 4 tests
+test call_casts_keep_their_call_site_as_derived_provenance ... ok
+test fixture_has_one_real_class_and_all_argument_shapes ... ok
+test recovered_calls_keep_their_invocation_argument_types ... ok
+test recovered_invocation_arguments_match_original_runtime ... ignored, requires JDK: compile Engine::class_source output and execute a temporary runner
+
+test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

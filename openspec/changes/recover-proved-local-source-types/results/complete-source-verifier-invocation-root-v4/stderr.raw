@@ -1,0 +1,11 @@
+verification failed: TestSwitch.test JDK replay matrix differs from the accepted class/runtime boundary
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-local-source-types-replay-root-v1.py", line 491, in <module>
+    try: main()
+         ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-local-source-types-replay-root-v1.py", line 291, in main
+    need(set(row['legs'])==expected_legs,case+' JDK replay matrix differs from the accepted class/runtime boundary')
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/verify-local-source-types-replay-root-v1.py", line 25, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: TestSwitch.test JDK replay matrix differs from the accepted class/runtime boundary

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v1.py", line 359, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v1.py", line 297, in main
+    rr=run(argv,ROOT,env,out/'raw'/case/leg/profile/clsfile.stem,'render-'+profile)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v1.py", line 89, in run
+    row=GUARD['run_command'](COMMAND_INDEX,[str(x) for x in argv],env)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", line 335, in run_command
+    time.sleep(1)
+KeyboardInterrupt

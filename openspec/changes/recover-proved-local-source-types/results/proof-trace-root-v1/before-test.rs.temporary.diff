@@ -1,0 +1,92 @@
+--- a/crates/jarde-java/tests/cf12_proved_local_source_types.rs
++++ b/crates/jarde-java/tests/cf12_proved_local_source_types.rs
+@@ -441,3 +441,89 @@
+     assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+     assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+ }
++
++#[test]
++fn temporary_cf12_type_proof_prefixes() {
++    for (label, class, owner, descriptor) in [
++        (
++            "CHAR",
++            CHAR_CLASS,
++            "jadx/tests/integration/switches/TestSwitch$TestCls",
++            "(Ljava/lang/String;)Ljava/lang/String;",
++        ),
++        (
++            "NULL",
++            NULL_CLASS,
++            "jadx/tests/integration/switches/TestSwitchNoDefault$TestCls",
++            "(I)V",
++        ),
++    ] {
++        eprintln!("ROOT_TYPED_TRACE BEGIN {label}");
++        let (report, _) = recover_class_method_with_budget(
++            class,
++            owner,
++            "test",
++            descriptor,
++            RecoveryEvidenceRequest::all(),
++            Some(Budget::new(limits())),
++        );
++        assert!(report.produced(), "{} {:?}", report.text, report.outcome);
++        eprintln!("ROOT_TYPED_TRACE END {label}");
++    }
++}
++#[test]
++fn temporary_typed_boundary_observations() {
++    for class in [
++        &include_bytes!(
++            "../../../openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-debug/classes/LocalSourceTypesBoundaries.class"
++        )[..],
++        &include_bytes!(
++            "../../../openspec/changes/recover-proved-local-source-types/results/boundary-preflight-root-v1/javac23-no-debug/classes/LocalSourceTypesBoundaries.class"
++        )[..],
++    ] {
++        for (name, descriptor) in [
++            ("charCallAndLiteralWrites", "(IZZ)Ljava/lang/String;"),
++            ("charFieldSeed", "()Ljava/lang/String;"),
++            ("charI2cSeed", "(I)I"),
++            ("charEntryParameterSeed", "(CZ)Ljava/lang/String;"),
++            ("intWithOutOfRangeWrites", "(II)I"),
++            ("intWithArithmeticWrite", "(Z)I"),
++            ("intWithUnknownCopyMerge", "(ZI)I"),
++            ("exactStringWritesAfterNull", "(I)V"),
++            ("mixedReferenceWrites", "(Z)V"),
++            ("allNullWrites", "(Z)V"),
++            ("unknownReferenceCopy", "(ZLjava/lang/Object;)V"),
++            ("possibleSlotReuse", "(Z)Ljava/lang/String;"),
++        ] {
++            let (report, method) = recover_class_method_with_budget(
++                class,
++                "LocalSourceTypesBoundaries",
++                name,
++                descriptor,
++                RecoveryEvidenceRequest::all(),
++                Some(Budget::new(limits())),
++            );
++            let missing: Vec<_> = method_bcis(class, name, descriptor)
++                .into_iter()
++                .filter(|bci| {
++                    !report.source_map.of_bci(*bci).iter().any(|segment| {
++                        std::iter::once(segment.origin().primary())
++                            .chain(segment.origin().derived())
++                            .any(|origin| origin.bci() == *bci && origin.method() == Some(&method))
++                    })
++                })
++                .collect();
++            eprintln!(
++                "ROOT_TYPED_BOUNDARY class_len={} name={} descriptor={} produced={} quality={:?} outcome={:?} missing={:?} text={:?}",
++                class.len(),
++                name,
++                descriptor,
++                report.produced(),
++                report.quality,
++                report.outcome,
++                missing,
++                report.text
++            );
++        }
++    }
++}

@@ -1,0 +1,159 @@
+{
+  "schema": "recover-proved-local-source-types-int-overload-observation-acceptance-luna-v2",
+  "status": "observed-candidate-replay-verified",
+  "cf12_complete": false,
+  "execution_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/int-overload-root-v1/execution.json",
+  "execution_sha256": "8ed9b731af210382543c3d0a6410d78ddea5156b2c54dfbd14a412fd1b30548f",
+  "candidate": {
+    "cli": "/private/tmp/jarde-proved-local-source-types-cli-v1",
+    "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+    "metadata": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/candidate-cli-typed-root-v1.json",
+    "metadata_sha256": "6295d4cc0c65bd5b5c476f71e44cf3abf513f77d854854bfdea777cbaf2be943",
+    "build_execution": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/validation-build-root-v2/execution.json",
+    "build_sha256": "18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413",
+    "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02"
+  },
+  "baseline": {
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "tools": {
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    },
+    "class_sha256": "18098c9d7257fabb8497107e42e86695be956dba666598ebd82daa2512722cd8",
+    "source_sha256": "983fa4b49f8662f7c1736792ba1a840799e792dad36b6f705d00cd6ef43ccaf6",
+    "original_runtime_stdout_sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f",
+    "original_javap_execution_sha256": "45f4e85b79106248d596e4fcccc5e47e120764c3c4ebc76bff025cf085bd5f60"
+  },
+  "guarded_commands": 9,
+  "profiles": {
+    "default": {
+      "report_sha256": "5b13cb1665454aa8faa54f2cfae8881a781d152f292be535f6677b700622d13e",
+      "source_sha256": "4d0e39f47bd707d1a89aac79d1a6e302c362cd189deb34ffce773219d4555a31",
+      "runtime": {
+        "stdout_sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "method": {
+        "method": "render",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+        "physical_bcis": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          8,
+          9,
+          12,
+          13,
+          16,
+          17,
+          20,
+          23
+        ],
+        "owned_bcis": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          8,
+          9,
+          12,
+          13,
+          16,
+          17,
+          20,
+          23
+        ],
+        "complete": true
+      },
+      "candidate_javap_bcis": [
+        0,
+        1,
+        2,
+        5,
+        6,
+        8,
+        9,
+        12,
+        13,
+        16,
+        17,
+        20,
+        23
+      ]
+    },
+    "all": {
+      "report_sha256": "90da6ccab5b3b4814d6454d44ed7f1efbf054bb86f42b046ba45638fa6cb4eb1",
+      "source_sha256": "4d0e39f47bd707d1a89aac79d1a6e302c362cd189deb34ffce773219d4555a31",
+      "runtime": {
+        "stdout_sha256": "a5331f18877e9e1543361e44b4cb0a1f5f0ed5f8297d850bf1fcc68bd7a3ab5f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "method": {
+        "method": "render",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+        "physical_bcis": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          8,
+          9,
+          12,
+          13,
+          16,
+          17,
+          20,
+          23
+        ],
+        "owned_bcis": [
+          0,
+          1,
+          2,
+          5,
+          6,
+          8,
+          9,
+          12,
+          13,
+          16,
+          17,
+          20,
+          23
+        ],
+        "complete": true
+      },
+      "candidate_javap_bcis": [
+        0,
+        1,
+        2,
+        5,
+        6,
+        8,
+        9,
+        12,
+        13,
+        16,
+        17,
+        20,
+        23
+      ]
+    }
+  },
+  "default_all_body_and_source_maps_identical": true,
+  "overload_boundary": "candidate javap selects StringBuilder.append(I), not append(C)",
+  "limitations": "This is one exact original class and its default/all full-class replay. It does not establish the broader CF12 local-source-type unit or prove unrelated candidate SSA shapes."
+}

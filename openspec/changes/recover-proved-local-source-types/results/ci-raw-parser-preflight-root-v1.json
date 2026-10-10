@@ -1,0 +1,10 @@
+{
+  "status": "actual-historical-raw-parser-preflight-passed-only",
+  "reason": "restore accepted gh log job/step prefix stripping before timestamps; private adapter omitted this",
+  "fixed_workspace_groups": 2,
+  "historical_summaries": [
+    355,
+    355
+  ],
+  "new_verifier_sha256": "515d41b646af6d87966c078caa8553e20fa2f6a8b0db7b1cc74fbbd3eb143c79"
+}

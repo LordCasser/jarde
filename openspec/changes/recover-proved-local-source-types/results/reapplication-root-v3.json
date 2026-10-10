@@ -1,0 +1,20 @@
+{
+  "schema": "local-source-types-reapplication-root-v3",
+  "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02",
+  "accepted_pretyped_sha256": "bc9be073af6fd98817d1bae6e541f630efea714cc2856a3981ff2bde76c7df06",
+  "files": {
+    "patch": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/applied-product-root-v2.patch",
+      "sha256": "60044857630b323e941a3bce8482ed562001029d9235da51ad5767dbee860fd6"
+    },
+    "test": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/applied-permanent-tests-root-v2.rs",
+      "sha256": "3d86585e5fe4fc502896426a2bbf11af07f1c03ad318ead0a45d3f4200a9f4e7"
+    }
+  },
+  "runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/run-focused-root-v3.py",
+    "sha256": "98609e291abd172990cbb39baefdf7a0e1e9b0ed732d13b627594f5c6539eec7"
+  },
+  "status": "reapplied_unvalidated"
+}

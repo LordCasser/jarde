@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v2.py", line 360, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v2.py", line 298, in main
+    rr=run(argv,ROOT,env,out/'raw'/case/leg/profile/clsfile.stem,'render-'+profile)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/prepare-local-source-types-replay-root-v2.py", line 89, in run
+    row=GUARD['run_command'](COMMAND_INDEX,[str(x) for x in argv],env)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", line 337, in run_command
+    size_final = target_bytes()
+                 ^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", line 187, in target_bytes
+    return sum(path.stat().st_size for path in target.rglob("*") if path.is_file()) if target.exists() else 0
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", line 187, in <genexpr>
+    return sum(path.stat().st_size for path in target.rglob("*") if path.is_file()) if target.exists() else 0
+               ^^^^^^^^^^^
+  File "/Users/lordcasser/.pyenv/versions/3.12.12/lib/python3.12/pathlib.py", line 840, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/lordcasser/workspace/projects/jarde/target/debug/.fingerprint/jarde-96021333a3898716/test-integration-test-p3_recovery_entry.json'

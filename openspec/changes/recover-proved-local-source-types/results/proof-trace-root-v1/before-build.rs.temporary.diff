@@ -1,0 +1,28 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -2446,6 +2446,12 @@
+             let Some(written) = use_.written else {
+                 continue;
+             };
++            eprintln!(
++                "ROOT_TYPED_TRACE write bci={} slot={} used={}",
++                use_.bci,
++                variable.slot(),
++                budget.usage().analysis_steps
++            );
+             // A local proof examines every physical write of this variable, including its
+             // placement path and the value actually stored. Bill the write before reading it.
+             charge(
+@@ -3061,6 +3067,12 @@
+     if !matches!(ssa.value(first.stored).ty(), Value::Null) {
+         return Ok(None);
+     }
++    eprintln!(
++        "ROOT_TYPED_TRACE null bci={} uses={} used={}",
++        first.at,
++        uses.len(),
++        budget.usage().analysis_steps
++    );
+     charge(
+         budget,
+         CountedBudgetDimension::AnalysisSteps,

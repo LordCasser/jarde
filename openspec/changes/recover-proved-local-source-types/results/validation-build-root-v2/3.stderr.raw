@@ -1,0 +1,3 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.52s
+[1m[92m     Running[0m tests/cf12_proved_local_source_types.rs (target/debug/deps/cf12_proved_local_source_types-931dbdf9dae24e1d)
