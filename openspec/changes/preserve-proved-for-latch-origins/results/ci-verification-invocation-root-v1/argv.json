@@ -1,0 +1,18 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-for-latch-origins/results/verify-ci-product-root-v1.py",
+  "d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c",
+  "38062706229",
+  "--metadata-sha256",
+  "aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c",
+  "--build-path",
+  "openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json",
+  "--build-schema",
+  "preserve-proved-for-latch-origins-validation-build-root-v1"
+]

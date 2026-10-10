@@ -1,0 +1,29 @@
+{
+  "utc": "2026-10-10T15:16:13.885592+00:00",
+  "duration_seconds": 0.25689387499005534,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-for-latch-origins/results/verify-cf07-candidate-root-v2.py",
+    "--build",
+    "openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 11703,
+      "sha256": "e26bb8cc80681abfb6e8ad893f3ef1df7c4a4d548bad0068b51bc552277bfd95"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

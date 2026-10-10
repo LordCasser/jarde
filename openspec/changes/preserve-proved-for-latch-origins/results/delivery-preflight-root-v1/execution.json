@@ -1,0 +1,515 @@
+{
+  "utc": "2026-10-10T15:20:20.996300+00:00",
+  "scope": "preflight; pending own CI and docs commits; not final clean delivery acceptance",
+  "worktree_inventory": {
+    "argv": [
+      "git",
+      "worktree",
+      "list",
+      "--porcelain"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "exit_code": 0,
+    "stdout": "worktree /Users/lordcasser/workspace/projects/jarde\nHEAD d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c\nbranch refs/heads/main\n\nworktree /Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde\nHEAD 698a219ec580819e12af487c4c8a3771e9baaa85\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\nworktree /Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde\nHEAD b3a01e24c86755dfe9a356f4ffc72636194eda70\ndetached\n\n",
+    "stderr": ""
+  },
+  "auxiliary_worktrees": [
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "698a219ec580819e12af487c4c8a3771e9baaa85",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "detached": true,
+      "status": {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "cwd": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "main_ancestor": {
+        "argv": [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+          "main"
+        ],
+        "cwd": "/Users/lordcasser/workspace/projects/jarde",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "target_exists": false,
+      "fuzz_target_exists": false
+    }
+  ],
+  "branches": {
+    "argv": [
+      "git",
+      "for-each-ref",
+      "--format=%(refname:short)",
+      "refs/heads"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "exit_code": 0,
+    "stdout": "main\n",
+    "stderr": ""
+  },
+  "root_status": {
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=normal"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "exit_code": 0,
+    "stdout": " M handoff.md\n M openspec/changes/preserve-proved-for-latch-origins/tasks.md\n M openspec/changes/preserve-proved-for-latch-origins/verification-root.md\n M openspec/changes/recover-prefixed-one-arm-loops/tasks.md\n M openspec/changes/recover-prefixed-one-arm-loops/verification-root.md\n M openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md\n?? openspec/changes/preserve-proved-for-latch-origins/results/capture-ci-product-root-v1.py\n?? openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-acceptance-root-v2.json\n?? openspec/changes/preserve-proved-for-latch-origins/results/cf07-if-join-next-architecture-luna-v1.md\n?? openspec/changes/preserve-proved-for-latch-origins/results/cf07-verification-invocation-root-v1/\n?? openspec/changes/preserve-proved-for-latch-origins/results/cf07-verification-invocation-root-v2/\n?? openspec/changes/preserve-proved-for-latch-origins/results/ci-product-live-root-v1/\n?? openspec/changes/preserve-proved-for-latch-origins/results/verify-cf07-candidate-root-v1-luna.py\n?? openspec/changes/preserve-proved-for-latch-origins/results/verify-cf07-candidate-root-v1.py\n?? openspec/changes/preserve-proved-for-latch-origins/results/verify-cf07-candidate-root-v2.py\n",
+    "stderr": ""
+  },
+  "head": {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "exit_code": 0,
+    "stdout": "d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c\n",
+    "stderr": ""
+  },
+  "origin_main": {
+    "argv": [
+      "git",
+      "rev-parse",
+      "origin/main"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "exit_code": 0,
+    "stdout": "d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c\n",
+    "stderr": ""
+  },
+  "root_target_exists": false,
+  "fuzz_target_exists": false,
+  "free_bytes": 59820634112
+}

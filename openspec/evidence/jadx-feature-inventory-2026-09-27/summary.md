@@ -324,3 +324,9 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 06:04 UTC multiply controls历史基线独立v1已实际接受：126闭合files/33命令、原2/JADX4完整源码raw成功、旧Jarde4编译拒绝且零运行。乘法最小change仍2/7、产品未应用；private v2/validation runner v2/candidate collector v2全部root读审，等待资源守卫满足后实跑。71/612及EM23整单元计数不变。
 
 2026-10-10 15:13 UTC：preserve-proved-for-latch-origins两文件最小修复已root应用，既有ForHeader与implicit-tail单边证明共用；无新IR/Frame/pass。真实12命令558/0/1、50pins和guard通过；新CLI双JDK/default-all八份完整生成类原样重编运行，20完整腿raw同原、28方法profile全部物理BCI完整，root独立接受full_bci_acceptance=true。新旧所有正文/旧来源恒同，仅12条derived for@20新增。CF07新29命令/10完整腿全成功，但独立验收待完成，counted@20与lastIndexOf@25独立缺口保持；本片3/6，自身产品CI和干净交付待完成。源码、raw及旧失败保留，target已清669.1MiB。71/612和EM23/CF07整单元计数不变。
+
+15:16 UTC CF07新候选独立v2已root实际接受：119 inventory members、29命令、10完整腿及源码/Runner/原raw/物理方法/准确goto重新解析全部核；counted20与lastIndexOf25仍未覆盖，accepted_scoped_observations且full_physical_bci_coverage=false。v1 Runner同包名重复插入导致实际验收失败的raw保留。For片4/6、单臂片6/7，其来源依赖3.1均关闭；来源产品d714a6bcc已提交推送，自身CI38062706229待最终接受，不借ca43。
+
+15:29 UTC下一明确CF07来源窄片preserve-proved-if-arm-join-origins规划4/4、strict有效、tasks1/7。普通If来源构造只支持空arm隐藏goto，本片拟复用现有If.join/OriginSet为非空arm末尾精确goto20→27加完整If来源；尚无产品/新CLI/内部diagnostic。公开RegionRecord为扁平摘要，须临时内部测试核实际嵌套Region与canonical block17/terminal20及全出边，不新增生产诊断hook。前片自身CI接受为生产应用前置，lastIndexOf25不混入。
+
+15:54 UTC For来源确切产品d714a6bcc自身CI38062706229独立v2接受，4jobs/52steps全部成功、双seed354records/3385/0/97、50pins及冻结CLI/build绑定；v1日志交错解析失败和raw保留，v2精确fingerprint六个名字/5ok+1ignored接受。For片5/6、单臂片6/7，最终clean交付待实跑；全量strict339/0。71/612与整单元计数不变。

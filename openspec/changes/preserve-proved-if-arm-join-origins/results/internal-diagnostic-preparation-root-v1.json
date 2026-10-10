@@ -1,0 +1,20 @@
+{
+  "schema": "if-arm-internal-diagnostic-root-preparation-v1",
+  "status": "reviewed_preparation_not_executed",
+  "patch": "internal-diagnostic-luna-v2.patch",
+  "root_corrections": [
+    "canonical branch leader11 versus branch instruction14; frozen current baseline input in Luna v2",
+    "wrapper output belongs to new If change, no nested For/If directory",
+    "guard runner test summary overridden for exact one test; no misleading historic full-lib expectations",
+    "only actual stripped environment keys recorded; own wrapper SHA captured"
+  ],
+  "prior_for_product_ci_required_before_apply": true,
+  "temporary_source_is_not_product_pin": true,
+  "files": {
+    "internal-diagnostic-luna-v1.patch": "46b9c265af1679aaf7750773521c8b69247ca1b755714695f770f6c81e411971",
+    "internal-diagnostic-luna-v2-readme.md": "62e4ace8f070325c1b090313565ce7907bdf5bb2334df8a279f32603bc14ea42",
+    "internal-diagnostic-luna-v2.patch": "dbe1510e269ab12dc6de742e1211eedf8a75ab901f01192c2dcf8ecfec36c38d",
+    "run-internal-diagnostic-luna-v2.py": "9fc6ddd0a1813b5906394f1e1dce7e753656cb60c575b32f5258d0c6e4642862",
+    "run-internal-diagnostic-root-v1.py": "f3f70733e5d9368feae621d9150ec149298b5da6e71a7ba9e8d26c37da0498c1"
+  }
+}

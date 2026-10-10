@@ -1,0 +1,35 @@
+{
+  "utc": "2026-10-10T15:53:05.266837+00:00",
+  "duration_seconds": 0.8920529169845395,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-for-latch-origins/results/verify-ci-product-root-v1.py",
+    "d714a6bcc86c7dfd757f7ff70f1f86a5b46a230c",
+    "38062706229",
+    "--metadata-sha256",
+    "aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c",
+    "--build-path",
+    "openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json",
+    "--build-schema",
+    "preserve-proved-for-latch-origins-validation-build-root-v1"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 1456,
+      "sha256": "dfda75f4ca150d7c1c5b4cb87c42b6b66613f3b590d6bc4af060503958e579cc"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+[
+  "python3",
+  "-B",
+  "openspec/changes/preserve-proved-for-latch-origins/results/capture-ci-product-root-v1.py"
+]

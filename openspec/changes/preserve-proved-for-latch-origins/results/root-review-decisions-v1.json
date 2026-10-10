@@ -1,0 +1,38 @@
+{
+  "scope": "root actual local acceptance; product own CI still pending",
+  "production_files": [
+    "crates/jarde-java/src/region.rs",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs"
+  ],
+  "latch_proof": "existing ForHeader plus final Straight/unique natural latch/exact update block and BCI/slot/terminal goto opcode/single complete canonical Normal edge",
+  "new_public_ir_frame_pass_or_dependency": false,
+  "loop_statement_span": "includes closing brace and following newline; real emitter checked",
+  "permanent_adversarial_tests": [
+    "rejected_for_update_slot_keeps_the_independent_while_latch",
+    "non_backedge_transfer_does_not_gain_a_loop_latch_origin"
+  ],
+  "fresh_whole_class_acceptance": "candidate-whole-classes-acceptance-root-v1.json",
+  "fresh_cf07_control_acceptance": "cf07-candidate-acceptance-root-v2.json",
+  "raw_cf07_rejection_preserved": "cf07-verification-invocation-root-v1",
+  "cf07_verifier_root_strengthening": [
+    "live SHA pin of accepted raw javap parser",
+    "live SHA of six JDK tools",
+    "reparse exact raw javap and compare entire physical method inventory",
+    "exact physical goto15->2/30->6/20->27/25->5",
+    "full render argv equality",
+    "same-package Runner stays byte-identical as actual pinned helper requires"
+  ],
+  "known_uncovered_cf07_bcis": {
+    "counted(II)I": [
+      20
+    ],
+    "lastIndexOf([IIII)I": [
+      25
+    ]
+  },
+  "next_bounded_root_architecture": "cf07-if-join-next-architecture-root-v1.md",
+  "source_sha256": {
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "3c80e3a14ff9cb4bd0c19712c0cf8a2970c2381a91a0c027adf0db21f48eb9da"
+  }
+}

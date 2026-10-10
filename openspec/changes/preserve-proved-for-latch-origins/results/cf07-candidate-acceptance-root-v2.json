@@ -1,0 +1,431 @@
+{
+  "schema": "preserve-proved-for-latch-origins-cf07-candidate-acceptance-root-v1",
+  "status": "accepted_scoped_observations",
+  "verified_observations": true,
+  "full_physical_bci_coverage": false,
+  "uncovered_physical_bcis": {
+    "counted(II)I": 20,
+    "lastIndexOf([IIII)I": 25
+  },
+  "claim_boundary": "andWhile@15 and counted@30 derived while origins are independently verified; counted@20 and lastIndexOf@25 remain uncovered.",
+  "candidate_bundle": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1",
+    "manifest_sha256": "563e0cadd0570ca943e085ede17f984d4fad201602389f9d412d505ff351a770",
+    "inventory_members": 119,
+    "commands": 29,
+    "cases": 10
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-proved-for-latch-cli-v1",
+    "sha256": "d2d9773d94011a680e18d968ea1b3684036791ceb7dfa769455adf9247f0d33a"
+  },
+  "metadata": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/candidate-cli-v1.json",
+    "sha256": "aeb3a081e3f05e27f64f5afea48d4fc4a2ccaa410209910eb40065436f54e54c",
+    "build_result_sha256": "2dd0b5357c047472d600a09ef37c2be97c286a950d09671ebf072189c63ce838",
+    "build_result_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json"
+  },
+  "baseline": {
+    "closed_files": 119,
+    "inventory_members": 118,
+    "commands": 29,
+    "cases": 10,
+    "manifest_sha256": "1a374647a971b416635bc114b9c197d05c855c51eeabd274f3ee571e868a64ee",
+    "inventory_sha256": "35e40b315f9936bcef0c774ec806c94e151a32790e7b233cdc01654913b3a08e",
+    "verification": "verified_from_frozen_raw_evidence"
+  },
+  "runtime_cases": {
+    "javac8-original": {
+      "compile": "javac8-original-compile",
+      "runtime": "javac8-original-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac8-jadx-default": {
+      "compile": "javac8-jadx-default-compile",
+      "runtime": "javac8-jadx-default-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac8-jadx-none": {
+      "compile": "javac8-jadx-none-compile",
+      "runtime": "javac8-jadx-none-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac8-jarde-default": {
+      "compile": "javac8-jarde-default-compile",
+      "runtime": "javac8-jarde-default-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac8-jarde-all": {
+      "compile": "javac8-jarde-all-compile",
+      "runtime": "javac8-jarde-all-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac23-original": {
+      "compile": "javac23-original-compile",
+      "runtime": "javac23-original-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac23-jadx-default": {
+      "compile": "javac23-jadx-default-compile",
+      "runtime": "javac23-jadx-default-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac23-jadx-none": {
+      "compile": "javac23-jadx-none-compile",
+      "runtime": "javac23-jadx-none-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac23-jarde-default": {
+      "compile": "javac23-jarde-default-compile",
+      "runtime": "javac23-jarde-default-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    },
+    "javac23-jarde-all": {
+      "compile": "javac23-jarde-all-compile",
+      "runtime": "javac23-jarde-all-run",
+      "class_paths": [
+        "cf07/LoopCases.class",
+        "cf07/Runner.class"
+      ],
+      "raw_runtime_matches_original": true
+    }
+  },
+  "source_map_checks": {
+    "physical_method_count_per_profile": 4,
+    "method_deltas": {
+      "javac8": {
+        "default": {
+          "<init>()V": [],
+          "andWhile(Z)I": [
+            [
+              198,
+              267,
+              "derived",
+              [
+                97,
+                110,
+                100,
+                87,
+                104,
+                105,
+                108,
+                101
+              ],
+              [
+                40,
+                90,
+                41,
+                73
+              ],
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              419,
+              "standalone_root",
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              "{\"kind\":\"base\"}",
+              15,
+              "Derived",
+              "null"
+            ]
+          ],
+          "counted(II)I": [
+            [
+              243,
+              426,
+              "derived",
+              [
+                99,
+                111,
+                117,
+                110,
+                116,
+                101,
+                100
+              ],
+              [
+                40,
+                73,
+                73,
+                41,
+                73
+              ],
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              419,
+              "standalone_root",
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              "{\"kind\":\"base\"}",
+              30,
+              "Derived",
+              "null"
+            ]
+          ],
+          "lastIndexOf([IIII)I": []
+        },
+        "all": {
+          "<init>()V": [],
+          "andWhile(Z)I": [
+            [
+              198,
+              267,
+              "derived",
+              [
+                97,
+                110,
+                100,
+                87,
+                104,
+                105,
+                108,
+                101
+              ],
+              [
+                40,
+                90,
+                41,
+                73
+              ],
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              419,
+              "standalone_root",
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              "{\"kind\":\"base\"}",
+              15,
+              "Derived",
+              "null"
+            ]
+          ],
+          "counted(II)I": [
+            [
+              243,
+              426,
+              "derived",
+              [
+                99,
+                111,
+                117,
+                110,
+                116,
+                101,
+                100
+              ],
+              [
+                40,
+                73,
+                73,
+                41,
+                73
+              ],
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              419,
+              "standalone_root",
+              "58e063fc5aa7a8572cb989aa8b338ade7aa94c2b0424a4c1f25f9654bc244ebc",
+              "{\"kind\":\"base\"}",
+              30,
+              "Derived",
+              "null"
+            ]
+          ],
+          "lastIndexOf([IIII)I": []
+        }
+      },
+      "javac23": {
+        "default": {
+          "<init>()V": [],
+          "andWhile(Z)I": [
+            [
+              198,
+              267,
+              "derived",
+              [
+                97,
+                110,
+                100,
+                87,
+                104,
+                105,
+                108,
+                101
+              ],
+              [
+                40,
+                90,
+                41,
+                73
+              ],
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              419,
+              "standalone_root",
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              "{\"kind\":\"base\"}",
+              15,
+              "Derived",
+              "null"
+            ]
+          ],
+          "counted(II)I": [
+            [
+              243,
+              426,
+              "derived",
+              [
+                99,
+                111,
+                117,
+                110,
+                116,
+                101,
+                100
+              ],
+              [
+                40,
+                73,
+                73,
+                41,
+                73
+              ],
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              419,
+              "standalone_root",
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              "{\"kind\":\"base\"}",
+              30,
+              "Derived",
+              "null"
+            ]
+          ],
+          "lastIndexOf([IIII)I": []
+        },
+        "all": {
+          "<init>()V": [],
+          "andWhile(Z)I": [
+            [
+              198,
+              267,
+              "derived",
+              [
+                97,
+                110,
+                100,
+                87,
+                104,
+                105,
+                108,
+                101
+              ],
+              [
+                40,
+                90,
+                41,
+                73
+              ],
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              419,
+              "standalone_root",
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              "{\"kind\":\"base\"}",
+              15,
+              "Derived",
+              "null"
+            ]
+          ],
+          "counted(II)I": [
+            [
+              243,
+              426,
+              "derived",
+              [
+                99,
+                111,
+                117,
+                110,
+                116,
+                101,
+                100
+              ],
+              [
+                40,
+                73,
+                73,
+                41,
+                73
+              ],
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              419,
+              "standalone_root",
+              "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              "{\"kind\":\"base\"}",
+              30,
+              "Derived",
+              "null"
+            ]
+          ],
+          "lastIndexOf([IIII)I": []
+        }
+      }
+    },
+    "uncovered_physical_bcis": {
+      "javac8": {
+        "<init>()V": [],
+        "andWhile(Z)I": [],
+        "counted(II)I": [
+          20
+        ],
+        "lastIndexOf([IIII)I": [
+          25
+        ]
+      },
+      "javac23": {
+        "<init>()V": [],
+        "andWhile(Z)I": [],
+        "counted(II)I": [
+          20
+        ],
+        "lastIndexOf([IIII)I": [
+          25
+        ]
+      }
+    },
+    "required_derived_while_origins": {
+      "andWhile(Z)I": 15,
+      "counted(II)I": 30
+    },
+    "default_all_text_and_maps_equal": true,
+    "all_preexisting_method_text_and_origins_preserved": true
+  },
+  "generated_at_note": "Verifier output is written only after all checks pass."
+}

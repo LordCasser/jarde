@@ -1,0 +1,12 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-for-latch-origins/results/verify-cf07-candidate-root-v2.py",
+  "--build",
+  "openspec/changes/preserve-proved-for-latch-origins/results/validation-build-root-v1/execution.json"
+]

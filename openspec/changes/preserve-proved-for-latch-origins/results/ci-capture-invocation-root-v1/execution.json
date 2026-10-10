@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T15:52:56.739383+00:00",
+  "duration_seconds": 16.86599770799512,
+  "argv": [
+    "python3",
+    "-B",
+    "openspec/changes/preserve-proved-for-latch-origins/results/capture-ci-product-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 137,
+      "sha256": "5e44919f57791830fa08dbfc066f6529deeba5d39b2c884f36ca53812320b881"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

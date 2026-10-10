@@ -1,0 +1,308 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -13640,4 +13640,305 @@
+             reason.message()
+         );
+     }
++
++    #[test]
++    fn diagnose_cf07_counted_if_join_from_real_class_ir() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        const CLASS: &[u8] = include_bytes!(
++            "../../../openspec/changes/preserve-proved-loop-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class"
++        );
++
++        fn find_loop(region: &Region, bci: u32) -> Option<&Region> {
++            match region {
++                Region::Loop { header, .. } if header.bci() == bci => Some(region),
++                Region::Loop { body, .. } => body.iter().find_map(|child| find_loop(child, bci)),
++                Region::Sequence { regions } => {
++                    regions.iter().find_map(|child| find_loop(child, bci))
++                }
++                Region::If {
++                    then_arm, else_arm, ..
++                } => find_loop(then_arm, bci).or_else(|| find_loop(else_arm, bci)),
++                _ => None,
++            }
++        }
++
++        fn find_if(region: &Region, bci: u32) -> Option<&Region> {
++            match region {
++                Region::If { branch_bci, .. } if *branch_bci == bci => Some(region),
++                Region::If {
++                    then_arm, else_arm, ..
++                } => find_if(then_arm, bci).or_else(|| find_if(else_arm, bci)),
++                Region::Loop { body, .. } | Region::Sequence { regions: body } => {
++                    body.iter().find_map(|child| find_if(child, bci))
++                }
++                _ => None,
++            }
++        }
++
++        fn last_straight(region: &Region) -> Option<&[CanonicalBlockId]> {
++            match region {
++                Region::Straight { blocks } => Some(blocks),
++                Region::Sequence { regions } => regions.last().and_then(last_straight),
++                _ => None,
++            }
++        }
++
++        let mut budget = Budget::new(jarde_reader::budget::Limits {
++            input_bytes: 1 << 20,
++            archive_entries: 100,
++            entry_bytes: 1 << 20,
++            read_bytes: 1 << 20,
++            class_bytes: 1 << 20,
++            attribute_bytes: 1 << 20,
++            code_bytes: 1 << 20,
++            result_items: 1 << 20,
++            output_bytes: 1 << 20,
++            class_headers: 100,
++            method_bodies: 100,
++            ir_items: 1 << 20,
++            ir_edges: 1 << 20,
++            analysis_steps: 1 << 20,
++            normalization_clones: 1 << 20,
++            nested_depth: 32,
++            dependency_depth: 32,
++            elapsed_millis: u64::MAX,
++        });
++        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
++            .expect("frozen CF07 class opens");
++        let definition = PhysicalDefinitionId {
++            location: PhysicalClassLocation::StandaloneRoot {
++                snapshot: snapshot.id().clone(),
++            },
++            class_bytes: ClassBytesId {
++                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
++                length: u64::try_from(CLASS.len()).expect("fixture length fits u64"),
++            },
++            variant: PhysicalVariant::Base,
++        };
++        let domain = LoadDomain {
++            loader: LoaderId("app".to_string()),
++            parent_loader: None,
++            delegation: DelegationPolicy::ParentFirst,
++            roots: vec![LoadRoot::StandaloneClass {
++                snapshot: snapshot.id().clone(),
++            }],
++            module_mode: ModuleMode::ClassPath,
++            external_override: RuntimeUncertainty::None,
++            runtime_transformation: RuntimeUncertainty::None,
++        };
++        let request = MethodAnalysisRequest {
++            environment: ResolutionEnvironment {
++                runtime: RuntimeView {
++                    physical: PhysicalView {
++                        snapshot: snapshot.id().clone(),
++                        scope: PhysicalScope::SnapshotAll,
++                    },
++                    profile: RuntimeProfile {
++                        java_release: 23,
++                        multi_release: MultiReleasePolicy::Disabled,
++                        layout: LayoutMode::Generic,
++                    },
++                    load_domain: domain.clone(),
++                },
++                domains: vec![domain],
++                providers: Vec::new(),
++            },
++            method: PhysicalMethodId {
++                owner: definition,
++                name: JvmBytes(b"counted".to_vec()),
++                descriptor: JvmBytes(b"(II)I".to_vec()),
++            },
++            stages: AnalysisStage::ALL.to_vec(),
++        };
++        let analysis = analyze_method_ir(&[snapshot], &request, &mut budget)
++            .expect("frozen counted method completes one real JVM analysis");
++        let ir = analysis.ir();
++        let canonical = ir.canonical().expect("canonical CFG from that analysis");
++        let ssa = ir.ssa().expect("SSA from that analysis");
++        let code = ir.code().expect("decoded code from that analysis");
++        let operations = Operations::of(code, ir.constant_pool());
++        let chains = crate::concat::plan_four_conditional_strings(
++            ssa,
++            canonical,
++            &operations,
++            &FieldCopies::default(),
++            &mut budget,
++        )
++        .expect("the real method's existing concat plan completes");
++        let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
++            .expect("normal-flow view from that canonical CFG");
++        let recovered = recover(
++            canonical,
++            &view,
++            ssa,
++            &operations,
++            ir.constant_pool(),
++            &chains,
++            &crate::init::Sites::empty(),
++            code,
++            Some(false),
++            false,
++            &crate::pass::JAVA_8,
++            &mut budget,
++        )
++        .expect("the real method region walk completes");
++
++        let outer = recovered
++            .regions
++            .iter()
++            .find_map(|region| find_loop(region, 6))
++            .expect("actual recovered outer loop at BCI 6");
++        let Region::Loop { header, body, .. } = outer else {
++            unreachable!();
++        };
++        let inner_if = body
++            .iter()
++            .find_map(|region| find_if(region, 14))
++            .expect("actual nested counted If at branch BCI 14");
++        let Region::If {
++            branch,
++            then_arm,
++            else_arm,
++            join,
++            ..
++        } = inner_if
++        else {
++            unreachable!();
++        };
++        let then_blocks = last_straight(then_arm).expect("then arm ends in a straight run");
++        let else_blocks = last_straight(else_arm).expect("else arm ends in a straight run");
++        let [then_source] = then_blocks else {
++            panic!("then last straight: {then_blocks:?}");
++        };
++        let [else_source] = else_blocks else {
++            panic!("else last straight: {else_blocks:?}");
++        };
++        let block_facts = |id: &CanonicalBlockId| {
++            canonical
++                .blocks()
++                .iter()
++                .find(|block| block.id() == id)
++                .expect("arm block exists in the same canonical graph")
++        };
++        let then_end = block_facts(then_source).end_bci();
++        let else_end = block_facts(else_source).end_bci();
++        let then_instructions: Vec<_> = code
++            .instructions
++            .iter()
++            .filter(|instruction| {
++                instruction.bci >= then_source.bci() && instruction.bci < then_end
++            })
++            .map(|instruction| (instruction.bci, instruction.opcode, instruction.width))
++            .collect();
++        let else_instructions: Vec<_> = code
++            .instructions
++            .iter()
++            .filter(|instruction| {
++                instruction.bci >= else_source.bci() && instruction.bci < else_end
++            })
++            .map(|instruction| (instruction.bci, instruction.opcode, instruction.width))
++            .collect();
++        let outgoing: Vec<_> = canonical
++            .edges()
++            .iter()
++            .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
++            .collect();
++        let then_arm_claims = then_arm
++            .blocks()
++            .iter()
++            .filter(|id| *id == then_source)
++            .count();
++        let else_arm_claims_then = else_arm
++            .blocks()
++            .iter()
++            .filter(|id| *id == then_source)
++            .count();
++        let global_then_claims = recovered
++            .regions
++            .iter()
++            .flat_map(|region| region.blocks())
++            .filter(|id| *id == then_source)
++            .count();
++        let else_arm_claims = else_arm
++            .blocks()
++            .iter()
++            .filter(|id| *id == else_source)
++            .count();
++        let then_arm_claims_else = then_arm
++            .blocks()
++            .iter()
++            .filter(|id| *id == else_source)
++            .count();
++        let global_else_claims = recovered
++            .regions
++            .iter()
++            .flat_map(|region| region.blocks())
++            .filter(|id| *id == else_source)
++            .count();
++        let then_edges: Vec<_> = canonical
++            .edges()
++            .iter()
++            .filter(|edge| edge.from() == then_source)
++            .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
++            .collect();
++        let else_edges: Vec<_> = canonical
++            .edges()
++            .iter()
++            .filter(|edge| edge.from() == else_source)
++            .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
++            .collect();
++
++        eprintln!("outer_loop_header={:?}", header);
++        eprintln!("inner_if_branch={:?} join={join:?}", branch);
++        eprintln!("then_last_straight={then_blocks:?} instructions={then_instructions:?}");
++        eprintln!("else_last_straight={else_blocks:?} instructions={else_instructions:?}");
++        eprintln!("then_source_outgoing={then_edges:?}");
++        eprintln!("else_source_outgoing={else_edges:?}");
++        eprintln!("canonical_all_edges={outgoing:?}");
++        eprintln!(
++            "then_source_owner_counts: then={then_arm_claims} else={else_arm_claims_then} method={global_then_claims}"
++        );
++        eprintln!(
++            "else_source_owner_counts: then={then_arm_claims_else} else={else_arm_claims} method={global_else_claims}"
++        );
++
++        assert_eq!(header.bci(), 6);
++        assert_eq!(branch.bci(), 14);
++        assert_eq!(join.as_ref().map(CanonicalBlockId::bci), Some(27));
++        assert_eq!(then_source.bci(), 17);
++        assert_eq!(operations.get(20), Some(&Operation::Transfer));
++        assert_eq!(then_instructions.last().map(|instruction| instruction.0), Some(20));
++        assert_eq!(then_instructions.last().map(|instruction| instruction.1), Some(0xa7));
++        assert_eq!(else_source.bci(), 23);
++        assert_eq!(else_instructions.last().map(|instruction| instruction.0), Some(26));
++        assert_eq!(then_arm_claims, 1);
++        assert_eq!(else_arm_claims_then, 0);
++        assert_eq!(global_then_claims, 1);
++        assert_eq!(then_arm_claims_else, 0);
++        assert_eq!(else_arm_claims, 1);
++        assert_eq!(global_else_claims, 1);
++        assert_eq!(
++            then_edges,
++            vec![(17, CanonicalEdgeKind::Normal, 27)],
++            "source block 17 has exactly its physical normal join edge"
++        );
++        assert_eq!(
++            else_edges,
++            vec![(23, CanonicalEdgeKind::Normal, 27)],
++            "else block 23 falls through to the same join"
++        );
++    }
+ }
