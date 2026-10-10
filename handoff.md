@@ -86,3 +86,5 @@ CI下载三次TLS/代理失败及原始字节保存；官方API/direct logs成�
 08:52 UTC root实际新增短路头链旧CLI观察3命令，goto20/19→2缺map，default/all正文与map恒同。永久assert被收紧到准确BCI及physical method。CF-07实际整类重放成功但不代表全BCI完整或新候选通过；只取已证末尾Straight，不扩大本片到if汇合/返回分支内部来源。机器余量约17GiB，root/fuzz target不存在，保持既有20GiB/1GiB守卫；后续先应用v6与实跑runner v3，再fresh CLI/完整控制/自身确切CI。
 
 最终资源复核（准确时间见resource JSON）：机器free约11GiB，根/fuzz target不存在，实际值见preserve-proved-loop-latch-origins/results/resource-checkpoint-root-v4.json；没有Cargo构建或新CLI，当前来源2/6、单臂1/7。CF-07独立验收已实际完成v4/118文件/10完整腿，源码补丁仍未应用。
+
+本轮接续：仍按普通循环来源→单臂续接推进，未开新语法探索。CF-07 新候选完整类重放工具准备完成，准确入口 preserve-proved-loop-latch-origins/results/README-cf07-candidate-root-v4.md；root实际helper预检接受旧118文件/29命令/10腿，观察校验准确拒绝旧andWhile@15缺口。私有v1/v2静态错误及v3实际tuple/string失败保留，v4已root审修；此为只读工具准备，零新候选/零Cargo，不勾动态tasks。当前5eddc6d61自身CI38039980011的MSRV/fuzz/supply成功、Clippy及首seed通过、第二seed运行中，尚非最终接受，也不作为未应用loop产品CI。机器free再降至约11GiB，root/fuzz target仍不存在；先复核资源再应用loop private-v6和runner v3，新CF-07 wrapper不替代原控制31命令重放及独立验收。

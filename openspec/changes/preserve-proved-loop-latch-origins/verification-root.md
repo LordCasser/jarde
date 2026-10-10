@@ -21,3 +21,5 @@ root 全文读审 runner v1、v2/v3 完整差异，实际只读 preflight 接受
 资源满足后的顺序：在干净检查点 root 应用 v6、格式化，以该 HEAD 运行 runner v3；12项真实验证成功才勾2.1/2.2。冻结新CLI及源码pins后执行已审 prepare-candidate-luna-v2.py，双JDK/default-all重新核 noPrefix 准确来源增加、其余正文/map保持及四整类真实编译失败；另以 CF-07 完整类检查相邻正常运行未回退，并核新增来源只落入已证普通直线末尾 latch。捕获精确产品自身CI后完成3.2。单臂片仍1/7，71/612分母和整单元完成数不变。
 
 历史版本均保留：test-only v1 实际 apply-check 退出128（hunk计数损坏），v2从真实base以difflib重建并实际check通过；早期私有READMEs的建议目标以本入口纠正结果为准。v3初次内存准备的整文件计数断言失败发生在写输出之前，之后限定新helper生成，不曾写入生产源码。其它架构债务不混入本片。
+
+CF-07 fresh candidate 重放入口现已准备：results/README-cf07-candidate-root-v4.md。root 全文审查 v2 及 v3/v4 差异，v4 SHA `91426f23deebdb5be099f02f25fa5d2c1f5f321114db4397b3532b299722f823`，复用已审 collector 完整 main 流程，仅覆盖新 CLI/meta/output。root 实际 helper 预检退出0，闭合旧118文件；真实旧基线的观察校验准确拒绝缺失 andWhile@15。v3 helper 观察曾因 tuple/string method key 错配实际退出1，历史保留。全部是工具准备/只读控制，未跑新候选29命令；新 CLI、candidate output、Cargo target 仍不存在，tasks仍2/6。

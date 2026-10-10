@@ -1,0 +1,40 @@
+{
+  "schema": "cf07-candidate-helper-preflight-root-v1",
+  "status": "preflight-passed",
+  "wrapper": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/prepare-cf07-candidate-root-v4.py",
+    "sha256": "91426f23deebdb5be099f02f25fa5d2c1f5f321114db4397b3532b299722f823"
+  },
+  "collector": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/cf07-loop-latch-baseline/prepare-baseline-luna-v2.py",
+    "sha256": "87c693a53f31898374d5c963c6fbe14b550db20439e0409486b9d191a00cec8f",
+    "old_main_invoked": false,
+    "loaded_helpers": [
+      "Recorder",
+      "compile_run",
+      "file_record",
+      "inventory_rows",
+      "method_key",
+      "parse_javap"
+    ],
+    "helper_globals_verified": true
+  },
+  "baseline": {
+    "closed": true,
+    "files": 118,
+    "commands": 29,
+    "cases": 10,
+    "manifest_sha256": "1a374647a971b416635bc114b9c197d05c855c51eeabd274f3ee571e868a64ee",
+    "inventory_sha256": "35e40b315f9936bcef0c774ec806c94e151a32790e7b233cdc01654913b3a08e",
+    "schema": "cf07-loop-latch-baseline-luna-v1"
+  },
+  "actions": {
+    "jdk": false,
+    "jadx": false,
+    "jarde_cli": false,
+    "compile": false,
+    "candidate_main": false,
+    "blake3_digest_evaluated": false
+  },
+  "blake3_module_available": true
+}

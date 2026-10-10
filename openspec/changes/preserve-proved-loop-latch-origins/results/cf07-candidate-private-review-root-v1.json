@@ -1,0 +1,44 @@
+{
+  "scope": "CF07 candidate replay tooling only; no production patch applied or candidate CLI run",
+  "files": {
+    "prepare-cf07-candidate-luna-v1.py": "06a90770afc0c20c2aa32a3d07725a0a3df7f1fc0b915ccfcade8116288f5894",
+    "prepare-cf07-candidate-luna-v2.py": "6e417df6f3f2a564f45a1d87adeb6586c7b16639c7bfd2ff9af39972811a1a80",
+    "prepare-cf07-candidate-root-v3.py": "3c5408f30599af825d399d59ebe853155c8129ebc33ae8717acf1d05bb8c57c3",
+    "prepare-cf07-candidate-root-v4.py": "91426f23deebdb5be099f02f25fa5d2c1f5f321114db4397b3532b299722f823"
+  },
+  "v1": {
+    "review": "static rejection",
+    "main_executed": false,
+    "reasons": [
+      "helper definitions absent from selected collector top level",
+      "comparison failures not included in final success"
+    ]
+  },
+  "v2": {
+    "review": "static rejection after agent helper preflight",
+    "main_executed": false,
+    "reasons": [
+      "early return bypasses javac23 target checks",
+      "literal javap instruction comparison ignores spacing",
+      "tuple method keys do not match string javap census"
+    ]
+  },
+  "v3": {
+    "review": "root delta reviewed; helper preflight passed; actual read-only observation check failed",
+    "main_executed": false,
+    "observation_helper_exit_code": 1,
+    "observed_runtime_error": "candidate method absent from javap: javac8-jarde-default ('<init>', '()V')",
+    "error_record_kind": "transcription of actual root tool result, not a raw process capture"
+  },
+  "v4": {
+    "review": "root complete v2 plus both full deltas reviewed",
+    "main_executed": false,
+    "helper_preflight_exit_code": 0,
+    "helper_preflight": "cf07-candidate-helper-preflight-root-v4.json",
+    "old_baseline_rejection_check_exit_code": 0,
+    "old_baseline_rejection_check": "cf07-candidate-observation-helper-check-root-v1.json",
+    "status": "ready-for-fresh-cli-replay; candidate not executed or accepted"
+  },
+  "tasks_changed": false,
+  "rust_jdk_jadx_cli_executed_this_review": false
+}

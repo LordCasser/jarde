@@ -1,0 +1,18 @@
+{
+  "status": "accepted-read-only-old-baseline-rejection",
+  "wrapper_sha256": "91426f23deebdb5be099f02f25fa5d2c1f5f321114db4397b3532b299722f823",
+  "baseline": {
+    "closed": true,
+    "files": 118,
+    "commands": 29,
+    "cases": 10,
+    "manifest_sha256": "1a374647a971b416635bc114b9c197d05c855c51eeabd274f3ee571e868a64ee",
+    "inventory_sha256": "35e40b315f9936bcef0c774ec806c94e151a32790e7b233cdc01654913b3a08e",
+    "schema": "cf07-loop-latch-baseline-luna-v1"
+  },
+  "actual_rejection": "expected derived latch BCI is not on its nonempty loop span: javac8 andWhile(Z)I@15",
+  "scope": "helper control only; no new candidate execution or acceptance",
+  "candidate_cli_exists": false,
+  "candidate_output_exists": false,
+  "jdk_cli_cargo_executed": false
+}
