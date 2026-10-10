@@ -1,0 +1,33 @@
+# Private v3: proved local source types
+
+This is a private candidate under `/private/tmp`; it has not changed the repository. The product patch merges the earlier char/null candidate with the restricted direct-producer adjustment. It is based on the current `crates/jarde-java/src/build.rs`; root should inspect/rebase it against the actual checkout before applying. No Cargo, rustfmt, JDK, JADX, CLI, or Git command was run for this preparation, so none of the patch or test draft is validated.
+
+## Producer evidence and boundary
+
+The null-first rule deliberately does not reuse `reference_lifetime_type` as a broad producer proof. That helper accepts a `Ref(Named)` frame and allows an `Unknown` frame when `array_of_value` or `constant_of_value` resolves it; the latter follows `Store` chains. Such helper behavior is useful elsewhere, but would allow a local's null-lifetime claim to pass through copy/store chains or merges beyond this change's direct-producer boundary. In this candidate, every non-null stored SSA operand must itself be a `Definition::Instruction` at an operation that directly supplies an exact reference type: string/class constant, non-void reference-returning invoke, reference field read, allocation, or array creation. It must match every other non-null write exactly, and at least one must exist.
+
+There is one narrow exception for a void invocation: an `invokespecial <init>` at the operand's own SSA definition BCI may prove the constructed reference only when the value's actual SSA frame type is `Value::Ref(RefType::Named { name, .. })` and `name` exactly equals the constructor owner in internal-name bytes. It must also name `<init>` and have a void descriptor. This is not a general named-frame allowance and follows no `Load`, `Store`, `Duplicate`, or `Phi` value.
+
+The JVM evidence supports that narrow form. In `crates/jarde-jvm/src/frame.rs`, `constructor_call` around lines 1806–1857 checks that `invokespecial <init>` is applicable to the uninitialized token and converts it to `named(allocated, method)`; `Frame::convert_token` around 1184 records each changed alias as a write. In the invoke handling around 2269, that conversion occurs only for an uninitialized receiver. In `crates/jarde-jvm/src/ssa.rs` around lines 1600–1620, frame writes become `Definition::Instruction { block, bci }` SSA values carrying the written frame type. The root's actual CF12 read saw a constructor-derived `Value::Ref(Named java/lang/StringBuilder)` at BCI 10 with `Invoke(Special, StringBuilder.<init>(I)V)`. Root's boundary evidence also saw `new String("two")` with `invokespecial` at BCI 40 and `astore` at BCI 43. These observations are the reason the constructor case is included; the private patch itself has not been run.
+
+For overload preservation, `crates/jarde-java/src/build.rs::invocation_argument` around lines 26508–26515 already spells a widening conversion with `cast_argument`. Thus if a proven char local is consumed by a descriptor-selected `append(I)`, the output should explicitly cast the argument to `int` and preserve the integer overload. The adjacent adversarial Java fixture is designed to make this observable: the correct result is `46`; choosing `append(C)` would print `.`. It has not been compiled or run.
+
+## Candidate files
+
+- `implementation.patch`: full proposed product diff, including existing `decide_types` integration, the char all-write certificate, direct exact-reference writes, the narrowly verified constructor producer, budget polling, and the null-first fallback.
+- `cf12_proved_local_source_types.rs`: private permanent integration-test draft based on the repository's existing frozen CF12 class bytes. It follows the production reader debug-local seam, analyzes with the real `analyze_method_ir`, and asserts default/all text and source-map identity, full physical-method source coverage, plus atomic budget-stop/cancellation behavior. It does not fabricate `SlotUse`, `LocalVariable`, SSA, or CFG facts.
+- `adversarial/CharProducerIntOverload.java`: fresh, small javac fixture for the overload boundary. It is not a frozen class and has not been compiled.
+
+The frozen test paths embedded in the draft are root's `TestSwitch$TestCls.class` and `TestSwitchNoDefault$TestCls.class` under `openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/full-replay-root-v1/`. Root must retain the source evidence's hashes and any accepted JDK/debug-mode matrix in the committed fixture manifest; this private draft intentionally does not invent values that were not included in the prompt.
+
+## Root verification still required
+
+1. Rebase/apply the product patch against the source root's currently accepted tree and compile focused tests. Pay attention to import visibility and unified-diff applicability; no compile was performed here.
+2. Run the two frozen CF12 methods through the real facade under default and all evidence and assert exact report identity. Confirm the chosen fixture paths exist at the acceptance checkout and every intended physical BCI maps to the same `PhysicalMethodId`.
+3. Run the real budget/cancellation test. The draft's `full_usage - 1` bound proves all-or-nothing publication if it stops, but does **not** claim to identify a stop inside the new proof. For proof-specific coverage, first observe the actual proof's charge/stop BCI and then add a bound that reaches that point; do not guess a BCI.
+4. Compile `adversarial/CharProducerIntOverload.java` into a private evidence directory with the accepted javac configuration. Inspect actual `charAt(I)C`, local stores, and `StringBuilder.append(I)` via the repository's reader/IR seam, then run only the original valid class and verify its output is `46`. Verify recovered source retains `append((int) value)` (parentheses may follow the emitter's established formatting) and that a copied/merged/unknown producer does not get this char proof.
+5. Re-run the full source/raw-output and runtime gates root owns. This patch is a candidate, not acceptance evidence.
+
+## Explicit limits
+
+The char proof refuses missing reuse paths, `iinc`, arithmetic, copy/phi, out-of-range or nonliteral integer writes, and any other unrecognized store. It only recognizes direct `char` producers or char-entry parameter loads and requires every physical write to be supported. The null rule refuses null-only writes, unresolved values, copy/phi chains, and mixed reference types. The constructor rule conservatively refuses `this`/super initialization values whose exact SSA producer type does not match the target owner, and any constructor alias not represented as the exact instruction definition. Conditional fallthrough and nested constant-name differences are separate CF12 work and are not included.
