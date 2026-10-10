@@ -1,0 +1,6 @@
+[
+  "git",
+  "apply",
+  "--check",
+  "/private/tmp/jarde-return-latch-real-boundary-root-v1/diagnostic-root-v1.patch"
+]

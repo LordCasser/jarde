@@ -1,0 +1,10 @@
+import ast,datetime,hashlib,json,os,shutil,signal,subprocess,time
+from pathlib import Path
+ROOT=Path('/Users/lordcasser/workspace/projects/jarde');OUT=Path('/private/tmp/jarde-return-latch-wrong-target-baseline-root-v1');OUT.mkdir(exist_ok=False)
+CLI=Path('/private/tmp/jarde-proved-if-join-cli-v1');sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();assert sha(CLI)=='7b751758ee7f0b49bd61332a1a78412b36ecef898e43171ecf6af620d65cc9a6'
+guard=Path('/private/tmp/jarde-cf12-render-baseline-root-v1.py');selected=[n for n in ast.parse(guard.read_text()).body if isinstance(n,ast.FunctionDef) and n.name in ('size','run')];exec(compile(ast.Module(body=selected,type_ignores=[]),str(guard),'exec'))
+env=os.environ.copy();record={'schema':'return-latch-wrong-target-old-cli-observation-root-v1','commands':[],'cli_sha256':sha(CLI)}
+source=ROOT/'openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class';b=source.read_bytes();assert b.count(bytes([0xa7,0xff,0xec]))==1;offset=b.index(bytes([0xa7,0xff,0xec]));mut=bytearray(b);mut[offset+1:offset+3]=(3).to_bytes(2,'big',signed=True);f=OUT/'LoopCases.class';f.write_bytes(mut)
+record.update(source_sha256=sha(source),mutated_sha256=sha(f),class_offset=offset,old_bytes=[0xa7,0xff,0xec],new_bytes=[0xa7,0,3],note='Same offset/bytes asserted by permanent inspect_method_bytecode test, analysis only; never run mutated class')
+assert run(OUT,'jarde-old-cli',[CLI,'class-source','--input',f,'--class','cf07.LoopCases','--policy','single-class','--release','8','--format','json','--evidence','all'])['exit_code']==0
+j=json.loads((OUT/'jarde-old-cli.stdout.raw').read_text());method=next(m for m in j['methods'] if 'lastIndexOf' in m['declaration']);record['method_text']=method['text'];record['source_map']=method['outcome']['report']['source_map'];record['status']='observed-preexisting-no-loop-transfer-gap';(OUT/'execution.json').write_text(json.dumps(record,indent=2)+'\n');print(method['text']);print(record['source_map'])

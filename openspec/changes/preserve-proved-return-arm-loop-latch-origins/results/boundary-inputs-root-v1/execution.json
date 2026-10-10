@@ -1,0 +1,265 @@
+{
+  "schema": "return-latch-real-boundary-input-root-v1",
+  "runner_sha256": "437d0a358604469f7c2b82f9c987cd17fb491bd7002f8b9212bf3a2602aa99be",
+  "guard_sha256": "21ba6aa495974bc155f794ebb8b5968fa1ff6328ce53a4e1d4f66469bf4e11ea",
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-g",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-d",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/src/boundary/MultipleLatch.java",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/src/boundary/NestedLatch.java",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/src/boundary/ReturnLatchEdges.java"
+      ],
+      "utc": "2026-10-10T17:32:38.907840+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.009867624990875,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/compile.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/compile.stderr.raw",
+          "bytes": 483,
+          "sha256": "cc06f5e2035adc5273ba40a81f0157663aba0c4e74e5a61d28e5f1df4d398670"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/MultipleLatch.class"
+      ],
+      "utc": "2026-10-10T17:32:39.918405+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0076189580140635,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/MultipleLatch/javap.stdout.raw",
+          "bytes": 2789,
+          "sha256": "10c42be524a3984d568454e56bfc8b2d8fad1d1fbedb4d4474e76671b4503cb1"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/MultipleLatch/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-baseline",
+      "argv": [
+        "/private/tmp/jarde-proved-if-join-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/MultipleLatch.class",
+        "--class",
+        "boundary.MultipleLatch",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-10T17:32:40.927074+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0128773750038818,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/MultipleLatch/jarde-baseline.stdout.raw",
+          "bytes": 27740,
+          "sha256": "b80ccbdb3207508252b1e123c31f215fdbba8990d353883841d3ec53cd2fbbbe"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/MultipleLatch/jarde-baseline.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/NestedLatch.class"
+      ],
+      "utc": "2026-10-10T17:32:41.940582+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0042695830052253,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/NestedLatch/javap.stdout.raw",
+          "bytes": 2797,
+          "sha256": "4086c9bf0e474e19ddba734d5f39f35db2f4e66f879ae90a8640f96064b99ac2"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/NestedLatch/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-baseline",
+      "argv": [
+        "/private/tmp/jarde-proved-if-join-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/NestedLatch.class",
+        "--class",
+        "boundary.NestedLatch",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-10T17:32:42.945405+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0074394999828655,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/NestedLatch/jarde-baseline.stdout.raw",
+          "bytes": 24782,
+          "sha256": "e753b31f75267d9e36b50ef24f75098fc286dde773ca4d3ef6ab765963c888b3"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/NestedLatch/jarde-baseline.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/ReturnLatchEdges.class"
+      ],
+      "utc": "2026-10-10T17:32:43.953514+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0059537079941947,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/ReturnLatchEdges/javap.stdout.raw",
+          "bytes": 3382,
+          "sha256": "a7ff5e87a400f134feb5c88fe250192a4bcec345711dbfc66163ea1dd79eeee8"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/ReturnLatchEdges/javap.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "label": "jarde-baseline",
+      "argv": [
+        "/private/tmp/jarde-proved-if-join-cli-v1",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/ReturnLatchEdges.class",
+        "--class",
+        "boundary.ReturnLatchEdges",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "utc": "2026-10-10T17:32:44.960042+00:00",
+      "guard_stop": null,
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "exit_code": 0,
+      "seconds": 1.0076820839894935,
+      "streams": [
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/ReturnLatchEdges/jarde-baseline.stdout.raw",
+          "bytes": 29842,
+          "sha256": "30112aad1675baea1704f81d259f2c41b09eab8a7ebdfbf18d8db39a56f079e4"
+        },
+        {
+          "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/ReturnLatchEdges/jarde-baseline.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "source": [
+    {
+      "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/src/boundary/ReturnLatchEdges.java",
+      "sha256": "c361aabfeec75c973ac35c6f7a52d019ef6676a38683a978650b3cf6c7ac5cfa"
+    },
+    {
+      "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/src/boundary/NestedLatch.java",
+      "sha256": "32a99db7c0f0cd7de0a2eb6b467e0e17fda3c2ec369ad26a0f40cfd8aa44851b"
+    },
+    {
+      "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/src/boundary/MultipleLatch.java",
+      "sha256": "a090a34bdcaf06b4bca7531652299b3b5651e1c37d2e4c4a419ed944913f0163"
+    }
+  ],
+  "classes": [
+    {
+      "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/MultipleLatch.class",
+      "sha256": "c1dfbf93dfddbd28d6c2e90005e2c7b85d4a3fb20880391b325ac18ee645f52d",
+      "bytes": 419
+    },
+    {
+      "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/NestedLatch.class",
+      "sha256": "acc7a7b5ff5714845151a6bc7f6fc853434590a4650c3463bcb13b0bbbb29cb6",
+      "bytes": 414
+    },
+    {
+      "path": "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/ReturnLatchEdges.class",
+      "sha256": "c21759a8c1c21a0baa19bb9aada3bd0215dfd5c1f1571304f84da02f706e51fc",
+      "bytes": 525
+    }
+  ],
+  "status": "observed-boundary-candidates-not-helper-acceptance"
+}

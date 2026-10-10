@@ -1,0 +1,6 @@
+e=true;n=0;prefixWhile=0;noPrefix=0;loopAndTail=100;takenArm=0
+e=false;n=0;prefixWhile=0;noPrefix=0;loopAndTail=0;takenArm=0
+e=true;n=1;prefixWhile=0;noPrefix=1;loopAndTail=100;takenArm=0
+e=false;n=1;prefixWhile=0;noPrefix=0;loopAndTail=0;takenArm=0
+e=true;n=4;prefixWhile=6;noPrefix=4;loopAndTail=106;takenArm=0
+e=false;n=4;prefixWhile=0;noPrefix=0;loopAndTail=0;takenArm=6

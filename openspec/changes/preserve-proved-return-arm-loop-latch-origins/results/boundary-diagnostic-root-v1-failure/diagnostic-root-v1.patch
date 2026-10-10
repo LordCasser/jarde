@@ -1,0 +1,239 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -13968,4 +13968,237 @@
+             Some(25)
+         );
+     }
++
++    #[test]
++    fn diagnose_real_return_latch_boundary_classes() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        fn analyze_and_print(class_bytes: &[u8], owner_name: &str, method_name: &str) {
++            let mut budget = Budget::new(jarde_reader::budget::Limits {
++                input_bytes: 1 << 20,
++                archive_entries: 100,
++                entry_bytes: 1 << 20,
++                read_bytes: 1 << 20,
++                class_bytes: 1 << 20,
++                attribute_bytes: 1 << 20,
++                code_bytes: 1 << 20,
++                result_items: 1 << 20,
++                output_bytes: 1 << 20,
++                class_headers: 100,
++                method_bodies: 100,
++                ir_items: 1 << 20,
++                ir_edges: 1 << 20,
++                analysis_steps: 1 << 20,
++                normalization_clones: 1 << 20,
++                nested_depth: 32,
++                dependency_depth: 32,
++                elapsed_millis: u64::MAX,
++            });
++            let snapshot = ArtifactSnapshot::open(
++                ArtifactInput::bytes(class_bytes.to_vec()),
++                &mut budget,
++            )
++            .expect("boundary class opens");
++            let definition = PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot {
++                    snapshot: snapshot.id().clone(),
++                },
++                class_bytes: ClassBytesId {
++                    digest: Digest(blake3::hash(class_bytes).to_hex().to_string()),
++                    length: u64::try_from(class_bytes.len()).expect("class size fits u64"),
++                },
++                variant: PhysicalVariant::Base,
++            };
++            let domain = LoadDomain {
++                loader: LoaderId("app".to_string()),
++                parent_loader: None,
++                delegation: DelegationPolicy::ParentFirst,
++                roots: vec![LoadRoot::StandaloneClass {
++                    snapshot: snapshot.id().clone(),
++                }],
++                module_mode: ModuleMode::ClassPath,
++                external_override: RuntimeUncertainty::None,
++                runtime_transformation: RuntimeUncertainty::None,
++            };
++            let request = MethodAnalysisRequest {
++                environment: ResolutionEnvironment {
++                    runtime: RuntimeView {
++                        physical: PhysicalView {
++                            snapshot: snapshot.id().clone(),
++                            scope: PhysicalScope::SnapshotAll,
++                        },
++                        profile: RuntimeProfile {
++                            java_release: 23,
++                            multi_release: MultiReleasePolicy::Disabled,
++                            layout: LayoutMode::Generic,
++                        },
++                        load_domain: domain.clone(),
++                    },
++                    domains: vec![domain],
++                    providers: Vec::new(),
++                },
++                method: PhysicalMethodId {
++                    owner: definition,
++                    name: JvmBytes(method_name.as_bytes().to_vec()),
++                    descriptor: JvmBytes(b"(I)I".to_vec()),
++                },
++                stages: AnalysisStage::ALL.to_vec(),
++            };
++            let analysis = analyze_method_ir(&[snapshot], &request, &mut budget)
++                .expect("one real analysis completes");
++            let ir = analysis.ir();
++            let canonical = ir.canonical().expect("canonical CFG exists");
++            let ssa = ir.ssa().expect("SSA exists");
++            let code = ir.code().expect("decoded code exists");
++            let operations = Operations::of(code, ir.constant_pool());
++            let chains = crate::concat::plan_four_conditional_strings(
++                ssa,
++                canonical,
++                &operations,
++                &crate::build::FieldCopies::default(),
++                &mut budget,
++            )
++            .expect("concat planning completes");
++            let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
++                .expect("normal-flow view builds from this canonical CFG");
++            let sites = crate::init::Sites::empty();
++            let recovered = recover(
++                canonical,
++                &view,
++                ssa,
++                &operations,
++                ir.constant_pool(),
++                &chains,
++                &sites,
++                code,
++                Some(false),
++                false,
++                &crate::pass::JAVA_8,
++                &mut budget,
++            )
++            .expect("region recovery completes");
++
++            let edges: Vec<_> = canonical
++                .edges()
++                .iter()
++                .map(|edge| (edge.from().bci(), edge.kind(), edge.to().bci()))
++                .collect();
++            eprintln!("boundary {owner_name}.{method_name}(I)I canonical_edges={edges:?}");
++
++            let mut seen_headers = BTreeSet::new();
++            for block in canonical.blocks() {
++                let Some(node) = view.index_of(block.id()) else {
++                    continue;
++                };
++                let Some(natural) = view.loop_entered_at(node) else {
++                    continue;
++                };
++                if !seen_headers.insert(natural.header()) {
++                    continue;
++                }
++                let loop_blocks: Vec<_> = natural
++                    .blocks()
++                    .iter()
++                    .filter_map(|node| view.id_of(*node).cloned())
++                    .collect();
++                let latches: Vec<_> = natural
++                    .latches()
++                    .iter()
++                    .filter_map(|node| view.id_of(*node).cloned())
++                    .collect();
++                eprintln!(
++                    "boundary {owner_name}.{method_name}(I)I natural_loop header={} blocks={loop_blocks:?} latches={latches:?} irreducible={}",
++                    natural.header(),
++                    natural.is_irreducible()
++                );
++            }
++            eprintln!(
++                "boundary {owner_name}.{method_name}(I)I recovered_regions={:#?}",
++                recovered.regions
++            );
++
++            for region in &recovered.regions {
++                let Region::Loop {
++                    header,
++                    body,
++                    for_header,
++                    ..
++                } = region
++                else {
++                    continue;
++                };
++                if !matches!(body.last(), Some(Region::If { join: None, .. })) {
++                    continue;
++                }
++                let Some(header_node) = view.index_of(header) else {
++                    continue;
++                };
++                let mut proof_budget = Budget::new(jarde_reader::budget::Limits {
++                    analysis_steps: u64::MAX,
++                    elapsed_millis: u64::MAX,
++                    ..Default::default()
++                });
++                let mut walker = Walker {
++                    canonical,
++                    view: &view,
++                    ssa,
++                    operations: &operations,
++                    pool: ir.constant_pool(),
++                    chains: &chains,
++                    sites: &sites,
++                    code,
++                    method_synchronized: Some(false),
++                    has_reachable_explicit_monitor: false,
++                    return_is_boolean: false,
++                    handlers: &code.exception_handlers,
++                    profile: &crate::pass::JAVA_8,
++                    budget: &mut proof_budget,
++                    catch_joins: BTreeSet::new(),
++                    fragmented: None,
++                    excluded_edge_nodes: BTreeSet::new(),
++                    visited: BTreeSet::new(),
++                    unclosed_tail_at: None,
++                    own_monitor: None,
++                    depth: 0,
++                };
++                let result = walker.implicit_tail_latch_origin(
++                    header_node,
++                    body,
++                    for_header.as_ref(),
++                );
++                eprintln!(
++                    "boundary {owner_name}.{method_name}(I)I actual_tail_if_helper header={} result={result:?} analysis_steps={}",
++                    header.bci(),
++                    proof_budget.usage().analysis_steps
++                );
++            }
++        }
++
++        const RETURN_LATCH_EDGES: &[u8] = include_bytes!(
++            "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/ReturnLatchEdges.class"
++        );
++        const NESTED_LATCH: &[u8] = include_bytes!(
++            "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/NestedLatch.class"
++        );
++        const MULTIPLE_LATCH: &[u8] = include_bytes!(
++            "/private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/MultipleLatch.class"
++        );
++
++        analyze_and_print(RETURN_LATCH_EDGES, "boundary.ReturnLatchEdges", "edge");
++        analyze_and_print(NESTED_LATCH, "boundary.NestedLatch", "nested");
++        analyze_and_print(MULTIPLE_LATCH, "boundary.MultipleLatch", "multiple");
++    }
+ }

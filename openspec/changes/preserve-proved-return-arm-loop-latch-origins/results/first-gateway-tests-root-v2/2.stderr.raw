@@ -1,0 +1,3 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.53s
+[1m[92m     Running[0m tests/p3_loop_exit_gateways.rs (target/debug/deps/p3_loop_exit_gateways-cc124f0ddd55c761)

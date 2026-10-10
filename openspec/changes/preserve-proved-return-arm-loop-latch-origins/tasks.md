@@ -5,11 +5,11 @@
 
 ## 2. Existing loop source proof
 
-- [ ] 2.1 Luna按设计准备私有最小patch，root全文审查并应用有限直接If候选提取；共用现有 exact-header/unique-natural-latch/full-canonical证书与gateway_origins，永久测试核物理owner/descriptor/全部18BCI/完整while span/旧condition和counted20来源，正文不变，无新实体。
-- [ ] 2.2 root实跑真实字节码错误target、非末尾transfer、非返回或异常/额外边与嵌套/多回边边界，以及budget/cancel Stop无部分artifact；保存实际IR/拒绝与raw，保持原Straight/ForHeader/条件链/If join路径。
+- [x] 2.1 Luna按设计准备私有最小patch，root全文审查并应用有限直接If候选提取；共用现有 exact-header/unique-natural-latch/full-canonical证书与gateway_origins，永久测试核物理owner/descriptor/全部18BCI/完整while span/旧condition和counted20来源，正文不变，无新实体。
+- [x] 2.2 root实跑真实字节码错误target、非末尾transfer、非返回或异常/额外边与嵌套/多回边边界，以及budget/cancel Stop无部分artifact；保存实际IR/拒绝与raw，保持原Straight/ForHeader/条件链/If join路径。
 
 ## 3. Complete source and delivery
 
-- [ ] 3.1 root在5GiB free/target1GiB守卫下实跑fmt/CI同范围Clippy/相关回归，冻结本片新CLI/meta/pins；新完整CF07双JDK/default-all原/JADX/Jarde原样重编运行与原raw同，独立全物理BCI接受，仅lastIndexOf25新增derived完整loop，旧For/Postfix完整控制正文/map恒同前片。
+- [x] 3.1 root在5GiB free/target1GiB守卫下实跑fmt/CI同范围Clippy/相关回归，冻结本片新CLI/meta/pins；新完整CF07双JDK/default-all原/JADX/Jarde原样重编运行与原raw同，独立全物理BCI接受，仅lastIndexOf25新增derived完整loop，旧For/Postfix完整控制正文/map恒同前片。
 - [ ] 3.2 提交推送产品并独立捕获其精确自身CI API/raw，接受全部jobs/steps/双seed/实际测试名和product/live pins，OpenSpec strict实际通过，失败raw不覆盖。
 - [ ] 3.3 root更新verification-root/71账本/handoff及computed-init for独立债务，提交推送全部授权修改；实际核main/origin同、全worktrees clean/无待合入或分支占用，cargo clean并保留冻结CLI/source/class/raw，不冒称整CF07追平或持续目标完成。

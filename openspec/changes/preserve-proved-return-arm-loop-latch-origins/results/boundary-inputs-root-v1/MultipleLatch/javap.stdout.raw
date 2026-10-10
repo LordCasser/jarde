@@ -1,0 +1,79 @@
+Classfile /private/tmp/jarde-return-latch-boundary-compile-root-v1/classes/boundary/MultipleLatch.class
+  Last modified 2026年10月11日; size 419 bytes
+  SHA-256 checksum c1dfbf93dfddbd28d6c2e90005e2c7b85d4a3fb20880391b325ac18ee645f52d
+  Compiled from "MultipleLatch.java"
+public final class boundary.MultipleLatch
+  minor version: 0
+  major version: 52
+  flags: (0x0031) ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+  this_class: #7                          // boundary/MultipleLatch
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 2, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // boundary/MultipleLatch
+   #8 = Utf8               boundary/MultipleLatch
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               LocalVariableTable
+  #12 = Utf8               this
+  #13 = Utf8               Lboundary/MultipleLatch;
+  #14 = Utf8               multiple
+  #15 = Utf8               (I)I
+  #16 = Utf8               n
+  #17 = Utf8               I
+  #18 = Utf8               StackMapTable
+  #19 = Utf8               SourceFile
+  #20 = Utf8               MultipleLatch.java
+{
+  public boundary.MultipleLatch();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lboundary/MultipleLatch;
+
+  public static int multiple(int);
+    descriptor: (I)I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: iload_0
+         1: ifle          25
+         4: iload_0
+         5: iconst_2
+         6: if_icmpne     12
+         9: goto          0
+        12: iload_0
+        13: iconst_1
+        14: if_icmpne     19
+        17: iload_0
+        18: ireturn
+        19: iinc          0, -1
+        22: goto          0
+        25: iconst_0
+        26: ireturn
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      27     0     n   I
+      StackMapTable: number_of_entries = 4
+        frame_type = 0 /* same */
+        frame_type = 11 /* same */
+        frame_type = 6 /* same */
+        frame_type = 5 /* same */
+}
+SourceFile: "MultipleLatch.java"

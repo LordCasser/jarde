@@ -1,0 +1,49 @@
+{
+  "utc": "2026-10-10T17:50:28.857121+00:00",
+  "duration_seconds": 5.6192496250150725,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/prepare-cf07-candidate-root-v1.py",
+    "--cli",
+    "/private/tmp/jarde-return-arm-latch-cli-v1",
+    "--cli-sha256",
+    "9ae5817d25749add0709b4f156c71ce23ac0e5ad41d66ee0136742024461a28f",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "9913bb51cfa4acc91ed10708f94acdcedb6b4eb85dd4ea31d827febbd05ad6ef",
+    "--metadata-schema",
+    "preserve-proved-return-arm-loop-latch-origins-candidate-cli-v1",
+    "--source-base",
+    "41fe336462448eae3547cafa2a141d52e85a08e0",
+    "--product-flag",
+    "uncommitted_return_arm_loop_latch_product",
+    "--build",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/validation-build-root-v1/execution.json",
+    "--build-schema",
+    "preserve-proved-return-arm-loop-latch-origins-validation-build-root-v1",
+    "--build-command-count",
+    "12",
+    "--runner-sha256",
+    "8c1b90733cf1f3baa6f62467b4c2536f465997b4b2c23c6256de358152e3e84f"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 663,
+      "sha256": "75006a353a0bffa833c74fe3083450411acd7f9e2a1d2ab94270088d0f570653"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

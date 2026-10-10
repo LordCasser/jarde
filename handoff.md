@@ -4,17 +4,22 @@
 
 ## 当前明确工作
 
+`preserve-proved-return-arm-loop-latch-origins` **5/7**：root已应用有限直接return/latch If候选扩展，本地12命令566/0/1、新CLI CF07完整29命令/10类腿全部物理BCI及旧For/Postfix57命令/20类腿/28方法profile已独立接受。唯一四profile新增lastIndexOf@25完整while来源；正文/旧来源恒同。自身产品CI与最终clean交付待完成，详见 [return-arm verification-root](openspec/changes/preserve-proved-return-arm-loop-latch-origins/verification-root.md)。新CLI `/private/tmp/jarde-return-arm-latch-cli-v1` SHA9ae5817d25749add0709b4f156c71ce23ac0e5ad41d66ee0136742024461a28f，实际source base41fe336462448eae3547cafa2a141d52e85a08e0。全BCI来源覆盖不能算整CF07追平，computed-init for仍独立待办。
+
+## 已闭合 If 来源片
+
 `preserve-proved-if-arm-join-origins` **7/7**：产品已root应用并通过本地/完整类独立验收，精确自身CI与8cbc468 clean交付已接受。生产只扩build.rs普通If来源：末尾直接Straight、真实goto/goto_w、完整唯一Normal边到准确If.join，复用OriginSet和既有ownership；无新IR/Frame/pass/依赖。全部执行证据见 [If verification-root](openspec/changes/preserve-proved-if-arm-join-origins/verification-root.md)。
 
 - 本地12命令562/0/1；52输入pins恒同，target峰值701667300bytes。永久测试核完整If跨度（含缩进/换行）、physical owner/descriptor/全部23BCI、旧condition/while来源、错误exit target与非transfer、真实Exception反例、Stop at20无部分artifact。
-- CF07新29命令/10完整类腿，双JDK8/23/default-all稳定；唯一新增counted@20 derived完整If，counted全部物理BCI已覆盖，正文和所有旧来源恒同。唯一剩余缺口lastIndexOf@25，整CF07计数不变。
+- CF07新29命令/10完整类腿，双JDK8/23/default-all稳定；唯一新增counted@20 derived完整If，counted全部物理BCI已覆盖，正文和所有旧来源恒同。当时剩余缺口lastIndexOf@25已由当前片补全，整CF07计数不变。
 - 旧For/Postfix新57命令/20完整类腿、28方法profile全物理BCI；8生成类正文与全部map精确同已接受For版本。真实测试预期错误与verifier作用域错误、原稿和失败raw保留。
 - CLI `/private/tmp/jarde-proved-if-join-cli-v1`，0555，SHA7b751758ee7f0b49bd61332a1a78412b36ecef898e43171ecf6af620d65cc9a6；metadata SHA6f785a03e50565bc5d90bd6a6ae85f1bb789e31647811421e5f21d41ee7030ca。冻结source base d9855c2764860c7c2e20e40e700abeaa59f00a55与uncommitted标志不回写。
 
 ## 下一步操作
 
 本片产品 `1f386686c6a31813254a85fed48d2af0af84a61c` 的自身CI [38068627541](https://github.com/LordCasser/jarde/actions/runs/38068627541) 已root独立v4接受：4jobs/52steps、双seed各3389/0/97及354记录，完整12gateway名、新If三名/内部异常名/旧integer11名、52live+Git pins恒同。见 results/ci-product-v2/acceptance-proved-if-arm-join-ci-root-v4.json。日志前缀与缩进解析的v2/v3真实失败保留，v4只改传输格式归一化；8cbc468 clean checkpoint已实际接受15worktrees全clean、仅main/无target、free65,230,618,624；关闭记录推送后再次实核，才应用下一片。
-关闭本片3.2/3.3后，下一明确项 **preserve-proved-return-arm-loop-latch-origins** 规划4/4、strict340/0、实现2/7：root同次真实IR诊断v2已实际1/0/0，证明lastIndex Loop5/末尾直接If16 joinNone/thenStraight19 return21/elseStraight22 SSA22,25/唯一natural latch22/全canonical仅Normal5/唯一owner；52pins已恢复，cargo clean144.8MiB。v1私有诊断E0277原始失败与root **owner修正都保留。本片限制单block直接双arm，其中一return/另一唯一exact latch，复用既有证书和gateway_origins，无新实体。Luna已private交付最小patch与新CF07完整collector/verifier，root已读审，另在准备新的validation runner，root前片CI接受后才应用。另有真实独立for呈现缺口：preheader初值门仅Push(Int)+Store，end-1的load/sub不满足，不能把来源缺口关闭算整CF07追平。
+If关闭记录41fe336已实际推送并再次审计15worktrees全clean/仅main/14辅助detached main祖先/无target；证据在当前片results/if-prerequisite-clean-final-root-v1。return-arm片已经实施，真实budget永久测试与错误target/nonterminal/nonreturn和异常/嵌套/多回边边界均已核，失败raw保留。先完成当前片自身精确CI与clean交付，再应用CF12局部类型真实IR临时诊断。
+
 
 ## 已闭合前片
 

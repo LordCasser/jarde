@@ -1,0 +1,89 @@
+{
+  "schema": "return-arm-latch-first-permanent-tests-root-v1",
+  "runner_sha256": "3d257352a3637e9a74104cc30c234c284900c4909d74806450ea06dcc32e8b86",
+  "guard_template_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+  "jdk": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "commands": [
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "p3_loop_exit_gateways",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T17:37:41.302766+00:00",
+      "duration_seconds": 1.0114383329928387,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 203518508,
+      "free_bytes_after": 64906334208,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "actual": [
+          [
+            15,
+            0,
+            0
+          ]
+        ],
+        "expected": [
+          [
+            15,
+            0,
+            0
+          ]
+        ],
+        "ok": true
+      },
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-return-arm-first-tests-root-v2/2.stdout.raw",
+          "bytes": 1222,
+          "sha256": "c16e31c1081ab8a24133ccb3ece08ae67fa53b00c44b975d56a51336291044c3"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-return-arm-first-tests-root-v2/2.stderr.raw",
+          "bytes": 297,
+          "sha256": "433680f7c5a4ef0095f6fd298bfa9c075e6f45fd219eab5346ad9ff8949ef342"
+        }
+      }
+    }
+  ],
+  "product_pins": {
+    "crates/jarde-java/src/region.rs": "422dceb20e4cc1abe1d26fa733b888101239c9bf9de279218c42f343b3733c8c",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "ff55605535ecaff4792579909dbdf7d04191a2c446a21ccb15df7c29b2ac643b"
+  },
+  "status": "passed"
+}

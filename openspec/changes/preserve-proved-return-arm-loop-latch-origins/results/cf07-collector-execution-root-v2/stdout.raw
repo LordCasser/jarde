@@ -1,0 +1,25 @@
+{
+  "status": "baseline-controls-complete",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "failures": []
+}
+{
+  "status": "candidate_replay_observed",
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/cf07-candidate-root-v1",
+  "candidate_commands": 29,
+  "method_deltas": 8
+}
+{
+  "status": "candidate-replay-observed",
+  "output": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-return-arm-loop-latch-origins/results/cf07-candidate-root-v1",
+  "commands": 29,
+  "cases": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  }
+}

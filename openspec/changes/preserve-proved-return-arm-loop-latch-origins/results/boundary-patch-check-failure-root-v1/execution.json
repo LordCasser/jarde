@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-10T17:43:05.944704+00:00",
+  "duration_seconds": 0.008083791995886713,
+  "argv": [
+    "git",
+    "apply",
+    "--check",
+    "/private/tmp/jarde-return-latch-real-boundary-root-v1/diagnostic-root-v1.patch"
+  ],
+  "exit_code": 128,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 107,
+      "sha256": "f8a5847817c45a46e32ed6f49202598ee64f93a30d18d01d06fbc03a5e89a38e"
+    }
+  }
+}

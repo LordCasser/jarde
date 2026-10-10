@@ -531,6 +531,293 @@ fn cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source() {
 }
 
 #[test]
+fn cf07_return_arm_loop_latch_is_derived_from_complete_while() {
+    const LAST_INDEX_BCIS: [u32; 18] = [
+        0, 1, 2, 3, 5, 7, 8, 11, 12, 14, 15, 16, 19, 21, 22, 25, 28, 29,
+    ];
+    let default = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::SourceMap),
+        None,
+    );
+    let all = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(default.produced(), "default: {:?}", default.outcome);
+    assert!(all.produced(), "all: {:?}", all.outcome);
+    assert_eq!(default.text, all.text);
+    assert_eq!(default.source_map, all.source_map);
+    assert!(!all.text.contains("@bytecode"), "{}", all.text);
+    for bci in LAST_INDEX_BCIS {
+        assert!(
+            !all.source_map.of_bci(bci).is_empty(),
+            "lastIndexOf BCI {bci} lost its source: {}",
+            all.text
+        );
+    }
+
+    let while_keyword = all
+        .text
+        .find("while (")
+        .expect("lastIndexOf recovered while");
+    let while_start = all.text[..while_keyword]
+        .rfind('\n')
+        .map_or(0, |newline| newline + 1);
+    let while_body = braced_body(&all.text, "while (");
+    // The source span includes the loop's closing brace and the emitter's following newline.
+    let while_end = while_body.end + 2;
+    let while_span = while_start..while_end;
+    assert_one_structured_owner_in(&all, while_span.clone(), &[5, 11, 19, 22], "while (", &[25]);
+    let latch_spans: Vec<_> = all
+        .source_map
+        .derived_of_bci(25)
+        .into_iter()
+        .filter(|segment| segment.start() == while_span.start && segment.end() == while_span.end)
+        .collect();
+    assert_eq!(
+        latch_spans.len(),
+        1,
+        "goto@25 must point to exactly the complete while span {while_span:?}: {}",
+        all.text
+    );
+    assert!(
+        all.source_map.of_bci(8).iter().any(|segment| {
+            segment.start() >= while_span.start && segment.end() <= while_span.end
+        }),
+        "while condition@8 lost its source: {}",
+        all.text
+    );
+    assert!(
+        all.source_map
+            .of_bci(16)
+            .iter()
+            .any(|segment| { segment.text(&all.text).trim_start().starts_with("if (") }),
+        "inner condition@16 lost its source: {}",
+        all.text
+    );
+
+    let mut owner_budget = Budget::new(limits());
+    let owner_snapshot = ArtifactSnapshot::open(
+        ArtifactInput::bytes(IF_JOIN_CF07.to_vec()),
+        &mut owner_budget,
+    )
+    .expect("frozen class snapshot opens");
+    let expected_owner = PhysicalDefinitionId {
+        location: PhysicalClassLocation::StandaloneRoot {
+            snapshot: owner_snapshot.id().clone(),
+        },
+        class_bytes: ClassBytesId {
+            digest: Digest(blake3::hash(IF_JOIN_CF07).to_hex().to_string()),
+            length: IF_JOIN_CF07.len() as u64,
+        },
+        variant: PhysicalVariant::Base,
+    };
+    for segment in all.source_map.segments() {
+        for origin in std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
+        {
+            if origin.bci() == 25 {
+                let method = origin.method().expect("latch source has physical method");
+                assert_eq!(method.name.0.as_slice(), b"lastIndexOf");
+                assert_eq!(method.descriptor.0.as_slice(), b"([IIII)I");
+                assert_eq!(&method.owner, &expected_owner);
+            }
+        }
+    }
+}
+
+#[test]
+fn cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn() {
+    let inspection = inspect_method_bytecode(
+        IF_JOIN_CF07,
+        MethodSelector {
+            name: JvmBytes(b"lastIndexOf".to_vec()),
+            descriptor: JvmBytes(b"([IIII)I".to_vec()),
+        },
+        &mut Budget::new(limits()),
+    )
+    .expect("frozen CF07 method bytecode reads");
+    let instruction = |bci| {
+        inspection
+            .instructions
+            .iter()
+            .find(|instruction| instruction.bci == bci)
+            .unwrap_or_else(|| panic!("frozen lastIndexOf is missing BCI {bci}"))
+    };
+    let goto = instruction(25);
+    assert_eq!(goto.opcode, 0xa7);
+    assert_eq!(goto.width, 3);
+    let goto_offset = usize::try_from(goto.span.start).expect("class offset fits");
+    assert_eq!(
+        &IF_JOIN_CF07[goto_offset..goto_offset + 3],
+        &[0xa7, 0xff, 0xec]
+    );
+
+    let has_no_loop_origin = |report: &jarde_java::RecoveryReport| {
+        !report.source_map.derived_of_bci(25).iter().any(|segment| {
+            segment
+                .text(&report.text)
+                .trim_start()
+                .starts_with("while (")
+        })
+    };
+
+    // Analysis-only mutation: redirect the real goto@25 from header@5 to loop exit@28.
+    let mut wrong_target = IF_JOIN_CF07.to_vec();
+    wrong_target[goto_offset + 1..goto_offset + 3].copy_from_slice(&3_i16.to_be_bytes());
+    assert_eq!(
+        25 + i16::from_be_bytes([wrong_target[goto_offset + 1], wrong_target[goto_offset + 2]])
+            as i32,
+        28,
+        "mutated goto targets the actual outer-loop exit",
+    );
+    let wrong_target_report = recover_class_method_with_budget(
+        &wrong_target,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(
+        wrong_target_report.produced(),
+        "{:?}",
+        wrong_target_report.outcome
+    );
+    assert!(
+        has_no_loop_origin(&wrong_target_report),
+        "{}",
+        wrong_target_report.text
+    );
+    // Redirecting the only backedge removes the natural loop. The preexisting no-loop
+    // If presentation has no source for this transfer; that independent gap is not a
+    // latch origin and this slice must not assign it to an invented while.
+    assert!(!wrong_target_report.text.contains("while ("));
+    assert!(wrong_target_report.source_map.of_bci(25).is_empty());
+
+    // Analysis-only mutation: keep the real three-byte span but replace goto with iinc local4,-1.
+    let mut nonterminal = IF_JOIN_CF07.to_vec();
+    nonterminal[goto_offset..goto_offset + 3].copy_from_slice(&[0x84, 0x04, 0xff]);
+    let nonterminal_report = recover_class_method_with_budget(
+        &nonterminal,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(
+        nonterminal_report.produced(),
+        "{:?}",
+        nonterminal_report.outcome
+    );
+    assert!(
+        has_no_loop_origin(&nonterminal_report),
+        "{}",
+        nonterminal_report.text
+    );
+    assert!(
+        nonterminal_report
+            .source_map
+            .of_bci(25)
+            .iter()
+            .any(|segment| { segment.origin().primary().bci() == 25 }),
+        "nonterminal iinc@25 lost its direct source: {}",
+        nonterminal_report.text
+    );
+
+    // Analysis-only mutation: make the would-be return arm throw a valid null reference instead.
+    // BCI 19..20 remains two bytes (aconst_null; nop), and BCI 21 becomes athrow; no class is run.
+    let load = instruction(19);
+    let returned = instruction(21);
+    assert_eq!(load.opcode, 0x15);
+    assert_eq!(load.width, 2);
+    assert_eq!(returned.opcode, 0xac);
+    assert_eq!(returned.width, 1);
+    let mut nonreturn = IF_JOIN_CF07.to_vec();
+    let load_offset = usize::try_from(load.span.start).expect("class offset fits");
+    let return_offset = usize::try_from(returned.span.start).expect("class offset fits");
+    nonreturn[load_offset..load_offset + 2].copy_from_slice(&[0x01, 0x00]);
+    nonreturn[return_offset] = 0xbf;
+    let nonreturn_report = recover_class_method_with_budget(
+        &nonreturn,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        None,
+    );
+    assert!(
+        nonreturn_report.produced(),
+        "{:?}",
+        nonreturn_report.outcome
+    );
+    assert!(
+        has_no_loop_origin(&nonreturn_report),
+        "{}",
+        nonreturn_report.text
+    );
+}
+
+#[test]
+fn cf07_return_arm_latch_budget_and_cancellation_publish_no_partial_source() {
+    use jarde_java::StopReason;
+    use jarde_reader::model::ExecutionReport;
+
+    let full = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(limits())),
+    );
+    let ExecutionReport::Complete { usage } = full.execution else {
+        panic!("full candidate did not complete: {:?}", full.outcome);
+    };
+    let mut late = limits();
+    late.analysis_steps = usage.analysis_steps.saturating_sub(1);
+    let stopped = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::new(late)),
+    );
+    assert!(!stopped.produced());
+    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
+    assert!(matches!(
+        stopped.stop(),
+        Some(StopReason::Budget {
+            dimension: CountedBudgetDimension::AnalysisSteps,
+            ..
+        })
+    ));
+
+    let token = CancellationToken::new();
+    token.cancel();
+    let cancelled = recover_class_method_with_budget(
+        IF_JOIN_CF07,
+        "cf07/LoopCases",
+        "lastIndexOf",
+        "([IIII)I",
+        RecoveryEvidenceRequest::all(),
+        Some(Budget::with_cancellation_token(limits(), token)),
+    );
+    assert!(!cancelled.produced());
+    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
+    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+}
+
+#[test]
 fn cf08_two_gateways_have_one_loop_owner_and_complete_sources() {
     let report = recover_method("find", "(I)I", RecoveryEvidenceRequest::all());
     assert!(report.produced(), "{:?}", report.outcome);

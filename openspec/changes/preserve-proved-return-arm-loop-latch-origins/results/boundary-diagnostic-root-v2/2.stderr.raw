@@ -1,0 +1,289 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.79s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+boundary boundary.ReturnLatchEdges.edge(I)I canonical_edges=[(0, Normal, 4), (0, Normal, 17), (0, Exception { handler_ordinal: 0 }, 20), (4, Normal, 9), (4, Normal, 11), (4, Exception { handler_ordinal: 0 }, 20), (9, Exception { handler_ordinal: 0 }, 20), (11, Normal, 0), (11, Exception { handler_ordinal: 1 }, 20)]
+boundary boundary.ReturnLatchEdges.edge(I)I natural_loop header=0 blocks=[CanonicalBlockId { bci: 0, path: [] }, CanonicalBlockId { bci: 4, path: [] }, CanonicalBlockId { bci: 11, path: [] }] latches=[CanonicalBlockId { bci: 11, path: [] }] irreducible=false
+boundary boundary.ReturnLatchEdges.edge(I)I recovered_regions=[
+    Try {
+        prefix: [],
+        lead: (
+            0,
+            0,
+        ),
+        body: Loop {
+            header: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            tests: [
+                (
+                    CanonicalBlockId {
+                        bci: 0,
+                        path: [],
+                    },
+                    1,
+                    FallThrough,
+                ),
+            ],
+            test_operator: None,
+            form: While,
+            for_header: None,
+            body: [
+                If {
+                    prefix: [],
+                    branch: CanonicalBlockId {
+                        bci: 4,
+                        path: [],
+                    },
+                    branch_bci: 6,
+                    then_arm: Straight {
+                        blocks: [],
+                    },
+                    else_arm: Try {
+                        prefix: [],
+                        lead: (
+                            11,
+                            11,
+                        ),
+                        body: Try {
+                            prefix: [
+                                CanonicalBlockId {
+                                    bci: 11,
+                                    path: [],
+                                },
+                            ],
+                            lead: (
+                                0,
+                                0,
+                            ),
+                            body: Straight {
+                                blocks: [],
+                            },
+                            normal_exit_bci: None,
+                            catches: [
+                                CatchClause {
+                                    types: Named(
+                                        [
+                                            7,
+                                        ],
+                                    ),
+                                    handler: CanonicalBlockId {
+                                        bci: 20,
+                                        path: [],
+                                    },
+                                    parameter: 1,
+                                    body: Straight {
+                                        blocks: [],
+                                    },
+                                },
+                            ],
+                            transparent: None,
+                        },
+                        normal_exit_bci: None,
+                        catches: [
+                            CatchClause {
+                                types: Named(
+                                    [
+                                        7,
+                                    ],
+                                ),
+                                handler: CanonicalBlockId {
+                                    bci: 20,
+                                    path: [],
+                                },
+                                parameter: 1,
+                                body: Straight {
+                                    blocks: [],
+                                },
+                            },
+                        ],
+                        transparent: None,
+                    },
+                    join: None,
+                },
+            ],
+            exit: Some(
+                CanonicalBlockId {
+                    bci: 17,
+                    path: [],
+                },
+            ),
+            gateway_origins: [],
+        },
+        normal_exit_bci: None,
+        catches: [
+            CatchClause {
+                types: Named(
+                    [
+                        7,
+                    ],
+                ),
+                handler: CanonicalBlockId {
+                    bci: 20,
+                    path: [],
+                },
+                parameter: 1,
+                body: Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 20,
+                            path: [],
+                        },
+                    ],
+                },
+            },
+        ],
+        transparent: None,
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 17,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 9,
+                path: [],
+            },
+        ],
+        reason: UncoveredBlocks {
+            blocks: [
+                17,
+                9,
+            ],
+        },
+    },
+]
+boundary boundary.NestedLatch.nested(I)I canonical_edges=[(0, Normal, 4), (0, Normal, 28), (4, Normal, 9), (4, Normal, 11), (11, Normal, 16), (11, Normal, 22), (16, Normal, 11), (22, Normal, 0)]
+boundary boundary.NestedLatch.nested(I)I natural_loop header=0 blocks=[CanonicalBlockId { bci: 0, path: [] }, CanonicalBlockId { bci: 4, path: [] }, CanonicalBlockId { bci: 11, path: [] }, CanonicalBlockId { bci: 16, path: [] }, CanonicalBlockId { bci: 22, path: [] }] latches=[CanonicalBlockId { bci: 22, path: [] }] irreducible=false
+boundary boundary.NestedLatch.nested(I)I natural_loop header=4 blocks=[CanonicalBlockId { bci: 11, path: [] }, CanonicalBlockId { bci: 16, path: [] }] latches=[CanonicalBlockId { bci: 16, path: [] }] irreducible=false
+boundary boundary.NestedLatch.nested(I)I recovered_regions=[
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 4,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 9,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 11,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 16,
+                path: [],
+            },
+        ],
+        reason: LoopShape {
+            block_bci: 0,
+        },
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 28,
+                path: [],
+            },
+            CanonicalBlockId {
+                bci: 22,
+                path: [],
+            },
+        ],
+        reason: UncoveredBlocks {
+            blocks: [
+                28,
+                22,
+            ],
+        },
+    },
+]
+boundary boundary.MultipleLatch.multiple(I)I canonical_edges=[(0, Normal, 4), (0, Normal, 25), (4, Normal, 9), (4, Normal, 12), (9, Normal, 0), (12, Normal, 17), (12, Normal, 19), (19, Normal, 0)]
+boundary boundary.MultipleLatch.multiple(I)I natural_loop header=0 blocks=[CanonicalBlockId { bci: 0, path: [] }, CanonicalBlockId { bci: 4, path: [] }, CanonicalBlockId { bci: 9, path: [] }, CanonicalBlockId { bci: 12, path: [] }, CanonicalBlockId { bci: 19, path: [] }] latches=[CanonicalBlockId { bci: 9, path: [] }, CanonicalBlockId { bci: 19, path: [] }] irreducible=false
+boundary boundary.MultipleLatch.multiple(I)I recovered_regions=[
+    Loop {
+        header: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        tests: [
+            (
+                CanonicalBlockId {
+                    bci: 0,
+                    path: [],
+                },
+                1,
+                FallThrough,
+            ),
+        ],
+        test_operator: None,
+        form: While,
+        for_header: None,
+        body: [
+            If {
+                prefix: [],
+                branch: CanonicalBlockId {
+                    bci: 4,
+                    path: [],
+                },
+                branch_bci: 6,
+                then_arm: Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 9,
+                            path: [],
+                        },
+                    ],
+                },
+                else_arm: If {
+                    prefix: [],
+                    branch: CanonicalBlockId {
+                        bci: 12,
+                        path: [],
+                    },
+                    branch_bci: 14,
+                    then_arm: Straight {
+                        blocks: [
+                            CanonicalBlockId {
+                                bci: 17,
+                                path: [],
+                            },
+                        ],
+                    },
+                    else_arm: Straight {
+                        blocks: [
+                            CanonicalBlockId {
+                                bci: 19,
+                                path: [],
+                            },
+                        ],
+                    },
+                    join: None,
+                },
+                join: None,
+            },
+        ],
+        exit: Some(
+            CanonicalBlockId {
+                bci: 25,
+                path: [],
+            },
+        ),
+        gateway_origins: [],
+    },
+    Straight {
+        blocks: [
+            CanonicalBlockId {
+                bci: 25,
+                path: [],
+            },
+        ],
+    },
+]
+boundary boundary.MultipleLatch.multiple(I)I actual_tail_if_helper header=0 result=Ok(None) analysis_steps=2

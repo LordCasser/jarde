@@ -340,3 +340,5 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 2026-10-10 16:48 UTC：If来源产品1f386686c已提交推送，自身CI38068627541待接受，当前5/7。等待期间root真实lastIndexOf同次IR诊断v2为1/0/0，确认Loop5末尾If16 joinNone，return arm19、独占latch22/SSA22,25、自然唯一latch/唯一Normal→5；52pins还原且cargo clean144.8MiB。下一片preserve-proved-return-arm-loop-latch-origins规划4/4、strict340/0、实现1/7，仅有限扩既有来源证书，生产应用须前片CI/clean交付。computed-init for为独立实际门：初值Push(Int)+Store不覆盖end-1，故全BCI覆盖不等于TestLoopCondition5 for断言追平。71/612与整单元状态不变；后续CF12/DT02/EM23按既有上游分母准备整单元扩验。
 
 2026-10-11：CF07 非空If汇合来源产品1f386686c自身CI38068627541已root独立v4接受4jobs/52steps、双seed3389/0/97、52pins。counted@20完整If来源闭合；lastIndexOf@25与computed-init for独立债务仍保留，下一来源片尚未实施。71/612不变。
+
+2026-10-11：preserve-proved-return-arm-loop-latch-origins已root实际实施，12命令566/0/1、52pins、5GiB/1GiB守卫通过；新CLI完整CF0729命令/10类腿/16方法profile全部物理BCI独立v3接受，唯一新增四profile lastIndexOf@25 derived完整while，正文与旧If/loop来源恒同。旧For/Postfix57命令/20类腿/28方法profile独立接受8生成类正文与全map精确不变。真实边界拒绝和Stop层级保留，cargo clean669.3MiB。当前5/7，自身精确产品CI与最终clean交付待完成；computed-init for仍是独立真实呈现门，71/612与整CF07计数不变。见[本片root验收](../../changes/preserve-proved-return-arm-loop-latch-origins/verification-root.md)。

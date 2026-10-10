@@ -1,0 +1,20 @@
+{
+  "schema": "return-arm-latch-validation-acceptance-root-v1",
+  "status": "accepted",
+  "build_sha256": "d81a2918b1a55e7d910ebd59d82956c14155b6968f4bfb602e85c99d88ab70de",
+  "metadata_sha256": "9913bb51cfa4acc91ed10708f94acdcedb6b4eb85dd4ea31d827febbd05ad6ef",
+  "source_commit_base": "41fe336462448eae3547cafa2a141d52e85a08e0",
+  "cli": {
+    "path": "/private/tmp/jarde-return-arm-latch-cli-v1",
+    "sha256": "9ae5817d25749add0709b4f156c71ce23ac0e5ad41d66ee0136742024461a28f",
+    "mode": "0o555"
+  },
+  "commands": 12,
+  "raw_streams_verified": 24,
+  "passed": 566,
+  "failed": 0,
+  "ignored": 1,
+  "pins": 52,
+  "peak_target_bytes": 701764764,
+  "boundary": "Local validation only; full controls and exact own product CI require separate acceptance."
+}
