@@ -10276,20 +10276,75 @@ impl Walker<'_> {
         )))
     }
 
-    /// The hidden transfer a final straight run may assign to a header-tested loop: a `while`
-    /// latch, or the exact update block already proved by `ForHeader`, whose terminal instruction
-    /// transfers back to this header and whose canonical block has no other outgoing edge.
+    /// The hidden transfer a final straight run may assign to a header-tested loop, or the direct
+    /// latch arm of its final return/latch `if`: a `while` latch, or the exact update block already
+    /// proved by `ForHeader`, whose terminal instruction transfers back to this header and whose
+    /// canonical block has no other outgoing edge.
     fn implicit_tail_latch_origin(
         &mut self,
         header_node: usize,
         body: &[Region],
         for_header: Option<&ForHeader>,
     ) -> Result<Option<u32>, StopReason> {
-        let Some(Region::Straight { blocks: tail }) = body.last() else {
+        let Some(tail) = body.last() else {
             return Ok(None);
         };
-        let Some(latch_id) = tail.last() else {
-            return Ok(None);
+        let (latch_id, return_id) = match tail {
+            Region::Straight { blocks } => {
+                let Some(latch_id) = blocks.last() else {
+                    return Ok(None);
+                };
+                (latch_id, None)
+            }
+            Region::If {
+                branch_bci,
+                then_arm,
+                else_arm,
+                join: None,
+                ..
+            } if for_header.is_none() => {
+                // This direct, no-join form is the one bounded exception to a final Straight
+                // child: exactly one single-block arm returns and the other can be the latch.
+                charge(
+                    self.budget,
+                    CountedBudgetDimension::AnalysisSteps,
+                    2,
+                    Some(*branch_bci),
+                )?;
+                let mut return_id = None;
+                let mut latch_id = None;
+                for arm in [then_arm.as_ref(), else_arm.as_ref()] {
+                    poll(self.budget, Some(*branch_bci))?;
+                    let Region::Straight { blocks } = arm else {
+                        return Ok(None);
+                    };
+                    let [block] = blocks.as_slice() else {
+                        return Ok(None);
+                    };
+                    poll(self.budget, Some(block.bci()))?;
+                    let Some(terminal) = self
+                        .ssa
+                        .block(block)
+                        .and_then(|ssa_block| ssa_block.instructions().last())
+                    else {
+                        return Ok(None);
+                    };
+                    let is_return = matches!(terminal.opcode(), 0xac..=0xb1)
+                        && matches!(self.operations.get(terminal.bci()), Some(Operation::Return));
+                    if is_return {
+                        if return_id.replace(block).is_some() {
+                            return Ok(None);
+                        }
+                    } else if latch_id.replace(block).is_some() {
+                        return Ok(None);
+                    }
+                }
+                let (Some(return_id), Some(latch_id)) = (return_id, latch_id) else {
+                    return Ok(None);
+                };
+                (latch_id, Some(return_id))
+            }
+            _ => return Ok(None),
         };
         let Some(latch_node) = self.view.index_of(latch_id) else {
             return Ok(None);
@@ -10356,8 +10411,12 @@ impl Walker<'_> {
             Some(latch_bci),
         )?;
         let mut outgoing = 0usize;
+        let mut return_outgoing = 0usize;
         for edge in self.canonical.edges() {
             poll(self.budget, Some(latch_bci))?;
+            if return_id.is_some_and(|return_id| edge.from() == return_id) {
+                return_outgoing += 1;
+            }
             if edge.from() != latch_id {
                 continue;
             }
@@ -10366,7 +10425,7 @@ impl Walker<'_> {
                 return Ok(None);
             }
         }
-        if outgoing != 1 {
+        if outgoing != 1 || return_outgoing != 0 {
             return Ok(None);
         }
         Ok(Some(latch_bci))
@@ -13638,6 +13697,275 @@ mod tests {
             reason.message().contains("[44, 45]"),
             "{}",
             reason.message()
+        );
+    }
+    #[test]
+    fn cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class"
+        );
+
+        fn find_loop(region: &Region, bci: u32) -> Option<&Region> {
+            match region {
+                Region::Loop { header, .. } if header.bci() == bci => Some(region),
+                Region::Loop { body, .. } | Region::Sequence { regions: body } => {
+                    body.iter().find_map(|child| find_loop(child, bci))
+                }
+                Region::If {
+                    then_arm, else_arm, ..
+                } => find_loop(then_arm, bci).or_else(|| find_loop(else_arm, bci)),
+                _ => None,
+            }
+        }
+
+        let mut budget = Budget::new(jarde_reader::budget::Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
+            .expect("frozen CF07 class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                length: u64::try_from(CLASS.len()).expect("fixture length fits u64"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 23,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method: PhysicalMethodId {
+                owner: definition,
+                name: JvmBytes(b"lastIndexOf".to_vec()),
+                descriptor: JvmBytes(b"([IIII)I".to_vec()),
+            },
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        let analysis = analyze_method_ir(&[snapshot], &request, &mut budget)
+            .expect("frozen lastIndexOf completes one real JVM analysis");
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("canonical CFG from that analysis");
+        let ssa = ir.ssa().expect("SSA from that analysis");
+        let code = ir.code().expect("decoded code from that analysis");
+        let operations = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::plan_four_conditional_strings(
+            ssa,
+            canonical,
+            &operations,
+            &crate::build::FieldCopies::default(),
+            &mut budget,
+        )
+        .expect("the real method's existing concat plan completes");
+        let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
+            .expect("normal-flow view from that canonical CFG");
+        let recovered = recover(
+            canonical,
+            &view,
+            ssa,
+            &operations,
+            ir.constant_pool(),
+            &chains,
+            &crate::init::Sites::empty(),
+            code,
+            Some(false),
+            false,
+            &crate::pass::JAVA_8,
+            &mut budget,
+        )
+        .expect("the real method region walk completes");
+
+        let loop_region = recovered
+            .regions
+            .iter()
+            .find_map(|region| find_loop(region, 5))
+            .expect("actual lastIndexOf loop header 5");
+        let Region::Loop {
+            header,
+            body,
+            for_header,
+            gateway_origins,
+            ..
+        } = loop_region
+        else {
+            unreachable!()
+        };
+        assert!(for_header.is_none());
+        assert_eq!(gateway_origins, &[25]);
+        let Some(Region::If {
+            branch_bci: 16,
+            join: None,
+            ..
+        }) = body.last()
+        else {
+            panic!("expected actual direct returning If tail: {body:#?}");
+        };
+        let header_node = view
+            .index_of(header)
+            .expect("actual header has normal-flow node");
+
+        // Exercise the production helper against this exact recovered Loop body and the same
+        // canonical graph, SSA, decoded operations, and normal-flow view used above.
+        use jarde_reader::budget::{CancellationToken, Limits};
+
+        fn steps(limit: u64) -> Budget {
+            Budget::new(Limits {
+                analysis_steps: limit,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            })
+        }
+
+        let sites = crate::init::Sites::empty();
+        macro_rules! real_walker {
+            ($budget:ident) => {
+                Walker {
+                    canonical,
+                    view: &view,
+                    ssa,
+                    operations: &operations,
+                    pool: ir.constant_pool(),
+                    chains: &chains,
+                    sites: &sites,
+                    code,
+                    method_synchronized: Some(false),
+                    has_reachable_explicit_monitor: false,
+                    return_is_boolean: false,
+                    handlers: &code.exception_handlers,
+                    profile: &crate::pass::JAVA_8,
+                    budget: &mut $budget,
+                    catch_joins: BTreeSet::new(),
+                    fragmented: None,
+                    excluded_edge_nodes: BTreeSet::new(),
+                    visited: BTreeSet::new(),
+                    unclosed_tail_at: None,
+                    own_monitor: None,
+                    depth: 0,
+                }
+            };
+        }
+
+        let mut no_steps = steps(0);
+        let stop = real_walker!(no_steps)
+            .implicit_tail_latch_origin(header_node, body, None)
+            .expect_err("the two branch-shape charges must stop before arm proof");
+        assert!(matches!(
+            stop,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                at: Some(16),
+                ..
+            }
+        ));
+        assert_eq!(no_steps.usage().analysis_steps, 0);
+
+        let mut two_steps = steps(2);
+        let stop = real_walker!(two_steps)
+            .implicit_tail_latch_origin(header_node, body, None)
+            .expect_err("the unique-latch charge must stop before edge scanning");
+        assert!(matches!(
+            stop,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                at: Some(25),
+                ..
+            }
+        ));
+        assert_eq!(two_steps.usage().analysis_steps, 2);
+
+        let mut three_steps = steps(3);
+        let stop = real_walker!(three_steps)
+            .implicit_tail_latch_origin(header_node, body, None)
+            .expect_err("the full canonical-edge charge must stop before scanning");
+        assert!(matches!(
+            stop,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                at: Some(25),
+                ..
+            }
+        ));
+        assert_eq!(three_steps.usage().analysis_steps, 3);
+
+        // Build and recover the actual method first; cancellation is introduced only for the
+        // proof walk, which must observe it at the candidate branch before returning an origin.
+        let token = CancellationToken::new();
+        let mut cancelled_budget = Budget::with_cancellation_token(
+            Limits {
+                analysis_steps: u64::MAX,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            token.clone(),
+        );
+        token.cancel();
+        let stop = real_walker!(cancelled_budget)
+            .implicit_tail_latch_origin(header_node, body, None)
+            .expect_err("post-analysis cancellation must stop the proof walk");
+        assert_eq!(stop, StopReason::Cancelled { at: Some(16) });
+        let mut complete = steps(1 << 20);
+        assert_eq!(
+            real_walker!(complete)
+                .implicit_tail_latch_origin(header_node, body, None)
+                .expect("complete direct proof"),
+            Some(25)
         );
     }
 }
