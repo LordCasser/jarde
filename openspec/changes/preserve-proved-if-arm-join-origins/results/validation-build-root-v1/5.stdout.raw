@@ -1,0 +1,12 @@
+
+running 7 tests
+test break_and_return_channel_recovers_the_return_arm ... ok
+test composite_labelled_families_recover_completely ... ok
+test double_jump_budget_and_cancellation_publish_no_partial_source ... ok
+test jump_transfer_blocks_have_one_owner_and_complete_sources ... ok
+test single_jump_matrix_is_unchanged_text ... ok
+test three_jump_body_keeps_its_registered_refusal ... ok
+test two_jump_loop_bodies_present_both_edges ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+

@@ -1,0 +1,48 @@
+{
+  "schema": "preserve-proved-if-arm-boundary-acceptance-root-v1",
+  "status": "accepted",
+  "execution_sha256": "6a9ed6132cb8f8b763be23f26bf55e49895f4969f1adb09015711aa4bcb74f84",
+  "internal_test": [
+    1,
+    0,
+    0
+  ],
+  "gateway_tests": [
+    12,
+    0,
+    0
+  ],
+  "canonical_proof": {
+    "actual_if_branch_bci": 12,
+    "actual_join_bci": 27,
+    "then_arm": "Fallback(ExceptionEdge(block15,handler0))",
+    "then_ssa_bcis": [
+      15,
+      18,
+      21
+    ],
+    "outgoing": [
+      {
+        "kind": "Normal",
+        "target": 27
+      },
+      {
+        "kind": "Exception",
+        "target": 36
+      }
+    ],
+    "helper_result": null
+  },
+  "public_stop_at": 20,
+  "root_corrections": [
+    "Original private test expected Straight but actual Region rejects this arm as ExceptionEdge; v1 raw failure retained.",
+    "Public report conservatively quotes method block leaders; existing physical instruction21 has no source span. It remains a separate source-coverage debt, not repaired or claimed here. v2 raw failure retained."
+  ],
+  "product_source_pins": {
+    "crates/jarde-java/src/build.rs": "2f60027b615ff2b8687cb3555c5cfa6fe1ac5a65b4244faa613ee70efaee466c",
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "85855d95bfb682e1f48035a799b05f0880835845887d8e14c10636b8415a8b9b",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class": "a9d90b1b42d69cf3ec6e30dd6d16cacf0c0264fe86adc88f1ba27d897046de2f"
+  },
+  "boundary": "Full validation, CLI replay and own product CI remain pending."
+}

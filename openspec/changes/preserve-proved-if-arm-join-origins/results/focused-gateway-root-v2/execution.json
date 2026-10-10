@@ -1,0 +1,155 @@
+{
+  "schema": "preserve-proved-if-arm-join-origins-focused-gateway-root-v2",
+  "status": "diagnostic-passed",
+  "test": "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+  "argv": [
+    "cargo",
+    "test",
+    "-p",
+    "jarde-java",
+    "--test",
+    "p3_loop_exit_gateways",
+    "--locked",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T16:16:04.515954+00:00",
+  "diagnostic_runner": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/run-focused-gateway-root-v2.py",
+    "sha256": "60baaf7e4bf799945e3d6b2d128626bf1475e3859579ea1ef1be8660488e5f5f"
+  },
+  "guarded_runner_template": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+  },
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "environment_overrides": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_TERM_COLOR": "always"
+  },
+  "stripped_java_environment_keys": [],
+  "guards": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_interval_seconds": 1,
+    "process_group_stop": true
+  },
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+    "sha256_before": "4f5df7bb4043101a8ae634915c9049e9fc680d8b75f5cca4daa7021db10a6568",
+    "sha256_after": "4f5df7bb4043101a8ae634915c9049e9fc680d8b75f5cca4daa7021db10a6568",
+    "unchanged_during_test": true,
+    "note": "applied product build.rs; full candidate freeze not yet performed"
+  },
+  "product_source_pins_before": {
+    "crates/jarde-java/src/build.rs": "4f5df7bb4043101a8ae634915c9049e9fc680d8b75f5cca4daa7021db10a6568",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "949dbe78447140e9b233102ed9779f2c67c88dc580d41d7e02da7fab224d9254",
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5"
+  },
+  "required_test_names": [
+    "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+    "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+    "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source"
+  ],
+  "preflight": {
+    "free_bytes": 63919198208,
+    "target_bytes": 203440673
+  },
+  "command": {
+    "index": 3,
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--test",
+      "p3_loop_exit_gateways",
+      "--locked",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T16:16:04.520552+00:00",
+    "duration_seconds": 2.024188042007154,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 203910073,
+    "free_bytes_after": 63918571520,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": {
+      "expected": [
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "actual": [
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "required": true,
+      "ok": true,
+      "required_test_names": [
+        "cf07_nonempty_if_join_goto_is_derived_from_complete_if"
+      ],
+      "required_test_names_present": true
+    },
+    "streams": {
+      "stdout": {
+        "path": "openspec/changes/preserve-proved-if-arm-join-origins/results/focused-gateway-root-v2/3.stdout.raw",
+        "bytes": 980,
+        "sha256": "c35235e4cc7d6e77b0ec30b8e2d01d84fcdfab4dec76b4054b5fd7bf157731df"
+      },
+      "stderr": {
+        "path": "openspec/changes/preserve-proved-if-arm-join-origins/results/focused-gateway-root-v2/3.stderr.raw",
+        "bytes": 297,
+        "sha256": "48a695f6be4ef5c958ddea9148f5aa5b66d7e6269e35876ffd4b7174fcfd9aa0"
+      }
+    }
+  },
+  "exact_test_line": [
+    "test cf07_nonempty_if_join_goto_is_derived_from_complete_if ... ok"
+  ],
+  "summary_matches": [
+    [
+      "12",
+      "0",
+      "0"
+    ]
+  ],
+  "free_bytes_after": 63918571520
+}

@@ -1,0 +1,37 @@
+[1m[92m   Compiling[0m libc v0.2.189
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m rustix v1.1.4
+[1m[92m   Compiling[0m getrandom v0.4.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m zerocopy v0.8.57
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m fastrand v2.5.0
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m quick-error v1.2.3
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m rusty-fork v0.3.1
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m rand_xorshift v0.4.0
+[1m[92m   Compiling[0m rand v0.9.5
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m unarray v0.1.4
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m serde_json v1.0.151
+[1m[92m   Compiling[0m proptest v1.11.0
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 30.65s
+[1m[92m     Running[0m tests/p3_loop_arm_join.rs (target/debug/deps/p3_loop_arm_join-66a3ef75e4ea1e16)

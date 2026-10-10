@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-10T16:33:13.067144+00:00",
+  "duration_seconds": 0.3262327920238022,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/verify-candidate-root-v2.py",
+    "--source-base",
+    "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+    "--build",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/validation-build-root-v1/execution.json"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 1261,
+      "sha256": "55ee744a34fb5ceae002bc021b4b3727c0f9217a860607e1bf14dd9b88181506"
+    }
+  }
+}

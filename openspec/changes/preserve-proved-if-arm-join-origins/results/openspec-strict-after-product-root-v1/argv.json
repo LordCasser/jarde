@@ -1,0 +1,6 @@
+[
+  "openspec",
+  "validate",
+  "--all",
+  "--strict"
+]

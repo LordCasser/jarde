@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-candidate-root-v2.py", line 296, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-candidate-root-v2.py", line 291, in main
+    postfix_for_baseline=verify_postfix_against_for_baseline(m,for_manifest)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-candidate-root-v2.py", line 116, in verify_postfix_against_for_baseline
+    if maps(old_doc)!=maps(new_doc):reject(f'postfix source spans/origins changed from accepted For baseline: {key}')
+       ^^^^^^^^^^^^^
+  File "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/verify-candidate-root-v2.py", line 115, in maps
+    def maps(doc):return {h['method_key'](row['item']):row['outcome']['report'].get('source_map') for row in doc['methods']}
+                          ^
+NameError: name 'h' is not defined

@@ -1,0 +1,7 @@
+[
+  "python3",
+  "-B",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/run-focused-gateway-root-v1.py",
+  "--expected-patch-region-sha256",
+  "4f5df7bb4043101a8ae634915c9049e9fc680d8b75f5cca4daa7021db10a6568"
+]

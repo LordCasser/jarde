@@ -1,0 +1,17 @@
+{
+  "schema": "preserve-proved-if-arm-ci-preparation-root-v1",
+  "status": "reviewed-unexecuted",
+  "root_changes": [
+    "Capture and verifier output paths both moved to this change results/ci-product-v2; failures remain private.",
+    "Luna v1 wrongly assumed new test was region::tests and frozen required gateway list included old names. v2 uses actual build::tests and three new gateway requirements; raw checks retain all twelve."
+  ],
+  "files": {
+    "capture-ci-product-root-v2.py": {
+      "sha256": "c886dfffa9ec8cd34f825fab6aaacbf147792577d0cfea5fc679566c9dc0be48"
+    },
+    "verify-ci-product-root-v2.py": {
+      "sha256": "d51366e7d9e9f2f9bfbe4456204e685d07d0c94aed58f2a667b486190401e90c"
+    }
+  },
+  "scope": "No future product SHA, run or CI success claimed; root invokes only with actual submitted product/run."
+}

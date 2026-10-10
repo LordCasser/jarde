@@ -1,0 +1,45 @@
+{"schema": "preserve-proved-if-arm-exception-fixture-root-v1", "status": "compiled-and-javap-captured", "utc": "2026-10-10T16:16:42.894469+00:00", "runner": {"path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/prepare-exception-join-case-root-v1.py", "sha256": "b4c0ddd0bf3165105232ad7ab946a1026f6135153c17e0c40e1d89a03e6ce9c2"}, "guard_template": {"path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py", "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"}, "jdk": {"manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json", "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec", "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home", "tools": {"java": {"path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java", "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"}, "javac": {"path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac", "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"}, "javap": {"path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap", "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"}}}, "commands": [{"index": 20, "argv": ["/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac", "--release", "8", "-g:none", "-proc:none", "-classpath", "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/empty-classpath", "-sourcepath", "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/empty-sourcepath", "-d", "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes", "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/src/ifjoin/ExceptionIfJoin.java"], "cwd": "/Users/lordcasser/workspace/projects/jarde", "started_at": "2026-10-10T16:16:40.847428+00:00", "duration_seconds": 1.022528124973178, "exit_code": 0, "guard_stop": null, "peak_target_bytes": 203443585, "free_bytes_after": 63918903296, "env_overrides": {"CARGO_BUILD_JOBS": "1", "CARGO_INCREMENTAL": "0", "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0", "RUST_TEST_THREADS": "1", "CARGO_TERM_COLOR": "always"}, "test_summary_check": {"expected": null, "actual": [], "required": false, "required_gateway_tests": [], "required_gateway_tests_present": null, "required_boolean_loop_tests": [], "required_boolean_loop_tests_present": null, "ok": true, "failure_reason": null}, "streams": {"stdout": {"path": "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/20.stdout.raw", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, "stderr": {"path": "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/20.stderr.raw", "bytes": 243, "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"}}}, {"index": 21, "argv": ["/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap", "-c", "-p", "-s", "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class"], "cwd": "/Users/lordcasser/workspace/projects/jarde", "started_at": "2026-10-10T16:16:41.873161+00:00", "duration_seconds": 1.021161957993172, "exit_code": 0, "guard_stop": null, "peak_target_bytes": 203443585, "free_bytes_after": 63918899200, "env_overrides": {"CARGO_BUILD_JOBS": "1", "CARGO_INCREMENTAL": "0", "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0", "RUST_TEST_THREADS": "1", "CARGO_TERM_COLOR": "always"}, "test_summary_check": {"expected": null, "actual": [], "required": false, "required_gateway_tests": [], "required_gateway_tests_present": null, "required_boolean_loop_tests": [], "required_boolean_loop_tests_present": null, "ok": true, "failure_reason": null}, "streams": {"stdout": {"path": "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/21.stdout.raw", "bytes": 1033, "sha256": "4f3972c232ae20efcaa69422addbf485e6739640f1b3bbee73b5baaeb51b4dd2"}, "stderr": {"path": "openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/21.stderr.raw", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}}}], "source": {"path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/src/ifjoin/ExceptionIfJoin.java", "sha256": "1189ac1050ce77fa55878648cd18e1a301bd5b2cd105d9e1e74034c733216117"}, "class": {"path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class", "sha256": "a9d90b1b42d69cf3ec6e30dd6d16cacf0c0264fe86adc88f1ba27d897046de2f", "bytes": 352}, "target_code_executed": false}
+public final class ifjoin.ExceptionIfJoin {
+  public ifjoin.ExceptionIfJoin();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static void mayThrow();
+    descriptor: ()V
+    Code:
+       0: return
+
+  public static int withException(int);
+    descriptor: (I)I
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     33
+       9: iload_2
+      10: iconst_1
+      11: iand
+      12: ifne          24
+      15: invokestatic  #7                  // Method mayThrow:()V
+      18: iinc          1, 2
+      21: goto          27
+      24: iinc          1, 1
+      27: iinc          2, 1
+      30: goto          4
+      33: goto          39
+      36: astore_3
+      37: iconst_m1
+      38: ireturn
+      39: iload_1
+      40: ireturn
+    Exception table:
+       from    to  target type
+           4    33    36   Class java/lang/RuntimeException
+}
+

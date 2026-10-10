@@ -1,0 +1,20 @@
+{
+  "schema": "preserve-proved-if-arm-validation-acceptance-root-v1",
+  "status": "accepted",
+  "build_sha256": "7f0ac81bd57faa67082bdc1f0231650a96c9d2658d00690f086c4039c49d6458",
+  "metadata_sha256": "6f785a03e50565bc5d90bd6a6ae85f1bb789e31647811421e5f21d41ee7030ca",
+  "source_commit_base": "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+  "cli": {
+    "path": "/private/tmp/jarde-proved-if-join-cli-v1",
+    "sha256": "7b751758ee7f0b49bd61332a1a78412b36ecef898e43171ecf6af620d65cc9a6",
+    "mode": "0o555"
+  },
+  "commands": 12,
+  "raw_streams_verified": 24,
+  "passed": 562,
+  "failed": 0,
+  "ignored": 1,
+  "pins": 52,
+  "peak_target_bytes": 701667300,
+  "boundary": "Whole-class source/physical acceptance and own product CI remain pending."
+}

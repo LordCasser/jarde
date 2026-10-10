@@ -1,0 +1,39 @@
+{
+  "utc": "2026-10-10T16:31:45.575480+00:00",
+  "duration_seconds": 64.56771054098499,
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/prepare-candidate-root-v2.py",
+    "--cli",
+    "/private/tmp/jarde-proved-if-join-cli-v1",
+    "--cli-sha256",
+    "7b751758ee7f0b49bd61332a1a78412b36ecef898e43171ecf6af620d65cc9a6",
+    "--metadata",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/candidate-cli-v1.json",
+    "--metadata-sha256",
+    "6f785a03e50565bc5d90bd6a6ae85f1bb789e31647811421e5f21d41ee7030ca",
+    "--source-base",
+    "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+    "--build",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/validation-build-root-v1/execution.json"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 190,
+      "sha256": "ba4e6288bc14acdf1db74289fe7fb19be60a315605cd07009ec58a4be875d186"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

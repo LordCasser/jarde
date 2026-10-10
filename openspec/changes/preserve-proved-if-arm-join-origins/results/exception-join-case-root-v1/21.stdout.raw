@@ -1,0 +1,43 @@
+public final class ifjoin.ExceptionIfJoin {
+  public ifjoin.ExceptionIfJoin();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static void mayThrow();
+    descriptor: ()V
+    Code:
+       0: return
+
+  public static int withException(int);
+    descriptor: (I)I
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: iload_0
+       6: if_icmpge     33
+       9: iload_2
+      10: iconst_1
+      11: iand
+      12: ifne          24
+      15: invokestatic  #7                  // Method mayThrow:()V
+      18: iinc          1, 2
+      21: goto          27
+      24: iinc          1, 1
+      27: iinc          2, 1
+      30: goto          4
+      33: goto          39
+      36: astore_3
+      37: iconst_m1
+      38: ireturn
+      39: iload_1
+      40: ireturn
+    Exception table:
+       from    to  target type
+           4    33    36   Class java/lang/RuntimeException
+}

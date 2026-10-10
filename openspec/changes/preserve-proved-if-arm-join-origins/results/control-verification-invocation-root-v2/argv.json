@@ -1,0 +1,14 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/verify-candidate-root-v3.py",
+  "--source-base",
+  "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+  "--build",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/validation-build-root-v1/execution.json"
+]

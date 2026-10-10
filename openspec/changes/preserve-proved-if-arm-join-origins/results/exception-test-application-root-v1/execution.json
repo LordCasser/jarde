@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T16:21:06.957815+00:00",
+  "duration_seconds": 0.011231916985707358,
+  "argv": [
+    "git",
+    "apply",
+    "/private/tmp/jarde-exception-if-join-test-private-v1/test.patch"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

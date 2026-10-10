@@ -1,0 +1,296 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -8767,6 +8767,70 @@
+         }
+     }
+     Ok(())
++}
++
++/// Return the last direct `goto` of a nonempty if arm only when its complete canonical
++/// outgoing set is the one normal edge to that if's join. `region::recover` has already checked
++/// non-overlapping ownership on the completed tree, so this reads the terminal arm child without
++/// rebuilding a method-wide ownership index.
++fn nonempty_if_join_transfer(
++    arm: &Region,
++    join: Option<&CanonicalBlockId>,
++    canonical: &CanonicalCfg,
++    ssa: &SsaTable,
++    operations: &Operations,
++    budget: &mut Budget,
++) -> Result<Option<u32>, StopReason> {
++    let Some(join) = join else {
++        return Ok(None);
++    };
++    // A sequence may end in a straight run, but do not search inside an earlier or nested child.
++    let terminal = match arm {
++        Region::Straight { blocks } => Some(blocks.last()),
++        Region::Sequence { regions } => match regions.last() {
++            Some(Region::Straight { blocks }) => Some(blocks.last()),
++            _ => None,
++        },
++        _ => None,
++    }
++    .flatten();
++    let Some(terminal) = terminal else {
++        return Ok(None);
++    };
++    let Some(instructions) = ssa.block(terminal).map(|block| block.instructions()) else {
++        return Ok(None);
++    };
++    let Some(instruction) = instructions.last() else {
++        return Ok(None);
++    };
++    let bci = instruction.bci();
++    // Operation::Transfer is decoded only for the unconditional goto/goto_w opcodes.
++    if !matches!(operations.get(bci), Some(Operation::Transfer)) {
++        return Ok(None);
++    }
++
++    // The edge list is the full canonical outgoing set, including exceptional edges. Bill the
++    // examined list before polling and reading it; any Stop aborts Builder before it can publish.
++    charge(
++        budget,
++        CountedBudgetDimension::IrEdges,
++        u64::try_from(canonical.edges().len()).unwrap_or(u64::MAX),
++        Some(bci),
++    )?;
++    poll(budget, Some(bci))?;
++    let outgoing: Vec<_> = canonical
++        .edges()
++        .iter()
++        .filter(|edge| edge.from() == terminal)
++        .collect();
++    if matches!(
++        outgoing.as_slice(),
++        [edge] if edge.kind() == CanonicalEdgeKind::Normal && edge.to() == join
++    ) {
++        Ok(Some(bci))
++    } else {
++        Ok(None)
++    }
+ }
+ 
+ struct Builder<'a> {
+@@ -17443,7 +17507,7 @@
+                 branch_bci,
+                 then_arm,
+                 else_arm,
+-                ..
++                join,
+             } => {
+                 for block in prefix {
+                     self.block(block)?;
+@@ -17490,22 +17554,34 @@
+                 // An empty arm may be a real, owned goto to this if's join. It emits no Java
+                 // statement, so the if that presents that edge carries the goto's BCI.
+                 for (arm, statements) in [(then_arm, &then_body), (else_arm, &else_body)] {
+-                    if !statements.is_empty() {
+-                        continue;
+-                    }
+-                    if let Region::Straight { blocks } = arm.as_ref() {
+-                        for block in blocks {
+-                            if let Some(instructions) =
+-                                self.ssa.block(block).map(|block| block.instructions())
+-                                && let [instruction] = instructions
+-                                && matches!(
+-                                    self.operations.get(instruction.bci()),
+-                                    Some(Operation::Transfer)
+-                                )
+-                            {
+-                                origin = origin.plus_derived(Origin::derived(instruction.bci()));
++                    if statements.is_empty() {
++                        // Preserve the existing empty-arm rule unchanged.
++                        if let Region::Straight { blocks } = arm.as_ref() {
++                            for block in blocks {
++                                if let Some(instructions) =
++                                    self.ssa.block(block).map(|block| block.instructions())
++                                    && let [instruction] = instructions
++                                    && matches!(
++                                        self.operations.get(instruction.bci()),
++                                        Some(Operation::Transfer)
++                                    )
++                                {
++                                    origin =
++                                        origin.plus_derived(Origin::derived(instruction.bci()));
++                                }
+                             }
+                         }
++                        continue;
++                    }
++                    if let Some(bci) = nonempty_if_join_transfer(
++                        arm,
++                        join.as_ref(),
++                        self.canonical,
++                        self.ssa,
++                        self.operations,
++                        self.budget,
++                    )? {
++                        origin = origin.plus_derived(Origin::derived(bci));
+                     }
+                 }
+                 self.push(Stmt::new(
+--- a/crates/jarde-java/tests/p3_loop_exit_gateways.rs
++++ b/crates/jarde-java/tests/p3_loop_exit_gateways.rs
+@@ -35,6 +35,9 @@
+ const NO_PREFIX_BCIS: [u32; 11] = [0, 1, 2, 3, 6, 7, 8, 11, 14, 17, 18];
+ const ITERATOR_PREFIX: &[u8] = include_bytes!(
+     "../../../openspec/evidence/java-syntax-2026-10-10/em23-variable-postfix-loop/baseline-root-v1/cases/javac23-original/classes/VariablePostfixLoop.class",
++);
++const IF_JOIN_CF07: &[u8] = include_bytes!(
++    "../../../openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+ );
+ 
+ fn limits() -> Limits {
+@@ -252,7 +255,152 @@
+         entry_anchor,
+         "prefix source anchor is outside the selected if arm: {}",
+         report.text
++    );
++}
++
++#[test]
++fn cf07_nonempty_if_join_goto_is_derived_from_complete_if() {
++    const METHOD_BCIS: [u32; 18] = [
++        0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 14, 17, 20, 23, 24, 25, 26,
++    ];
++    const METHOD_TAIL_BCIS: [u32; 5] = [27, 30, 33, 36, 37];
++    let evidence = RecoveryEvidenceRequest::essential()
++        .with_kind(RecoveryEvidenceKind::SourceMap);
++    let default = recover_class_method_with_budget(
++        IF_JOIN_CF07,
++        "cf07/LoopCases",
++        "counted",
++        "(II)I",
++        evidence,
++        None,
++    );
++    let all = recover_class_method_with_budget(
++        IF_JOIN_CF07,
++        "cf07/LoopCases",
++        "counted",
++        "(II)I",
++        RecoveryEvidenceRequest::all(),
++        None,
++    );
++    assert!(default.produced(), "default: {:?}", default.outcome);
++    assert!(all.produced(), "all: {:?}", all.outcome);
++    assert_eq!(default.text, all.text);
++    assert_eq!(default.source_map, all.source_map);
++    assert!(!all.text.contains("@bytecode"), "{}", all.text);
++
++    for bci in METHOD_BCIS.into_iter().chain(METHOD_TAIL_BCIS) {
++        assert!(
++            !all.source_map.of_bci(bci).is_empty(),
++            "BCI {bci} lost its source: {}",
++            all.text
++        );
++    }
++    let if_spans = all.source_map.derived_of_bci(20);
++    assert!(
++        if_spans.iter().any(|segment| {
++            let text = segment.text(&all.text);
++            segment.start() <= all.text.find("if (").expect("inner if is emitted")
++                && segment.end() > all.text.find("if (").expect("inner if is emitted")
++                && text.trim_start().starts_with("if (")
++                && text.ends_with("}\n")
++        }),
++        "goto@20 is not derived from the complete if statement: {}",
++        all.text
++    );
++    assert!(
++        all.source_map.of_bci(14).iter().any(|segment| {
++            segment.text(&all.text).trim_start().starts_with("if (")
++        }),
++        "condition@14 lost the inner-if source: {}",
++        all.text
++    );
++    assert!(
++        all.source_map.derived_of_bci(30).iter().any(|segment| {
++            segment.text(&all.text).trim_start().starts_with("while (")
++        }),
++        "outer while latch@30 lost its source: {}",
++        all.text
++    );
++
++    let mut owner_budget = Budget::new(limits());
++    let owner_snapshot = ArtifactSnapshot::open(
++        ArtifactInput::bytes(IF_JOIN_CF07.to_vec()),
++        &mut owner_budget,
++    )
++    .expect("frozen class snapshot opens");
++    let expected_owner = PhysicalDefinitionId {
++        location: PhysicalClassLocation::StandaloneRoot {
++            snapshot: owner_snapshot.id().clone(),
++        },
++        class_bytes: ClassBytesId {
++            digest: Digest(blake3::hash(IF_JOIN_CF07).to_hex().to_string()),
++            length: IF_JOIN_CF07.len() as u64,
++        },
++        variant: PhysicalVariant::Base,
++    };
++    for segment in all.source_map.segments() {
++        for origin in std::iter::once(segment.origin().primary())
++            .chain(segment.origin().derived())
++        {
++            if origin.bci() == 20 {
++                let method = origin.method().expect("goto source has physical method");
++                assert_eq!(method.name.0.as_slice(), b"counted");
++                assert_eq!(method.descriptor.0.as_slice(), b"(II)I");
++                assert_eq!(&method.owner, &expected_owner);
++            }
++        }
++    }
++}
++
++#[test]
++fn cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source() {
++    use jarde_java::StopReason;
++    use jarde_reader::model::ExecutionReport;
++
++    let full = recover_class_method_with_budget(
++        IF_JOIN_CF07,
++        "cf07/LoopCases",
++        "counted",
++        "(II)I",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::new(limits())),
+     );
++    let ExecutionReport::Complete { usage } = full.execution else {
++        panic!("full candidate did not complete: {:?}", full.outcome);
++    };
++    let mut late = limits();
++    late.ir_edges = usage.ir_edges.saturating_sub(1);
++    let stopped = recover_class_method_with_budget(
++        IF_JOIN_CF07,
++        "cf07/LoopCases",
++        "counted",
++        "(II)I",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::new(late)),
++    );
++    assert!(!stopped.produced());
++    assert!(stopped.text.is_empty() && stopped.source_map.is_empty());
++    assert!(matches!(
++        stopped.stop(),
++        Some(StopReason::Budget {
++            dimension: CountedBudgetDimension::IrEdges,
++            ..
++        })
++    ));
++
++    let token = CancellationToken::new();
++    token.cancel();
++    let cancelled = recover_class_method_with_budget(
++        IF_JOIN_CF07,
++        "cf07/LoopCases",
++        "counted",
++        "(II)I",
++        RecoveryEvidenceRequest::all(),
++        Some(Budget::with_cancellation_token(limits(), token)),
++    );
++    assert!(!cancelled.produced());
++    assert!(cancelled.text.is_empty() && cancelled.source_map.is_empty());
++    assert!(cancelled.stop().is_some_and(StopReason::is_cancelled));
+ }
+ 
+ #[test]

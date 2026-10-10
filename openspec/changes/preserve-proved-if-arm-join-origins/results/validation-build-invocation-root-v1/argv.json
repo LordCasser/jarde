@@ -1,0 +1,22 @@
+[
+  "python3",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/run-validation-build-root-v1.py",
+  "--source-base",
+  "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+  "--expected-lib-count",
+  "336",
+  "--expected-gateway-count",
+  "12",
+  "--required-lib-test",
+  "build::tests::exception_if_join_transfer_rejects_a_canonical_exception_edge",
+  "--required-lib-test",
+  "region::tests::prefixed_loop_chain_certificate_rejects_extra_entries_exits_and_owners",
+  "--required-lib-test",
+  "region::tests::prefixed_loop_header_cannot_reopen_claimed_outer_target_or_parent_scope",
+  "--required-gateway-test",
+  "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+  "--required-gateway-test",
+  "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+  "--required-gateway-test",
+  "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source"
+]

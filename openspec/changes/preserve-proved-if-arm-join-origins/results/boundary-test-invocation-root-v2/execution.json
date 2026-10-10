@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-10T16:23:31.846255+00:00",
+  "duration_seconds": 12.189831750001758,
+  "argv": [
+    "python3",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/run-boundary-tests-root-v2.py",
+    "--build-sha256",
+    "fa3402e3754626451b77f7610c8e32350e4cc58742eb147cbb8efb4a5e7d5758"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 36,
+      "sha256": "3595de440c114aba2ae5742f2162bfadb91a794bd743f5b2632b3d4500de2617"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

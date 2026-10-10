@@ -1,0 +1,5 @@
+[
+  "git",
+  "apply",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/implementation-luna-v2.patch"
+]

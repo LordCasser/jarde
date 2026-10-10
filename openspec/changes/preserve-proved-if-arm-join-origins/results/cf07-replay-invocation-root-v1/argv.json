@@ -1,0 +1,20 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/prepare-cf07-candidate-root-v3.py",
+  "--cli-sha256",
+  "7b751758ee7f0b49bd61332a1a78412b36ecef898e43171ecf6af620d65cc9a6",
+  "--metadata-sha256",
+  "6f785a03e50565bc5d90bd6a6ae85f1bb789e31647811421e5f21d41ee7030ca",
+  "--source-base",
+  "d9855c2764860c7c2e20e40e700abeaa59f00a55",
+  "--runner-sha256",
+  "f139f117354f4b96762737190c03a025f3a02d3efc078062b715c63d83518f6b",
+  "--build",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/validation-build-root-v1/execution.json"
+]

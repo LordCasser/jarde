@@ -1,0 +1,152 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 11.83s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+ExceptionIfJoin recovered tree: [
+    Try {
+        prefix: [
+            CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+        ],
+        lead: (
+            4,
+            4,
+        ),
+        body: Loop {
+            header: CanonicalBlockId {
+                bci: 4,
+                path: [],
+            },
+            tests: [
+                (
+                    CanonicalBlockId {
+                        bci: 4,
+                        path: [],
+                    },
+                    6,
+                    FallThrough,
+                ),
+            ],
+            test_operator: None,
+            form: While,
+            for_header: Some(
+                ForHeader {
+                    init_bci: 3,
+                    update_bci: 27,
+                    update_block: CanonicalBlockId {
+                        bci: 27,
+                        path: [],
+                    },
+                    slot: 2,
+                },
+            ),
+            body: [
+                If {
+                    prefix: [],
+                    branch: CanonicalBlockId {
+                        bci: 9,
+                        path: [],
+                    },
+                    branch_bci: 12,
+                    then_arm: Fallback {
+                        blocks: [
+                            CanonicalBlockId {
+                                bci: 15,
+                                path: [],
+                            },
+                        ],
+                        reason: ExceptionEdge {
+                            block_bci: 15,
+                            handler_ordinal: 0,
+                        },
+                    },
+                    else_arm: Straight {
+                        blocks: [
+                            CanonicalBlockId {
+                                bci: 24,
+                                path: [],
+                            },
+                        ],
+                    },
+                    join: Some(
+                        CanonicalBlockId {
+                            bci: 27,
+                            path: [],
+                        },
+                    ),
+                },
+                Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 27,
+                            path: [],
+                        },
+                    ],
+                },
+            ],
+            exit: Some(
+                CanonicalBlockId {
+                    bci: 33,
+                    path: [],
+                },
+            ),
+            gateway_origins: [
+                30,
+            ],
+        },
+        normal_exit_bci: None,
+        catches: [
+            CatchClause {
+                types: Named(
+                    [
+                        12,
+                    ],
+                ),
+                handler: CanonicalBlockId {
+                    bci: 36,
+                    path: [],
+                },
+                parameter: 3,
+                body: Straight {
+                    blocks: [
+                        CanonicalBlockId {
+                            bci: 36,
+                            path: [],
+                        },
+                    ],
+                },
+            },
+        ],
+        transparent: None,
+    },
+    Fallback {
+        blocks: [
+            CanonicalBlockId {
+                bci: 33,
+                path: [],
+            },
+        ],
+        reason: UncoveredBlocks {
+            blocks: [
+                33,
+            ],
+        },
+    },
+]
+
+thread 'build::tests::exception_if_join_transfer_rejects_a_canonical_exception_edge' (20873662) panicked at crates/jarde-java/src/build.rs:35757:30:
+unexpected real then-arm shape: Fallback {
+    blocks: [
+        CanonicalBlockId {
+            bci: 15,
+            path: [],
+        },
+    ],
+    reason: ExceptionEdge {
+        block_bci: 15,
+        handler_ordinal: 0,
+    },
+}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --lib`

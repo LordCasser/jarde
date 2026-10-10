@@ -1,0 +1,5 @@
+null=0
+empty=0
+mixed=2
+repeat=1
+null-element=NullPointerException

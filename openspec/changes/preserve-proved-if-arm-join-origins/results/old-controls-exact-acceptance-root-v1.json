@@ -1,0 +1,11 @@
+{
+  "schema": "preserve-proved-if-arm-old-controls-exact-acceptance-root-v1",
+  "status": "accepted",
+  "generated_class_profiles": 8,
+  "method_profiles": 28,
+  "body_and_all_maps_byte_facts_equal": true,
+  "previous_manifest_sha256": "38e80cb85429e0236f91b9828fafc145eebf23e990e79b4ef02e9609dc7c5525",
+  "candidate_manifest_sha256": "89953659d9e59eddf5ff72f5e1b7cae6fc7d9ad80603ed415a9e9a38047c053a",
+  "independent_whole_class_acceptance_sha256": "187db36694949caf956c8b2c78dd6806b50e2540ed57e00fa378f90e9116c1ec",
+  "verifier_v2_failure": "undefined h used by map comparison; v3 passes the actual postfix helper. Original failure raw retained."
+}

@@ -1,0 +1,6 @@
+[
+  "python3",
+  "openspec/changes/preserve-proved-if-arm-join-origins/results/run-boundary-tests-root-v2.py",
+  "--build-sha256",
+  "fa3402e3754626451b77f7610c8e32350e4cc58742eb147cbb8efb4a5e7d5758"
+]

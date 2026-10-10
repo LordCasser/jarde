@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-10T16:16:06.552158+00:00",
+  "duration_seconds": 2.0843645830173045,
+  "argv": [
+    "python3",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/run-focused-gateway-root-v2.py",
+    "--expected-patch-region-sha256",
+    "4f5df7bb4043101a8ae634915c9049e9fc680d8b75f5cca4daa7021db10a6568"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

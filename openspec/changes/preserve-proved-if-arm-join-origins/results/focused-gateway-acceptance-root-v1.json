@@ -1,0 +1,24 @@
+{
+  "schema": "preserve-proved-if-arm-focused-acceptance-root-v1",
+  "status": "accepted",
+  "execution_sha256": "fc119bc6c79a6e07b4e356a46b526339b6e4bfb47d157bb26eec5e0c602a530b",
+  "tests": 12,
+  "failed": 0,
+  "ignored": 0,
+  "new_tests": [
+    "cf07_nonempty_if_join_goto_is_derived_from_complete_if",
+    "cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals",
+    "cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source"
+  ],
+  "root_corrections": [
+    "Complete If node includes actual leading indentation and terminal newline.",
+    "Wrong-target counterexample uses actual outer loop exit@33; goto20\u2192header6 changes the actual If join and is valid, so it is not a negative proof.",
+    "Nontransfer iinc@20 falls through to block23, not directly to join27."
+  ],
+  "product_source_pins": {
+    "crates/jarde-java/src/build.rs": "4f5df7bb4043101a8ae634915c9049e9fc680d8b75f5cca4daa7021db10a6568",
+    "crates/jarde-java/tests/p3_loop_exit_gateways.rs": "949dbe78447140e9b233102ed9779f2c67c88dc580d41d7e02da7fab224d9254",
+    "crates/jarde-java/src/region.rs": "79056610e41111c3f6b4e3c38d56923a3f1e05dbd83ee0fa259dbed0902f93a5"
+  },
+  "boundary": "Exception outgoing rejection and full CLI replay/own product CI not yet accepted."
+}

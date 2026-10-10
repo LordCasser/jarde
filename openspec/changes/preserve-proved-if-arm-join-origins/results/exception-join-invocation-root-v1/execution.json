@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-10T16:16:42.898904+00:00",
+  "duration_seconds": 2.086009374994319,
+  "argv": [
+    "python3",
+    "openspec/changes/preserve-proved-if-arm-join-origins/results/prepare-exception-join-case-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 6489,
+      "sha256": "dd475586169640d80e7c9a5eea84c31ad2a560cbed7c7cf5a6a0c69af0b957e3"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

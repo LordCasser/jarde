@@ -1,0 +1,11 @@
+
+running 1 test
+test build::tests::exception_if_join_transfer_rejects_a_canonical_exception_edge ... FAILED
+
+failures:
+
+failures:
+    build::tests::exception_if_join_transfer_rejects_a_canonical_exception_edge
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 335 filtered out; finished in 0.01s
+

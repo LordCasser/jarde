@@ -1,0 +1,171 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -35375,6 +35375,9 @@
+     );
+     const LOOP_TRANSFERS_FIXTURE: &[u8] =
+         include_bytes!("../../../tests/fixtures/p3-loop-transfers/v8/OuterContinue.class");
++    const EXCEPTION_IF_JOIN_FIXTURE: &[u8] = include_bytes!(
++        "../../../openspec/changes/preserve-proved-if-arm-join-origins/results/exception-join-case-root-v1/classes/ifjoin/ExceptionIfJoin.class"
++    );
+     /// Runs the real JVM IR and region producers, then asks only this proof about their output.
+     fn fixture_conditional_attempt(
+         class: &[u8],
+@@ -35426,11 +35429,45 @@
+     }
+ 
+     fn fixture_value_attempts_with_tree(
++        class: &[u8],
++        name: &str,
++        descriptor: &str,
++        short_region: Option<&Region>,
++        mutate_region: Option<fn(&mut Region)>,
++    ) -> (
++        Region,
++        ConditionalValueAttempt,
++        Option<(u32, u32)>,
++        crate::region::Recovered,
++        crate::report::RecoveryReport,
++        ShortCircuitValueAttempt,
++        Option<ConditionalTreeProof>,
++        IntermediateJoinAttempt,
++        Vec<(u32, Vec<SsaUse>)>,
++    ) {
++        fixture_value_attempts_with_tree_observing(
++            class,
++            name,
++            descriptor,
++            short_region,
++            mutate_region,
++            |_, _, _, _, _| {},
++        )
++    }
++
++    fn fixture_value_attempts_with_tree_observing(
+         class: &[u8],
+         name: &str,
+         descriptor: &str,
+         short_region: Option<&Region>,
+         mutate_region: Option<fn(&mut Region)>,
++        inspect: impl FnOnce(
++            &crate::region::Recovered,
++            &CanonicalCfg,
++            &SsaTable,
++            &Operations,
++            &mut Budget,
++        ),
+     ) -> (
+         Region,
+         ConditionalValueAttempt,
+@@ -35557,6 +35594,7 @@
+             &mut budget,
+         )
+         .expect("the fixture region tree is bounded");
++        inspect(&recovered, canonical, ssa, &operations, &mut budget);
+         let candidate = recovered
+             .regions
+             .iter()
+@@ -35672,6 +35710,104 @@
+             intermediate_attempt,
+             stack_phi_uses,
+         )
++    }
++
++    #[test]
++    fn exception_if_join_transfer_rejects_a_canonical_exception_edge() {
++        use jarde_jvm::method_ir::CanonicalEdgeKind;
++
++        let (
++            _candidate,
++            _ordinary,
++            _producer_bcis,
++            recovered,
++            _report,
++            _short,
++            _tree,
++            _intermediate,
++            _phi_uses,
++        ) = fixture_value_attempts_with_tree_observing(
++            EXCEPTION_IF_JOIN_FIXTURE,
++            "withException",
++            "(I)I",
++            None,
++            None,
++            |recovered, canonical, ssa, operations, budget| {
++                eprintln!("ExceptionIfJoin recovered tree: {:#?}", recovered.regions);
++                let mut matching_if = None;
++                for root in &recovered.regions {
++                    collect_guards(root, &mut |candidate| {
++                        if matches!(candidate, Region::If { branch_bci: 12, .. }) {
++                            assert!(
++                                matching_if.replace(candidate).is_none(),
++                                "branch@12 has more than one recovered If"
++                            );
++                        }
++                    });
++                }
++                let Some(Region::If {
++                    then_arm,
++                    join: Some(join),
++                    ..
++                }) = matching_if
++                else {
++                    panic!(
++                        "the real recovered tree has no If@12 with a join: {:#?}",
++                        recovered.regions
++                    );
++                };
++                assert_eq!(join.bci(), 27, "javap pins the If join");
++
++                let terminal = match then_arm.as_ref() {
++                    Region::Straight { blocks } => blocks.last(),
++                    Region::Sequence { regions } => match regions.last() {
++                        Some(Region::Straight { blocks }) => blocks.last(),
++                        _ => None,
++                    },
++                    other => panic!("unexpected real then-arm shape: {other:#?}"),
++                }
++                .expect("the recovered then arm has a terminal straight block");
++                let ssa_block = ssa
++                    .block(terminal)
++                    .expect("the real terminal canonical block has SSA");
++                let bcis: Vec<_> = ssa_block
++                    .instructions()
++                    .iter()
++                    .map(SsaInstruction::bci)
++                    .collect();
++                assert_eq!(bcis, [15, 18, 21], "javap pins the source block");
++                assert!(matches!(operations.get(15), Some(Operation::Invoke(_))));
++                assert!(matches!(operations.get(18), Some(Operation::Increment { .. })));
++                assert_eq!(operations.get(21), Some(&Operation::Transfer));
++
++                let outgoing: Vec<_> = canonical
++                    .edges()
++                    .iter()
++                    .filter(|edge| edge.from() == terminal)
++                    .collect();
++                assert_eq!(outgoing.len(), 2, "full canonical outgoing set");
++                assert!(outgoing.iter().any(|edge| {
++                    edge.kind() == CanonicalEdgeKind::Normal && edge.to() == join
++                }));
++                assert!(outgoing.iter().any(|edge| {
++                    matches!(edge.kind(), CanonicalEdgeKind::Exception { .. })
++                        && edge.to().bci() == 36
++                }));
++                assert_eq!(
++                    nonempty_if_join_transfer(
++                        then_arm,
++                        Some(join),
++                        canonical,
++                        ssa,
++                        operations,
++                        budget,
++                    )
++                    .expect("the bounded edge proof completes"),
++                    None,
++                    "a second exceptional outgoing edge prevents an If origin"
++                );
++            },
++        );
+     }
+ 
+     #[test]
