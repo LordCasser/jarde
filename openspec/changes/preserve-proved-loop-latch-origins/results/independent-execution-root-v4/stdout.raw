@@ -1,0 +1,6 @@
+{
+  "schema": "preserve-proved-loop-latch-independent-acceptance-root-v4",
+  "status": "rejected",
+  "verified": false,
+  "failure": "AttributeError: type object 'blake3.blake3.blake3' has no attribute 'blake3'"
+}

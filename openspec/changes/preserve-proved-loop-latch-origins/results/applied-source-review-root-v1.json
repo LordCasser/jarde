@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-10T10:22:04.637091+00:00",
+  "patch_sha256": "3b5aa370bc52193eda4ea7c491930fc59d13ebfee3203d33e30192f7e6dc4c1c",
+  "production_proof": "unchanged from accepted private-v6",
+  "test_corrections": [
+    "MethodFacts parameter_slots read from official descriptor_facts for every static fixture, replacing hardcoded1",
+    "only SourceMap request versus all; essential intentionally omits optional source-map"
+  ],
+  "verified_now": [
+    "validation-build-root-v6 commands0..3 fmt/CI29Clippy/Java333/gateway5 all0",
+    "noPrefix all11physical BCI/derived14 while/exactphysicalmethod owner/default SourceMap-only vsall/Stop passed"
+  ],
+  "not_verified": [
+    "remainingcommands4..11",
+    "freshCLI/wholeclass replay",
+    "exactproductCI"
+  ],
+  "free_bytes": 5353005056
+}

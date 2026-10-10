@@ -1,0 +1,16 @@
+{
+  "time": "2026-10-10T10:15:16.036517+00:00",
+  "removed": [
+    {
+      "path": "target/debug/deps/jarde_java-9c368dde3446805c",
+      "bytes": 33253584,
+      "proof": "successful test executable in validation-build-root-v6 commands2/3; Cargo will rebuild missing output"
+    },
+    {
+      "path": "target/debug/deps/p3_loop_exit_gateways-cc124f0ddd55c761",
+      "bytes": 31369424,
+      "proof": "successful test executable in validation-build-root-v6 commands2/3; Cargo will rebuild missing output"
+    }
+  ],
+  "free_bytes_after": 5372858368
+}

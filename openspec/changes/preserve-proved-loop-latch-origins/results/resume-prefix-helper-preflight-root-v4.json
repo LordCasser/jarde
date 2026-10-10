@@ -1,0 +1,115 @@
+{
+  "schema": "loop-latch-resume-prefix-helper-root-v4",
+  "utc": "2026-10-10T10:27:04.784557+00:00",
+  "status": "verified-prefix-only",
+  "runner": {
+    "path": "openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v8.py",
+    "sha256": "d4efa1a566e08bf66ebabda815b387df0d03c5b0fa7eb81e2620e81a1dcf9685"
+  },
+  "resumed": {
+    "path": "openspec/changes/preserve-proved-loop-latch-origins/results/validation-build-root-v6/execution.json",
+    "sha256": "d8056c99ab9ca3ded6616d53ef43c9a0b0bddf3596ba8c43f3f8f00639b001a9",
+    "commands_reused": 4,
+    "reused_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "failed_index_excluded": 4
+  },
+  "pin_counts": {
+    "candidate_sources": 17,
+    "test_sources": 8,
+    "canonical_files": 24
+  },
+  "commands": [
+    {
+      "index": 0,
+      "exit_code": 0,
+      "guard_stop": null,
+      "summary": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      }
+    },
+    {
+      "index": 1,
+      "exit_code": 0,
+      "guard_stop": null,
+      "summary": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      }
+    },
+    {
+      "index": 2,
+      "exit_code": 0,
+      "guard_stop": null,
+      "summary": {
+        "expected": null,
+        "actual": [
+          [
+            333,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      }
+    },
+    {
+      "index": 3,
+      "exit_code": 0,
+      "guard_stop": null,
+      "summary": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_gateway_tests": [
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source"
+        ],
+        "required_gateway_tests_present": true,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      }
+    }
+  ],
+  "cargo_started": false,
+  "claim": "This revalidates four previously successful commands on identical source pins; remaining eight commands and frozen CLI are not accepted."
+}

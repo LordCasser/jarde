@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "--offline",
+    "--with",
+    "blake3",
+    "python",
+    "-B",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/verify-loop-latch-candidates-root-v4.py"
+  ],
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "started_at": "2026-10-10T10:34:00.061207+00:00",
+  "finished_at": "2026-10-10T10:34:00.322041+00:00",
+  "exit_code": 1,
+  "verifier_sha256": "65d7ffd3a35f48b4f6975229015f516feebabc6ec878521eb4a428971726861e",
+  "streams": {
+    "stdout": {
+      "path": "openspec/changes/preserve-proved-loop-latch-origins/results/independent-execution-root-v4/stdout.raw",
+      "bytes": 214,
+      "sha256": "4f54686fda38ffc5cadfe8f77ce21bc4e2ffe54844922bc19ac3d8cac3b1decf"
+    },
+    "stderr": {
+      "path": "openspec/changes/preserve-proved-loop-latch-origins/results/independent-execution-root-v4/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

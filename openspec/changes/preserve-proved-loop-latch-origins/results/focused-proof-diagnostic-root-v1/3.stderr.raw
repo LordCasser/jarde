@@ -1,0 +1,33 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.53s
+[1m[92m     Running[0m tests/p3_loop_exit_gateways.rs (target/debug/deps/p3_loop_exit_gateways-cc124f0ddd55c761)
+NO_PREFIX_DIAGNOSTIC text=// @method noPrefix(ZI)I
+// @declaration a static method of `PlainOneArmLoops`, member flags 0x0008
+// recovered from bytecode; presentation is not claimed to compile
+{
+    int local2;
+    local2 = 0;
+    if (arg0) {
+        // @bytecode 6 11
+        // local 1 has a declaration placement that does not cover all known reads and writes
+    }
+    return local2;
+}
+ regions=[RegionRecord { bci: 0, structured: true, blocks: [0, 6, 11], code: None, message: None, rule: Some(RuleVersion { rule: "if", version: "1" }) }, RegionRecord { bci: 17, structured: true, blocks: [17], code: None, message: None, rule: Some(RuleVersion { rule: "straight", version: "1" }) }]
+
+thread 'no_prefix_while_latch_keeps_physical_source_and_one_owner' (18953929) panicked at crates/jarde-java/tests/p3_loop_exit_gateways.rs:290:5:
+// @method noPrefix(ZI)I
+// @declaration a static method of `PlainOneArmLoops`, member flags 0x0008
+// recovered from bytecode; presentation is not claimed to compile
+{
+    int local2;
+    local2 = 0;
+    if (arg0) {
+        // @bytecode 6 11
+        // local 1 has a declaration placement that does not cover all known reads and writes
+    }
+    return local2;
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[1m[91merror[0m: test failed, to rerun pass `-p jarde-java --test p3_loop_exit_gateways`

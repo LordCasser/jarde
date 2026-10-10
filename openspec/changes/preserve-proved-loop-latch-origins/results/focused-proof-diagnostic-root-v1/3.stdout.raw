@@ -1,0 +1,15 @@
+
+running 5 tests
+test cf08_gateway_budget_and_cancellation_publish_no_partial_source ... ok
+test cf08_two_gateways_have_one_loop_owner_and_complete_sources ... ok
+test cf08_unproved_gateways_keep_physical_quotes ... ok
+test no_prefix_latch_budget_and_cancellation_publish_no_partial_source ... ok
+test no_prefix_while_latch_keeps_physical_source_and_one_owner ... FAILED
+
+failures:
+
+failures:
+    no_prefix_while_latch_keeps_physical_source_and_one_owner
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

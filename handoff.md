@@ -1,6 +1,6 @@
 # HANDOFF — jarde 主线接续入口
 
-用户明确要求继续在当前聊天推进。持续目标active，按JADX **71单元/612测试文件**逐片追平，再探索额外场景。root负责架构、OpenSpec、真实对照及对抗验收；确定性patch/script交给Luna。窄片成功不改分母、不冒增整单元完成数。
+用户明确要求继续在当前聊天推进。持续目标继续推进（用户已明确恢复构建），按JADX **71单元/612测试文件**逐片追平，再探索额外场景。root负责架构、OpenSpec、真实对照及对抗验收；确定性patch/script交给Luna。窄片成功不改分母、不冒增整单元完成数。
 
 ## 当前状态
 
@@ -14,7 +14,11 @@
 
 ## 立即接续
 
-**当前下一步（08:52 UTC更新）：** 按两套已strict有效的OpenSpec推进普通循环。recover-prefixed-one-arm-loops当前1/7：原形与四方法控制基线独立接受，method-aware临时诊断patch已备而未应用/编译，先动态核arm分段停止点。preserve-proved-loop-latch-origins当前2/6：基线接受、root private-v6全文审查/apply-check通过，局部末尾latch来源与相邻双臂origin gate已有最小候选（含无计量重复扫描修正、双臂/双跳转/短路头链准确来源断言），生产源码仍与main恒同；待20GiB资源守卫满足后root应用/编译/正反例与fresh CLI接受。只有method来源修复不能冒称四份整类运行成功。 最新入口是 preserve-proved-loop-latch-origins/verification-root.md：v6 patch SHA aedfdfbfa16d6d7c1feb8e7a9be72e242893917bbc433af1ff087a4a2b59f425，runner改为root-v3的12命令；固定JDK23工具/环境，root只读preflight接受17产品/8测试/23当前include pins。当前新CLI不存在、零Cargo。CF-07旧CLI实际29命令/118文件、原2/JADX4/Jarde4完整类成功；准确goto@15/20/30/25来源缺口保留，root实际独立verifier-v4退出0，接受文件为cf07-loop-latch-baseline/independent-verification-root-v3.json；来源缺口及新候选未接受。
+**最新用户授权：** 机器余量下限20GiB改为5GiB，保留本仓target1GiB上限、实时中止与完成清理。后文20GiB均为历史记录。
+
+**当前下一步（10:35 UTC）：** 普通循环来源片 `preserve-proved-loop-latch-origins` 已实际实现并通过完整12命令/552测试及fresh双JDK对照，tasks **5/6**，剩精确产品自己的CI与交付。root独立verifier-v5接受Plain31命令/111files（仅noPrefix@14来源增加，四整类仍失败/零runtime）和CF-07 29命令/119files（原2/JADX4/Jarde4完整类运行全部一致，andWhile@15、counted@30来源增加）。准确入口 `openspec/changes/preserve-proved-loop-latch-origins/verification-root.md`，CLI/meta/source pins在results/candidate-cli-v1.json；旧失败版本均保留。
+
+**再下一片：** `recover-prefixed-one-arm-loops` 仍1/7；只准备了method-aware probe与独立guarded runner，未应用或构建。先动态核prefix/header/Frame/join实际停止点、撤销probe，再由Luna沿现有region_at和Frame提交局部续接private patch。loop来源已接受不能代替单臂完整类恢复，71/612和整单元完成数不变。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 

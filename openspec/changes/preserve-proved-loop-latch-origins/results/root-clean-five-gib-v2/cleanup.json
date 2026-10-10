@@ -1,0 +1,35 @@
+{
+  "schema": "loop-latch-root-clean-five-gib-v2",
+  "started_at": "2026-10-10T10:37:01.159869+00:00",
+  "finished_at": "2026-10-10T10:37:01.572896+00:00",
+  "argv": [
+    "cargo",
+    "clean"
+  ],
+  "exit_code": 0,
+  "cwd": "/Users/lordcasser/workspace/projects/jarde",
+  "before_disk": {
+    "total": 494384795648,
+    "used": 482708889600,
+    "free": 11675906048
+  },
+  "after_disk": {
+    "total": 494384795648,
+    "used": 482006495232,
+    "free": 12378300416
+  },
+  "target_exists_after": false,
+  "frozen_cli_exists": true,
+  "streams": {
+    "stdout": {
+      "path": "cargo-clean.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "cargo-clean.stderr.raw",
+      "bytes": 40,
+      "sha256": "4e9a17c85b4eae620d600aba96c55a88852ff0dd79cde32822c85c5d62142e3a"
+    }
+  }
+}

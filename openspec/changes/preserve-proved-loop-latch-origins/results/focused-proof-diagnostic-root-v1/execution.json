@@ -1,0 +1,63 @@
+{
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  },
+  "command": {
+    "index": 3,
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--test",
+      "p3_loop_exit_gateways",
+      "--locked",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T10:06:11.214249+00:00",
+    "duration_seconds": 3.3473465000279248,
+    "exit_code": 101,
+    "guard_stop": null,
+    "peak_target_bytes": 331359272,
+    "free_bytes_after": 5446586368,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": null,
+    "streams": {
+      "stdout": {
+        "path": "openspec/changes/preserve-proved-loop-latch-origins/results/focused-proof-diagnostic-root-v1/3.stdout.raw",
+        "bytes": 555,
+        "sha256": "220d2d013730077db104e01ade2206086d774c33842f306c4c6547b3f0107d7c"
+      },
+      "stderr": {
+        "path": "openspec/changes/preserve-proved-loop-latch-origins/results/focused-proof-diagnostic-root-v1/3.stderr.raw",
+        "bytes": 1668,
+        "sha256": "1250b2d127cfd7f5e6fcf1a9555ebb8e2b7181339f2852bcda2481fbdf51064b"
+      }
+    }
+  }
+}

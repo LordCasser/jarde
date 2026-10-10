@@ -1,0 +1,10 @@
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/candidate-replay-root-v3/cases/javac23-jarde-default/PlainOneArmLoops.java:19: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/candidate-replay-root-v3/cases/javac23-jarde-default/PlainOneArmLoops.java:42: 错误: 缺少返回语句
+    }
+    ^
+/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/candidate-replay-root-v3/cases/javac23-jarde-default/PlainOneArmLoops.java:51: 错误: 缺少返回语句
+    }
+    ^
+3 个错误

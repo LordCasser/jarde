@@ -1,0 +1,48 @@
+{
+  "schema": "preserve-proved-loop-latch-independent-acceptance-root-v5",
+  "status": "accepted",
+  "verified": true,
+  "plain": {
+    "closed_files": 111,
+    "captured_commands": 31,
+    "candidate_cli_sha256": "1728ef3fa1a3a9e8ed56d6f4384a1c54c3e63400e6495c750a0bd139d7623b5c",
+    "candidate_metadata_sha256": "6b0c59d452d8d5a1fb157c60e81a6602f9cc78c26479f2638e98bdfda54df9e3",
+    "full_class_compile": "four failures, zero runtime",
+    "new_origin": "noPrefix@14 derived while",
+    "all_existing_method_text_and_other_maps_equal": true
+  },
+  "cf07": {
+    "closed_files": 119,
+    "commands": 29,
+    "cases": 10,
+    "candidate_cli_sha256": "1728ef3fa1a3a9e8ed56d6f4384a1c54c3e63400e6495c750a0bd139d7623b5c",
+    "metadata_sha256": "6b0c59d452d8d5a1fb157c60e81a6602f9cc78c26479f2638e98bdfda54df9e3",
+    "build_execution_sha256": "7d95e8449e58e05c429d65caf065698c503ca26947bdf314bd20cf1bec934651",
+    "whole_class": "2 original + 4 JADX + 4 Jarde all successful",
+    "derived_loop_origins": {
+      "javac8": [
+        [
+          "andWhile(Z)I",
+          15
+        ],
+        [
+          "counted(II)I",
+          30
+        ]
+      ],
+      "javac23": [
+        [
+          "andWhile(Z)I",
+          15
+        ],
+        [
+          "counted(II)I",
+          30
+        ]
+      ]
+    },
+    "default_all_equal": true,
+    "existing_origins_preserved": true
+  },
+  "evidence_scope": "closed candidate inventories; frozen CLI/metadata/build-v9 pins; replay argv and raw compile/runtime streams; exact method text and physical origin deltas"
+}

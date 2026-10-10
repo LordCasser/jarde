@@ -1,0 +1,15 @@
+{
+  "schema": "loop-latch-resource-checkpoint-root-v2",
+  "utc": "2026-10-10T10:25:45.864594+00:00",
+  "root": "/Users/lordcasser/workspace/projects/jarde",
+  "minimum_free_bytes": 5368709120,
+  "maximum_target_bytes": 1073741824,
+  "disk": {
+    "total": 494384795648,
+    "used": 491855470592,
+    "free": 2529325056
+  },
+  "target_bytes": 290516348,
+  "swap": "vm.swapusage: total = 16384.00M  used = 15142.69M  free = 1241.31M  (encrypted)\n",
+  "rust_started": false
+}

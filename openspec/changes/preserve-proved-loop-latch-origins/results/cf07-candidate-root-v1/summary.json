@@ -1,0 +1,11 @@
+{
+  "schema": "cf07-loop-latch-summary-luna-v1",
+  "status": "baseline-controls-complete",
+  "case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "original_cross_jdk_raw_equal": true,
+  "failures": []
+}

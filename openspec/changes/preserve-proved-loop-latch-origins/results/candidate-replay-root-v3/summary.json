@@ -1,0 +1,13 @@
+{
+  "schema": "preserve-proved-loop-latch-origins-candidate-summary-root-v3",
+  "status": "completed",
+  "source_scope_accepted": true,
+  "full_compile_observations_expected": true,
+  "candidate_case_counts": {
+    "original": 2,
+    "jadx": 4,
+    "jarde": 4
+  },
+  "captured_command_count": 31,
+  "failures": []
+}
