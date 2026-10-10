@@ -1,6 +1,6 @@
 # 非空 If arm 汇合来源：root 验收与接续
 
-当前 **5/7**。已接受实际内部诊断、最小产品、永久边界回归和新 CLI 完整源码对照；精确自身 CI 与最终 clean main 交付尚未关闭。71 单元/612 测试文件和 CF07 整单元计数不变。
+当前 **6/7**。实际内部诊断、最小产品、永久边界回归、新 CLI 完整源码对照及精确自身 CI 已独立接受；最终 clean main 交付正在关闭。71 单元/612 测试文件和 CF07 整单元计数不变。
 
 ## 产品与证明
 
@@ -27,3 +27,7 @@ root提交推送本片全部代码/class/源码/raw后，核提交head自身CI�
 完成自身CI后更新账本/handoff、提交推送记录，核main/origin、全部15 worktrees、仅main分支/辅助detached、没有待合入/占用，关闭3.2/3.3。当前cargo clean已实际释放3022files/669.2MiB；冻结CLI、源码/class与raw保留。资源守卫继续按用户批准的5GiB free/本仓target1GiB、一秒进程组中止执行。
 
 2026-10-10 16:48 UTC：产品已提交推送 `1f386686c6a31813254a85fed48d2af0af84a61c`；准确自身CI为 [38068627541](https://github.com/LordCasser/jarde/actions/runs/38068627541)。真实API快照中 supply chain/MSRV成功，stable双seed与fuzz仍执行，不作最终接受。产品checkpoint实际main/origin同、15worktrees全clean、仅main/14辅助detached祖先且无target/free63095857152；这不是CI后最终交付。等待期间下一片真实lastIndex诊断实际1/0/0，52pins已还原/target已再次clean144.8MiB，证据和独立规划见preserve-proved-return-arm-loop-latch-origins；当前If仍5/7。
+
+## 精确自身 CI 已接受（2026-10-11）
+
+产品 `1f386686c6a31813254a85fed48d2af0af84a61c` / run38068627541 经 root v4 独立接受：4 jobs/52 steps 全成功，两 fixed seed 各3389 passed/0 failed/97 ignored、354结果记录；每seed完整12 gateway名、新If三名、内部Exception名与旧integer11名准确存在，52 live+Git pins恒同。接受记录为 results/ci-product-v2/acceptance-proved-if-arm-join-ci-root-v4.json。v2因gh日志job/step前缀失败、v3因去时间戳吞掉Rust缩进导致binary边界失败；两次真实raw保留，v4仅移除传输前缀和一个时间戳分隔符，保留indent并重核全部计数，不放宽验收。
