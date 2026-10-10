@@ -1,0 +1,4 @@
+  File "/private/tmp/jarde-verify-typed-ci-repair-preflight-root-v4.py", line 9
+    data={'schema':'typed-ci-repair-source-and-local-preflight-root-v4','status':'accepted-local-only','product_commit':product,'verifier_sha256':sha(p),'historical_build':base,'focused_repair':repair,'ci_accepted':False};(out/'acceptance.json').write_text(json.dumps(data,indent=2)+'
+                                                                                                                                                                                                                                                                                           ^
+SyntaxError: unterminated string literal (detected at line 9)

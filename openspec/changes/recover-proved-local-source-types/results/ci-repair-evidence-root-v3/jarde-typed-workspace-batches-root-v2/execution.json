@@ -1,0 +1,6302 @@
+{
+  "schema": "typed-full-workspace-batched-root-v1",
+  "utc": "2026-10-10T21:07:14.479873+00:00",
+  "status": "failed",
+  "seed": "5350648285461741569",
+  "metadata_sha256": "e0f8e9a553476b75ab7fb3f095b10f7048bd9cdd6fa97de9eab73881d593ccf0",
+  "target_inventory": [
+    [
+      "jarde",
+      "jarde",
+      "lib"
+    ],
+    [
+      "jarde",
+      "bulk_scope_sweep",
+      "example"
+    ],
+    [
+      "jarde",
+      "class_source_file",
+      "example"
+    ],
+    [
+      "jarde",
+      "demand_workloads",
+      "example"
+    ],
+    [
+      "jarde",
+      "inspect_class_header",
+      "example"
+    ],
+    [
+      "jarde",
+      "navigate_artifact",
+      "example"
+    ],
+    [
+      "jarde",
+      "resolve_and_analyze",
+      "example"
+    ],
+    [
+      "jarde",
+      "task_operations",
+      "example"
+    ],
+    [
+      "jarde",
+      "anonymous_parameterized_root",
+      "test"
+    ],
+    [
+      "jarde",
+      "anonymous_supertype_return",
+      "test"
+    ],
+    [
+      "jarde",
+      "assert_statement_sugar",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_backpressure",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_cancel",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_delivery",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_handover",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_lifecycle",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_retention",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_serial",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_recovery_workers",
+      "test"
+    ],
+    [
+      "jarde",
+      "bulk_support",
+      "test"
+    ],
+    [
+      "jarde",
+      "class_scope_constructor_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "class_source",
+      "test"
+    ],
+    [
+      "jarde",
+      "class_static_initializer_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "ctor_reorder_dispatch_guard",
+      "test"
+    ],
+    [
+      "jarde",
+      "d0_demand_counts",
+      "test"
+    ],
+    [
+      "jarde",
+      "d1_evidence_selection",
+      "test"
+    ],
+    [
+      "jarde",
+      "d2_prepared_handoff",
+      "test"
+    ],
+    [
+      "jarde",
+      "d3_artifact_binding",
+      "test"
+    ],
+    [
+      "jarde",
+      "d5_acceptance_ledger",
+      "test"
+    ],
+    [
+      "jarde",
+      "d5_process_release",
+      "test"
+    ],
+    [
+      "jarde",
+      "d5_semantic_comparison",
+      "test"
+    ],
+    [
+      "jarde",
+      "double_brace_capture",
+      "test"
+    ],
+    [
+      "jarde",
+      "em22_boolean_xor",
+      "test"
+    ],
+    [
+      "jarde",
+      "em23_field_unit_updates",
+      "test"
+    ],
+    [
+      "jarde",
+      "engine",
+      "test"
+    ],
+    [
+      "jarde",
+      "enum_string_field_name",
+      "test"
+    ],
+    [
+      "jarde",
+      "field_generic_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "fixture_behavior_guards",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_body_throws_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_constructor_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_method_budget",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_method_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_outer_member_family",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_static_member_family",
+      "test"
+    ],
+    [
+      "jarde",
+      "generic_throws_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "historical_classfile_corpus",
+      "test"
+    ],
+    [
+      "jarde",
+      "inner_class_static_mixed_folding",
+      "test"
+    ],
+    [
+      "jarde",
+      "interface_initializer_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "interface_initializer_proof",
+      "test"
+    ],
+    [
+      "jarde",
+      "jvm_bytecode_oracle",
+      "test"
+    ],
+    [
+      "jarde",
+      "lambda_companion_bodies",
+      "test"
+    ],
+    [
+      "jarde",
+      "lambda_root_member_folding",
+      "test"
+    ],
+    [
+      "jarde",
+      "member_class_static_folding",
+      "test"
+    ],
+    [
+      "jarde",
+      "member_family_external_use",
+      "test"
+    ],
+    [
+      "jarde",
+      "member_family_identity",
+      "test"
+    ],
+    [
+      "jarde",
+      "member_local_type_source_names",
+      "test"
+    ],
+    [
+      "jarde",
+      "navigation",
+      "test"
+    ],
+    [
+      "jarde",
+      "nested_class_literal_values",
+      "test"
+    ],
+    [
+      "jarde",
+      "nested_generic_header_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "nested_type_source_spelling",
+      "test"
+    ],
+    [
+      "jarde",
+      "ordinary_generic_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_active_facts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_artifact_tree",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_budget_ledger",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_multi_release",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_prepared_class",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_query_api",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_query_bounds",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_query_demand",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_query_model",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_query_planes",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_query_positions",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_reader_facts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_scope_cursor",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_xref_bootstrap",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_xref_code",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_xref_golden",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_xref_metadata",
+      "test"
+    ],
+    [
+      "jarde",
+      "p1_xref_properties",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_canonical",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_cfg",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_closure",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_contracts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_declaration_refs",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_dispatch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_entry_counts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_frame",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_golden",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_members",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_passes",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_prefixed_roots",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_properties",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_resolution",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_return_address",
+      "test"
+    ],
+    [
+      "jarde",
+      "p2_ssa",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_accessor_edges",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_alias_field",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_annotation_default",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_anonymous_class_facts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_array_access",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_array_foreach",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_array_initializers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_array_slot_retype_locals",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_array_types",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_arraylength_loop_condition",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_bigdecimal_number_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_bitwise",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_boolean_array_initializers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_boolean_array_store_contract",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_boolean_array_stores",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_boolean_contexts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_boolean_field_stores",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_boolean_short_circuit_return",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_catch_after_field_assignment",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_caught_value_argument_typing",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_chained_store",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_char_switch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_class_literals",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_compound_lvalue_updates",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_concat_char",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_concat_conversion",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_constructed_reference_array_elements",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_constructor_primitive_conversion_arguments",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_content",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_crossing_array_read_values",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_declaration_handoff",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_declarations",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_deferred_value_order",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_edge_settlement",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_eval_context",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_exception_scope",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_execution_comparison",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_field_increment",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_field_presentations",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_final_static",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_finally_straight",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_floating_constants",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_for_add_store",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_for_latch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_forward_join",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_guard",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_handler_store",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_heterogeneous_array_initializers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_hoisted_boolean",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_immediate_functional_receivers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_instance_receiver",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_instanceof",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_integer_boolean_return_boundaries",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_integer_boolean_return_contract",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_integer_boolean_returns",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_invocation_arguments",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_isolation",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_iterable_foreach",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_labeled_loop_tail",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_lambda_adaptation",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_local_postfix_array_elements",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_local_rewrite",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_long_field_assignment_result",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_loop_arm_join",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_loop_boolean_do",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_loop_boolean_exit",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_loop_test_values",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_loop_transfers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_loop_try_handler_entry",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_meeting",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_method_ir",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mixed_short_circuit_argument",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mixed_short_circuit_array",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mixed_short_circuit_field",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mixed_short_circuit_instance_field",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mixed_short_circuit_local",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mixed_short_circuit_return",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_multi_resource_twr_geometry",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_mutf8",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_narrow_array_store_order",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_narrow_array_stores",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_narrow_field_stores",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_narrow_integer_return_contract",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_narrow_integer_returns",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_narrow_return_boundaries",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_nested_annotation_source",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_nested_array_initializers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_nested_int_array_compound_updates",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_nested_try",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_new_value",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_null_resource",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_numeric_comparison",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_one_armed_if",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_ordinary_new_invokes",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_parameter_slots",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_partial_array_allocation",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_platform_collection_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_popped_static_qualifier",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_postfix_handler_boundary",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_postfix_lvalue_values",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_precise_rethrow",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_prefix_survival",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_prepared_input",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_primitive_conversions",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_product_vocabulary",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_proved_varargs_calls",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_recovery_entry",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_reference_cast",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_reference_slot_lifetimes",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_region_fallback_origins",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_region_owner_overlap",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_required_conversions",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_scope",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_scv_concat_consumers",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_shared_catchall_finally",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_shared_latch_nested_loops",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_shift_expressions",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_shift_negative_boundaries",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_short_circuit_exception_chain",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_short_circuit_exception_edge",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_short_circuit_transfer_gateway",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_snapshot_hierarchy_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_special_dispatch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_special_refusal",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_stated_rows",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_static_call",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_string_switch_projection",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_switch_arm_loop_exits",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_switch_fallthrough",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_switch_forward_join",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_switch_loop_exits",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_switch_value",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_sync_return",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_throw",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_throwable_wrap_arguments",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_try_local",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_two_exit_return",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_catch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_discarded_call",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_enclosing_catch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_enclosing_catch_call",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_lead_sequence",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_return_tail",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_twr_saved_return_typing",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_type_qualifier",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_typed_catch",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_typed_catch_boundary_return",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_unary_negation",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_varargs",
+      "test"
+    ],
+    [
+      "jarde",
+      "p3_wrapped_array_foreach",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_feature_registry",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_golden",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_modern_facts",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_plugins",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_runtime_matrix",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_x2_states",
+      "test"
+    ],
+    [
+      "jarde",
+      "p4_x3_patterns",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_benchmark",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_bulk_corpus",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_container_lookup",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_corpus_fingerprint",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_definition_read_reuse",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_facts_cache",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_optimize_workloads",
+      "test"
+    ],
+    [
+      "jarde",
+      "p5_shared_payload",
+      "test"
+    ],
+    [
+      "jarde",
+      "parameterized_interface_headers",
+      "test"
+    ],
+    [
+      "jarde",
+      "preserve_local_scope_plan",
+      "test"
+    ],
+    [
+      "jarde",
+      "preserve_local_scope_refusals",
+      "test"
+    ],
+    [
+      "jarde",
+      "preserve_monitor_exit_evaluation_order",
+      "test"
+    ],
+    [
+      "jarde",
+      "qualified_super_default",
+      "test"
+    ],
+    [
+      "jarde",
+      "raw_receiver_field_selection",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_array_element_field_receiver",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_array_initializer_value_positions",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_boolean_int_bitwise_operands",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_boxed_number_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_branching_guard_body",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_chained_field_assignment",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_conditional_rhs_field_compound",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_covariant_array_store_receiver",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_double_brace_allocation_site",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_dup_store_conditional",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_inline_conditional_concat_operands",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_instance_field_assignment_chains",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_io_resource_finally",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_javac8_allocation_qualifier_null_check",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_javac8_getclass_null_check_idiom",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_lambda_primitive_array_capture",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_lock_guard_loop_finally",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_loop_else_if_early_returns",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_loop_test_copy_store",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_nested_lock_finally_bodies",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_platform_implementer_argument_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_platform_interface_argument_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_postfix_condition_positions",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_postfix_old_value_snapshot",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_proved_nonnull_bound_receivers",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_short_circuit_local_branch_reads",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_statement_position_news",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_static_generic_field_init_text",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_synthetic_ctor_super_order",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_temporal_argument_widening",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_unicode_identifiers",
+      "test"
+    ],
+    [
+      "jarde",
+      "recover_write_accessor_field_types",
+      "test"
+    ],
+    [
+      "jarde",
+      "same_class_generic_binding",
+      "test"
+    ],
+    [
+      "jarde",
+      "same_class_generic_call_consumers",
+      "test"
+    ],
+    [
+      "jarde",
+      "static_method_local_generic_throws",
+      "test"
+    ],
+    [
+      "jarde",
+      "task_operations",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "jarde_java",
+      "lib"
+    ],
+    [
+      "jarde-java",
+      "anonymous_allocation_candidates",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "array_invocation_widening",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "cf12_proved_local_source_types",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "class_initializer_candidates",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "em27_inline_char_array",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "member_capture_outer_read",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "nested_ctor_argument_sites",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "nested_monitor_regions",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_boolean_array_initializer_contract",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_carried_conditional_arguments",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_conditional_field_writes",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_conditional_values",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_do_while_return",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_effectful_exits",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_exception_only_catchall",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_flag_conditional_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_inner_assignment",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_intermediate_join",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_java_recovery",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_local_null_conditional_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_loop_body_double_jumps",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_loop_exit_gateways",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_loop_terminal_return",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_null_lead_straight_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_patterns",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_preceded_catches",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_proved_boolean_conditional_returns",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_repeq_boolean_arguments",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_segmented_null_lead_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_shared_join_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_shared_tail",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_short_circuit_chain_controls",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_transparent_empty_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "p3_void_loop_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "proved_discarded_call_origins",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "twr_direct_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "twr_inner_finally",
+      "test"
+    ],
+    [
+      "jarde-java",
+      "varargs_ctor_argument_sites",
+      "test"
+    ],
+    [
+      "jarde-jvm",
+      "jarde_jvm",
+      "lib"
+    ],
+    [
+      "jarde-query",
+      "jarde_query",
+      "lib"
+    ],
+    [
+      "jarde-query",
+      "owner_candidates",
+      "test"
+    ],
+    [
+      "jarde-reader",
+      "jarde_reader",
+      "lib"
+    ],
+    [
+      "jarde-reader",
+      "class_annotation_facts",
+      "test"
+    ],
+    [
+      "jarde-reader",
+      "member_annotation_facts",
+      "test"
+    ],
+    [
+      "jarde-reader",
+      "method_signature_proof",
+      "test"
+    ],
+    [
+      "jarde-reader",
+      "type_annotation_facts",
+      "test"
+    ],
+    [
+      "jarde-cli",
+      "jarde-cli",
+      "bin"
+    ],
+    [
+      "jarde-cli",
+      "artifact_tree_cli",
+      "test"
+    ],
+    [
+      "jarde-cli",
+      "class_source_cli",
+      "test"
+    ],
+    [
+      "jarde-cli",
+      "export_cli",
+      "test"
+    ],
+    [
+      "jarde-cli",
+      "json_cli",
+      "test"
+    ],
+    [
+      "jarde-cli",
+      "query_cli",
+      "test"
+    ],
+    [
+      "jarde-cli",
+      "task_cli",
+      "test"
+    ]
+  ],
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--lib",
+        "--examples"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:03:49.108042+00:00",
+      "duration_seconds": 107.3840212909854,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 678537274,
+      "free_bytes_after": 63055360000,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v1/0.stdout.raw",
+          "bytes": 101622,
+          "sha256": "40355a0c130a654c9d237f6faf0ebe40dc0aeca3b908e0e4bcf41143bc213bee"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v1/0.stderr.raw",
+          "bytes": 4127,
+          "sha256": "f4ab60d4d7067a4a5701077d1e93fd99240101c03f05cbc4f2a52a64048d5a7c"
+        }
+      },
+      "observed_counts": [
+        [
+          223,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "anonymous_parameterized_root",
+        "--test",
+        "anonymous_supertype_return",
+        "--test",
+        "assert_statement_sugar",
+        "--test",
+        "bulk_recovery_backpressure"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:07:14.480693+00:00",
+      "duration_seconds": 50.767114458984,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408308344,
+      "free_bytes_after": 62681325568,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/1.stdout.raw",
+          "bytes": 75789,
+          "sha256": "fcbe8748a64f5231689f8d7f51c79c012bdef9ee87508fa23c9119a974e94d7b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/1.stderr.raw",
+          "bytes": 3660,
+          "sha256": "6ada434df45a5aa6e87d4339c044de2e8370798ddf628ef542a4d3e4da9068a5"
+        }
+      },
+      "observed_counts": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "bulk_recovery_cancel",
+        "--test",
+        "bulk_recovery_delivery",
+        "--test",
+        "bulk_recovery_handover",
+        "--test",
+        "bulk_recovery_lifecycle"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:08:05.306485+00:00",
+      "duration_seconds": 5.097380958992289,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 380913460,
+      "free_bytes_after": 62672486400,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/2.stdout.raw",
+          "bytes": 75103,
+          "sha256": "170d158d400348526ac1e7d082040eec8c5905c9f3a26fe7ad1b723b1b321060"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/2.stderr.raw",
+          "bytes": 628,
+          "sha256": "fb45511a9ec972b9ba3864b651d691c880673f6ef314500964b3f6ca02273613"
+        }
+      },
+      "observed_counts": [
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "bulk_recovery_retention",
+        "--test",
+        "bulk_recovery_serial",
+        "--test",
+        "bulk_recovery_workers",
+        "--test",
+        "bulk_support"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:08:10.459296+00:00",
+      "duration_seconds": 3.0579220420040656,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 360120023,
+      "free_bytes_after": 62651277312,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/3.stdout.raw",
+          "bytes": 75016,
+          "sha256": "158c74dee38de5c71d553e125eee8b6660b7ec2af66a91499dc64f4f8ec7d244"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/3.stderr.raw",
+          "bytes": 606,
+          "sha256": "2f05a5d8372d16bd2f840452595e2486ae35ed036979f17952d7cf568e458592"
+        }
+      },
+      "observed_counts": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "class_scope_constructor_projection",
+        "--test",
+        "class_source",
+        "--test",
+        "class_static_initializer_projection",
+        "--test",
+        "ctor_reorder_dispatch_guard"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:08:13.559239+00:00",
+      "duration_seconds": 42.69809379099752,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 419169821,
+      "free_bytes_after": 62285697024,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/4.stdout.raw",
+          "bytes": 83242,
+          "sha256": "70700d81c39621c2eda0b039ecc5be9d1f928a39d7ca9c039b097ea4559e4a43"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/4.stderr.raw",
+          "bytes": 670,
+          "sha256": "35935c20e2f0e9fffa4b2e0aca31792eba711a0e8214734148857a5d0e4d7a70"
+        }
+      },
+      "observed_counts": [
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          102,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 5,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "d0_demand_counts",
+        "--test",
+        "d1_evidence_selection",
+        "--test",
+        "d2_prepared_handoff",
+        "--test",
+        "d3_artifact_binding"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:08:56.319877+00:00",
+      "duration_seconds": 3.056131582998205,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 419183465,
+      "free_bytes_after": 62285447168,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/5.stdout.raw",
+          "bytes": 76253,
+          "sha256": "af85a0aaa979d574de324c307be293e78b6886d86bae7a41d2bb17d96b04f557"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/5.stderr.raw",
+          "bytes": 604,
+          "sha256": "98c81971c5034c50c47e34c16fed8b017f163de49e80eb96f71dbbf332f30e69"
+        }
+      },
+      "observed_counts": [
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ],
+        [
+          13,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 6,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "d5_acceptance_ledger",
+        "--test",
+        "d5_process_release",
+        "--test",
+        "d5_semantic_comparison",
+        "--test",
+        "double_brace_capture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:08:59.442752+00:00",
+      "duration_seconds": 3.0556193749944214,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 369272111,
+      "free_bytes_after": 62336122880,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/6.stdout.raw",
+          "bytes": 75555,
+          "sha256": "abd5c4e2c3ebe4fdb1e8a486795bca1a73c9dc6fd5f20d225eb39a8c2c8204c9"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/6.stderr.raw",
+          "bytes": 614,
+          "sha256": "0a6d5c9a1dcb54270c7320788243c2fa4469f2d7043ff4d4df41e086b95e1952"
+        }
+      },
+      "observed_counts": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          5
+        ],
+        [
+          4,
+          0,
+          1
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 7,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "em22_boolean_xor",
+        "--test",
+        "em23_field_unit_updates",
+        "--test",
+        "engine",
+        "--test",
+        "enum_string_field_name"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:09:02.542309+00:00",
+      "duration_seconds": 5.095241625007475,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 390314534,
+      "free_bytes_after": 62314516480,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/7.stdout.raw",
+          "bytes": 75105,
+          "sha256": "3dba18beeca40c610aa5dd856c9942ae0588668cd410f07627fc6a358e68af9d"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/7.stderr.raw",
+          "bytes": 588,
+          "sha256": "150de7573b04a45fbb5a1549909a849725211394b701304a756bcfa76d3db102"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 8,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "field_generic_projection",
+        "--test",
+        "fixture_behavior_guards",
+        "--test",
+        "generic_body_throws_projection",
+        "--test",
+        "generic_constructor_projection"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:09:07.694392+00:00",
+      "duration_seconds": 11.21353187499335,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417683356,
+      "free_bytes_after": 62286147584,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/8.stdout.raw",
+          "bytes": 76880,
+          "sha256": "9c909f64011d66939c97244444f3aaa0350d2b98335665cb503f32896e2f79b6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/8.stderr.raw",
+          "bytes": 668,
+          "sha256": "5ebaa89dfb9303b7df5d78f3f3c9a7d104291a511115ceb2652ce7ace975b24e"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          6
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 9,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "generic_method_budget",
+        "--test",
+        "generic_method_projection",
+        "--test",
+        "generic_outer_member_family",
+        "--test",
+        "generic_static_member_family"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:09:18.975122+00:00",
+      "duration_seconds": 18.313738416996785,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417849706,
+      "free_bytes_after": 63296659456,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/9.stdout.raw",
+          "bytes": 76446,
+          "sha256": "a2d7adf07fda3ef718b561e708e35a2d391005098c8477d7713e6eaea583f228"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/9.stderr.raw",
+          "bytes": 656,
+          "sha256": "d2b2411d6ba7073ea3b4ae81e479c304a809326ca8067c3b6f8f7ffb5b08d6fb"
+        }
+      },
+      "observed_counts": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          22,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 10,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "generic_throws_projection",
+        "--test",
+        "historical_classfile_corpus",
+        "--test",
+        "inner_class_static_mixed_folding",
+        "--test",
+        "interface_initializer_projection"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:09:37.372668+00:00",
+      "duration_seconds": 13.234960292000324,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 388832128,
+      "free_bytes_after": 64117985280,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/10.stdout.raw",
+          "bytes": 75905,
+          "sha256": "30a6d9b9280ce4ffe11324672e1d56d76f975948f5c142c252a320d868f3a9d9"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/10.stderr.raw",
+          "bytes": 686,
+          "sha256": "313cda5cd1e78e7b54c516e83bf3509b2b069a146a8aaca273212bd6de952baa"
+        }
+      },
+      "observed_counts": [
+        [
+          13,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 11,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "interface_initializer_proof",
+        "--test",
+        "jvm_bytecode_oracle",
+        "--test",
+        "lambda_companion_bodies",
+        "--test",
+        "lambda_root_member_folding"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:09:50.662633+00:00",
+      "duration_seconds": 8.148932665993925,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 388571562,
+      "free_bytes_after": 64118063104,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/11.stdout.raw",
+          "bytes": 75111,
+          "sha256": "f43e23892701130c97f7739a5730f6b86467af26e8e49c8d0e6f6b010a712147"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/11.stderr.raw",
+          "bytes": 644,
+          "sha256": "5a8935591be5dd3d8c4b6ac53c0c549ab31a1850f12115a9fd63efcf826e35d3"
+        }
+      },
+      "observed_counts": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 12,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "member_class_static_folding",
+        "--test",
+        "member_family_external_use",
+        "--test",
+        "member_family_identity",
+        "--test",
+        "member_local_type_source_names"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:09:58.860854+00:00",
+      "duration_seconds": 15.303562624991173,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418950146,
+      "free_bytes_after": 65712459776,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/12.stdout.raw",
+          "bytes": 76696,
+          "sha256": "59a497bac9e3155e9ec5e11e4354d765137221e9190a356c4f70a61688c859ed"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/12.stderr.raw",
+          "bytes": 664,
+          "sha256": "f4ebdc25681d5a4c8308f4eee599b5bc0c4108ea1fe53a28a162dc93fc9bcfb5"
+        }
+      },
+      "observed_counts": [
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          20,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 13,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "navigation",
+        "--test",
+        "nested_class_literal_values",
+        "--test",
+        "nested_generic_header_projection",
+        "--test",
+        "nested_type_source_spelling"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:14.241134+00:00",
+      "duration_seconds": 11.189703957992606,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 413896596,
+      "free_bytes_after": 65740222464,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/13.stdout.raw",
+          "bytes": 76921,
+          "sha256": "26454518734494a9875693cd9a15fd13b94303738b058bd8731261d78c9f86d7"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/13.stderr.raw",
+          "bytes": 646,
+          "sha256": "63e25b5399cb639140ae9b130153513d268ffa71203f8ea2476fc2117178bfdb"
+        }
+      },
+      "observed_counts": [
+        [
+          20,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 14,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "ordinary_generic_projection",
+        "--test",
+        "p1_active_facts",
+        "--test",
+        "p1_artifact_tree",
+        "--test",
+        "p1_budget_ledger"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:25.490070+00:00",
+      "duration_seconds": 9.18172120800591,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 349482049,
+      "free_bytes_after": 65784115200,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/14.stdout.raw",
+          "bytes": 77851,
+          "sha256": "c43575962de44b396599e8c6cd8e2742173a85770b95ceba28a7c0e47760ac65"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/14.stderr.raw",
+          "bytes": 602,
+          "sha256": "56c247bbc68a96211a89dca8266430b667cf0ae64bb8a077de74995695e5bd90"
+        }
+      },
+      "observed_counts": [
+        [
+          14,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          14,
+          0,
+          0
+        ],
+        [
+          18,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 15,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p1_multi_release",
+        "--test",
+        "p1_prepared_class",
+        "--test",
+        "p1_query_api",
+        "--test",
+        "p1_query_bounds"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:34.713117+00:00",
+      "duration_seconds": 4.100533958000597,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 309609202,
+      "free_bytes_after": 65822552064,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/15.stdout.raw",
+          "bytes": 78667,
+          "sha256": "c6c1b82cb2f5cdc2ebd83bff4e04135b6fc1bb8c0facfc5fdb9efa865fdc382f"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/15.stderr.raw",
+          "bytes": 574,
+          "sha256": "02bb84bea83d5da253f40a908f9310f07212962a906d72a55d3cbe2802993665"
+        }
+      },
+      "observed_counts": [
+        [
+          29,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          23,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 16,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p1_query_demand",
+        "--test",
+        "p1_query_model",
+        "--test",
+        "p1_query_planes",
+        "--test",
+        "p1_query_positions"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:38.833249+00:00",
+      "duration_seconds": 2.042554374987958,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 304898749,
+      "free_bytes_after": 65826717696,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/16.stdout.raw",
+          "bytes": 75430,
+          "sha256": "6f3e472506d889fb277432d75be8c9d20afaf631c4eb0d083bab68dcefa54dc8"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/16.stderr.raw",
+          "bytes": 578,
+          "sha256": "0c09c5abb2023f9c13691df25aaa6c1cb4d64c537b3d7605564d4b05b38e2924"
+        }
+      },
+      "observed_counts": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 17,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p1_reader_facts",
+        "--test",
+        "p1_scope_cursor",
+        "--test",
+        "p1_xref_bootstrap",
+        "--test",
+        "p1_xref_code"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:40.891818+00:00",
+      "duration_seconds": 2.049207584001124,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 303847548,
+      "free_bytes_after": 65827815424,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/17.stdout.raw",
+          "bytes": 78864,
+          "sha256": "d23876c8da9c43b9eca3c3b8122216d12a5a266472b0b237a133dc061b29512d"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/17.stderr.raw",
+          "bytes": 572,
+          "sha256": "646837d1cac49f1d261144f9c952da82dda7ccedcda9af0fdbb93b42588ce7db"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          28,
+          0,
+          0
+        ],
+        [
+          28,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 18,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p1_xref_golden",
+        "--test",
+        "p1_xref_metadata",
+        "--test",
+        "p1_xref_properties",
+        "--test",
+        "p2_canonical"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:42.961730+00:00",
+      "duration_seconds": 3.089211915998021,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 313158008,
+      "free_bytes_after": 65817985024,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/18.stdout.raw",
+          "bytes": 77281,
+          "sha256": "b7fd5513b963cd5ef0e91299a5b87daa493421b39ec470d09072b3d322738bc9"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/18.stderr.raw",
+          "bytes": 574,
+          "sha256": "b7ec77f84822b83caf6958a8801389db3bdd7cf2b1aa2abdf9aa105e594e1a5b"
+        }
+      },
+      "observed_counts": [
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          35,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 19,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p2_cfg",
+        "--test",
+        "p2_closure",
+        "--test",
+        "p2_contracts",
+        "--test",
+        "p2_declaration_refs"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:46.078304+00:00",
+      "duration_seconds": 4.098348875006195,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 322374782,
+      "free_bytes_after": 65808441344,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/19.stdout.raw",
+          "bytes": 79641,
+          "sha256": "ec0cac3b030564181b376612c91dae391de3cd615bdf599ffb9a42715b2061cf"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/19.stderr.raw",
+          "bytes": 548,
+          "sha256": "43381511d4481f3dace10d69b59d3e2255f63e11d2b86a9fb1935033d7aa2270"
+        }
+      },
+      "observed_counts": [
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          30,
+          0,
+          0
+        ],
+        [
+          34,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 20,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p2_dispatch",
+        "--test",
+        "p2_entry_counts",
+        "--test",
+        "p2_frame",
+        "--test",
+        "p2_golden"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:50.205786+00:00",
+      "duration_seconds": 3.0584786249964964,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 316596389,
+      "free_bytes_after": 65813536768,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/20.stdout.raw",
+          "bytes": 78104,
+          "sha256": "06bc5545462752b3a8d1b7cafe96c503fc9e4d7e81edd246f5c381283a85dbb9"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/20.stderr.raw",
+          "bytes": 540,
+          "sha256": "05049b27937d67d2424fe5275586d0f372c5852219c0cba06555618997c9005c"
+        }
+      },
+      "observed_counts": [
+        [
+          33,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          16,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 21,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p2_members",
+        "--test",
+        "p2_passes",
+        "--test",
+        "p2_prefixed_roots",
+        "--test",
+        "p2_properties"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:53.288010+00:00",
+      "duration_seconds": 2.0627573329838924,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 318470271,
+      "free_bytes_after": 65811116032,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/21.stdout.raw",
+          "bytes": 79145,
+          "sha256": "2acede899b91cb9eb359c3a17d38688ed5da5b5134398808940bfc236dab7cbe"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/21.stderr.raw",
+          "bytes": 552,
+          "sha256": "be4e7a36ff9f418b2541e63fda60b67a02f7cde49ece956013b8fe6c85969a64"
+        }
+      },
+      "observed_counts": [
+        [
+          53,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          17,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 22,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p2_resolution",
+        "--test",
+        "p2_return_address",
+        "--test",
+        "p2_ssa",
+        "--test",
+        "p3_accessor_edges"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:55.378432+00:00",
+      "duration_seconds": 2.046750083012739,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 331426319,
+      "free_bytes_after": 65798438912,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/22.stdout.raw",
+          "bytes": 76412,
+          "sha256": "3c40c96f523a70bb4895d8edd60657152d20e8098376422e9971342e123999f1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/22.stderr.raw",
+          "bytes": 560,
+          "sha256": "57705a0f2af237a354760505894e9efb15421f6748eb2388b1e6c495383f05d8"
+        }
+      },
+      "observed_counts": [
+        [
+          16,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 23,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_alias_field",
+        "--test",
+        "p3_annotation_default",
+        "--test",
+        "p3_anonymous_class_facts",
+        "--test",
+        "p3_array_access"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:10:57.454358+00:00",
+      "duration_seconds": 3.089858291990822,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418208258,
+      "free_bytes_after": 65710157824,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/23.stdout.raw",
+          "bytes": 75510,
+          "sha256": "3d05023793c233fdc29a8036cc4298748eeb3083ba0b0b3080dad9ff924fedc9"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/23.stderr.raw",
+          "bytes": 602,
+          "sha256": "a7a39a7e53a0c5fd6ae8f56953f15af568f73d9175d909b449e80ca100e9f0f1"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 24,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_array_foreach",
+        "--test",
+        "p3_array_initializers",
+        "--test",
+        "p3_array_slot_retype_locals",
+        "--test",
+        "p3_array_types"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:00.620613+00:00",
+      "duration_seconds": 7.16442245899816,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408449447,
+      "free_bytes_after": 65719828480,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/24.stdout.raw",
+          "bytes": 75742,
+          "sha256": "a84f1e9656393da40596a70d93269d8a973b3714786ae71fc6ca06a5b2bd1524"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/24.stderr.raw",
+          "bytes": 610,
+          "sha256": "43c3b6831498f167327494bc2653088660d5a0a153f169f19ae43b8f7bebe80a"
+        }
+      },
+      "observed_counts": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 25,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_arraylength_loop_condition",
+        "--test",
+        "p3_bigdecimal_number_widening",
+        "--test",
+        "p3_bitwise",
+        "--test",
+        "p3_boolean_array_initializers"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:07.857518+00:00",
+      "duration_seconds": 2.0618182919861283,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417981287,
+      "free_bytes_after": 65709789184,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/25.stdout.raw",
+          "bytes": 75462,
+          "sha256": "78d827f07b0dc098ba49ed711e3724ef82917cee145a63ee5339a9f3dd3818b5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/25.stderr.raw",
+          "bytes": 648,
+          "sha256": "e705e7de3c9a3d509e2b074a955ed7d6330ee12ce34be769662f5947761d16b6"
+        }
+      },
+      "observed_counts": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          2
+        ],
+        [
+          3,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "index": 26,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_boolean_array_store_contract",
+        "--test",
+        "p3_boolean_array_stores",
+        "--test",
+        "p3_boolean_contexts",
+        "--test",
+        "p3_boolean_field_stores"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:09.991232+00:00",
+      "duration_seconds": 3.082364708010573,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408628876,
+      "free_bytes_after": 65718808576,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/26.stdout.raw",
+          "bytes": 75730,
+          "sha256": "e8fe0845f689d04196fa58302d7dbad9dad767f198bd4c5319ce53a868cd27cd"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/26.stderr.raw",
+          "bytes": 646,
+          "sha256": "4abca471d7f8e01d14ea2b0110df9eb944d806cd0e47004273e13c57317340f4"
+        }
+      },
+      "observed_counts": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          13,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "index": 27,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_boolean_short_circuit_return",
+        "--test",
+        "p3_catch_after_field_assignment",
+        "--test",
+        "p3_caught_value_argument_typing",
+        "--test",
+        "p3_chained_store"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:13.137769+00:00",
+      "duration_seconds": 3.0915274169819895,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417360097,
+      "free_bytes_after": 65709543424,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/27.stdout.raw",
+          "bytes": 74556,
+          "sha256": "89d1d4416c349f09b49fb8d8e8c038665a17be48c4dab4ffb150647f1ba1b00e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/27.stderr.raw",
+          "bytes": 672,
+          "sha256": "1869e425df7570e612a7322be0264d0d52b0d4878a778bcd20cc6c5f9e3889da"
+        }
+      },
+      "observed_counts": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 28,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_char_switch",
+        "--test",
+        "p3_class_literals",
+        "--test",
+        "p3_compound_lvalue_updates",
+        "--test",
+        "p3_concat_char"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:16.305658+00:00",
+      "duration_seconds": 2.063964125001803,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417965562,
+      "free_bytes_after": 65707974656,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/28.stdout.raw",
+          "bytes": 75056,
+          "sha256": "e2e9a30c27c33b8f8a859384e61ccf504a825103e03f760ce04154f710d7f8cc"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/28.stderr.raw",
+          "bytes": 596,
+          "sha256": "1e6ef2e3961c29a42b3e929b4168305533a03865fca1117b25157444626eef4b"
+        }
+      },
+      "observed_counts": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          1
+        ],
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 29,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_concat_conversion",
+        "--test",
+        "p3_constructed_reference_array_elements",
+        "--test",
+        "p3_constructor_primitive_conversion_arguments",
+        "--test",
+        "p3_content"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:18.441910+00:00",
+      "duration_seconds": 10.18998087500222,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 399259482,
+      "free_bytes_after": 65725931520,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/29.stdout.raw",
+          "bytes": 75397,
+          "sha256": "6781ec4bf797188a7d4d2eafc20557b8851413f99d5ad20e466bb2e8c4cb748e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/29.stderr.raw",
+          "bytes": 682,
+          "sha256": "419a49d497acf9089e3173a24b63f0e2bbb7e5c8405c70a53b4b2de299bdda70"
+        }
+      },
+      "observed_counts": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 30,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_crossing_array_read_values",
+        "--test",
+        "p3_declaration_handoff",
+        "--test",
+        "p3_declarations",
+        "--test",
+        "p3_deferred_value_order"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:28.694840+00:00",
+      "duration_seconds": 3.0897856669907924,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408316981,
+      "free_bytes_after": 65716322304,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/30.stdout.raw",
+          "bytes": 75712,
+          "sha256": "7bbb245675cb885939f04b468bc32495969e827e2b9de7789c8d5f4c31c5b700"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/30.stderr.raw",
+          "bytes": 632,
+          "sha256": "bc6eeaf26c2fc0f991707f3df54104c8e5b8980af70e8bce2055d850f3d0bf69"
+        }
+      },
+      "observed_counts": [
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "index": 31,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_edge_settlement",
+        "--test",
+        "p3_eval_context",
+        "--test",
+        "p3_exception_scope",
+        "--test",
+        "p3_execution_comparison"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:31.857935+00:00",
+      "duration_seconds": 2.0598195000202395,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 389719740,
+      "free_bytes_after": 65733857280,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/31.stdout.raw",
+          "bytes": 75682,
+          "sha256": "269049f5818f659bed258d8517c8bd82828c44c9af666cd762f12b14d493bea5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/31.stderr.raw",
+          "bytes": 602,
+          "sha256": "cd5a03e68439cc2dbf5ec093f0e68fb2c10cb2bcf8e4da8ad960333092e0ffb6"
+        }
+      },
+      "observed_counts": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "index": 32,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_field_increment",
+        "--test",
+        "p3_field_presentations",
+        "--test",
+        "p3_final_static",
+        "--test",
+        "p3_finally_straight"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:33.976144+00:00",
+      "duration_seconds": 2.066819291008869,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417594445,
+      "free_bytes_after": 65708253184,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/32.stdout.raw",
+          "bytes": 74989,
+          "sha256": "8408e2c71e4c66e1a120371b7232ee094afe5b8f9d638ec3f1502aaa19055a69"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/32.stderr.raw",
+          "bytes": 602,
+          "sha256": "5fdc9c1fc37b6f11249bc3549a8c437ddfe483613e1818225c955167bde407e6"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          1
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 33,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_floating_constants",
+        "--test",
+        "p3_for_add_store",
+        "--test",
+        "p3_for_latch",
+        "--test",
+        "p3_forward_join"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:36.122736+00:00",
+      "duration_seconds": 2.0689150000107475,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417262887,
+      "free_bytes_after": 65708113920,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/33.stdout.raw",
+          "bytes": 74745,
+          "sha256": "af5deb15e87981291a6dde6e71c9b2a633c7e7bc4b2717e47fa3f4c24ecd95d2"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/33.stderr.raw",
+          "bytes": 582,
+          "sha256": "4733834af0cc8aecd11870bc8c390dd6c9f8a03b0818c3fc68a2128211f6690f"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 34,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_guard",
+        "--test",
+        "p3_handler_store",
+        "--test",
+        "p3_heterogeneous_array_initializers",
+        "--test",
+        "p3_hoisted_boolean"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:38.266257+00:00",
+      "duration_seconds": 4.116672208008822,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 399160172,
+      "free_bytes_after": 65726824448,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/34.stdout.raw",
+          "bytes": 75983,
+          "sha256": "ea8050dc87000f29507bd828375899b8585c0052de21ba9f3ce7dfbb76963450"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/34.stderr.raw",
+          "bytes": 608,
+          "sha256": "9ea1530de2132ae537eca1265220e1d0bb7695b6b106d96963d3bd8e5e97397f"
+        }
+      },
+      "observed_counts": [
+        [
+          13,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 35,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_immediate_functional_receivers",
+        "--test",
+        "p3_instance_receiver",
+        "--test",
+        "p3_instanceof",
+        "--test",
+        "p3_integer_boolean_return_boundaries"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:42.464669+00:00",
+      "duration_seconds": 10.249900875001913,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418297755,
+      "free_bytes_after": 65704787968,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/35.stdout.raw",
+          "bytes": 76315,
+          "sha256": "445227caf82b4d5491981bac47b9aab238e6764745df358f99dfec66c99c24ab"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/35.stderr.raw",
+          "bytes": 658,
+          "sha256": "52e20da4cb889055083575b29e42915edaef76f71e9acb8d68d3295bcdc6401a"
+        }
+      },
+      "observed_counts": [
+        [
+          16,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 36,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_integer_boolean_return_contract",
+        "--test",
+        "p3_integer_boolean_returns",
+        "--test",
+        "p3_invocation_arguments",
+        "--test",
+        "p3_isolation"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:52.788963+00:00",
+      "duration_seconds": 3.102608874993166,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408799011,
+      "free_bytes_after": 65716727808,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/36.stdout.raw",
+          "bytes": 74909,
+          "sha256": "9ab69f9439e9e842630fd9782208d4d1a347400b7f0fdc84a3033c1232b1bc18"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/36.stderr.raw",
+          "bytes": 644,
+          "sha256": "325cdbbe00e70de7227d25a4c09c1f8d73a0706313e4e28d30702bf839e65d0a"
+        }
+      },
+      "observed_counts": [
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 37,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_iterable_foreach",
+        "--test",
+        "p3_labeled_loop_tail",
+        "--test",
+        "p3_lambda_adaptation",
+        "--test",
+        "p3_local_postfix_array_elements"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:11:55.963671+00:00",
+      "duration_seconds": 8.210271500021918,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418054636,
+      "free_bytes_after": 65704042496,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/37.stdout.raw",
+          "bytes": 76211,
+          "sha256": "a285765c8f7bad6f640d6b00e9752ccde2a073612387a0a6d0de033e21dddcef"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/37.stderr.raw",
+          "bytes": 634,
+          "sha256": "72d5ac1f229f543352f19c3ed7b3f4bdc18f129a7535e9a76458d3e39c20f5ce"
+        }
+      },
+      "observed_counts": [
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          2
+        ],
+        [
+          3,
+          0,
+          2
+        ]
+      ]
+    },
+    {
+      "index": 38,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_local_rewrite",
+        "--test",
+        "p3_long_field_assignment_result",
+        "--test",
+        "p3_loop_arm_join",
+        "--test",
+        "p3_loop_boolean_do"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:04.248542+00:00",
+      "duration_seconds": 5.142390291992342,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408502505,
+      "free_bytes_after": 65713369088,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/38.stdout.raw",
+          "bytes": 75569,
+          "sha256": "d7009af17e96bbf9cc1c045f398f383c7f6fb03416628221f9b5650de32ea784"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/38.stderr.raw",
+          "bytes": 616,
+          "sha256": "64cae3ddca4bb55b659dee5db8ab555e5fa7a725112f2455d5650278d04b3670"
+        }
+      },
+      "observed_counts": [
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 39,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_loop_boolean_exit",
+        "--test",
+        "p3_loop_test_values",
+        "--test",
+        "p3_loop_transfers",
+        "--test",
+        "p3_loop_try_handler_entry"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:09.463256+00:00",
+      "duration_seconds": 3.084706375026144,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418012346,
+      "free_bytes_after": 65703272448,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/39.stdout.raw",
+          "bytes": 75198,
+          "sha256": "57fdaf0d8cb1d3f543ea0c9b911e028251b55ff74e44325474aedc663ff1334c"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/39.stderr.raw",
+          "bytes": 616,
+          "sha256": "5e4e3fec9236eadbabc58799c2a123020888b764d77e9ea927ea40516b8fabbf"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 40,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_meeting",
+        "--test",
+        "p3_method_ir",
+        "--test",
+        "p3_mixed_short_circuit_argument",
+        "--test",
+        "p3_mixed_short_circuit_array"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:12.617396+00:00",
+      "duration_seconds": 4.11761149999802,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 392718417,
+      "free_bytes_after": 65728122880,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/40.stdout.raw",
+          "bytes": 75035,
+          "sha256": "0a8d967db54375fbc8c392e6235b8b4545f05bea76124f1bcc5828f2642c2b33"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/40.stderr.raw",
+          "bytes": 616,
+          "sha256": "ed871eae195560e2c4d9937295247b28cdef86b74e377dbf18c2a299a94c7100"
+        }
+      },
+      "observed_counts": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 41,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_mixed_short_circuit_field",
+        "--test",
+        "p3_mixed_short_circuit_instance_field",
+        "--test",
+        "p3_mixed_short_circuit_local",
+        "--test",
+        "p3_mixed_short_circuit_return"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:16.801880+00:00",
+      "duration_seconds": 5.15880533400923,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417993338,
+      "free_bytes_after": 65703063552,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/41.stdout.raw",
+          "bytes": 75123,
+          "sha256": "bf720e2242add205ed73bb8f628ef3c1fe9990dae3d971565b458f4bba619d79"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/41.stderr.raw",
+          "bytes": 698,
+          "sha256": "852ed4e95ea925d57b606fb12a2ad79f1ee697bde07ad1af129066966c98ef85"
+        }
+      },
+      "observed_counts": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 42,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_multi_resource_twr_geometry",
+        "--test",
+        "p3_mutf8",
+        "--test",
+        "p3_narrow_array_store_order",
+        "--test",
+        "p3_narrow_array_stores"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:22.037469+00:00",
+      "duration_seconds": 2.0826385419932194,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417784777,
+      "free_bytes_after": 65702805504,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/42.stdout.raw",
+          "bytes": 75156,
+          "sha256": "f865294d5cc861c8926f8178cab66074e8cff3a880c168544c55b43d42b85b10"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/42.stderr.raw",
+          "bytes": 628,
+          "sha256": "1954e1abd5c808ee4123d773ca43afdf2c8e7708d35158f25e74a2e80b59be17"
+        }
+      },
+      "observed_counts": [
+        [
+          6,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "index": 43,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_narrow_field_stores",
+        "--test",
+        "p3_narrow_integer_return_contract",
+        "--test",
+        "p3_narrow_integer_returns",
+        "--test",
+        "p3_narrow_return_boundaries"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:24.199658+00:00",
+      "duration_seconds": 3.0915917080128565,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417785965,
+      "free_bytes_after": 65702469632,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/43.stdout.raw",
+          "bytes": 75037,
+          "sha256": "f0a9daa51004efae13d9549e0392f74a987c6d6bdd4933884f33fe32b7087327"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/43.stderr.raw",
+          "bytes": 668,
+          "sha256": "5bf2adb9a1e71b9bff898fa603e89dca46df0703dc9acfdb719e3674294da8e1"
+        }
+      },
+      "observed_counts": [
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 44,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_nested_annotation_source",
+        "--test",
+        "p3_nested_array_initializers",
+        "--test",
+        "p3_nested_int_array_compound_updates",
+        "--test",
+        "p3_nested_try"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:27.364706+00:00",
+      "duration_seconds": 2.0597771249886137,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418089536,
+      "free_bytes_after": 65702318080,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/44.stdout.raw",
+          "bytes": 76021,
+          "sha256": "7054ef62d82ca06c448831b7743cf221dc38fd488eff002e6291f9d877019e2b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/44.stderr.raw",
+          "bytes": 662,
+          "sha256": "ae295fae63e67b19a9020245eb5a09571b8a273bb4d4f64cb567e0034a95fc5f"
+        }
+      },
+      "observed_counts": [
+        [
+          7,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          1
+        ],
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 45,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_new_value",
+        "--test",
+        "p3_null_resource",
+        "--test",
+        "p3_numeric_comparison",
+        "--test",
+        "p3_one_armed_if"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:29.491493+00:00",
+      "duration_seconds": 2.0750116249837447,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 408265430,
+      "free_bytes_after": 65711661056,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/45.stdout.raw",
+          "bytes": 75245,
+          "sha256": "addda8e8b5f9812cc643c17cbac823c9c921decf66ad31205b8fbcf818b6b80c"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/45.stderr.raw",
+          "bytes": 582,
+          "sha256": "ee5f9512fdbe94140bee5c0f0b846f1ea7178f82e85ecd9ca2db71bfe2a26eca"
+        }
+      },
+      "observed_counts": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          1
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 46,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_ordinary_new_invokes",
+        "--test",
+        "p3_parameter_slots",
+        "--test",
+        "p3_partial_array_allocation",
+        "--test",
+        "p3_platform_collection_widening"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:31.636107+00:00",
+      "duration_seconds": 3.1045377499831375,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 418095873,
+      "free_bytes_after": 65701601280,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/46.stdout.raw",
+          "bytes": 75182,
+          "sha256": "f69c19160356b585addc9be7c4b6e650635042814ac4323b73daefb850613137"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/46.stderr.raw",
+          "bytes": 652,
+          "sha256": "cafa3edf5e16791c317f637c70db2c5d7420b36908bcc649b34a65c1665fe767"
+        }
+      },
+      "observed_counts": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          5,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 47,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_popped_static_qualifier",
+        "--test",
+        "p3_postfix_handler_boundary",
+        "--test",
+        "p3_postfix_lvalue_values",
+        "--test",
+        "p3_precise_rethrow"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:34.818870+00:00",
+      "duration_seconds": 2.087536542007001,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 417589518,
+      "free_bytes_after": 65701883904,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/47.stdout.raw",
+          "bytes": 75117,
+          "sha256": "d8cfd9e48ee7535f2e7aaee072c418732258a5274370f24fccd6d60da309e689"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/47.stderr.raw",
+          "bytes": 644,
+          "sha256": "48b10865de471fbab58b537444040cbeae9565b513f63a437a6fedb12e904f65"
+        }
+      },
+      "observed_counts": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 48,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_prefix_survival",
+        "--test",
+        "p3_prepared_input",
+        "--test",
+        "p3_primitive_conversions",
+        "--test",
+        "p3_product_vocabulary"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:36.982537+00:00",
+      "duration_seconds": 2.0641997500206344,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 378693507,
+      "free_bytes_after": 65739284480,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/48.stdout.raw",
+          "bytes": 75007,
+          "sha256": "94387fe95b340cdbb128b2d5d11ba5fe019818961ef21342a0f890ddc7dbcae1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/48.stderr.raw",
+          "bytes": 614,
+          "sha256": "93b6cdb938dbc2db886cc9c970ad2825c1462d92ade35719eef0ac906ed02f2a"
+        }
+      },
+      "observed_counts": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "index": 49,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "p3_proved_varargs_calls",
+        "--test",
+        "p3_recovery_entry",
+        "--test",
+        "p3_reference_cast",
+        "--test",
+        "p3_reference_slot_lifetimes"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T21:12:39.131276+00:00",
+      "duration_seconds": 2.082877250009915,
+      "exit_code": 101,
+      "guard_stop": null,
+      "peak_target_bytes": 408463172,
+      "free_bytes_after": 65713745920,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/49.stdout.raw",
+          "bytes": 79169,
+          "sha256": "11d123c3e52fd7d3d5667cd1d44e31167de9cafe6b3f75c026405481b3b5aa41"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-typed-workspace-batches-root-v2/49.stderr.raw",
+          "bytes": 715,
+          "sha256": "797bc462f8bd24f322777d9d87966ee8ebffa1a1a788dfe2ac49f22ced22de93"
+        }
+      }
+    }
+  ],
+  "carried_completed_unit_execution": "/private/tmp/jarde-typed-workspace-batches-root-v1/execution.json",
+  "removed_completed_test_executables": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/anonymous_parameterized_root-ff1399649f00d201",
+      "sha256": "5aa4c18665b576516861a5a02331620e1992ca939f7fe82fa08b127d6fcb9335",
+      "bytes": 31116368
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/assert_statement_sugar-16a6fd1ae2fabf94",
+      "sha256": "612a8040d848015d61038823105e0155266c36a2b61c3cae9e04dc28758e90df",
+      "bytes": 31304000
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/anonymous_supertype_return-ae8da61719c7338a",
+      "sha256": "a045974afc5f2e1a4db10ff040fee47bedb75610632b48b0af2575c2d57a88f4",
+      "bytes": 31116432
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_backpressure-3455f2e8274aa898",
+      "sha256": "ae2ba405ec751a6d01b4d15dc3c56a1ed325376d6295bf590b02cfebedb8b970",
+      "bytes": 22142368
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_cancel-b2d50234595b3c4c",
+      "sha256": "5e7ad2190875719be861ad216028e69d75f91730a060ec699181cd0c7cfe7c6e",
+      "bytes": 22116928
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_handover-dc0495651cf802c5",
+      "sha256": "21d867d086b64167acfeaf0d30c11034c7cc54833e29f1575766871bd74f5742",
+      "bytes": 22058192
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_delivery-0f6f07dd5bfc5546",
+      "sha256": "03173bee10f71192e062f262cd8b7729ba4ade9f51d6791c88e7211d2cbdbd69",
+      "bytes": 22022720
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_lifecycle-6ae810bfe56a68ab",
+      "sha256": "9bc9b223047addede60dbde3ec353f57a1d3c8ac9140b2eca663b91c6ecc1140",
+      "bytes": 22075632
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_retention-6eec38de588dbf93",
+      "sha256": "7ce83112960b0043bb27a60c66be51dc39f0cc729476c5a94bd444dd5c771ecd",
+      "bytes": 22213856
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_workers-462365d9615c87fb",
+      "sha256": "c302fbe44312dbe9a79f8f18c3cfe41e74c9dd26f13888e44c263bf7f8c0e1d1",
+      "bytes": 22341712
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_recovery_serial-5530e53c35a7c11b",
+      "sha256": "80e64a8049d477b6e6756070a8a12bbe3de69055eb0afc335132b670e82e79a8",
+      "bytes": 22159792
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/bulk_support-64f4cb199c5ed6e1",
+      "sha256": "01010d5f935f937ab7053f6a3112276973f0dfe6144c9b2f1844780d037832a3",
+      "bytes": 754032
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/class_source-a9782f4805c496fd",
+      "sha256": "de9d1de408c60462b7e93633c82f7f4e5239f3c037cd780574176ebfe59c4640",
+      "bytes": 32903088
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/class_scope_constructor_projection-2744e6c6c3f0f5ba",
+      "sha256": "884c8c43bb0f89c138beefe934c8d379615f815e42cf93ebd27ac50e4a327cbb",
+      "bytes": 31333552
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/ctor_reorder_dispatch_guard-1bb261056d750714",
+      "sha256": "1c1c0c5c66cc0579b8a8eea5b9e57245d078470a7e2c03ea5d4c730ccdb15b19",
+      "bytes": 31083184
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/class_static_initializer_projection-68781716834ce1c1",
+      "sha256": "20bf27bd79a1422e08513de998baaa22caf813166a363caca6b7bb1381fa0550",
+      "bytes": 31047472
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d2_prepared_handoff-d758e55a2640f314",
+      "sha256": "21c85fb8d2e2cca2ce6f2f0814f5bf544c8b4ba014b291a73681c1169a3a6b7a",
+      "bytes": 31438544
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d0_demand_counts-456deb73df823c1c",
+      "sha256": "2cdb131a2317f5cd86cdd220d98cebe0b16bf7970a0002d5f249146d0d3f937b",
+      "bytes": 31238960
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d1_evidence_selection-c373e2712054b6dc",
+      "sha256": "0893aee0eb57777f672991ea533e18ccaf6dbdd61ee362f520c8ff5d1179a278",
+      "bytes": 31501808
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d3_artifact_binding-eb3e09d50a7047fe",
+      "sha256": "e2751c2309273daf51966ae5841158704b73f3fb7ac67e37269483e8263f2f6b",
+      "bytes": 32194160
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d5_semantic_comparison-918a6fc5f3ea8a01",
+      "sha256": "25809ab488a079ada0f38b9944d8cc6a23c8550cea4adcb603523374963815fc",
+      "bytes": 22072832
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/double_brace_capture-505a6caa0448af96",
+      "sha256": "88f76da23ded7aa23277ebd57264bbc5a45f25cdc2d71ebf8a7a4e108b4fdf54",
+      "bytes": 31099952
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d5_process_release-0d8842be96153639",
+      "sha256": "5121180cb4cfce58a3dd39e897963fabce4eabeef12b59803498950b8ceb9c20",
+      "bytes": 22438256
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/d5_acceptance_ledger-abdac8a227503ec3",
+      "sha256": "d3d69e51e7a5576d155fea50441323fb8c27d345ad8a733e818e5b9dff7bd74e",
+      "bytes": 837248
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/engine-dbd4cf0f48124368",
+      "sha256": "1b2acee910dacba8d12fa5ee477c6e9ccc3da624efef19106002f1a39b6af0c3",
+      "bytes": 3757376
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/enum_string_field_name-e957e5700723644d",
+      "sha256": "1263620f6e054a87897c787723a6daf436c4f7261d46f11f14ca77b06850a03b",
+      "bytes": 31270048
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/em22_boolean_xor-d3d1cccae0edc55f",
+      "sha256": "dba30e020bd1b8f920bf1d4b545e7d1cc90e0094cd7907a3f9ed6b907134afa0",
+      "bytes": 31218112
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/em23_field_unit_updates-f39143f1d7094ddf",
+      "sha256": "0ea6e54401136967b8775fb789ee88dddc4ab91102a651928100a040df55d2d0",
+      "bytes": 31237456
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/field_generic_projection-03ba2a6bcf131e0b",
+      "sha256": "285e63ccc1c6afb80290ea2b1ea5aaf157726dc2914d11421250932e9ee4117d",
+      "bytes": 31232848
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_constructor_projection-e5aafdb109a6f85c",
+      "sha256": "4ec4b584670901a82938c5a5f8fe0bb7ae22bbffac36647004101a318a788699",
+      "bytes": 31233680
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/fixture_behavior_guards-0e75e87e50dc92f5",
+      "sha256": "fafee4003f57dfb957251dc16048348a299764cf0fa33109a3ab6916b17e790f",
+      "bytes": 31150272
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_body_throws_projection-b6c86c854e3673e0",
+      "sha256": "e79a49e28ed88def4e25ff818dca286b73e07f9a8412f9230ca95ec55aa72ca6",
+      "bytes": 31217184
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_method_projection-e128b3a7254022f3",
+      "sha256": "d516c7747ee829ce7748cf45217b260717f222e681c255afd4092c55192a9748",
+      "bytes": 31283872
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_outer_member_family-96fa10e9d91b5949",
+      "sha256": "1cf1b515af7d430f68fe1f87e947f593953f1e923e3f0f94adba196bf623c502",
+      "bytes": 31270240
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_method_budget-43e4add09959c888",
+      "sha256": "c5fc60aa29e7697cf0e240d493603311bd4bbd8c4d49ab1fe31db2b596c46402",
+      "bytes": 31182976
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_static_member_family-1dc93849fbee50b5",
+      "sha256": "dd1db55ca36686feef03b7f5e705519f09c988aaf312535f6ca39cb0bdf7ec9c",
+      "bytes": 31252240
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/historical_classfile_corpus-e96f651e6ce0a987",
+      "sha256": "57a5c736f068b2f0a388d11a66c8e0efb23e69a3366f94a3fb4f7b368528efb2",
+      "bytes": 1506096
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/generic_throws_projection-a310da332b61d0fa",
+      "sha256": "c2073712ec0cf4fb239457b34f7b1b5d8e5a72a7b238c3b29528427de9bb24da",
+      "bytes": 31284208
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/inner_class_static_mixed_folding-6a416ce552c13eee",
+      "sha256": "5b7ac5f21aefe0fdbf01dbaeaf381ababb90adee0b9a71df5408817407de2461",
+      "bytes": 31304000
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/interface_initializer_projection-f8c13ba99b0e3f41",
+      "sha256": "0d78a75d71fd7c1fe25f3b8019f3b8f6d758e817b2ccffea9686024c3a224de8",
+      "bytes": 31863088
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/interface_initializer_proof-9930647327959c71",
+      "sha256": "8d51732970c7333330a776f5a95f26f545bfe735b0e3a1d1af014d6437712fd9",
+      "bytes": 31199440
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/lambda_root_member_folding-8dfe8afcb331420e",
+      "sha256": "c2ba8cf165a26e9b45341afaf4c9a17d34ddbfafc23de576bc7b2542c85fdbc6",
+      "bytes": 32000032
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/jvm_bytecode_oracle-b68aad13a222fac3",
+      "sha256": "a5cb2b828b0a4eeb891208bce40b9475d846de75598bf54007229537d0016dda",
+      "bytes": 1423632
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/lambda_companion_bodies-8c9fcacf18e6780a",
+      "sha256": "b36a876e4a8732336cd9cfeaa51928db6096e674904ca27e433b472f57ec6cc1",
+      "bytes": 31063664
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/member_family_identity-95b1e3ba3995d0d0",
+      "sha256": "180955883b6ecf5efcb368d03c4d01c8742dea3d5a77363f6be4f12ec18bc22a",
+      "bytes": 32204080
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/member_class_static_folding-641c7397f54c7408",
+      "sha256": "f7951581c3ac3542a28267a477a395d303134e970a9c300eb8146bc26fd570fc",
+      "bytes": 31304000
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/member_family_external_use-370826260731f848",
+      "sha256": "076c3d6ef23bc83fde552b8ea33be3e1f26fc20081abeec115adad0754b73307",
+      "bytes": 31286912
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/member_local_type_source_names-2214756c3b462d1f",
+      "sha256": "a6b40c0b468ebbe91d2df31b755b7570d6cbc6ef38d2b0c5688d8cb17a8989d7",
+      "bytes": 31253824
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/navigation-d719b7d336828d85",
+      "sha256": "39afc663a347376742f1b4664ad448087ab92886dc7f0781ff7e6d656119798a",
+      "bytes": 7800576
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/nested_type_source_spelling-1601183b0571cc7e",
+      "sha256": "2bb46a1510fa8a2270b2b698b5370908ec515f1d3ce7777933556187c821de88",
+      "bytes": 31030480
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/nested_class_literal_values-da19bf2723befc64",
+      "sha256": "9242b8046d1e94192fa98ef2c68c6a76225d24bb3f56c49d4344e1c1ff3cd129",
+      "bytes": 31114320
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/nested_generic_header_projection-41e9fe05c7a268f7",
+      "sha256": "dfa94893073891fd6347a3b524057d1df2c6da56a73fc34334e69eddb6d7f05d",
+      "bytes": 31304112
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/ordinary_generic_projection-628ee55d5500fd47",
+      "sha256": "b1e653c02473d86e37cac8b009e5c7c8e084be9968628d2e2f23a28bd501bbff",
+      "bytes": 31250384
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_active_facts-2a12a5b8879349b2",
+      "sha256": "db5b2d9f8da1ea5c5f0e95c34bb4dd0e2f506725d9cd8074f9c8a611db1ac8e1",
+      "bytes": 22125072
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_budget_ledger-1c730e389e98c74a",
+      "sha256": "18da0fdd0bad2062eb1ae6bd508f4a0d5b96ef7b115716441e14c9525b424d59",
+      "bytes": 1081344
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_artifact_tree-1b1132c64aa89fdb",
+      "sha256": "1ef97619937575928effb42ef6909aa9f1cff227a6bc102783e47fc1b655bb6c",
+      "bytes": 2096432
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_multi_release-1cbecdb7b41badf9",
+      "sha256": "a4f219072fe3549461c6d095cf11b2d8e7a79a273c1fc21a24fd7e23faad7837",
+      "bytes": 4668016
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_query_api-82e7ccf59430d128",
+      "sha256": "1bb98448f11e4f7337952214ba72cb80d3dcd1af393c6a8a49479a04bf703e2d",
+      "bytes": 5700992
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_query_bounds-580fd47dfcb82a63",
+      "sha256": "58c1ceffe37af72d312e80a2b0249509ba3d3b3ec720ed021525e4b140e456c7",
+      "bytes": 3513648
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_prepared_class-78aa636523e294e2",
+      "sha256": "ebb4319ee7afbdb043610e29cef01eea083ac933789207985a32267fbb634d1a",
+      "bytes": 2791584
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_query_planes-5868854c72537cf5",
+      "sha256": "0875659c6db0b678d9c23f28ec1d9b54ac7ce4fb3d28123ee2f01a1f94ee686f",
+      "bytes": 3382512
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_query_model-8fe99fcce4437530",
+      "sha256": "ac1c318c20f1c8bff52db5860c79c64034557c25f298159168782e14da64e830",
+      "bytes": 1827616
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_query_demand-bbdd4c76e69ac0ed",
+      "sha256": "4007ee1c8be9a81e3d6cc1538bc021f311af26448d206a8b340378ec5c856d4d",
+      "bytes": 3403408
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_query_positions-e444afcc150a2bf3",
+      "sha256": "d3ee1af171dcc6a5459a6561f1cb69e84d98f31cc6c87e6e3da09dbe0dd871ca",
+      "bytes": 3344256
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_scope_cursor-d46e5edf80ea6106",
+      "sha256": "9359afa7a1edcfb08315154ad7cfdcd99d72dceb6126d1db6bb9e270737846e5",
+      "bytes": 2064368
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_xref_bootstrap-a164eb02655acd59",
+      "sha256": "825f647ffe6434aad90498a9835d3c413ff02fde7977167bb85ec9761d99ff08",
+      "bytes": 3585040
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_reader_facts-e3ff51874810da2d",
+      "sha256": "14736a8d5456af8f2a562e7231b64d0a380799f1d63f4343569af18f559d50e7",
+      "bytes": 1523952
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_xref_code-b3ca273ffc837fca",
+      "sha256": "e1d058453855dc9004f234e6beea439a486c8bda1458ab6a9fb3b7e552c359fd",
+      "bytes": 3726288
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_canonical-32eef19aa65f7486",
+      "sha256": "e162f141a4711ab71eda1c58214abd0e61a7598fe6aaf2086ea79c3690af6e84",
+      "bytes": 6897776
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_xref_metadata-9785218156414d15",
+      "sha256": "0057c04eb404b54b44ae7a639270ab4722f32bf1e6d0b09c893de9823a2029b2",
+      "bytes": 3698480
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_xref_properties-51212cac3236a6b4",
+      "sha256": "1420f8fa9d43fef6fbf37c2836d5b866aa510610b405e752b0319f6eadea4086",
+      "bytes": 4434432
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p1_xref_golden-a2e3b4473541270c",
+      "sha256": "279fd0b1e6f8b788084a7a4ea3756db31d4d6d21d387a6d722c9dca83f039653",
+      "bytes": 5166960
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_cfg-d1ae5a2c18047e4a",
+      "sha256": "fe644ba1a2017667c277431b090270a4fb0c8e99c2e309d4e2ef3f8f0f7ed79d",
+      "bytes": 6930848
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_closure-d7f8280a6c228324",
+      "sha256": "614918580dc831a5df57f08dfc4fce3387804756b7241296e57ff63f560d1a1a",
+      "bytes": 8771488
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_contracts-7ccb3eea66636e77",
+      "sha256": "51bf53c759ac596a8d86e0054b98abbca9a128d92c14aab1ffd9fb612e44583b",
+      "bytes": 9347856
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_declaration_refs-4edad9de3c06ef61",
+      "sha256": "95d324a3c3d525a0336bcbf1a84f4a64ed82361a2f381e8e04f03b978ec7aa1f",
+      "bytes": 4357152
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_dispatch-0f9bb5eb00072ded",
+      "sha256": "7dc3be616b11ff53dd21bb39a6afc473d5f810e64a2b0019057e07507295b907",
+      "bytes": 3719536
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_golden-78408e066f8120d8",
+      "sha256": "329d543d61b3aff98238589166d0b8526c34ae3505acdf32698ac10cff846280",
+      "bytes": 7049648
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_frame-df48864d9f231617",
+      "sha256": "9cdf7d887f42ee25f64200c8dcb2493aa0aee47fdd4b4d35f9b4e9d11be82fa0",
+      "bytes": 5896352
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_entry_counts-1e2172a444e5aec3",
+      "sha256": "a0c855ebde8a57eb2be5885f3a92225b0c62e515f015b48743c22360f39d573c",
+      "bytes": 6954160
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_properties-1e970e1862e073c9",
+      "sha256": "cacc246ceab25df0818e3a7b95dc848064c708b5773eb5a8e28170c1d1da4987",
+      "bytes": 6126512
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_prefixed_roots-bb00a000225a908d",
+      "sha256": "d51453280af22b4c7bbe5fe441db45078c697185be5eda5706bf64f30c4daa4d",
+      "bytes": 6810480
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_members-79d622b6145a4d87",
+      "sha256": "d19c0cb945ca547ca7d4898bce66f6ac57f437c2e00a49ca416be950a48f3781",
+      "bytes": 6724880
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_passes-84efd69af4ef0764",
+      "sha256": "0a342759a6009645df6cb82453bc6a2822f865f9cb726197c73c8b34e6c91f73",
+      "bytes": 5825520
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_resolution-bddc7899381b0f77",
+      "sha256": "4bb95e86bfffa65a4215a2a49e8931301ad83674aec394cfb206de040ef82d24",
+      "bytes": 3041264
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_accessor_edges-d9f78bddb1982494",
+      "sha256": "0634d2bb7238562c314161c1d8714e68cfbc9bf606f4c871e83577079b20e854",
+      "bytes": 22724064
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_return_address-eb0073c73c985bca",
+      "sha256": "9313a7a4ea11e4b0a6de4aa33a253c75bf6f1f1f6e7d3de2e85b7a5eb7e0f4e8",
+      "bytes": 6896368
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p2_ssa-fd58565efe649802",
+      "sha256": "60d8688e4f989cbbd7912e5c5ae56a145db54c90b7b8c4904f56f6941d929274",
+      "bytes": 5774144
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_annotation_default-e51254a43c500648",
+      "sha256": "bed8b493cdde94321244bc3e94fc57ef6101655f4c49663fc39f9127268f8ae8",
+      "bytes": 32000464
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_anonymous_class_facts-1dfd1089a8bdb225",
+      "sha256": "3ef16e90efe666f6cad7c86be319049ed7b431552154dca85dd61f00683fa1a7",
+      "bytes": 30962880
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_array_access-4159752eb2b1775f",
+      "sha256": "1908014d7bce7e0b23b046214fa715df63cc655a8c89f2d92409b40e9aa54b7b",
+      "bytes": 31199520
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_alias_field-bde4a30c1f9a4c04",
+      "sha256": "0fa5af7d6598fddc49801f0253a79393eb7d42260b1c129a6f2cdd2f3610c538",
+      "bytes": 31046720
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_array_types-1dc7b3514563b2d1",
+      "sha256": "895a271dc15ec3fa6a667c466689cd3a771324a27a7167d3a770e33eac174c8a",
+      "bytes": 21675536
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_array_initializers-6a030cecf599e30c",
+      "sha256": "c9a84df7d85d104085ad1edcde5448d97fdf6c157d2e04f2960893dce483e5e5",
+      "bytes": 31256688
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_array_slot_retype_locals-4b7ed8f925b052b4",
+      "sha256": "df6c1f8a3cf8d3bcbfd7762c0f2f3c4299eae04342cab0c46391c468c41cde99",
+      "bytes": 31233664
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_array_foreach-3f239e506a49cec9",
+      "sha256": "f3c196b9b0b02e76a4039c2b353f8085aa4ca543a3e105cbdfa5b89c2c3a806d",
+      "bytes": 31270320
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_arraylength_loop_condition-e68a47546bb92864",
+      "sha256": "f0aa91a7a416262a3fb28074e8c09f8b7db49cbfc4f3027eba7033574afdcfc5",
+      "bytes": 31186064
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_bigdecimal_number_widening-0181c351ee9a8124",
+      "sha256": "f3c839fa1cd7a94cd363370133bac337a9afa9df5404404693a62f0040d9c940",
+      "bytes": 31286896
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_boolean_array_initializers-299926886f9f8d3a",
+      "sha256": "35d71a58d27379e1bebc4eaec3c171a4c61f37bac799121604d9afb3803ff555",
+      "bytes": 31232944
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_bitwise-c3df78b656db04a1",
+      "sha256": "450f5f0ecb9cc0fcac27190a25e778d3c440235864e46060039a03bfdde6db29",
+      "bytes": 31250752
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_boolean_array_stores-d05044b5477cc772",
+      "sha256": "1b312508b452c19ab2259b0c8de9e82ef2383247e3790f87e31851fce3bb4992",
+      "bytes": 31217008
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_boolean_contexts-29eb991156092fcf",
+      "sha256": "75c1af80329850ed53977d2e1b1afecfb12d7759ac7a9936c7bcbc66a99ab624",
+      "bytes": 21691920
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_boolean_field_stores-15513a0aaa153884",
+      "sha256": "d0d84d48e4a0ea90fe992c31e9f33ed6b4f279889fea51b1efb53c314023eb7c",
+      "bytes": 31462512
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_boolean_array_store_contract-ff8c78bda7d6a6a9",
+      "sha256": "61f760450d050a1c19f963713e88f48e6d6c1229cb56dbdf5ba56955c6e27d91",
+      "bytes": 31221888
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_chained_store-305d7af3ac670ff8",
+      "sha256": "78dd3c3e7bc8c9976ef2538ddf5875f8666d14b930826fb168917c64d6ec923f",
+      "bytes": 31048208
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_caught_value_argument_typing-5d4e4ae1ec9ccf62",
+      "sha256": "731abac7ab9940902be085b67ca122d37c325d3057ac4a65dbbba598adcb038e",
+      "bytes": 30962928
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_catch_after_field_assignment-60ef7a4cc8e6cce0",
+      "sha256": "0f0ba71d32446bc27e2ebced2691d579a6cda3e5d10e798b6bbb9a5a5001445d",
+      "bytes": 31050176
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_boolean_short_circuit_return-71ea40cb479d9dd6",
+      "sha256": "0499c98514f18fc32a8c9e3ab808be0529831e42f30834011507a665e3421c40",
+      "bytes": 31255296
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_concat_char-8dd5e5ea52fb8656",
+      "sha256": "04ed1bef075615f017ac217638154db72a6e7bfd107e57d06a941fa654ed0180",
+      "bytes": 31182608
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_class_literals-f6f6b0afc1209dff",
+      "sha256": "09f09ec530fd39aa528401fc06682cac6b205cdb980fc188089191d1b43c352b",
+      "bytes": 31232992
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_compound_lvalue_updates-5125e363d674c896",
+      "sha256": "c4fdeeb50c9937db34ebf735799dcfd212d4b9c62d30d5ed956646f1ec4b7d72",
+      "bytes": 31324208
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_char_switch-ce6c73cd302c5dc6",
+      "sha256": "53e16bb8273004f542a0bc42bb526e6a973da38a1c4bd7979692c6a6d8e0e0cc",
+      "bytes": 31166016
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_constructed_reference_array_elements-ceebdbfa01dddb38",
+      "sha256": "6f7d455a8ecee5a1fb0eac1239637a73bc6fe4586ed5e11cc380cf14f6f3e187",
+      "bytes": 31337472
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_concat_conversion-5387401ca41375b3",
+      "sha256": "6e803726e761c7e2f67272fd387fa6393829e427a2b937782849201d56566d11",
+      "bytes": 21794016
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_content-654564a25f53e799",
+      "sha256": "aa7483a7e0c0da390a607e143b787a3cd3952c46c5ae3d3100a3fe54332233c3",
+      "bytes": 21607712
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_constructor_primitive_conversion_arguments-4033c34e47d545e6",
+      "sha256": "561e4bf20a36c4635d4d13cb2dca32d7defcdd960978fc8c91df5733443ebbda",
+      "bytes": 31440864
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_deferred_value_order-a5bc4a613891d391",
+      "sha256": "d5f60710681f20d15859fa66ba4e709466389b33be59fd5b3015cc93d09e64c5",
+      "bytes": 31097600
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_declaration_handoff-730ea132c153442d",
+      "sha256": "de2792bc7eb6cee0ed8adfb0acf0ceb9304a4f53ba2d1ed1c0e5f52387c6c4c3",
+      "bytes": 21677392
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_declarations-d944ddd428cf0933",
+      "sha256": "2778fa85db3b7d7f750efb3e184024cc048240c4cc31f8edbb02bf03e4487d1d",
+      "bytes": 31216368
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_crossing_array_read_values-2f6653191bc685a8",
+      "sha256": "3bb36d0b7e08d599acb580ea72b63ef2474d7e77a60021fa62e50c0590bf156c",
+      "bytes": 31233344
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_eval_context-6b0ab511c14b45ad",
+      "sha256": "cdac975ab62dd238d99e679f3c81aafab9e3dc8252def1400e703ca331252dfa",
+      "bytes": 21778416
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_execution_comparison-f262adb7f6e97740",
+      "sha256": "2c1c935ad084137bc231f9f866eedeb1fa086a64777a32213872bd4fc90a1543",
+      "bytes": 22255888
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_exception_scope-eb6fb0d3aace8ba3",
+      "sha256": "68c8e7e2244509611f33375b185a114943e3b80e334cbdc9a9653614495ffe31",
+      "bytes": 21515056
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_edge_settlement-35931958be7a723a",
+      "sha256": "6f6800669a9b28374d5de69daa3c4c3bb47b1893c9a8280d594a0dd5c23dbe66",
+      "bytes": 31063472
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_final_static-e803194bc67a5fe8",
+      "sha256": "45cbe42937b2a48217deb85cc5dc9fec7d693ca82b96cdaddd11ede018a8681c",
+      "bytes": 31165936
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_field_presentations-195c977a7697dce2",
+      "sha256": "dae45fc5eb4129373bc32871518a94f527dcbd0bd3c6de5cccb843fa0c8c0f23",
+      "bytes": 31046736
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_finally_straight-58659ce28eca9bf3",
+      "sha256": "257fa7c70104ab66cbd51fc9e354495c0b50bfcb0eed2d0fd13a6625cd72cac2",
+      "bytes": 31199408
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_field_increment-f10eb1f405be04d0",
+      "sha256": "d652fc1b00588013b7c0f1e175b9a0dedadd168ba986b0903c4cc9c5dbe036b0",
+      "bytes": 31064912
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_forward_join-13b4bdb1c88d9dfe",
+      "sha256": "c97eb44feb42ab895dcff4586e716dfc1d7d61b08c1ae35fddee259cf44a7607",
+      "bytes": 31063408
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_for_latch-01797e8e72ca5839",
+      "sha256": "d7569d8efc15150d7de922d881e63b4ec6ad6688cde1ef5767d4e7bb55d1aed9",
+      "bytes": 30979776
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_for_add_store-54024fe180e9e4b4",
+      "sha256": "f187baa542f4aef07d277ce623f8773ef201ef2b9976656c4276e96be070e3b5",
+      "bytes": 30979456
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_floating_constants-266e84dd4f576605",
+      "sha256": "4654760a3ca78776f9fca310456abd17b78776c325d9648d6ce03bdb4a72acf0",
+      "bytes": 31114320
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_heterogeneous_array_initializers-8dea6e2d9127c7de",
+      "sha256": "ff2f74bf0f9d0af9f642d1574ddba16341443190ffb5f0091d509e5e9109ba73",
+      "bytes": 31420496
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_guard-01556c5516aada19",
+      "sha256": "7c8c92d763e95d762c98c56885981e9ad0d66713de400cfc2304fc5b82dd1d33",
+      "bytes": 21739168
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_hoisted_boolean-dedec750e8417cd7",
+      "sha256": "ffa9ca76ac8321e49473aee80e2db6f23332a8e60399d07ac47d397221153ad5",
+      "bytes": 21675328
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_handler_store-809a1f4b495f2637",
+      "sha256": "52125368971045b4256c9ea9e6df252dfea3523a740b53fa68f2735033419e8e",
+      "bytes": 31182752
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_integer_boolean_return_boundaries-d046db52832a0f9b",
+      "sha256": "08cea3dac95743ba4f0351e5252f147753d2ba79a99adc1d7c6cb8b251b8f75b",
+      "bytes": 31203648
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_immediate_functional_receivers-1d39b95e75545fef",
+      "sha256": "1901e6341cf9746ca0d8086ce430a6f55560be0281242431270f4baa23ebd43f",
+      "bytes": 31478032
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_instance_receiver-5121b7139ed5b546",
+      "sha256": "a900ede562d5b679fcf31dfd6b4b772b41976688bf2cb95a439bc7bf87bf07c3",
+      "bytes": 31046688
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_instanceof-fadee819e51297bf",
+      "sha256": "24891baf3d7a5a56c043b5194bc648aeaaf1765731b2503b9daecaa1632a1357",
+      "bytes": 31415648
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_isolation-d8ca5e31ac07f6ec",
+      "sha256": "ee8c23a65dc357005f0d684f3a2590c8868a12bc067877a171c9552fa6cb4ed4",
+      "bytes": 22179136
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_integer_boolean_return_contract-e8f3951319619e41",
+      "sha256": "c640d5f28c28c82070e6b06d2c0ded7eeaeee0e1d42aee4e012db047553d9ce5",
+      "bytes": 31204240
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_integer_boolean_returns-7d6f852ba7535524",
+      "sha256": "d500c8d103a2aa72b17f0971b8b13622e2b32c0c65cdb8da77dcfbd27103cf69",
+      "bytes": 31220416
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_invocation_arguments-b74f29fb25753ad7",
+      "sha256": "36a7ceb84be93776d63e6799ce15e438f002e1d577faf2c195521420458aa32a",
+      "bytes": 31031776
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_iterable_foreach-a9a53711fed056d9",
+      "sha256": "6d503e9d0f934538310f7228f3dbd7cd4746609b37ee8c049330f2dd1bfab5a0",
+      "bytes": 31270384
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_labeled_loop_tail-1ce07fde70e0b595",
+      "sha256": "1b83a9010a1b93a94c90d11c2662d0db8cb203f02cc5dcdc6c3f6c6660c005e1",
+      "bytes": 31216624
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_lambda_adaptation-4e5d0919498f329c",
+      "sha256": "9538890cbd7b545772d2ef7c58723af3fd9181d22633d6890975de49a8121eb0",
+      "bytes": 31166688
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_local_postfix_array_elements-9499d0ca2030aaae",
+      "sha256": "ab02c337a5d4a6de19786785c2a98ad5a2ae8329ca2bb43d97a7d0f389654908",
+      "bytes": 31217072
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_local_rewrite-919c1955dd060069",
+      "sha256": "5aa8ae8457aa2008d6ca49c9c07dba7300c1c22c1255c34027933b4b46f0a9c2",
+      "bytes": 21739136
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_long_field_assignment_result-976e7a8a3f20a58a",
+      "sha256": "0c721e6960a8e94bfb1dc94b57a9e784ba42a2e5ee578bea057b1cf39d734458",
+      "bytes": 31098720
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_loop_arm_join-302a45619f078fcf",
+      "sha256": "4fbfe6f40b26e249645701aebe9a886a9cb727f56274e72f78b4e5eec48a1c08",
+      "bytes": 31200336
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_loop_boolean_do-4eaad75d152f4baf",
+      "sha256": "e8183878b258ab479f557d4cbeb5f9188480e351346cc3f6390531c340efdb18",
+      "bytes": 31271040
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_loop_boolean_exit-2be0a4420e2c08db",
+      "sha256": "377b73f0904161f362f2b414693d653f521d9c54613f20c6cde060b73018f996",
+      "bytes": 31238080
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_loop_test_values-77f5da79d3e233cd",
+      "sha256": "e30570d9d79b36d2c9533da1911d6c19b5917f4737569d0835b8f8a8b9661f31",
+      "bytes": 31182640
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_loop_try_handler_entry-5c3ebecfe12c6fc7",
+      "sha256": "9b8088a279cd1ac12b99d6c8fbb2b3bcb77732c180315bf56bcb65b870f8a428",
+      "bytes": 31202816
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_loop_transfers-a9316f75331d28aa",
+      "sha256": "8a5c0af01c18b1b5bc1cbd205c2d9fbcf8abe4ed93abdf8adc8d355d481e98b1",
+      "bytes": 31186096
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_method_ir-9989d6b1b37776a5",
+      "sha256": "3e9711c6f0c53051a33067fdf49b4350e86b2a460b92d05df708eee321949c4f",
+      "bytes": 5991008
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mixed_short_circuit_argument-d623b1ee9052cdd3",
+      "sha256": "c28a1206c349211e20efff4fab6459b396c0d951ec8c954834266c36596d0f39",
+      "bytes": 31217184
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_meeting-9657de943389eb6b",
+      "sha256": "340a3e00b8b71a51dd1ad46f0e2891fcba59fe93f2c126a0d16cb457237b8483",
+      "bytes": 31046736
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mixed_short_circuit_array-e113ea2885402cd4",
+      "sha256": "5b1aa7b66d7b201aec301021f1e69d37cda029461b476a65b62b715d6f0673fe",
+      "bytes": 31250496
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mixed_short_circuit_field-538fbf848bc741db",
+      "sha256": "e671695d1e26254aadcab379056e110ade48813c517a052e420fe20f0eeece88",
+      "bytes": 31081056
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mixed_short_circuit_local-de9f4c71575ac188",
+      "sha256": "42efa75f4183361ef2edeccbeb1d6943e388c2f077e56c4b92fcbe4c6ead72a6",
+      "bytes": 31233792
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mixed_short_circuit_instance_field-72a2ecaa4513a082",
+      "sha256": "ffc395cadcfd53a26db437345f86d6818e214fffc17ea240a4ff334b797ec3b0",
+      "bytes": 31233872
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mixed_short_circuit_return-fdc1bcfa31935d13",
+      "sha256": "8974f893b7a4fda5570dbe68b4dd90b449edaa570a6f1dcb1964fd5967e26372",
+      "bytes": 31217168
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_narrow_array_store_order-20d6dc07f932abc8",
+      "sha256": "16df41cce2594968377e8c331715554a087c790c92c01786135e67d2807dcf17",
+      "bytes": 31237680
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_multi_resource_twr_geometry-2f261ccfb68b0e3d",
+      "sha256": "1b608310150b2088b41bda425c13d68e2368a77e840bb9af3a748d1c1a73dc71",
+      "bytes": 31153024
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_narrow_array_stores-ca0c71aaeccfa626",
+      "sha256": "0e9c95c4f7c2abbd2acf244d0cd131d004921f863747ba71f2e1999d68c9db43",
+      "bytes": 31192176
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_mutf8-9144d91b26960fd5",
+      "sha256": "77bdd03be8f3b16a5e295ea33eac117e738b927e2a25bd2993bd63a3b2ed60c0",
+      "bytes": 30962912
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_narrow_integer_returns-88e26ff0e2bb9604",
+      "sha256": "41c05bed57fa734675626c05e693f25dbaa1332519b687fbe9748ac52501b57c",
+      "bytes": 31097808
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_narrow_return_boundaries-690ed7fb86be2f8e",
+      "sha256": "30f78db37414138901bfe0f614aad45531c5998c602d2c30d609be1928d14863",
+      "bytes": 31117488
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_narrow_integer_return_contract-a612eeb956fceef1",
+      "sha256": "dcef0d61862a69d8e6ffcaee6722b5ea921682c671a981f1c7ae16cb2cdc3f08",
+      "bytes": 31200800
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_narrow_field_stores-ac3dd53af39c1007",
+      "sha256": "dd2ecd3973da23581136028e248a84bedb07b960033432aa6886830dd1868ceb",
+      "bytes": 31118336
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_nested_array_initializers-9ee77bcb736387a1",
+      "sha256": "0e32672490217fcab21222a9359de49808169d1185a4633f873c509b9879d94c",
+      "bytes": 31216896
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_nested_int_array_compound_updates-4f522d4ad9dbbd8b",
+      "sha256": "73dca7a9f15ee43841e861de11c47a663074a2141bc8617836176c9b52d5d28b",
+      "bytes": 31288640
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_nested_try-6461919911340d90",
+      "sha256": "68294fc1844f19cc20f9e377cdc6bdc7773060e995a9304db58c9e2ba8d58ccb",
+      "bytes": 31046784
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_nested_annotation_source-1277d8279b54f9fc",
+      "sha256": "f51b599f7a3c5e0752baccabc325516f495b8ebe44836eb058a04615891273f8",
+      "bytes": 31269408
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_numeric_comparison-e811abc423170399",
+      "sha256": "30155a94508258dc63913a9284db161d12d4f5b088f42ecb3ad32a33610326cf",
+      "bytes": 21741536
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_null_resource-fe21bfd9f1cf4dab",
+      "sha256": "4dee40e6687eb71c3535045761d207483292ee7b19fd980f3349619546305dbc",
+      "bytes": 31137968
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_new_value-b11d2fc4d4caf707",
+      "sha256": "a7d969e22e1e2dd451c730858ca80eed2f4f12d45bc355be0639c784886cf11b",
+      "bytes": 31063312
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_one_armed_if-5be0dfdd53783f33",
+      "sha256": "2d6a670a4fd47644a58008c16b8b53c626874ecb230117091ee45ad068438592",
+      "bytes": 31046672
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_partial_array_allocation-1913b6a5161a5485",
+      "sha256": "0bc1db58b6858d58b91c0624e5591c36978958bfbc4ec0e2011cda5b1bfe18ee",
+      "bytes": 31101824
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_platform_collection_widening-a308c2415673629f",
+      "sha256": "3d3ec245afae2987d276eef6ad56630ec1569c159056b2116a0f09c41d4d1bb7",
+      "bytes": 31233584
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_parameter_slots-998c19089500d24d",
+      "sha256": "1e9e3c4f8e2939a5825c24849af5c7ec2b7a50d05955e4a3adfc528ef1900b8a",
+      "bytes": 31217104
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_ordinary_new_invokes-6fffd51252ba2366",
+      "sha256": "81199d3f7f8d585e8791de3f2570a3d75fdfdd2475b511e1dc1ad0147b7df571",
+      "bytes": 31256784
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_popped_static_qualifier-3761f43457224b83",
+      "sha256": "087793822af71e53bc31c0506147299b87939fcaffb2c7a4dc29989ba68211f7",
+      "bytes": 31046832
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_postfix_lvalue_values-c66d58f058b92e5d",
+      "sha256": "ce8f4c3e8222632eb73d229bb55cd60da3ac709e3219c240f8c05107a4ca5e64",
+      "bytes": 31132064
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_postfix_handler_boundary-e5f0e805ee344658",
+      "sha256": "71466dc56901c0798effe5b7dea6a865adef25e8bbf7cb7f8e986a7744889bd2",
+      "bytes": 31064352
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_precise_rethrow-45780090f81910f1",
+      "sha256": "8d580b2e731da7b89f5283b6cdd066ff6ffa2c40dfd92ee5b4855fe4520a6d5e",
+      "bytes": 31046688
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_prefix_survival-dddbce870d48396a",
+      "sha256": "73532d7594f02f43e931d22f4b010755fbed28b74dbde04d03cce2fa5ba7d04a",
+      "bytes": 31046736
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_product_vocabulary-8f69460b9342b36d",
+      "sha256": "0fdb3c3e227797cad7f6edb146f06b24ff1665a4b81c1e53c331ac83e935eeb2",
+      "bytes": 1097616
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_prepared_input-d23729487a84e93e",
+      "sha256": "4faffd567d10ebf652175930dd95b95acd8e61b6998d1c5e43ee532d09cfb5fa",
+      "bytes": 21980448
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/target/debug/deps/p3_primitive_conversions-bc8dee08ceac2060",
+      "sha256": "92c35f2fbc9fd3a0b23bfe7276fde07ac8b874d6cfc9e6af0167c32a4d7599ab",
+      "bytes": 31260032
+    }
+  ],
+  "guard_limits": {
+    "free_bytes": 5368709120,
+    "target_bytes": 1073741824
+  },
+  "carried_execution_sha256": "544f5a530cc17b8a5ad4fb74c83b9562e1e187ae2255628fa85c795bdfb0b9f4",
+  "error": "AssertionError: (49, None)"
+}

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.65s
+[1m[92m     Running[0m tests/p3_narrow_field_stores.rs (target/debug/deps/p3_narrow_field_stores-ac3dd53af39c1007)
+[1m[92m     Running[0m tests/p3_narrow_integer_return_contract.rs (target/debug/deps/p3_narrow_integer_return_contract-a612eeb956fceef1)
+[1m[92m     Running[0m tests/p3_narrow_integer_returns.rs (target/debug/deps/p3_narrow_integer_returns-88e26ff0e2bb9604)
+[1m[92m     Running[0m tests/p3_narrow_return_boundaries.rs (target/debug/deps/p3_narrow_return_boundaries-690ed7fb86be2f8e)

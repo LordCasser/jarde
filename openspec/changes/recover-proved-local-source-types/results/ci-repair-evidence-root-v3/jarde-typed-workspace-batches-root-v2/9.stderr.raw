@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.98s
+[1m[92m     Running[0m tests/generic_method_budget.rs (target/debug/deps/generic_method_budget-43e4add09959c888)
+[1m[92m     Running[0m tests/generic_method_projection.rs (target/debug/deps/generic_method_projection-e128b3a7254022f3)
+[1m[92m     Running[0m tests/generic_outer_member_family.rs (target/debug/deps/generic_outer_member_family-96fa10e9d91b5949)
+[1m[92m     Running[0m tests/generic_static_member_family.rs (target/debug/deps/generic_static_member_family-1dc93849fbee50b5)

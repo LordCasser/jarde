@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-required-null-verifier-luna-v1/verify.py", line 330, in <module>
+    main()
+  File "/private/tmp/jarde-required-null-verifier-luna-v1/verify.py", line 316, in main
+    reports = verify_reports(case, d)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-required-null-verifier-luna-v1/verify.py", line 158, in verify_reports
+    require(bytes_from_raw(identity["name"]).decode("ascii") == name, "identity name mismatch")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-required-null-verifier-luna-v1/verify.py", line 127, in bytes_from_raw
+    return bytes(value["raw"])
+                 ~~~~~^^^^^^^
+TypeError: list indices must be integers or slices, not str

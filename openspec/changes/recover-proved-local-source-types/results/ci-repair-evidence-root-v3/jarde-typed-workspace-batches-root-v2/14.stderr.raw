@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.52s
+[1m[92m     Running[0m tests/ordinary_generic_projection.rs (target/debug/deps/ordinary_generic_projection-628ee55d5500fd47)
+[1m[92m     Running[0m tests/p1_active_facts.rs (target/debug/deps/p1_active_facts-2a12a5b8879349b2)
+[1m[92m     Running[0m tests/p1_artifact_tree.rs (target/debug/deps/p1_artifact_tree-1b1132c64aa89fdb)
+[1m[92m     Running[0m tests/p1_budget_ledger.rs (target/debug/deps/p1_budget_ledger-1c730e389e98c74a)

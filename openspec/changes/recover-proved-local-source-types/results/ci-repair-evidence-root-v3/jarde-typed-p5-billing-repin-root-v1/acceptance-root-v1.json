@@ -1,0 +1,25 @@
+{
+  "schema": "typed-p5-cost-only-repair-acceptance-root-v1",
+  "status": "accepted-p5-only",
+  "previous_product": "2c5ee0d6ce4544251b03b4aaef36e659a51b2272",
+  "p5_before_sha256": "6ee7af9664b796cfb2f2f7132897db62bdadff26b6259826efc05dca3cf84acd",
+  "p5_after_sha256": "48ec01a4123021db3b4f6e5942adfbc1bba343009741a7edd767dd15d9009fee",
+  "recorder_sha256": "4e42ddf1e754f40ced6774c055f6e8f20b0d0564ebdd23db079005c54125984d",
+  "six_deltas": [
+    16,
+    22,
+    14,
+    43,
+    14,
+    3
+  ],
+  "arm_delta": 112,
+  "regular_batch_index": 62,
+  "regular_p5_counts": [
+    5,
+    0,
+    1
+  ],
+  "full_workspace_status_at_verification": "running",
+  "scope": "Six actual bulk rows and both 187-method arms repinned only AnalysisSteps. Regular shape/old-arm semantic and billing tests passed. Budget limits and frozen product unchanged. This accepts no CI/full-workspace completion."
+}

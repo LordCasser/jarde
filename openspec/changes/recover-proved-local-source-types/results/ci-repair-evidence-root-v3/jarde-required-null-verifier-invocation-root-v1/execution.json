@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:26:09.398537+00:00",
+  "duration_seconds": 0.03715562500292435,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-required-null-verifier-luna-v1/verify.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 760,
+      "sha256": "1916717b310ca24c2820d5ea9700a12887287cb8a5be9793165ae3f59f55b1e2"
+    }
+  }
+}

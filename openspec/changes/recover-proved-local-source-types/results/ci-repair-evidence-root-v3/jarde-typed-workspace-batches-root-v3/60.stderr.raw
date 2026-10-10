@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.46s
+[1m[92m     Running[0m tests/p3_wrapped_array_foreach.rs (target/debug/deps/p3_wrapped_array_foreach-164777a2ed221a9a)
+[1m[92m     Running[0m tests/p4_feature_registry.rs (target/debug/deps/p4_feature_registry-e98b0aacb5ff08ef)
+[1m[92m     Running[0m tests/p4_golden.rs (target/debug/deps/p4_golden-7496e57f9a225eaa)
+[1m[92m     Running[0m tests/p4_modern_facts.rs (target/debug/deps/p4_modern_facts-46ddff1a164a6453)

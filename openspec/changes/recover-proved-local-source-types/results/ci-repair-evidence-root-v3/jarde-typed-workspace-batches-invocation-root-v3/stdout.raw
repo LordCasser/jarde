@@ -1,0 +1,14 @@
+{"completed_batch": 50, "total_batches": 94, "test_totals": [18, 0, 1]}
+{"completed_batch": 51, "total_batches": 94, "test_totals": [23, 0, 0]}
+{"completed_batch": 52, "total_batches": 94, "test_totals": [23, 0, 0]}
+{"completed_batch": 53, "total_batches": 94, "test_totals": [10, 0, 0]}
+{"completed_batch": 54, "total_batches": 94, "test_totals": [17, 0, 1]}
+{"completed_batch": 55, "total_batches": 94, "test_totals": [13, 0, 0]}
+{"completed_batch": 56, "total_batches": 94, "test_totals": [13, 0, 0]}
+{"completed_batch": 57, "total_batches": 94, "test_totals": [21, 0, 1]}
+{"completed_batch": 58, "total_batches": 94, "test_totals": [22, 0, 1]}
+{"completed_batch": 59, "total_batches": 94, "test_totals": [16, 0, 1]}
+{"completed_batch": 60, "total_batches": 94, "test_totals": [20, 0, 1]}
+{"completed_batch": 61, "total_batches": 94, "test_totals": [32, 0, 0]}
+{"completed_batch": 62, "total_batches": 94, "test_totals": [36, 0, 0]}
+{"status": "failed", "error": "AssertionError: (62, None)", "workspace_summary_count": null, "workspace_totals": null}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:15:56.282627+00:00",
+  "duration_seconds": 3.7440925420087297,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-run-required-char-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 108,
+      "sha256": "2738bce11fd9281b1ba2296da86291dc91b19706cd2fd2f55445ebb9bc943cfe"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

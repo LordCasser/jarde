@@ -1,0 +1,10 @@
+from pathlib import Path
+import hashlib,importlib.util,json,subprocess
+root=Path('/Users/lordcasser/workspace/projects/jarde');out=Path('/private/tmp/jarde-typed-ci-repair-preflight-root-v4');out.mkdir(exist_ok=False)
+p=root/'openspec/changes/recover-proved-local-source-types/results/verify-typed-ci-root-v4.py';sp=importlib.util.spec_from_file_location('verified_ci_v4',p);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m)
+product=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip();assert product=='2c5ee0d6ce4544251b03b4aaef36e659a51b2272'
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest();meta=root/'openspec/changes/recover-proved-local-source-types/results/candidate-cli-typed-root-v1.json';md=json.loads(meta.read_text());names=set(md['required_origin_tests'])
+base=m.verify_pins(product,'5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02',meta,'6295d4cc0c65bd5b5c476f71e44cf3abf513f77d854854bfdea777cbaf2be943',Path('/private/tmp/jarde-proved-local-source-types-cli-v1'),'e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403',root/'openspec/changes/recover-proved-local-source-types/results/validation-build-root-v2/execution.json','18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413',root/'openspec/changes/recover-proved-local-source-types/results/run-validation-build-root-v2.py','75e3b3494bf6a2f3179fc1d61e01865382cbdcb4bcefc527f9bc97f012687b87',names,9)
+repair=m.verify_repair(Path('/private/tmp/jarde-typed-ci-repair-root-v7/execution.json'),'860f4817e9e82566aeb37b791a99de8d07311ac826fd1385938b63e0002e9559',product,meta)
+data={'schema':'typed-ci-repair-source-and-local-preflight-root-v4','status':'accepted-local-only','product_commit':product,'verifier_sha256':sha(p),'historical_build':base,'focused_repair':repair,'ci_accepted':False};(out/'acceptance.json').write_text(json.dumps(data,indent=2)+'
+');print(json.dumps({'status':data['status'],'historical_pins':base['product_pin_entries_verified'],'repair_binary_counts':[r['counts'] for r in repair['test_summaries']]}))

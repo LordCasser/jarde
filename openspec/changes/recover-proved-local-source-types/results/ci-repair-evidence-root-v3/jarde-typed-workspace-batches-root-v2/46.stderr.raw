@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.60s
+[1m[92m     Running[0m tests/p3_ordinary_new_invokes.rs (target/debug/deps/p3_ordinary_new_invokes-6fffd51252ba2366)
+[1m[92m     Running[0m tests/p3_parameter_slots.rs (target/debug/deps/p3_parameter_slots-998c19089500d24d)
+[1m[92m     Running[0m tests/p3_partial_array_allocation.rs (target/debug/deps/p3_partial_array_allocation-1913b6a5161a5485)
+[1m[92m     Running[0m tests/p3_platform_collection_widening.rs (target/debug/deps/p3_platform_collection_widening-a308c2415673629f)

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:05:45.771269+00:00",
+  "duration_seconds": 116.70746020801016,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-run-typed-workspace-batches-root-v1.py"
+  ],
+  "exit_code": 1,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 241,
+      "sha256": "a53a57aafdcb3d9f200a695014e339d52ac20876482f0b999b80247617b1f3f7"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

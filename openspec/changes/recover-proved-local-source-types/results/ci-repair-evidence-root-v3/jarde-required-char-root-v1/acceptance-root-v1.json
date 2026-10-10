@@ -1,0 +1,16 @@
+{
+  "schema": "typed-whole-class-repair-acceptance-root-v1",
+  "status": "accepted",
+  "case": "required",
+  "execution_sha256": "a2b069ba2101052f73d9adf69d380587086a93f66793ca22adeb01d9ad0b9c28",
+  "fixture_sha256": "d71eeaa5dc3eb66eafffda9e0c509eae43e3dde566b67df0006348352778d1e4",
+  "class_blake3_from_reports": "96ed4aee49026f64179075ee3843709aa7e7a5cd02ed2d05f7a11e1b9c385d3d",
+  "commands": 19,
+  "runtime_legs": 8,
+  "members": 13,
+  "raw_streams_verified": 38,
+  "verifier_sha256": "f446fdc426f1cdcedb1d1129f28295bb0ccac92b0dcd56acf82f6a835c8cc9e4",
+  "verifier_invocation_sha256": "1b947c5b69d5910450b68bace2d7be41cfd208728c3c64f376de485752cbdb19",
+  "independent_blake3_verified": true,
+  "scope": "RequiredConversions original complete Java source, JADX and Jarde default/all, both JDK8/23. Five relevant methods called for each of all 65536 char values; all 13 members and field retained and compiled."
+}

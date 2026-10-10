@@ -1,0 +1,21 @@
+{
+  "verified_observations": {
+    "required": {
+      "execution_sha256": "a2b069ba2101052f73d9adf69d380587086a93f66793ca22adeb01d9ad0b9c28",
+      "fixture_sha256": "d71eeaa5dc3eb66eafffda9e0c509eae43e3dde566b67df0006348352778d1e4",
+      "class_blake3_from_reports": "96ed4aee49026f64179075ee3843709aa7e7a5cd02ed2d05f7a11e1b9c385d3d",
+      "commands": 19,
+      "runtime_legs": 8,
+      "members": 13
+    },
+    "null_builder": {
+      "execution_sha256": "9d4cbb606405c0928cc79b0820ad36db9bd100ad860e38a6ba9f06475e44052e",
+      "fixture_sha256": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3",
+      "class_blake3_from_reports": "f24b5b45eb94733793e5ee6d7f52f9cfe710d89bdbd65140930822d38f84a77b",
+      "commands": 19,
+      "runtime_legs": 8,
+      "members": 3
+    }
+  },
+  "acceptance_record_written": false
+}

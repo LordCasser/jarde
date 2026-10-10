@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:16:26.881682+00:00",
+  "duration_seconds": 3.4433540000172798,
+  "argv": [
+    "python3",
+    "-B",
+    "/private/tmp/jarde-run-null-builder-runtime-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 106,
+      "sha256": "74317f3dd98ca548c647be579db4c2032e8c32cb0ce8fe5d9e9097d603822917"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

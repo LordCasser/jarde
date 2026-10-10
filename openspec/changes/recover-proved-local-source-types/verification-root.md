@@ -61,3 +61,13 @@ root 已全文读 replay v2、v3，均有静态缺陷，未执行候选。v3仍�
 RequiredConversions 完整13成员与field、NullThenBuilder 完整三成员的源/JADX/Jarde default/all双JDK实际运行均通过：前者逐值检查65536char及五个相关方法，后者 true/false 两值结果7/6。Null的原Java不可得，原执行腿使用原canonical class，不声称恢复原源码；独立verifier复核尚未完成。全工作区小批验证已保留前49个成功命令，从此前Null旧断言失败的第49号命令开始补完，其结果不能预先视为通过。新提交自身CI及最终clean仍待完成，任务6/8不变。
 
 root审查CI adapter v4：局部repair三个Cargo Running headers来自stderr，准确名字/计数来自stdout；CI combined日志继续严格核目标header与双seed。九项追加repair pins独立核Git/live与实际repair，不混入历史冻结闭包。v3私稿与v4及审查改动保留，不把静态适配当CI验收。
+
+## P5 实际计费基线与独立整类复核
+
+产品修复2c5ee0d6已提交推送。前一修复f5e36ba43的自身CI38086421940实际在旧NullThenBuilder拒绝断言失败，raw SHA bbcf546fa98252989c522b6ccfe0427ede15e599532e4367661e41be2b368d4f，第二seed跳过；失败原样归档。2c5ee0d6修了两个声明期待，但全workspace小批随后在P5旧AnalysisSteps pins发现另一冲突，不能接受该片3.2。
+
+P5既有ignored recorder实跑六个固定archive形状，逐项复核只有AnalysisSteps增加16/22/14/43/14/3；两个187成员逐方法路径均从19458变19570，增量112与六行之和一致。原因是decide_types新增全物理write扫描及有限producer/null证明，必须准确计费，所有fixture/read/IR/source/outcome/delivery维度不变。本次只更新六行与两arm的AnalysisSteps常量及说明，不增budget，不改生产。root独立复核原Git before、actual recorder raw、各九维计数、所有sum与live after；小批v4第62号命令常规P5五项通过/一ignored，完整文本/outcome/content/execution三路径比较及两个成本断言都通过。[P5接受范围](results/ci-repair-evidence-root-v3/jarde-typed-p5-billing-repin-root-v1/acceptance-root-v1.json)仅限此片成本，94批全量尚在执行。
+
+两个完整类运行现在已独立接受：[RequiredConversions](results/ci-repair-evidence-root-v3/jarde-required-char-root-v1/acceptance-root-v1.json)与[NullThenBuilder](results/ci-repair-evidence-root-v3/jarde-null-builder-runtime-root-v1/acceptance-root-v1.json)各19命令/38raw/8运行腿，root实核完整sources、精确argv、13/3成员及field、源map spans与所有physical owners、live工具SHA和独立BLAKE3。Required逐值调用五个相关方法，其余成员完整保留并编译；Null原Java不可得，original仍仅准确class oracle。Luna verifier先误读identity.name为对象而非raw数组，root修正后实际退出0，原失败保留。冻结CLI与17/10/50闭包不变。
+
+CI adapter v4的source/local预验收真实退出0，核77分类条目/28构建raw及三组22测试/9追加pins与Git/live相同；它不接受CI。root生成预验收脚本的newline syntax失败原样保留后v5修正。任务仍6/8，待包含P5修复的精确自身双seed CI及clean主线。

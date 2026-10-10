@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.27s
+[1m[92m     Running[0m tests/p1_xref_golden.rs (target/debug/deps/p1_xref_golden-a2e3b4473541270c)
+[1m[92m     Running[0m tests/p1_xref_metadata.rs (target/debug/deps/p1_xref_metadata-9785218156414d15)
+[1m[92m     Running[0m tests/p1_xref_properties.rs (target/debug/deps/p1_xref_properties-51212cac3236a6b4)
+[1m[92m     Running[0m tests/p2_canonical.rs (target/debug/deps/p2_canonical-32eef19aa65f7486)

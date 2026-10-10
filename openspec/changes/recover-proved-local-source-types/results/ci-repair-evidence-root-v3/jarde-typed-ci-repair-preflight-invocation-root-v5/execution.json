@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:29:54.831794+00:00",
+  "duration_seconds": 2.189559708989691,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-verify-typed-ci-repair-preflight-root-v5.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 116,
+      "sha256": "4df65c64c6f372f63e3f363afb2810c9342f377d0df25d2d38af29ddc5bd3e53"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

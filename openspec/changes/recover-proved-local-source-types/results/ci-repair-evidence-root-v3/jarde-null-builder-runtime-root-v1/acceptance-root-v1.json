@@ -1,0 +1,16 @@
+{
+  "schema": "typed-whole-class-repair-acceptance-root-v1",
+  "status": "accepted",
+  "case": "null_builder",
+  "execution_sha256": "9d4cbb606405c0928cc79b0820ad36db9bd100ad860e38a6ba9f06475e44052e",
+  "fixture_sha256": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3",
+  "class_blake3_from_reports": "f24b5b45eb94733793e5ee6d7f52f9cfe710d89bdbd65140930822d38f84a77b",
+  "commands": 19,
+  "runtime_legs": 8,
+  "members": 3,
+  "raw_streams_verified": 38,
+  "verifier_sha256": "f446fdc426f1cdcedb1d1129f28295bb0ccac92b0dcd56acf82f6a835c8cc9e4",
+  "verifier_invocation_sha256": "1b947c5b69d5910450b68bace2d7be41cfd208728c3c64f376de485752cbdb19",
+  "independent_blake3_verified": true,
+  "scope": "NullThenBuilder original Java unavailable. Canonical class oracle and complete JADX/Jarde default/all, both JDK8/23. Both boolean inputs checked; all three members retained. Not an acceptance of all CF12."
+}

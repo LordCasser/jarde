@@ -1,0 +1,778 @@
+{
+  "schema": "meet-char-int-full-class-comparison-root-v1",
+  "utc": "2026-10-10T21:16:23.505130+00:00",
+  "fixture_sha256": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3",
+  "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+  "original_source_available": false,
+  "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class",
+        "--class",
+        "NullThenBuilder",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:23.528792+00:00",
+      "duration_seconds": 0.018798,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/0.stdout.raw",
+        "bytes": 42908,
+        "sha256": "06819bf8c1f29bdf5eb2c9ecfbaeecd82a712b034b28fd79b40f5f8653fc4ab7"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/0.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-proved-local-source-types-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class",
+        "--class",
+        "NullThenBuilder",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:23.548367+00:00",
+      "duration_seconds": 0.009178,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/1.stdout.raw",
+        "bytes": 45058,
+        "sha256": "12a9494323d3a5f4be393ae375442ed51314c2bb9e97a0b71b4e108b67593642"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/1.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/jadx-output",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/input.jar"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:23.558868+00:00",
+      "duration_seconds": 1.081168,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/2.stdout.raw",
+        "bytes": 148,
+        "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/2.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/original/classes",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/original/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/original/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/original/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:24.640915+00:00",
+      "duration_seconds": 0.252892,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/3.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/3.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/original/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:24.894298+00:00",
+      "duration_seconds": 0.054043,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/4.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/4.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/NullThenBuilder.java",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:24.949098+00:00",
+      "duration_seconds": 0.194546,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/5.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/5.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.144107+00:00",
+      "duration_seconds": 0.04758,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/6.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/6.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/NullThenBuilder.java",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.192479+00:00",
+      "duration_seconds": 0.194195,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/7.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/7.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.387197+00:00",
+      "duration_seconds": 0.04765,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/8.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/8.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/NullThenBuilder.java",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.435669+00:00",
+      "duration_seconds": 0.190794,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/9.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/9.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/classes",
+        "defpackage.Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.627017+00:00",
+      "duration_seconds": 0.048026,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/10.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/10.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/original/classes",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/original/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/original/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/original/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.676068+00:00",
+      "duration_seconds": 0.240533,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/11.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/11.stderr.raw",
+        "bytes": 268,
+        "sha256": "312e9bd919c699a2f8409f70240177012720c94095f0f4374d44152defc50f7e"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/original/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.917374+00:00",
+      "duration_seconds": 0.070514,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/12.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/12.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/NullThenBuilder.java",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:25.988708+00:00",
+      "duration_seconds": 0.237225,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/13.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/13.stderr.raw",
+        "bytes": 268,
+        "sha256": "312e9bd919c699a2f8409f70240177012720c94095f0f4374d44152defc50f7e"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:26.226550+00:00",
+      "duration_seconds": 0.050069,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/14.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/14.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/NullThenBuilder.java",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:26.277456+00:00",
+      "duration_seconds": 0.235842,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/15.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/15.stderr.raw",
+        "bytes": 268,
+        "sha256": "312e9bd919c699a2f8409f70240177012720c94095f0f4374d44152defc50f7e"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/classes",
+        "Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:26.513889+00:00",
+      "duration_seconds": 0.050259,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/16.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/16.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-J-Duser.language=en",
+        "-J-Duser.country=US",
+        "-encoding",
+        "UTF-8",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/empty",
+        "-sourcepath",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/empty",
+        "-d",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/classes",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/NullThenBuilder.java",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/Runner.java"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:26.565001+00:00",
+      "duration_seconds": 0.233134,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/17.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/17.stderr.raw",
+        "bytes": 268,
+        "sha256": "312e9bd919c699a2f8409f70240177012720c94095f0f4374d44152defc50f7e"
+      }
+    },
+    {
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/classes",
+        "defpackage.Runner"
+      ],
+      "exit_code": 0,
+      "utc": "2026-10-10T21:16:26.798740+00:00",
+      "duration_seconds": 0.050947,
+      "stdout": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/18.stdout.raw",
+        "bytes": 15,
+        "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-null-builder-runtime-root-v1/18.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "legs": [
+    {
+      "jdk": "javac8",
+      "profile": "original",
+      "source_sha256": null,
+      "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/original/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:24.894298+00:00",
+        "duration_seconds": 0.054043,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/4.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac8",
+      "profile": "default",
+      "source_sha256": "9ca570d3dfbb2266f8dc5f45be3ed274734a7197b3fe2bd8d84cc569ef35074d",
+      "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/default/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:25.144107+00:00",
+        "duration_seconds": 0.04758,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/6.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac8",
+      "profile": "all",
+      "source_sha256": "9ca570d3dfbb2266f8dc5f45be3ed274734a7197b3fe2bd8d84cc569ef35074d",
+      "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/all/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:25.387197+00:00",
+        "duration_seconds": 0.04765,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/8.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac8",
+      "profile": "jadx",
+      "source_sha256": "9ae48f94b69f79221b8439af911186796eeec43fc691017a9e982b3b1eddf743",
+      "runner_sha256": "846cafae49ec2b7cd349d867986c4cb0af22e842459cfd001b55baf8c16e4830",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac8/jadx/classes",
+          "defpackage.Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:25.627017+00:00",
+        "duration_seconds": 0.048026,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/10.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "original",
+      "source_sha256": null,
+      "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/original/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:25.917374+00:00",
+        "duration_seconds": 0.070514,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/12.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "default",
+      "source_sha256": "9ca570d3dfbb2266f8dc5f45be3ed274734a7197b3fe2bd8d84cc569ef35074d",
+      "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/default/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:26.226550+00:00",
+        "duration_seconds": 0.050069,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/14.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "all",
+      "source_sha256": "9ca570d3dfbb2266f8dc5f45be3ed274734a7197b3fe2bd8d84cc569ef35074d",
+      "runner_sha256": "f34b3bed7d4f5f85b65055b8874833eeca0963770cf3d8895832eb9722c78358",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/all/classes",
+          "Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:26.513889+00:00",
+        "duration_seconds": 0.050259,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/16.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "jdk": "javac23",
+      "profile": "jadx",
+      "source_sha256": "9ae48f94b69f79221b8439af911186796eeec43fc691017a9e982b3b1eddf743",
+      "runner_sha256": "846cafae49ec2b7cd349d867986c4cb0af22e842459cfd001b55baf8c16e4830",
+      "runtime": {
+        "argv": [
+          "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "-Xverify:all",
+          "-cp",
+          "/private/tmp/jarde-null-builder-runtime-root-v1/javac23/jadx/classes",
+          "defpackage.Runner"
+        ],
+        "exit_code": 0,
+        "utc": "2026-10-10T21:16:26.798740+00:00",
+        "duration_seconds": 0.050947,
+        "stdout": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/18.stdout.raw",
+          "bytes": 15,
+          "sha256": "f2bf7fd47997f5b42bd7c3bbba2b39ed247752db58a1dfa65c9f0d73cda50564"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-null-builder-runtime-root-v1/18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "full_class_methods_retained": 3
+}
