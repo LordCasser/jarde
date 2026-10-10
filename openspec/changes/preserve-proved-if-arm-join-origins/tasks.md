@@ -1,7 +1,7 @@
 ## 1. Exact baseline and diagnostic
 
 - [x] 1.1 root实际接受前片新CF07 frozen raw：119 inventory members/29命令/10完整源码编译运行腿、双JDK与default-all恒同、全部物理方法/BCI/准确goto，counted仅缺20、lastIndexOf仅缺25；引用cf07-candidate-acceptance-root-v2.json明确scoped而非全BCI。
-- [ ] 1.2 接受前片d714a6bcc精确自身CI后，root在5GiB/target1GiB守卫下实跑临时内部测试诊断并还原源码；证明实际If join=27、then最后Straight所属canonical block17/terminal20→27、唯一arm owner与全canonical出边，保存真实argv/raw/pins，不能用扁平公开RegionRecord或旧probe代替新诊断。
+- [x] 1.2 接受前片d714a6bcc精确自身CI后，root在5GiB/target1GiB守卫下实跑临时内部测试诊断并还原源码；证明实际If join=27、then最后Straight所属canonical block17/terminal20→27、唯一arm owner与全canonical出边，保存真实argv/raw/pins，不能用扁平公开RegionRecord或旧probe代替新诊断。
 
 ## 2. Existing If origin path
 
