@@ -1,0 +1,455 @@
+{
+  "status": "accepted_clean_checkpoint_bytes_copied",
+  "files": [
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/0.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/0.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/0.stdout.raw",
+      "bytes": 41,
+      "sha256": "1fa47b60f9daae2bff1a08ad1c1ec2de69c1552589abfbc823fba9f8166ab86b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/1.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/1.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/1.stdout.raw",
+      "bytes": 41,
+      "sha256": "1fa47b60f9daae2bff1a08ad1c1ec2de69c1552589abfbc823fba9f8166ab86b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/10.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/10.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/10.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/11.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/11.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/12.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/12.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/13.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/13.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/13.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/14.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/14.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/15.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/15.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/16.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/16.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/17.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/17.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/17.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/18.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/18.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/18.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/19.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/19.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/2.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/2.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/2.stdout.raw",
+      "bytes": 41,
+      "sha256": "1fa47b60f9daae2bff1a08ad1c1ec2de69c1552589abfbc823fba9f8166ab86b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/20.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/20.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/20.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/21.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/21.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/21.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/22.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/22.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/23.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/23.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/23.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/24.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/24.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/25.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/25.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/26.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/26.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/26.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/27.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/27.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/27.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/28.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/28.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/29.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/29.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/29.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/3.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/3.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/3.stdout.raw",
+      "bytes": 5,
+      "sha256": "6403203dd5a0867eb14d104ee8a73730bd72dd9ad92e78d996a6dba0a5dcfc01"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/30.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/30.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/30.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/30.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/31.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/31.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/31.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/31.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/32.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/32.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/32.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/32.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/33.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/33.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/33.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/33.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/34.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/34.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/34.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/34.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/35.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/35.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/35.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/35.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/36.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/36.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/36.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/36.stdout.raw",
+      "bytes": 57,
+      "sha256": "0ea4aa107a8fcf38abe8088e125d1a992b881e18e6b30d2a37cb2754329bd55b"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/4.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/4.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/4.stdout.raw",
+      "bytes": 5,
+      "sha256": "6403203dd5a0867eb14d104ee8a73730bd72dd9ad92e78d996a6dba0a5dcfc01"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/5.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/5.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/5.stdout.raw",
+      "bytes": 1899,
+      "sha256": "532e2c2a8f023c071853eb69a783fbcef8dd3652b26fa7bfe9bad936b35ae9a7"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/6.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/6.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/6.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/7.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/7.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/7.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/8.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/8.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/8.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/9.stderr.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/9.stdout.raw",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "/private/tmp/jarde-discarded-call-delivery-clean-checkpoint-root-v2/execution.json",
+      "archived_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/clean-delivery-checkpoint-root-v2/execution.json",
+      "bytes": 27779,
+      "sha256": "14a484971f83886fcc9df9a2c62fd38035f75fe08a674557436823191c5e8594"
+    }
+  ]
+}

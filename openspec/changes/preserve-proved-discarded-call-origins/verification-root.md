@@ -1,6 +1,6 @@
 # Root verification — preserve-proved-discarded-call-origins
 
-当前5/6，生产、本地/完整类和精确自身产品CI均已独立接受；最终clean主线仍待完成。该片不关闭整个CF12或71单元持续目标。
+当前6/6，生产、本地/完整类、精确自身产品CI及clean主线交付均已独立接受。该片不关闭整个CF12或71单元持续目标。
 
 ## Implementation
 
@@ -28,6 +28,10 @@ strict全343/343实际通过（product-strict-root-v1）；产品 **c5941c890b35
 
 接受记录 [acceptance-proved-discarded-call-ci-root-v3.json](results/ci-product-v1/acceptance-proved-discarded-call-ci-root-v3.json) SHA **16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2**；verifier源码SHA0e41a5fd1b9257734f872f56d3c45462434ae373f4310991853bff9fa9d9c9db。本片不借前片或后续文档CI。
 
-## Remaining delivery
+## Clean main delivery
 
-提交新验收/独立基线/交接文档后，须实核15worktrees全clean/仅main/main=origin/无target，使用准确新pop CLI的audit，再关闭3.3。新的pretyped CF12基线已经独立48cmd/16整类报告/38方法profile接受，准确九处Stmt pop derived新增，其他正文/maps恒同；JDK8 ORIGINAL helper版本失败原样保留，完整上游控制仅JDK23/Java8 source-target。typed仍2/8，生产未重新应用。
+新验收、独立基线、私有稿审查与交接文档已随 **35cdf3cb8531e70744e3c893e2c2e1128ad2a0e0** 实际提交推送；root随后执行准确新pop CLI的clean audit，退出0：HEAD=main=origin/main，仅本地main，实际远端heads也只有main；15worktrees全clean、14辅助detached且均为main祖先，无待合入或其他分支占用，全部无target/fuzz target。机器free59346087936bytes，CLI准确SHA/0555再次核对。
+
+原字节checkpoint已归档 [clean-delivery-checkpoint-root-v2/execution.json](results/clean-delivery-checkpoint-root-v2/execution.json)，SHA **14a484971f83886fcc9df9a2c62fd38035f75fe08a674557436823191c5e8594**；准确audit源码SHA031c241adce70f142f31ec4e3925d9d765615b56eee75a340e68ba532d4a2363。关闭记录提交后继续在private目录实核最终HEAD，不为把自身commit写进文档而循环产生修改。此片严格校验再次343/343；不借后续文档CI替代c594自身CI。
+
+新的pretyped CF12基线已经独立48cmd/16整类报告/38方法profile接受，准确九处Stmt pop derived新增，其他正文/maps恒同；JDK8 ORIGINAL helper版本失败原样保留，完整上游控制仅JDK23/Java8 source-target。typed仍2/8，生产未重新应用；从关闭后的当前main重应用saved类型patch，不能恢复历史HEAD覆盖本片。

@@ -2,15 +2,15 @@
 
 用户明确继续在当前聊天推进。以本地JADX **71验收单元/612测试文件**为清单，逐片追平后再探索；root负责架构、OpenSpec、真实源码/JADX/Jarde整类对照及对抗验收，确定性私有稿交Luna。窄片成功不增加整单元完成数。
 
-## 当前工作：调用结果 pop 来源
+## 刚关闭：调用结果 pop 来源
 
-`preserve-proved-discarded-call-origins` **5/6**。已应用build.rs两条普通调用语句共用的小型来源消费helper，复用既有discards准确一对一证据，预算/poll后将pop挂到完整Stmt derived；无新IR/Frame/计划/pass，未扩大qualifier/pop2准入。根实际定向5/0/0；完整本地12cmd639/0/0、target峰值701811680bytes；新CLI完整对照26cmd/8runtime腿/28方法profile/18class独立接受，仅pop4/13/15新增来源，正文和旧maps恒同；额外pop2完整三方法恒同回退。详见 [verification-root](openspec/changes/preserve-proved-discarded-call-origins/verification-root.md)。
+`preserve-proved-discarded-call-origins` **6/6**。已应用build.rs两条普通调用语句共用的小型来源消费helper，复用既有discards准确一对一证据，预算/poll后将pop挂到完整Stmt derived；无新IR/Frame/计划/pass，未扩大qualifier/pop2准入。根实际定向5/0/0；完整本地12cmd639/0/0、target峰值701811680bytes；新CLI完整对照26cmd/8runtime腿/28方法profile/18class独立接受，仅pop4/13/15新增来源，正文和旧maps恒同；额外pop2完整三方法恒同回退。详见 [verification-root](openspec/changes/preserve-proved-discarded-call-origins/verification-root.md)。
 
-CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde；metadata/build在该change/results，真实sourcebase7a1ca930fc6178613df5df86145fff846c79791c，历史uncommitted标志不回写。产品c5941c890b352b281fc2bcf4102e45243691bddb已实际提交推送，自身CI38079005388已独立接受4jobs/52steps、双seed各3398/0/97及355summary；五新增名/lib337/gateway15与72分类条目（71唯一路径）Git/live pins均核。接受记录SHA16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2，两次verifier格式/计数失败保留。cargo clean实际3027files/669.3MiB，target不存在；当前有新基线/证据文档修改，不能冒称工作区clean。strict343/343已实际通过，待15worktrees clean验收后关闭本片，再应用typed。
+CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde；metadata/build在该change/results，真实sourcebase7a1ca930fc6178613df5df86145fff846c79791c，历史uncommitted标志不回写。产品c5941c890b352b281fc2bcf4102e45243691bddb已实际提交推送，自身CI38079005388已独立接受4jobs/52steps、双seed各3398/0/97及355summary；五新增名/lib337/gateway15与72分类条目（71唯一路径）Git/live pins均核。接受记录SHA16abfae27106be6a81ae8d641b9f5427df797456bbfe54b806b98ab50669a8e2，两次verifier格式/计数失败保留。cargo clean实际3027files/669.3MiB，target不存在。全部验收/独立基线已随35cdf3cb8531e70744e3c893e2c2e1128ad2a0e0提交推送；随后实际audit接受main=origin、15worktrees全clean/14辅助detached祖先、本地与远端仅main、无target，free59346087936bytes。准确pop CLI再次0555/SHA核对。证据在results/clean-delivery-checkpoint-root-v2，SHA14a484971f83886fcc9df9a2c62fd38035f75fe08a674557436823191c5e8594。strict343/343再次通过；关闭文档提交后继续private final audit，不借文档CI。
 
-## 后续已有方向
+## 当前推进：局部类型恢复
 
-`recover-proved-local-source-types` **2/8**：第一次两轮真实2/1，null/String全来源与atomic Stop通过；char正文正确但仍缺append后pop82/92/105。已完整保存实际patch/test/失败raw并恢复build.rs及自动测试目录，生产尚未再次应用。独立post-pop/pretyped基线已实际48cmd/16整类报告/38方法profile接受，只有九处准确完整Stmt pop来源新增，旧正文/maps恒同。完整上游控制为JDK23/Java8 source-target；ORIGINAL JDK8 helper版本失败18cmd/raw保留，无stub或删check。详见[typed root验收](openspec/changes/recover-proved-local-source-types/verification-root.md)。pop片关闭后重新应用typed并保留全部physical BCI断言，原rootv6 raw不覆盖，不能让候选充当预期。
+`recover-proved-local-source-types` **2/8**：第一次两轮真实2/1，null/String全来源与atomic Stop通过；char正文正确但仍缺append后pop82/92/105。已完整保存实际patch/test/失败raw并恢复build.rs及自动测试目录，生产尚未再次应用。独立post-pop/pretyped基线已实际48cmd/16整类报告/38方法profile接受，只有九处准确完整Stmt pop来源新增，旧正文/maps恒同。完整上游控制为JDK23/Java8 source-target；ORIGINAL JDK8 helper版本失败18cmd/raw保留，无stub或删check。详见[typed root验收](openspec/changes/recover-proved-local-source-types/verification-root.md)。下一步从关闭后的当前main重新应用typed，先运行永久真实class focused测试，再取得证明预算前缀并核边界；保留全部physical BCI断言，原rootv6 raw不覆盖，不能让候选充当预期。
 
 类型saved实际patch/永久测试已root全文读；replay v2/v3已全文审查发现身份/路径/物理BCI和拒绝分类缺陷，v5已root审读修正，仓库results/private-replay-luna-v5保留，尚无候选执行。原边界12cmd/4腿只能算original验收。root已全文读预算observer草稿，因4个test-only实体/thread-local+生产cfg分支过重而不应用；使用临时实际trace保存prefix后移除、已有trusted真实IR永久测试准确Stop/public cancel即可。
 
@@ -24,6 +24,6 @@ CLI `/private/tmp/jarde-proved-discarded-call-cli-v1` 0555，SHA251d3d4e77773a67
 
 ## 资源、分支与账本
 
-用户已明确批准 **5GiB最低机器余量/本仓target1GiB上限**，一秒进程组中止及完成cargo clean。root独占Git/Cargo/rustfmt/JDK/JADX/CLI；Luna private准备或只读审计，不占用分支。最近产品应用前7a1推送后真实审计15worktrees clean，仅main，14辅助detached main祖先，main=origin、无target/fuzz target；证据在当前pop片results/prerequisite-clean-root-v1。产品关闭须重新真实审计。
+用户已明确批准 **5GiB最低机器余量/本仓target1GiB上限**，一秒进程组中止及完成cargo clean。root独占Git/Cargo/rustfmt/JDK/JADX/CLI；Luna private准备或只读审计，不占用分支。最新35cdf3cb8提交推送后实际审计15worktrees clean，仅main，14辅助detached main祖先，main=origin、本地及真实远端heads只有main、全部无target/fuzz target；证据在pop片results/clean-delivery-checkpoint-root-v2。关闭文档的最终HEAD仍用private实际audit确认。
 
 长期入口：[71单元账本](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。CF12五份原上游Java/六方法完整基线已实际确认JADX六腿同原，旧Jarde六同/两异/四编译失败；整CF12尚未接受。另有named Try→Loop丢own_try、fallback physical21缺span、iadd@5来源、flat Signature generic arity、receiver-tail预算、CF16浅层组合、handler ctor goto19/else-if缩进等独立债务。持续目标active，未暂停或宣称完成。
