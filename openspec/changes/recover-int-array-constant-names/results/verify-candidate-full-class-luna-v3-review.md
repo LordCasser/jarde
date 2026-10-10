@@ -1,0 +1,9 @@
+# Independent v3 verifier review
+
+This frozen successor leaves verifier v1 and v2 unchanged. It has not been run. It reads the v6 evidence directly and adds no toolchain invocation.
+
+The v6 render rows contain `source`, `document`, `member_map.fields`, and `member_map.methods`; they do not contain `class_source_text`, `physical_inventory_matches`, or instruction lists. V3 therefore checks `source` against the JSON document's `text`, checks the recorded physical identity/count fields, and gets BCI membership from the original javap evidence: the controls' original `member_map.instructions_by_method`, and the accepted ArrayFill baseline's captured `javap -p -c -s -v` raw output. The raw javap records are hash-checked against the closed baseline inventory before parsing the matching method descriptor's instruction offsets.
+
+It also recomputes BLAKE3 with the preflighted `blake3` package for each actual original class-file byte record and joins that digest to the class, physical field/method owner identities, and projection anchors. The accepted ArrayFill baseline inventory stays pinned and closed. V3 checks the actual JADX input ZIP contains exactly the five javac23 original control classes, byte-for-byte, with no Runner, checks source paths passed to javac against the complete recorded source set, and scans each actual output class directory against its declared class census. The expected negative matrix is ten observations: five refused target classes across two JDK legs in the default profile.
+
+The remaining v6 inventory, command journal/raw streams, frozen CLI/metadata/JDK/JADX pins, complete-class rebuilds, runtime comparisons, and physical ArrayFill report comparisons are carried forward. V3 refuses to overwrite an existing output file. A pass would establish only these recorded evidence and provenance checks; it would not prove which names appeared in original Java source or complete the OpenSpec change.

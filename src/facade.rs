@@ -19790,57 +19790,124 @@ fn project_class_source_integer_constant_names(
         else {
             continue;
         };
-        let Some((body, uses)) = jarde_java::report::project_class_source_integer_constants(
-            ast,
-            &candidates,
-            method.item.descriptor.raw().0.ends_with(b")I"),
-            budget,
-        )
-        .map_err(|stop| {
-            enum_projection_stop_error(
-                stop,
-                "integer constant name projection",
-                "integer_constant_ir_missing",
+        let returns_int = method.item.descriptor.raw().0.ends_with(b")I");
+        let returns_int_array = method.item.descriptor.raw().0.ends_with(b")[I");
+        let Some((body, uses, original_body)) =
+            jarde_java::report::project_class_source_integer_constants(
+                ast,
+                &candidates,
+                returns_int,
+                returns_int_array,
+                budget,
             )
-        })?
+            .map_err(|stop| {
+                enum_projection_stop_error(
+                    stop,
+                    "integer constant name projection",
+                    "integer_constant_ir_missing",
+                )
+            })?
         else {
             continue;
         };
+        let has_array_use = uses.iter().any(|use_site| use_site.body_range.is_some());
+        if has_array_use {
+            let mut prior_same_member = false;
+            for staged in &report.projection_inputs.member_texts {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if staged.member == method.item.index {
+                    prior_same_member = true;
+                    break;
+                }
+            }
+            if prior_same_member {
+                continue;
+            }
+            budget.poll()?;
+            budget.charge(
+                CountedBudgetDimension::AnalysisSteps,
+                u64::try_from(method.text.len()).unwrap_or(u64::MAX),
+            )?;
+            let original_body_matches = original_body
+                .as_deref()
+                .and_then(|original| method.integer_constant_projection_text(original))
+                .as_deref()
+                == Some(method.text.as_str());
+            if !original_body_matches {
+                continue;
+            }
+        }
         let Some(text) = method.integer_constant_projection_text(&body) else {
             continue;
         };
         let mut derived = Vec::new();
         let mut unique = true;
         for use_site in uses {
-            let prefix = if use_site.case_label {
-                "case "
+            let span = if let Some(range) = use_site.body_range.as_ref() {
+                budget.poll()?;
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                budget.charge(
+                    CountedBudgetDimension::AnalysisSteps,
+                    u64::try_from(range.end.saturating_sub(range.start)).unwrap_or(u64::MAX),
+                )?;
+                method.integer_constant_projection_span(&body, range.start, range.end)
             } else {
-                "return "
+                let (prefix, suffix) = if use_site.case_label {
+                    ("case ", ":")
+                } else {
+                    ("return ", ";")
+                };
+                let needle = format!("{prefix}{}{suffix}", use_site.name);
+                let mut matches = text.match_indices(&needle);
+                let Some((at, _)) = matches.next() else {
+                    unique = false;
+                    break;
+                };
+                if matches.next().is_some() {
+                    unique = false;
+                    break;
+                }
+                let start = at + prefix.len();
+                Some((start, start + use_site.name.len()))
             };
-            let suffix = if use_site.case_label { ":" } else { ";" };
-            let needle = format!("{prefix}{}{suffix}", use_site.name);
-            let mut matches = text.match_indices(&needle);
-            let Some((at, _)) = matches.next() else {
+            let Some((start, end)) = span else {
                 unique = false;
                 break;
             };
-            if matches.next().is_some() {
+            if text.get(start..end) != Some(use_site.name.as_str()) {
                 unique = false;
                 break;
             }
-            let start = at + prefix.len();
-            let Some(field) = report
-                .integer_constant_candidates
-                .iter()
-                .find(|candidate| candidate.name == use_site.name)
-            else {
+            let field = if use_site.body_range.is_some() {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                let mut matching = None;
+                for candidate in &report.integer_constant_candidates {
+                    budget.poll()?;
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    if candidate.name == use_site.name {
+                        matching = Some(candidate);
+                        break;
+                    }
+                }
+                matching
+            } else {
+                report
+                    .integer_constant_candidates
+                    .iter()
+                    .find(|candidate| candidate.name == use_site.name)
+            };
+            let Some(field) = field else {
                 unique = false;
                 break;
             };
+            if use_site.body_range.is_some() {
+                budget.charge(CountedBudgetDimension::IrItems, 3)?;
+            }
             derived.push(class_source::MemberFamilyDerivedProjection {
                 kind: class_source::MemberFamilyDerivedKind::IntegerConstantName,
                 start,
-                end: start + use_site.name.len(),
+                end,
                 anchors: vec![
                     class_source::MemberFamilyPhysicalAnchor::Field {
                         field: field.field.identity.clone(),
@@ -19854,6 +19921,9 @@ fn project_class_source_integer_constant_names(
             });
         }
         if unique {
+            if has_array_use {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+            }
             projected.push(class_source::MemberFamilyMethodText {
                 index: method.item.index,
                 text,
@@ -19873,12 +19943,31 @@ fn project_class_source_integer_constant_names(
         CountedBudgetDimension::OutputBytes,
         u64::try_from(text.len()).unwrap_or(u64::MAX),
     )?;
-    for method in &mut report.methods {
-        if let Some(staged) = projected
-            .iter()
-            .find(|staged| staged.index == method.item.index)
-        {
-            method.text = staged.text.clone();
+    budget.charge(
+        CountedBudgetDimension::IrItems,
+        u64::try_from(report.methods.len()).unwrap_or(u64::MAX),
+    )?;
+    let mut staged_method_texts = vec![None; report.methods.len()];
+    for staged in &projected {
+        let mut matched_index = None;
+        for (index, method) in report.methods.iter().enumerate() {
+            budget.poll()?;
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if method.item.index == staged.index {
+                matched_index = Some(index);
+                break;
+            }
+        }
+        let Some(index) = matched_index else {
+            return Ok(());
+        };
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+        staged_method_texts[index] = Some(staged.text.clone());
+    }
+    budget.poll()?;
+    for (method, staged) in report.methods.iter_mut().zip(staged_method_texts) {
+        if let Some(text) = staged {
+            method.text = text;
         }
     }
     report.text = text;
@@ -19974,11 +20063,15 @@ fn recover_prepared_member(
     } else {
         None
     };
-    let integer_switch_ast = options.capture_integer_constant_asts
+    let integer_constant_ast = options.capture_integer_constant_asts
         && analyzed.ir().code().is_some_and(|code| {
-            code.instructions
-                .iter()
-                .any(|instruction| matches!(instruction.opcode, 0xaa | 0xab))
+            code.instructions.iter().any(|instruction| {
+                matches!(instruction.opcode, 0xaa | 0xab)
+                    || (request.method.name.0 != b"<init>"
+                        && request.method.name.0 != b"<clinit>"
+                        && request.method.descriptor.0.ends_with(b")[I")
+                        && instruction.opcode == 0xbc)
+            })
         });
     if analyzed.ir().code().is_some() {
         // The prepared half of the same demand-path decode (`crate::d0_counts`): one count per
@@ -20016,7 +20109,7 @@ fn recover_prepared_member(
             || options.array_helper_census_needed
             || options.capture_assert_asts
             || (options.capture_instance_array_ctor_asts && request.method.name.0 == b"<init>")
-            || integer_switch_ast,
+            || integer_constant_ast,
         options.retain_generic_call_asts,
         budget,
     )?;
@@ -44055,11 +44148,23 @@ mod integer_constant_name_tests {
     );
 
     fn source(bytes: &[u8], name: &str, budget: &mut Budget) -> ClassSourceReport {
+        source_with_snapshot(bytes, name, budget).0
+    }
+
+    fn source_with_snapshot(
+        bytes: &[u8],
+        name: &str,
+        budget: &mut Budget,
+    ) -> (
+        ClassSourceReport,
+        jarde_reader::artifact::ArtifactSnapshot,
+        jarde_jvm::environment::ResolutionEnvironment,
+    ) {
         let engine = Engine::new();
         let snapshot = engine
             .open(ArtifactInput::bytes(bytes.to_vec()), budget)
             .unwrap();
-        let environment = EnvironmentRequest {
+        let request = EnvironmentRequest {
             snapshot: snapshot.id().clone(),
             scope: PhysicalScope::SnapshotAll,
             policy: EnvironmentPolicy::SingleClass,
@@ -44070,6 +44175,7 @@ mod integer_constant_name_tests {
             },
             loader: LoaderId("app".to_owned()),
         };
+        let resolved = request.build(std::slice::from_ref(&snapshot)).unwrap();
         let OperationOutcome::Performed(report) = engine
             .class_source(
                 std::slice::from_ref(&snapshot),
@@ -44077,7 +44183,7 @@ mod integer_constant_name_tests {
                     class: ClassRef::Name {
                         class: ClassNameQuery::internal(name),
                     },
-                    environment,
+                    environment: request,
                 },
                 budget,
             )
@@ -44085,7 +44191,36 @@ mod integer_constant_name_tests {
         else {
             panic!("class must be unique");
         };
-        report
+        (report, snapshot, resolved)
+    }
+
+    fn ast_for_method(
+        snapshot: &jarde_reader::artifact::ArtifactSnapshot,
+        environment: &jarde_jvm::environment::ResolutionEnvironment,
+        method: &PhysicalMethodId,
+        budget: &mut Budget,
+    ) -> jarde_java::report::ClassSourceMethodAst {
+        let analyzed = jarde_jvm::analyze_method_ir(
+            std::slice::from_ref(snapshot),
+            &crate::ir::MethodAnalysisRequest {
+                environment: environment.clone(),
+                method: method.clone(),
+                stages: jarde_jvm::ir::AnalysisStage::ALL.to_vec(),
+            },
+            budget,
+        )
+        .unwrap();
+        let facts = recovery_facts(analyzed.ir().declaration(), analyzed.ir().code(), method);
+        let request = jarde_java::RecoveryRequest::new(
+            analyzed.ir(),
+            &facts,
+            environment.runtime.profile.clone(),
+        );
+        let recovered = jarde_java::report::recover_for_class_source_with_anonymous_ast(
+            &request, budget, false, false, true, false, false,
+        );
+        assert!(recovered.report.produced());
+        recovered.ast.expect("full class-source AST retained")
     }
 
     fn compiled(name: &str, text: &str) -> Vec<u8> {
@@ -44182,6 +44317,286 @@ mod integer_constant_name_tests {
         };
         assert!(physical.text.contains("case 1:"));
         assert!(physical.text.contains("return 3294;"));
+    }
+
+    #[test]
+    fn direct_int_array_names_have_exact_leaf_spans_and_keep_switch_projection() {
+        let bytes = compiled(
+            "ArrayConstantNames",
+            "class ArrayConstantNames { static final int VALUE=7; static int[] values(){return new int[]{7,7,8};} static int pick(int x){switch(x){case 7:return 9;default:return 0;}} }",
+        );
+        let report = source(&bytes, "ArrayConstantNames", &mut task_budget(&[]).unwrap());
+        assert!(report.text.contains("new int[]{VALUE, VALUE, 8}"));
+        assert!(report.text.contains("case VALUE:"));
+        let values = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"values")
+            .unwrap();
+        let array_names: Vec<_> = report
+            .integer_constant_projections
+            .iter()
+            .filter(|projection| {
+                projection.anchors.iter().any(|anchor| {
+                    matches!(
+                        anchor,
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
+                            if method == &values.item.identity
+                    )
+                })
+            })
+            .collect();
+        assert_eq!(array_names.len(), 2);
+        let mut bcis = Vec::new();
+        let mut ranges = Vec::new();
+        for projection in array_names {
+            assert_eq!(&report.text[projection.start..projection.end], "VALUE");
+            assert!(projection.anchors.iter().any(|anchor| matches!(
+                anchor,
+                class_source::MemberFamilyPhysicalAnchor::Field { .. }
+            )));
+            let class_source::MemberFamilyPhysicalAnchor::MethodPoint { bci, .. } = projection
+                .anchors
+                .iter()
+                .find(|anchor| {
+                    matches!(
+                        anchor,
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
+                            if method == &values.item.identity
+                    )
+                })
+                .unwrap()
+            else {
+                unreachable!()
+            };
+            bcis.push(*bci);
+            ranges.push((projection.start, projection.end));
+        }
+        bcis.sort_unstable();
+        bcis.dedup();
+        assert_eq!(bcis.len(), 2);
+        ranges.sort_unstable();
+        assert_ne!(ranges[0], ranges[1]);
+        let class_source::ClassSourceOutcome::Recovered {
+            report: physical, ..
+        } = &values.outcome
+        else {
+            panic!()
+        };
+        assert!(physical.text.contains("new int[]{7, 7, 8}"));
+    }
+
+    #[test]
+    fn direct_array_names_reject_unsupported_shapes_shadowing_duplicates_and_accept_assert_body() {
+        let unsupported = compiled(
+            "ArrayUnsupported",
+            "class ArrayUnsupported { static final int VALUE=7; static int[][] nested(){return new int[][]{{7}};} static int[] value(){return new int[]{make()};} static int make(){return 7;} }",
+        );
+        let report = source(
+            &unsupported,
+            "ArrayUnsupported",
+            &mut task_budget(&[]).unwrap(),
+        );
+        let value = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"value")
+            .unwrap();
+        assert!(!value.text.contains("VALUE"));
+        assert!(report.integer_constant_projections.is_empty());
+
+        let shadowed = compiled(
+            "ArrayShadow",
+            "class ArrayShadow { static final int VALUE=7; static int[] value(int VALUE){return new int[]{7};} static int[] local(){int VALUE=8; return new int[]{7};} }",
+        );
+        let report = source(&shadowed, "ArrayShadow", &mut task_budget(&[]).unwrap());
+        let value = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"value")
+            .unwrap();
+        assert!(value.text.contains("new int[]{7}"));
+        assert!(report.integer_constant_projections.is_empty());
+
+        let duplicate = compiled(
+            "ArrayDuplicate",
+            "class ArrayDuplicate { static final int VALUE=7; static final int OTHER=7; static int[] value(){return new int[]{7};} }",
+        );
+        let report = source(&duplicate, "ArrayDuplicate", &mut task_budget(&[]).unwrap());
+        let value = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"value")
+            .unwrap();
+        assert!(value.text.contains("new int[]{7}"));
+        assert!(report.integer_constant_projections.is_empty());
+
+        let prior = compiled(
+            "ArrayPriorProjection",
+            "class ArrayPriorProjection { static final int VALUE=7; static int[] value(boolean ok){ assert ok; return new int[]{7}; } }",
+        );
+        let report = source(
+            &prior,
+            "ArrayPriorProjection",
+            &mut task_budget(&[]).unwrap(),
+        );
+        let value = report
+            .methods
+            .iter()
+            .find(|method| method.item.name.raw().0 == b"value")
+            .unwrap();
+        assert!(
+            value
+                .text
+                .contains("ArrayPriorProjection.$assertionsDisabled")
+        );
+        assert!(value.text.contains("if (!ok)"));
+        assert!(value.text.contains("throw new java.lang.AssertionError()"));
+        assert!(value.text.contains("return new int[]{VALUE};"));
+        let value_projections: Vec<_> = report
+            .integer_constant_projections
+            .iter()
+            .filter(|projection| {
+                projection.anchors.iter().any(|anchor| {
+                    matches!(
+                        anchor,
+                        class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, .. }
+                            if method == &value.item.identity
+                    )
+                })
+            })
+            .collect();
+        assert_eq!(
+            value_projections.len(),
+            1,
+            "PriorAssert method text: {:?}; method projections: {:?}",
+            value.text,
+            value_projections
+        );
+        let projection = value_projections[0];
+        assert_eq!(
+            projection.kind,
+            class_source::MemberFamilyDerivedKind::IntegerConstantName
+        );
+        assert_eq!(
+            report.text.get(projection.start..projection.end),
+            Some("VALUE")
+        );
+        let value_field = report
+            .integer_constant_candidates
+            .iter()
+            .find(|candidate| candidate.name == "VALUE")
+            .expect("the fixture's unique constant candidate");
+        assert!(projection.anchors.iter().any(|anchor| matches!(
+            anchor,
+            class_source::MemberFamilyPhysicalAnchor::Field { field, index }
+                if field == &value_field.field.identity && *index == value_field.field.index
+        )));
+        assert!(projection.anchors.iter().any(|anchor| matches!(
+            anchor,
+            class_source::MemberFamilyPhysicalAnchor::MethodPoint { method, bci: 23 }
+                if method == &value.item.identity
+        )));
+        let class_source::ClassSourceOutcome::Recovered {
+            report: physical, ..
+        } = &value.outcome
+        else {
+            panic!("PriorAssert physical method must retain its recovery report");
+        };
+        assert!(
+            physical.text.contains("return new int[]{7};"),
+            "physical recovery text: {:?}",
+            physical.text
+        );
+    }
+
+    #[test]
+    fn staged_same_method_text_is_not_overwritten_after_a_valid_replay() {
+        let bytes = compiled(
+            "ArrayStagedTarget",
+            "class ArrayStagedTarget { static final int VALUE=7; static int[] values(){return new int[]{7};} }",
+        );
+        let mut budget = task_budget(&[]).unwrap();
+        let (mut baseline, snapshot, environment) =
+            source_with_snapshot(&bytes, "ArrayStagedTarget", &mut budget);
+        let method_index = baseline
+            .methods
+            .iter()
+            .position(|method| method.item.name.raw().0 == b"values")
+            .unwrap();
+        let identity = baseline.methods[method_index].item.identity.clone();
+        let ast = ast_for_method(&snapshot, &environment, &identity, &mut budget);
+        let names: Vec<_> = baseline
+            .integer_constant_candidates
+            .iter()
+            .map(|candidate| jarde_java::report::IntegerConstantName {
+                value: candidate.value,
+                name: candidate.name.clone(),
+            })
+            .collect();
+        let (_, uses, original_body) = jarde_java::report::project_class_source_integer_constants(
+            &ast,
+            &names,
+            false,
+            true,
+            &mut budget,
+        )
+        .unwrap()
+        .expect("the fixture has an admitted direct int-array leaf");
+        assert!(uses.iter().any(|use_site| use_site.body_range.is_some()));
+        let original_body = original_body.expect("the adapter supplies the physical AST replay");
+        let physical_method_text = baseline.methods[method_index]
+            .integer_constant_projection_text(&original_body)
+            .expect("the ordinary method envelope accepts its replayed body");
+        let projected_method_text = baseline.methods[method_index].text.clone();
+        assert_ne!(physical_method_text, projected_method_text);
+        assert_eq!(
+            baseline.methods[method_index]
+                .integer_constant_projection_text(&original_body)
+                .as_deref(),
+            Some(physical_method_text.as_str())
+        );
+
+        // Reconstitute the pre-array-projection report from the physical AST body and the exact
+        // spans the successful baseline projection published.
+        for projection in baseline.integer_constant_projections.iter().rev() {
+            assert_eq!(
+                baseline.text.get(projection.start..projection.end),
+                Some("VALUE")
+            );
+            baseline
+                .text
+                .replace_range(projection.start..projection.end, "7");
+        }
+        baseline.methods[method_index].text = physical_method_text.clone();
+        baseline.integer_constant_projections.clear();
+        assert!(baseline.text.contains("new int[]{7}"));
+        assert!(!baseline.text.contains("new int[]{VALUE}"));
+
+        // With no earlier member_text, the exact same AST and body pass the adapter's replay gate
+        // and produce the known valid name projection.
+        let mut control = baseline.clone();
+        let asts = [(identity.clone(), ast.clone(), None, None)];
+        project_class_source_integer_constant_names(&mut control, &asts, &mut budget).unwrap();
+        assert!(control.text.contains("new int[]{VALUE}"));
+        assert_eq!(control.integer_constant_projections.len(), 1);
+
+        // Seed a real same-method text-only input with the member index and text from this report.
+        // If the staged-target guard were removed, the control above shows this call would project.
+        baseline.projection_inputs.member_texts.push(
+            class_source::ClassSourceProjectedMemberText {
+                member: baseline.methods[method_index].item.index,
+                text: baseline.methods[method_index].text.clone(),
+                emission: None,
+            },
+        );
+        let before_text = baseline.text.clone();
+        let before_method_text = baseline.methods[method_index].text.clone();
+        let before_projections = baseline.integer_constant_projections.clone();
+        project_class_source_integer_constant_names(&mut baseline, &asts, &mut budget).unwrap();
+        assert_eq!(baseline.text, before_text);
+        assert_eq!(baseline.methods[method_index].text, before_method_text);
+        assert_eq!(baseline.integer_constant_projections, before_projections);
     }
 
     #[test]

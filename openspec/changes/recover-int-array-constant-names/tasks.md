@@ -5,13 +5,13 @@
 
 ## 2. 最小实现
 
-- [ ] 2.1 Luna准备private patch，扩展同轮capture及直接一维int数组Return叶投影，保持唯一候选/名称遮蔽/原body一致性；root审后应用，真实Rust用例证明CONST_INT可见且switch回归不变。
-- [ ] 2.2 复用body-only emitter replay核精确BCI/name segments，内部handoff新数组body range经既有writer映射；真实测试核重复名称不同BCI、token范围、Field/MethodPoint、歧义拒绝与Stop传播。
+- [x] 2.1 Luna准备private patch，扩展同轮capture及直接一维int数组Return叶投影，保持唯一候选/名称遮蔽/原body一致性；root审后应用，真实Rust用例证明CONST_INT可见且switch回归不变。
+- [x] 2.2 复用body-only emitter replay核精确BCI/name segments，内部handoff新数组body range经既有writer映射；真实测试核重复名称不同BCI、token范围、Field/MethodPoint、歧义拒绝与Stop传播。
 
 ## 3. 对抗与完整类回放
 
-- [ ] 3.1 构造完整类的同值歧义/parameter与local遮蔽/不支持表达式和数组形状/预算取消控制，默认-all正文一致；永久Rust测试及root对抗审查通过，不把early-stop用例冒称late-stage动态注入。
-- [ ] 3.2 root冻结新CLI/meta/product pins，完整ConstantIntArray及控制类集双JDK重编-Xverify/raw对原oracle，并验全部physical成员/BCI/来源；不得手改generated源或借原helper。
+- [x] 3.1 构造完整类的同值歧义/parameter与local遮蔽/不支持表达式和数组形状/预算取消控制，默认-all正文一致；永久Rust测试及root对抗审查通过，不把early-stop用例冒称late-stage动态注入。
+- [x] 3.2 root冻结新CLI/meta/product pins，完整ConstantIntArray及控制类集双JDK重编-Xverify/raw对原oracle，并验全部physical成员/BCI/来源；不得手改generated源或借原helper。
 
 ## 4. 主线验收
 

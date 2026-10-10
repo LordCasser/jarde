@@ -1,0 +1,7 @@
+# Independent v2 verifier review
+
+This is a frozen successor to `verify-candidate-full-class-luna-v1.py`; v1 and its review remain unchanged. It has not been executed. It reads the actual `candidate-full-class-root-v6/manifest.json` and frozen evidence directly, without importing the collector or invoking compilers, decompilers, the CLI, or repository tooling.
+
+The only evidence-strengthening change is that v2 imports the preflighted Python `blake3` package and recomputes BLAKE3 from every original class-file byte record used by a render. It then checks the recomputed digest and byte length against the CLI-reported digest, CLI-verified digest, rendered class owner, and every physical field/method owner. Projection anchor identities remain required to equal their physical member identities; their owner bytes therefore join to the recomputed class identity. The accepted ArrayFill baseline remains independently closed by its pinned inventory SHA and every inventory entry's SHA-256, and the current ArrayFill report digest must match that accepted baseline.
+
+All other v1 checks are carried forward unchanged, including the 417-entry v6 inventory closure, fixed tool/source pins, complete original/candidate class sets, raw runtime comparisons, source-map/BCI checks, and 12 accepted ArrayFill physical-report comparisons. As with v1, passing this verifier would establish only the recorded full-class/runtime observations and provenance links; it would not prove which symbols were present in the original Java source or complete the whole OpenSpec change.

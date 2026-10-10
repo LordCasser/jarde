@@ -11340,6 +11340,43 @@ impl ClassSourceMethod {
         ))
     }
 
+    /// Maps a body-only replay range through the exact original envelope and method placement.
+    pub(crate) fn integer_constant_projection_span(
+        &self,
+        body: &str,
+        start: usize,
+        end: usize,
+    ) -> Option<(usize, usize)> {
+        let declaration = self.declaration.as_ref()?;
+        let ClassSourceOutcome::Recovered { report, .. } = &self.outcome else {
+            return None;
+        };
+        let original = artifact(&report.text)?;
+        if !self.markers.is_empty() || start >= end {
+            return None;
+        }
+        let source = body.get(start..end)?;
+        if source.contains('\n') {
+            return None;
+        }
+        let artifact_start = original.envelope.len().checked_add(2)?.checked_add(start)?;
+        let artifact_end = original.envelope.len().checked_add(2)?.checked_add(end)?;
+        let annotations = self
+            .annotations
+            .uses
+            .iter()
+            .map(|annotation| 4 + annotation.len() + 1)
+            .sum::<usize>();
+        let block_prefix = annotations + format!("    {declaration} {{\n").len();
+        let staged = Artifact {
+            envelope: original.envelope,
+            statements: body,
+        };
+        let mapped = placed_artifact_span(&staged, artifact_start, artifact_end, block_prefix)?;
+        let text = self.integer_constant_projection_text(body)?;
+        (text.get(mapped.0..mapped.1)? == source).then_some(mapped)
+    }
+
     /// This member's text with its body replaced by the assert projection's staged statements,
     /// keeping the original envelope the recovery wrote and every marker already placed.
     ///

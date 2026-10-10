@@ -15,5 +15,5 @@
 
 ## 4. 主线验收
 
-- [ ] 4.1 root对抗复审、fmt/scoped Clippy/全部OpenSpec strict及reader/fingerprint，提交后确切新产品双seed全仓/JDK25/MSRV/fuzz/supply CI接受。
-- [ ] 4.2 提交推送main，更新handoff/71账本及实际任务状态；只清本仓target并保留输入/raw/冻结CLI，不冒称EM18整单元完成。
+- [x] 4.1 root对抗复审、fmt/scoped Clippy/全部OpenSpec strict及reader/fingerprint，提交后确切新产品双seed全仓/JDK25/MSRV/fuzz/supply CI接受。
+- [x] 4.2 提交推送main，更新handoff/71账本及实际任务状态；只清本仓target并保留输入/raw/冻结CLI，不冒称EM18整单元完成。
