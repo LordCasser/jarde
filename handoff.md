@@ -38,3 +38,9 @@ For来源片 `preserve-proved-for-latch-origins` **6/6**、产品d714a6bcc86c7df
 长期账本：[71单元summary](openspec/evidence/jadx-feature-inventory-2026-09-27/summary.md)。当前片已完成，关闭记录再次核clean后推进局部类型片；持续目标仍active，不暂停也不宣称已完成。
 
 并行方向只读清单在下一片results/next-ledger-triage-luna-v1.md：CF-12整数switch、DT-02静态成员类、EM-23字段更新按本地JADX活动断言/已有完整基线扩验；CF-12已实跑五份原上游Java fixture/六方法，见 [完整基线](openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/README.md)：JADX六腿全类编译运行同原，Jarde六同/两异/四编译失败。类型恢复 OpenSpec recover-proved-local-source-types 为2/8（root v6基线与同次真实IR/架构审查已接受，生产未应用），Luna私有类型v3实现/永久测试准备完成待root审查与真实工具链；原始边界12命令/4原腿已独立核，不能算候选验收。条件fallthrough真实11块/17Normal诊断已独立接受，OpenSpec recover-proved-conditional-switch-fallthrough为1/7；静态消费审查发现group-level fall_through不能表达局部break，root已决定必要SwitchBreak证据叶、最近作用域准确消费现有ASTBreak；Luna private准备中，不能只发map。常量名门另记债务。尚未接受整CF12。
+
+## 最新活动片：调用结果 pop 来源
+
+return-arm已7/7闭合，关闭记录e84600a65实际推送并private再次审计15worktrees全部clean、仅main/无target，才应用typed。typed首次实际2轮2/1：null/String全物理来源与atomic Stop通过；char正确正文但全来源仍缺append后pop82/92/105，失败raw保留，尚未验收。已完整保存typed实际diff/永久测试并恢复build.rs到HEAD，测试移出自动测试目录，typed仍2/8。
+
+独立OpenSpec preserve-proved-discarded-call-origins已完整规划strict通过，复用现有discards证据在两条成功普通调用语句路径追加完整Stmt derived pop并计费/poll；不扩证明计划，不混入局部类型。先用无typed依赖的完整真实类独立验收及自身CI/clean，再重新应用typed，保留全物理断言。Luna private准备patch/fixtures，root独占工具链。条件switch v2草稿已保留尚未root全文验收；typed replay v2修正合同后尚未执行。
