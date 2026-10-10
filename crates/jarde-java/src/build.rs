@@ -23009,9 +23009,10 @@ impl Builder<'_> {
                     }
                 };                let Some((slot, written)) = write else {
                     // No local slot takes the result: the call is a statement of its own.
+                    let origin = self.call_statement_origin(at)?;
                     return self.push(Stmt::new(
                         StmtKind::Expr(call),
-                        OriginSet::new(Origin::direct(at)),
+                        origin,
                     ));
                 };
                 let (variable, target_name) = match self.write_target(slot, at, "call") {
@@ -26706,10 +26707,28 @@ impl Builder<'_> {
                 return self.fallback(bcis, &reason, at);
             }
         };
-        self.push(Stmt::new(
-            StmtKind::Expr(call),
-            OriginSet::new(Origin::direct(at)),
-        ))
+        let origin = self.call_statement_origin(at)?;
+        self.push(Stmt::new(StmtKind::Expr(call), origin))
+    }
+
+    /// The origins of a successful call statement, including only its proved result discard.
+    ///
+    /// The discard plan already proved the exact invoke-to-pop pair. Poll and charge that one
+    /// physical source dependency before the statement can be pushed; qualifier pops are a
+    /// separate shape and are deliberately not read here.
+    fn call_statement_origin(&mut self, call_bci: u32) -> Result<OriginSet, StopReason> {
+        let mut origin = OriginSet::new(Origin::direct(call_bci));
+        if let Some(pop_bci) = self.pops().discards.get(&call_bci).copied() {
+            poll(self.budget, Some(pop_bci))?;
+            charge(
+                self.budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(pop_bci),
+            )?;
+            origin = origin.plus_derived(Origin::derived(pop_bci));
+        }
+        Ok(origin)
     }
 
     /// Whether the `bridge@1` rule proved one instruction to be the erasure of the value it casts.

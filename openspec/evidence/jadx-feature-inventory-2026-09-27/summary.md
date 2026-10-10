@@ -356,3 +356,7 @@ CF16最终整类补验已root独立536checks/0errors：Normal双JDK当前Jarde�
 ### 2026-10-11 typed 首次工具链与独立 pop 来源债务
 
 typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/String全来源与atomic Stop通过；char已正确呈现但完整来源缺[82,92,105]，均append后pop，不接受2.1/2.2/2.3或整CF12。完整保存实际typed diff/test/失败raw后已恢复HEAD。独立preserve-proved-discarded-call-origins按既有discards精确一对一证据补成功语句derived来源，两条创建路径共用有限预算消费，不新增IR/Frame/计划；先自身完整类/CI/clean再恢复typed。静态qualifier-pop潜在来源遗漏另记，不泛化到本片。71单元/612测试及完成数不变。
+
+### 2026-10-11 调用结果 pop 来源实际候选验收
+
+独立preserve-proved-discarded-call-origins已4/6：最小两条普通Stmt消费既有discards、真实5永久tests、本地12cmd639/0/0，完整源码/JADX/Jarde双JDK/default-all26cmd8runtime腿28method profiles18class独立接受，只新增pop4/13/15准确完整Stmt derived，正文及所有旧maps恒同。wide pop2另实际2CLI核全三方法refusal/map不变。CLI已冻结，cargo clean3027files/669.3MiB、target不存在；精确自身产品CI/最后主线clean仍待完成。typed仍2/8且生产未重新应用，下一步先接受post-pop独立pretyped CF12基线；不增加71整单元完成数。
