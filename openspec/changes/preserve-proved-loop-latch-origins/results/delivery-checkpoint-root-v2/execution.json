@@ -1,0 +1,147 @@
+{
+  "status": "accepted-checkpoint-audit",
+  "created_at_utc": "2026-10-10T11:37:29.427514+00:00",
+  "product_checkpoint": "ca43ac74767c4609284f13b251de9d6c349c67a4",
+  "origin_main": "ca43ac74767c4609284f13b251de9d6c349c67a4",
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "ca43ac74767c4609284f13b251de9d6c349c67a4",
+      "branch": "refs/heads/main",
+      "detached": false,
+      "status_before_new_journal": "?? openspec/changes/preserve-proved-loop-latch-origins/results/delivery-checkpoint-root-v1/\n",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "branch": null,
+      "detached": true,
+      "status_before_new_journal": "",
+      "ancestor_of_main": true,
+      "target_exists": false
+    }
+  ],
+  "main_only_dirty_path_was_own_prior_journal": true,
+  "other_branch_occupations": 0,
+  "protected_detached_worktrees": 14,
+  "free_bytes": 3835457536
+}
