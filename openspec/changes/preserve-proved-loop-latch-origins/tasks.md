@@ -11,4 +11,4 @@
 ## 3. Fresh evidence and delivery
 
 - [x] 3.1 冻结 fresh CLI/源码 pins，双 JDK/default-all 重放完整控制并独立验收来源精确变化：noPrefix 原10个来源保持并增加真实14，其他方法正文/map恒同；如单臂片尚未修复，仍记录四整类编译失败/无runtime，不删方法或手改生成源码。本片不以全类失败取消真实来源修复，也不将来源修复冒称全类成功。
-- [ ] 3.2 root 实跑 fmt、CI 同范围 Clippy、相关回归和本change OpenSpec strict；提交推送后按精确产品 headSha 捕获并独立验收自身 CI，更新 71 账本及 handoff 范围，核主线 clean/无分支占用，仅清理本仓 target。
+- [x] 3.2 root 实跑 fmt、CI 同范围 Clippy、相关回归和本change OpenSpec strict；提交推送后按精确产品 headSha 捕获并独立验收自身 CI，更新 71 账本及 handoff 范围，核主线 clean/无分支占用，仅清理本仓 target。

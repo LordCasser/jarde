@@ -1,6 +1,6 @@
 # 普通 while 隐式回跳来源：root 验收入口
 
-当前 tasks **5/6**。局部来源实现、永久正反例、fresh CLI 对照与精确产品CI均由root实际独立验收；剩余3.2的主线检查点交付。单臂续接仍是另一项工作，不计 CF-07/EM-23 整单元完成。
+当前 tasks **6/6**。局部来源实现、永久正反例、fresh CLI 对照与精确产品CI均由root实际独立验收。检查点ca43ac747已推送main；root核全部14辅助工作树clean/detached/ancestor且无target、无其它分支占用。记录results/delivery-checkpoint-root-v2。单臂续接仍是另一项工作，不计 CF-07/EM-23 整单元完成。
 
 2026-10-10 10:31 UTC，root 完整执行 `results/run-validation-build-root-v9.py` 的12条命令，fmt、CI同范围Clippy及552 passed/0 failed/1 ignored全部通过。根 arm-join 4项、double-jumps 7项、Boolean-loop 3项均实跑，gateway 5项含 noPrefix 来源和预算/取消。源前后49个pins恒同，target峰值760681447 bytes；机器5GiB/target1GiB守卫全程未触发。fresh CLI `/private/tmp/jarde-loop-latch-cli-v1` SHA-256 `1728ef3fa1a3a9e8ed56d6f4384a1c54c3e63400e6495c750a0bd139d7623b5c`，metadata SHA `6b0c59d452d8d5a1fb157c60e81a6602f9cc78c26479f2638e98bdfda54df9e3`，准确身份以 `results/candidate-cli-v1.json` 为准。
 

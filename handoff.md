@@ -16,9 +16,13 @@
 
 **最新用户授权：** 机器余量下限20GiB改为5GiB，保留本仓target1GiB上限、实时中止与完成清理。后文20GiB均为历史记录。
 
-**上一片（11:34 UTC）：** 普通循环来源片 `preserve-proved-loop-latch-origins` 本地12命令/552测试、fresh双JDK和精确404b自身CI38045578457已由root独立验收。CI4jobs/52steps、双seed各3379/0/97和354records成功；接受文件results/ci-product-v1/acceptance-loop-latch-v3.json。tasks5/6只剩主线检查点交付，单臂恢复仍是另一片，不冒增整单元完成数。
+**上一片（11:34 UTC）：** 普通循环来源片 `preserve-proved-loop-latch-origins` 本地12命令/552测试、fresh双JDK和精确404b自身CI38045578457已由root独立验收。CI4jobs/52steps、双seed各3379/0/97和354records成功；接受文件results/ci-product-v1/acceptance-loop-latch-v3.json。tasks6/6已完成ca43检查点交付，单臂恢复仍是另一片，不冒增整单元完成数。
 
 **下一片（11:30 UTC）：** `recover-prefixed-one-arm-loops` 当前4/7；root实际12命令556测试通过并独立重核24raw/50pins，已冻结fresh CLI。修复loopAndTail真实Frame完成契约错误，永久普通三种极性/尾部及iterator原形通过。完整类v2在第17条前因5GiB余量守卫中止，v3已准备、未完整类接受；机器耗盘来自本仓以外，已cargo clean本仓669.1MiB，target不存在。准确入口为该change/verification-root.md；71/612与EM23整单元计数不变。
+
+**产品检查点：** 单臂片产品`ca43ac74767c4609284f13b251de9d6c349c67a4`已提交推送main，精确自身CI为38048944005（运行中）；不能用404b循环来源CI替代单臂CI。主线在新增交付日志之前已clean，所有14辅助worktree仍为clean detached ancestor，无target/分支占用；受应用固定保护的副本继续保留。单臂 tasks3.1/3.2/3.3仍待完成，不冒称全类恢复或全BCI完整。
+
+**接续执行：** 先重新核机器free≥5368709120、本仓target≤1073741824（目前target不存在）。余量足够后，使用已冻结CLI与candidate-cli-v1.json的准确SHA，运行该change/results/prepare-candidate-root-v3.py并显式传入validation-build-root-v5/execution.json；它独占candidate-whole-classes-root-v3且逐命令写journal。整类原形/Plain的8份生成源都重编运行后，再实跑verify-candidate-root-v3.py --build同文件，全部physical BCI、owner及default/all恒同才可勾3.1。若实证For投影goto20或iterator42缺map，拆独立来源OpenSpec，不豁免门禁；ForHeader已有unique latch/update_block证明，可优先考虑复用既有implicit-tail helper和gateway_origins，不急增public IR/pass。与此同时按精确ca43 Git blobs捕获自身CI并独立验收；CI日志stdout/stderr可能交错，已有loop verifier-v3的interface局部修正仅为参考，不照搬旧test数量/路径。
 
 06:53 UTC仅cargo clean本仓释放814.8MiB/3414files，target不存在且冻结CLI保留，记录root-clean-v2。邻项TestVariablesDefinitions2旧CLI基线已独立接受31commands/112files：原2/JADX4成功、Jarde4编译失败。现有诊断明确外层ipdom为45；源码审计怀疑straight前缀遇loop-header13提前返回，单臂续接只支持boolean early-return而拒绝。尚未动态证明具体触发链，不在乘法patch里处理；下一片先沿既有region/Frame续接设计，不计EM23整单元完成。
 
