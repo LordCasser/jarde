@@ -1,0 +1,138 @@
+{
+  "schema": "discarded-call-pop2-control-root-acceptance-v1",
+  "status": "accepted-unchanged-control",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "/private/tmp/jarde-return-arm-latch-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac23/original/discardprobe/ProbePop2.class",
+        "--class",
+        "discardprobe.ProbePop2",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:10:02.534422+00:00",
+      "duration_seconds": 1.0116642499924637,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61748633600,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/pop2-controls-root-v1/0.stdout.raw",
+          "bytes": 25323,
+          "sha256": "9d5d8d5fff8d03c5e9b8add222131765cc898626dcc78c4a88f9516149e602de"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/pop2-controls-root-v1/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "/private/tmp/jarde-proved-discarded-call-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/javac23/original/discardprobe/ProbePop2.class",
+        "--class",
+        "discardprobe.ProbePop2",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:10:03.580705+00:00",
+      "duration_seconds": 1.0115609579952434,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61748588544,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/pop2-controls-root-v1/1.stdout.raw",
+          "bytes": 25323,
+          "sha256": "ab4107d19306eaa092aecf503cd4ee01aac2380ddb529117e843c1a18b432ea1"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/pop2-controls-root-v1/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "class_sha256": "ea2d95ff242bba7ac66f7693b8a21dcca18e86d976be81728a6304d27e173e85",
+  "all_three_methods_body_map_refusals_identical": true,
+  "discard_quality": "fallback",
+  "diagnostics": [
+    {
+      "code": "jre_recovery_produced",
+      "message": "1 region(s), 3 statement(s), 4 segment(s), 288 byte(s) written from 1 canonical block(s)",
+      "provenance": null,
+      "severity": "info"
+    },
+    {
+      "code": "jre_declaration",
+      "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+      "provenance": null,
+      "severity": "info"
+    }
+  ],
+  "no_new_derived_pop2": true
+}

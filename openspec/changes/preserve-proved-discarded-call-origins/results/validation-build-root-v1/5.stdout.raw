@@ -1,0 +1,9 @@
+
+running 4 tests
+test a_popped_invocation_before_interface_static_call_is_an_independent_statement ... ok
+test an_invocation_discarded_before_static_call_is_written_once ... ok
+test an_unmatched_non_invoke_qualifier_is_refused_with_its_full_source_chain ... ok
+test static_read_and_compound_store_controls_still_evaluate_the_receiver_once ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

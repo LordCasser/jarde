@@ -1,0 +1,22 @@
+{
+  "schema": "preserve-proved-discarded-call-origins-focused-root-acceptance-v1",
+  "status": "accepted-focused-tests-only",
+  "focused_execution_sha256": "5c068f9f2af063d5d2d2b5d53fcd5c5490614d082a58a8169538a87569d8587b",
+  "actual_tests": [
+    5,
+    0,
+    0
+  ],
+  "precise_stop": {
+    "dimension": "analysis_steps",
+    "limit": 13,
+    "written": 0,
+    "at": 4
+  },
+  "cancel_scope": "after-real-IR-analysis, public atomic refusal; no claim of cancellation at exact pop checkpoint",
+  "temporary_instrumentation_removed": true,
+  "production_source_sha256": "652d94f00e6a501393b34c1b4e4c3e85f3b660396abb18326443ec648aa788e4",
+  "test_source_sha256": "389ec8c728a1cbe6eb6d741f8e182a63e29454d14372b2e3a72dab0561351ee9",
+  "complete_class_replay": "pending",
+  "own_product_ci": "pending"
+}

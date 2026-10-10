@@ -1,0 +1,1717 @@
+{
+  "schema": "discarded-call-candidate-replay-root-v2",
+  "status": "candidate-replay-observed",
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/original-inputs-root-v1/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/original-inputs-root-v1/DiscardedCallSourceProbeRunner.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/original-inputs-root-v1/ProbePop2.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:00.211536+00:00",
+      "duration_seconds": 1.0152074999932665,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685321728,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-original-compile"
+    },
+    {
+      "index": 1,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original",
+        "discardprobe.DiscardedCallSourceProbe"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:01.232369+00:00",
+      "duration_seconds": 1.014717500016559,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685284864,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/1.stdout.raw",
+          "bytes": 7170,
+          "sha256": "74c05533122e830214dde9a13adc9c415ecdeb2f836144b6e70a581544f600f5"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-DiscardedCallSourceProbe-javap"
+    },
+    {
+      "index": 2,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original",
+        "discardprobe.ProbePop2"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:02.247591+00:00",
+      "duration_seconds": 1.0116156669973861,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685219328,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "required successful test summary was absent or empty"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/2.stdout.raw",
+          "bytes": 1835,
+          "sha256": "da123dc9f8f49702984838228dd1a244f6c7c5b7795308d316c927129cbd7616"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-ProbePop2-javap"
+    },
+    {
+      "index": 3,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:03.259683+00:00",
+      "duration_seconds": 1.0064233339799102,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685125120,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [
+          "no_prefix_while_latch_keeps_physical_source_and_one_owner",
+          "no_prefix_latch_budget_and_cancellation_publish_no_partial_source"
+        ],
+        "required_gateway_tests_present": false,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(5, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/3.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-original-runtime"
+    },
+    {
+      "index": 4,
+      "argv": [
+        "/private/tmp/jarde-proved-discarded-call-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original/discardprobe/DiscardedCallSourceProbe.class",
+        "--class",
+        "discardprobe.DiscardedCallSourceProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:04.266728+00:00",
+      "duration_seconds": 1.0096530839800835,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685047296,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            4,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(4, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/4.stdout.raw",
+          "bytes": 75130,
+          "sha256": "2782924d60a68de138ac916c3b34b0e7856bbb9c38495606cfd14a877a88d43e"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-default-render"
+    },
+    {
+      "index": 5,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/default/classes",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/default/sources/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/default/sources/DiscardedCallSourceProbeRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:05.277891+00:00",
+      "duration_seconds": 1.0116179999895394,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684940800,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            7,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(7, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/5.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/5.stderr.raw",
+          "bytes": 241,
+          "sha256": "2a4dc479bc349646b728afd1bd9b99fd8c47757844d687dc275115df8ee04cf6"
+        }
+      },
+      "label": "javac8-default-compile"
+    },
+    {
+      "index": 6,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/default/classes",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:06.290314+00:00",
+      "duration_seconds": 1.0100088749895804,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685243904,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(5, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/6.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-default-runtime"
+    },
+    {
+      "index": 7,
+      "argv": [
+        "/private/tmp/jarde-proved-discarded-call-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original/discardprobe/DiscardedCallSourceProbe.class",
+        "--class",
+        "discardprobe.DiscardedCallSourceProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:07.301283+00:00",
+      "duration_seconds": 1.007088542013662,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685157888,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            12,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(12, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/7.stdout.raw",
+          "bytes": 79171,
+          "sha256": "cd06447b398cb351124cc9f2419485ae2bd49e071b08f6d39820be94c1afe08e"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-all-render"
+    },
+    {
+      "index": 8,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/all/classes",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/all/sources/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/all/sources/DiscardedCallSourceProbeRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:08.309991+00:00",
+      "duration_seconds": 1.0059495410241652,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685022720,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "required successful test summary was absent or empty"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/8.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/8.stderr.raw",
+          "bytes": 237,
+          "sha256": "813707581bee3716ddbbacb2486c26c40d7891e00bb4febd181a2178c344c896"
+        }
+      },
+      "label": "javac8-all-compile"
+    },
+    {
+      "index": 9,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/all/classes",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:09.316830+00:00",
+      "duration_seconds": 1.0120350409997627,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61685010432,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": false,
+        "failure_reason": "expected summaries [(5, 0, 1)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/9.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-all-runtime"
+    },
+    {
+      "index": 10,
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/jadx/decompile",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/original/discardprobe/DiscardedCallSourceProbe.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:10.330012+00:00",
+      "duration_seconds": 2.018384499999229,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684928512,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            3,
+            0,
+            0
+          ]
+        ],
+        "actual": [],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [
+          "proved_header_test_chains_become_short_circuit_loop_conditions",
+          "an_independent_effect_between_header_tests_is_never_folded_into_the_condition",
+          "recovered_loop_exit_matches_the_java8_class_for_terminating_and_continuing_inputs"
+        ],
+        "required_boolean_loop_tests_present": false,
+        "ok": false,
+        "failure_reason": "expected summaries [(3, 0, 0)], got []"
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/10.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-jadx-render"
+    },
+    {
+      "index": 11,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/jadx/classes",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/jadx/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/jadx/sources/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/jadx/sources/DiscardedCallSourceProbeRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:12.349706+00:00",
+      "duration_seconds": 1.0119126249919645,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684903936,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/11.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/11.stderr.raw",
+          "bytes": 238,
+          "sha256": "3e362460bd6fd38587d5e381eead7a427c4ae36375fce4c626d7ad56dfda5aad"
+        }
+      },
+      "label": "javac8-jadx-compile"
+    },
+    {
+      "index": 12,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac8/jadx/classes",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:13.362570+00:00",
+      "duration_seconds": 1.0120375829865225,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684887552,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/12.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac8-jadx-runtime"
+    },
+    {
+      "index": 13,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/original-inputs-root-v1/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/original-inputs-root-v1/DiscardedCallSourceProbeRunner.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/original-inputs-root-v1/ProbePop2.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:14.376840+00:00",
+      "duration_seconds": 1.0047884169907775,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684862976,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/13.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/13.stderr.raw",
+          "bytes": 253,
+          "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+        }
+      },
+      "label": "javac23-original-compile"
+    },
+    {
+      "index": 14,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original",
+        "discardprobe.DiscardedCallSourceProbe"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:15.383284+00:00",
+      "duration_seconds": 1.0148246249882504,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684850688,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/14.stdout.raw",
+          "bytes": 7479,
+          "sha256": "48eea03189258d02a7a512f0a138573d04f7ef2e3bb3ff0ac1b1623529d3a180"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-DiscardedCallSourceProbe-javap"
+    },
+    {
+      "index": 15,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-v",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original",
+        "discardprobe.ProbePop2"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:16.398982+00:00",
+      "duration_seconds": 1.0119805829890538,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684998144,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/15.stdout.raw",
+          "bytes": 2093,
+          "sha256": "289e15af6379a8fa040d84b5a4e546fb6ace0e73d51eadaa1a3aea45bb5328fe"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-ProbePop2-javap"
+    },
+    {
+      "index": 16,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:17.411808+00:00",
+      "duration_seconds": 1.0118524589925073,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684764672,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/16.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-original-runtime"
+    },
+    {
+      "index": 17,
+      "argv": [
+        "/private/tmp/jarde-proved-discarded-call-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original/discardprobe/DiscardedCallSourceProbe.class",
+        "--class",
+        "discardprobe.DiscardedCallSourceProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:18.424720+00:00",
+      "duration_seconds": 1.0054105839808472,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684617216,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/17.stdout.raw",
+          "bytes": 75128,
+          "sha256": "90b4639ea5c972f099131ba0570a00f8169d30464a3ac3c5a1306e09a667669c"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-default-render"
+    },
+    {
+      "index": 18,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/default/classes",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/default/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/default/sources/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/default/sources/DiscardedCallSourceProbeRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:19.432004+00:00",
+      "duration_seconds": 1.011996666988125,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684482048,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/18.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/18.stderr.raw",
+          "bytes": 495,
+          "sha256": "ebe93d3d9bda6709ba48e1544e582750aaf37ce7dd307fb2e667596ebc4bcad2"
+        }
+      },
+      "label": "javac23-default-compile"
+    },
+    {
+      "index": 19,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/default/classes",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:20.445270+00:00",
+      "duration_seconds": 1.012009665981168,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684473856,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/19.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-default-runtime"
+    },
+    {
+      "index": 20,
+      "argv": [
+        "/private/tmp/jarde-proved-discarded-call-cli-v1",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original/discardprobe/DiscardedCallSourceProbe.class",
+        "--class",
+        "discardprobe.DiscardedCallSourceProbe",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:21.459023+00:00",
+      "duration_seconds": 1.0102100409858394,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61684314112,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/20.stdout.raw",
+          "bytes": 79171,
+          "sha256": "67b74ee0aa73bdd2577bf979177e92371924ba7addc9cde212c2375bbd59e1a2"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/20.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-all-render"
+    },
+    {
+      "index": 21,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/all/classes",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/all/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/all/sources/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/all/sources/DiscardedCallSourceProbeRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:22.471568+00:00",
+      "duration_seconds": 1.0028524580120575,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61694631936,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/21.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/21.stderr.raw",
+          "bytes": 491,
+          "sha256": "85d95f72e77adbcd8a9a53a3d6f03c8a398157a66be6009432a576d8113bbee2"
+        }
+      },
+      "label": "javac23-all-compile"
+    },
+    {
+      "index": 22,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/all/classes",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:23.475736+00:00",
+      "duration_seconds": 1.0038340410101227,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61694455808,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/22.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/22.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-all-runtime"
+    },
+    {
+      "index": 23,
+      "argv": [
+        "/opt/homebrew/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/jadx/decompile",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/original/discardprobe/DiscardedCallSourceProbe.class"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:24.481519+00:00",
+      "duration_seconds": 2.012587417004397,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61694611456,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/23.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/23.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-jadx-render"
+    },
+    {
+      "index": 24,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "-encoding",
+        "UTF-8",
+        "-g:none",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-proc:none",
+        "-implicit:none",
+        "-classpath",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/jadx/classes",
+        "-d",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/jadx/classes",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/jadx/sources/DiscardedCallSourceProbe.java",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/jadx/sources/DiscardedCallSourceProbeRunner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:26.495778+00:00",
+      "duration_seconds": 1.0072112919879146,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61694562304,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/24.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/24.stderr.raw",
+          "bytes": 492,
+          "sha256": "d37fd38a48f588357d5273c3c8f1dc6918e3c81e809bbc5741d1b5cf9da5df81"
+        }
+      },
+      "label": "javac23-jadx-compile"
+    },
+    {
+      "index": 25,
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/javac23/jadx/classes",
+        "discardprobe.DiscardedCallSourceProbeRunner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:12:27.504290+00:00",
+      "duration_seconds": 1.0116977090074215,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 61694472192,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/25.stdout.raw",
+          "bytes": 124,
+          "sha256": "a5c1c405e6641e3c37ad569826b95468616113cfb9ab0396faeecf7d6277064b"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/candidate-replay-root-v2/25.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "label": "javac23-jadx-runtime"
+    }
+  ],
+  "collector_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/collect-candidate-root-v2.py",
+  "collector_sha256": "cb9b4e852ac91fb3fa494d122520651ef1488d7e92d19d233b70458cc907d028",
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-proved-discarded-call-cli-v1",
+    "sha256": "251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde",
+    "mode": "0555"
+  },
+  "metadata_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-cli-v1.json",
+  "metadata_sha256": "da278c04dab628ed5365c77901bed0843c02510cba56d40e58af9f7e1775ebb3",
+  "build_result_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/validation-build-root-v1/execution.json",
+  "build_result_sha256": "6a2d86b1f35b14ff4aa62c88238a00c6a517df43554bf4ef320d224c03df187c",
+  "source_commit_base": "7a1ca930fc6178613df5df86145fff846c79791c",
+  "baseline_execution_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/execution.json",
+  "baseline_execution_sha256": "48a675bf6bf2ffc2c58b8a8ac0e90cad69e5077730a2470ed23f4b52639dbd1e",
+  "baseline_acceptance_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/baseline-root-v1/acceptance-root-v1.json",
+  "baseline_acceptance_sha256": "b2819eb2632925696a117528634468e73f0834ecef28e0d34c248bc82723e717",
+  "baseline_class_json_sha256": {
+    "javac8/default/class.json": "3b0f64210c612ac1608d33347b4e27489f3025edfeaa504ae42f8fea74ae53f0",
+    "javac8/all/class.json": "48f005adce08cd873fa9a23054a4f26c8a4ae8d21a6c66c4e43aaa9c7ae3791a",
+    "javac23/default/class.json": "0965dfc297f68098d82b97644f4dcb05dcdca0b89e9d2d8066ecf3ffbc48d139",
+    "javac23/all/class.json": "ce8e474b724b9e24c80048b6ba297612ddaf564a98e4164c35c11bb0d7c3a356"
+  },
+  "original_inputs": {
+    "DiscardedCallSourceProbe.java": "2f067f8110639ab68467a397c21824eabb8bc434cd1376c8a57369d2ffbdf1ea",
+    "DiscardedCallSourceProbeRunner.java": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+    "ProbePop2.java": "914f126077bf34d9551ce9afd9b4f66eb0033f059a9d158da0b3092dcf68d630"
+  },
+  "jadx": {
+    "path": "/opt/homebrew/bin/jadx",
+    "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+  },
+  "legs": {
+    "javac8": {
+      "java_home": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "tools": {
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+        },
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      },
+      "original": {
+        "compile_index": 0,
+        "classes": {
+          "discardprobe/DiscardedCallSourceProbe.class": {
+            "length": 979,
+            "sha256": "347b1678d4fc3cd6dd168336eccdf354ecc12f61f804c0c36406bbdeee43fa6c",
+            "blake3": "7e0429cfcefdd2a3c73f373d084f9e7b3dfedac335711f23b075dfa84200122b"
+          },
+          "discardprobe/DiscardedCallSourceProbeRunner.class": {
+            "length": 1449,
+            "sha256": "b8ec35a7a11d260cfefc7f2695999bdba6017d97c8498cf42c0f7219034b7352",
+            "blake3": "cf998e79bedc48a1c37a73fc3892d9f11987be975a0fcb8598514a3959fcebc7"
+          },
+          "discardprobe/ProbePop2.class": {
+            "length": 244,
+            "sha256": "83901804da90811f6b672df84cb03cbe7dba36e20cc6b67b1d97549921cf5da2",
+            "blake3": "5d0b23f4394f48db2b0a759c6ec2a2b58af723e31e4a12c0e4fefb360ac302f2"
+          }
+        },
+        "DiscardedCallSourceProbe_javap_index": 1,
+        "ProbePop2_javap_index": 2,
+        "runtime_index": 3
+      },
+      "profiles": {
+        "default": {
+          "render_index": 4,
+          "compile_index": 5,
+          "runtime_index": 6,
+          "generated_source_sha256": "8d14cea85518b9b143fb76da0cc5d223c6baeecff32198acec1efc5b28f41853",
+          "runner_sha256": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+          "classes": {
+            "discardprobe/DiscardedCallSourceProbe.class": {
+              "length": 955,
+              "sha256": "2d9bb7a056b90bbf8b6cd1cfc1fa6c1bef64d1e696ad3d6fe41a7b9e9d1e88f1",
+              "blake3": "39ae54b2b9385414f10013d8048fa0679ab5d21387d93f339b82602f42d45e7c"
+            },
+            "discardprobe/DiscardedCallSourceProbeRunner.class": {
+              "length": 1449,
+              "sha256": "b8ec35a7a11d260cfefc7f2695999bdba6017d97c8498cf42c0f7219034b7352",
+              "blake3": "cf998e79bedc48a1c37a73fc3892d9f11987be975a0fcb8598514a3959fcebc7"
+            }
+          }
+        },
+        "all": {
+          "render_index": 7,
+          "compile_index": 8,
+          "runtime_index": 9,
+          "generated_source_sha256": "8d14cea85518b9b143fb76da0cc5d223c6baeecff32198acec1efc5b28f41853",
+          "runner_sha256": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+          "classes": {
+            "discardprobe/DiscardedCallSourceProbe.class": {
+              "length": 955,
+              "sha256": "2d9bb7a056b90bbf8b6cd1cfc1fa6c1bef64d1e696ad3d6fe41a7b9e9d1e88f1",
+              "blake3": "39ae54b2b9385414f10013d8048fa0679ab5d21387d93f339b82602f42d45e7c"
+            },
+            "discardprobe/DiscardedCallSourceProbeRunner.class": {
+              "length": 1449,
+              "sha256": "b8ec35a7a11d260cfefc7f2695999bdba6017d97c8498cf42c0f7219034b7352",
+              "blake3": "cf998e79bedc48a1c37a73fc3892d9f11987be975a0fcb8598514a3959fcebc7"
+            }
+          }
+        },
+        "jadx": {
+          "render_index": 10,
+          "compile_index": 11,
+          "runtime_index": 12,
+          "generated_source_sha256": "48c02db8db2f2f87c7ff6b39cdc0cb979d520bd00df0690fbccc8139f2256eda",
+          "runner_sha256": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+          "classes": {
+            "discardprobe/DiscardedCallSourceProbe.class": {
+              "length": 814,
+              "sha256": "2d19b856ec525826dc689e1d41fc7509b93ce05f15cd894562ea8aeae363953c",
+              "blake3": "9f0fef4e4e4a783bae8f508ca389fead4f2367836d483c35256afa78d2999b98"
+            },
+            "discardprobe/DiscardedCallSourceProbeRunner.class": {
+              "length": 1449,
+              "sha256": "b8ec35a7a11d260cfefc7f2695999bdba6017d97c8498cf42c0f7219034b7352",
+              "blake3": "cf998e79bedc48a1c37a73fc3892d9f11987be975a0fcb8598514a3959fcebc7"
+            }
+          }
+        }
+      }
+    },
+    "javac23": {
+      "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "tools": {
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      },
+      "original": {
+        "compile_index": 13,
+        "classes": {
+          "discardprobe/DiscardedCallSourceProbe.class": {
+            "length": 979,
+            "sha256": "e913b22b36d114a1eb675459d72e5df8533d5221159388bcba2f5ad4c5504ecb",
+            "blake3": "8282057a2be25b6c8d8dfa2f15151442d2bd396bed83bb6924ce58e0360e33a3"
+          },
+          "discardprobe/DiscardedCallSourceProbeRunner.class": {
+            "length": 1446,
+            "sha256": "d9fd9492914bade2bf09693773ce702d873896b46984288925618311516c0120",
+            "blake3": "ef47230c2ee41519ae558f35c177059fad452095c455b4709ff7b4d9d9c56b9c"
+          },
+          "discardprobe/ProbePop2.class": {
+            "length": 244,
+            "sha256": "ea2d95ff242bba7ac66f7693b8a21dcca18e86d976be81728a6304d27e173e85",
+            "blake3": "e98fa1e7b2efc8c7b86dc38ee830e93e3c917d8406fdd59118d5429670ce258c"
+          }
+        },
+        "DiscardedCallSourceProbe_javap_index": 14,
+        "ProbePop2_javap_index": 15,
+        "runtime_index": 16
+      },
+      "profiles": {
+        "default": {
+          "render_index": 17,
+          "compile_index": 18,
+          "runtime_index": 19,
+          "generated_source_sha256": "8d14cea85518b9b143fb76da0cc5d223c6baeecff32198acec1efc5b28f41853",
+          "runner_sha256": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+          "classes": {
+            "discardprobe/DiscardedCallSourceProbe.class": {
+              "length": 955,
+              "sha256": "be8160ba9fab4df61cbeaf997cc977655ac033d0f88aee4fba3749bbf6a21d4f",
+              "blake3": "fcfb069903fcab79133e809b1f747a364a06de30dd2c792ae0d84fd66fe71ad5"
+            },
+            "discardprobe/DiscardedCallSourceProbeRunner.class": {
+              "length": 1446,
+              "sha256": "d9fd9492914bade2bf09693773ce702d873896b46984288925618311516c0120",
+              "blake3": "ef47230c2ee41519ae558f35c177059fad452095c455b4709ff7b4d9d9c56b9c"
+            }
+          }
+        },
+        "all": {
+          "render_index": 20,
+          "compile_index": 21,
+          "runtime_index": 22,
+          "generated_source_sha256": "8d14cea85518b9b143fb76da0cc5d223c6baeecff32198acec1efc5b28f41853",
+          "runner_sha256": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+          "classes": {
+            "discardprobe/DiscardedCallSourceProbe.class": {
+              "length": 955,
+              "sha256": "be8160ba9fab4df61cbeaf997cc977655ac033d0f88aee4fba3749bbf6a21d4f",
+              "blake3": "fcfb069903fcab79133e809b1f747a364a06de30dd2c792ae0d84fd66fe71ad5"
+            },
+            "discardprobe/DiscardedCallSourceProbeRunner.class": {
+              "length": 1446,
+              "sha256": "d9fd9492914bade2bf09693773ce702d873896b46984288925618311516c0120",
+              "blake3": "ef47230c2ee41519ae558f35c177059fad452095c455b4709ff7b4d9d9c56b9c"
+            }
+          }
+        },
+        "jadx": {
+          "render_index": 23,
+          "compile_index": 24,
+          "runtime_index": 25,
+          "generated_source_sha256": "48c02db8db2f2f87c7ff6b39cdc0cb979d520bd00df0690fbccc8139f2256eda",
+          "runner_sha256": "180f520e94f7250fbbf0a96699376e5878cdc8418e78fa4a90cf738aee5155b5",
+          "classes": {
+            "discardprobe/DiscardedCallSourceProbe.class": {
+              "length": 814,
+              "sha256": "0c9eaaf7dc4d5671c6f5250bd7eacdde22e935c5c7cc9988664f398f0c5f2ec4",
+              "blake3": "b601c37b36c4fbe903603a231dbf709b31394af0bacc16a0c747b3bec50c4972"
+            },
+            "discardprobe/DiscardedCallSourceProbeRunner.class": {
+              "length": 1446,
+              "sha256": "d9fd9492914bade2bf09693773ce702d873896b46984288925618311516c0120",
+              "blake3": "ef47230c2ee41519ae558f35c177059fad452095c455b4709ff7b4d9d9c56b9c"
+            }
+          }
+        }
+      }
+    }
+  },
+  "guard": {
+    "template_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "template_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824
+  },
+  "environment": {
+    "stripped_keys": [
+      "JAVA_TOOL_OPTIONS",
+      "_JAVA_OPTIONS",
+      "JDK_JAVA_OPTIONS",
+      "CLASSPATH"
+    ],
+    "overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "LC_ALL": "C"
+  }
+}

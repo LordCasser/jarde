@@ -1,0 +1,3 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 10.38s
+[1m[92m     Running[0m tests/proved_discarded_call_origins.rs (target/debug/deps/proved_discarded_call_origins-7c6cb333c734b7c5)

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T19:10:04.610597+00:00",
+  "duration_seconds": 2.145918875001371,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-discarded-call-origins/results/run-pop2-controls-root-v1.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 3736,
+      "sha256": "cd3064a6172ef40067721f1f3e236d162c96ea4e90ab78e3130e1f2aa2537b9b"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

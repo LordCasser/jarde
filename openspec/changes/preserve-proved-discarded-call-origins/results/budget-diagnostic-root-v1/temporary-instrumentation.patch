@@ -1,0 +1,10 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -26719,6 +26719,7 @@
+     fn call_statement_origin(&mut self, call_bci: u32) -> Result<OriginSet, StopReason> {
+         let mut origin = OriginSet::new(Origin::direct(call_bci));
+         if let Some(pop_bci) = self.pops().discards.get(&call_bci).copied() {
++            eprintln!("ROOT_POP_BUDGET call={call_bci} pop={pop_bci} prefix={}", self.budget.usage().analysis_steps);
+             poll(self.budget, Some(pop_bci))?;
+             charge(
+                 self.budget,

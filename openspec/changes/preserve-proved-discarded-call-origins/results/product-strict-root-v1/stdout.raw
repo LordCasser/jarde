@@ -1,0 +1,2514 @@
+{
+  "items": [
+    {
+      "id": "add-demand-driven-core-results",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 28
+    },
+    {
+      "id": "add-parallel-bulk-recovery",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 25
+    },
+    {
+      "id": "align-class-source-test-callers",
+      "type": "change",
+      "valid": true,
+      "issues": [
+        {
+          "level": "INFO",
+          "path": "file",
+          "message": "skip_specs is set in .openspec.yaml: change declares no spec-level behavior changes, zero deltas accepted"
+        }
+      ],
+      "durationMs": 6
+    },
+    {
+      "id": "analysis-contracts",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 2
+    },
+    {
+      "id": "artifact-snapshots",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "artifact-views",
+      "type": "spec",
+      "valid": true,
+      "issues": [
+        {
+          "level": "INFO",
+          "path": "requirements[1]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[2]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[3]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        }
+      ],
+      "durationMs": 1
+    },
+    {
+      "id": "assemble-proved-interface-abstract-member-pair",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 12
+    },
+    {
+      "id": "assemble-proved-member-class-family",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 12
+    },
+    {
+      "id": "assemble-proved-static-member-declaration-only",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 10
+    },
+    {
+      "id": "audit-corpus-gates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 9
+    },
+    {
+      "id": "classfile-inspection",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "compose-constructed-reference-array-elements",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "conservative-output",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "debox-proved-wrapper-return-boxing",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "demand-resolver",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "facts-cache",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 1
+    },
+    {
+      "id": "fix-descriptor-slot-facts",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 9
+    },
+    {
+      "id": "inline-proved-anonymous-interface",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "inline-proved-anonymous-super-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "inline-proved-nested-anonymous-interfaces",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "inline-proved-this-local-alias",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 8
+    },
+    {
+      "id": "java8-recovery",
+      "type": "spec",
+      "valid": true,
+      "issues": [
+        {
+          "level": "INFO",
+          "path": "requirements[0]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[4]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[7]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[8]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[10]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[11]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        }
+      ],
+      "durationMs": 0
+    },
+    {
+      "id": "jvm-ir",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "make-required-conversions-explicit",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 8
+    },
+    {
+      "id": "measured-execution",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "modern-classfile-semantics",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 1
+    },
+    {
+      "id": "optimize-demand-workloads",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "own-proved-loop-terminal-return",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "own-proved-shared-early-return-tail",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "performance-gates",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "present-proved-java-structure",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "present-proved-static-member-class",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-array-invocation-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-bound-reference-creation-timing",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "preserve-carried-conditional-invocation-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "preserve-deferred-value-order",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "preserve-export-first-stop",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-guarded-return-expression",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-invocation-argument-types",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-lambda-descriptor-adaptation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-list-iterable-invocation-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-local-scope-across-exception-regions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-monitor-exit-evaluation-order",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "preserve-nonfinal-static-initializer-phase",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "preserve-popped-static-qualifiers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-postfix-fallback-soundness",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-proved-discarded-call-origins",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-proved-for-latch-origins",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-proved-if-arm-join-origins",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-proved-loop-latch-origins",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-proved-reference-overload-binding",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "preserve-proved-return-arm-loop-latch-origins",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "preserve-region-fallback-instruction-origins",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "preserve-special-call-dispatch",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "preserve-type-qualifier-bindings",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "project-multiple-enum-switch-sites",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "project-proved-assert-statements",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "project-proved-bridge-forwards",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "project-proved-direct-override-annotation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "project-proved-enhanced-for-loops",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "project-proved-enum-switch-labels",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "project-proved-outer-super-bridges",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "project-proved-platform-iterable-owners",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "project-proved-wrapped-array-elements",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "promote-proved-class-static-field-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "propagate-value-rendering-stops",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "prove-enum-int-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "prove-generic-field-write-source-types",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "prove-interface-super-source-legality",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "prove-narrow-numeric-conditional-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "prove-outer-super-overload-binding",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "prune-proved-foreach-cache-declarations",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "query-api",
+      "type": "spec",
+      "valid": true,
+      "issues": [
+        {
+          "level": "INFO",
+          "path": "requirements[1]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        }
+      ],
+      "durationMs": 0
+    },
+    {
+      "id": "recover-anonymous-local-decl-site",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-anonymous-mixed-super-capture",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-anonymous-parameterized-root",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-anonymous-supertype-return",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "recover-array-element-field-receiver",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "recover-array-initializer-value-positions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-array-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-array-slot-retype-locals",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-arraylength-loop-condition",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-assert-statement-sugar",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-bigdecimal-number-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-bitwise-expressions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-boolean-array-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-boolean-array-stores",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-boolean-field-stores",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-boolean-int-bitwise-operands",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-boxed-number-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-boxed-sam-adaptations",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-branching-guard-body",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-bridge-admission-gates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-bridge-superclass-header-precondition",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-capture-ctor-super-order",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-catch-loop-shared-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-catch-value-field-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-caught-value-argument-typing",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-chained-field-assignment",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-charsequence-argument-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-class-annotation-uses",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-class-literals",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-class-scope-constructor-parameters",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-class-type-variable-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-committed-local-multireads",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-common-instance-array-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-comparable-argument-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-compound-lvalue-updates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-concat-constructor-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-concat-saved-shared-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-conditional-field-writes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-conditional-finally-copies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-conditional-rhs-field-compound",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-conditional-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-constructor-predicate-loop-exits",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-constructor-primitive-conversion-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-covariant-array-store-receiver",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-covariant-child-array-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-crossing-array-read-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-ctor-reorder-dispatch-guard",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-discarded-allocation-statement",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-disjunctive-field-writes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-divergent-ternary-statement-split",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-do-while-body-transfers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-double-brace-allocation-site",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-dt29-fieldcast-family",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-dup-store-conditional",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-effectful-dual-loop-exits",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-empty-catch-call-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-enclosing-catch-call-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-enclosing-named-catch",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-enum-argument-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-enum-mixed-constant-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-enum-string-field-name-generalization",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-enum-user-initializer-suffix",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-exception-only-catchall",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-explicit-reference-casts",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-final-static-field-writes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-fixture-behavior-guard-coverage",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-flag-conditional-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-floating-annotation-defaults",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-floating-point-constants",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-fold-context-projection-preservation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-fragmented-loop-catches",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-functional-constructor-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-generic-enclosing-member-call-sites",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-generic-method-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-handler-loop-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-heterogeneous-array-init",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-init-block-return-suppression",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-inline-conditional-concat-operands",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-inner-class-instance-folding",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-inner-class-static-mixed-folding",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-instance-field-assignment-chains",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-instanceof-expressions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-int-array-constant-names",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-int-field-multiply-updates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-integer-boolean-returns",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-interface-field-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-intermediate-join-conditional-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-io-resource-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-javac8-allocation-qualifier-null-check",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-javac8-getclass-null-check-idiom",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-labeled-loop-tail-coverage",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "recover-lambda-inline-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-lambda-primitive-array-capture",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-lambda-synthetic-helpers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-local-null-conditional-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-local-postfix-array-elements",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-lock-guard-loop-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-loop-arm-join-continuation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-loop-body-double-jumps",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-loop-body-try-catch",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-loop-else-if-early-returns",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-loop-test-copy-store",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-member-annotation-uses",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-member-class-static-folding",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-mixed-short-circuit-array-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-mixed-short-circuit-field-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-mixed-short-circuit-instance-field-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-multi-resource-twr",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "recover-multi-return-loop-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-named-row-crossing-locals",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-narrow-array-stores",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-narrow-field-stores",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-narrow-integer-returns",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-nested-annotation-defaults",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-nested-array-initializers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-nested-class-literal-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-cleanup-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-conditional-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-ctor-argument-sites",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-effectful-loop-arm",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-enum-constant-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-finally-append-exits",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-generic-class-headers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-nested-int-array-compound-updates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-nested-lock-finally-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-nested-monitor-regions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-string-switch-arm-continuation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nested-type-source-spelling",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-no-body-generic-method-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-nonloop-labeled-blocks",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-null-lead-straight-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-null-resource-headers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-nullable-resource-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-numeric-comparison-conditions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-ordinary-parameterized-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-parameterized-interface-headers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-partial-array-allocations",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-platform-collection-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-platform-interface-argument-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-postfix-condition-positions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-postfix-lvalue-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-postfix-old-value-snapshot",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-preceded-statement-catches",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-precise-rethrow",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-prefixed-one-arm-loops",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-primitive-conversions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-private-field-owner-casts",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-proved-anonymous-init-block",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-anonymous-inner-this",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-anonymous-local-capture",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-body-generic-throws",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-body-method-local-generic-throws",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-byte-conditional-invocation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-captured-lambda-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-conditional-switch-fallthrough",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-debug-diamond-local",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-direct-parameterized-superclass",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-proved-early-return-predicate-tail",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-enum-arbitrary-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-enum-constant-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-enum-constants",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-enum-constructor-delegation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-enum-string-varargs",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-field-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-finally-cleanup",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-generic-constructor-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-generic-member-call-sites",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-generic-null-return",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-generic-outer-member-family",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-generic-static-member",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-generic-throws",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-inline-string-char-array",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-integer-constant-names",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-local-assignments-in-conditions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-local-source-types",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-long-field-assignment-result",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-loop-exit-gateways",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-member-inner-construction",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-proved-method-parameters",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-proved-nested-annotation-source",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-proved-nested-enum-source",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-nested-int-conditional-return",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-proved-nonnull-bound-receivers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-package-info-source",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-parameterized-null-return",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-plain-enum-arities",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-static-method-local-generic-throws",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-proved-string-arg-enum-constant-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-varargs-calls",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-proved-wildcard-void-parameters",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-qualified-super-default-calls",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-qualified-type-use-annotations",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-raw-receiver-field-selection",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-ref-eq-boolean-argument",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-reifiable-wildcard-array-return-signatures",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 8
+    },
+    {
+      "id": "recover-return-in-do-while-false",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-return-through-effectful-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-returned-int-array-compound-updates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-same-class-generic-bindings",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-same-class-generic-call-consumers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 7
+    },
+    {
+      "id": "recover-same-package-parent-field-writes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-saved-return-value-typing",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-scv-concat-consumers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-segmented-finally-exits",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-segmented-null-lead-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shadowed-method-type-parameters",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shared-catchall-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shared-field-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shared-join-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shared-latch-nested-loops",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shared-terminal-boolean-returns",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-shift-expressions",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-short-circuit-field-chains",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-short-circuit-invocation-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-short-circuit-local-branch-reads",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-short-circuit-local-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-short-circuit-return-values",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-short-circuit-transfer-gateways",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-single-static-interface-fold",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-snapshot-hierarchy-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-statement-position-news",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-static-generic-field-init-text",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-static-initializer-completion",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-string-switch",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-string-ternary-enum-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-structured-finally-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-switch-arm-loop-exits",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-switch-case-nonlocal-exits",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-switch-inside-named-catch",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-switch-local-join-before-loop-continue",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-synchronized-multi-exit",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-synthetic-ctor-super-order",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-temporal-argument-widening",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-ternary-enum-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-throw-statements",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-throwable-wrap-arguments",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-transparent-empty-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-two-catch-return-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-two-level-effectful-loop-join",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recover-twr-direct-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-twr-inner-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-twr-javac8-close-sequence",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-twrcall-statement-bodies",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "recover-typed-catch-boundary-return",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 6
+    },
+    {
+      "id": "recover-typed-functional-method-references",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-unary-negation",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-unicode-identifiers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-varargs-array-ctor-args",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "recover-void-loop-finally",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 8
+    },
+    {
+      "id": "recover-write-accessor-field-types",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "recovery-validation",
+      "type": "spec",
+      "valid": true,
+      "issues": [
+        {
+          "level": "INFO",
+          "path": "requirements[0]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[3]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[5]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[7]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        },
+        {
+          "level": "INFO",
+          "path": "requirements[8]",
+          "message": "Requirement text is very long (>500 characters). Consider breaking it down."
+        }
+      ],
+      "durationMs": 0
+    },
+    {
+      "id": "refuse-overlapping-region-ownership",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "refuse-unconsumed-construction-invokes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "report-committed-field-presentations",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 4
+    },
+    {
+      "id": "reuse-selected-class-read",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 9
+    },
+    {
+      "id": "runtime-dispatch-queries",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 1
+    },
+    {
+      "id": "semantic-query-plugins",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "separate-reused-local-lifetimes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "simplify-proved-boolean-conditional-returns",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "simplify-proved-boolean-xor-literal",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "source-maps",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "spell-annotation-type-headers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 3
+    },
+    {
+      "id": "spell-proved-else-if-chain",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "spell-proved-field-unit-updates",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 11
+    },
+    {
+      "id": "spell-proved-member-local-types",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 5
+    },
+    {
+      "id": "spell-the-instance-receiver-as-this",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 11
+    },
+    {
+      "id": "split-proved-monitor-slot-reuse",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 11
+    },
+    {
+      "id": "split-proved-reference-slot-lifetimes",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 11
+    },
+    {
+      "id": "structural-xref",
+      "type": "spec",
+      "valid": true,
+      "issues": [],
+      "durationMs": 0
+    },
+    {
+      "id": "type-immediate-functional-receivers",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 11
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 343,
+      "passed": 343,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 325,
+        "passed": 325,
+        "failed": 0
+      },
+      "spec": {
+        "items": 18,
+        "passed": 18,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0",
+  "root": {
+    "path": "/Users/lordcasser/workspace/projects/jarde",
+    "source": "nearest"
+  }
+}

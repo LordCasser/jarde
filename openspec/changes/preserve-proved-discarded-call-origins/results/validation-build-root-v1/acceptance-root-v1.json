@@ -1,0 +1,21 @@
+{
+  "schema": "discarded-call-local-validation-root-acceptance-v1",
+  "status": "accepted-local-validation-only",
+  "commands": 12,
+  "tests": [
+    639,
+    0,
+    0
+  ],
+  "peak_target_bytes": 701811680,
+  "pin_groups": {
+    "candidate_sources": 17,
+    "test_sources": 8,
+    "canonical_files": 47
+  },
+  "cli_sha256": "251d3d4e77773a6783df6a10564ad8cf82e67f1405ccd424558f1a0ee5e6bcde",
+  "metadata_sha256": "da278c04dab628ed5365c77901bed0843c02510cba56d40e58af9f7e1775ebb3",
+  "build_sha256": "6a2d86b1f35b14ff4aa62c88238a00c6a517df43554bf4ef320d224c03df187c",
+  "own_product_ci": "pending",
+  "complete_replay": "pending"
+}

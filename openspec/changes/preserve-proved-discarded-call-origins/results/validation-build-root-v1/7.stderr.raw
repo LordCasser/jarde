@@ -1,0 +1,3 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.51s
+[1m[92m     Running[0m tests/p3_loop_arm_join.rs (target/debug/deps/p3_loop_arm_join-66a3ef75e4ea1e16)

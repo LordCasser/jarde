@@ -1,0 +1,5 @@
+[
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-discarded-call-origins/results/run-pop2-controls-root-v1.py"
+]

@@ -1,0 +1,18 @@
+[
+  "uv",
+  "run",
+  "--offline",
+  "--with",
+  "blake3",
+  "python",
+  "-B",
+  "openspec/changes/preserve-proved-discarded-call-origins/results/collect-candidate-root-v2.py",
+  "--cli",
+  "/private/tmp/jarde-proved-discarded-call-cli-v1",
+  "--metadata",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/candidate-cli-v1.json",
+  "--build",
+  "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/validation-build-root-v1/execution.json",
+  "--source-base",
+  "7a1ca930fc6178613df5df86145fff846c79791c"
+]

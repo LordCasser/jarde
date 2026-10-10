@@ -1,0 +1,13 @@
+
+running 8 tests
+test a_discarded_call_body_presents_the_call_statement ... ok
+test a_result_the_source_receives_keeps_the_assignment_channel ... ok
+test a_stopped_or_cancelled_run_publishes_no_partial_pop_body ... ok
+test the_negative_refusal_is_the_guard_body_diagnostic_at_the_body_bci ... ok
+test the_recovered_classes_compile_and_run_the_original_paths ... ok
+test the_variant_family_presents_every_discarded_call_shape ... ok
+test the_void_call_controls_keep_their_exact_text ... ok
+test verifier_valid_pop_shapes_outside_the_criterion_keep_the_body_refusal ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.43s
+

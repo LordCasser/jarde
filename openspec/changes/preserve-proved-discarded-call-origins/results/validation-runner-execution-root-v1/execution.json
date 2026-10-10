@@ -1,0 +1,38 @@
+{
+  "utc": "2026-10-10T19:08:06.526077+00:00",
+  "duration_seconds": 173.86231229201076,
+  "argv": [
+    "python",
+    "-B",
+    "openspec/changes/preserve-proved-discarded-call-origins/results/run-validation-build-root-v1.py",
+    "--source-base",
+    "7a1ca930fc6178613df5df86145fff846c79791c",
+    "--expected-lib-count",
+    "337",
+    "--expected-origin-test-count",
+    "5",
+    "--new-test-name",
+    "frozen_probe_has_exact_identity",
+    "--new-test-name",
+    "proved_static_virtual_and_interface_call_pops_map_to_complete_statements",
+    "--new-test-name",
+    "consumed_and_local_deferred_calls_keep_their_existing_body_and_map",
+    "--new-test-name",
+    "exact_pop_charge_and_cancel_publish_no_partial_statement",
+    "--new-test-name",
+    "wide_pop2_is_not_attached_to_a_call_statement"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 16295,
+      "sha256": "56372a06c4e6ac2ad282b477c07f3bce62fd1d85d456218e629686a1aeb1d42b"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

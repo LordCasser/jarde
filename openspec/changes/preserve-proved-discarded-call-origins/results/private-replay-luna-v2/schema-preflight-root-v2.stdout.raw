@@ -1,0 +1,151 @@
+{
+  "schema": "discarded-call-replay-json-schema-preflight-root-v2",
+  "status": "pure-json-schema-assertions-passed",
+  "baseline_execution_sha256": "48a675bf6bf2ffc2c58b8a8ac0e90cad69e5077730a2470ed23f4b52639dbd1e",
+  "baseline_acceptance_sha256": "b2819eb2632925696a117528634468e73f0834ecef28e0d34c248bc82723e717",
+  "baseline_class_json_sha256": {
+    "javac8/default/class.json": "3b0f64210c612ac1608d33347b4e27489f3025edfeaa504ae42f8fea74ae53f0",
+    "javac8/all/class.json": "48f005adce08cd873fa9a23054a4f26c8a4ae8d21a6c66c4e43aaa9c7ae3791a",
+    "javac23/default/class.json": "0965dfc297f68098d82b97644f4dcb05dcdca0b89e9d2d8066ecf3ffbc48d139",
+    "javac23/all/class.json": "ce8e474b724b9e24c80048b6ba297612ddaf564a98e4164c35c11bb0d7c3a356"
+  },
+  "baseline_commands": 26,
+  "baseline_methods_per_profile": 7,
+  "baseline_missing_by_profile": {
+    "javac8/default": {
+      "discardStatic": [
+        4
+      ],
+      "discardAppend": [
+        13
+      ],
+      "discardListAdd": [
+        15
+      ]
+    },
+    "javac8/all": {
+      "discardStatic": [
+        4
+      ],
+      "discardAppend": [
+        13
+      ],
+      "discardListAdd": [
+        15
+      ]
+    },
+    "javac23/default": {
+      "discardStatic": [
+        4
+      ],
+      "discardAppend": [
+        13
+      ],
+      "discardListAdd": [
+        15
+      ]
+    },
+    "javac23/all": {
+      "discardStatic": [
+        4
+      ],
+      "discardAppend": [
+        13
+      ],
+      "discardListAdd": [
+        15
+      ]
+    }
+  },
+  "actual_method_entry_identity_path": "methods[].item.identity",
+  "actual_report_method_type": "string name+descriptor",
+  "actual_report_has_fallbacks": true,
+  "actual_entry_text_type": "string",
+  "actual_origin_fields": [
+    "bci",
+    "cp",
+    "method",
+    "provenance"
+  ],
+  "derived_origin_sample": {
+    "bci": 10,
+    "cp": null,
+    "method": {
+      "descriptor": [
+        40,
+        76,
+        106,
+        97,
+        118,
+        97,
+        47,
+        108,
+        97,
+        110,
+        103,
+        47,
+        83,
+        116,
+        114,
+        105,
+        110,
+        103,
+        59,
+        41,
+        76,
+        106,
+        97,
+        118,
+        97,
+        47,
+        108,
+        97,
+        110,
+        103,
+        47,
+        83,
+        116,
+        114,
+        105,
+        110,
+        103,
+        59
+      ],
+      "name": [
+        100,
+        105,
+        115,
+        99,
+        97,
+        114,
+        100,
+        76,
+        105,
+        115,
+        116,
+        65,
+        100,
+        100
+      ],
+      "owner": {
+        "class_bytes": {
+          "digest": "8282057a2be25b6c8d8dfa2f15151442d2bd396bed83bb6924ce58e0360e33a3",
+          "length": 979
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "8282057a2be25b6c8d8dfa2f15151442d2bd396bed83bb6924ce58e0360e33a3"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      }
+    },
+    "provenance": "Derived"
+  },
+  "validation_runner_path": "/private/tmp/jarde-discarded-call-validation-luna-v1/run-validation-build-root-v1.py",
+  "validation_cli_path": "/private/tmp/jarde-proved-discarded-call-cli-v1",
+  "collector_ast": "passed",
+  "verifier_ast": "passed",
+  "toolchain_executed": false
+}

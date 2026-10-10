@@ -1,0 +1,15 @@
+--- a/crates/jarde-java/tests/proved_discarded_call_origins.rs
++++ b/crates/jarde-java/tests/proved_discarded_call_origins.rs
+@@ -524,3 +524,12 @@
+     );
+     assert!(deferred.source_map.derived_of_bci(1).is_empty());
+ }
++
++#[test]
++fn root_temporary_fresh_recovery_budget_trace() {
++    let (report, _) = recover_class_method_with_budget(
++        PROBE_CLASS, "discardprobe/DiscardedCallSourceProbe", "discardStatic", "(Z)V",
++        RecoveryEvidenceRequest::all(), Some(Budget::new(limits())),
++    );
++    assert!(report.produced(), "{:?}", report.outcome);
++}

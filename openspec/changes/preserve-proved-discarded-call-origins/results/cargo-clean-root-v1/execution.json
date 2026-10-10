@@ -1,0 +1,50 @@
+{
+  "schema": "discarded-call-cargo-clean-root-v1",
+  "status": "cleaned",
+  "command": {
+    "index": 0,
+    "argv": [
+      "cargo",
+      "clean"
+    ],
+    "cwd": "/Users/lordcasser/workspace/projects/jarde",
+    "started_at": "2026-10-10T19:08:49.932450+00:00",
+    "duration_seconds": 1.0446609170176089,
+    "exit_code": 0,
+    "guard_stop": null,
+    "peak_target_bytes": 701811680,
+    "free_bytes_after": 61358141440,
+    "env_overrides": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "RUST_TEST_THREADS": "1",
+      "CARGO_TERM_COLOR": "always"
+    },
+    "test_summary_check": {
+      "expected": null,
+      "actual": [],
+      "required": false,
+      "required_gateway_tests": [],
+      "required_gateway_tests_present": null,
+      "required_boolean_loop_tests": [],
+      "required_boolean_loop_tests_present": null,
+      "ok": true,
+      "failure_reason": null
+    },
+    "streams": {
+      "stdout": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/cargo-clean-root-v1/0.stdout.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-discarded-call-origins/results/cargo-clean-root-v1/0.stderr.raw",
+        "bytes": 53,
+        "sha256": "086c842c3d900c0ef456012284d7440d6a6169db7f8d58cf52f4c09b6f61359e"
+      }
+    }
+  },
+  "target_absent": true
+}

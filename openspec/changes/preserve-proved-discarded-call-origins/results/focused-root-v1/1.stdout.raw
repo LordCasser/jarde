@@ -1,0 +1,8 @@
+
+running 3 tests
+test consumed_and_local_deferred_calls_keep_their_existing_body_and_map ... ok
+test frozen_probe_has_exact_identity ... ok
+test proved_static_virtual_and_interface_call_pops_map_to_complete_statements ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

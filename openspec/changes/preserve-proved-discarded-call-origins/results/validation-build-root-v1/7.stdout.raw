@@ -1,0 +1,9 @@
+
+running 4 tests
+test a_second_loop_entry_or_different_exit_keeps_the_method_quoted ... ok
+test budget_and_cancellation_do_not_publish_a_partial_loop_arm ... ok
+test extra_loop_transfers_do_not_claim_the_inner_join_tail ... ok
+test loop_arm_joins_before_the_outer_arm_tail_once ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

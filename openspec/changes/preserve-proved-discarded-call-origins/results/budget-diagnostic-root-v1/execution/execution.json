@@ -1,0 +1,141 @@
+{
+  "schema": "discarded-call-origins-focused-root-v1",
+  "runner_sha256": "c62c9115ab511c3c0f461aa12db68834e694b7f62c79da353443f669e01a85af",
+  "guards": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:01:19.833384+00:00",
+      "duration_seconds": 3.0451855409774,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 203641759,
+      "free_bytes_after": 67520548864,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": null,
+        "actual": [],
+        "required": false,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/budget-diagnostic-root-v1/execution/0.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/budget-diagnostic-root-v1/execution/0.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde-java",
+        "--test",
+        "proved_discarded_call_origins",
+        "--locked",
+        "root_temporary_fresh_recovery_budget_trace",
+        "--",
+        "--nocapture"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "started_at": "2026-10-10T19:01:22.883725+00:00",
+      "duration_seconds": 10.10826075001387,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 203643881,
+      "free_bytes_after": 67519721472,
+      "env_overrides": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "RUST_TEST_THREADS": "1",
+        "CARGO_TERM_COLOR": "always"
+      },
+      "test_summary_check": {
+        "expected": [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "actual": [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        "required": true,
+        "required_gateway_tests": [],
+        "required_gateway_tests_present": null,
+        "required_boolean_loop_tests": [],
+        "required_boolean_loop_tests_present": null,
+        "ok": true,
+        "failure_reason": null
+      },
+      "streams": {
+        "stdout": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/budget-diagnostic-root-v1/execution/1.stdout.raw",
+          "bytes": 167,
+          "sha256": "b8ed1a09d92644dbaf1442f919d5f1f7d4c7e5aa858afaa2405c0f04ea0444ba"
+        },
+        "stderr": {
+          "path": "openspec/changes/preserve-proved-discarded-call-origins/results/budget-diagnostic-root-v1/execution/1.stderr.raw",
+          "bytes": 353,
+          "sha256": "d19d7e4a31143300874cc689061d12bb65b31fd1721523ef949f15e2a17b6cd3"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "jdk23": {
+    "manifest_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "java_home": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+    "tools": {
+      "java": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+      },
+      "javac": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+      },
+      "javap": {
+        "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+      }
+    }
+  }
+}

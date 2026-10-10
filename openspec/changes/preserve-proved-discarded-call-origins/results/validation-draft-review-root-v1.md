@@ -1,0 +1,7 @@
+# Root validation runner review
+
+全文审读Luna私有run-validation-build-root-v1.py与README/path closure。12条命令与原CI允许lint逐项确认；实际Rust source的永久函数计数为新5、guarded-call8、qualifier4、gateway15、If-loop4、boolean-loop3、patterns85，reader178/lib337来自已独立接受前产品原始结果；17product/8test/include闭包不猜固定未来成功。
+
+发现validate_baseline_observation在最后对acceptance错误拿execution的schema/status：真实acceptance为discarded-call-source-baseline-root-acceptance-v1/accepted-baseline-observations-only。私有原稿保留；root仓库执行版只纠正这两项，实际执行其两个只读前置核对函数均通过，并从同次source解析核7个真实目标函数数后才启动Cargo。CLI freeze不把metadata SHA写回build避免循环引用，sourcebase取实际HEAD完整40hex。
+
+这份静态审查不声称12命令成功；以validation-build-root-v1/execution.json及raw为准。

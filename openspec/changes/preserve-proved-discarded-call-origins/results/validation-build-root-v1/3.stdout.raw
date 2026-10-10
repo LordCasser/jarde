@@ -1,0 +1,10 @@
+
+running 5 tests
+test consumed_and_local_deferred_calls_keep_their_existing_body_and_map ... ok
+test exact_pop_charge_and_cancel_publish_no_partial_statement ... ok
+test frozen_probe_has_exact_identity ... ok
+test proved_static_virtual_and_interface_call_pops_map_to_complete_statements ... ok
+test wide_pop2_is_not_attached_to_a_call_statement ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
