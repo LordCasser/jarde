@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.95s
+[1m[92m     Running[0m tests/p2_dispatch.rs (target/debug/deps/p2_dispatch-0f9bb5eb00072ded)
+[1m[92m     Running[0m tests/p2_entry_counts.rs (target/debug/deps/p2_entry_counts-1e2172a444e5aec3)
+[1m[92m     Running[0m tests/p2_frame.rs (target/debug/deps/p2_frame-df48864d9f231617)
+[1m[92m     Running[0m tests/p2_golden.rs (target/debug/deps/p2_golden-78408e066f8120d8)

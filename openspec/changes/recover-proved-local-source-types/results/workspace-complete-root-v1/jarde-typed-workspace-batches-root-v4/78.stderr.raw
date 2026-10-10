@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.19s
+[1m[92m     Running[0m tests/p3_boolean_array_initializer_contract.rs (target/debug/deps/p3_boolean_array_initializer_contract-828c003fdaf15dd2)
+[1m[92m     Running[0m tests/p3_carried_conditional_arguments.rs (target/debug/deps/p3_carried_conditional_arguments-638225aa687d5055)
+[1m[92m     Running[0m tests/p3_conditional_field_writes.rs (target/debug/deps/p3_conditional_field_writes-4d37538ad7d5d5b3)
+[1m[92m     Running[0m tests/p3_conditional_values.rs (target/debug/deps/p3_conditional_values-234bcbb8cce152ff)

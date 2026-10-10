@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.79s
+[1m[92m     Running[0m tests/p3_iterable_foreach.rs (target/debug/deps/p3_iterable_foreach-a9a53711fed056d9)
+[1m[92m     Running[0m tests/p3_labeled_loop_tail.rs (target/debug/deps/p3_labeled_loop_tail-1ce07fde70e0b595)
+[1m[92m     Running[0m tests/p3_lambda_adaptation.rs (target/debug/deps/p3_lambda_adaptation-4e5d0919498f329c)
+[1m[92m     Running[0m tests/p3_local_postfix_array_elements.rs (target/debug/deps/p3_local_postfix_array_elements-9499d0ca2030aaae)

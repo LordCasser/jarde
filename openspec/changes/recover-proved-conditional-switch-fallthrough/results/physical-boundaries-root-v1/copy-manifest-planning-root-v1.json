@@ -1,0 +1,107 @@
+{
+  "status": "byte-exact-private-unapplied-drafts",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/README.md",
+      "copy": "jarde-conditional-physical-tests-luna-v1/README.md",
+      "bytes": 2988,
+      "sha256": "a313f2890ee6239ff96e6c667f7e768f3e36c76583f5636aeca4158783a453c6"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/SHA256SUMS",
+      "copy": "jarde-conditional-physical-tests-luna-v1/SHA256SUMS",
+      "bytes": 973,
+      "sha256": "09b6117971d6322d9cd7253cfee42a37775484e7516f3096795bd933bb6404fb"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/tests/conditional_switch_proof_tests.rs",
+      "copy": "jarde-conditional-physical-tests-luna-v1/tests/conditional_switch_proof_tests.rs",
+      "bytes": 10502,
+      "sha256": "81f5d429859c1f61de02fb626783d8bd0e9a473cfb92ac2d351b7954391fdc46"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v1/tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v1/tests/p3_conditional_switch_fallthrough.rs",
+      "copy": "jarde-conditional-physical-tests-luna-v1/tests/p3_conditional_switch_fallthrough.rs",
+      "bytes": 13397,
+      "sha256": "9df72a2d5121f7c5caa5eebaffcfc4eb13420b810480f668f7106e942f73d379"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/README.md",
+      "copy": "jarde-conditional-physical-tests-luna-v2/README.md",
+      "bytes": 3357,
+      "sha256": "b154f6d644fec9b66168dc5c1b7fa04f604d195b5e45edc771a11dd55986a1c5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/SHA256SUMS",
+      "copy": "jarde-conditional-physical-tests-luna-v2/SHA256SUMS",
+      "bytes": 980,
+      "sha256": "8e8a80f254bbe4f55d2838cb3264d898e1c07adf72d91fd8cbacc9e87be561e4"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/conditional_switch_proof_tests.rs",
+      "copy": "jarde-conditional-physical-tests-luna-v2/tests/conditional_switch_proof_tests.rs",
+      "bytes": 10291,
+      "sha256": "76eb947d9e2631e1e3955dd16d32180f2cc20050480b2cceede96dce4163aae5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac23/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac23/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac8/A-multiple-exit/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-tests-luna-v2/tests/fixtures/p3-conditional-switch-boundaries/javac8/B-nonadjacent/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-tests-luna-v2/tests/p3_conditional_switch_boundary_rejection.rs",
+      "copy": "jarde-conditional-physical-tests-luna-v2/tests/p3_conditional_switch_boundary_rejection.rs",
+      "bytes": 13699,
+      "sha256": "476dc3aa3409754367dac59644f5d5e138695daadf236e888c7edcf665706873"
+    },
+    {
+      "source": "/private/tmp/jarde-cf12-constant-label-plan-luna-v1/analysis.md",
+      "copy": "jarde-cf12-constant-label-plan-luna-v1/analysis.md",
+      "bytes": 9552,
+      "sha256": "0ca1e1de377fcc9449977df7fb70b0f5f6fa89d94d08a64af27dfe1f0cfa4b5e"
+    }
+  ]
+}

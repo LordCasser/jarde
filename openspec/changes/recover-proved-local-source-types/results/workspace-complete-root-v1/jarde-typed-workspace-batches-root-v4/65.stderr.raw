@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.66s
+[1m[92m     Running[0m tests/qualified_super_default.rs (target/debug/deps/qualified_super_default-da293407c60e459e)
+[1m[92m     Running[0m tests/raw_receiver_field_selection.rs (target/debug/deps/raw_receiver_field_selection-9f158d7744bea337)
+[1m[92m     Running[0m tests/recover_array_element_field_receiver.rs (target/debug/deps/recover_array_element_field_receiver-50e8c9670e990a0c)
+[1m[92m     Running[0m tests/recover_array_initializer_value_positions.rs (target/debug/deps/recover_array_initializer_value_positions-2d3f3bc37cd53ab4)

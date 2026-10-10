@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.11s
+[1m[92m     Running[0m tests/recover_postfix_condition_positions.rs (target/debug/deps/recover_postfix_condition_positions-e12627b6eb890629)
+[1m[92m     Running[0m tests/recover_postfix_old_value_snapshot.rs (target/debug/deps/recover_postfix_old_value_snapshot-e8ee1811ab6c5188)
+[1m[92m     Running[0m tests/recover_proved_nonnull_bound_receivers.rs (target/debug/deps/recover_proved_nonnull_bound_receivers-330bddb0253fd6d8)
+[1m[92m     Running[0m tests/recover_short_circuit_local_branch_reads.rs (target/debug/deps/recover_short_circuit_local_branch_reads-67dee7bafab00326)

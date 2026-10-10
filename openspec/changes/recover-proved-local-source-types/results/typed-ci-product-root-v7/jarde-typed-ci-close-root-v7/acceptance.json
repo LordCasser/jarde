@@ -1,0 +1,358 @@
+{
+  "schema": "recover-proved-local-source-types-ci-product-acceptance-root-v7",
+  "status": "accepted",
+  "product_commit": "43dffc9b806dc2b69102e50f52ee78a50850c6d0",
+  "run_id": 38087978610,
+  "source_commit_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02",
+  "ci": {
+    "jobs": 4,
+    "steps": 52,
+    "summary_sha256": "dc67d330e3c88cd46cd0b873aa3bc80847d126b42d604d61cd766a709035558e",
+    "stable_gzip_sha256": "c4c1c90acef33bf2ad429f1f85ed55a979eab5eed70e22c58c442dfee51170ee",
+    "stable_raw_sha256": "f9a9137abade75fe7ff6461cf08b3e29df0e381a4c7a2baee66ee50ed3d8de3b",
+    "supply_gzip_sha256": "c7850bfe56b63c8049073dc18a34719585a6a556b561cc1355db1960a54b48e8",
+    "supply_raw_sha256": "29ed1d7995b6054f8bde3b73227b76cee94578569986b825a1dffeb36f690f11",
+    "seed_runs": [
+      {
+        "seed": "5350648285461741569",
+        "p5_bulk_corpus": {
+          "counts": [
+            5,
+            0,
+            1
+          ],
+          "tests": {
+            "a_slow_consumer_changes_the_readings_and_not_the_shape": "ok",
+            "every_case_holds_the_shape_it_is_named_for": "ok",
+            "record_the_billing_table": "ignored",
+            "the_corpus_is_rebuilt_from_the_committed_bytes_every_time": "ok",
+            "the_fixed_shape_bills_the_counts_the_corpus_pins": "ok",
+            "the_old_per_method_arms_keep_their_ledger_and_the_same_text": "ok"
+          }
+        },
+        "library_counts": [
+          337,
+          0,
+          0
+        ],
+        "library_header": "Running unittests src/lib.rs (target/debug/deps/jarde_java-2c27823e5da061f3)",
+        "typed_counts": [
+          9,
+          0,
+          0
+        ],
+        "typed_test_names": [
+          "cf12_charat_stored_value_drives_char_source_type_and_full_origins",
+          "cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins",
+          "cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source",
+          "typed_boundary_four_char_seeds_have_specific_types_and_full_origins_in_both_debug_profiles",
+          "typed_boundary_mixed_all_null_and_unknown_reference_stay_object_in_both_debug_profiles",
+          "typed_boundary_null_first_exact_string_stays_string_in_both_debug_profiles",
+          "typed_boundary_proof_budget_stops_before_publication_at_observed_sites",
+          "typed_boundary_range_arithmetic_and_input_copy_remain_int_in_both_debug_profiles",
+          "typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all"
+        ],
+        "meeting_counts": [
+          6,
+          0,
+          0
+        ],
+        "meeting_test_names": [
+          "a_char_return_spells_the_code_unit_its_constant_stands_for",
+          "a_discarded_call_result_is_the_calls_own_statement",
+          "a_popped_evaluation_is_the_static_calls_qualifier",
+          "a_position_performs_its_own_widening",
+          "no_shape_of_the_rule_claims_a_pop2",
+          "real_primitive_conversions_are_spelled_from_their_instructions"
+        ],
+        "repair_binary_results": {
+          "tests/p3_meeting.rs": {
+            "counts": [
+              6,
+              0,
+              0
+            ],
+            "test_names": [
+              "a_char_return_spells_the_code_unit_its_constant_stands_for",
+              "a_discarded_call_result_is_the_calls_own_statement",
+              "a_popped_evaluation_is_the_static_calls_qualifier",
+              "a_position_performs_its_own_widening",
+              "no_shape_of_the_rule_claims_a_pop2",
+              "real_primitive_conversions_are_spelled_from_their_instructions"
+            ]
+          },
+          "tests/p3_required_conversions.rs": {
+            "counts": [
+              8,
+              0,
+              0
+            ],
+            "test_names": [
+              "a_conversion_no_evidence_states_is_refused",
+              "a_converted_part_states_the_appends_own_type",
+              "a_part_that_already_meets_its_parameter_gains_nothing",
+              "a_return_states_the_members_own_type",
+              "a_write_states_the_written_types_own_type",
+              "an_argument_states_the_callees_parameter_type",
+              "every_declared_member_of_the_sample_is_covered",
+              "the_conversion_costs_no_ir_item_and_no_normalization_clone"
+            ]
+          },
+          "tests/p3_reference_slot_lifetimes.rs": {
+            "counts": [
+              8,
+              0,
+              0
+            ],
+            "test_names": [
+              "all_sixteen_no_debug_classes_keep_each_reference_lifetime_separate",
+              "different_name_lvt_sources_remain_byte_for_byte_unchanged",
+              "held_reference_across_a_local_overwrite_is_not_published_as_a_slot_alias",
+              "low_analysis_budget_and_cancellation_do_not_publish_a_split_source",
+              "nonzero_stack_reference_forwarding_keeps_both_jdk_sources_and_metadata_unchanged",
+              "null_first_exact_builder_writes_refine_only_the_local_type",
+              "same_name_lvt_sources_keep_their_existing_failure_verbatim",
+              "unsupported_reference_boundaries_keep_the_cli9_source_verbatim"
+            ]
+          }
+        },
+        "workspace_result_records": 356,
+        "workspace_totals": [
+          3408,
+          0,
+          97
+        ]
+      },
+      {
+        "seed": "5350648285461741570",
+        "p5_bulk_corpus": {
+          "counts": [
+            5,
+            0,
+            1
+          ],
+          "tests": {
+            "a_slow_consumer_changes_the_readings_and_not_the_shape": "ok",
+            "every_case_holds_the_shape_it_is_named_for": "ok",
+            "record_the_billing_table": "ignored",
+            "the_corpus_is_rebuilt_from_the_committed_bytes_every_time": "ok",
+            "the_fixed_shape_bills_the_counts_the_corpus_pins": "ok",
+            "the_old_per_method_arms_keep_their_ledger_and_the_same_text": "ok"
+          }
+        },
+        "library_counts": [
+          337,
+          0,
+          0
+        ],
+        "library_header": "Running unittests src/lib.rs (target/debug/deps/jarde_java-2c27823e5da061f3)",
+        "typed_counts": [
+          9,
+          0,
+          0
+        ],
+        "typed_test_names": [
+          "cf12_charat_stored_value_drives_char_source_type_and_full_origins",
+          "cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins",
+          "cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source",
+          "typed_boundary_four_char_seeds_have_specific_types_and_full_origins_in_both_debug_profiles",
+          "typed_boundary_mixed_all_null_and_unknown_reference_stay_object_in_both_debug_profiles",
+          "typed_boundary_null_first_exact_string_stays_string_in_both_debug_profiles",
+          "typed_boundary_proof_budget_stops_before_publication_at_observed_sites",
+          "typed_boundary_range_arithmetic_and_input_copy_remain_int_in_both_debug_profiles",
+          "typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all"
+        ],
+        "meeting_counts": [
+          6,
+          0,
+          0
+        ],
+        "meeting_test_names": [
+          "a_char_return_spells_the_code_unit_its_constant_stands_for",
+          "a_discarded_call_result_is_the_calls_own_statement",
+          "a_popped_evaluation_is_the_static_calls_qualifier",
+          "a_position_performs_its_own_widening",
+          "no_shape_of_the_rule_claims_a_pop2",
+          "real_primitive_conversions_are_spelled_from_their_instructions"
+        ],
+        "repair_binary_results": {
+          "tests/p3_meeting.rs": {
+            "counts": [
+              6,
+              0,
+              0
+            ],
+            "test_names": [
+              "a_char_return_spells_the_code_unit_its_constant_stands_for",
+              "a_discarded_call_result_is_the_calls_own_statement",
+              "a_popped_evaluation_is_the_static_calls_qualifier",
+              "a_position_performs_its_own_widening",
+              "no_shape_of_the_rule_claims_a_pop2",
+              "real_primitive_conversions_are_spelled_from_their_instructions"
+            ]
+          },
+          "tests/p3_required_conversions.rs": {
+            "counts": [
+              8,
+              0,
+              0
+            ],
+            "test_names": [
+              "a_conversion_no_evidence_states_is_refused",
+              "a_converted_part_states_the_appends_own_type",
+              "a_part_that_already_meets_its_parameter_gains_nothing",
+              "a_return_states_the_members_own_type",
+              "a_write_states_the_written_types_own_type",
+              "an_argument_states_the_callees_parameter_type",
+              "every_declared_member_of_the_sample_is_covered",
+              "the_conversion_costs_no_ir_item_and_no_normalization_clone"
+            ]
+          },
+          "tests/p3_reference_slot_lifetimes.rs": {
+            "counts": [
+              8,
+              0,
+              0
+            ],
+            "test_names": [
+              "all_sixteen_no_debug_classes_keep_each_reference_lifetime_separate",
+              "different_name_lvt_sources_remain_byte_for_byte_unchanged",
+              "held_reference_across_a_local_overwrite_is_not_published_as_a_slot_alias",
+              "low_analysis_budget_and_cancellation_do_not_publish_a_split_source",
+              "nonzero_stack_reference_forwarding_keeps_both_jdk_sources_and_metadata_unchanged",
+              "null_first_exact_builder_writes_refine_only_the_local_type",
+              "same_name_lvt_sources_keep_their_existing_failure_verbatim",
+              "unsupported_reference_boundaries_keep_the_cli9_source_verbatim"
+            ]
+          }
+        },
+        "workspace_result_records": 356,
+        "workspace_totals": [
+          3408,
+          0,
+          97
+        ]
+      }
+    ],
+    "aggregate_counts_predeclared": false
+  },
+  "frozen_cli_and_build": {
+    "candidate_cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+    "metadata_sha256": "6295d4cc0c65bd5b5c476f71e44cf3abf513f77d854854bfdea777cbaf2be943",
+    "build_sha256": "18a9750cdeb0d8bc45786f5d0766cbb256f1c8a87b1daf350965e910535a6413",
+    "runner_sha256": "75e3b3494bf6a2f3179fc1d61e01865382cbdcb4bcefc527f9bc97f012687b87",
+    "source_base": "5c2c06f1ec8c3ff0560f2c2d89059ee7d6d06b02",
+    "product_pin_entries_verified": 77,
+    "build_commands": 14,
+    "build_raw_streams_verified": 28,
+    "typed_test_names": [
+      "cf12_charat_stored_value_drives_char_source_type_and_full_origins",
+      "cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins",
+      "cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source",
+      "typed_boundary_four_char_seeds_have_specific_types_and_full_origins_in_both_debug_profiles",
+      "typed_boundary_mixed_all_null_and_unknown_reference_stay_object_in_both_debug_profiles",
+      "typed_boundary_null_first_exact_string_stays_string_in_both_debug_profiles",
+      "typed_boundary_proof_budget_stops_before_publication_at_observed_sites",
+      "typed_boundary_range_arithmetic_and_input_copy_remain_int_in_both_debug_profiles",
+      "typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all"
+    ]
+  },
+  "repair_gate": {
+    "execution_path": "/private/tmp/jarde-typed-ci-repair-root-v7/execution.json",
+    "execution_sha256": "860f4817e9e82566aeb37b791a99de8d07311ac826fd1385938b63e0002e9559",
+    "schema": "typed-ci-repair-local-root-v1",
+    "status": "passed",
+    "focused_commands": 2,
+    "raw_streams_verified": 4,
+    "test_summaries": [
+      {
+        "binary": "tests/p3_meeting.rs",
+        "counts": [
+          6,
+          0,
+          0
+        ],
+        "test_names": [
+          "a_char_return_spells_the_code_unit_its_constant_stands_for",
+          "a_discarded_call_result_is_the_calls_own_statement",
+          "a_popped_evaluation_is_the_static_calls_qualifier",
+          "a_position_performs_its_own_widening",
+          "no_shape_of_the_rule_claims_a_pop2",
+          "real_primitive_conversions_are_spelled_from_their_instructions"
+        ]
+      },
+      {
+        "binary": "tests/p3_required_conversions.rs",
+        "counts": [
+          8,
+          0,
+          0
+        ],
+        "test_names": [
+          "a_conversion_no_evidence_states_is_refused",
+          "a_converted_part_states_the_appends_own_type",
+          "a_part_that_already_meets_its_parameter_gains_nothing",
+          "a_return_states_the_members_own_type",
+          "a_write_states_the_written_types_own_type",
+          "an_argument_states_the_callees_parameter_type",
+          "every_declared_member_of_the_sample_is_covered",
+          "the_conversion_costs_no_ir_item_and_no_normalization_clone"
+        ]
+      },
+      {
+        "binary": "tests/p3_reference_slot_lifetimes.rs",
+        "counts": [
+          8,
+          0,
+          0
+        ],
+        "test_names": [
+          "all_sixteen_no_debug_classes_keep_each_reference_lifetime_separate",
+          "different_name_lvt_sources_remain_byte_for_byte_unchanged",
+          "held_reference_across_a_local_overwrite_is_not_published_as_a_slot_alias",
+          "low_analysis_budget_and_cancellation_do_not_publish_a_split_source",
+          "nonzero_stack_reference_forwarding_keeps_both_jdk_sources_and_metadata_unchanged",
+          "null_first_exact_builder_writes_refine_only_the_local_type",
+          "same_name_lvt_sources_keep_their_existing_failure_verbatim",
+          "unsupported_reference_boundaries_keep_the_cli9_source_verbatim"
+        ]
+      }
+    ],
+    "additional_test_pins": {
+      "tests/p3_meeting.rs": "c4655b9fc0bfbe32ee02ba87f9c7bb36898cd740f29145b50f8c997045bd2caf",
+      "tests/fixtures/p3-meeting/v8/Meet.class": "0e3b9f78d79e49e345ccb163a01eeaa0d21f9ed7ca0b340c24d7901cd4b1c04c",
+      "tests/fixtures/p3-meeting/Meet.java": "2c4b5055998affb2ca1294184bb78aedecf92dbc7335b85b45dbc6a4fc10c132",
+      "tests/fixtures/p3-required-conversions/RequiredConversions.java": "7f9705b16412242c732af0ad2cb7cfb61b02e0b26c95fe077d2797898339c66d",
+      "tests/fixtures/p3-required-conversions/v8/RequiredConversions.class": "d71eeaa5dc3eb66eafffda9e0c509eae43e3dde566b67df0006348352778d1e4",
+      "tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3",
+      "tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.baseline.java": "f04aad4af575953e14ce91084bc5e3e5fc23b3656f42dd21280701a81ccb8e1e",
+      "tests/p3_required_conversions.rs": "e8a3366f88b68d526f2145d974501e3bf23be536c7911faa69c2aa41f8a6569d",
+      "tests/p3_reference_slot_lifetimes.rs": "0b5a6c01bc6cf377aa550a1713cdfdda5b1d1e16b505941110eb572bc07d2201"
+    },
+    "baseline_pin_count": 76,
+    "baseline_closure_unchanged": true
+  },
+  "p5_repair_gate": {
+    "acceptance_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v3/jarde-typed-p5-billing-repin-root-v1/acceptance-root-v1.json",
+    "acceptance_sha256": "74f2a4e7bbf04f16fa2789e4ce7a7b345120202eb6681079d7f7a277569cf408",
+    "scope": "historical P5-only acceptance; that artifact did not establish full workspace completion",
+    "p5_source_sha256": "48ec01a4123021db3b4f6e5942adfbc1bba343009741a7edd767dd15d9009fee",
+    "p5_source_is_separate_from_historical_17_10_50_closure": true,
+    "repinned_dimensions": "AnalysisSteps only",
+    "six_analysis_step_deltas": [
+      16,
+      22,
+      14,
+      43,
+      14,
+      3
+    ],
+    "two_arm_delta": 112,
+    "recorder_execution_sha256": "4e42ddf1e754f40ced6774c055f6e8f20b0d0564ebdd23db079005c54125984d",
+    "recorder_streams_verified": 2,
+    "pre_repin_regular_batch_index": 62,
+    "pre_repin_regular_batch_stdout_sha256": "a37613ac411e1c12882c594fd75cf927ad34191336e20e885462e567ec5b8b79",
+    "full_workspace_status_at_verification": "running"
+  },
+  "acceptance_scope": "CI API and all captured job steps completed successfully; both exact fixed-seed workspace runs were parsed from raw stable logs with no failed test records and equal observed totals; historical typed tests, p3_meeting tests, and the added conversion/reference-lifetime suites were derived from product sources and passed in each seed; 337 jarde-java lib tests remained intact; frozen typed metadata/build pins and the separate local repair gate plus its nine additional pins were checked against Git blobs and live files. The separate P5 billing repair was checked against its explicit P5-only acceptance, source bytes, recorder raw, and pre-repin failing batch raw; P5 remains outside the historical 17/10/50 closure. The P5-only artifact records the full workspace as running and does not establish full-workspace completion."
+}

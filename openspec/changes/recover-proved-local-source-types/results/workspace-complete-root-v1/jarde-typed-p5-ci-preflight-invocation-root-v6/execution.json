@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-10T21:36:14.676575+00:00",
+  "duration_seconds": 0.09603637500549667,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-verify-typed-p5-ci-preflight-root-v6.py"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 80,
+      "sha256": "e08791544d208389f1605ec7e102dbbdb74ce54e03fd73c0c03ae2346bcb58cb"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

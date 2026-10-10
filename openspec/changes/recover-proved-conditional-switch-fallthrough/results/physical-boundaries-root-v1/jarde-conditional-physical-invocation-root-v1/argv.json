@@ -1,0 +1,7 @@
+[
+  "python",
+  "-B",
+  "/private/tmp/jarde-conditional-physical-collector-root-v1.py",
+  "--out",
+  "/private/tmp/jarde-conditional-physical-root-v1"
+]

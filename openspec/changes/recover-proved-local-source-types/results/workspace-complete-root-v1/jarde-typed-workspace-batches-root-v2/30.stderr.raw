@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.66s
+[1m[92m     Running[0m tests/p3_crossing_array_read_values.rs (target/debug/deps/p3_crossing_array_read_values-2f6653191bc685a8)
+[1m[92m     Running[0m tests/p3_declaration_handoff.rs (target/debug/deps/p3_declaration_handoff-730ea132c153442d)
+[1m[92m     Running[0m tests/p3_declarations.rs (target/debug/deps/p3_declarations-d944ddd428cf0933)
+[1m[92m     Running[0m tests/p3_deferred_value_order.rs (target/debug/deps/p3_deferred_value_order-a5bc4a613891d391)

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.85s
+[1m[92m     Running[0m tests/field_generic_projection.rs (target/debug/deps/field_generic_projection-03ba2a6bcf131e0b)
+[1m[92m     Running[0m tests/fixture_behavior_guards.rs (target/debug/deps/fixture_behavior_guards-0e75e87e50dc92f5)
+[1m[92m     Running[0m tests/generic_body_throws_projection.rs (target/debug/deps/generic_body_throws_projection-b6c86c854e3673e0)
+[1m[92m     Running[0m tests/generic_constructor_projection.rs (target/debug/deps/generic_constructor_projection-e5aafdb109a6f85c)

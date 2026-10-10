@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.81s
+[1m[92m     Running[0m tests/p3_arraylength_loop_condition.rs (target/debug/deps/p3_arraylength_loop_condition-e68a47546bb92864)
+[1m[92m     Running[0m tests/p3_bigdecimal_number_widening.rs (target/debug/deps/p3_bigdecimal_number_widening-0181c351ee9a8124)
+[1m[92m     Running[0m tests/p3_bitwise.rs (target/debug/deps/p3_bitwise-c3df78b656db04a1)
+[1m[92m     Running[0m tests/p3_boolean_array_initializers.rs (target/debug/deps/p3_boolean_array_initializers-299926886f9f8d3a)

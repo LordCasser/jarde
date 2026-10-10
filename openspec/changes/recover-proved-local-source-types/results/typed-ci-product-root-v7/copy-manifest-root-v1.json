@@ -1,0 +1,218 @@
+[
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/capture-execution-root-v1.json",
+    "copy": "jarde-typed-ci-capture-root-v6/capture-execution-root-v1.json",
+    "bytes": 22017,
+    "sha256": "4f8e2b0f588678463b51e1ccdd7f6689cacbbda0c430453b087574a4ee3a0b54"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-run-v1.json",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-run-v1.json",
+    "bytes": 10113,
+    "sha256": "dc67d330e3c88cd46cd0b873aa3bc80847d126b42d604d61cd766a709035558e"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-run-v1.stderr.raw",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-run-v1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-stable-job-v1.log.gz",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-stable-job-v1.log.gz",
+    "bytes": 279090,
+    "sha256": "c4c1c90acef33bf2ad429f1f85ed55a979eab5eed70e22c58c442dfee51170ee"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-stable-job-v1.log.gz.stderr.raw",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-stable-job-v1.log.gz.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-stable-job-v1.log.stdout.raw",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-stable-job-v1.log.stdout.raw",
+    "bytes": 1773554,
+    "sha256": "f9a9137abade75fe7ff6461cf08b3e29df0e381a4c7a2baee66ee50ed3d8de3b"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-supply-job-v1.log.gz",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-supply-job-v1.log.gz",
+    "bytes": 15136,
+    "sha256": "c7850bfe56b63c8049073dc18a34719585a6a556b561cc1355db1960a54b48e8"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-supply-job-v1.log.gz.stderr.raw",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-supply-job-v1.log.gz.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-capture-root-v6/ci-supply-job-v1.log.stdout.raw",
+    "copy": "jarde-typed-ci-capture-root-v6/ci-supply-job-v1.log.stdout.raw",
+    "bytes": 115708,
+    "sha256": "29ed1d7995b6054f8bde3b73227b76cee94578569986b825a1dffeb36f690f11"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/0.presentation.stderr",
+    "copy": "jarde-typed-ci-close-root-v6/0.presentation.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/0.presentation.stdout",
+    "copy": "jarde-typed-ci-close-root-v6/0.presentation.stdout",
+    "bytes": 1662,
+    "sha256": "b3ef1df744d6bc389dd445d09e5a33ad4d59b774d54e67fc4985e2d7fcd04266"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/1.presentation.stderr",
+    "copy": "jarde-typed-ci-close-root-v6/1.presentation.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/1.presentation.stdout",
+    "copy": "jarde-typed-ci-close-root-v6/1.presentation.stdout",
+    "bytes": 4362,
+    "sha256": "88c802a98e777b6bd90fabecc807d2ea933e5a00b73f2eee583c8e02615f74ba"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/inputs.json",
+    "copy": "jarde-typed-ci-close-root-v6/inputs.json",
+    "bytes": 4716,
+    "sha256": "c950809375b93be4a12af0e7e06c8a1277e78b0ab7b0e4b7b3879145fc4ec55f"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-0/argv.json",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-0/argv.json",
+    "bytes": 1231,
+    "sha256": "98bb76a4ee3f04d231e8f4d5ca8d5a4c9e3d454df21e2891984359de9e53d22f"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-0/execution.json",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-0/execution.json",
+    "bytes": 1735,
+    "sha256": "c61c61daa485aac97955ecd5cf860866dc38f7b68955b93d121320b09f2e2481"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-0/stderr.raw",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-0/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-0/stdout.raw",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-0/stdout.raw",
+    "bytes": 117,
+    "sha256": "68850d2c917026ca1c004c15ba5300bb7aea3c409ac06b594401e48b724d08c0"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-1/argv.json",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-1/argv.json",
+    "bytes": 2753,
+    "sha256": "6557ad55e2713debcaf807969ff0a904428df35653fb7246da62624dbfe4d603"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-1/execution.json",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-1/execution.json",
+    "bytes": 3310,
+    "sha256": "7913621f0b9ab036df3a53a61eca34e25f91a742ddf19a5c9d6db89c32b2f593"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-1/stderr.raw",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-1/stderr.raw",
+    "bytes": 1346,
+    "sha256": "4f7b05fd7209cadb667205b76dc6ab90fa05f2883623cfb8820c0398a8936f22"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v6/invocation-1/stdout.raw",
+    "copy": "jarde-typed-ci-close-root-v6/invocation-1/stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/acceptance.json",
+    "copy": "jarde-typed-ci-close-root-v7/acceptance.json",
+    "bytes": 16913,
+    "sha256": "6bcdf9b1e1f21e59fd1660ccfe73347ff485c574d3e0723a0a46d5dac0abdb81"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/argv.json",
+    "copy": "jarde-typed-ci-close-root-v7/argv.json",
+    "bytes": 2721,
+    "sha256": "138dabb21eb6cc29ed73864219b058047e943f34c7ffff04df16d54d88774886"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/presentation.stderr",
+    "copy": "jarde-typed-ci-close-root-v7/presentation.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/presentation.stdout",
+    "copy": "jarde-typed-ci-close-root-v7/presentation.stdout",
+    "bytes": 6822,
+    "sha256": "22311b508ff85e336875005b4cb8fd35ff19834619ab13d98e23d8cb472d5898"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/verifier-invocation/argv.json",
+    "copy": "jarde-typed-ci-close-root-v7/verifier-invocation/argv.json",
+    "bytes": 2721,
+    "sha256": "138dabb21eb6cc29ed73864219b058047e943f34c7ffff04df16d54d88774886"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/verifier-invocation/execution.json",
+    "copy": "jarde-typed-ci-close-root-v7/verifier-invocation/execution.json",
+    "bytes": 3277,
+    "sha256": "3dcf9611186ed3c161b0e78fb58eb36576c193064faf029e6f95dd2fd8f676db"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/verifier-invocation/stderr.raw",
+    "copy": "jarde-typed-ci-close-root-v7/verifier-invocation/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-root-v7/verifier-invocation/stdout.raw",
+    "copy": "jarde-typed-ci-close-root-v7/verifier-invocation/stdout.raw",
+    "bytes": 3839,
+    "sha256": "0aa47d7686e2d10ab6e8e65f35b4de1f32e8d221b9580f649cd76a109e5499b1"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-invocation-root-v6/argv.json",
+    "copy": "jarde-typed-ci-close-invocation-root-v6/argv.json",
+    "bytes": 77,
+    "sha256": "5bf9c54fb46f334b7d57d8d7a0fb2cd761740bbf16be87b73691b258c15642c8"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-invocation-root-v6/execution.json",
+    "copy": "jarde-typed-ci-close-invocation-root-v6/execution.json",
+    "bytes": 528,
+    "sha256": "7baf5e466b5a163a7d25976de57fd209e9df3525a101cf51d1c5531603cffe4e"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-invocation-root-v6/stderr.raw",
+    "copy": "jarde-typed-ci-close-invocation-root-v6/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-invocation-root-v6/stdout.raw",
+    "copy": "jarde-typed-ci-close-invocation-root-v6/stdout.raw",
+    "bytes": 30,
+    "sha256": "a7157806cfdf4fcc1148853a9f8cb451b8e2f5a1b9eddf495e089f36845fc7ca"
+  },
+  {
+    "source": "/private/tmp/jarde-verify-typed-ci-root-v7.py",
+    "copy": "jarde-verify-typed-ci-root-v7.py",
+    "bytes": 42894,
+    "sha256": "4d1d3341a81e0adfe49b0f3f37a61a83a4d1fc0707237121d5cf575d7ddb3feb"
+  },
+  {
+    "source": "/private/tmp/jarde-typed-ci-close-presentation-root-v6.txt",
+    "copy": "jarde-typed-ci-close-presentation-root-v6.txt",
+    "bytes": 472,
+    "sha256": "55bb17793918a9fba1315daeaf8021897965abb2de64cacd2829df7cdef61e37"
+  }
+]

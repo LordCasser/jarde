@@ -1,0 +1,223 @@
+public final class ConditionalSwitchBoundaries {
+  private ConditionalSwitchBoundaries();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static java.lang.String partialBreak(int, int);
+    descriptor: (II)Ljava/lang/String;
+    Code:
+       0: new           #7                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+       7: astore_2
+       8: iload_0
+       9: lookupswitch  { // 2
+                     0: 36
+                     1: 57
+               default: 67
+          }
+      36: iload_1
+      37: ifeq          67
+      40: aload_2
+      41: ldc           #10                 // String A
+      43: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: pop
+      47: goto          67
+      50: aload_2
+      51: ldc           #16                 // String F
+      53: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: pop
+      57: aload_2
+      58: ldc           #18                 // String B
+      60: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: pop
+      64: goto          74
+      67: aload_2
+      68: ldc           #20                 // String D
+      70: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: pop
+      74: aload_2
+      75: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      78: areturn
+
+  public static java.lang.String innerLoopBreak(int, int);
+    descriptor: (II)Ljava/lang/String;
+    Code:
+       0: new           #7                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+       7: astore_2
+       8: iload_0
+       9: lookupswitch  { // 2
+                     0: 36
+                     1: 70
+               default: 80
+          }
+      36: iconst_0
+      37: istore_3
+      38: iload_3
+      39: iconst_2
+      40: if_icmpge     63
+      43: aload_2
+      44: ldc           #26                 // String L
+      46: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      49: pop
+      50: iload_1
+      51: ifeq          57
+      54: goto          63
+      57: iinc          3, 1
+      60: goto          38
+      63: aload_2
+      64: ldc           #28                 // String O
+      66: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: pop
+      70: aload_2
+      71: ldc           #30                 // String N
+      73: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: pop
+      77: goto          87
+      80: aload_2
+      81: ldc           #20                 // String D
+      83: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: pop
+      87: aload_2
+      88: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      91: areturn
+
+  public static java.lang.String innerSwitchBreak(int, int);
+    descriptor: (II)Ljava/lang/String;
+    Code:
+       0: new           #7                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+       7: astore_2
+       8: iload_0
+       9: lookupswitch  { // 2
+                     0: 36
+                     1: 80
+               default: 90
+          }
+      36: iload_1
+      37: lookupswitch  { // 1
+                     0: 56
+               default: 66
+          }
+      56: aload_2
+      57: ldc           #32                 // String I
+      59: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: pop
+      63: goto          73
+      66: aload_2
+      67: ldc           #34                 // String J
+      69: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      72: pop
+      73: aload_2
+      74: ldc           #28                 // String O
+      76: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      79: pop
+      80: aload_2
+      81: ldc           #30                 // String N
+      83: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: pop
+      87: goto          97
+      90: aload_2
+      91: ldc           #20                 // String D
+      93: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: pop
+      97: aload_2
+      98: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     101: areturn
+
+  public static java.lang.String terminalCase(int);
+    descriptor: (I)Ljava/lang/String;
+    Code:
+       0: new           #7                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: iload_0
+       9: tableswitch   { // 0 to 2
+                     0: 36
+                     1: 48
+                     2: 67
+               default: 77
+          }
+      36: aload_1
+      37: ldc           #36                 // String R
+      39: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: pop
+      43: aload_1
+      44: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      47: areturn
+      48: aload_1
+      49: ldc           #38                 // String T
+      51: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: pop
+      55: new           #40                 // class java/lang/IllegalArgumentException
+      58: dup
+      59: aload_1
+      60: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      63: invokespecial #42                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      66: athrow
+      67: aload_1
+      68: ldc           #45                 // String C
+      70: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: pop
+      74: goto          84
+      77: aload_1
+      78: ldc           #20                 // String D
+      80: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: pop
+      84: aload_1
+      85: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      88: areturn
+
+  public static java.lang.String caughtExceptionThenFallthrough(int, int);
+    descriptor: (II)Ljava/lang/String;
+    Code:
+       0: new           #7                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #9                  // Method java/lang/StringBuilder."<init>":()V
+       7: astore_2
+       8: iload_0
+       9: lookupswitch  { // 2
+                     0: 36
+                     1: 68
+               default: 78
+          }
+      36: iload_1
+      37: ifne          45
+      40: ldc           #47                 // String 7
+      42: goto          47
+      45: ldc           #49                 // String x
+      47: invokestatic  #51                 // Method java/lang/Integer.parseInt:(Ljava/lang/String;)I
+      50: istore_3
+      51: aload_2
+      52: iload_3
+      53: invokevirtual #57                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      56: pop
+      57: goto          68
+      60: astore_3
+      61: aload_2
+      62: ldc           #45                 // String C
+      64: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      67: pop
+      68: aload_2
+      69: ldc           #30                 // String N
+      71: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: pop
+      75: goto          85
+      78: aload_2
+      79: ldc           #20                 // String D
+      81: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      84: pop
+      85: aload_2
+      86: invokevirtual #22                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      89: areturn
+    Exception table:
+       from    to  target type
+          36    57    60   Class java/lang/NumberFormatException
+}

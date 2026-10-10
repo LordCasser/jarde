@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-10T22:13:41.701973+00:00",
+  "duration_seconds": 11.973065958009101,
+  "argv": [
+    "python",
+    "-B",
+    "/private/tmp/jarde-typed-ci-repair-adapter-root-v6/capture-typed-ci-root-v6.py",
+    "--product-commit",
+    "43dffc9b806dc2b69102e50f52ee78a50850c6d0",
+    "--run-id",
+    "38087978610",
+    "--typed-test-count",
+    "9",
+    "--typed-test-name",
+    "cf12_charat_stored_value_drives_char_source_type_and_full_origins",
+    "--typed-test-name",
+    "cf12_null_first_direct_string_writes_drive_string_source_type_and_full_origins",
+    "--typed-test-name",
+    "cf12_recovery_budget_stop_and_cancellation_publish_no_partial_source",
+    "--typed-test-name",
+    "typed_boundary_four_char_seeds_have_specific_types_and_full_origins_in_both_debug_profiles",
+    "--typed-test-name",
+    "typed_boundary_mixed_all_null_and_unknown_reference_stay_object_in_both_debug_profiles",
+    "--typed-test-name",
+    "typed_boundary_null_first_exact_string_stays_string_in_both_debug_profiles",
+    "--typed-test-name",
+    "typed_boundary_proof_budget_stops_before_publication_at_observed_sites",
+    "--typed-test-name",
+    "typed_boundary_range_arithmetic_and_input_copy_remain_int_in_both_debug_profiles",
+    "--typed-test-name",
+    "typed_boundary_real_slot_conflict_is_preserved_as_the_exact_fallback_in_default_and_all",
+    "--expected-lib-count",
+    "337"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 117,
+      "sha256": "68850d2c917026ca1c004c15ba5300bb7aea3c409ac06b594401e48b724d08c0"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

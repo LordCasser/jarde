@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.31s
+[1m[92m     Running[0m tests/p3_segmented_null_lead_finally.rs (target/debug/deps/p3_segmented_null_lead_finally-0a2c4c08e0f11b44)
+[1m[92m     Running[0m tests/p3_shared_join_finally.rs (target/debug/deps/p3_shared_join_finally-8cfe683763cca194)
+[1m[92m     Running[0m tests/p3_shared_tail.rs (target/debug/deps/p3_shared_tail-ed86963ae7bde813)
+[1m[92m     Running[0m tests/p3_short_circuit_chain_controls.rs (target/debug/deps/p3_short_circuit_chain_controls-8ae976d6392457dc)

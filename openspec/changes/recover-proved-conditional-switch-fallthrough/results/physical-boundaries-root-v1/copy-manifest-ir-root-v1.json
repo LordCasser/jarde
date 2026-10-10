@@ -1,0 +1,143 @@
+{
+  "status": "byte-exact-copies",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-root-v1/0.stderr.raw",
+      "copy": "jarde-conditional-physical-ir-root-v1/0.stderr.raw",
+      "bytes": 1997,
+      "sha256": "f0f9b9cb4052e12763355b35bf54f5c37f17970847c53e1998a3ffa592d84f08"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-root-v1/0.stdout.raw",
+      "copy": "jarde-conditional-physical-ir-root-v1/0.stdout.raw",
+      "bytes": 144944,
+      "sha256": "d854ada770ee2778abb3ad8b02747f108f3a230d2e7ec842aa1775051bb45200"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-root-v1/execution.json",
+      "copy": "jarde-conditional-physical-ir-root-v1/execution.json",
+      "bytes": 24938,
+      "sha256": "7ca7e90fa1b4302208533204d70f1da17c24d6bbd5cc26b26c106c32a3ddf0d3"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-root-v1/observer-root.rs",
+      "copy": "jarde-conditional-physical-ir-root-v1/observer-root.rs",
+      "bytes": 10847,
+      "sha256": "26fbd3bedd219da3c7f9ea7baa62f653d6c4c0c06796fcc7a68c9120ceef4444"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-root-v1/rustfmt.stderr.raw",
+      "copy": "jarde-conditional-physical-ir-root-v1/rustfmt.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-root-v1/rustfmt.stdout.raw",
+      "copy": "jarde-conditional-physical-ir-root-v1/rustfmt.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-invocation-root-v1/argv.json",
+      "copy": "jarde-conditional-physical-ir-invocation-root-v1/argv.json",
+      "bytes": 86,
+      "sha256": "cf4196a9f5fae6b9d18fb9401bce91c452396621206662c8d8870ebf01be5bf3"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-invocation-root-v1/execution.json",
+      "copy": "jarde-conditional-physical-ir-invocation-root-v1/execution.json",
+      "bytes": 537,
+      "sha256": "acafae4d4477b848a0043af63790016b83dde2433e97dd738778b75f305a5071"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-invocation-root-v1/stderr.raw",
+      "copy": "jarde-conditional-physical-ir-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-invocation-root-v1/stdout.raw",
+      "copy": "jarde-conditional-physical-ir-invocation-root-v1/stdout.raw",
+      "bytes": 128,
+      "sha256": "1330b53d45e791567f28ae262a5369758d5a9bf6f3914ff37e429842022f2307"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-clean-root-v1/argv.json",
+      "copy": "jarde-conditional-physical-ir-clean-root-v1/argv.json",
+      "bytes": 25,
+      "sha256": "2aa0ec7108900b253b9b80ba5d66975e50fe0889843ce14e18565d333473c611"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-clean-root-v1/execution.json",
+      "copy": "jarde-conditional-physical-ir-clean-root-v1/execution.json",
+      "bytes": 475,
+      "sha256": "34917d0ee285a7517de2bfaf6f37c0528a142e38b076baf99a64721cd43f3658"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-clean-root-v1/stderr.raw",
+      "copy": "jarde-conditional-physical-ir-clean-root-v1/stderr.raw",
+      "bytes": 39,
+      "sha256": "7ded22e8283b16a131d7585a881494eeb1c216b2f051d56412ae660b0c7132c6"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-clean-root-v1/stdout.raw",
+      "copy": "jarde-conditional-physical-ir-clean-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-verifier-luna-v1/README.md",
+      "copy": "jarde-conditional-physical-ir-verifier-luna-v1/README.md",
+      "bytes": 1091,
+      "sha256": "f54e02cb899054142c5bc34d78975e3dbeb19a406c43968dc3024810a8b002a4"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-verifier-luna-v1/verify.py",
+      "copy": "jarde-conditional-physical-ir-verifier-luna-v1/verify.py",
+      "bytes": 15573,
+      "sha256": "76cedfadd252cef6cda58cc88e216e54e7b5f66d0b23139fa29bdfb1e7408d02"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-verifier-invocation-root-v2/argv.json",
+      "copy": "jarde-conditional-physical-ir-verifier-invocation-root-v2/argv.json",
+      "bytes": 89,
+      "sha256": "495d4de22aac8db7ebc8e9314f06f8651648176a0e1daff450d6e2c93f9acf7d"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-verifier-invocation-root-v2/execution.json",
+      "copy": "jarde-conditional-physical-ir-verifier-invocation-root-v2/execution.json",
+      "bytes": 545,
+      "sha256": "c94137e3f32aa52c78d59655fe1890f331928a107a0a6f19352d8b25155ed807"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-verifier-invocation-root-v2/stderr.raw",
+      "copy": "jarde-conditional-physical-ir-verifier-invocation-root-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-ir-verifier-invocation-root-v2/stdout.raw",
+      "copy": "jarde-conditional-physical-ir-verifier-invocation-root-v2/stdout.raw",
+      "bytes": 13824,
+      "sha256": "3062118d50c418e3327fd26413679c8bbdf869c08331bbe27554aaec69f00f89"
+    },
+    {
+      "source": "/private/tmp/jarde-run-conditional-physical-ir-root-v1.py",
+      "copy": "jarde-run-conditional-physical-ir-root-v1.py",
+      "bytes": 3259,
+      "sha256": "05ebc3f06f3a329708b61b194064ad6a5f7f44ada50e56cedd8ce34e41a95bed"
+    },
+    {
+      "source": "/private/tmp/jarde-verify-conditional-physical-ir-root-v2.py",
+      "copy": "jarde-verify-conditional-physical-ir-root-v2.py",
+      "bytes": 16463,
+      "sha256": "d85ececd505d177c2714f5bfefa635e7c7e12327c5e93d80adb590b559087198"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-observer-root-v1.rs",
+      "copy": "jarde-conditional-physical-observer-root-v1.rs",
+      "bytes": 10603,
+      "sha256": "e93349e0330cda2d95b030b32f17d1b7fbf0b81d0469ae7eef855b5bb9f5ae51"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.97s
+[1m[92m     Running[0m tests/recover_inline_conditional_concat_operands.rs (target/debug/deps/recover_inline_conditional_concat_operands-5aabfb780d6cab53)
+[1m[92m     Running[0m tests/recover_instance_field_assignment_chains.rs (target/debug/deps/recover_instance_field_assignment_chains-16623e3a96ebd27f)
+[1m[92m     Running[0m tests/recover_io_resource_finally.rs (target/debug/deps/recover_io_resource_finally-3520e6c847940111)
+[1m[92m     Running[0m tests/recover_javac8_allocation_qualifier_null_check.rs (target/debug/deps/recover_javac8_allocation_qualifier_null_check-0c1abe33d512ccd4)

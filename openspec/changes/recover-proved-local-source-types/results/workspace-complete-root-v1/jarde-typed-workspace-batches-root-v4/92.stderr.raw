@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 7.31s
+[1m[92m     Running[0m tests/artifact_tree_cli.rs (target/debug/deps/artifact_tree_cli-57234a3ebbc965df)
+[1m[92m     Running[0m tests/class_source_cli.rs (target/debug/deps/class_source_cli-11ae52421e728800)
+[1m[92m     Running[0m tests/export_cli.rs (target/debug/deps/export_cli-000a77d08cb6245e)
+[1m[92m     Running[0m tests/json_cli.rs (target/debug/deps/json_cli-7df1ae5abfb82338)

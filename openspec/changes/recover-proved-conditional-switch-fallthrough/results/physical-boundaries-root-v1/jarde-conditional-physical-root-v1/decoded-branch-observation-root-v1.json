@@ -1,0 +1,26 @@
+{
+  "status": "observed-javap-only",
+  "canonical_ir_read": false,
+  "rows": [
+    {
+      "label": "javac8-A-multiple-exit-javap",
+      "javap_ifeq37_target": 57,
+      "javap_goto47_target": 67
+    },
+    {
+      "label": "javac8-B-nonadjacent-javap",
+      "javap_ifeq37_target": 67,
+      "javap_goto47_target": 67
+    },
+    {
+      "label": "javac23-A-multiple-exit-javap",
+      "javap_ifeq37_target": 57,
+      "javap_goto47_target": 67
+    },
+    {
+      "label": "javac23-B-nonadjacent-javap",
+      "javap_ifeq37_target": 67,
+      "javap_goto47_target": 67
+    }
+  ]
+}

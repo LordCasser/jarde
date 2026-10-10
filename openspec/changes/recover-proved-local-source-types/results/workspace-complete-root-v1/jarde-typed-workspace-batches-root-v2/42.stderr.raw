@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.54s
+[1m[92m     Running[0m tests/p3_multi_resource_twr_geometry.rs (target/debug/deps/p3_multi_resource_twr_geometry-2f261ccfb68b0e3d)
+[1m[92m     Running[0m tests/p3_mutf8.rs (target/debug/deps/p3_mutf8-9144d91b26960fd5)
+[1m[92m     Running[0m tests/p3_narrow_array_store_order.rs (target/debug/deps/p3_narrow_array_store_order-20d6dc07f932abc8)
+[1m[92m     Running[0m tests/p3_narrow_array_stores.rs (target/debug/deps/p3_narrow_array_stores-ca0c71aaeccfa626)

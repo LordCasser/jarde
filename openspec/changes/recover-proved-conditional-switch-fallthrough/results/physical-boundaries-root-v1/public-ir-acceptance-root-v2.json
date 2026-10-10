@@ -1,0 +1,627 @@
+{
+  "execution_sha256": "7ca7e90fa1b4302208533204d70f1da17c24d6bbd5cc26b26c106c32a3ddf0d3",
+  "guarded_command_peak_target_bytes": 180560145,
+  "observer_sha256": "26fbd3bedd219da3c7f9ea7baa62f653d6c4c0c06796fcc7a68c9120ceef4444",
+  "product_acceptance": false,
+  "profiles": [
+    {
+      "canonical_blocks": [
+        {
+          "bci": 0,
+          "end_bci": 36,
+          "path": []
+        },
+        {
+          "bci": 36,
+          "end_bci": 40,
+          "path": []
+        },
+        {
+          "bci": 57,
+          "end_bci": 67,
+          "path": []
+        },
+        {
+          "bci": 67,
+          "end_bci": 74,
+          "path": []
+        },
+        {
+          "bci": 40,
+          "end_bci": 50,
+          "path": []
+        },
+        {
+          "bci": 74,
+          "end_bci": 79,
+          "path": []
+        }
+      ],
+      "canonical_edges_full_multiset": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        }
+      ],
+      "case0_reachable_exits": [
+        57,
+        67
+      ],
+      "class_blake3": "d185c867cc368dd8ff7a662b2351b8a18390a6c95e510046fe65d22b39798406",
+      "class_path": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+      "class_sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+      "descriptor": "(II)Ljava/lang/String;",
+      "goto_47_target": 67,
+      "ifeq_37_target": 57,
+      "incoming_to_switch_targets": {
+        "36": [
+          [
+            0,
+            "Normal"
+          ]
+        ],
+        "57": [
+          [
+            0,
+            "Normal"
+          ],
+          [
+            36,
+            "Normal"
+          ]
+        ],
+        "67": [
+          [
+            0,
+            "Normal"
+          ],
+          [
+            40,
+            "Normal"
+          ]
+        ]
+      },
+      "leg": "javac8-A-multiple-exit",
+      "method": "partialBreak",
+      "owner": "ConditionalSwitchBoundaries",
+      "physical_instruction_bcis_not_listed_in_canonical": [
+        50,
+        51,
+        53,
+        56
+      ],
+      "physical_instruction_count": 29,
+      "physical_owner_snapshot_blake3": "d185c867cc368dd8ff7a662b2351b8a18390a6c95e510046fe65d22b39798406",
+      "physical_switch_targets": {
+        "case0": 36,
+        "case1": 57,
+        "default": 67
+      },
+      "ssa_block_membership": [
+        0,
+        36,
+        40,
+        57,
+        67,
+        74
+      ]
+    },
+    {
+      "canonical_blocks": [
+        {
+          "bci": 0,
+          "end_bci": 36,
+          "path": []
+        },
+        {
+          "bci": 36,
+          "end_bci": 40,
+          "path": []
+        },
+        {
+          "bci": 57,
+          "end_bci": 67,
+          "path": []
+        },
+        {
+          "bci": 67,
+          "end_bci": 74,
+          "path": []
+        },
+        {
+          "bci": 40,
+          "end_bci": 50,
+          "path": []
+        },
+        {
+          "bci": 74,
+          "end_bci": 79,
+          "path": []
+        }
+      ],
+      "canonical_edges_full_multiset": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        }
+      ],
+      "case0_reachable_exits": [
+        67
+      ],
+      "class_blake3": "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+      "class_path": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+      "class_sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+      "descriptor": "(II)Ljava/lang/String;",
+      "goto_47_target": 67,
+      "ifeq_37_target": 67,
+      "incoming_to_switch_targets": {
+        "36": [
+          [
+            0,
+            "Normal"
+          ]
+        ],
+        "57": [
+          [
+            0,
+            "Normal"
+          ]
+        ],
+        "67": [
+          [
+            0,
+            "Normal"
+          ],
+          [
+            36,
+            "Normal"
+          ],
+          [
+            40,
+            "Normal"
+          ]
+        ]
+      },
+      "leg": "javac8-B-nonadjacent",
+      "method": "partialBreak",
+      "owner": "ConditionalSwitchBoundaries",
+      "physical_instruction_bcis_not_listed_in_canonical": [
+        50,
+        51,
+        53,
+        56
+      ],
+      "physical_instruction_count": 29,
+      "physical_owner_snapshot_blake3": "63978aeef832dec2f8a52e34d969576555032b163726ffd75307da433ebdb707",
+      "physical_switch_targets": {
+        "case0": 36,
+        "case1": 57,
+        "default": 67
+      },
+      "ssa_block_membership": [
+        0,
+        36,
+        40,
+        57,
+        67,
+        74
+      ]
+    },
+    {
+      "canonical_blocks": [
+        {
+          "bci": 0,
+          "end_bci": 36,
+          "path": []
+        },
+        {
+          "bci": 36,
+          "end_bci": 40,
+          "path": []
+        },
+        {
+          "bci": 57,
+          "end_bci": 67,
+          "path": []
+        },
+        {
+          "bci": 67,
+          "end_bci": 74,
+          "path": []
+        },
+        {
+          "bci": 40,
+          "end_bci": 50,
+          "path": []
+        },
+        {
+          "bci": 74,
+          "end_bci": 79,
+          "path": []
+        }
+      ],
+      "canonical_edges_full_multiset": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        }
+      ],
+      "case0_reachable_exits": [
+        57,
+        67
+      ],
+      "class_blake3": "3928133f5269fa3c71dd51b6a502553299e8f23e37f8a85775357609cb53100d",
+      "class_path": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+      "class_sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d",
+      "descriptor": "(II)Ljava/lang/String;",
+      "goto_47_target": 67,
+      "ifeq_37_target": 57,
+      "incoming_to_switch_targets": {
+        "36": [
+          [
+            0,
+            "Normal"
+          ]
+        ],
+        "57": [
+          [
+            0,
+            "Normal"
+          ],
+          [
+            36,
+            "Normal"
+          ]
+        ],
+        "67": [
+          [
+            0,
+            "Normal"
+          ],
+          [
+            40,
+            "Normal"
+          ]
+        ]
+      },
+      "leg": "javac23-A-multiple-exit",
+      "method": "partialBreak",
+      "owner": "ConditionalSwitchBoundaries",
+      "physical_instruction_bcis_not_listed_in_canonical": [
+        50,
+        51,
+        53,
+        56
+      ],
+      "physical_instruction_count": 29,
+      "physical_owner_snapshot_blake3": "3928133f5269fa3c71dd51b6a502553299e8f23e37f8a85775357609cb53100d",
+      "physical_switch_targets": {
+        "case0": 36,
+        "case1": 57,
+        "default": 67
+      },
+      "ssa_block_membership": [
+        0,
+        36,
+        40,
+        57,
+        67,
+        74
+      ]
+    },
+    {
+      "canonical_blocks": [
+        {
+          "bci": 0,
+          "end_bci": 36,
+          "path": []
+        },
+        {
+          "bci": 36,
+          "end_bci": 40,
+          "path": []
+        },
+        {
+          "bci": 57,
+          "end_bci": 67,
+          "path": []
+        },
+        {
+          "bci": 67,
+          "end_bci": 74,
+          "path": []
+        },
+        {
+          "bci": 40,
+          "end_bci": 50,
+          "path": []
+        },
+        {
+          "bci": 74,
+          "end_bci": 79,
+          "path": []
+        }
+      ],
+      "canonical_edges_full_multiset": [
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 36,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 57,
+          "to_path": []
+        },
+        {
+          "from": 0,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 40,
+          "to_path": []
+        },
+        {
+          "from": 36,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 40,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 67,
+          "to_path": []
+        },
+        {
+          "from": 57,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        },
+        {
+          "from": 67,
+          "from_path": [],
+          "kind": "Normal",
+          "to": 74,
+          "to_path": []
+        }
+      ],
+      "case0_reachable_exits": [
+        67
+      ],
+      "class_blake3": "8d4e04945a9603d7b4ceb051b0710e63690993678419c0ad8b5c0113d5e59470",
+      "class_path": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+      "class_sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5",
+      "descriptor": "(II)Ljava/lang/String;",
+      "goto_47_target": 67,
+      "ifeq_37_target": 67,
+      "incoming_to_switch_targets": {
+        "36": [
+          [
+            0,
+            "Normal"
+          ]
+        ],
+        "57": [
+          [
+            0,
+            "Normal"
+          ]
+        ],
+        "67": [
+          [
+            0,
+            "Normal"
+          ],
+          [
+            36,
+            "Normal"
+          ],
+          [
+            40,
+            "Normal"
+          ]
+        ]
+      },
+      "leg": "javac23-B-nonadjacent",
+      "method": "partialBreak",
+      "owner": "ConditionalSwitchBoundaries",
+      "physical_instruction_bcis_not_listed_in_canonical": [
+        50,
+        51,
+        53,
+        56
+      ],
+      "physical_instruction_count": 29,
+      "physical_owner_snapshot_blake3": "8d4e04945a9603d7b4ceb051b0710e63690993678419c0ad8b5c0113d5e59470",
+      "physical_switch_targets": {
+        "case0": 36,
+        "case1": 57,
+        "default": 67
+      },
+      "ssa_block_membership": [
+        0,
+        36,
+        40,
+        57,
+        67,
+        74
+      ]
+    }
+  ],
+  "schema": "conditional-physical-public-ir-observations-acceptance-root-v1",
+  "scope": "public physical decode, canonical CFG, SSA block membership, on four frozen class inputs; no conditional product proof or acceptance",
+  "status": "accepted-public-ir-observations-no-product",
+  "stderr_sha256": "f0f9b9cb4052e12763355b35bf54f5c37f17970847c53e1998a3ffa592d84f08",
+  "stdout_sha256": "d854ada770ee2778abb3ad8b02747f108f3a230d2e7ec842aa1775051bb45200"
+}

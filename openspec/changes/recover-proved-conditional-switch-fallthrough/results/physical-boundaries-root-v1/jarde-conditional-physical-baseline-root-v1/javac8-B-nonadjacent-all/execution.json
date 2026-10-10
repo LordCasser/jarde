@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-10T21:48:46.662384+00:00",
+  "duration_seconds": 0.01732762501342222,
+  "argv": [
+    "/private/tmp/jarde-proved-local-source-types-cli-v1",
+    "class-source",
+    "--input",
+    "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+    "--class",
+    "ConditionalSwitchBoundaries",
+    "--policy",
+    "single-class",
+    "--release",
+    "8",
+    "--format",
+    "json",
+    "--evidence",
+    "all"
+  ],
+  "exit_code": 0,
+  "streams": {
+    "stdout": {
+      "path": "stdout.raw",
+      "bytes": 117746,
+      "sha256": "25e2cb40c6a5459d7e225d1ea32830e6ef74d8919b4e37e00804cf7825e74d2d"
+    },
+    "stderr": {
+      "path": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

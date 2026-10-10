@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.94s
+[1m[92m     Running[0m tests/p3_alias_field.rs (target/debug/deps/p3_alias_field-bde4a30c1f9a4c04)
+[1m[92m     Running[0m tests/p3_annotation_default.rs (target/debug/deps/p3_annotation_default-e51254a43c500648)
+[1m[92m     Running[0m tests/p3_anonymous_class_facts.rs (target/debug/deps/p3_anonymous_class_facts-1dfd1089a8bdb225)
+[1m[92m     Running[0m tests/p3_array_access.rs (target/debug/deps/p3_array_access-4159752eb2b1775f)

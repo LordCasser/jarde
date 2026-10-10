@@ -1,0 +1,641 @@
+{
+  "status": "byte-exact-copies",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-conditional-physical-collector-luna-v1/collector.py",
+      "copy": "jarde-conditional-physical-collector-luna-v1/collector.py",
+      "bytes": 15719,
+      "sha256": "5e38647f445beaed4fdb8da258f9d1a5f6128234194b84166aef95f7cf59baca"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/acceptance-root-v1.json",
+      "copy": "jarde-conditional-physical-root-v1/acceptance-root-v1.json",
+      "bytes": 425,
+      "sha256": "5a372c1c24e28870785f69d663abda7a74e57ce61456f9df743f7c92810340b5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/ConditionalSwitchBoundariesRunner.java",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/classes/ConditionalSwitchBoundariesRunner.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/A-multiple-exit/classes/ConditionalSwitchBoundariesRunner.class",
+      "bytes": 2136,
+      "sha256": "a8a8e24b5556a08d90ad73f99f7835e7b2bb0e22c788613827968e58f265753b"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/ConditionalSwitchBoundariesRunner.java",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/classes/ConditionalSwitchBoundariesRunner.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/B-nonadjacent/classes/ConditionalSwitchBoundariesRunner.class",
+      "bytes": 2136,
+      "sha256": "a8a8e24b5556a08d90ad73f99f7835e7b2bb0e22c788613827968e58f265753b"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/original/ConditionalSwitchBoundariesRunner.java",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/original/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1488,
+      "sha256": "e51368a95639b9bba3cd94a0f93ac38c11e465b984644ca28c4dc88ab6d82eb5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundariesRunner.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac23/original/classes/ConditionalSwitchBoundariesRunner.class",
+      "bytes": 2136,
+      "sha256": "a8a8e24b5556a08d90ad73f99f7835e7b2bb0e22c788613827968e58f265753b"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/ConditionalSwitchBoundariesRunner.java",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/classes/ConditionalSwitchBoundariesRunner.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/classes/ConditionalSwitchBoundariesRunner.class",
+      "bytes": 1805,
+      "sha256": "5f8e28dfa6aebc4f92fc39f030ab18fa25ca8b2ce9071b33f8fd829af129ab64"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/ConditionalSwitchBoundariesRunner.java",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/classes/ConditionalSwitchBoundariesRunner.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/B-nonadjacent/classes/ConditionalSwitchBoundariesRunner.class",
+      "bytes": 1805,
+      "sha256": "5f8e28dfa6aebc4f92fc39f030ab18fa25ca8b2ce9071b33f8fd829af129ab64"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/original/ConditionalSwitchBoundariesRunner.java",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/original/ConditionalSwitchBoundariesRunner.java",
+      "bytes": 1478,
+      "sha256": "de1955dc08a09068625035fac104b255ce48699aeb6270cae0f4f372ce26e75f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundaries.class",
+      "bytes": 1494,
+      "sha256": "27dea02e6dc3003a822ef7db2f447a6d21a508d1fb83c83622f86c64f4ff1b8b"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundariesRunner.class",
+      "copy": "jarde-conditional-physical-root-v1/cases/javac8/original/classes/ConditionalSwitchBoundariesRunner.class",
+      "bytes": 1805,
+      "sha256": "5f8e28dfa6aebc4f92fc39f030ab18fa25ca8b2ce9071b33f8fd829af129ab64"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/decoded-branch-observation-root-v1.json",
+      "copy": "jarde-conditional-physical-root-v1/decoded-branch-observation-root-v1.json",
+      "bytes": 582,
+      "sha256": "3caf6b9a7201f188be8422f2a9b5021c53845c8a8ba9f2f8fc8d34be347e6cfc"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/execution.json",
+      "copy": "jarde-conditional-physical-root-v1/execution.json",
+      "bytes": 55822,
+      "sha256": "0a404fc1450fc4ce27ac9c3df9c65f482b369465c66b7ea4014c9cf801150812"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/01.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/01.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/01.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/01.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/02.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/02.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/02.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/02.stdout.raw",
+      "bytes": 717,
+      "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/03.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/03.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/03.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/03.stdout.raw",
+      "bytes": 9362,
+      "sha256": "b87135edd57bd50ce0c5c9abd201ca10a84b48feffe3118770a119b8959ab3a0"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/04.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/04.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/04.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/04.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/05.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/05.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/05.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/05.stdout.raw",
+      "bytes": 717,
+      "sha256": "bea57f00af8dd173de6033c6aff075b746d376738eecba4ec83be1486b288c18"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/06.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/06.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/06.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/06.stdout.raw",
+      "bytes": 9362,
+      "sha256": "d76df45e87f11a2b38382af498b41073efece765d4506bc2741d871b2b9c07d7"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/07.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/07.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/07.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/07.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/08.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/08.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/08.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/08.stdout.raw",
+      "bytes": 717,
+      "sha256": "b27e7b166acb7bdcc26da4c8c6c247ac69301d71c8b87230c5e7b055d40032f8"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/09.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/09.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/09.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/09.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/10.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/10.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/10.stdout.raw",
+      "bytes": 717,
+      "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/11.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/11.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/11.stdout.raw",
+      "bytes": 9362,
+      "sha256": "7ddcd2d9e24a123dc89991140b23d8453aa4fdeb61909d67e88ba11f2283a72a"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/12.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/12.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/12.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/13.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/13.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/13.stdout.raw",
+      "bytes": 717,
+      "sha256": "bea57f00af8dd173de6033c6aff075b746d376738eecba4ec83be1486b288c18"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/14.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/14.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/14.stdout.raw",
+      "bytes": 9362,
+      "sha256": "b22e7ff9e647c13a88f12375ab2ae3d646913b3d0f4846ec65ea2eb452c9e44c"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/15.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/15.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/15.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/16.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/16.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/16.stdout.raw",
+      "bytes": 717,
+      "sha256": "b27e7b166acb7bdcc26da4c8c6c247ac69301d71c8b87230c5e7b055d40032f8"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/javac23-original.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/javac23-original.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/javac23-original.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/javac23-original.stdout.raw",
+      "bytes": 717,
+      "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/javac8-original.stderr.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/javac8-original.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-root-v1/streams/javac8-original.stdout.raw",
+      "copy": "jarde-conditional-physical-root-v1/streams/javac8-original.stdout.raw",
+      "bytes": 717,
+      "sha256": "d734a3d84521b5cb5b8b8690a875dfca9a92f8867bf70efca7d24727ce691dc2"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-invocation-root-v1/argv.json",
+      "copy": "jarde-conditional-physical-invocation-root-v1/argv.json",
+      "bytes": 153,
+      "sha256": "58bb1b341d2ab424c41b6c97ea2aba5c2959990028cde510f2fe3a3e9c23bdda"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-invocation-root-v1/execution.json",
+      "copy": "jarde-conditional-physical-invocation-root-v1/execution.json",
+      "bytes": 607,
+      "sha256": "139d9a8161f73871900a01476d94d9c3b5a14efd56fa9ffc046fd6d2a501db57"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-invocation-root-v1/stderr.raw",
+      "copy": "jarde-conditional-physical-invocation-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-invocation-root-v1/stdout.raw",
+      "copy": "jarde-conditional-physical-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/ConditionalSwitchBoundaries.java",
+      "bytes": 4324,
+      "sha256": "2d40cf454723c83613f186afe1219da566c43f4cbf62fc4139474fbe59e89985"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/argv.json",
+      "bytes": 365,
+      "sha256": "feba74308c8cee42c5137ee8fbdf8ce4a8c98a1b621c4091a3b8b9492ab0dbb8"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/execution.json",
+      "bytes": 843,
+      "sha256": "8871fc4495ae50f6efc39e6abd90be0e28cebb37fb2c68991c9bd39bbc9cc105"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/stdout.raw",
+      "bytes": 109795,
+      "sha256": "40d196adbacd7e1b18284d22b9536c8bf04d65d3cd36965d991c66c80ce035ac"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/ConditionalSwitchBoundaries.java",
+      "bytes": 4324,
+      "sha256": "2d40cf454723c83613f186afe1219da566c43f4cbf62fc4139474fbe59e89985"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/argv.json",
+      "bytes": 340,
+      "sha256": "995803be65792b596560b6672eecd3abc85c9c076677a49838b998454bbcf8bb"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/execution.json",
+      "bytes": 815,
+      "sha256": "031e5b8d5a461e7f7c6a2ad5875dfe9dd2d008a017d269862402605515390164"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/stdout.raw",
+      "bytes": 102366,
+      "sha256": "4bf606f134575465182b125bc5cdd18392dc29623fdbb810f03ff674ffbe0d38"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/ConditionalSwitchBoundaries.java",
+      "bytes": 4477,
+      "sha256": "d6811a682fea91d60dc8cbd0acd3c1ab20fa33bd4c328d3061a1e2d9e1dddea1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/argv.json",
+      "bytes": 363,
+      "sha256": "21c2224261dfaa3559adf1eb9bee14927633568488488d85c62912e3a9680968"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/execution.json",
+      "bytes": 842,
+      "sha256": "23ac541c1fe58b851ca2b151d1e0a6aa12d1be80e67f0d1e5776e70c89abd496"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/stdout.raw",
+      "bytes": 117746,
+      "sha256": "32a1c48509e8b56bb2e24076efa53a4488ade7c37102fd23d2356b3214673271"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/ConditionalSwitchBoundaries.java",
+      "bytes": 4477,
+      "sha256": "d6811a682fea91d60dc8cbd0acd3c1ab20fa33bd4c328d3061a1e2d9e1dddea1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/argv.json",
+      "bytes": 338,
+      "sha256": "7106cd39de60f15de5eb0a5734da0a38257af0e343221a306f902e0a25e81820"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/execution.json",
+      "bytes": 813,
+      "sha256": "80ead9250e4999793e5e67f537f94fb25eed5ac788365e402e2da8f987b9001b"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/stdout.raw",
+      "bytes": 110888,
+      "sha256": "b8c7d83673f8456fe5cf0efdd845a540bfb80040c1414b3cd458d7cb7a5558b9"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/ConditionalSwitchBoundaries.java",
+      "bytes": 4324,
+      "sha256": "2d40cf454723c83613f186afe1219da566c43f4cbf62fc4139474fbe59e89985"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/argv.json",
+      "bytes": 364,
+      "sha256": "86c6239aa21a74da1d02de103d6e315280fa467128e63e3c6308d028255bd25f"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/execution.json",
+      "bytes": 843,
+      "sha256": "b65edb0ea8a8b91de4ba09b40348de2e8ce65bf9e8079fe061daf08232a491c8"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/stdout.raw",
+      "bytes": 109795,
+      "sha256": "0555e26eb368aeb86913a89c4d0e45cb958e72f1016d5f08fbe0d8881d0222f0"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/ConditionalSwitchBoundaries.java",
+      "bytes": 4324,
+      "sha256": "2d40cf454723c83613f186afe1219da566c43f4cbf62fc4139474fbe59e89985"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/argv.json",
+      "bytes": 339,
+      "sha256": "6c34b864abc146eca1d1527b3cf63b6f23544967ef253fe881ba9b92a00a29cb"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/execution.json",
+      "bytes": 813,
+      "sha256": "ec406309d712b22c07692a373a460a53b9194cf333525eaf86a44b5d604efaa4"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/stdout.raw",
+      "bytes": 102376,
+      "sha256": "4eb82c69a62c18e07c08a3a6774811b36fb69068a5976feae72616eb301808b9"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/ConditionalSwitchBoundaries.java",
+      "bytes": 4477,
+      "sha256": "d6811a682fea91d60dc8cbd0acd3c1ab20fa33bd4c328d3061a1e2d9e1dddea1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/argv.json",
+      "bytes": 362,
+      "sha256": "c8a61c8b5cb2302d8380711f84c72fe3394d04f8c1a25556d33f4be21e07ccc8"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/execution.json",
+      "bytes": 840,
+      "sha256": "7fc115f0f40a4e573565099d54192ffec69d2f4db765747450028324f5c9ffd6"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/stdout.raw",
+      "bytes": 117746,
+      "sha256": "25e2cb40c6a5459d7e225d1ea32830e6ef74d8919b4e37e00804cf7825e74d2d"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/ConditionalSwitchBoundaries.java",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/ConditionalSwitchBoundaries.java",
+      "bytes": 4477,
+      "sha256": "d6811a682fea91d60dc8cbd0acd3c1ab20fa33bd4c328d3061a1e2d9e1dddea1"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/argv.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/argv.json",
+      "bytes": 337,
+      "sha256": "e9179526cf4e607685cd292974afff22f214ac595740e1d60cf7ad2d69baac6c"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/execution.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/execution.json",
+      "bytes": 812,
+      "sha256": "9218425ead4a48dfb34d51528efdb5321c0f9454fac88480a653e87d527474cf"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/stderr.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/stdout.raw",
+      "copy": "jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/stdout.raw",
+      "bytes": 110888,
+      "sha256": "811d2315dfeef5eb6aea77a043ee20858e4b2720b3a418be8e533633714da172"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-baseline-root-v1/observation.json",
+      "copy": "jarde-conditional-physical-baseline-root-v1/observation.json",
+      "bytes": 3880,
+      "sha256": "831ebf4d55bd097abf19e7024de16ee4c754eef65d44f5b7755251b86b8d8ce5"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-switch-adversarial-luna-v1/review.md",
+      "copy": "jarde-conditional-switch-adversarial-luna-v1/review.md",
+      "bytes": 4550,
+      "sha256": "ec73a520e1afa57008bea55b74f4f57b1e94eb16b8eb69fbbf043924e3fc319d"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-switch-physical-negative-plan-luna-v1/plan.md",
+      "copy": "jarde-conditional-switch-physical-negative-plan-luna-v1/plan.md",
+      "bytes": 5656,
+      "sha256": "77b592993862f7bd1fffc274cce857a0e5c97615048598c48dcf2a10c16d47d8"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-physical-collector-root-v1.py",
+      "copy": "jarde-conditional-physical-collector-root-v1.py",
+      "bytes": 15787,
+      "sha256": "df8af3d6759ffae6926dc784ddcbe210a613ed128b7c1f9a40868806c738357e"
+    }
+  ]
+}

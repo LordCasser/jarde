@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.07s
+[1m[92m     Running[0m tests/recover_statement_position_news.rs (target/debug/deps/recover_statement_position_news-2b43cc68aab77e49)
+[1m[92m     Running[0m tests/recover_static_generic_field_init_text.rs (target/debug/deps/recover_static_generic_field_init_text-490b21012dce55b3)
+[1m[92m     Running[0m tests/recover_synthetic_ctor_super_order.rs (target/debug/deps/recover_synthetic_ctor_super_order-898987ccc63d507e)
+[1m[92m     Running[0m tests/recover_temporal_argument_widening.rs (target/debug/deps/recover_temporal_argument_widening-9032235ac07a12c6)

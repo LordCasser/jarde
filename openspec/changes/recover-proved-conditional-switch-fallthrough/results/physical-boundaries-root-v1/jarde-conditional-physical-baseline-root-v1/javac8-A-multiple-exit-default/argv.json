@@ -1,0 +1,14 @@
+[
+  "/private/tmp/jarde-proved-local-source-types-cli-v1",
+  "class-source",
+  "--input",
+  "/private/tmp/jarde-conditional-physical-root-v1/cases/javac8/A-multiple-exit/classes/ConditionalSwitchBoundaries.class",
+  "--class",
+  "ConditionalSwitchBoundaries",
+  "--policy",
+  "single-class",
+  "--release",
+  "8",
+  "--format",
+  "json"
+]

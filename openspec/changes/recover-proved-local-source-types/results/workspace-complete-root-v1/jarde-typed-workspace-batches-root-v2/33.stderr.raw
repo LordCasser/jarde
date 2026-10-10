@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.33s
+[1m[92m     Running[0m tests/p3_floating_constants.rs (target/debug/deps/p3_floating_constants-266e84dd4f576605)
+[1m[92m     Running[0m tests/p3_for_add_store.rs (target/debug/deps/p3_for_add_store-54024fe180e9e4b4)
+[1m[92m     Running[0m tests/p3_for_latch.rs (target/debug/deps/p3_for_latch-01797e8e72ca5839)
+[1m[92m     Running[0m tests/p3_forward_join.rs (target/debug/deps/p3_forward_join-13b4bdb1c88d9dfe)

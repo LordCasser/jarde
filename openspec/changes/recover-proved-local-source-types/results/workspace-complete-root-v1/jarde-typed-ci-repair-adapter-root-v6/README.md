@@ -1,0 +1,1 @@
+Root v6 preserves the private Luna v5 draft. Corrects the P5 dot escaping and permits the actual ignored reason suffix, without relaxing the other binaries; closes prior Git before bytes and exact six source constants / measured recorder literals. P5-only historical running scope is retained as a historical observation. This has not accepted CI.

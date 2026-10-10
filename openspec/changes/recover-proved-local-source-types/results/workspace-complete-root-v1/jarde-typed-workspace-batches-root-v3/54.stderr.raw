@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.54s
+[1m[92m     Running[0m tests/p3_static_call.rs (target/debug/deps/p3_static_call-01de2a1667efe925)
+[1m[92m     Running[0m tests/p3_string_switch_projection.rs (target/debug/deps/p3_string_switch_projection-29f86fe6c994eee8)
+[1m[92m     Running[0m tests/p3_switch_arm_loop_exits.rs (target/debug/deps/p3_switch_arm_loop_exits-741b46e163bdf5a1)
+[1m[92m     Running[0m tests/p3_switch_fallthrough.rs (target/debug/deps/p3_switch_fallthrough-ea5077884b7a4a06)

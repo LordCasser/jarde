@@ -1,0 +1,4 @@
+[1m[92m   Compiling[0m jarde-cli v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-cli)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.58s
+[1m[92m     Running[0m tests/query_cli.rs (target/debug/deps/query_cli-45a4c8e789df7521)
+[1m[92m     Running[0m tests/task_cli.rs (target/debug/deps/task_cli-310dce83ec627153)

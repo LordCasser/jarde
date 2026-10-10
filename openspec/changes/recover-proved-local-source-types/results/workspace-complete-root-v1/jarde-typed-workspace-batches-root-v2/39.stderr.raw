@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.59s
+[1m[92m     Running[0m tests/p3_loop_boolean_exit.rs (target/debug/deps/p3_loop_boolean_exit-2be0a4420e2c08db)
+[1m[92m     Running[0m tests/p3_loop_test_values.rs (target/debug/deps/p3_loop_test_values-77f5da79d3e233cd)
+[1m[92m     Running[0m tests/p3_loop_transfers.rs (target/debug/deps/p3_loop_transfers-a9316f75331d28aa)
+[1m[92m     Running[0m tests/p3_loop_try_handler_entry.rs (target/debug/deps/p3_loop_try_handler_entry-5c3ebecfe12c6fc7)

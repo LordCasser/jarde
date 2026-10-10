@@ -1,0 +1,9 @@
+{
+  "status": "accepted-jvm-only-observation",
+  "canonical_ir_read": false,
+  "conditional_product_accepted": false,
+  "commands_verified": 16,
+  "runtime_legs": 6,
+  "records_per_runtime_leg": 36,
+  "scope": "Two exact offset-only full-class variants verified and run with original Runner independently on JDK8/23. No matching Java source; next actual reader canonical/SSA shape and caller exclusion remain outstanding."
+}

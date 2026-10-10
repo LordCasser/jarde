@@ -375,3 +375,7 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-11：同一typed旧断言审计追加RequiredConversions char声明与NullThenBuilder null→准确StringBuilder，两测试修复后focused v7共22/0/0；其他七引用拒绝边界与原baseline保持，生产17/10/50冻结闭包不变。完整13成员/3成员双JDK八运行腿实际通过，但独立复核与新提交自身CI/clean未闭合；Null原源码不可得，仅canonical class原执行oracle。全workspace小批正在从旧断言失败命令续跑，不预先计通过。typed6/8、71/612及整CF12不变。
 
 2026-10-11：两完整char/null修复类现在root独立复核接受，均19cmd/38raw/八双JDK运行腿，全部physical owner/span与独立BLAKE3核实。全workspace另发现P5旧AnalysisSteps成本；实际六形状ignored recorder增16/22/14/43/14/3，两个187成员arm各+112，其他计数/文字/行为不变；仅重新固定成本表，常规P5五通过一ignored。94小批仍执行，新产品自身双seedCI/clean待完成，typed6/8及整CF12/71/612不变。
+
+2026-10-11：typed产品43dffc9b8本地全workspace94命令/356目标已root独立接受3408/0/97，86Git/live pins恒同；旧失败与carry原raw保留，target峰值799452287bytes且已清理。自身CI38087978610第一seed已成功、第二seed运行，仍6/8。conditional新增A/B完整物理class负例：双JDK JVM验证及36行执行通过，四同次public reader profiles独立核6 canonical块/8 Normal、A两个case exits/B唯一非相邻exit；仅观察，不计helper/caller准入或条件片任务完成。TestSwitchLabels同类投影caller门与Inner跨类绑定已拆清方向，未开新机制或实现。71/612和整单元完成数不变。
+
+2026-10-11：typed精确产品43dffc9b8自身CI38087978610已root v7独立接受，4jobs/52steps全部成功、双seed各356摘要和3408/0/97，86Git/live pins闭合。任务7/8待新增证据clean交付；仅局部类型窄片，不增加CF12/71整单元完成数。v6日志解析失败及v7成功原样保留。

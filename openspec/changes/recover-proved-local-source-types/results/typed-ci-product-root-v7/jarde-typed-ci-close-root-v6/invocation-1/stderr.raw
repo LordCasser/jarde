@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-typed-ci-repair-adapter-root-v6/verify-typed-ci-root-v6.py", line 461, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/private/tmp/jarde-typed-ci-repair-adapter-root-v6/verify-typed-ci-root-v6.py", line 449, in main
+    workspace=verify_workspace(a.product_commit,names,a.typed_test_count)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-typed-ci-repair-adapter-root-v6/verify-typed-ci-root-v6.py", line 250, in verify_workspace
+    if binary_counts!=[(typed_count,0,0)]:raise RuntimeError(f'typed test summary mismatch: {binary_counts}')
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: typed test summary mismatch: [(9, 0, 0), (10, 0, 0), (2, 0, 0), (2, 0, 0), (5, 0, 0), (4, 0, 0), (5, 0, 0), (4, 0, 0), (1, 0, 0), (2, 0, 0), (6, 0, 0), (12, 0, 0), (4, 0, 0), (8, 0, 0), (5, 0, 0), (5, 0, 0), (54, 0, 1), (6, 0, 0), (7, 0, 0), (15, 0, 0), (5, 0, 0), (7, 0, 0), (85, 0, 0), (11, 0, 0), (3, 0, 0), (7, 0, 0), (5, 0, 0), (30, 0, 0), (5, 0, 0), (1, 0, 0), (4, 0, 0), (4, 0, 0), (5, 0, 0), (5, 0, 0), (4, 0, 0), (3, 0, 0), (234, 0, 0), (7, 0, 0), (2, 0, 0), (178, 0, 0), (7, 0, 0), (7, 0, 0), (3, 0, 0), (4, 0, 0)]

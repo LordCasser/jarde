@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.64s
+[1m[92m     Running[0m tests/p3_local_rewrite.rs (target/debug/deps/p3_local_rewrite-919c1955dd060069)
+[1m[92m     Running[0m tests/p3_long_field_assignment_result.rs (target/debug/deps/p3_long_field_assignment_result-976e7a8a3f20a58a)
+[1m[92m     Running[0m tests/p3_loop_arm_join.rs (target/debug/deps/p3_loop_arm_join-302a45619f078fcf)
+[1m[92m     Running[0m tests/p3_loop_boolean_do.rs (target/debug/deps/p3_loop_boolean_do-4eaad75d152f4baf)

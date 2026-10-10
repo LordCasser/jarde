@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.15s
+[1m[92m     Running[0m tests/recover_unicode_identifiers.rs (target/debug/deps/recover_unicode_identifiers-23a6369dcd7065d6)
+[1m[92m     Running[0m tests/recover_write_accessor_field_types.rs (target/debug/deps/recover_write_accessor_field_types-42467a35035ab0ea)
+[1m[92m     Running[0m tests/same_class_generic_binding.rs (target/debug/deps/same_class_generic_binding-ebad099aa72bc5de)
+[1m[92m     Running[0m tests/same_class_generic_call_consumers.rs (target/debug/deps/same_class_generic_call_consumers-8bf3b81f4c048626)

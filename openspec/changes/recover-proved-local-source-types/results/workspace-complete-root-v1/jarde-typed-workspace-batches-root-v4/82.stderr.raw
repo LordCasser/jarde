@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.86s
+[1m[92m     Running[0m tests/p3_patterns.rs (target/debug/deps/p3_patterns-a83fd95a6ba2fb00)
+[1m[92m     Running[0m tests/p3_preceded_catches.rs (target/debug/deps/p3_preceded_catches-6c6cd48c8b7c76c7)
+[1m[92m     Running[0m tests/p3_proved_boolean_conditional_returns.rs (target/debug/deps/p3_proved_boolean_conditional_returns-41fc78103654922f)
+[1m[92m     Running[0m tests/p3_repeq_boolean_arguments.rs (target/debug/deps/p3_repeq_boolean_arguments-705a7ac68ba31350)

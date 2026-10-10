@@ -1,0 +1,88 @@
+{
+  "status": "frozen-typed-baseline-observed",
+  "product_accepted": false,
+  "canonical_ir_read": false,
+  "cli_sha256": "e6978d74d0935621e73db7d2640fc5a545e4ddfd4c090027ebb84930b5419403",
+  "rows": [
+    {
+      "leg": "javac8",
+      "variant": "A-multiple-exit",
+      "profile": "default",
+      "class_sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+      "report_raw_sha256": "4eb82c69a62c18e07c08a3a6774811b36fb69068a5976feae72616eb301808b9",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-default/execution.json"
+    },
+    {
+      "leg": "javac8",
+      "variant": "A-multiple-exit",
+      "profile": "all",
+      "class_sha256": "94cda1eeb3cb95dd3b211989fcc5ed9ad6744162c225f47483e7a02cc8a19350",
+      "report_raw_sha256": "0555e26eb368aeb86913a89c4d0e45cb958e72f1016d5f08fbe0d8881d0222f0",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-A-multiple-exit-all/execution.json"
+    },
+    {
+      "leg": "javac8",
+      "variant": "B-nonadjacent",
+      "profile": "default",
+      "class_sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+      "report_raw_sha256": "811d2315dfeef5eb6aea77a043ee20858e4b2720b3a418be8e533633714da172",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-default/execution.json"
+    },
+    {
+      "leg": "javac8",
+      "variant": "B-nonadjacent",
+      "profile": "all",
+      "class_sha256": "006e5a27f8afaedcbbdc65f603721edb2c89f128e85ad4d8679915f268e133b1",
+      "report_raw_sha256": "25e2cb40c6a5459d7e225d1ea32830e6ef74d8919b4e37e00804cf7825e74d2d",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac8-B-nonadjacent-all/execution.json"
+    },
+    {
+      "leg": "javac23",
+      "variant": "A-multiple-exit",
+      "profile": "default",
+      "class_sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d",
+      "report_raw_sha256": "4bf606f134575465182b125bc5cdd18392dc29623fdbb810f03ff674ffbe0d38",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-default/execution.json"
+    },
+    {
+      "leg": "javac23",
+      "variant": "A-multiple-exit",
+      "profile": "all",
+      "class_sha256": "afff2fb119e9a53d5d13b5b88a66720e0ec303a62c384651b751091cccbe515d",
+      "report_raw_sha256": "40d196adbacd7e1b18284d22b9536c8bf04d65d3cd36965d991c66c80ce035ac",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-A-multiple-exit-all/execution.json"
+    },
+    {
+      "leg": "javac23",
+      "variant": "B-nonadjacent",
+      "profile": "default",
+      "class_sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5",
+      "report_raw_sha256": "b8c7d83673f8456fe5cf0efdd845a540bfb80040c1414b3cd458d7cb7a5558b9",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-default/execution.json"
+    },
+    {
+      "leg": "javac23",
+      "variant": "B-nonadjacent",
+      "profile": "all",
+      "class_sha256": "1420bbeb909bf3b9790353e7eaeafc5cbe6f71665d267f707e8b732a1b9d6ad5",
+      "report_raw_sha256": "32a1c48509e8b56bb2e24076efa53a4488ade7c37102fd23d2356b3214673271",
+      "members": 6,
+      "outcome": "performed",
+      "execution_path": "/private/tmp/jarde-conditional-physical-baseline-root-v1/javac23-B-nonadjacent-all/execution.json"
+    }
+  ]
+}

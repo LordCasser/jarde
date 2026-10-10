@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.09s
+[1m[92m     Running[0m tests/em27_inline_char_array.rs (target/debug/deps/em27_inline_char_array-d15d519367a89cd0)
+[1m[92m     Running[0m tests/member_capture_outer_read.rs (target/debug/deps/member_capture_outer_read-fea7ff8e80c20028)
+[1m[92m     Running[0m tests/nested_ctor_argument_sites.rs (target/debug/deps/nested_ctor_argument_sites-28f1385266d593e8)
+[1m[92m     Running[0m tests/nested_monitor_regions.rs (target/debug/deps/nested_monitor_regions-091d4a2304b0985a)

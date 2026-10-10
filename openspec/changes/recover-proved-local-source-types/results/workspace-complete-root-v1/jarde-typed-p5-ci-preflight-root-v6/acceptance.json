@@ -1,0 +1,45 @@
+{
+  "schema": "typed-p5-ci-preflight-root-v6",
+  "status": "accepted-local-only",
+  "product_commit": "43dffc9b806dc2b69102e50f52ee78a50850c6d0",
+  "verifier_sha256": "7dce6aaee6fc9bc0182659a69a65f8f499c03cc2f8efba91772f25e677d2e8b9",
+  "p5_cost_gate": {
+    "acceptance_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-source-types/results/ci-repair-evidence-root-v3/jarde-typed-p5-billing-repin-root-v1/acceptance-root-v1.json",
+    "acceptance_sha256": "74f2a4e7bbf04f16fa2789e4ce7a7b345120202eb6681079d7f7a277569cf408",
+    "scope": "historical P5-only acceptance; that artifact did not establish full workspace completion",
+    "p5_source_sha256": "48ec01a4123021db3b4f6e5942adfbc1bba343009741a7edd767dd15d9009fee",
+    "p5_source_is_separate_from_historical_17_10_50_closure": true,
+    "repinned_dimensions": "AnalysisSteps only",
+    "six_analysis_step_deltas": [
+      16,
+      22,
+      14,
+      43,
+      14,
+      3
+    ],
+    "two_arm_delta": 112,
+    "recorder_execution_sha256": "4e42ddf1e754f40ced6774c055f6e8f20b0d0564ebdd23db079005c54125984d",
+    "recorder_streams_verified": 2,
+    "pre_repin_regular_batch_index": 62,
+    "pre_repin_regular_batch_stdout_sha256": "a37613ac411e1c12882c594fd75cf927ad34191336e20e885462e567ec5b8b79",
+    "full_workspace_status_at_verification": "running"
+  },
+  "actual_local_p5_binary": {
+    "counts": [
+      5,
+      0,
+      1
+    ],
+    "tests": {
+      "a_slow_consumer_changes_the_readings_and_not_the_shape": "ok",
+      "every_case_holds_the_shape_it_is_named_for": "ok",
+      "record_the_billing_table": "ignored",
+      "the_corpus_is_rebuilt_from_the_committed_bytes_every_time": "ok",
+      "the_fixed_shape_bills_the_counts_the_corpus_pins": "ok",
+      "the_old_per_method_arms_keep_their_ledger_and_the_same_text": "ok"
+    }
+  },
+  "adversarial_parser_rejections": 2,
+  "ci_accepted": false
+}
