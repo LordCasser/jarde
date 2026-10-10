@@ -1,6 +1,6 @@
 # 单臂分支内前缀循环：root接续入口
 
-当前tasks **4/7**。root实际 validation-build-root-v5 的12命令全部成功，556 passed/0 failed/1 ignored；独立验证重新核24个raw streams和50个产品/测试/canonical pins，结果见 results/validation-acceptance-root-v1.json。永久单臂正反例及相邻回归通过，完整类与全BCI接受仍未完成。
+当前tasks **5/7**。root实际 validation-build-root-v5 的12命令全部成功，556 passed/0 failed/1 ignored；独立验证重新核24个raw streams和50个产品/测试/canonical pins，结果见 results/validation-acceptance-root-v1.json。八份完整生成类重编运行已成功且自身精确产品 CI 已独立接受；全 BCI 接受仍待独立 for 来源修复。
 
 root在已推送产品404b422e141e200f0eea000f64937becedbad664上实际apply-check/apply method-aware probe，格式化，按5GiB机器/1GiB target守卫构建独立诊断CLI，再对两份冻结javac23 class执行default/probe四调用。真实raw在results/arm-loop-diagnostic-luna-v1，应用/撤销逐字hash在results/probe-application-root-v1，root只读复核接受在results/diagnostic-acceptance-root-v1.json。report.rs/region.rs均已逐字恢复，loop来源产品49pins保持；diagnostic CLI不作为产品CLI。
 
@@ -30,3 +30,11 @@ validation v4在正确接受for显示后暴露真正的loopAndTail拒绝：regio
 完整类collector v1因私有脚本JDK manifest pin转抄错误在工具链执行前失败；root以两个已SHA绑定的accepted baseline collectors核正确pin，v2随后真实完成16条命令，却在第17条前因机器余量5178011648 bytes低于5GiB停止。该次未完成，不声明候选完整类成功；原始字节分别在candidate-replay-invocation-root-v1/v2及candidate-whole-classes-root-v1/v2。v3已准备逐命令journal，待余量满足后重新完整执行，绝不以旧部分成功补齐。
 
 root随后只cargo clean本仓target，删除3022 files/669.1MiB，冻结CLI保留、target不存在；实际记录results/root-clean-build-v1。其它进程耗盘使完成清理时机器余量仍低于5GiB，不下调已授权下限，不清除其它项目或用户数据。OpenSpec全量strict真实337 passed/0 failed，见results/openspec-strict-root-v1。For投影goto@20及iterator@42尚未在本CLI实跑确认，不据静态审计宣称缺口或豁免全BCI门禁。
+
+## 14:49 UTC root 完整观测及自身 CI 接受
+
+candidate-whole-classes-root-v3 已真实完成57命令，原4/JADX8/Jarde8共20个完整编译运行腿全部成功，八份Jarde完整源码原样生成与重编，exit/stdout/stderr逐字同各自原class。default/all正文及source map恒同、物理origin绑定有效；原形countEmpty包含goto@42且全部BCI完整，Plain ctor/noPrefix完整，prefixWhile/loopAndTail/takenArm四profile各仅缺goto@20。full verifier-v3真实退出1，raw在candidate-verification-invocation-root-v1，不存在full acceptance。root随后实跑verify-observations-only-root-v1退出0，接受文件candidate-whole-classes-observation-acceptance-root-v1.json明确accepted-observations-only/full_bci_acceptance=false，重核28物理方法行及准确12缺口组合，不勾3.1。
+
+精确产品ca43ac74767c4609284f13b251de9d6c349c67a4自己的CI38048944005已捕获并由root实际verify-ci-product-root-v4独立接受：4jobs/52steps、两seed各354结果记录与3383passed/0failed/97ignored；七gateway、两新增region及旧整数11项逐seed通过。50源码/测试/include pins逐一同ca43 Git blob与当前源码、冻结CLI及12命令24raw同本片v5。准确接受文件results/ci-product-v1/acceptance-prefixed-one-arm-loops-root-v4.json，实际调用记录ci-verification-invocation-root-v4。私有v1/v2脚本的动态expected/testnames/不存在字段转抄错误未执行；root v3实跑因freeze没有built_binary字段退出1，原失败raw保留，v4按真实schema核build命令/CLI冻结而成功。共享SHA固定CI helper字节不改，stdout与stderr交错处理仅在本片独立适配器内核准确测试名和summary。
+
+下一步为独立OpenSpec preserve-proved-for-latch-origins（规划4/4、strict有效、tasks1/6），复用现有ForHeader与implicit-tail helper/gateway_origins，不扩大循环识别。3.1依赖新CLI八份完整生成类全部物理BCI独立接受；3.3待最终干净交付，71/612及EM23/CF07整单元统计不变。

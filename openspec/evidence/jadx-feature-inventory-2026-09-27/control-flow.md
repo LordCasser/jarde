@@ -130,6 +130,8 @@ CF-18 于 2026-09-28 完成上述固定形态的受证恢复：两份完整 Java
 
 ### 2026-10-10 CF-07 回跳来源复验
 
+14:49 UTC 单臂前缀循环片 recover-prefixed-one-arm-loops 当前5/7：root fresh v3实际57命令，原4/JADX8/Jarde8共20完整编译运行腿一致，八份Jarde类正文/default-all/source所有者均有效；Plain三方法四profile仅缺goto@20，iterator原形含goto@42且全来源完整。严格观测验收与full verifier真实失败分别保留，不能把运行成功当全来源接受。自身精确ca43 CI38048944005已root独立v4接受4jobs/52steps、双seed3383/0/97与354records。独立 [for来源片](../../changes/preserve-proved-for-latch-origins/design.md) 规划完整、基线1/6接受，实现候选未应用；使用已有ForHeader/gateway origins，无新机制依据，不增加整单元完成数。
+
 复用既有 LoopCases 全类，root 实际固定双JDK/当前JADX default-none/旧冻结Jarde default-all 重放29命令、10个完整编译运行腿；各重建程序 exit/stdout/stderr 与原oracle一致。证据见 [CF-07来源基线](../java-syntax-2026-10-10/cf07-loop-latch-baseline/README.md)，root实际独立verifier-v4退出0，接受118文件闭合、完整类原始流及primary+derived物理来源；准确文件为independent-verification-root-v3.json。来源仍准确遗漏 andWhile goto@15→2、counted goto@20→27及@30→6、lastIndexOf goto@25→5，不能以运行成功声称全部BCI来源完整。
 
 [preserve-proved-loop-latch-origins](../../changes/preserve-proved-loop-latch-origins/verification-root.md) 已实际实现并独立v5接受，当前6/6，精确404b产品CI38045578457已独立v3接受4jobs/52steps、双seed3379/0/97；ca43检查点已提交推送、无其它分支占用或target。完整12命令/552测试通过；fresh CF-07 29命令/119files的原2/JADX4/Jarde4完整类运行一致，仅andWhile@15与counted@30准确while派生来源增加，旧来源/default-all/正文保持；普通控制另31命令/111files接受noPrefix@14来源增加但四Jarde整类仍编译失败、零runtime。counted@20及lastIndexOf@25仍未覆盖，if汇合及返回分支内部来源另分析，不扩大本片或CF-07整单元统计。71/612分母不变。
