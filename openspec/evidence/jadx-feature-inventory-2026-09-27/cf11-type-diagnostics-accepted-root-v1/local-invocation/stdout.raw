@@ -1,0 +1,1 @@
+{"status": "observed_same_ir", "restored_files": {"crates/jarde-java/src/build.rs": true, "tests/p3_hoisted_iterator_foreach.rs": true}, "source_pin_count_before": 4744, "source_pin_count_during": 4745, "source_pin_count_after": 4744, "target_absent": true, "cleanup_status": "passed", "peak_target_bytes": 327613755}

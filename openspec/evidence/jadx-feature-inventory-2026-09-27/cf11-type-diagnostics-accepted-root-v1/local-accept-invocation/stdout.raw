@@ -1,0 +1,1 @@
+{"schema": "cf11-local-type-debt-observation-acceptance-v2", "status": "observed_same_ir", "failure_count": 0, "output": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v5.json", "observation_scope": "diagnostic same-IR observation only; never a product-fix or correctness acceptance"}

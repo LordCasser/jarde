@@ -11,3 +11,5 @@ root架构约束：先用v1原class做同IR诊断，确认全部write/local iden
 root 后续静态审阅：`names.rs` 的 `DebugLocal::descriptor()` 文档仅保证“unique matched generic signature”时存在，`with_type_metadata` 同时保存 erasure 与 LVTT。因此原 class 的 ordinary LVT Object 已有 raw/javap 证据，不等于 `decide_types` 当前输入已有该 descriptor；same-IR 日志必须如实记录 None。reader 保留普通 descriptor，facade 仅在唯一匹配 LVTT 的分支传递它；是否扩大现有字段传播仍需源码类型证明。
 
 观测 v2 已由 root 实际执行：精确测试1/0/0，但结束时 free5352644608低于5GiB，守卫判定失败，runner/invocation exit1；不接受为正式诊断通过。finally clean exit0，两文件原字节恢复，4744→4745→4744，target不存在。raw显示同一local1/index0的初始String常量写、后续Object next写和Unknown loop Phi，但声明最终选String。证据与元数据/方法泛型的独立只读分析见[本轮诊断](cf11-type-analysis-root-v1/README.md)。后续要核准全部写入兼容性及读取约束，不能无条件Object化；资源满足后才重新独立验收。
+
+空间恢复后 observation-v3 实际 exit0、guard未触发；新增Load29的Stack0/Value14完整消费链唯一到Return30，方法descriptor返回Object。独立accept-v5 actualexit0已接受同IR观察，source4744→4745→4744按原字节恢复、clean/target absent；详[实际诊断验收](cf11-type-diagnostics-accepted-root-v1/README.md)。可以据此设计最小逐写兼容规则，但尚未类型修复，no-debug/窄receiver/数组/参数/复用仍须控制，旧v2资源失败不被覆盖。

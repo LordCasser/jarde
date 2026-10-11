@@ -1,0 +1,99 @@
+{
+  "schema": "cf11-local-type-debt-observation-acceptance-prep-v5",
+  "status": "prepared_not_executed; v4 checks and immutable input pins retained; failure conclusion wording corrected",
+  "acceptor": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v5/accept_observation.py",
+    "bytes": 25215,
+    "sha256": "12d1e3caaabcaa8151725e0a0e8dee714504abb71f5c074acc89e23bee3f39c1"
+  },
+  "output_default": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v4.json",
+  "cli_argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v5/accept_observation.py",
+    "--out",
+    "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v5.json"
+  ],
+  "accepted_run_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/execution.json",
+    "sha256": "ca118e61a67e18ea112537ca14bf6f2f3a47c1c07c23625edb12927639de378d",
+    "schema": "cf11-local-type-debt-observation-v3",
+    "status": "observed_same_ir"
+  },
+  "accepted_invocation_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v3/execution.json",
+    "sha256": "90c4805d3432332a2fcaf2b3d0151a60a29c64b706ea09f84860508c591a9e70",
+    "argv": [
+      "python3",
+      "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/run_observation.py"
+    ],
+    "exit_code": 0
+  },
+  "v3_prep": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3",
+    "runner_sha256": "81aff04094719ca2323fc174d8b0c6e4bae330cd028d4169870080aeb3020a3e",
+    "patch_sha256": "26d9b02565f8ea5e8793776f3a5a0c69d9adf9c75b0e8502e01a309dbf1a090c",
+    "candidate_build_sha256": "3910b0d4c4ccf6100315f1e499cbd0f68db1976e44bd549423c5c61da97865b0",
+    "candidate_test_sha256": "526a0c36a34378b662b135dfa732c5297818c2b5e8eff2648683613ceb3053aa"
+  },
+  "preserved_prior_failures": [
+    {
+      "version": "v1",
+      "prep_pins_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v1/pins.json",
+      "prep_pins_sha256": "8542554beae0cbfba6b2c82f108a8ffbbe136f15e9451a214e90b5dd5e782629",
+      "acceptance_output_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v1/acceptance.json",
+      "status": "failed_resource_guard_as_recorded_in_v1_prep_pins",
+      "run_receipt_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v2/execution.json",
+      "run_receipt_sha256": "020670da4514acf3fdf24ea602ad0299f1e3bc901372dafa223239dc0be98a82"
+    },
+    {
+      "version": "v2",
+      "acceptance_path": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v2.json",
+      "acceptance_sha256": "ed4bedde6906100545ff7a41d6b6975daaebc1bb5daf1f68c88aa479b35cc52c",
+      "status": "failed"
+    },
+    {
+      "version": "v3",
+      "acceptance_path": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v3.json",
+      "acceptance_sha256": "e592e4bc3f592ba48dea2785dd5fa8b725b913e805c76cb29e434413f4369fc3",
+      "status": "failed"
+    }
+  ],
+  "checks": {
+    "run_status": "observed_same_ir",
+    "invocation_exit_code": 0,
+    "test_exit_code": 0,
+    "guard_stop": null,
+    "free_bytes_after_minimum": 5368709120,
+    "peak_target_bytes_maximum": 1073741824,
+    "source_pin_counts": [
+      4744,
+      4745,
+      4744
+    ],
+    "default_rust_stack": true,
+    "cleanup_exact_argv": [
+      "cargo",
+      "clean"
+    ],
+    "cleanup_only_space_bypass": true,
+    "target_absent": true,
+    "full_events": [
+      "begin",
+      "lvt",
+      "local",
+      "access",
+      "access",
+      "access",
+      "load_output",
+      "load_output_consumer",
+      "phi_summary",
+      "phi",
+      "end"
+    ],
+    "output_value": "Stack(0)/ValueId(14)",
+    "consumer": "Return at physical BCI 30"
+  },
+  "scope": "diagnostic same-IR observation only; no product-fix, Java source-type correctness, or Object-return proof claim",
+  "not_run": true,
+  "cli_output_override": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v5.json"
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "cf11-method-signature-diagnostic-acceptance-v1",
+  "status": "accepted_observation_only",
+  "receipt": {
+    "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-run-root-v1/execution.json",
+    "sha256": "f9e84144b3e16ba5e0356fa726e0ee07f7732e94ffee03cf423e08bae9171e02"
+  },
+  "invocation": {
+    "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-invocation-root-v1/execution.json",
+    "sha256": "57725966867c79820c8ff645018ac12401f0dcba905744161918569d4e085d52"
+  },
+  "diagnostic_runner_sha256": "6c4ad2598a898b104560bb4aed07f547584107d1656d2f4d8a9696eb5ee6c6ed",
+  "patch_sha256": "c736eb2b70475d2a00f10d8eebb5e92c990910a5c4a413ed4cf32f65e9c3ac11",
+  "source_closure_count": 4744,
+  "requests": {
+    "method_projection_attempts": 3,
+    "program_ssa_attempts": 3,
+    "request_outputs_consistent": true
+  },
+  "signature_observation": "class=cf11/UpstreamNestedLoops method=test descriptor=(Ljava/util/List;Ljava/util/List;)V signature_hex=284c6a6176612f7574696c2f4c6973743c4c6a6176612f6c616e672f537472696e673b3e3b4c6a6176612f7574696c2f4c6973743c4c6a6176612f6c616e672f537472696e673b3e3b2956 parsed=MethodSignature { type_parameters: [], parameters: [Class(ClassType { segments: [ClassTypeSegment { binary_name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116], arguments: [Exact(Class(ClassType { segments: [ClassTypeSegment { binary_name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103], arguments: [] }] }))] }] }), Class(ClassType { segments: [ClassTypeSegment { binary_name: [106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116], arguments: [Exact(Class(ClassType { segments: [ClassTypeSegment { binary_name: [106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 83, 116, 114, 105, 110, 103], arguments: [] }] }))] }] })], result: None, throws: [] } class_scope=[] erasure=MethodSignatureErasureProof { type_parameters: [], parameters: [[76, 106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116, 59], [76, 106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116, 59]], result: None, throws: [] } candidate=None same_class_body_proof_present=false staged_declaration_present=true staged_marker_count=0",
+  "terminal_projection_observation": "state=refused stage=project_method_signature_with_state error=unsupported (ordinary_generic_source_unproved): same-run Program/SSA cannot prove the body under parameterized types",
+  "same_run_program_ssa_observation": "class=cf11/UpstreamNestedLoops method=test descriptor=(Ljava/util/List;Ljava/util/List;)V program_ragged=false program_statements=13 program_nodes=5 code_instructions=45 code_stopped=false code_exception_handlers=0 ssa_blocks=13 ssa_block_instruction_counts=[3, 3, 7, 3, 3, 2, 1, 8, 1, 4, 1, 5, 4] ssa_phi_count=21 operation_count=45 method_parameter_count=2",
+  "ssa_first_reject": "rejected_line=9154",
+  "ssa_reject_candidate_source_line": "reject_none!();",
+  "named_test": "nested_iterators_project_and_preserve_the_outer_assignment_and_cast",
+  "test_summary": "1 passed; 0 failed; 0 ignored",
+  "test_exit": 0,
+  "cleanup_exit": 0,
+  "target_absent": true,
+  "source_restored_exactly": true,
+  "scope": "one existing TestNestedLoops API test; diagnostic observation only; no generic-equivalence or full-workspace claim"
+}

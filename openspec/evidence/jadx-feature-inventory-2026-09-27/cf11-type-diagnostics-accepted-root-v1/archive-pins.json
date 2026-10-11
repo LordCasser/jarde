@@ -1,0 +1,186 @@
+{
+  "schema": "cf11-type-diagnostics-accepted-archive-root-v1",
+  "scope": "accepted observations only; no product type or generic fix",
+  "files": [
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/0.stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-observation/0.stderr.raw",
+      "bytes": 8680,
+      "sha256": "e0174c31eeb4348158b849e9f700d5604a31b6e082997c9f288ef0ffad8dabb0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/0.stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-observation/0.stdout.raw",
+      "bytes": 175,
+      "sha256": "200cb15c8004473cff2c43de3e08d1affcb766f685df7cc92573e5ec53670ba7"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/1.stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-observation/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "eea432a10fac9dc28f1db9a1739693cb237ff36b9f811fa0c270b5674447e46e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/1.stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-observation/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/execution.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-observation/execution.json",
+      "bytes": 2292275,
+      "sha256": "ca118e61a67e18ea112537ca14bf6f2f3a47c1c07c23625edb12927639de378d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/observation.patch",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-observation/observation.patch",
+      "bytes": 9419,
+      "sha256": "26d9b02565f8ea5e8793776f3a5a0c69d9adf9c75b0e8502e01a309dbf1a090c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v3/execution.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-invocation/execution.json",
+      "bytes": 799,
+      "sha256": "90c4805d3432332a2fcaf2b3d0151a60a29c64b706ea09f84860508c591a9e70"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v3/stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v3/stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-invocation/stdout.raw",
+      "bytes": 318,
+      "sha256": "5732e471a9fd45370a5446dd2d563ab57bc1718c22a18afa910fdf16e7f8078f"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-invocation-root-v5/execution.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-accept-invocation/execution.json",
+      "bytes": 924,
+      "sha256": "940842ce4df00700563f8cecd4908f2b0c0fa49fc182ec7657d1e9fb3dcfc932"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-invocation-root-v5/stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-accept-invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-invocation-root-v5/stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-accept-invocation/stdout.raw",
+      "bytes": 307,
+      "sha256": "035b4f4f4723751c80fb00b0dbfe6da04135e2bd9cd067d690ddf0726599400d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-run-root-v1/0.stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-observation/0.stderr.raw",
+      "bytes": 9546,
+      "sha256": "9492d4e9d81cfba40fda63751336fac9eefbf46ac2907f99d694f78c82c75da0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-run-root-v1/0.stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-observation/0.stdout.raw",
+      "bytes": 192,
+      "sha256": "04f8fe58783cd8b67e7e3f30e33d19b0c3d7c2544cbf2bf7e69d6d527a0c0c63"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-run-root-v1/1.stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-observation/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "50882d289f6cb77793e0e16f4477a86dc93e69adcdc59878ade853f944215190"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-run-root-v1/1.stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-observation/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-run-root-v1/execution.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-observation/execution.json",
+      "bytes": 2298995,
+      "sha256": "f9e84144b3e16ba5e0356fa726e0ee07f7732e94ffee03cf423e08bae9171e02"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-invocation-root-v1/execution.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-invocation/execution.json",
+      "bytes": 803,
+      "sha256": "57725966867c79820c8ff645018ac12401f0dcba905744161918569d4e085d52"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-invocation-root-v1/stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-invocation-root-v1/stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-invocation/stdout.raw",
+      "bytes": 385,
+      "sha256": "0f007cec2d0f5cda01f9cdd59223dccadaf00a5fc51d2087643574cf7f1247c6"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-accept-invocation-root-v1/execution.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-accept-invocation/execution.json",
+      "bytes": 1279,
+      "sha256": "20eaf7a77c0ea9a370a40264fbda76706b9f16f399d258960b00808466e0968e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-accept-invocation-root-v1/stderr.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-accept-invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-accept-invocation-root-v1/stdout.raw",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-accept-invocation/stdout.raw",
+      "bytes": 225,
+      "sha256": "b9bf0d8b1bdbec6d859b746f873896de684538496476b12b05229d1276ebab97"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v5/accept_observation.py",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-acceptor/accept_observation.py",
+      "bytes": 25215,
+      "sha256": "12d1e3caaabcaa8151725e0a0e8dee714504abb71f5c074acc89e23bee3f39c1"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v5/pins.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-acceptor/pins.json",
+      "bytes": 4080,
+      "sha256": "4e776900a3d698b134050d5117f5505c63b7fc905e7bbedae6b64713e25e6ff0"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-accept-prep-luna-v5/README.md",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/local-acceptor/README.md",
+      "bytes": 1742,
+      "sha256": "b13741757add255506ae91a25e307ba2f5ce0de61b20529514867f31947b2537"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-accept-prep-luna-v1/accept.py",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-acceptor/accept.py",
+      "bytes": 14844,
+      "sha256": "fd59d00f6d09d74d0e96f9521c7f8112727e3507eae1bf1cb20022b1ed72529b"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-accept-prep-luna-v1/README.md",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/method-acceptor/README.md",
+      "bytes": 2519,
+      "sha256": "79bc9fae4f513dd0d50e31e16b9a52bd186a50bcdc7925b7bb454025d0929a1c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-acceptance-root-v5.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/jarde-cf11-local-type-debt-observation-acceptance-root-v5.json",
+      "bytes": 26910,
+      "sha256": "27bc1b0e46686d8d11c10478d6527f4ec0f0b175dcbe6c30af9044375ebd053d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-acceptance-root-v1.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-diagnostics-accepted-root-v1/jarde-cf11-method-signature-acceptance-root-v1.json",
+      "bytes": 3302,
+      "sha256": "1dfdff9c2d1bc9f028fd997e0ef4d997db0f153b55bfdb9f11f4f1692ff2b306"
+    }
+  ]
+}

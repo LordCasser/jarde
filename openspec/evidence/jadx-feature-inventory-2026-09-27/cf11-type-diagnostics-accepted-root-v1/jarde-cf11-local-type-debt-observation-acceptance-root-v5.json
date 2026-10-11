@@ -1,0 +1,240 @@
+{
+  "schema": "cf11-local-type-debt-observation-acceptance-v2",
+  "status": "observed_same_ir",
+  "scope": "diagnostic same-IR observation only; never a product-fix or correctness acceptance",
+  "created_at": "2026-10-11T23:15:37.795234+00:00",
+  "run_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3/execution.json",
+    "expected_sha256": "ca118e61a67e18ea112537ca14bf6f2f3a47c1c07c23625edb12927639de378d"
+  },
+  "invocation_receipt": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-invocation-root-v3/execution.json",
+    "expected_sha256": "90c4805d3432332a2fcaf2b3d0151a60a29c64b706ea09f84860508c591a9e70"
+  },
+  "failures": [],
+  "facts": {
+    "runner_status": "observed_same_ir",
+    "invocation_exit_code": 0,
+    "named_test": {
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "p3_hoisted_iterator_foreach",
+        "literal_seeded_object_type_debt_same_ir_diagnostic",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "stdout_lines": [
+        "",
+        "running 1 test",
+        "test literal_seeded_object_type_debt_same_ir_diagnostic ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.01s",
+        "",
+        "",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m cfg-if v1.0.4",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m libc v0.2.189",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m proc-macro2 v1.0.107",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m unicode-ident v1.0.24",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m quote v1.0.47",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m bitflags v2.13.2",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m syn v3.0.5",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m serde_core v1.0.229",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m shlex v2.0.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m find-msvc-tools v0.1.12",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m cc v1.4.6",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m equivalent v1.0.2",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m hashbrown v0.17.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m crc32fast v1.5.2",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m indexmap v2.14.2",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m blake3 v1.8.7",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m getrandom v0.3.4",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m simd-adler32 v0.3.10",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m adler2 v2.0.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m thiserror v2.0.20",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m serde v1.0.229",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m miniz_oxide v0.9.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m thiserror-impl v2.0.20",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m serde_derive v1.0.229",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m arrayvec v0.7.8",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m constant_time_eq v0.4.2",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m flate2 v1.1.10",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m noak v0.7.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m zerocopy v0.8.57",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m getrandom v0.4.3",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rustix v1.1.4",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m foldhash v0.1.5",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rawzip v0.5.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m hashbrown v0.15.5",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rand_core v0.9.5",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m errno v0.3.14",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m autocfg v1.5.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m fixedbitset v0.5.7",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m petgraph v0.8.3",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m num-traits v0.2.19",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m fastrand v2.5.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m zmij v1.0.23",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m once_cell v1.21.4",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m tempfile v3.27.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m ppv-lite86 v0.2.21",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m wait-timeout v0.2.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m bit-vec v0.8.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m fnv v1.0.7",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m quick-error v1.2.3",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m serde_json v1.0.151",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rusty-fork v0.3.1",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m bit-set v0.8.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rand_chacha v0.9.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rand v0.9.5",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m rand_xorshift v0.4.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m regex-syntax v0.8.11",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m memchr v2.8.3",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m itoa v1.0.18",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m unarray v0.1.4",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m proptest v1.11.0",
+        "\u001b[1m\u001b[92m   Compiling\u001b[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)",
+        "\u001b[1m\u001b[92m    Finished\u001b[0m `test` profile [unoptimized] target(s) in 39.72s",
+        "\u001b[1m\u001b[92m     Running\u001b[0m tests/p3_hoisted_iterator_foreach.rs (target/debug/deps/p3_hoisted_iterator_foreach-c7ba2fc8ed535eaf)",
+        "JARDE_LOCAL_TYPE event=begin class=cf11/CF11OuterAssignmentTarget method=noCastAssign descriptor=(Ljava/util/List;)Ljava/lang/Object;",
+        "JARDE_LOCAL_TYPE event=lvt slot=1 name=\"target\" range=Some((3, 31)) descriptor=None boundary_identity=Some((3, 2, 30, Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 })))",
+        "JARDE_LOCAL_TYPE event=local identity=LocalVariable { slot: 1, index: 0 } chosen=Some(Type(Reference(\"java.lang.String\"))) access_count=3",
+        "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([0]) bci=2 read=None written=Some(\"id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\") stored=Some(\"id=ValueId(4) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(2) }]\") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 2, opcode: 76, reads: [(Stack(0), ValueId(4))], writes: [(Local(1), ValueId(5))] })",
+        "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([1, 0]) bci=25 read=None written=Some(\"id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\") stored=Some(\"id=ValueId(12) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 20 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 19, path: [] }, bci: Some(25) }]\") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 25, opcode: 76, reads: [(Stack(0), ValueId(12))], writes: [(Local(1), ValueId(13))] })",
+        "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([2]) bci=29 read=Some(\"id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }]\") written=None stored=None operation=Some(Load { slot: 1 }) instruction=Some(SsaInstruction { bci: 29, opcode: 43, reads: [(Local(1), ValueId(2))], writes: [(Stack(0), ValueId(14))] })",
+        "JARDE_LOCAL_TYPE event=load_output source_bci=29 slot=Stack(0) output=id=ValueId(14) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 29, path: [] }, bci: 29 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(30) }]",
+        "JARDE_LOCAL_TYPE event=load_output_consumer output=ValueId(14) use_block=CanonicalBlockId { bci: 29, path: [] } physical_bci=30 consumer_instruction=Some(SsaInstruction { bci: 30, opcode: 176, reads: [(Stack(0), ValueId(14))], writes: [] }) operation=Some(Return)",
+        "JARDE_LOCAL_TYPE event=phi_summary slot=1 count=1",
+        "JARDE_LOCAL_TYPE event=phi block=CanonicalBlockId { bci: 10, path: [] } slot=Local(1) value=id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }] inputs=[\"id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\", \"id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\"]",
+        "JARDE_LOCAL_TYPE event=end",
+        "JARDE_LOCAL_TYPE_PUBLIC method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId(\"1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075\") }, class_bytes: ClassBytesId { digest: Digest(\"1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075\"), length: 1483 }, variant: Base }, name: JvmBytes([110, 111, 67, 97, 115, 116, 65, 115, 115, 105, 103, 110]), descriptor: JvmBytes([40, 76, 106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116, 59, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59]) } outcome=Produced representation=Java quality=Structured text=\"// @method noCastAssign(Ljava/util/List;)Ljava/lang/Object;\\n// @declaration a static method of `cf11.CF11OuterAssignmentTarget`, member flags 0x0009\\n// recovered from bytecode; presentation is not claimed to compile\\n{\\n    java.lang.String target;\\n    java.util.Iterator iterator;\\n    target = \\\"seed\\\";\\n    iterator = values.iterator();\\n    while (iterator.hasNext()) {\\n        target = iterator.next();\\n    }\\n    return target;\\n}\\n\""
+      ],
+      "raw_stream_sha256": {
+        "stdout": "200cb15c8004473cff2c43de3e08d1affcb766f685df7cc92573e5ec53670ba7",
+        "stderr": "e0174c31eeb4348158b849e9f700d5604a31b6e082997c9f288ef0ffad8dabb0"
+      }
+    },
+    "guard": {
+      "stop": null,
+      "free_limit_bytes": 5368709120,
+      "test_free_bytes_after": 14417797120,
+      "target_limit_bytes": 1073741824,
+      "peak_target_bytes": 327613755
+    },
+    "source_closure": {
+      "before_count": 4744,
+      "during_count": 4745,
+      "after_count": 4744,
+      "changed_during": [
+        "crates/jarde-java/src/build.rs",
+        "openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+        "tests/p3_hoisted_iterator_foreach.rs"
+      ],
+      "fixture_path": "openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "fixture_sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93",
+      "before_map_sha256": "d7a68ce7bb536364e7a017907458f4dd2329127b2c520baf49e933df716db456",
+      "during_map_sha256": "514267c8877da836e03e4302a80a049034e7ad58502d01db8b2b1012fdd3e4b2",
+      "after_equals_before": true
+    },
+    "cleanup": {
+      "argv": [
+        "cargo",
+        "clean"
+      ],
+      "exit_code": 0,
+      "cleanup_only": {
+        "exact_argv": [
+          "cargo",
+          "clean"
+        ],
+        "space_precheck_bypassed": true,
+        "space_monitor_abort_bypassed": true,
+        "observed_before": {
+          "target_bytes": 327613755,
+          "free_bytes": 14417797120
+        },
+        "observed_after": {
+          "target_bytes": 0,
+          "free_bytes": 14740877312
+        }
+      },
+      "target_absent": true
+    },
+    "diagnostic_trace_complete": true,
+    "diagnostic_log_lines": [
+      "JARDE_LOCAL_TYPE event=begin class=cf11/CF11OuterAssignmentTarget method=noCastAssign descriptor=(Ljava/util/List;)Ljava/lang/Object;",
+      "JARDE_LOCAL_TYPE event=lvt slot=1 name=\"target\" range=Some((3, 31)) descriptor=None boundary_identity=Some((3, 2, 30, Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 })))",
+      "JARDE_LOCAL_TYPE event=local identity=LocalVariable { slot: 1, index: 0 } chosen=Some(Type(Reference(\"java.lang.String\"))) access_count=3",
+      "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([0]) bci=2 read=None written=Some(\"id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\") stored=Some(\"id=ValueId(4) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(2) }]\") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 2, opcode: 76, reads: [(Stack(0), ValueId(4))], writes: [(Local(1), ValueId(5))] })",
+      "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([1, 0]) bci=25 read=None written=Some(\"id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\") stored=Some(\"id=ValueId(12) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 20 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 19, path: [] }, bci: Some(25) }]\") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 25, opcode: 76, reads: [(Stack(0), ValueId(12))], writes: [(Local(1), ValueId(13))] })",
+      "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([2]) bci=29 read=Some(\"id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }]\") written=None stored=None operation=Some(Load { slot: 1 }) instruction=Some(SsaInstruction { bci: 29, opcode: 43, reads: [(Local(1), ValueId(2))], writes: [(Stack(0), ValueId(14))] })",
+      "JARDE_LOCAL_TYPE event=load_output source_bci=29 slot=Stack(0) output=id=ValueId(14) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 29, path: [] }, bci: 29 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(30) }]",
+      "JARDE_LOCAL_TYPE event=load_output_consumer output=ValueId(14) use_block=CanonicalBlockId { bci: 29, path: [] } physical_bci=30 consumer_instruction=Some(SsaInstruction { bci: 30, opcode: 176, reads: [(Stack(0), ValueId(14))], writes: [] }) operation=Some(Return)",
+      "JARDE_LOCAL_TYPE event=phi_summary slot=1 count=1",
+      "JARDE_LOCAL_TYPE event=phi block=CanonicalBlockId { bci: 10, path: [] } slot=Local(1) value=id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }] inputs=[\"id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\", \"id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\"]",
+      "JARDE_LOCAL_TYPE event=end",
+      "JARDE_LOCAL_TYPE_PUBLIC method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId(\"1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075\") }, class_bytes: ClassBytesId { digest: Digest(\"1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075\"), length: 1483 }, variant: Base }, name: JvmBytes([110, 111, 67, 97, 115, 116, 65, 115, 115, 105, 103, 110]), descriptor: JvmBytes([40, 76, 106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116, 59, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59]) } outcome=Produced representation=Java quality=Structured text=\"// @method noCastAssign(Ljava/util/List;)Ljava/lang/Object;\\n// @declaration a static method of `cf11.CF11OuterAssignmentTarget`, member flags 0x0009\\n// recovered from bytecode; presentation is not claimed to compile\\n{\\n    java.lang.String target;\\n    java.util.Iterator iterator;\\n    target = \\\"seed\\\";\\n    iterator = values.iterator();\\n    while (iterator.hasNext()) {\\n        target = iterator.next();\\n    }\\n    return target;\\n}\\n\""
+    ],
+    "lvt_is_control_evidence_only_no_type_inference": true,
+    "lvt_line_raw": "JARDE_LOCAL_TYPE event=lvt slot=1 name=\"target\" range=Some((3, 31)) descriptor=None boundary_identity=Some((3, 2, 30, Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 }), Some(LocalVariable { slot: 1, index: 0 })))",
+    "decided_line_raw": "JARDE_LOCAL_TYPE event=local identity=LocalVariable { slot: 1, index: 0 } chosen=Some(Type(Reference(\"java.lang.String\"))) access_count=3",
+    "slot_use_lines_raw": [
+      "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([0]) bci=2 read=None written=Some(\"id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\") stored=Some(\"id=ValueId(4) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 0 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 0, path: [] }, bci: Some(2) }]\") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 2, opcode: 76, reads: [(Stack(0), ValueId(4))], writes: [(Local(1), ValueId(5))] })",
+      "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([1, 0]) bci=25 read=None written=Some(\"id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\") stored=Some(\"id=ValueId(12) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 20 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 19, path: [] }, bci: Some(25) }]\") operation=Some(Store { slot: 1 }) instruction=Some(SsaInstruction { bci: 25, opcode: 76, reads: [(Stack(0), ValueId(12))], writes: [(Local(1), ValueId(13))] })",
+      "JARDE_LOCAL_TYPE event=access identity=LocalVariable { slot: 1, index: 0 } identity_at_bci=Some(LocalVariable { slot: 1, index: 0 }) path=Some([2]) bci=29 read=Some(\"id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }]\") written=None stored=None operation=Some(Load { slot: 1 }) instruction=Some(SsaInstruction { bci: 29, opcode: 43, reads: [(Local(1), ValueId(2))], writes: [(Stack(0), ValueId(14))] })"
+    ],
+    "load_output_value_line_raw": "JARDE_LOCAL_TYPE event=load_output source_bci=29 slot=Stack(0) output=id=ValueId(14) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 29, path: [] }, bci: 29 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(30) }]",
+    "load_output_consumer_lines_raw": [
+      "JARDE_LOCAL_TYPE event=load_output_consumer output=ValueId(14) use_block=CanonicalBlockId { bci: 29, path: [] } physical_bci=30 consumer_instruction=Some(SsaInstruction { bci: 30, opcode: 176, reads: [(Stack(0), ValueId(14))], writes: [] }) operation=Some(Return)"
+    ],
+    "phi_lines_raw": [
+      "JARDE_LOCAL_TYPE event=phi_summary slot=1 count=1",
+      "JARDE_LOCAL_TYPE event=phi block=CanonicalBlockId { bci: 10, path: [] } slot=Local(1) value=id=ValueId(2) ty=Ref(Unknown) def=Phi { block: CanonicalBlockId { bci: 10, path: [] }, slot: Local(1) } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 29, path: [] }, bci: Some(29) }] inputs=[\"id=ValueId(5) ty=Ref(Unknown) def=Instruction { block: CanonicalBlockId { bci: 0, path: [] }, bci: 2 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\", \"id=ValueId(13) ty=Ref(Named { name: [76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59], loader: LoaderId(\\\"app\\\") }) def=Instruction { block: CanonicalBlockId { bci: 19, path: [] }, bci: 25 } replaced_by=None consumers=[SsaUse { block: CanonicalBlockId { bci: 10, path: [] }, bci: None }]\"]"
+    ],
+    "public_api_result_line_raw": "JARDE_LOCAL_TYPE_PUBLIC method=PhysicalMethodId { owner: PhysicalDefinitionId { location: StandaloneRoot { snapshot: SnapshotId(\"1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075\") }, class_bytes: ClassBytesId { digest: Digest(\"1a7d9acfc310e5a90f68bd79c54628fb636d3e13ee5d3e2c8c0bbff912eac075\"), length: 1483 }, variant: Base }, name: JvmBytes([110, 111, 67, 97, 115, 116, 65, 115, 115, 105, 103, 110]), descriptor: JvmBytes([40, 76, 106, 97, 118, 97, 47, 117, 116, 105, 108, 47, 76, 105, 115, 116, 59, 41, 76, 106, 97, 118, 97, 47, 108, 97, 110, 103, 47, 79, 98, 106, 101, 99, 116, 59]) } outcome=Produced representation=Java quality=Structured text=\"// @method noCastAssign(Ljava/util/List;)Ljava/lang/Object;\\n// @declaration a static method of `cf11.CF11OuterAssignmentTarget`, member flags 0x0009\\n// recovered from bytecode; presentation is not claimed to compile\\n{\\n    java.lang.String target;\\n    java.util.Iterator iterator;\\n    target = \\\"seed\\\";\\n    iterator = values.iterator();\\n    while (iterator.hasNext()) {\\n        target = iterator.next();\\n    }\\n    return target;\\n}\\n\"",
+    "static_method_control_review": {
+      "diagnostic_named_test": "literal_seeded_object_type_debt_same_ir_diagnostic",
+      "four_method_source_controls": [
+        {
+          "name": "positive",
+          "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+          "projection": true
+        },
+        {
+          "name": "noCastAssign",
+          "descriptor": "(Ljava/util/List;)Ljava/lang/Object;",
+          "projection": false
+        },
+        {
+          "name": "bodyEffectBeforeAssign",
+          "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+          "projection": false
+        },
+        {
+          "name": "extraNextConsumption",
+          "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+          "projection": false
+        }
+      ],
+      "four_method_source_controls_executed_by_this_invocation": false,
+      "baseline_v1_class_method_signatures": [
+        "public static java.lang.String positive(java.util.List);",
+        "public static java.lang.Object noCastAssign(java.util.List);",
+        "public static java.lang.String bodyEffectBeforeAssign(java.util.List);",
+        "public static java.lang.String extraNextConsumption(java.util.List);"
+      ],
+      "baseline_v1_javap_sha256": "05bf2fd6d0235253e79af931e1f16cde51ac2a34f746c49b8812f6d4e95c49ea"
+    },
+    "observation_conclusion": "Diagnostic trace accepted as observed_same_ir only; no product-fix conclusion."
+  },
+  "run_receipt_sha256": "ca118e61a67e18ea112537ca14bf6f2f3a47c1c07c23625edb12927639de378d",
+  "invocation_receipt_sha256": "90c4805d3432332a2fcaf2b3d0151a60a29c64b706ea09f84860508c591a9e70",
+  "runner_sha256": "81aff04094719ca2323fc174d8b0c6e4bae330cd028d4169870080aeb3020a3e",
+  "patch_sha256": "26d9b02565f8ea5e8793776f3a5a0c69d9adf9c75b0e8502e01a309dbf1a090c"
+}
