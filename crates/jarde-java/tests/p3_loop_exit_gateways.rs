@@ -1193,13 +1193,45 @@ fn one_arm_straight_prefix_loop_and_optional_tail_are_closed() {
     assert_eq!(iterator_default.text, iterator.text);
     assert_eq!(iterator_default.source_map, iterator.source_map);
     assert!(!iterator.text.contains("@bytecode"), "{}", iterator.text);
-    assert!(iterator.text.contains("while ("), "{}", iterator.text);
-    assert!(iterator.text.contains("hasNext"), "{}", iterator.text);
-    assert!(iterator.text.contains(".next"), "{}", iterator.text);
+    assert!(
+        iterator
+            .text
+            .contains("for (java.lang.Object iteratorElement23 : arg0) {"),
+        "countEmpty did not retain the exact proved iterator header: {}",
+        iterator.text
+    );
+    assert!(
+        iterator
+            .text
+            .contains("java.lang.String local3 = (java.lang.String) iteratorElement23;"),
+        "countEmpty lost the original String cast: {}",
+        iterator.text
+    );
+    assert!(
+        iterator.text.contains("if (local3.isEmpty()) {"),
+        "{}",
+        iterator.text
+    );
+    assert!(
+        iterator.text.contains("local1 = local1 + 1;"),
+        "{}",
+        iterator.text
+    );
+    assert!(
+        iterator.text.contains("return local1;"),
+        "{}",
+        iterator.text
+    );
     let arm = braced_body(&iterator.text, "if (arg0 != null) {");
     // Frozen javac23 branch targets/fallthrough give arm blocks 6, 13, 22,
     // 39, 42; 45 is the shared exit and is deliberately outside the arm.
-    assert_one_structured_owner_in(&iterator, arm, &[6, 13, 22, 39, 42], ".iterator()", &[6, 7]);
+    assert_one_structured_owner_in(
+        &iterator,
+        arm,
+        &[6, 13, 22, 39, 42],
+        "for (java.lang.Object iteratorElement23 : arg0)",
+        &[6, 7],
+    );
 }
 
 #[test]

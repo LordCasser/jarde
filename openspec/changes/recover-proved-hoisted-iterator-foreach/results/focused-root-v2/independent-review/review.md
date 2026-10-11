@@ -1,0 +1,27 @@
+# Focused review: hoisted Iterator ownership and Phi inputs
+
+This is a read-only review of the current `build.rs` helper and the focused root execution receipt. It does not modify shared files and does not run Cargo, Git, JDK, JADX, or the CLI. The execution record reports a focused pass only; it is not a whole-workspace or whole-class result.
+
+## Findings in the final helper
+
+`iterator_declaration_for_loop` first requires the three local accesses (initializer store, `hasNext` receiver load, `next` receiver load) to map to one `LocalVariable`, and checks the recovered name and declaration membership. It rejects incomplete placement, requires owner-path visibility, and permits a strict ancestor only for an `Elevated` placement. It then looks for the exact typed blank declaration in the active statement list using its name and slot-to-variable identity. Duplicate matching rows refuse. Presence selects the existing same-list removal/gap behavior even for a strict-prefix owner; absence selects the cross-list case and requires an exact unique Iterator declaration at the owner region. This follows physical list membership rather than inferring it from path length. Source: `build.rs:11850-11993`.
+
+`iterator_phi_use_ownership` inspects every use of the tested SSA value. Instruction uses are restricted to the two known receiver-load BCIs. Block-only uses are counted by block and must be accounted for by exact occurrences of the same `ValueId` in that block's Phi inputs. Each Phi containing that exact input must have a dead output with a replacement chain back to the iterator; all `Value` inputs of that matching Phi must also resolve to the iterator, while `Itself` is accepted. Thus an unrelated Phi in the same block is skipped after being charged if it has no exact target input; an unrelated value mixed into a Phi that does contain the target causes refusal. That is a deliberate safety boundary, not a missed global rejection. Inputs and replacement steps are polled and charged individually, without building an intermediate `matching_values` vector. Source: `build.rs:11995-12104`.
+
+The call site runs the ownership check for both the initial iterator value and the header Phi value. A false result declines the candidate. A budget/cancellation `StopReason` is saved in `proof_stop`, exits the proof closure, then is returned as `Err` after the closure, so a stop is not converted to an ordinary refusal. Source: `build.rs:21840-21853` and `21950-21955`.
+
+The broader candidate still retains the existing interface owner/descriptors, slot writes, header and next block shape, receiver stack operands, next/cast single-consumer checks, and exception-handler equality checks (`build.rs:21487-21529`, `21790-21928`). The new helper does not by itself prove all later foreach conditions; candidate generation remains gated by these checks.
+
+## Receipt verification
+
+The receipt `/private/tmp/jarde-hoisted-iterator-focused-root-v2/execution.json` has schema `hoisted-iterator-focused-root-v2` and status `passed_focused_candidate_only`. Its eight commands, in order, are `cargo fmt --all`; the hoisted-iterator, existing iterable, array, and wrapped-array integration tests; `jarde-java` library tests; a `jarde-cli` binary build; and `cargo clean`. Every command records exit 0 and `guard_stop: null`. All 16 recorded raw stdout/stderr files match their receipt byte counts and SHA-256 values.
+
+The four integration targets report `2/0/0`, `5/0/0`, `6/0/0`, and `4/0/0` passed/failed/ignored. Their raw output contains the exact named outcomes retained in `pins.json`; the 360 library tests also report `360/0/0`. The two new focused tests are `nested_foreach_late_stop_and_precancel_leave_no_partial_method_artifact` and `nested_inner_iterator_projects_without_changing_outer_loop_or_binding`. The iterable suite includes the existing direct/debug/no-debug, execution comparison, platform-owner, bounded-stop, and extra-use refusal cases. The focused suite therefore exercised both success and refusal/stop paths represented by those tests.
+
+The receipt records default Rust stack (`rust_min_stack: null` and runner explicitly removes `RUST_MIN_STACK`), no formatter changes, an initially absent target, final target absent after successful clean, and identical 4,729-entry source-pin maps before formatting, before/after the run. I independently hashed all 4,729 current source files: all match the receipt (28,402,153 bytes total). The candidate CLI is 61,314,560 bytes, mode `0555`, and its live SHA-256 matches `8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a`.
+
+The inherited guard helper uses a 5 GiB minimum free-space threshold, a 1 GiB target-size maximum, and a one-second poll interval. Recorded maximum target size is 654,226,085 bytes; minimum post-command free space is 25,085,022,208 bytes, and no guard stopped a command. The receipt has no standalone `guard_limits` object, so the threshold/poll values are pinned to the runner's imported guard helper source rather than claimed as fields recorded in `execution.json`.
+
+## Limits
+
+This validates the focused targets, library suite, and CLI build from the recorded run. It does not establish whole-workspace testing, whole-class CLI output correctness, or broader behavior beyond the named fixtures. The review itself is static; the execution facts above are read and hash-checked from the root-produced receipt and raw streams.

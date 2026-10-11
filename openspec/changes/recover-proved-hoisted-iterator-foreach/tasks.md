@@ -6,12 +6,12 @@
 
 ## 2. 最小实现与永久回归
 
-- [ ] 2.1 根据实际首拒派发Luna私有最小候选，root审查应用。验收：仅复用同LocalVariable完整可见owner、精确Phi input/use occurrence对账与现有有界replacement；匹配Phi已替换/无reader/各arm同iterator，无关Phi不增加门；新祖先路径间隔只有空声明，删除位置限当前列表、祖先声明保留。原同列表路径与完整其它循环proof保持，新增工作明确计费/Stop传播；新通用证明机制先拆债务。
-- [ ] 2.2 增加必要永久fixture/API/owner、split身份、Phi multiplicity/mixed/live/无关Phi、额外消费反例并核真实Stop。验收：default/all/noRuleDetails同一正文决策，全部physical BCI/UTF8来源合法，outer Assign/generic边界不越界；真实AnalysisSteps或其他实际dimension/usage/location和当前方法原子无产物，pre-cancel单列。
+- [x] 2.1 根据实际首拒派发Luna私有最小候选，root审查应用。验收：仅复用同LocalVariable完整可见owner、精确Phi input/use occurrence对账与现有有界replacement；匹配Phi已替换/无reader/各arm同iterator，无关Phi不增加门；准确空声明在self.stmts时保留原同列表路径；owner前缀只证可见性，不代替list匹配。新祖先路径间隔只有空声明，删除位置限当前列表、其它列表祖先声明保留。原同列表路径与完整其它循环proof保持，新增工作明确计费/Stop传播；新通用证明机制先拆债务。
+- [x] 2.2 增加必要永久fixture/API/owner、split身份、Phi multiplicity/mixed/live/无关Phi、额外消费反例并核真实Stop。验收：default/all/noRuleDetails同一正文决策，全部physical BCI/UTF8来源合法，outer Assign/generic边界不越界；真实AnalysisSteps或其他实际dimension/usage/location和当前方法原子无产物，pre-cancel单列。
 
 ## 3. 完整验收与交付
 
-- [ ] 3.1 冻结当前完整输入闭包新CLI并root接受完整双JDK三方对照。验收：同源完整generated class未经编辑重编执行，exit/stdout/stderr/身份/顺序及异常同原，来源default/all准确；JADX差异、未恢复部分与原始失败单列。
-- [ ] 3.2 完成fresh全工作区、fmt/同CI Clippy/global strict与最终CLI绑定。验收：实际metadata各目标恰好一次、逐named outcomes核验；默认Rust stack、5GiB free/target1GiB一秒守卫、最终clean，CLI与实测candidate字节一致。
+- [x] 3.1 冻结当前完整输入闭包新CLI并root接受完整双JDK三方对照。验收：同源完整generated class未经编辑重编执行，exit/stdout/stderr/身份/顺序及异常同原，来源default/all准确；JADX差异、未恢复部分与原始失败单列。
+- [x] 3.2 完成fresh全工作区、fmt/同CI Clippy/global strict与最终CLI绑定。验收：实际metadata各目标恰好一次、逐named outcomes核验；默认Rust stack、5GiB free/target1GiB一秒守卫、最终clean，CLI与实测candidate字节一致。
 - [ ] 3.3 提交推送产品并独立接受自身CI。验收：确切head/run全部jobs/steps和双seed目标/named outcomes同本地，失败修复后用新产品自身CI，不借前片。
 - [ ] 3.4 更新账本/verification/handoff并交付干净main。验收：实际HEAD/main/origin/remote一致、仅main、aux checkout detached干净main祖先无target，关闭文档推送后按真实HEAD审计；仅关闭该窄片，不增加整个CF11/71/612完成数。

@@ -1,0 +1,1 @@
+实际 focused candidate 验收：8 命令/16 原始流；新增 API 2、既有 foreach 5/6/4、Java lib 360 均按 named outcome 核对。默认 Rust 栈；5 GiB free/target 1 GiB 守卫未触发、最终 cargo clean。4729 输入完整闭包在构建前后及验收时相同。尚不代表 whole-class 对照、全 workspace、Clippy 或自身 CI 验收。首轮借用编译错误完整保留于 first-focused-root-v1。

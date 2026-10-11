@@ -11847,6 +11847,262 @@ struct SnapshotConsumer {
     bci: u32,
 }
 
+/// Finds the current-list declaration, or verifies the complete visible owner for an already
+/// emitted ancestor declaration. `None` means the facts are incomplete; the inner index names
+/// only a current-list declaration eligible for removal. The boolean marks a declaration absent
+/// from this list, whose proved ancestor owner requires the stricter empty-declaration gap rule.
+fn iterator_declaration_for_loop(
+    declarations: &Declarations,
+    declared: &BTreeSet<LocalVariable>,
+    names: &NameTable,
+    reuse: &reuse::Plan,
+    statements: &[Stmt],
+    path: &[u32],
+    iterator_name: &str,
+    slot: u16,
+    init_index: usize,
+    access_bcis: [u32; 3],
+    init_store_bci: u32,
+    budget: &mut Budget,
+) -> Result<Option<(Option<usize>, bool)>, StopReason> {
+    let first_at = access_bcis[0];
+    poll(budget, Some(first_at))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(first_at),
+    )?;
+    let Some(variable) = reuse.variable_at(slot, first_at) else {
+        return Ok(None);
+    };
+    for at in access_bcis.into_iter().skip(1) {
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        if reuse.variable_at(slot, at) != Some(variable) {
+            return Ok(None);
+        }
+    }
+    poll(budget, Some(init_store_bci))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(init_store_bci),
+    )?;
+    if names.text(variable) != Some(iterator_name) || !declared.contains(&variable) {
+        return Ok(None);
+    }
+
+    poll(budget, Some(init_store_bci))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        1,
+        Some(init_store_bci),
+    )?;
+    let Some(placement) = declarations.placements.get(&variable) else {
+        return Ok(None);
+    };
+    let owner = match placement {
+        DeclarationPlacement::Local { owner } | DeclarationPlacement::Elevated { owner } => owner,
+        DeclarationPlacement::Incomplete { .. } => return Ok(None),
+    };
+    poll(budget, Some(init_store_bci))?;
+    charge(
+        budget,
+        CountedBudgetDimension::AnalysisSteps,
+        u64::try_from(owner.len().saturating_add(1)).unwrap_or(u64::MAX),
+        Some(init_store_bci),
+    )?;
+    if !path.starts_with(owner.as_slice()) {
+        return Ok(None);
+    }
+    let strict_owner = owner.len() < path.len();
+    if strict_owner && !matches!(placement, DeclarationPlacement::Elevated { .. }) {
+        return Ok(None);
+    }
+
+    // RegionPath identifies declaration planning locations, not the physical statement Vec that
+    // owns an emitted declaration. A strict-prefix owner can still have emitted its row into this
+    // active list (for a single-level loop); use the identity-checked row in `statements` to keep
+    // the old same-list removal/gap behavior.
+    let mut statement_index = None;
+    for (index, statement) in statements[..init_index].iter().enumerate() {
+        let at = statement.origin.primary().bci();
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        if matches!(
+            &statement.kind,
+            StmtKind::Declare {
+                ty: Type::Reference(ty),
+                name,
+                value: None,
+                ..
+            } if name == iterator_name
+                && (ty == "java.util.Iterator" || ty == "Iterator")
+                && reuse.variable_at(slot, at) == Some(variable)
+        ) {
+            if statement_index.replace(index).is_some() {
+                return Ok(None);
+            }
+        }
+    }
+
+    // If the exact declaration row is absent from the active list, this is a cross-list
+    // Elevated owner. It is safe to remove only the init row, and only for a strict ancestor.
+    let ancestor_owner = statement_index.is_none();
+    if ancestor_owner
+        && (!strict_owner || !matches!(placement, DeclarationPlacement::Elevated { .. }))
+    {
+        return Ok(None);
+    }
+
+    if let DeclarationPlacement::Elevated { .. } = placement {
+        let Some(owner_declarations) = declarations.at_region.get(owner) else {
+            return Ok(None);
+        };
+        let mut owner_variable_matches = 0usize;
+        let mut owner_anchor_matches = 0usize;
+        for declaration in owner_declarations {
+            poll(budget, Some(declaration.at))?;
+            charge(
+                budget,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+                Some(declaration.at),
+            )?;
+            if declaration.variable == variable {
+                owner_variable_matches += 1;
+                if declaration.at == init_store_bci
+                    && matches!(&declaration.ty, Type::Reference(ty)
+                        if ty == "java.util.Iterator" || ty == "Iterator")
+                {
+                    owner_anchor_matches += 1;
+                }
+            }
+        }
+        if owner_variable_matches != 1 || owner_anchor_matches != 1 {
+            return Ok(None);
+        }
+    } else if statement_index.is_none() {
+        return Ok(None);
+    }
+
+    Ok(Some((statement_index, ancestor_owner)))
+}
+
+/// Checks every use of one iterator value. Phi operands are counted by exact ValueId, while
+/// replacement following is used only to prove that each matching historical arm still denotes
+/// this iterator. Unrelated Phis in the same block are intentionally outside this proof.
+fn iterator_phi_use_ownership(
+    ssa: &SsaTable,
+    iterator_value: ValueId,
+    allowed_loads: [u32; 2],
+    budget: &mut Budget,
+) -> Result<bool, StopReason> {
+    fn resolves_to(
+        ssa: &SsaTable,
+        mut value: ValueId,
+        target: ValueId,
+        budget: &mut Budget,
+        at: u32,
+    ) -> Result<bool, StopReason> {
+        for _ in 0..=ssa.phis().len() {
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            if value == target {
+                return Ok(true);
+            }
+            let Some(replacement) = ssa.value(value).replaced_by() else {
+                return Ok(false);
+            };
+            value = replacement;
+        }
+        Ok(false)
+    }
+
+    let mut none_uses_by_block = BTreeMap::<CanonicalBlockId, usize>::new();
+    for use_ in ssa.value(iterator_value).uses() {
+        let at = use_.block().bci();
+        poll(budget, Some(at))?;
+        charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+        if let Some(bci) = use_.bci() {
+            if !allowed_loads.contains(&bci) {
+                return Ok(false);
+            }
+        } else {
+            let count = none_uses_by_block.entry(use_.block().clone()).or_default();
+            let Some(next_count) = count.checked_add(1) else {
+                return Ok(false);
+            };
+            *count = next_count;
+        }
+    }
+
+    for (block, expected_occurrences) in none_uses_by_block {
+        let at = block.bci();
+        let mut matching_phis = 0usize;
+        let mut exact_occurrences = 0usize;
+        for phi in ssa.phis() {
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            if phi.block() != &block {
+                continue;
+            }
+            let mut phi_occurrences = 0usize;
+            for input in phi.inputs() {
+                poll(budget, Some(at))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+                match input {
+                    PhiInput::Value(value) => {
+                        if *value == iterator_value {
+                            let Some(next_count) = phi_occurrences.checked_add(1) else {
+                                return Ok(false);
+                            };
+                            phi_occurrences = next_count;
+                        }
+                    }
+                    PhiInput::Itself => {}
+                }
+            }
+            if phi_occurrences == 0 {
+                continue;
+            }
+            let Some(next_matching_phis) = matching_phis.checked_add(1) else {
+                return Ok(false);
+            };
+            matching_phis = next_matching_phis;
+            let Some(next_occurrences) = exact_occurrences.checked_add(phi_occurrences) else {
+                return Ok(false);
+            };
+            exact_occurrences = next_occurrences;
+            poll(budget, Some(at))?;
+            charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+            let phi_value = ssa.value(phi.value());
+            if phi_value.replaced_by().is_none()
+                || !phi_value.uses().is_empty()
+                || !resolves_to(ssa, phi.value(), iterator_value, budget, at)?
+            {
+                return Ok(false);
+            }
+            for input in phi.inputs() {
+                poll(budget, Some(at))?;
+                charge(budget, CountedBudgetDimension::AnalysisSteps, 1, Some(at))?;
+                if let PhiInput::Value(value) = input {
+                    if !resolves_to(ssa, *value, iterator_value, budget, at)? {
+                        return Ok(false);
+                    }
+                }
+            }
+        }
+        if matching_phis == 0 || exact_occurrences != expected_occurrences {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 impl Builder<'_> {
     /// The postfix old-value snapshots this body proves (`recover-postfix-old-value-snapshot`).
     ///
@@ -18985,7 +19241,7 @@ impl Builder<'_> {
             None
         };
         let iterable_projected = if for_header.is_none() && tests.len() == 1 {
-            self.iterable_for_each_candidate(first_test_bci, &kind, body)?
+            self.iterable_for_each_candidate(first_test_bci, path, &kind, body)?
         } else {
             None
         };
@@ -21224,6 +21480,7 @@ impl Builder<'_> {
     fn iterable_for_each_candidate(
         &mut self,
         test_bci: u32,
+        path: &[u32],
         kind: &StmtKind,
         regions: &[Region],
     ) -> Result<Option<(StmtKind, OriginSet, Vec<usize>, String)>, StopReason> {
@@ -21271,6 +21528,7 @@ impl Builder<'_> {
             Some(test_bci),
         )?;
 
+        let mut proof_stop = None;
         let candidate = (|| {
             let StmtKind::While { label, cond, body } = kind else {
                 return None;
@@ -21353,28 +21611,6 @@ impl Builder<'_> {
             let Some(Type::Reference(iterable_type)) = &iterable.presented else {
                 return None;
             };
-            let declaration_index = self.stmts[..init_index].iter().rposition(|stmt| {
-                matches!(&stmt.kind, StmtKind::Declare { ty: Type::Reference(ty), name, value: None, .. }
-                    if name == iterator_name && (ty == "java.util.Iterator" || ty == "Iterator"))
-            })?;
-            if self.stmts[init_index + 1..]
-                .iter()
-                .any(|stmt| match &stmt.kind {
-                    StmtKind::Declare { value: None, .. } => false,
-                    StmtKind::Declare {
-                        value: Some(value), ..
-                    }
-                    | StmtKind::Assign { value, .. } => !matches!(
-                        value.kind,
-                        ExprKind::Integer(_) | ExprKind::Long(_) | ExprKind::Boolean(_)
-                    ),
-                    _ => true,
-                }) || self.stmts[init_index + 1..].iter().any(|stmt| {
-                matches!(&stmt.kind, StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. }
-                    if name == iterable_name || name == iterator_name)
-            }) {
-                return None;
-            }
             let init_bci = match &init_stmt.kind {
                 StmtKind::Assign { value, .. }
                 | StmtKind::Declare {
@@ -21452,6 +21688,54 @@ impl Builder<'_> {
                     Some(Operation::Store { .. })
                 )
             {
+                return None;
+            }
+            let (declaration_index, ancestor_owner) = match iterator_declaration_for_loop(
+                &self.declarations,
+                &self.declared,
+                self.names,
+                self.reuse,
+                &self.stmts,
+                path,
+                iterator_name,
+                *iterator_slot,
+                init_index,
+                [init_store_bci, test_load_bci, next_load_bci],
+                init_store_bci,
+                self.budget,
+            ) {
+                Ok(Some(owner)) => owner,
+                Ok(None) => return None,
+                Err(stop) => {
+                    proof_stop = Some(stop);
+                    return None;
+                }
+            };
+            let only_blank_declarations = self.stmts[init_index + 1..]
+                .iter()
+                .all(|stmt| matches!(stmt.kind, StmtKind::Declare { value: None, .. }));
+            let no_loop_local_writes = !self.stmts[init_index + 1..].iter().any(|stmt| {
+                matches!(&stmt.kind, StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. }
+                    if name == iterable_name || name == iterator_name)
+            });
+            let safe_gap = if ancestor_owner {
+                only_blank_declarations
+            } else {
+                !self.stmts[init_index + 1..]
+                    .iter()
+                    .any(|stmt| match &stmt.kind {
+                        StmtKind::Declare { value: None, .. } => false,
+                        StmtKind::Declare {
+                            value: Some(value), ..
+                        }
+                        | StmtKind::Assign { value, .. } => !matches!(
+                            value.kind,
+                            ExprKind::Integer(_) | ExprKind::Long(_) | ExprKind::Boolean(_)
+                        ),
+                        _ => true,
+                    })
+            };
+            if !safe_gap || !no_loop_local_writes {
                 return None;
             }
             let iterator_value =
@@ -21554,16 +21838,18 @@ impl Builder<'_> {
                 return None;
             }
             for value in [iterator_value, phi.value()] {
-                if self.ssa.value(value).uses().iter().any(|use_| {
-                    ![Some(test_load_bci), Some(next_load_bci)].contains(&use_.bci())
-                        && !(use_.bci().is_none()
-                            && use_.block() == header
-                            && phi.inputs().iter().all(|input| {
-                                *input == PhiInput::Value(iterator_value)
-                                    || *input == PhiInput::Itself
-                            }))
-                }) {
-                    return None;
+                match iterator_phi_use_ownership(
+                    self.ssa,
+                    value,
+                    [test_load_bci, next_load_bci],
+                    self.budget,
+                ) {
+                    Ok(true) => {}
+                    Ok(false) => return None,
+                    Err(stop) => {
+                        proof_stop = Some(stop);
+                        return None;
+                    }
                 }
             }
             let next_result = stack_result(instruction(next_bci)?)?;
@@ -21658,9 +21944,15 @@ impl Builder<'_> {
                 body.to_vec(),
                 next_bci,
                 origin,
-                vec![declaration_index, init_index],
+                declaration_index
+                    .into_iter()
+                    .chain(std::iter::once(init_index))
+                    .collect(),
             ))
         })();
+        if let Some(stop) = proof_stop {
+            return Err(stop);
+        }
         let Some((label, iterable, mut body, next_bci, origin, remove)) = candidate else {
             return Ok(None);
         };
@@ -33612,8 +33904,17 @@ mod tests {
         })
     }
 
-    fn analyze_own_grid(
+    const HOISTED_ITERATOR_CLASS: &[u8] = include_bytes!(
+        "../../../openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
+    );
+    const SCOPE_REUSE_CLASS: &[u8] =
+        include_bytes!("../../../tests/fixtures/p3-scope/v8-debug/Scope.class");
+    const HOISTED_ITERATOR_DESCRIPTOR: &str = "(Ljava/util/List;Ljava/util/List;)V";
+
+    fn analyze_test_method(
         class: &[u8],
+        name: &str,
+        descriptor: &str,
         java_release: u16,
     ) -> (
         jarde_jvm::method_ir::MethodIrAnalysis,
@@ -33646,6 +33947,11 @@ mod tests {
             },
             variant: PhysicalVariant::Base,
         };
+        let method = PhysicalMethodId {
+            owner: definition.clone(),
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+        };
         let domain = LoadDomain {
             loader: LoaderId("app".to_owned()),
             parent_loader: None,
@@ -33656,11 +33962,6 @@ mod tests {
             module_mode: ModuleMode::ClassPath,
             external_override: RuntimeUncertainty::None,
             runtime_transformation: RuntimeUncertainty::None,
-        };
-        let method = PhysicalMethodId {
-            owner: definition.clone(),
-            name: JvmBytes(b"ownGridDirect".to_vec()),
-            descriptor: JvmBytes(b"()[[LBase;".to_vec()),
         };
         let request = MethodAnalysisRequest {
             environment: ResolutionEnvironment {
@@ -33684,9 +33985,774 @@ mod tests {
         };
         (
             analyze_method_ir(&[snapshot], &request, &mut budget)
-                .expect("ownGridDirect SSA analysis completes"),
+                .expect("the real fixture method completes SSA analysis"),
             method,
         )
+    }
+
+    fn analyze_own_grid(
+        class: &[u8],
+        java_release: u16,
+    ) -> (
+        jarde_jvm::method_ir::MethodIrAnalysis,
+        jarde_reader::model::PhysicalMethodId,
+    ) {
+        analyze_test_method(class, "ownGridDirect", "()[[LBase;", java_release)
+    }
+
+    struct IteratorTestContext {
+        analysis: jarde_jvm::method_ir::MethodIrAnalysis,
+        reuse: reuse::Plan,
+        names: NameTable,
+        declarations: Declarations,
+    }
+
+    fn iterator_test_debug_locals(
+        code: &jarde_reader::classfile::MethodCodeFacts,
+    ) -> Vec<DebugLocal> {
+        let jarde_reader::classfile::LocalDebugTable::Read(records) = code.debug() else {
+            return Vec::new();
+        };
+        records
+            .iter()
+            .map(|record| {
+                DebugLocal::over(
+                    record.slot,
+                    record.name_lossy(),
+                    record.start_bci,
+                    record.end_bci,
+                )
+            })
+            .collect()
+    }
+
+    fn iterator_test_context(
+        class: &[u8],
+        name: &str,
+        descriptor: &str,
+        java_release: u16,
+    ) -> IteratorTestContext {
+        let (analysis, _) = analyze_test_method(class, name, descriptor, java_release);
+        let ir = analysis.ir();
+        let declaration = ir.declaration().expect("fixture method declaration");
+        let canonical = ir.canonical().expect("fixture canonical CFG");
+        let ssa = ir.ssa().expect("fixture SSA");
+        let code = ir.code().expect("fixture bytecode facts");
+        let operations = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::Plan::empty();
+        let sites = crate::init::Sites::empty();
+        let mut budget = child_array_test_budget();
+        let normal = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
+            .expect("fixture normal-flow view");
+        let regions = crate::region::recover(
+            canonical,
+            &normal,
+            ssa,
+            &operations,
+            ir.constant_pool(),
+            &chains,
+            &sites,
+            code,
+            Some(declaration.access_flags() & 0x0020 != 0),
+            matches!(return_type(descriptor).as_ref(), Some(Type::Boolean)),
+            &crate::pass::JAVA_8,
+            &mut budget,
+        )
+        .expect("fixture regions")
+        .regions;
+        let resources = resource_slots(&regions);
+        let debug_locals = iterator_test_debug_locals(code);
+        let reuse = reuse::plan(
+            ssa,
+            canonical,
+            &operations,
+            &regions,
+            code.max_locals,
+            declaration.parameter_slots(),
+            &debug_locals,
+            &resources,
+            &mut budget,
+        )
+        .expect("fixture split-aware reuse plan");
+        let names = if declaration.access_flags() & 0x0008 == 0 {
+            NameTable::build_with_receiver(
+                declaration.parameter_slots(),
+                code.max_locals,
+                reuse.evidence(),
+            )
+        } else {
+            NameTable::build(
+                declaration.parameter_slots(),
+                code.max_locals,
+                reuse.evidence(),
+            )
+        };
+        let facts = crate::facts::MethodFacts::new(name, descriptor, declaration.parameter_slots())
+            .with_access_flags(declaration.access_flags());
+        let parameter_types = facts.parameter_types();
+        let declaring_class = String::from_utf8_lossy(&declaration.class_name().0).into_owned();
+        let fields = crate::field::Plan::empty();
+        let return_ty = return_type(descriptor);
+        let declarations = declarations(
+            &regions,
+            canonical,
+            ssa,
+            &operations,
+            &names,
+            &reuse,
+            facts.parameters(),
+            facts.has_receiver(),
+            Some(&declaring_class),
+            &parameter_types,
+            return_ty.as_ref(),
+            &fields,
+            &debug_locals,
+            code,
+            &sites,
+            &mut budget,
+        )
+        .expect("fixture declaration ownership plan");
+        IteratorTestContext {
+            analysis,
+            reuse,
+            names,
+            declarations,
+        }
+    }
+
+    fn iterator_init_value(ssa: &SsaTable, store_bci: u32, slot: u16) -> ValueId {
+        ssa.blocks()
+            .iter()
+            .flat_map(|block| block.instructions())
+            .find(|instruction| instruction.bci() == store_bci)
+            .and_then(|instruction| {
+                instruction
+                    .writes()
+                    .iter()
+                    .find_map(|(written, value)| (*written == Slot::Local(slot)).then_some(*value))
+            })
+            .expect("the pinned init store writes the iterator local")
+    }
+
+    fn iterator_blank_declaration(name: &str, bci: u32) -> Stmt {
+        Stmt::new(
+            StmtKind::Declare {
+                ty: Type::Reference("java.util.Iterator".to_owned()),
+                source_type_name: None,
+                name: name.to_owned(),
+                value: None,
+            },
+            OriginSet::new(Origin::direct(bci)),
+        )
+    }
+
+    fn call_iterator_declaration_gate(
+        context: &IteratorTestContext,
+        declarations: &Declarations,
+        declared: &BTreeSet<LocalVariable>,
+        statements: &[Stmt],
+        path: &[u32],
+        budget: &mut Budget,
+    ) -> Result<Option<(Option<usize>, bool)>, StopReason> {
+        let variable = context
+            .reuse
+            .variable_at(5, 33)
+            .expect("iterator local identity");
+        let name = context.names.text(variable).expect("iterator local name");
+        iterator_declaration_for_loop(
+            declarations,
+            declared,
+            &context.names,
+            &context.reuse,
+            statements,
+            path,
+            name,
+            5,
+            statements.len(),
+            [33, 35, 45],
+            33,
+            budget,
+        )
+    }
+
+    #[test]
+    fn iterator_declaration_gate_uses_real_local_owner_and_refuses_incomplete_facts() {
+        let mut context = iterator_test_context(
+            HOISTED_ITERATOR_CLASS,
+            "test",
+            HOISTED_ITERATOR_DESCRIPTOR,
+            8,
+        );
+        let variable = context
+            .reuse
+            .variable_at(5, 33)
+            .expect("init local identity");
+        assert_eq!(context.reuse.variable_at(5, 35), Some(variable));
+        assert_eq!(context.reuse.variable_at(5, 45), Some(variable));
+        assert_eq!(context.names.text(variable), Some("local5"));
+        assert_eq!(
+            context.declarations.placements.get(&variable),
+            Some(&DeclarationPlacement::Elevated { owner: vec![1] })
+        );
+        let planned = context
+            .declarations
+            .at_region
+            .get(&vec![1])
+            .expect("the real planner emits the elevated owner row");
+        assert_eq!(
+            planned
+                .iter()
+                .filter(|entry| entry.variable == variable && entry.at == 33)
+                .count(),
+            1
+        );
+
+        let declared = BTreeSet::from([variable]);
+        let row = iterator_blank_declaration("local5", 33);
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &declared,
+                &[row.clone()],
+                &[1, 1],
+                &mut budget,
+            )
+            .unwrap(),
+            Some((Some(0), false)),
+            "a matching row in the active statement list has only its local index returned"
+        );
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &declared,
+                &[],
+                &[1, 1],
+                &mut budget,
+            )
+            .unwrap(),
+            Some((None, true)),
+            "the exact elevated row can be visible in an ancestor list"
+        );
+
+        let saved_owner_rows = context
+            .declarations
+            .at_region
+            .remove(&vec![1])
+            .expect("actual owner rows can be withheld for this probe");
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &declared,
+                &[],
+                &[1, 1],
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "missing actual owner row is not inferred from the placement alone"
+        );
+        context
+            .declarations
+            .at_region
+            .insert(vec![1], saved_owner_rows);
+
+        let saved_placement = context
+            .declarations
+            .placements
+            .insert(
+                variable,
+                DeclarationPlacement::Incomplete { owner: vec![1] },
+            )
+            .expect("the actual planner had an owner placement");
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &declared,
+                &[],
+                &[1, 1],
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "incomplete ownership is not completed from the visible path"
+        );
+        context
+            .declarations
+            .placements
+            .insert(variable, saved_placement);
+
+        let saved_type = {
+            let owner_rows = context.declarations.at_region.get_mut(&vec![1]).unwrap();
+            let typed_row = owner_rows
+                .iter_mut()
+                .find(|entry| entry.variable == variable && entry.at == 33)
+                .expect("the actual declaration anchor");
+            std::mem::replace(&mut typed_row.ty, Type::Int)
+        };
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &declared,
+                &[],
+                &[1, 1],
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "an owner anchor with a non-Iterator type is not sufficient"
+        );
+        context
+            .declarations
+            .at_region
+            .get_mut(&vec![1])
+            .unwrap()
+            .iter_mut()
+            .find(|entry| entry.variable == variable && entry.at == 33)
+            .unwrap()
+            .ty = saved_type;
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &BTreeSet::new(),
+                &[],
+                &[1, 1],
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "a planned owner is insufficient if the declaration was not emitted"
+        );
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            call_iterator_declaration_gate(
+                &context,
+                &context.declarations,
+                &declared,
+                &[],
+                &[2],
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "the owner path must be visible from the actual loop path"
+        );
+
+        let mut limits = child_array_test_budget().limits().clone();
+        limits.analysis_steps = 1;
+        let mut stopped = Budget::new(limits);
+        let stop = call_iterator_declaration_gate(
+            &context,
+            &context.declarations,
+            &declared,
+            &[],
+            &[1, 1],
+            &mut stopped,
+        )
+        .unwrap_err();
+        assert!(
+            matches!(
+                stop,
+                StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(35),
+                    ..
+                }
+            ),
+            "the second real local identity check owns the Stop: {stop:?}"
+        );
+        eprintln!(
+            "[iterator-owner-stop] usage={} stop={stop:?}",
+            stopped.usage().analysis_steps
+        );
+    }
+
+    #[test]
+    fn iterator_declaration_gate_rejects_real_split_slot_identity_changes() {
+        let context = iterator_test_context(SCOPE_REUSE_CLASS, "reuse", "(ZI)I", 8);
+        let first = context.reuse.variable_at(3, 8).expect("then-arm local");
+        let second = context.reuse.variable_at(3, 17).expect("else-arm local");
+        assert_ne!(
+            first, second,
+            "the fixture's slot 3 has two real debug-local lifetimes"
+        );
+        let declared = BTreeSet::from([first]);
+        let mut budget = child_array_test_budget();
+        assert_eq!(
+            iterator_declaration_for_loop(
+                &context.declarations,
+                &declared,
+                &context.names,
+                &context.reuse,
+                &[],
+                &[],
+                context.names.text(first).expect("first split-local name"),
+                3,
+                0,
+                [8, 17, 8],
+                7,
+                &mut budget,
+            )
+            .unwrap(),
+            None,
+            "same slot with different source-lifetime identities cannot prove one iterator local"
+        );
+    }
+
+    #[test]
+    fn iterator_phi_gate_counts_real_duplicate_inputs_and_ignores_unrelated_phi() {
+        let context = iterator_test_context(
+            HOISTED_ITERATOR_CLASS,
+            "test",
+            HOISTED_ITERATOR_DESCRIPTOR,
+            8,
+        );
+        let ssa = context.analysis.ir().ssa().expect("actual fixture SSA");
+        let iterator = iterator_init_value(ssa, 33, 5);
+        let body_block_uses = ssa
+            .value(iterator)
+            .uses()
+            .iter()
+            .filter(|use_| use_.bci().is_none() && use_.block().bci() == 97)
+            .count();
+        assert_eq!(
+            body_block_uses, 3,
+            "three actual None-use occurrences at block 97"
+        );
+        let header_phi = ssa
+            .phis()
+            .iter()
+            .find(|phi| {
+                phi.slot() == Slot::Local(5)
+                    && phi.inputs().contains(&PhiInput::Value(iterator))
+                    && phi.inputs().contains(&PhiInput::Itself)
+            })
+            .expect("the actual loop-header phi retains its self backedge");
+        assert_eq!(
+            header_phi
+                .inputs()
+                .iter()
+                .filter(|input| **input == PhiInput::Value(iterator))
+                .count(),
+            1
+        );
+        let matching = ssa
+            .phis()
+            .iter()
+            .find(|phi| {
+                phi.block().bci() == 97 && phi.inputs().contains(&PhiInput::Value(iterator))
+            })
+            .expect("actual block-97 iterator phi");
+        assert_eq!(
+            matching
+                .inputs()
+                .iter()
+                .filter(|input| **input == PhiInput::Value(iterator))
+                .count(),
+            3,
+            "the three operands are counted as occurrences, not a set"
+        );
+        let unrelated = ssa
+            .phis()
+            .iter()
+            .find(|phi| {
+                phi.block().bci() == 97
+                    && phi.slot() == Slot::Local(6)
+                    && phi
+                        .inputs()
+                        .iter()
+                        .all(|input| *input != PhiInput::Value(iterator))
+            })
+            .expect("the same block has a phi for the unrelated element local");
+        assert!(ssa.value(unrelated.value()).uses().is_empty());
+        assert!(ssa.value(unrelated.value()).replaced_by().is_some());
+
+        let mut budget = child_array_test_budget();
+        assert!(iterator_phi_use_ownership(ssa, iterator, [35, 45], &mut budget).unwrap());
+        let mut budget = child_array_test_budget();
+        assert!(
+            !iterator_phi_use_ownership(ssa, iterator, [35, 44], &mut budget).unwrap(),
+            "a real load outside the supplied exact allowed-load set is rejected"
+        );
+        let mut limits = child_array_test_budget().limits().clone();
+        limits.analysis_steps = 1;
+        let mut stopped = Budget::new(limits);
+        let stop = iterator_phi_use_ownership(ssa, iterator, [35, 45], &mut stopped).unwrap_err();
+        assert!(
+            matches!(
+                stop,
+                StopReason::Budget {
+                    dimension: CountedBudgetDimension::AnalysisSteps,
+                    at: Some(35),
+                    ..
+                }
+            ),
+            "the initial real iterator use owns the Stop: {stop:?}"
+        );
+        eprintln!(
+            "[iterator-phi-stop] usage={} stop={stop:?}",
+            stopped.usage().analysis_steps
+        );
+    }
+
+    const HOISTED_ITERATOR_PHI_CONTROLS_CLASS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class"
+    );
+
+    fn iterator_source_store(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+    ) -> (u16, u32, ValueId) {
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("control method SSA");
+        let code = ir.code().expect("control method bytecode");
+        let operations = Operations::of(code, ir.constant_pool());
+        let iterator_call = operations
+            .iter()
+            .find_map(|(bci, operation)| match operation {
+                Operation::Invoke(target)
+                    if target.name() == "iterator"
+                        && target.descriptor() == "()Ljava/util/Iterator;" =>
+                {
+                    Some(*bci)
+                }
+                _ => None,
+            })
+            .expect("control method has an iterator() invocation");
+        let block = ssa
+            .blocks()
+            .iter()
+            .find(|block| {
+                block
+                    .instructions()
+                    .iter()
+                    .any(|instruction| instruction.bci() == iterator_call)
+            })
+            .expect("iterator() invocation has an SSA block");
+        let call_index = block
+            .instructions()
+            .iter()
+            .position(|instruction| instruction.bci() == iterator_call)
+            .expect("iterator() invocation is in its block");
+        let (store, slot, value) = block.instructions()[call_index + 1..]
+            .iter()
+            .find_map(|instruction| {
+                let Some(Operation::Store { slot }) = operations.get(instruction.bci()) else {
+                    return None;
+                };
+                instruction.writes().iter().find_map(|(written, value)| {
+                    (*written == Slot::Local(*slot)).then_some((instruction, *slot, *value))
+                })
+            })
+            .expect("iterator() result is stored in a local after the call");
+        (slot, store.bci(), value)
+    }
+
+    fn iterator_source_load_bcis(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+        source: ValueId,
+    ) -> Vec<u32> {
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("control method SSA");
+        let code = ir.code().expect("control method bytecode");
+        let operations = Operations::of(code, ir.constant_pool());
+        let mut loads = BTreeSet::new();
+        for use_ in ssa.value(source).uses() {
+            if let Some(bci) = use_.bci() {
+                assert!(
+                    matches!(operations.get(bci), Some(Operation::Load { .. })),
+                    "the source value's physical use at BCI {bci} is a decoded local load"
+                );
+                loads.insert(bci);
+            }
+        }
+        loads.into_iter().collect()
+    }
+
+    fn iterator_receiver_load_pair(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+        receiver_calls: &[&str],
+    ) -> [u32; 2] {
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("control method SSA");
+        let code = ir.code().expect("control method bytecode");
+        let operations = Operations::of(code, ir.constant_pool());
+        let mut loads = BTreeSet::new();
+        for (bci, operation) in operations.iter() {
+            let Operation::Invoke(target) = operation else {
+                continue;
+            };
+            if !receiver_calls.contains(&target.name()) {
+                continue;
+            }
+            let block = ssa
+                .blocks()
+                .iter()
+                .find(|block| {
+                    block
+                        .instructions()
+                        .iter()
+                        .any(|instruction| instruction.bci() == *bci)
+                })
+                .expect("receiver invocation has an SSA block");
+            let call_index = block
+                .instructions()
+                .iter()
+                .position(|instruction| instruction.bci() == *bci)
+                .expect("receiver invocation is in its block");
+            let load = block
+                .instructions()
+                .get(
+                    call_index
+                        .checked_sub(1)
+                        .expect("receiver call has a preceding load"),
+                )
+                .expect("receiver load instruction");
+            assert!(
+                matches!(operations.get(load.bci()), Some(Operation::Load { .. })),
+                "the receiver of {} at BCI {bci} is loaded immediately before invocation",
+                target.name()
+            );
+            loads.insert(load.bci());
+        }
+        let loads: Vec<_> = loads.into_iter().collect();
+        match loads.as_slice() {
+            [one] => [*one, *one],
+            [first, second] => [*first, *second],
+            _ => panic!("expected one or two real receiver loads, got {loads:?}"),
+        }
+    }
+
+    fn phi_has_value(inputs: &[PhiInput], value: ValueId) -> bool {
+        inputs
+            .iter()
+            .any(|input| matches!(input, PhiInput::Value(input_value) if *input_value == value))
+    }
+
+    #[test]
+    fn mixed_iterator_real_phi_is_live_and_fails_the_production_use_gate() {
+        let (analysis, _) = analyze_test_method(
+            HOISTED_ITERATOR_PHI_CONTROLS_CLASS,
+            "mixedIterator",
+            "(Ljava/util/List;Ljava/util/List;Z)I",
+            8,
+        );
+        let ssa = analysis.ir().ssa().expect("mixed control SSA");
+        let (slot, _store_bci, source) = iterator_source_store(&analysis);
+        let mixed_phi = ssa
+            .phis()
+            .iter()
+            .find(|phi| {
+                phi.slot() == Slot::Local(slot)
+                    && phi_has_value(phi.inputs(), source)
+                    && phi
+                        .inputs()
+                        .iter()
+                        .any(|input| matches!(input, PhiInput::Value(value) if *value != source))
+            })
+            .expect("the same local's merge phi has the original and alternate iterator values");
+        let mixed_value = ssa.value(mixed_phi.value());
+        assert!(
+            mixed_value.replaced_by().is_none(),
+            "the mixed phi is not replaced"
+        );
+        assert!(
+            !mixed_value.uses().is_empty(),
+            "the mixed phi is live at loop reads"
+        );
+        assert!(iterator_source_load_bcis(&analysis, source).is_empty());
+        assert!(
+            ssa.value(source)
+                .uses()
+                .iter()
+                .any(|use_| { use_.bci().is_none() && use_.block() == mixed_phi.block() })
+        );
+
+        eprintln!(
+            "[iterator-mixed-refusal] source={source:?} phi={mixed_phi:?} uses={:?}",
+            mixed_value.uses()
+        );
+        let allowed = iterator_receiver_load_pair(&analysis, &["hasNext", "next"]);
+        assert_ne!(
+            allowed[0], allowed[1],
+            "both real receiver loads are present"
+        );
+        let mut budget = child_array_test_budget();
+        assert!(
+            !iterator_phi_use_ownership(ssa, source, allowed, &mut budget).unwrap(),
+            "after allowing actual hasNext/next loads, the real live unreplaced same-local phi is refused"
+        );
+    }
+
+    #[test]
+    fn alias_branch_phi_does_not_expand_the_exact_value_reader_allowlist() {
+        let (analysis, _) = analyze_test_method(
+            HOISTED_ITERATOR_PHI_CONTROLS_CLASS,
+            "extraAliasConsumer",
+            "(Ljava/util/List;Ljava/util/List;Z)Z",
+            8,
+        );
+        let ssa = analysis.ir().ssa().expect("alias control SSA");
+        let (source_slot, _store_bci, source) = iterator_source_store(&analysis);
+        let alias_phi = ssa
+            .phis()
+            .iter()
+            .find(|phi| {
+                matches!(phi.slot(), Slot::Local(slot) if slot != source_slot)
+                    && ssa.value(phi.value()).replaced_by().is_none()
+                    && !ssa.value(phi.value()).uses().is_empty()
+            })
+            .expect("the branch-written alias has a live phi in another local slot");
+        assert!(
+            alias_phi
+                .inputs()
+                .iter()
+                .filter(|input| matches!(input, PhiInput::Value(_)))
+                .count()
+                >= 2,
+            "both branch definitions reach the alias phi"
+        );
+        let source_loads = iterator_source_load_bcis(&analysis, source);
+        eprintln!(
+            "[iterator-alias-refusal] source={source:?} source_loads={source_loads:?} alias_phi={alias_phi:?}"
+        );
+        assert_eq!(
+            source_loads.len(),
+            1,
+            "the original value has one physical alias-copy load"
+        );
+        let allowed = iterator_receiver_load_pair(&analysis, &["hasNext"]);
+        assert_eq!(
+            allowed[0], allowed[1],
+            "one real hasNext receiver load fills the fixed pair"
+        );
+        assert!(
+            !allowed.contains(&source_loads[0]),
+            "the alias-copy load is an additional source-value consumer, not a hasNext receiver load"
+        );
+        assert!(
+            ssa.value(source)
+                .uses()
+                .iter()
+                .any(|use_| use_.bci() == Some(source_loads[0])),
+            "the extra physical consumer is the real source use"
+        );
+
+        let mut budget = child_array_test_budget();
+        assert!(
+            !iterator_phi_use_ownership(ssa, source, allowed, &mut budget).unwrap(),
+            "the source use at the alias-copy Load is refused before any cross-slot phi aliasing"
+        );
     }
 
     fn prove_own_grid(

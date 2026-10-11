@@ -6,7 +6,7 @@
 
 - 复用 split-aware LocalVariable 和 DeclarationPlacement/at_region 核对 iterator 的完整可见声明 owner，支持已被 planner 提升的声明。
 - 保留调用 descriptor、完整 header Phi、唯一消费者和 effect/handler 证明；对额外 None-use 按 block 核对精确 Phi input 次数，只接受已替换且有界解析到同一 iterator 的平凡历史输入，不增加通用 liveness/alias 机制。
-- 变换只移除当前列表的已证明初始化赋值，保留祖先空声明；使用已有 Object foreach 头和原 cast/元素绑定。
+- 以准确空声明是否在当前语句列表区分旧路径与新祖先路径；owner前缀仅证可见性。新路径只移除当前列表的已证明初始化赋值，保留其它列表的祖先空声明；使用已有 Object foreach 头和原 cast/元素绑定。
 - 固定完整类、异常及迭代调用顺序控制和错误 owner/slot/消费反例，验收预算、来源、default/all一致性。
 
 ### Prerequisites and Non-Goals

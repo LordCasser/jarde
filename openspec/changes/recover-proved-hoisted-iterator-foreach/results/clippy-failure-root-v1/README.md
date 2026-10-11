@@ -1,0 +1,1 @@
+实际final v4：fmt check成功，同CI Clippy因cfg(test) helper build.rs34455的manual_contains失败，finally guarded cargo clean成功/target不存在。没有改CI白名单；应将精确Value arm会员查询由iter().any(equal)改contains(equal)，无生产行为变化。修正后须按最终4732输入字节重新冻结回归/full/final绑定，不将旧full receipt重新标记。

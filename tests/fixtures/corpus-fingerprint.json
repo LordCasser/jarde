@@ -4451,6 +4451,16 @@
       "path": "tests/fixtures/p3-hoisted-boolean/v8/HoistedBoolean.class"
     },
     {
+      "blake3": "bd2ecf55763192524d03c0b111f9f8664ce2b74151adde15ec765a239084f7f4",
+      "bytes": 606,
+      "path": "tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.class"
+    },
+    {
+      "blake3": "6a25e818e6b9b1fed50c040ec32003e8ee71df7bfb1cce64267ed1238f428210",
+      "bytes": 707,
+      "path": "tests/fixtures/p3-hoisted-iterator/HoistedIteratorPhiControls.java"
+    },
+    {
       "blake3": "1199c4ee7ed39fc028729eda3fd85ebf607682e7e27d45dbd3f55698b54e630a",
       "bytes": 1495,
       "path": "tests/fixtures/p3-immediate-functional-receivers/v8/bound-control/BoundFunctionalReceiver.class"
@@ -11071,8 +11081,8 @@
       "path": "tests/fixtures/recover-unicode-identifiers/ascii/RG.jarde.java"
     },
     {
-      "blake3": "39ffa451fe06a5875e7d82ba1c72df9351988416b28bd07d82a0cf8d483fc528",
-      "bytes": 5234,
+      "blake3": "36e8a09d61877133e841fa74598a7237d372742f690bf6501e9ea7020585af05",
+      "bytes": 5192,
       "path": "tests/fixtures/recover-unicode-identifiers/ascii/SB.jarde.java"
     },
     {

@@ -12238,7 +12238,10 @@ mod tests {
             // Conditional-constructor-values and fixed SequentialLoops2: three javac 23 --release 8
             // classfiles (3/8/10 Code bodies; 10/10/14 branch/switch targets), 21 bodies total,
             // one handler (`handlerAroundConditional`), 34 branch/switch targets and no jsr.
-            (1103, 4911, 469, 2987, 10),
+            // HoistedIteratorPhiControls: one canonical javac8 class, three Code bodies,
+            // no handlers, five direct branch targets (mixed 3 + alias 2), no jsr;
+            // independently confirmed against both compiler legs and parsed Code bytes.
+            (1104, 4914, 469, 2992, 10),
             "fixture population changed: re-measure these counts"
         );
     }

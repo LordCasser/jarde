@@ -1,0 +1,1 @@
+最新实际永久回归10cmd/20raw：lib365、API2、reader1、p5常规5/0/1及再生1、Unicode4、gateway15；默认栈、5GiB/target1GiB守卫、4732输入前后/live一致、最终clean。精确foreach预期修正后才冻结此闭包；candidate CLI与已双JDK完整类对照的v2字节相同。这里只接受永久回归，不代表fresh全workspace或自身CI。

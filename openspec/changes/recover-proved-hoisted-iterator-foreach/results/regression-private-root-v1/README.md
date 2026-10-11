@@ -1,0 +1,3 @@
+私有v2仅新增test模块，root核生产prefix逐字节同baseline df113e...，原analyze_own_grid提取可复用fixture方法分析，wrapper维持原身份。独立静态审阅一致，root去掉unused ir/ssa bindings并加真实Stop/SSA打印。
+
+v3别名测试假设在应用前被root和独立review静态拒绝，未编译/实跑该候选：SSA的Load/Store写均创建新ValueId，slot4 Phi不能预设含store6原ValueId，且不应把真实额外Load11放入allowed。保留全部producer原件；采用v4：mixed/live真实同slot merge与alias extra physicalLoad拒绝，不能冒称alias exact cross-slot Phi fixture。双JDK原source编译证明见phi-fixture-build-root-v1；Rust实际新断言待root回归验证。

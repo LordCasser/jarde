@@ -69,6 +69,8 @@ open('loc/Loc.punct.class','wb').write(src.replace(old, new))
 
 ## 读取者
 
+2026-10-12：`recover-proved-hoisted-iterator-foreach` 仅更新 `SB.jarde.java` 的 `cond` 方法为已证 Object foreach，保留原 String cast、条件体和泛型拒绝。root 用冻结原 class、旧 CLI 和新 CLI 的未经编辑完整类分别在 javac 8/23 重编验证运行，六条运行腿同 main 与 empty/null/strings/null-element/wrong-element 的六行输出；原 golden、准确 diff 和原始命令在该变更的验收证据中保留。其余 ASCII golden 不变；F1 的两处计数 for 仍由测试的准确块替换核验。
+
 `tests/recover_unicode_identifiers.rs`（锚、双腿往返、别名对照、ASCII 逐字节控制）；
 `crates/jarde-reader/src/classfile.rs` 的 fixture 人口普查把本目录 4 个 `.class` 计入
 （+4 类、+11 Code 体），`tests/p5_corpus_fingerprint.rs` 固定本目录全部输入字节。

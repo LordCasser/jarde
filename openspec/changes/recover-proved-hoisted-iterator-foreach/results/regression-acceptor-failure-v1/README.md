@@ -1,0 +1,1 @@
+验收器首版实际exit1：p5_corpus_fingerprint的nocapture正常打印多行统计，将named outcome的ok移到单独一行，单行regex漏计。生产/Cargo各命令实际成功、原raw不改；v2按每个测试header分段并核真实terminal状态，验收实际通过，不因此重跑工具链。

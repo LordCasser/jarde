@@ -1,0 +1,1 @@
+实际尾部诊断13批通过；15cmd/30raw，source4732一致、5GiB/target1GiB守卫、默认栈、最终clean。仅定位并验证第二次workspace失败及尚未执行的尾部，不拼接两次失败为全workspace通过。
