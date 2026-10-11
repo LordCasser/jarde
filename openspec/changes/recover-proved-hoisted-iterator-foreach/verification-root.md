@@ -1,6 +1,6 @@
 # 提升iterator声明的内层foreach验收
 
-当前8/9：1.1–1.3基线/诊断和2.1最小实现已接受。私有v1的strict-prefix列表误判被静态拦截；v2按当前准确空声明行区分两条路径，root补充owner anchor的Iterator类型核验。实际focused-v2默认栈通过新增API 2、既有foreach 5/6/4和Java lib360；8cmd/16raw、4729输入闭包前后/live一致、peak654226085B、finally clean。root独立accept实际exit0且Luna只读复核一致。2.2永久反例已应用并实跑接受，完整class3.1已root实际接受；最终4732输入的fresh full workspace/fmt/同CI Clippy/global strict/final CLI字节绑定已root实际接受；自身CI及交付尚待。
+当前9/9：1.1–1.3基线/诊断和2.1最小实现已接受。私有v1的strict-prefix列表误判被静态拦截；v2按当前准确空声明行区分两条路径，root补充owner anchor的Iterator类型核验。实际focused-v2默认栈通过新增API 2、既有foreach 5/6/4和Java lib360；8cmd/16raw、4729输入闭包前后/live一致、peak654226085B、finally clean。root独立accept实际exit0且Luna只读复核一致。2.2永久反例已应用并实跑接受，完整class3.1已root实际接受；最终4732输入的fresh full workspace/fmt/同CI Clippy/global strict/final CLI字节绑定已root实际接受；自身CI及交付尚待。
 
 准确范围：inner42在iterator_declaration_before_init；outer13在body_first_not_initialized_declaration。现有Object iteratorElement头保留cast/body binding，泛型和外层Assign独立。不将同列表找不到空声明推断成其余gate已通过，不跨frame删除祖先声明。
 
@@ -37,3 +37,5 @@ fixture单canonical javac8 class606B，javac23同source603B不同字节，两腿
 产品已实际提交推送：993e9f8c0f413bb7c31538e6f7c2c92a742e7af4，自身CI38176302604正在运行；MSRV/supply chain/fuzz成功，stable完整双seed尚待。7/9不变。并行下一固定outer13同IR诊断已实际接受，全部4732源码恢复/clean，详下一片recover-proved-iterator-assignment-foreach/results/outer-assignment-diagnostic-root-v1；该诊断没有永久改写，不影响本产品/live字节绑定，亦不关闭本产品CI或下一片实现。
 
 3.3已root实际接受：[自身CI](results/own-product-ci-root-v1/README.md)绑定993e9f8/38176302604，四jobs/52steps、两seed各362targets/3480-0-97及3577逐named同本地，19required全部通过。capture及verifier-v3均实际exit0；原v2漏记examples pin错误与显式七example productGit/live补充核验保留，不伪造历史source pin。当前8/9，关闭文档后按真实HEAD做3.4 clean audit，target不存在。
+
+3.4实际接受：关闭文档e29b587f7推送后root真实clean auditor exit0，15物理checkout/14aux detached clean main祖先、main/origin/remote及仅main、所有无target/fuzz-target、free10456530944B及4732输入/五实际receipt/CLI准确绑定。详[clean audit](results/clean-main-root-v1/README.md)，receiptSHA25690a748176b8cf1b749804b685872b8e6212598fec14216537a6dfbfede791983。窄片9/9，CF-11/71/612完成数不变。随后关闭记录提交按真实HEAD外置再次audit后才应用下一候选。
