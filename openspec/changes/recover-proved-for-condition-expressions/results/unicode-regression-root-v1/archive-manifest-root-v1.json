@@ -1,0 +1,77 @@
+{
+  "status": "accepted_focused_unicode_only",
+  "files": {
+    "README.md": {
+      "bytes": 523,
+      "sha256": "f570eac24d0b4d191ce31dc3ca72a62a70ea922e8ada37cc221d18a9f88b2108"
+    },
+    "invocation/execution.json": {
+      "bytes": 801,
+      "sha256": "e8cff31cd33824eebf2d89646db0f49c4d8e6c177772545e7f307845a575e14c"
+    },
+    "invocation/stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invocation/stdout.raw": {
+      "bytes": 184,
+      "sha256": "e206b1458dd1880181410583432db057fb0189da79019abfe94c421f5c94b325"
+    },
+    "private-preparation/REVIEW.md": {
+      "bytes": 1178,
+      "sha256": "35ca1055c8b03113bc87351e9e2be35f6eadda904b6e203589f6e5ac14e2d960"
+    },
+    "private-preparation/candidate.patch": {
+      "bytes": 2269,
+      "sha256": "f2b2df5c6d44325669c4e7173367b08337f77cb31c0a2802dd986e7a6ee23ae5"
+    },
+    "private-preparation/pins.json": {
+      "bytes": 1517,
+      "sha256": "e2bc6afd85bf552efb209c9355cf23326f8046402cec08347bd0ee559c6b4b46"
+    },
+    "private-preparation/recover_unicode_identifiers.original.rs": {
+      "bytes": 17282,
+      "sha256": "9776f2f52eb7324fd83e5f5e389181c0577098b419d8773a7b0212e62dfb0890"
+    },
+    "private-preparation/recover_unicode_identifiers.rs": {
+      "bytes": 18559,
+      "sha256": "d391dbda6da1f5b728335f38a3400aba1bfb35978806fbbd78166c4fbac7d887"
+    },
+    "root-applied.rs": {
+      "bytes": 18587,
+      "sha256": "0216ddcc1970c653e3230a1d7457773ad9164c504a96d5218209c3e24a68053a"
+    },
+    "run/0.stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/0.stdout.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/1.stderr.raw": {
+      "bytes": 3288,
+      "sha256": "f672a48c8d6d6d3dccea4de2dacd7913d61dd92cc795e11f9a869e227c20aa7a"
+    },
+    "run/1.stdout.raw": {
+      "bytes": 400,
+      "sha256": "97d954882517347f626427d0ec903031425442510adc73ecf71a2d5ee4a7538d"
+    },
+    "run/2.stderr.raw": {
+      "bytes": 52,
+      "sha256": "69f5360bc9612b3034e9411eea25ee28e88ca544238d2c90a12f2c016d0e1a8f"
+    },
+    "run/2.stdout.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/execution.json": {
+      "bytes": 1521940,
+      "sha256": "a53d4e76734bc3b3b5ad6c4b4ae25886862efa84532d8311e52c80cf6ffa76cc"
+    },
+    "runner.py": {
+      "bytes": 4565,
+      "sha256": "ae9e0a4a3fb4d75fd0007ea00a466d5dffcd8545cd2fded1a7e1ae8ec9ecd934"
+    }
+  }
+}

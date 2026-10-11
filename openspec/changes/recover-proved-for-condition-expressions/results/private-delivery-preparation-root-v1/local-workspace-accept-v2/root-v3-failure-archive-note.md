@@ -1,0 +1,10 @@
+# Root-v3 failed workspace evidence record
+
+Root reported that it copied and SHA-verified this failed run into its shared archive at `results/workspace-failed-root-v3`. This note preserves the private source paths and original hashes used for the archive reference; it does not claim a passing full-workspace run.
+
+- Workspace receipt: `/private/tmp/jarde-for-condition-workspace-root-v3/execution.json`, SHA-256 `cef6a38aa7640f6bee51a1522470715311dcf782e65b1f7dab8790a34de0a087`; status `failed`.
+- Failing command 75: `cargo test -p jarde --all-features --locked --message-format json --test recover_temporal_argument_widening --test recover_unicode_identifiers --test recover_write_accessor_field_types --test same_class_generic_binding`, exit 101, no guard stop. Stdout `/private/tmp/jarde-for-condition-workspace-root-v3/75.stdout.raw`, SHA-256 `382effd5ded17fb8cf02524fa3226564119bf73ed1bbcd5aae18150ca3fce124`; stderr `/private/tmp/jarde-for-condition-workspace-root-v3/75.stderr.raw`, SHA-256 `30b1a10425b7dd8aed0cab40bd22023f8a6926074db878238e19b1b4f1feba03`. The failure is the old Unicode F1 byte-for-byte expectation after the two proved for-header projections.
+- Cleanup command 76 (`cargo clean`) exited 0 with no guard stop. Its stdout is empty (SHA-256 `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca4a495991b7852b855`); stderr SHA-256 `19d68bf28f930e721d53b4be44cfac39b80830808aa2710441d65f36fab5a532`. Receipt records target absent and 4,718 source pins unchanged before/after.
+- Metadata `/private/tmp/jarde-for-condition-workspace-root-v3/metadata.json`, SHA-256 `4ea50dff391dbd2b5eadccebf67494a9d55f8af48df8798c8bd7ecacbbc72a7a`.
+- Runner `/private/tmp/jarde-for-condition-workspace-root-v3.py`, SHA-256 `3d3ac837903853baca085357ee8566de56a03d18d26d93937ef82193eccaa3c5`.
+- Invocation receipt `/private/tmp/jarde-cf11-invocations-root-v1/for-condition-workspace-v3/execution.json`, SHA-256 `9de353375ac1bafc006fc6691423a2586bb1937044f167a26f990a619c99faa5`; stdout SHA-256 `e085a877db5e1c9ae2c3d9bb12c69c541908e3d77e1e52cc4627f99947a967ef`; stderr empty.

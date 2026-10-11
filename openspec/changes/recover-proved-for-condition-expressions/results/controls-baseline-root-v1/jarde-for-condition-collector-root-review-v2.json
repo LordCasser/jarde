@@ -1,0 +1,10 @@
+{
+  "status": "reviewed_preparation_only",
+  "files": {
+    "collect_controls.py": "91b7ce6653836112dccae3bafc00347152b060419300cf4b3c352aaa958f49f1",
+    "check_controls.py": "4f3e9595bb24b7581046f38c3fe6677c74fd50268809e640d37faa50bc5ece43",
+    "README.md": "4ffa70ae4b0a7a68f5e74d82a75534c68ebb06951344282dfd1dc9350fed2c87",
+    "pins.json": "04b6091d4243be7e66fe0146a1bcd3351e298660f109269b1f8e64b6e8f1bb82"
+  },
+  "review": "dynamic targets; exact source/CLI/tools/raw; guarded serial commands; original dual-JDK oracle; generated failure observations and conditional isolated legs; physical BCI/UTF8/default-all maps; failed class-set null; explicit runtime mismatches; switch-free fixture constraint"
+}

@@ -1,0 +1,1 @@
+本次 fresh workspace v3 失败，不是全仓验收通过。73 个测试批次成功后，command 75 的 recover_unicode_identifiers 在 F1 历史全文 while 断言失败；后续目标没有运行。原始输出显示同两个准确数组长度/+2 for 循环头。Command 76 cargo clean 成功，target 不存在，4718 项源码闭包前后恒同，target 峰值 446079070 bytes。run、invocation 和 runner 原文完整保留。

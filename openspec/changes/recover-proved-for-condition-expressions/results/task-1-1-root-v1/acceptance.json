@@ -1,0 +1,35 @@
+{
+  "status": "accepted_fixed_baseline_same_ir_only",
+  "baseline_command_count": 29,
+  "same_ir_counts": {
+    "CF11_LOOPS2_CLASS": 1,
+    "CF11_LOOPS2_EDGE": 12,
+    "CF11_LOOPS2_NODE": 10,
+    "CF11_LOOPS2_SSA_TABLE": 1,
+    "CF11_LOOPS2_INSN": 28,
+    "CF11_LOOPS2_TRACE": 19,
+    "CF11_LOOPS2_RECOVERY": 1
+  },
+  "outer_header": 4,
+  "init_bci": 3,
+  "update_bci": 41,
+  "first_reject": {
+    "operation": "Invoke List.size",
+    "bci": 6
+  },
+  "invoke_result": {
+    "id": 22,
+    "definition_block": 4,
+    "definition_bci": 6,
+    "uses": [
+      {
+        "block": 4,
+        "bci": 11
+      }
+    ]
+  },
+  "inner_reject": "preheader last instruction is not induction store",
+  "same_ir_execution_sha256": "29e45464b31f625c2f7ccf197adca1a1a222618f1ac97b9b44be72839f15e7f0",
+  "source_restored_count": 4707,
+  "target_absent": true
+}

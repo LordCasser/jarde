@@ -1,0 +1,76 @@
+{
+  "schema": "jarde-for-condition-clean-main-audit-prep-luna-v1-pins",
+  "status": "prepared_only_not_run",
+  "artifacts": {
+    "clean-main-audit.py": {
+      "sha256": "b240ce95a0357dd5e0e22acf1e0a07fb25e42d51f0c3b8ae6d3ba6f9f4e22415",
+      "bytes": 13501
+    },
+    "README.md": {
+      "sha256": "51b4f3f84c4f626bfb8421578f74ee2894ec1c185a26e3d51daf1e259ac580e4",
+      "bytes": 1763
+    },
+    "review.md": {
+      "sha256": "f271aea1c9bd4b938dd166a4faf00360b3344a8d5cfb06392879cc179dfc6ba1",
+      "bytes": 1959
+    }
+  },
+  "inputs": {
+    "audit_template": {
+      "path": "/private/tmp/jarde-cf11-delivery-prep-luna-v4/clean-main-audit.py",
+      "sha256": "29e041499f5ea226e84d5b2d06409e6684ec1ba946d121296345023064eaf346"
+    },
+    "audit_template_pins": {
+      "path": "/private/tmp/jarde-cf11-delivery-prep-luna-v4/pins.json",
+      "sha256": "8b2260c4b3205a31c986525f63fcc12944d047815ae9e13a223ace66da400fee"
+    },
+    "root_v2_lint_build_runner": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v2.py",
+      "sha256": "cd2bf4a5b507b029b80227fd98bc8763a5dd5290afea668ee15770a2fc85dda2"
+    },
+    "root_v2_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "root_v2_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-for-condition-final-cli-root-v2",
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "bytes": 61213840,
+      "mode": "0555",
+      "exists_at_prep": false
+    },
+    "build_receipt": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v2/execution.json",
+      "sha256": "runtime_required_as_EXPECTED_BUILD_RECEIPT_SHA256",
+      "exists_at_prep": false
+    }
+  },
+  "audit_contract": {
+    "source_pin_count": 4718,
+    "worktree_count": 15,
+    "free_space_min_bytes": 5368709120,
+    "commands": [
+      "fmt",
+      "workflow_clippy",
+      "openspec_validate_strict",
+      "cli_build",
+      "clean"
+    ],
+    "receipt_pin_policy": "source_pins_before == source_pins_after"
+  },
+  "static_checks": [
+    "ast.parse passed",
+    "symtable.symtable passed"
+  ],
+  "execution_prohibited": [
+    "Git",
+    "Cargo",
+    "JDK",
+    "JADX",
+    "CLI"
+  ]
+}

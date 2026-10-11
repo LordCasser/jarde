@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-postfix-accept-root-v1.py", line 27, in <module>
+    old=baseline[profile['label']];new=L(profile['report_pin']['path']);oldr=L(old['report_pin']['path']);cls=profile['class'].rsplit('.',1)[-1]
+        ~~~~~~~~^^^^^^^^^^^^^^^^^^
+KeyError: 'javac8-jarde-default-UpstreamNestedLoops2'

@@ -15,7 +15,8 @@
 //! * `F2.stepTwoWithQuote` — the patrol's fixed refusal — recovers whole and presents the
 //!   accumulator exactly as the unprotected control does, and recompiles and runs like the
 //!   original under `java -Xverify:all`;
-//! * `F1` — the unprotected control — stays byte-for-byte the patrol's recorded recovery;
+//! * `F1` — the unprotected control — differs from the patrol's recorded recovery only by the
+//!   two exact array-length/+2 loop-header projections, and recompiles/runs like its frozen class;
 //! * the variant family recovers whole and runs like the original: an `int` accumulator with the
 //!   call in its tree, a `double[]` accumulator, a reference-array accumulator, two writes inside
 //!   one catch, and one crossing local carried across two protected regions;
@@ -39,7 +40,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 const F1: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class"
 );
-/// The patrol's recorded `F1` presentation: the byte-for-byte control this slice must not move.
+/// Historical F1 presentation; only the two exact proved loop-header projections may differ.
 const F1_VERBATIM: &str = include_str!(
     "../openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/results/F1.jarde.java"
 );
@@ -145,6 +146,30 @@ fn method_segment(class_text: &str, signature: &str) -> String {
     class_text[declaration + body..=declaration + end].to_owned()
 }
 
+/// The current F1 presentation may project exactly its two proved array-length/+2 latches.
+/// Every other byte remains the patrol's frozen presentation.
+fn f1_expected_header_projection() -> String {
+    let mut expected = F1_VERBATIM.to_owned();
+    for (before, after) in [
+        (
+            "        local2 = 0;\n        while (local2 < arg0.length) {\n            local1 = local1 + arg0[local2];\n            local2 = local2 + 2;\n        }",
+            "        for (local2 = 0; local2 < arg0.length; local2 = local2 + 2) {\n            local1 = local1 + arg0[local2];\n        }",
+        ),
+        (
+            "        local2 = 0;\n        while (local2 < arg0.length) {\n            local1.append(pick(arg0[local2]));\n            local2 = local2 + 2;\n        }",
+            "        for (local2 = 0; local2 < arg0.length; local2 = local2 + 2) {\n            local1.append(pick(arg0[local2]));\n        }",
+        ),
+    ] {
+        assert_eq!(
+            expected.matches(before).count(),
+            1,
+            "each exact F1 header projection has one historical source block"
+        );
+        expected = expected.replacen(before, after, 1);
+    }
+    expected
+}
+
 static UNIQUE: AtomicU64 = AtomicU64::new(0);
 
 fn scratch_dir(tag: &str) -> PathBuf {
@@ -192,13 +217,64 @@ fn compile_and_run(tag: &str, class: &str, text: &str) -> String {
     String::from_utf8(run.stdout).expect("the run prints UTF-8")
 }
 
+/// Runs the frozen original class bytes directly, without recompiling an original source.
+fn run_frozen_class(tag: &str, class: &str, bytes: &[u8]) -> String {
+    let dir = scratch_dir(tag);
+    fs::write(dir.join(format!("{class}.class")), bytes).expect("the frozen class writes");
+    let run = Command::new("java")
+        .arg("-Xverify:all")
+        .arg("-cp")
+        .arg(&dir)
+        .arg(class)
+        .output()
+        .expect("the installed JDK provides java");
+    assert!(
+        run.status.success(),
+        "{class} frozen class must run: {}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    String::from_utf8(run.stdout).expect("the frozen run prints UTF-8")
+}
+
 #[test]
-fn f2_recovers_and_the_unprotected_control_stays_verbatim() {
-    // The control first: the unprotected `i += 2` recovery is one byte of the patrol's record.
+fn f2_recovers_and_the_unprotected_control_only_projects_its_two_for_headers() {
+    // The unprotected control: exactly its two proved array-length/+2 latches may become headers.
     let control = class_text(F1, "F1");
     assert_eq!(
-        control.text, F1_VERBATIM,
-        "the unprotected control must not move by one character"
+        control.text,
+        f1_expected_header_projection(),
+        "the unprotected control may change only in the two exact loop headers"
+    );
+    assert_eq!(control.text.matches("for (").count(), 2, "{}", control.text);
+    for (signature, statement) in [
+        (
+            "public static int stepTwo(",
+            "local1 = local1 + arg0[local2];",
+        ),
+        (
+            "public static java.lang.String stepTwoWithCall(",
+            "local1.append(pick(arg0[local2]));",
+        ),
+    ] {
+        let body = method_segment(&control.text, signature);
+        assert_eq!(
+            body.matches("for (local2 = 0; local2 < arg0.length; local2 = local2 + 2)")
+                .count(),
+            1,
+            "{signature}: one exact step-two for header\n{body}"
+        );
+        assert_eq!(
+            body.matches("local2 = local2 + 2").count(),
+            1,
+            "{signature}: the only increment is the header update\n{body}"
+        );
+        assert!(body.contains(statement), "{signature}: {body}");
+        assert!(!body.contains("while ("), "{signature}: {body}");
+    }
+    assert_eq!(
+        compile_and_run("f1-recovered", "F1", &control.text),
+        run_frozen_class("f1-original", "F1", F1),
+        "the complete F1 projection runs like the frozen original class"
     );
     // The patrol's fixed refusal now recovers whole, in the control's own presentation.
     let report = class_text(F2, "F2");
@@ -209,9 +285,14 @@ fn f2_recovers_and_the_unprotected_control_stays_verbatim() {
     );
     let sum = recovered_method_text(&report, "stepTwoWithQuote");
     assert!(
-        sum.contains("while (local2 < arg0.length)")
+        sum.contains("for (local2 = 0; local2 < arg0.length; local2 = local2 + 2)")
             && sum.contains("local1 = local1 + arg0[local2];"),
         "the loop accumulates the element read:\n{sum}"
+    );
+    assert_eq!(
+        sum.matches("local2 = local2 + 2").count(),
+        1,
+        "the one step-two update belongs to the for header:\n{sum}"
     );
     assert!(
         sum.contains("try {\n                local1 = local1 + risky(arg0[local2]);")

@@ -1,0 +1,447 @@
+--- region.rs.base
++++ region.rs.candidate
+@@ -53,6 +53,19 @@
+ use crate::facts::{CompareOp, ConstantValue, Operation};
+ use crate::normal_flow::NormalFlowView;
+ use crate::stop::{StopReason, charge, poll};
++
++#[cfg(test)]
++macro_rules! cf11_diag {
++    ($at_bci:expr, $($arg:tt)*) => {{
++        if std::env::var_os("JRE_CF11_DIAGNOSTIC").is_some() {
++            eprintln!("CF11_LOOPS2_TRACE at_bci={} {}", $at_bci, format_args!($($arg)*));
++        }
++    }};
++}
++#[cfg(not(test))]
++macro_rules! cf11_diag {
++    ($at_bci:expr, $($arg:tt)*) => {{}};
++}
+ 
+ /// Why one region could only be kept as bytecode.
+ #[derive(Clone, Debug, Eq, PartialEq)]
+@@ -13413,6 +13426,7 @@
+         blocks: &BTreeSet<usize>,
+         terminal_returns: &BTreeSet<usize>,
+     ) -> Result<Option<ForHeader>, StopReason> {
++        cf11_diag!(header.bci(), "prove_for_header_enter header={:?} header_node={} blocks={:?} terminal_returns={:?}", header, header_node, blocks.iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>(), terminal_returns.iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>());
+         let at = Some(header.bci());
+         poll(self.budget, at)?;
+         let items = self
+@@ -13429,7 +13443,9 @@
+             u64::try_from(items).unwrap_or(u64::MAX),
+             at,
+         )?;
+-        self.for_header_candidate(header, header_node, blocks, terminal_returns)
++        let result = self.for_header_candidate(header, header_node, blocks, terminal_returns);
++        cf11_diag!(header.bci(), "prove_for_header_return header={:?} result={:?}", header, result);
++        result
+     }
+ 
+     fn for_header_candidate(
+@@ -13439,17 +13455,21 @@
+         blocks: &BTreeSet<usize>,
+         terminal_returns: &BTreeSet<usize>,
+     ) -> Result<Option<ForHeader>, StopReason> {
++        cf11_diag!(header.bci(), "for_header_candidate_enter header={:?} node={} body_blocks={:?}", header, header_node, blocks.iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>());
+         let Some((proof, preheader, invariants)) = (|| {
+             let loop_fact = self.view.loop_entered_at(header_node)?;
++            cf11_diag!(header.bci(), "for_header_stage loop_fact blocks={:?} latches={:?} irreducible={}", loop_fact.blocks().iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>(), loop_fact.latches().iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>(), loop_fact.is_irreducible());
+             let latch = *loop_fact.latches().iter().next()?;
+             if loop_fact.latches().len() != 1
+                 || latch == header_node
+                 || self.view.successors(latch) != [header_node]
+             {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13449 header_node={}", header_node);
+                 return None;
+             }
+             let update_block = self.view.id_of(latch)?;
+             let update_instructions = self.ssa.block(update_block)?.instructions();
++            cf11_diag!(header.bci(), "for_header_stage latch={} update_block={:?} update_instructions={:?}", self.view.id_of(latch).map(CanonicalBlockId::bci).unwrap_or_default(), update_block, update_instructions.iter().map(|instruction| (instruction.bci(), instruction.opcode(), self.operations.get(instruction.bci()), instruction.reads(), instruction.writes())).collect::<Vec<_>>());
+             let (slot, update, step, induction_input) = if let Some(
+                 [induction, step, add, update, transfer],
+             ) = update_instructions
+@@ -13475,9 +13495,11 @@
+                 && matches!(update.opcode(), 0x36 | 0x3b..=0x3e)
+             {
+                 let [(Slot::Local(read_slot), induction_input)] = induction.reads() else {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13478 header_node={}", header_node);
+                     return None;
+                 };
+                 if read_slot != slot {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13481 header_node={}", header_node);
+                     return None;
+                 }
+                 let induction_value = induction
+@@ -13512,10 +13534,12 @@
+                     || self.ssa.value(step_value).uses().len() != 1
+                     || self.ssa.value(sum_value).uses().len() != 1
+                 {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13515 header_node={}", header_node);
+                     return None;
+                 }
+                 let Some(Operation::Load { slot: step_slot }) = self.operations.get(step.bci())
+                 else {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13519 header_node={}", header_node);
+                     return None;
+                 };
+                 (*slot, update, Some(*step_slot), Some(*induction_input))
+@@ -13523,16 +13547,19 @@
+                 let update_tail =
+                     update_instructions.get(update_instructions.len().checked_sub(2)?..)?;
+                 let [update, transfer] = update_tail else {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13526 header_node={}", header_node);
+                     return None;
+                 };
+                 let Some(Operation::Increment { slot, .. }) = self.operations.get(update.bci())
+                 else {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13530 header_node={}", header_node);
+                     return None;
+                 };
+                 if !matches!(
+                     self.operations.get(transfer.bci()),
+                     Some(Operation::Transfer)
+                 ) {
++                    cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13536 header_node={}", header_node);
+                     return None;
+                 }
+                 (*slot, update, None, None)
+@@ -13550,6 +13577,7 @@
+                     .count()
+                     != 1
+             {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13553 header_node={}", header_node);
+                 return None;
+             }
+             let in_edges = self.view.predecessors(latch);
+@@ -13562,6 +13590,7 @@
+                         })
+                 })
+             {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13565 header_node={}", header_node);
+                 return None;
+             }
+             // If the latch also holds body effects, an early edge to its entry must execute those
+@@ -13570,9 +13599,11 @@
+             if update_instructions.len() > if step.is_some() { 5 } else { 2 }
+                 && in_edges != [header_node]
+             {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13573 header_node={}", header_node);
+                 return None;
+             }
+ 
++            cf11_diag!(header.bci(), "for_header_stage update_shape slot={:?} update_bci={} step={:?} incoming_latch_bcis={:?}", slot, update.bci(), step, in_edges.iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>());
+             let outside: Vec<_> = self
+                 .view
+                 .predecessors(header_node)
+@@ -13580,20 +13611,24 @@
+                 .filter(|source| !blocks.contains(source))
+                 .collect();
+             let [preheader] = outside.as_slice() else {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13583 header_node={}", header_node);
+                 return None;
+             };
+             if self.view.successors(*preheader) != [header_node] {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13586 header_node={}", header_node);
+                 return None;
+             }
+             let preheader_block = self.view.id_of(*preheader)?;
+             let initial_instructions = self.ssa.block(preheader_block)?.instructions();
+             let Some(initial) = initial_instructions.last() else {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13591 header_node={}", header_node);
+                 return None;
+             };
+             if !matches!(
+                 self.operations.get(initial.bci()),
+                 Some(Operation::Store { slot: target }) if *target == slot
+             ) {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13597 header_node={}", header_node);
+                 return None;
+             }
+             let init_value = initial
+@@ -13610,6 +13645,7 @@
+                 .filter_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value));
+             let stack_input = stack_reads.next()?;
+             if stack_reads.next().is_some() {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13613 header_node={}", header_node);
+                 return None;
+             }
+             let Definition::Instruction {
+@@ -13617,6 +13653,7 @@
+                 bci: producer_bci,
+             } = self.ssa.value(stack_input).def()
+             else {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13620 header_node={}", header_node);
+                 return None;
+             };
+             let Some(producer) = self
+@@ -13630,9 +13667,11 @@
+                         .find(|instruction| instruction.bci() == *producer_bci)
+                 })
+             else {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13633 header_node={}", header_node);
+                 return None;
+             };
+             let [store_use] = self.ssa.value(stack_input).uses() else {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13636 header_node={}", header_node);
+                 return None;
+             };
+             if !producer
+@@ -13643,9 +13682,11 @@
+                 || store_use.bci() != Some(initial.bci())
+                 || stack_input == init_value
+             {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13646 header_node={}", header_node);
+                 return None;
+             }
+ 
++            cf11_diag!(header.bci(), "for_header_stage init slot={:?} preheader={:?} init_bci={} update_bci={} init_value={:?} update_value={:?} stack_input={:?}", slot, self.view.id_of(*preheader).map(CanonicalBlockId::bci), initial.bci(), update.bci(), init_value, update_value, stack_input);
+             let phi = self
+                 .ssa
+                 .phis()
+@@ -13657,15 +13698,19 @@
+                 || self.ssa.value(init_value).uses().len() != 1
+                 || self.ssa.value(update_value).uses().len() != 1
+             {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13660 header_node={}", header_node);
+                 return None;
+             }
+             // The first load of an add/store latch must read this header's induction value,
+             // not another merged local that happens to occupy the same slot.
+             if induction_input.is_some_and(|value| value != phi.value()) {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13665 header_node={}", header_node);
+                 return None;
+             }
+ 
++            cf11_diag!(header.bci(), "for_header_stage phi={:?} inputs={:?} induction_input={:?}", phi, phi.inputs(), induction_input);
+             let test = self.ssa.block(header)?.instructions();
++            cf11_diag!(header.bci(), "for_header_stage test_block_instructions={:?}", test.iter().map(|instruction| (instruction.bci(), instruction.opcode(), self.operations.get(instruction.bci()), instruction.reads(), instruction.writes())).collect::<Vec<_>>());
+             let mut reads_induction = false;
+             let mut invariants = BTreeSet::new();
+             if let Some(step) = step {
+@@ -13680,6 +13725,7 @@
+                             .iter()
+                             .any(|(at, value)| *at == Slot::Local(slot) && *value == phi.value())
+                         {
++                            cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13683 header_node={}", header_node);
+                             return None;
+                         }
+                     }
+@@ -13691,10 +13737,11 @@
+                         | Operation::Arithmetic { .. }
+                         | Operation::Comparison { .. },
+                     ) => {}
+-                    _ => return None,
++                    _ => { cf11_diag!(header.bci(), "for_header_reject gate=unsupported_test_operation bci={} opcode={} operation={:?}", instruction.bci(), instruction.opcode(), self.operations.get(instruction.bci())); return None; },
+                 }
+             }
+             if !reads_induction {
++                cf11_diag!(header.bci(), "for_header_reject gate=region_rs_line_13698 header_node={}", header_node);
+                 return None;
+             }
+             Some((
+@@ -13708,11 +13755,14 @@
+                 invariants,
+             ))
+         })() else {
+-            return Ok(None);
+-        };
++            cf11_diag!(header.bci(), "for_header_candidate_closure_refused header={:?}; inspect last stage/reject record", header);
++            return Ok(None);
++        };
++        cf11_diag!(header.bci(), "for_header_candidate_core_proven proof={:?} preheader={:?} invariants={:?}; checking all blocks", proof, self.view.id_of(preheader).map(CanonicalBlockId::bci), invariants);
+         for names in self.ssa.blocks() {
+             poll(self.budget, Some(names.block().bci()))?;
+             let Some(node) = self.view.index_of(names.block()) else {
++                cf11_diag!(header.bci(), "for_header_reject gate=ssa_block_missing_from_normal_view block={:?}", names.block());
+                 return Ok(None);
+             };
+             for instruction in names.instructions() {
+@@ -13723,6 +13773,7 @@
+                         .iter()
+                         .any(|(at, _)| *at == Slot::Local(proof.slot))
+                 {
++                    cf11_diag!(header.bci(), "for_header_reject gate=loop_writes_induction block={} bci={} slot={:?} writes={:?}", names.block().bci(), instruction.bci(), proof.slot, instruction.writes());
+                     return Ok(None);
+                 }
+                 if blocks.contains(&node)
+@@ -13730,6 +13781,7 @@
+                         |(at, _)| matches!(at, Slot::Local(index) if invariants.contains(index)),
+                     )
+                 {
++                    cf11_diag!(header.bci(), "for_header_reject gate=loop_writes_invariant block={} bci={} invariants={:?} writes={:?}", names.block().bci(), instruction.bci(), invariants, instruction.writes());
+                     return Ok(None);
+                 }
+                 if !blocks.contains(&node) && node != preheader {
+@@ -13746,6 +13798,7 @@
+                             && reads_induction
+                             && !writes_induction;
+                         if !certified_return_read {
++                            cf11_diag!(header.bci(), "for_header_reject gate=external_induction_access block={} bci={} reads_induction={} writes_induction={} terminal_return={} terminal_returns={:?}", names.block().bci(), instruction.bci(), reads_induction, writes_induction, terminal_returns.contains(&node), terminal_returns.iter().filter_map(|node| self.view.id_of(*node).map(CanonicalBlockId::bci)).collect::<Vec<_>>());
+                             return Ok(None);
+                         }
+                     }
+@@ -17265,6 +17318,163 @@
+ #[cfg(test)]
+ mod tests {
+     use super::*;
++
++    #[test]
++    fn cf11_nested_loops2_for_header_diagnostic() {
++        use jarde_jvm::engine::analyze_method_ir;
++        use jarde_jvm::environment::ResolutionEnvironment;
++        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
++        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
++        use jarde_reader::budget::Limits;
++        use jarde_reader::model::{
++            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
++            PhysicalMethodId, PhysicalVariant,
++        };
++        use jarde_reader::view::{
++            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
++            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
++            RuntimeView,
++        };
++
++        const CLASS: &[u8] = include_bytes!(
++            "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops2.class"
++        );
++        assert_eq!(CLASS.len(), 878);
++        let mut budget = Budget::new(Limits {
++            input_bytes: 1 << 20,
++            archive_entries: 100,
++            entry_bytes: 1 << 20,
++            read_bytes: 1 << 20,
++            class_bytes: 1 << 20,
++            attribute_bytes: 1 << 20,
++            code_bytes: 1 << 20,
++            result_items: 1 << 20,
++            output_bytes: 1 << 20,
++            class_headers: 100,
++            method_bodies: 100,
++            ir_items: 1 << 20,
++            ir_edges: 1 << 20,
++            analysis_steps: 1 << 20,
++            normalization_clones: 1 << 20,
++            nested_depth: 32,
++            dependency_depth: 32,
++            elapsed_millis: u64::MAX,
++        });
++        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
++            .expect("frozen original TestNestedLoops2 class opens");
++        let definition = PhysicalDefinitionId {
++            location: PhysicalClassLocation::StandaloneRoot {
++                snapshot: snapshot.id().clone(),
++            },
++            class_bytes: ClassBytesId {
++                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
++                length: u64::try_from(CLASS.len()).expect("class bytes fit u64"),
++            },
++            variant: PhysicalVariant::Base,
++        };
++        let domain = LoadDomain {
++            loader: LoaderId("app".to_owned()),
++            parent_loader: None,
++            delegation: DelegationPolicy::ParentFirst,
++            roots: vec![LoadRoot::StandaloneClass {
++                snapshot: snapshot.id().clone(),
++            }],
++            module_mode: ModuleMode::ClassPath,
++            external_override: RuntimeUncertainty::None,
++            runtime_transformation: RuntimeUncertainty::None,
++        };
++        let analysis = analyze_method_ir(
++            &[snapshot.clone()],
++            &MethodAnalysisRequest {
++                environment: ResolutionEnvironment {
++                    runtime: RuntimeView {
++                        physical: PhysicalView {
++                            snapshot: snapshot.id().clone(),
++                            scope: PhysicalScope::SnapshotAll,
++                        },
++                        profile: RuntimeProfile {
++                            java_release: 8,
++                            multi_release: MultiReleasePolicy::Disabled,
++                            layout: LayoutMode::Generic,
++                        },
++                        load_domain: domain.clone(),
++                    },
++                    domains: vec![domain],
++                    providers: Vec::new(),
++                },
++                method: PhysicalMethodId {
++                    owner: definition,
++                    name: JvmBytes(b"test".to_vec()),
++                    descriptor: JvmBytes(b"(Ljava/util/List;)Z".to_vec()),
++                },
++                stages: AnalysisStage::ALL.to_vec(),
++            },
++            &mut budget,
++        )
++        .expect("Reader analyzes the exact real TestNestedLoops2.test method");
++        let ir = analysis.ir();
++        let canonical = ir.canonical().expect("same IR has canonical CFG");
++        let ssa = ir.ssa().expect("same IR has SSA");
++        let code = ir.code().expect("same IR has decoded code");
++        let pool = ir.constant_pool();
++        let operations = Operations::of(code, pool);
++        let view = NormalFlowView::build(canonical, &mut budget)
++            .expect("same canonical CFG projects to normal flow");
++
++        eprintln!("CF11_LOOPS2_CLASS bytes={} blake3={} physical_method=test(Ljava/util/List;)Z", CLASS.len(), blake3::hash(CLASS).to_hex());
++        eprintln!("CF11_LOOPS2_CANONICAL blocks={} edges={} unreachable={:?}", canonical.blocks().len(), canonical.edges().len(), canonical.unreachable());
++        for edge in canonical.edges() {
++            eprintln!("CF11_LOOPS2_EDGE {:?} {:?} -> {:?}", edge.kind(), edge.from(), edge.to());
++        }
++        for (node, id) in view.ids().iter().enumerate() {
++            let bci_vec = |nodes: Vec<usize>| nodes.into_iter().filter_map(|n| view.id_of(n).map(CanonicalBlockId::bci)).collect::<Vec<_>>();
++            let loop_fact = view.loop_entered_at(node).map(|loop_of| (
++                loop_of.blocks().iter().filter_map(|n| view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(),
++                loop_of.latches().iter().filter_map(|n| view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(),
++                loop_of.is_irreducible(),
++            ));
++            let dominators = view.ids().iter().enumerate().filter_map(|(d, candidate)| view.dominates(d, node).then_some(candidate.bci())).collect::<Vec<_>>();
++            let ipdom = view.immediate_post_dominator(node).and_then(|next| view.id_of(next).map(CanonicalBlockId::bci));
++            eprintln!("CF11_LOOPS2_NODE index={} id={:?} preds={:?} succs={:?} dominators={:?} ipdom={:?} natural_loop={:?}",
++                node, id, bci_vec(view.predecessors(node)), bci_vec(view.successors(node)), dominators, ipdom, loop_fact);
++        }
++        for (node, id) in view.ids().iter().enumerate() {
++            if let Some(loop_fact) = view.loop_entered_at(node) {
++                eprintln!("CF11_LOOPS2_LOOP_HEADER node={} header={:?} blocks={:?} latches={:?} irreducible={}", node, id, loop_fact.blocks().iter().filter_map(|n| view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(), loop_fact.latches().iter().filter_map(|n| view.id_of(*n).map(CanonicalBlockId::bci)).collect::<Vec<_>>(), loop_fact.is_irreducible());
++            }
++        }
++        eprintln!("CF11_LOOPS2_SSA_TABLE {:#?}", ssa);
++        for block in ssa.blocks() {
++            for instruction in block.instructions() {
++                eprintln!("CF11_LOOPS2_INSN block={:?} bci={} opcode={} reads={:?} writes={:?} operation={:?}",
++                    block.block(), instruction.bci(), instruction.opcode(), instruction.reads(), instruction.writes(), operations.get(instruction.bci()));
++            }
++        }
++        let chains = crate::concat::plan_four_conditional_strings(
++            ssa,
++            canonical,
++            &operations,
++            &crate::build::FieldCopies::default(),
++            &mut budget,
++        )
++        .expect("string-concat planning leaves this loop method unchanged");
++        let recovered = recover(
++            canonical,
++            &view,
++            ssa,
++            &operations,
++            pool,
++            &chains,
++            &crate::init::Sites::empty(),
++            code,
++            Some(false),
++            true,
++            &crate::pass::JAVA_8,
++            &mut budget,
++        )
++        .expect("real method region walk completes");
++        eprintln!("CF11_LOOPS2_RECOVERY structured={} fallbacks={:?} regions={:#?} claimed={:?}", recovered.is_structured(), recovered.fallbacks(), recovered.regions, recovered.claimed);
++    }
+ 
+     #[test]
+     fn range_end_transfer_rejects_competing_entries_and_exits() {

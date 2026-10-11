@@ -1,0 +1,5 @@
+{
+  "status": "reviewed_checker_only_correction",
+  "reason": "Observed false SHA256 assumption: class_bytes.digest is BLAKE3. Reuse prior accepted nested-v4 shape/owner/physical binding policy without claiming independent recomputation. Preserve original failed checker invocation.",
+  "checker_sha256": "16c73e000ddeb909382110bc5a73a8928ec20578de8c6445e895b7aaca4a98f8"
+}

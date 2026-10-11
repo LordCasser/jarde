@@ -1,0 +1,9 @@
+empty=false
+same6=false
+ten=false
+eleven_then_zero=true
+zero_then_eleven=true
+ascending=true
+descending=true
+null_list=java.lang.NullPointerException
+null_element=java.lang.NullPointerException

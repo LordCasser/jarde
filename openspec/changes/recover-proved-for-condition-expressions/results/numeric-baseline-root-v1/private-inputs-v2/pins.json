@@ -1,0 +1,21 @@
+{
+  "fixture": "jarde-for-condition-numeric-inputs-luna-v2",
+  "package": "cf11",
+  "source_level": "Java 8",
+  "compiled_or_run": false,
+  "sourcefiles": [
+    {
+      "class": "cf11.ForConditionNumeric",
+      "source": "ForConditionNumeric.java",
+      "bytes": 621,
+      "sha256": "5cd7a82fa49484a4706270ab4bc63364c81a4725287b9b264b35992d5a641396"
+    },
+    {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 2079,
+      "sha256": "cd70b090ff8220a255a0bcd6a0c08ae45a60e02d584d22f24256a0550aa252ad"
+    }
+  ],
+  "oracle_status": "Original-class runtime oracle pending parent compilation; predictions are not actual results."
+}

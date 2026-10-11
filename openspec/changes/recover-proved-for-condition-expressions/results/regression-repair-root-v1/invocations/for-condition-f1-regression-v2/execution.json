@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-f1-regression-root-v2.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T15:38:28.296914+00:00",
+  "finished_at": "2026-10-11T15:39:19.359336+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-f1-regression-v2/stdout.raw",
+      "bytes": 181,
+      "sha256": "f2dc9509e725d82d7f98129361ab5ab662219eb5fe32f8b22858af270b0fb668"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-f1-regression-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-collector-root-v3/check_controls.py",
+    "--execution",
+    "/private/tmp/jarde-for-condition-baseline-root-v1/execution.json",
+    "--out",
+    "/private/tmp/jarde-for-condition-baseline-root-check-v1.json"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T14:41:55.971620+00:00",
+  "finished_at": "2026-10-11T14:41:56.175418+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-baseline-check-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-baseline-check-v1/stderr.raw",
+      "bytes": 1844,
+      "sha256": "f90e80d80da1c7f8142d57b6c62f6249eeabc7b14f5e93c592b03be05e008a9d"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

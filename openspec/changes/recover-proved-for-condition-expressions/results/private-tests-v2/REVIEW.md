@@ -1,0 +1,17 @@
+# Private v2 test candidate review
+
+The full candidate files are copies of the current repository tests with proposed additions appended and the four class-fixture constants added. `candidates.patch` is the exact unified patch against the current repository versions. This directory is not a worktree and none of these files were copied back to the repository.
+
+The include paths match root's planned fixture destination: `tests/fixtures/java8/cf11-for-condition/{ForConditionEffects,ForConditionReads,ForConditionRefusals,UpstreamNestedLoops2}.class`. Root should retain the Java 23 `--release 8` class bytes as specified. The pinned source bytes are under root's baseline leg directories; the checksums in `pins.json` identify what these candidate include paths are expected to reference.
+
+The eight positive ForHeader methods are three in `ForConditionEffects` and five in `ForConditionReads`. `assert_counted_for_header` parses balanced parentheses, checks the initializer, condition's induction local, and the unique same-local `+1` update in the third clause. The two-call condition asserts one `offset()` then one `limit()` in that order. The continue test intentionally permits the current region's `if`/`else` projection; it checks the header update remains unique and the body event arms remain present. Root's three-way Runner comparison already established the real continue case trace `events=12412312`, `offsetCalls=3`, `limitCalls=3`; that runtime observation is noted here as external acceptance evidence, not claimed as a Rust API-test execution.
+
+The fixed `UpstreamNestedLoops2.test(Ljava/util/List;)Z` baseline is already structured with no body fallback and complete physical origins. The new assertion changes only the outer loop form to `for`, preserves the inner `while`, and keeps full method physical coverage. The generic-signature raw-List diagnostic does not imply a quoted body and is deliberately not asserted as a failure.
+
+`sumWithAssignedCallBound()I` is a reliable structured `while` negative with a complete physical map; the candidate asserts default/all text and maps match and the `bound = limit()` result remains used by `return sum + bound`. `oldWhileWithWrittenLocalBound()I` similarly remains a structured `while` when its local bound is written in the body.
+
+`sumWithLeadingTickAndBreak()I` is different: its current exact baseline is `Quality::Fallback`, `ExplanationOnly`, `NotJava`, with fallback codes `jre_region_unmet_precondition` at BCI 4 and `jre_region_uncovered_blocks` for blocks 14 and 17. Its usable source anchors are BCIs 0, 4, 14, 17, and 27, with the fallback quote `@bytecode 0 4 14 17 27`. The known physical-map gaps `[1, 2, 3, 7, 8, 11, 18, 19, 20, 21, 24, 28]` are recorded as a separate debt: the candidate does not claim complete physical coverage or assert those missing mappings.
+
+The late Stop candidate uses the existing nested-loop test's dynamic `source_steps - 1` recipe and existing `assert_late_stop` / `assert_no_partial_body` checks. Pre-cancellation uses the existing `assert_precancel`. No numeric budget is hard-coded and no new budget helper is introduced. No Cargo, rustc, Java/JDK, JADX, or CLI command was run; no shared file was edited.
+
+The focused test commands once root elects to run them are `cargo test --locked -p jarde --test p3_for_latch` and `cargo test --locked -p jarde --test p3_nested_loop_side_exits`. This agent did not execute either command.

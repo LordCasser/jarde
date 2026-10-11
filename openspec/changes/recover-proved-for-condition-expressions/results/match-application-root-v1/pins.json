@@ -1,0 +1,39 @@
+{
+  "candidate": {
+    "path": "/private/tmp/jarde-for-condition-match-impl-luna-v1/region.rs",
+    "sha256": "c905af706bda527881fa99e6a3f1e771164d676900a5c57c1dd154bb9fb63eaa"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-for-condition-match-impl-luna-v1/region.rs.patch",
+    "sha256": "a81c36a25ca19dbf34ff6c5c5cf8c3f4cd4c2c5608a97b3a54d775a7b2cb51bc"
+  },
+  "sources": [
+    {
+      "path": "crates/jarde-java/src/region.rs",
+      "sha256": "5313e42faa9d7025d929f203c29e1c3bba271ec6eaf63a70323d2816a6a42604"
+    },
+    {
+      "path": "crates/jarde-java/src/build.rs",
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "path": "openspec/changes/recover-proved-for-condition-expressions/proposal.md",
+      "sha256": "01ebd2fa7f4dce1d9d3ea7a9e126f8dab530eb7f5a2c114b1fb7e23f2360cea5"
+    },
+    {
+      "path": "openspec/changes/recover-proved-for-condition-expressions/design.md",
+      "sha256": "3d8b6a8623656cb0660f03e8e2ddedba603f7dc6d0fcf31aff495dfd5aaf39a4"
+    },
+    {
+      "path": "openspec/changes/recover-proved-for-condition-expressions/specs/java8-recovery/spec.md",
+      "sha256": "374e9f00ce285cfb5b5d8d740b5f6763d4d043f6a76d1f38c10f263e4b0751b9"
+    },
+    {
+      "path": "openspec/changes/recover-proved-for-condition-expressions/tasks.md",
+      "sha256": "093f01e55722629e8482a5c1ba572ae6763d1b3e76e88338753a0997407eeccf"
+    }
+  ],
+  "production_region_baseline_matches_parent_pin": true,
+  "shared_workspace_modified": false,
+  "validation": "normalized unified diff inspected; no build or tests run"
+}

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-budget-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T15:20:23.605728+00:00",
+  "finished_at": "2026-10-11T15:21:13.481199+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-budget-v1/stdout.raw",
+      "bytes": 153,
+      "sha256": "bde933544d88fcc9ab4f55aa8a9769aab4e34abd455b3fc07d3705c642b64f02"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-budget-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

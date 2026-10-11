@@ -1,0 +1,3 @@
+候选CLI v3实际三组对照，115命令/230 raw，28完整生成compile/run成功腿，8既有拒绝类compile失败且未运行。正例11个for、固定outer for/inner while及完整物理来源获验收；所有非目标方法正文、map、quality逐个与旧基线相同。原Refusals fallback十二BCI缺口严格相同。controls的8个Jarde成功腿为完整生成Effects或Reads与其它原类隔离重编，不是三生成类一起成功。numeric/fixed各四Jarde+四JADX完整生成腿成功。
+
+accept v1仅因历史固定capture label无类名后缀而KeyError，v2只显式适配此schema差异后通过，失败raw保留。仍非最终source binding/fresh workspace/own CI验收。冻结可执行文件不进入Git，字节身份见acceptance。

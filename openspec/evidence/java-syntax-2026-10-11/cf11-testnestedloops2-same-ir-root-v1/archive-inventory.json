@@ -1,0 +1,142 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/jarde-nested-loops2-same-ir-root-v1/0.stderr.raw",
+      "archived": "execution/0.stderr.raw",
+      "bytes": 198454,
+      "sha256": "343bacc341aa9d9d2867a3dbaeb0d5c6b2a55e61b08c729a24548fdc8ad00a49"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-same-ir-root-v1/0.stdout.raw",
+      "archived": "execution/0.stdout.raw",
+      "bytes": 182,
+      "sha256": "a034533b6f7e65f4d772b262d37b267a55de77b025294e6661a69254e07cbc1e"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-same-ir-root-v1/1.stderr.raw",
+      "archived": "execution/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "c63a74e8870e633e5133373fffd3f40094a97db6c6d9ef1409ffead5d55bc963"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-same-ir-root-v1/1.stdout.raw",
+      "archived": "execution/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-same-ir-root-v1/execution.json",
+      "archived": "execution/execution.json",
+      "bytes": 2276771,
+      "sha256": "29e45464b31f625c2f7ccf197adca1a1a222618f1ac97b9b44be72839f15e7f0"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-same-ir/execution.json",
+      "archived": "invocation/execution.json",
+      "bytes": 765,
+      "sha256": "16c37af26c6fb26b89b26430fec180f28ae4aa6a6528baf9997e34457eeb88a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-same-ir/stderr.raw",
+      "archived": "invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-same-ir/stdout.raw",
+      "archived": "invocation/stdout.raw",
+      "bytes": 286,
+      "sha256": "cbdc4404d2bfdd4da86119d48882cb3927dbedfdd7021bd59871d8cd64931587"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v1/pins.json",
+      "archived": "private-prep/v1/pins.json",
+      "bytes": 1820,
+      "sha256": "c3145bfd1e5f61867fa38145a5db846a891c1cde31dbe0fb49ed0a9bea2625a0"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v1/README.md",
+      "archived": "private-prep/v1/README.md",
+      "bytes": 1532,
+      "sha256": "7df5077e755c9056abe43dd74d23ac7c543ac69c40af00601aa83770d3eaa535"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v1/region.rs.patch",
+      "archived": "private-prep/v1/region.rs.patch",
+      "bytes": 23997,
+      "sha256": "8e148cdae2d4e9aa7fd29e72b63213e3d258c0fde2681c562362f05e970d495c"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v2/pins.json",
+      "archived": "private-prep/v2/pins.json",
+      "bytes": 1820,
+      "sha256": "7384b0cfbbd239da4e8c5431695c4dab103efc9a11f86a90e297a9b0828298cb"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v2/README.md",
+      "archived": "private-prep/v2/README.md",
+      "bytes": 1704,
+      "sha256": "a0ad7d97e684908c7f9f709ee7a455e6e4b18f7ebbca5030a0b9c0e3f7d3ec98"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v2/region.rs.patch",
+      "archived": "private-prep/v2/region.rs.patch",
+      "bytes": 23998,
+      "sha256": "32660a70483d20ece26614eb9564f9a795e88bc458a163cfe8257f4aee23a5be"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v3/pins.json",
+      "archived": "private-prep/v3/pins.json",
+      "bytes": 1820,
+      "sha256": "527d81a39e832a3127ad8e23b605608080b005ed0203dc0f93ab0f5fe92e77cd"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v3/README.md",
+      "archived": "private-prep/v3/README.md",
+      "bytes": 2138,
+      "sha256": "3fdcd8fc4aa9569a1fcf0655a7b14dd1a12e6f63112637808dc0ce3bc9f1a9ed"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v3/region.rs.patch",
+      "archived": "private-prep/v3/region.rs.patch",
+      "bytes": 23997,
+      "sha256": "68bc000e5a4d664f323654954821aa24c1c9258c7ba831bccd448fb46e000df0"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v4/pins.json",
+      "archived": "private-prep/v4/pins.json",
+      "bytes": 1820,
+      "sha256": "ff70e4c0e8d7761a2ae6b2fc79533b807adf31f9cd29064a2091c535492d9464"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v4/README.md",
+      "archived": "private-prep/v4/README.md",
+      "bytes": 2389,
+      "sha256": "63677897c92fdff820609a2540af42ee187e2e2694505280ff2426b3fa24c665"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v4/region.rs.patch",
+      "archived": "private-prep/v4/region.rs.patch",
+      "bytes": 24001,
+      "sha256": "d08d1da2f8ff9812ba29282740d6ce3602c49d6d85a70d3527e972436947b621"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v4/region.rs",
+      "archived": "private-prep/v4/region.rs",
+      "bytes": 984145,
+      "sha256": "d3a8c195c78683d6f80af5875866a4ef09f24f9ab79a65ca84a86064f2eeb842"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-diagnostic-root-v1.py",
+      "archived": "runner/jarde-nested-loops2-diagnostic-root-v1.py",
+      "bytes": 6155,
+      "sha256": "0fbd45b8df4ef6891c744fb563ee511d67d66148d71522ef81043c9644169d49"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-same-ir-archive-root-v1.py",
+      "archived": "archive-root-v1.py",
+      "bytes": 4035,
+      "sha256": "c71cad57ae2681c4af8e1be01c45ee25a517eefb22740acb582552bd1562c6e8"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "version": "private-diagnostic-prep-luna-v1",
+  "base_path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "base_bytes": 969181,
+  "base_sha256": "5313e42faa9d7025d929f203c29e1c3bba271ec6eaf63a70323d2816a6a42604",
+  "candidate_path": "/private/tmp/jarde-nested-loops2-diagnostic-prep-luna-v1/region.rs",
+  "candidate_bytes": 984141,
+  "candidate_sha256": "f5d6ba5d27ae06752e3e374c547e47bcdace9522b54bd7277d0d7cdbbd2e86b3",
+  "class_path": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops2.class",
+  "class_bytes": 878,
+  "class_sha256": "1b11e7ac235ff48798edb6bd1f47c02829592bdbcf7f4af0066fec278d095547",
+  "javap_path": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-original/javap.txt",
+  "javap_sha256": "e37d56ddbdd0630e8f42fa95662186c79595360db19aa29f0496b1bf94f87e8b",
+  "test_name": "cf11_nested_loops2_for_header_diagnostic",
+  "test_method": "cf11.UpstreamNestedLoops2.test(Ljava/util/List;)Z",
+  "runner": "JRE_CF11_DIAGNOSTIC=1 cargo test -p jarde-java --lib region::tests::cf11_nested_loops2_for_header_diagnostic -- --exact --nocapture --test-threads=1",
+  "toolchain_run": "none",
+  "patch_bytes": 23997,
+  "patch_sha256": "8e148cdae2d4e9aa7fd29e72b63213e3d258c0fde2681c562362f05e970d495c",
+  "additional_source_pins": {
+    "ssa_api": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    "normal_flow_api": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/normal_flow.rs",
+      "bytes": 37236,
+      "sha256": "8945a6d45b36acfb46066954ece0ec0ec50ad310987fad7155b586d7be2cf3ee"
+    }
+  }
+}

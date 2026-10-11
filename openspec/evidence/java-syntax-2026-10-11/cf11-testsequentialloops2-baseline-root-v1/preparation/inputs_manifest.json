@@ -1,0 +1,18 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.UpstreamSequentialLoops2",
+      "source": "UpstreamSequentialLoops2.java",
+      "bytes": 542,
+      "sha256": "118617f1cddf04d79f72e12d4d100edf090edebff3695517ceae6b0a022749dd"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 934,
+    "sha256": "83ab844177d6944d62f4d3ed1d3d4f2ec472ba9e3b54043b9c312db8faa0e1a4"
+  }
+}

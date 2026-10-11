@@ -1,0 +1,19 @@
+--- tests/p3_crossing_array_read_values.rs
++++ tests/p3_crossing_array_read_values.rs
+@@ -285,10 +285,15 @@
+     );
+     let sum = recovered_method_text(&report, "stepTwoWithQuote");
+     assert!(
+-        sum.contains("while (local2 < arg0.length)")
++        sum.contains("for (local2 = 0; local2 < arg0.length; local2 = local2 + 2)")
+             && sum.contains("local1 = local1 + arg0[local2];"),
+         "the loop accumulates the element read:\n{sum}"
+     );
++    assert_eq!(
++        sum.matches("local2 = local2 + 2").count(),
++        1,
++        "the one step-two update belongs to the for header:\n{sum}"
++    );
+     assert!(
+         sum.contains("try {\n                local1 = local1 + risky(arg0[local2]);")
+             && sum.contains("local1 = local1 - 1;"),

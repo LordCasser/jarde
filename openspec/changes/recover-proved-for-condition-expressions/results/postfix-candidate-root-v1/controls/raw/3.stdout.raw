@@ -1,0 +1,344 @@
+Classfile /private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionEffects.class
+  Last modified 2026-10-11; size 1464 bytes
+  MD5 checksum ad53e6517a112d397edc41ad091ead3c
+  Compiled from "ForConditionEffects.java"
+public class cf11.ForConditionEffects
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #17.#45        // java/lang/Object."<init>":()V
+   #2 = Fieldref           #16.#46        // cf11/ForConditionEffects.offsetCalls:I
+   #3 = Fieldref           #16.#47        // cf11/ForConditionEffects.events:I
+   #4 = Fieldref           #16.#48        // cf11/ForConditionEffects.offsetThrowAt:I
+   #5 = Class              #49            // java/lang/IllegalStateException
+   #6 = String             #34            // offset
+   #7 = Methodref          #5.#50         // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+   #8 = Fieldref           #16.#51        // cf11/ForConditionEffects.offsetValue:I
+   #9 = Fieldref           #16.#52        // cf11/ForConditionEffects.limitCalls:I
+  #10 = Fieldref           #16.#53        // cf11/ForConditionEffects.limitThrowAt:I
+  #11 = String             #37            // limit
+  #12 = Fieldref           #16.#54        // cf11/ForConditionEffects.limitValue:I
+  #13 = Methodref          #16.#55        // cf11/ForConditionEffects.offset:()I
+  #14 = Methodref          #16.#56        // cf11/ForConditionEffects.limit:()I
+  #15 = Fieldref           #16.#57        // cf11/ForConditionEffects.dynamicLimit:I
+  #16 = Class              #58            // cf11/ForConditionEffects
+  #17 = Class              #59            // java/lang/Object
+  #18 = Utf8               events
+  #19 = Utf8               I
+  #20 = Utf8               offsetCalls
+  #21 = Utf8               limitCalls
+  #22 = Utf8               offsetValue
+  #23 = Utf8               limitValue
+  #24 = Utf8               offsetThrowAt
+  #25 = Utf8               limitThrowAt
+  #26 = Utf8               dynamicLimit
+  #27 = Utf8               <init>
+  #28 = Utf8               ()V
+  #29 = Utf8               Code
+  #30 = Utf8               LineNumberTable
+  #31 = Utf8               LocalVariableTable
+  #32 = Utf8               this
+  #33 = Utf8               Lcf11/ForConditionEffects;
+  #34 = Utf8               offset
+  #35 = Utf8               ()I
+  #36 = Utf8               StackMapTable
+  #37 = Utf8               limit
+  #38 = Utf8               sumWithFunctionBounds
+  #39 = Utf8               i
+  #40 = Utf8               sum
+  #41 = Utf8               sumWithFunctionBoundsAndContinue
+  #42 = Utf8               sumWithChangingFieldBound
+  #43 = Utf8               SourceFile
+  #44 = Utf8               ForConditionEffects.java
+  #45 = NameAndType        #27:#28        // "<init>":()V
+  #46 = NameAndType        #20:#19        // offsetCalls:I
+  #47 = NameAndType        #18:#19        // events:I
+  #48 = NameAndType        #24:#19        // offsetThrowAt:I
+  #49 = Utf8               java/lang/IllegalStateException
+  #50 = NameAndType        #27:#60        // "<init>":(Ljava/lang/String;)V
+  #51 = NameAndType        #22:#19        // offsetValue:I
+  #52 = NameAndType        #21:#19        // limitCalls:I
+  #53 = NameAndType        #25:#19        // limitThrowAt:I
+  #54 = NameAndType        #23:#19        // limitValue:I
+  #55 = NameAndType        #34:#35        // offset:()I
+  #56 = NameAndType        #37:#35        // limit:()I
+  #57 = NameAndType        #26:#19        // dynamicLimit:I
+  #58 = Utf8               cf11/ForConditionEffects
+  #59 = Utf8               java/lang/Object
+  #60 = Utf8               (Ljava/lang/String;)V
+{
+  static int events;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int offsetCalls;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limitCalls;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int offsetValue;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limitValue;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int offsetThrowAt;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limitThrowAt;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int dynamicLimit;
+    descriptor: I
+    flags: ACC_STATIC
+
+  public cf11.ForConditionEffects();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/ForConditionEffects;
+
+  static int offset();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #2                  // Field offsetCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #2                  // Field offsetCalls:I
+         8: getstatic     #3                  // Field events:I
+        11: bipush        10
+        13: imul
+        14: iconst_1
+        15: iadd
+        16: putstatic     #3                  // Field events:I
+        19: getstatic     #4                  // Field offsetThrowAt:I
+        22: ifeq          44
+        25: getstatic     #2                  // Field offsetCalls:I
+        28: getstatic     #4                  // Field offsetThrowAt:I
+        31: if_icmpne     44
+        34: new           #5                  // class java/lang/IllegalStateException
+        37: dup
+        38: ldc           #6                  // String offset
+        40: invokespecial #7                  // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        43: athrow
+        44: getstatic     #8                  // Field offsetValue:I
+        47: ireturn
+      LineNumberTable:
+        line 14: 0
+        line 15: 8
+        line 16: 19
+        line 17: 34
+        line 19: 44
+      StackMapTable: number_of_entries = 1
+        frame_type = 44 /* same */
+
+  static int limit();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: getstatic     #9                  // Field limitCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #9                  // Field limitCalls:I
+         8: getstatic     #3                  // Field events:I
+        11: bipush        10
+        13: imul
+        14: iconst_2
+        15: iadd
+        16: putstatic     #3                  // Field events:I
+        19: getstatic     #10                 // Field limitThrowAt:I
+        22: ifeq          44
+        25: getstatic     #9                  // Field limitCalls:I
+        28: getstatic     #10                 // Field limitThrowAt:I
+        31: if_icmpne     44
+        34: new           #5                  // class java/lang/IllegalStateException
+        37: dup
+        38: ldc           #11                 // String limit
+        40: invokespecial #7                  // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        43: athrow
+        44: getstatic     #12                 // Field limitValue:I
+        47: ireturn
+      LineNumberTable:
+        line 23: 0
+        line 24: 8
+        line 25: 19
+        line 26: 34
+        line 28: 44
+      StackMapTable: number_of_entries = 1
+        frame_type = 44 /* same */
+
+  static int sumWithFunctionBounds();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=0
+         0: iconst_0
+         1: istore_0
+         2: iconst_0
+         3: istore_1
+         4: iload_1
+         5: invokestatic  #13                 // Method offset:()I
+         8: invokestatic  #14                 // Method limit:()I
+        11: iadd
+        12: if_icmpge     36
+        15: iload_0
+        16: iload_1
+        17: iadd
+        18: istore_0
+        19: getstatic     #3                  // Field events:I
+        22: bipush        10
+        24: imul
+        25: iconst_3
+        26: iadd
+        27: putstatic     #3                  // Field events:I
+        30: iinc          1, 1
+        33: goto          4
+        36: iload_0
+        37: ireturn
+      LineNumberTable:
+        line 32: 0
+        line 33: 2
+        line 34: 15
+        line 35: 19
+        line 33: 30
+        line 37: 36
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            4      32     1     i   I
+            2      36     0   sum   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 4
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 31
+
+  static int sumWithFunctionBoundsAndContinue();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=0
+         0: iconst_0
+         1: istore_0
+         2: iconst_0
+         3: istore_1
+         4: iload_1
+         5: invokestatic  #13                 // Method offset:()I
+         8: invokestatic  #14                 // Method limit:()I
+        11: iadd
+        12: if_icmpge     54
+        15: iload_1
+        16: ifne          33
+        19: getstatic     #3                  // Field events:I
+        22: bipush        10
+        24: imul
+        25: iconst_4
+        26: iadd
+        27: putstatic     #3                  // Field events:I
+        30: goto          48
+        33: iload_0
+        34: iload_1
+        35: iadd
+        36: istore_0
+        37: getstatic     #3                  // Field events:I
+        40: bipush        10
+        42: imul
+        43: iconst_3
+        44: iadd
+        45: putstatic     #3                  // Field events:I
+        48: iinc          1, 1
+        51: goto          4
+        54: iload_0
+        55: ireturn
+      LineNumberTable:
+        line 41: 0
+        line 42: 2
+        line 43: 15
+        line 44: 19
+        line 45: 30
+        line 47: 33
+        line 48: 37
+        line 42: 48
+        line 50: 54
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            4      50     1     i   I
+            2      54     0   sum   I
+      StackMapTable: number_of_entries = 4
+        frame_type = 253 /* append */
+          offset_delta = 4
+          locals = [ int, int ]
+        frame_type = 28 /* same */
+        frame_type = 14 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+
+  static int sumWithChangingFieldBound();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=0
+         0: iconst_0
+         1: istore_0
+         2: iconst_0
+         3: istore_1
+         4: iload_1
+         5: getstatic     #15                 // Field dynamicLimit:I
+         8: if_icmpge     40
+        11: iload_0
+        12: iload_1
+        13: iadd
+        14: istore_0
+        15: getstatic     #3                  // Field events:I
+        18: bipush        10
+        20: imul
+        21: iconst_3
+        22: iadd
+        23: putstatic     #3                  // Field events:I
+        26: getstatic     #15                 // Field dynamicLimit:I
+        29: iconst_1
+        30: isub
+        31: putstatic     #15                 // Field dynamicLimit:I
+        34: iinc          1, 1
+        37: goto          4
+        40: iload_0
+        41: ireturn
+      LineNumberTable:
+        line 54: 0
+        line 55: 2
+        line 56: 11
+        line 57: 15
+        line 58: 26
+        line 55: 34
+        line 60: 40
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            4      36     1     i   I
+            2      40     0   sum   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 4
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 35
+}
+SourceFile: "ForConditionEffects.java"

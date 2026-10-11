@@ -1,0 +1,18 @@
+{
+  "upstream_source": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestSequentialLoops2.java",
+  "upstream_source_sha256": "adb34f80f7d55cd3309ed7708f0fdb46768cf32e4004dbd13d4e278530306720",
+  "field": {
+    "name": "lowercases",
+    "byte_offset_start": 330,
+    "byte_offset_end_exclusive": 386,
+    "sha256": "3209860a1335c2128aa1a82e3e5668cd15580a18d7ae07c1407a36a3bd5801fd"
+  },
+  "method": {
+    "signature": "public static String asciiToLowerCase(String s)",
+    "byte_offset_start": 388,
+    "byte_offset_end_exclusive": 808,
+    "sha256": "80c97a42c86da19956b70d9626219b7f456d277d5e2a3a0e580fa7586f6ea577"
+  },
+  "field_sha256_after_copy": "3209860a1335c2128aa1a82e3e5668cd15580a18d7ae07c1407a36a3bd5801fd",
+  "method_sha256_after_copy": "80c97a42c86da19956b70d9626219b7f456d277d5e2a3a0e580fa7586f6ea577"
+}

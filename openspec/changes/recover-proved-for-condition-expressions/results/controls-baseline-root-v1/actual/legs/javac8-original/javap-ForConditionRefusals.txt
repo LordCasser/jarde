@@ -1,0 +1,190 @@
+Classfile /private/tmp/jarde-for-condition-baseline-root-v1/legs/javac8-original/classes/cf11/ForConditionRefusals.class
+  Last modified 2026-10-11; size 894 bytes
+  MD5 checksum c0c1e23bb9ce21a66db8f1480373fc75
+  Compiled from "ForConditionRefusals.java"
+public class cf11.ForConditionRefusals
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#30         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #7.#31         // cf11/ForConditionRefusals.counter:I
+   #3 = Fieldref           #7.#32         // cf11/ForConditionRefusals.limitCalls:I
+   #4 = Fieldref           #7.#33         // cf11/ForConditionRefusals.limit:I
+   #5 = Methodref          #7.#34         // cf11/ForConditionRefusals.tick:()V
+   #6 = Methodref          #7.#35         // cf11/ForConditionRefusals.limit:()I
+   #7 = Class              #36            // cf11/ForConditionRefusals
+   #8 = Class              #37            // java/lang/Object
+   #9 = Utf8               counter
+  #10 = Utf8               I
+  #11 = Utf8               limit
+  #12 = Utf8               limitCalls
+  #13 = Utf8               <init>
+  #14 = Utf8               ()V
+  #15 = Utf8               Code
+  #16 = Utf8               LineNumberTable
+  #17 = Utf8               LocalVariableTable
+  #18 = Utf8               this
+  #19 = Utf8               Lcf11/ForConditionRefusals;
+  #20 = Utf8               tick
+  #21 = Utf8               ()I
+  #22 = Utf8               sumWithLeadingTickAndBreak
+  #23 = Utf8               i
+  #24 = Utf8               sum
+  #25 = Utf8               StackMapTable
+  #26 = Utf8               sumWithAssignedCallBound
+  #27 = Utf8               bound
+  #28 = Utf8               SourceFile
+  #29 = Utf8               ForConditionRefusals.java
+  #30 = NameAndType        #13:#14        // "<init>":()V
+  #31 = NameAndType        #9:#10         // counter:I
+  #32 = NameAndType        #12:#10        // limitCalls:I
+  #33 = NameAndType        #11:#10        // limit:I
+  #34 = NameAndType        #20:#14        // tick:()V
+  #35 = NameAndType        #11:#21        // limit:()I
+  #36 = Utf8               cf11/ForConditionRefusals
+  #37 = Utf8               java/lang/Object
+{
+  static int counter;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limit;
+    descriptor: I
+    flags: ACC_STATIC
+
+  static int limitCalls;
+    descriptor: I
+    flags: ACC_STATIC
+
+  public cf11.ForConditionRefusals();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/ForConditionRefusals;
+
+  static void tick();
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #2                  // Field counter:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #2                  // Field counter:I
+         8: return
+      LineNumberTable:
+        line 9: 0
+        line 10: 8
+
+  static int limit();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #3                  // Field limitCalls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #3                  // Field limitCalls:I
+         8: getstatic     #4                  // Field limit:I
+        11: ireturn
+      LineNumberTable:
+        line 13: 0
+        line 14: 8
+
+  static int sumWithLeadingTickAndBreak();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=0
+         0: iconst_0
+         1: istore_0
+         2: iconst_0
+         3: istore_1
+         4: invokestatic  #5                  // Method tick:()V
+         7: iload_0
+         8: invokestatic  #6                  // Method limit:()I
+        11: if_icmplt     17
+        14: goto          27
+        17: iload_1
+        18: iload_0
+        19: iadd
+        20: istore_1
+        21: iinc          0, 1
+        24: goto          4
+        27: iload_1
+        28: ireturn
+      LineNumberTable:
+        line 18: 0
+        line 19: 2
+        line 21: 4
+        line 22: 7
+        line 23: 14
+        line 25: 17
+        line 26: 21
+        line 28: 27
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            2      27     0     i   I
+            4      25     1   sum   I
+      StackMapTable: number_of_entries = 3
+        frame_type = 253 /* append */
+          offset_delta = 4
+          locals = [ int, int ]
+        frame_type = 12 /* same */
+        frame_type = 9 /* same */
+
+  static int sumWithAssignedCallBound();
+    descriptor: ()I
+    flags: ACC_STATIC
+    Code:
+      stack=3, locals=3, args_size=0
+         0: iconst_0
+         1: istore_0
+         2: iconst_0
+         3: istore_1
+         4: iconst_0
+         5: istore_2
+         6: iload_1
+         7: invokestatic  #6                  // Method limit:()I
+        10: dup
+        11: istore_0
+        12: if_icmpge     25
+        15: iload_2
+        16: iload_1
+        17: iadd
+        18: istore_2
+        19: iinc          1, 1
+        22: goto          6
+        25: iload_2
+        26: iload_0
+        27: iadd
+        28: ireturn
+      LineNumberTable:
+        line 32: 0
+        line 33: 2
+        line 34: 4
+        line 35: 6
+        line 36: 15
+        line 37: 19
+        line 39: 25
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            2      27     0 bound   I
+            4      25     1     i   I
+            6      23     2   sum   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 254 /* append */
+          offset_delta = 6
+          locals = [ int, int, int ]
+        frame_type = 18 /* same */
+}
+SourceFile: "ForConditionRefusals.java"

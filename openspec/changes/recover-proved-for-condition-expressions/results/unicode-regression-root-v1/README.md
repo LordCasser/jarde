@@ -1,0 +1,1 @@
+Root 实际 Unicode 专项 4/0/0 通过：仅对 F1 两个准确历史数组长度/+2 while 块投影为 for，F1 剩余全文和 SB/RG/package-info 全文仍逐字相等。历史 golden 未改；现有中文标识符完整类编译运行测试通过。私有候选只做准备；root 另修正文档注释，实际源码另存 root-applied.rs 并绑定 execution 的 4718 项闭包。所有命令守卫通过、source pins 前后恒同、target peak 353315506 bytes，cargo clean 成功。不是完整 workspace 通过。

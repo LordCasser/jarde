@@ -1,0 +1,41 @@
+{
+  "schema": "crossing-array-read-f1-for-test-private-v2",
+  "status": "prepared_not_run",
+  "files": {
+    "candidate": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v2/p3_crossing_array_read_values.rs",
+      "bytes": 20576,
+      "sha256": "fee3402e67a85f0d4f65cf58a88defdd06d5af001d5a29000b88f7ffff4c8830"
+    },
+    "base_shared_file": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v2/p3_crossing_array_read_values.original.rs",
+      "bytes": 20391,
+      "sha256": "f3d026d9431235798fa7d0a49c62b4eaf60d81bfe44ff1e7b3b3f85621e699a1"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v2/candidate.patch",
+      "bytes": 780,
+      "sha256": "61e3e4da0869f29451b875b289c549727d6f65e60d7d6d7295a147cacd0ff6a4"
+    },
+    "review": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v2/REVIEW.md",
+      "bytes": 1031,
+      "sha256": "ce36bdcc47e1eaed9ba2902fd5b4416f4425ca92fec1589d45ddb93d4b911ac8"
+    },
+    "raw_failed_run": {
+      "path": "/private/tmp/jarde-for-condition-f1-regression-root-v1/1.stderr.raw",
+      "bytes": 4296,
+      "sha256": "2cf49631ed5d9b69750506e58d83418e1dd72b514d064ce2298aee04ec21fdcc"
+    },
+    "f2_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F2.class",
+      "bytes": 627,
+      "sha256": "da5175933c6085dde6f9218da64eb84dad3bacacbdccbf297a7b80dbbd1c1e32"
+    },
+    "v1_candidate": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v1/p3_crossing_array_read_values.rs",
+      "bytes": 20394,
+      "sha256": "01f6e9de65648b868a2e148dc89a6b52fd31d54a4263189291b97447a91d9187"
+    }
+  }
+}

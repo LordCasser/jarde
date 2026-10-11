@@ -1,0 +1,89 @@
+{
+  "schema": "jarde-for-condition-local-workspace-accept-luna-v2-pins",
+  "status": "prepared_only_not_run",
+  "artifacts": {
+    "README.md": {
+      "sha256": "f4ec8749625dc326e48a7bc3e61d28e6fb628a9066124614e1d1270d44ac8d78",
+      "bytes": 1342
+    },
+    "accept_workspace.py": {
+      "sha256": "bd6861fabda78a3e268cc74b522bf86ccbbef913ac3b5345bbb970b2a4336f66",
+      "bytes": 23494
+    },
+    "review.md": {
+      "sha256": "d818533f30d07b74c25f44eda3ef9fa77fd87711df15d73c6c68dff7479deed2",
+      "bytes": 1788
+    },
+    "root-v3-failure-archive-note.md": {
+      "sha256": "366693d0792a2dab4b1e85b1c6403457a0eb661e77c91f92f7ef95c5185fd326",
+      "bytes": 2079
+    }
+  },
+  "inputs": {
+    "source_candidate_v1": {
+      "path": "/private/tmp/jarde-for-condition-local-workspace-accept-luna-v1.py",
+      "sha256": "7b7f487d928e7b0450fe3b5ad49a2c90ae4e4c387a524dece42ad9d9831268cf"
+    },
+    "root_v4_runner": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v4.py",
+      "sha256": "70f4b0f974ea934f0bc761b4b56722aef8ceee010fa7e6027ed9c30b88b8fabd"
+    },
+    "committed_base": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-nested-loop-side-exits/results/final-workspace-root-v3/verify-cf11-own-ci.py",
+      "sha256": "7669fb27ff653b5e8e35b68a2b54ec0723b4d5d63ee5c05fc0d7af5ed639c1f7"
+    },
+    "conditional_helper": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca"
+    },
+    "guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    "root_v3_failed_workspace": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v3/execution.json",
+      "sha256": "cef6a38aa7640f6bee51a1522470715311dcf782e65b1f7dab8790a34de0a087",
+      "status": "failed"
+    },
+    "prior_archive_destination": {
+      "path": "results/workspace-failed-root-v3",
+      "status": "root reports copied and SHA-verified"
+    }
+  },
+  "contract": {
+    "workspace": "/private/tmp/jarde-for-condition-workspace-root-v4",
+    "runner": "/private/tmp/jarde-for-condition-workspace-root-v4.py",
+    "source_pin_count": 4718,
+    "batch_count": 95,
+    "target_count": 360,
+    "command_count": 98,
+    "required_outcomes": {
+      "tests/p3_crossing_array_read_values.rs": [
+        "f2_recovers_and_the_unprotected_control_only_projects_its_two_for_headers"
+      ],
+      "tests/recover_unicode_identifiers.rs": [
+        "the_ascii_presentations_only_change_in_the_two_proved_f1_for_headers"
+      ]
+    },
+    "resource_limits": {
+      "free_bytes_min": 5368709120,
+      "target_bytes_max": 1073741824,
+      "poll_seconds": 1
+    }
+  },
+  "static_checks": [
+    "ast.parse passed",
+    "symtable.symtable passed"
+  ],
+  "prohibited_execution": [
+    "Git",
+    "Cargo",
+    "JDK",
+    "JADX",
+    "CLI"
+  ]
+}

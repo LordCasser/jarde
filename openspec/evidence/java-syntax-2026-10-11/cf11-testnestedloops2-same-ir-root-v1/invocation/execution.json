@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-nested-loops2-diagnostic-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T14:19:52.430626+00:00",
+  "finished_at": "2026-10-11T14:20:25.072061+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-same-ir/stdout.raw",
+      "bytes": 286,
+      "sha256": "cbdc4404d2bfdd4da86119d48882cb3927dbedfdd7021bd59871d8cd64931587"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-same-ir/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

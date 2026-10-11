@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-f1-regression-root-v1.py", line 39, in <module>
+    run(['cargo','test','-p','jarde','--test','p3_crossing_array_read_values','--locked','--','--nocapture'])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-for-condition-f1-regression-root-v1.py", line 28, in run
+    c=g.run_command(len(x['commands']),argv,env);x['commands'].append(c);save();assert c['exit_code']==0 and c['guard_stop'] is None
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

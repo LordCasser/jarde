@@ -1,0 +1,11 @@
+--- jarde-for-condition-workspace-root-v3.py
++++ jarde-for-condition-workspace-root-v4.py
+@@ -19,7 +19,7 @@
+ 
+ sys.dont_write_bytecode = True
+ ROOT = Path('/Users/lordcasser/workspace/projects/jarde')
+-OUT = Path('/private/tmp/jarde-for-condition-workspace-root-v3')
++OUT = Path('/private/tmp/jarde-for-condition-workspace-root-v4')
+ TEMPLATE = ROOT / 'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py'
+ SCAN_PATH = ROOT / 'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'
+ TEMPLATE_SHA256 = '51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33'

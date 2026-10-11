@@ -1,0 +1,12 @@
+
+running 7 tests
+test accepted_comparison_keeps_compare_and_branch_origins ... ok
+test call_operands_keep_order_and_boolean_merge_preserves_double_less_than ... ok
+test direct_long_float_double_relations_recover_with_expected_nan_polarity ... ok
+test jdk_execution_matches_original_for_comparisons_and_effects ... ignored, runs javac/java with NaN, signed zero, infinities, calls and exceptions
+test long_compare_through_local_keeps_refusal_sources ... ok
+test long_compare_with_overwritten_local_keeps_refusal_sources ... ok
+test long_compare_with_stack_duplicate_and_pop_keeps_refusal_sources ... ok
+
+test result: ok. 6 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

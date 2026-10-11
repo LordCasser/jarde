@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-collector-luna-v2/collect_controls.py", line 183, in <module>
+    if __name__=='__main__': raise SystemExit(main())
+                                              ~~~~^^
+  File "/private/tmp/jarde-for-condition-collector-luna-v2/collect_controls.py", line 66, in main
+    if not targets or len(set(targets))!=len(targets) or not all(isinstance(x,str) and re.fullmatch(r'cf11\.[A-Za-z_$][A-Za-z0-9_$]*',x) for x in targets) or 'cf11.Runner' in targets or not isinstance(runner,dict) or runner.get('class')!='cf11.Runner': raise SystemExit('manifest must bind unique cf11 target classes plus Runner; no command run')
+                                                             ^^^
+  File "/private/tmp/jarde-for-condition-collector-luna-v2/collect_controls.py", line 66, in <genexpr>
+    if not targets or len(set(targets))!=len(targets) or not all(isinstance(x,str) and re.fullmatch(r'cf11\.[A-Za-z_$][A-Za-z0-9_$]*',x) for x in targets) or 'cf11.Runner' in targets or not isinstance(runner,dict) or runner.get('class')!='cf11.Runner': raise SystemExit('manifest must bind unique cf11 target classes plus Runner; no command run')
+                                                                                       ^^
+NameError: cannot access free variable 're' where it is not associated with a value in enclosing scope. Did you forget to import 're'?

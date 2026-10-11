@@ -1,0 +1,202 @@
+{
+  "schema": "for-condition-next-round-private-pins-v1",
+  "private_prep_only": true,
+  "workspace_runner_v4": {
+    "path": "/private/tmp/jarde-for-condition-workspace-root-v4.py",
+    "bytes": 18953,
+    "sha256": "70f4b0f974ea934f0bc761b4b56722aef8ceee010fa7e6027ed9c30b88b8fabd",
+    "mode": "0o555"
+  },
+  "final_build_runner_v3": {
+    "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+    "bytes": 5761,
+    "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e",
+    "mode": "0o555"
+  },
+  "ci_verifier_v4": {
+    "path": "/private/tmp/jarde-for-condition-next-round-luna-v1/jarde-for-condition-ci-verifier-luna-v4.py",
+    "bytes": 33867,
+    "sha256": "cc82f638e0292196020bee8422e62dc033c371565a7afc38c56d2b971e0df673",
+    "mode": "0o644"
+  },
+  "retained_prior_artifacts": {
+    "/private/tmp/jarde-for-condition-workspace-root-v4.py": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v4.py",
+      "bytes": 18953,
+      "sha256": "70f4b0f974ea934f0bc761b4b56722aef8ceee010fa7e6027ed9c30b88b8fabd",
+      "mode": "0o555"
+    },
+    "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+      "bytes": 5761,
+      "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e",
+      "mode": "0o555"
+    },
+    "/private/tmp/jarde-for-condition-workspace-root-v3.py": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v3.py",
+      "bytes": 18953,
+      "sha256": "3d3ac837903853baca085357ee8566de56a03d18d26d93937ef82193eccaa3c5",
+      "mode": "0o555"
+    },
+    "/private/tmp/jarde-for-condition-final-lint-build-root-v2.py": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v2.py",
+      "bytes": 5722,
+      "sha256": "cd2bf4a5b507b029b80227fd98bc8763a5dd5290afea668ee15770a2fc85dda2",
+      "mode": "0o555"
+    },
+    "/private/tmp/jarde-for-condition-candidate-cli-root-v3": {
+      "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "mode": "0o555"
+    },
+    "/private/tmp/jarde-run-conditional-workspace-batches-root-v5.py": {
+      "path": "/private/tmp/jarde-run-conditional-workspace-batches-root-v5.py",
+      "bytes": 6932,
+      "sha256": "15fb42dd044f2371fa8d0c75010f9b87b3474ad4a20c5f9d1007f15af299c76f",
+      "mode": "0o644"
+    },
+    "/private/tmp/jarde-for-condition-focused-root-v3.py": {
+      "path": "/private/tmp/jarde-for-condition-focused-root-v3.py",
+      "bytes": 6264,
+      "sha256": "b65b77d235366e22e8d76453b6c966d624a6c0a1eeb1a397cdf71f7236b59c99",
+      "mode": "0o555"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-nested-loop-side-exits/results/final-workspace-root-v3/verify-cf11-own-ci.py": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-nested-loop-side-exits/results/final-workspace-root-v3/verify-cf11-own-ci.py",
+      "bytes": 38306,
+      "sha256": "7669fb27ff653b5e8e35b68a2b54ec0723b4d5d63ee5c05fc0d7af5ed639c1f7",
+      "mode": "0o644"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "bytes": 43302,
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca",
+      "mode": "0o644"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+      "bytes": 6778,
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3",
+      "mode": "0o644"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "mode": "0o644"
+    },
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "mode": "0o644"
+    }
+  },
+  "workspace_v3_failure_evidence": {
+    "record": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v3/execution.json",
+      "bytes": 2587339,
+      "sha256": "cef6a38aa7640f6bee51a1522470715311dcf782e65b1f7dab8790a34de0a087",
+      "mode": "0o644"
+    },
+    "schema": "for-condition-full-workspace-batched-root-v1",
+    "status": "failed",
+    "error": "RuntimeError: command 75 failed or hit a guard",
+    "expected_batches": 95,
+    "expected_targets": 360,
+    "expected_source_files": 4718,
+    "metadata": {
+      "command_index": 1,
+      "workspace_member_count": 6,
+      "target_count": 360,
+      "batch_count": 95
+    },
+    "commands_recorded": 77,
+    "failed_command": {
+      "index": 74,
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "jarde",
+        "--all-features",
+        "--locked",
+        "--message-format",
+        "json",
+        "--test",
+        "recover_short_circuit_local_branch_reads",
+        "--test",
+        "recover_statement_position_news",
+        "--test",
+        "recover_static_generic_field_init_text",
+        "--test",
+        "recover_synthetic_ctor_super_order"
+      ],
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 425378687,
+      "free_bytes_after": 19495055360,
+      "stdout": {
+        "path": "/private/tmp/jarde-for-condition-workspace-root-v3/74.stdout.raw",
+        "bytes": 76187,
+        "sha256": "a993521ce2881ae68953919d5fc906a7c01a33a45dc9d9d3cd501d2b6bb4b848",
+        "mode": "0o644"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-for-condition-workspace-root-v3/74.stderr.raw",
+        "bytes": 740,
+        "sha256": "427730cb70754a98026dbc8f04ee5423f3d4372379051770a938e5d303398162",
+        "mode": "0o644"
+      }
+    },
+    "cleanup": {
+      "status": "passed",
+      "target_absent_after": true,
+      "command_index": 76,
+      "exit_code": 0
+    },
+    "source_pins": {
+      "before_count": 4718,
+      "after_count": 4718,
+      "equal": true,
+      "canonical_before_sha256": "cd9859aa183f4439afaeaac94f66c22d59710896711af5084a4760494870b286"
+    },
+    "failed_test": "tests/recover_unicode_identifiers.rs::the_ascii_presentations_are_byte_for_byte_the_pre_change_ones"
+  },
+  "final_build_v3_receipt": {
+    "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3/execution.json",
+    "exists": false,
+    "expected_schema": "for-condition-final-lint-build-root-v1",
+    "status": "not_run_at_prep"
+  },
+  "accepted_candidate_v3": {
+    "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+    "bytes": 61213840,
+    "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+    "mode": "0o555"
+  },
+  "expected_final_change_paths": [
+    "tests/p3_nested_loop_side_exits.rs",
+    "tests/fixtures/java8/cf11-for-condition/README.md",
+    "tests/p3_crossing_array_read_values.rs",
+    "tests/recover_unicode_identifiers.rs"
+  ],
+  "required_unicode_test": "tests/recover_unicode_identifiers.rs::the_ascii_presentations_only_change_in_the_two_proved_f1_for_headers",
+  "workspace_contract": {
+    "runner_path": "/private/tmp/jarde-for-condition-workspace-root-v4.py",
+    "output_path": "/private/tmp/jarde-for-condition-workspace-root-v4",
+    "schema": "for-condition-full-workspace-batched-root-v1",
+    "expected_batches": 95,
+    "expected_targets": 360,
+    "source_closure_files": 4718,
+    "seed": "5350648285461741569"
+  },
+  "build_contract": {
+    "runner_path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+    "output_path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3",
+    "final_cli_path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+    "schema": "for-condition-final-lint-build-root-v1",
+    "required_candidate_identity": true
+  }
+}

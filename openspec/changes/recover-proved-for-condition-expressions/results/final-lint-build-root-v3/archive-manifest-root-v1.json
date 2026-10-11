@@ -1,0 +1,105 @@
+{
+  "status": "accepted_final_local_lint_and_cli_binding_own_ci_pending",
+  "files": {
+    "README.md": {
+      "bytes": 890,
+      "sha256": "c21272115d78fba1f5c814a6c3c9125d974837384b72872cacc69b718e656f22"
+    },
+    "accept-final-binding.py": {
+      "bytes": 3925,
+      "sha256": "0e3fb77c11430cf88bdbcaf173f8ad3657570e78ca187f6689dff214a1e0981b"
+    },
+    "clean-main-audit-preparation/README.md": {
+      "bytes": 1311,
+      "sha256": "f4cd9c508b89f620005bc16e5b853e5d2363400f4b8389f9c9fa80851e8ca7e1"
+    },
+    "clean-main-audit-preparation/clean-main-audit.py": {
+      "bytes": 13541,
+      "sha256": "aaeb3a58f567ab0b388cc8f86315d0c99609653bf147c12de461f107f980f5ba"
+    },
+    "clean-main-audit-preparation/pins.json": {
+      "bytes": 2800,
+      "sha256": "a125bc0f97b6a18574ba3e7075e9a9b222556e02e74dfb271bab27f6633bd1e1"
+    },
+    "clean-main-audit-preparation/review.md": {
+      "bytes": 1443,
+      "sha256": "f529c8d090f4e5c5bf62b3e805c717751355919d36d111c96a9baaa99b276a54"
+    },
+    "final-binding-acceptance.json": {
+      "bytes": 1540,
+      "sha256": "d2a40c4f6a9602acbc9b95d12cda8f7824edfd99a06311eed3569539e15c06f2"
+    },
+    "invocations/for-condition-final-binding-v1/execution.json": {
+      "bytes": 786,
+      "sha256": "2c112b2df607627549d20ca41ad5154e6088b07ad4a9571494adcb6e4697a252"
+    },
+    "invocations/for-condition-final-binding-v1/stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invocations/for-condition-final-binding-v1/stdout.raw": {
+      "bytes": 125,
+      "sha256": "5d32e1bdb40713d122826c16afd8a23d6fd79f316e7348471eb445cee9944046"
+    },
+    "invocations/for-condition-final-lint-build-v3/execution.json": {
+      "bytes": 795,
+      "sha256": "a6bafbbe23e05c57b457849052eca2e81e3f4eee41b83f20d6aa3e7b2dee713b"
+    },
+    "invocations/for-condition-final-lint-build-v3/stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "invocations/for-condition-final-lint-build-v3/stdout.raw": {
+      "bytes": 144,
+      "sha256": "bdc05ff3ca3eba7ae267066115baa805bee1454f663b0633de688801f90f2c62"
+    },
+    "run/0.stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/0.stdout.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/1.stderr.raw": {
+      "bytes": 3835,
+      "sha256": "38a0be4c288c0003ab5ecc82f65c425af1d3d67795a703431c2b4f3a12d27c3d"
+    },
+    "run/1.stdout.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/2.stderr.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/2.stdout.raw": {
+      "bytes": 16213,
+      "sha256": "2d6e2f16ede2ca36c288d894afeabbc87205fa86a5dd1d95ebab482767ef5be4"
+    },
+    "run/3.stderr.raw": {
+      "bytes": 2291,
+      "sha256": "6b7b6c222812793e264020c95966ffd95f96677bffd7da17a22bbca139f50399"
+    },
+    "run/3.stdout.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/4.stderr.raw": {
+      "bytes": 53,
+      "sha256": "eb6cb8a68025a74593f3603abfc4b0738f66e4effdb8d0c70315d3eaf6865246"
+    },
+    "run/4.stdout.raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run/execution.json": {
+      "bytes": 1525957,
+      "sha256": "b4b7bba399b44686da9e990293df3ec99eab36b288ab984b2a9e63a711d8477d"
+    },
+    "runner.py": {
+      "bytes": 5761,
+      "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e"
+    }
+  }
+}

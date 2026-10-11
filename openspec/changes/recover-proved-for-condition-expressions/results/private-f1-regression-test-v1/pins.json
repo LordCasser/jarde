@@ -1,0 +1,72 @@
+{
+  "schema": "crossing-array-read-f1-for-private-test-candidate-v1",
+  "status": "prepared_not_run",
+  "candidate_scope": "only p3_crossing_array_read_values.rs; historical OpenSpec evidence unchanged",
+  "files": {
+    "candidate": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v1/p3_crossing_array_read_values.rs",
+      "bytes": 20394,
+      "sha256": "01f6e9de65648b868a2e148dc89a6b52fd31d54a4263189291b97447a91d9187"
+    },
+    "base": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v1/p3_crossing_array_read_values.original.rs",
+      "bytes": 17160,
+      "sha256": "3bfe35bf5667ca067da565f187b72dab04a3c39bdfb6be31858447cee07c06ac"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v1/candidate.patch",
+      "bytes": 5188,
+      "sha256": "4047f62f0f0b0be9d87ae04f0ebe9a3bcd37e1fe4909cdb3b9838584e40d88c9"
+    },
+    "review": {
+      "path": "/private/tmp/jarde-crossing-array-read-f1-for-test-prep-luna-v1/REVIEW.md",
+      "bytes": 1367,
+      "sha256": "7f610dd8491eb797c20262cde401760ab3604f9dd38827122225372028d9c60e"
+    },
+    "f1_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F1.class",
+      "bytes": 795,
+      "sha256": "b711fbeeae8860e315663128e203817651b8d57839118fd80ae4952c7231d751"
+    },
+    "f1_historical": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/results/F1.jarde.java",
+      "bytes": 2321,
+      "sha256": "52553f181c599b8d40e7730d0af48b736445917ec616957fc2ea9ee64b3f3b8c"
+    },
+    "f2_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/fixture/F2.class",
+      "bytes": 627,
+      "sha256": "da5175933c6085dde6f9218da64eb84dad3bacacbdccbf297a7b80dbbd1c1e32"
+    },
+    "values_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Values.class",
+      "bytes": 2769,
+      "sha256": "5f7c921b8eeadcd2b54d2230d4b0cacbcc0be752a61144f1381fef4b74285f55"
+    },
+    "refused_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Refused.class",
+      "bytes": 1430,
+      "sha256": "dda8ab985384bbd88f1d9a3503f5027766c43addd17499584b7a05a11901f532"
+    },
+    "refused_baseline": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/results/Cf10Refused.before.java",
+      "bytes": 2842,
+      "sha256": "3ce83b995f86b78413dad31ce4b735d67133bb8e101b9898a8cf71d1132b4082"
+    },
+    "nested_class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/fixture/Cf10Nested.class",
+      "bytes": 1421,
+      "sha256": "ab10795c07cd1414698ceb7ea1b8fb03a9dabe7fac81f3f54c3a9b60ede11f12"
+    },
+    "nested_baseline": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-01/cf10-crossing-array-read-patrol/crossing-array-read-values/results/Cf10Nested.before.java",
+      "bytes": 2665,
+      "sha256": "a6c69415115c4627666bb67b3d442670339ac0a677e244d67e376d0e1fcbce1b"
+    },
+    "failed_raw": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v2/32.stdout.raw",
+      "bytes": 79087,
+      "sha256": "a89ec4c7eac4fde1889b8b0811729ad8bebcf3caf9ad6cafa0855ccef6f8f798"
+    }
+  }
+}

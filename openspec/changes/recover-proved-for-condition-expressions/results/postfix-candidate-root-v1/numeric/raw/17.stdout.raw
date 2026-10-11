@@ -1,0 +1,15 @@
+long-normal=return:1
+float-normal=return:1
+double-normal=return:1
+float-nan-first=return:0
+float-nan-later=return:1
+double-nan-first=return:0
+double-nan-later=return:1
+long-null=throw:java.lang.NullPointerException
+float-null=throw:java.lang.NullPointerException
+double-null=throw:java.lang.NullPointerException
+long-bounds=throw:java.lang.ArrayIndexOutOfBoundsException
+float-bounds=throw:java.lang.ArrayIndexOutOfBoundsException
+double-bounds=throw:java.lang.ArrayIndexOutOfBoundsException
+long-min-bound=return:0
+long-max-bound=return:1

@@ -1,0 +1,4471 @@
+{
+  "schema": "cf11-target-full-source-capture-v2",
+  "status": "observed",
+  "package": "cf11",
+  "classes": [
+    "cf11.ForConditionEffects",
+    "cf11.ForConditionReads",
+    "cf11.ForConditionRefusals"
+  ],
+  "runner_class": "cf11.Runner",
+  "inputs_manifest": {
+    "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/manifest.json",
+    "bytes": 863,
+    "sha256": "99ef0b881f4df678020b9bc99394a5cc2ce409b184e7c74a1eece3b112a7b5ad"
+  },
+  "inputs_manifest_path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/manifest.json",
+  "input_entries": {
+    "package": "cf11",
+    "source_level": "Java 8",
+    "target_classes": [
+      {
+        "class": "cf11.ForConditionEffects",
+        "source": "ForConditionEffects.java",
+        "bytes": 1551,
+        "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+      },
+      {
+        "class": "cf11.ForConditionReads",
+        "source": "ForConditionReads.java",
+        "bytes": 1252,
+        "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+      },
+      {
+        "class": "cf11.ForConditionRefusals",
+        "source": "ForConditionRefusals.java",
+        "bytes": 758,
+        "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+      }
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 9842,
+      "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:15.826309+00:00",
+      "duration_seconds": 1.008528624981409,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14446075904,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac8-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:16.838639+00:00",
+      "duration_seconds": 1.015639374993043,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14446051328,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/2.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac8-original-javap-ForConditionEffects",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes",
+        "cf11.ForConditionEffects"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:17.855728+00:00",
+      "duration_seconds": 1.013358791009523,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14446006272,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/3.stdout.raw",
+          "bytes": 11840,
+          "sha256": "30c9398bef574e807b8be1dcfae60cb3d24e70c984c6bb70ea2213f81585072f"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac8-original-javap-ForConditionReads",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes",
+        "cf11.ForConditionReads"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:18.872725+00:00",
+      "duration_seconds": 1.011387290986022,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445944832,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/4.stdout.raw",
+          "bytes": 8919,
+          "sha256": "7d08b16d98e4df1bb65d6172810858b9567f091ece5c305e6f96d1ed3b6f61ce"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac8-original-javap-ForConditionRefusals",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes",
+        "cf11.ForConditionRefusals"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:19.885788+00:00",
+      "duration_seconds": 1.0156892919912934,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445871104,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/5.stdout.raw",
+          "bytes": 5972,
+          "sha256": "1b8816bba916af6f230b17210e175059944cb4a6450327157e5bfc8107d3766e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/5.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:20.907111+00:00",
+      "duration_seconds": 1.0148887500108685,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445821952,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/6.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/6.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "javac23-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:21.924022+00:00",
+      "duration_seconds": 1.0099752500245813,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445801472,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/7.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "javac23-original-javap-ForConditionEffects",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes",
+        "cf11.ForConditionEffects"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:22.935836+00:00",
+      "duration_seconds": 1.0134213750134222,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445875200,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/8.stdout.raw",
+          "bytes": 12205,
+          "sha256": "5b173297d5425005cd26113ea19f9660511f06ee738e07f245bf60a4cafa0c52"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "javac23-original-javap-ForConditionReads",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes",
+        "cf11.ForConditionReads"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:23.955660+00:00",
+      "duration_seconds": 1.0156822499993723,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445838336,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/9.stdout.raw",
+          "bytes": 9237,
+          "sha256": "a30b0411999aa9602b78bb81b0a5896c8c280597ec1a63109c9cd6d47068816f"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "javac23-original-javap-ForConditionRefusals",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes",
+        "cf11.ForConditionRefusals"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:24.973769+00:00",
+      "duration_seconds": 1.0150097500008997,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445760512,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/10.stdout.raw",
+          "bytes": 6284,
+          "sha256": "b4967e757c2e5c6d95607bcfd9815fed32b54e6fa71bcee5f3eaf3d1c476801f"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:25.993776+00:00",
+      "duration_seconds": 1.0160682499990799,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445719552,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/11.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "jadx-default",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/default",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:27.013138+00:00",
+      "duration_seconds": 1.0108240420231596,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445666304,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/12.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:28.025893+00:00",
+      "duration_seconds": 1.0081001670041587,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445547520,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/13.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/13.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:29.035932+00:00",
+      "duration_seconds": 1.0112707499938551,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14431473664,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/14.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:30.051838+00:00",
+      "duration_seconds": 1.0145987909927499,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445641728,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/15.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/15.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:31.070558+00:00",
+      "duration_seconds": 1.0159294999903068,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14445580288,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/16.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "jadx-none",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/none",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:32.093145+00:00",
+      "duration_seconds": 1.0148406660009641,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14448857088,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/17.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:33.112622+00:00",
+      "duration_seconds": 1.0138464999909047,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14452858880,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/18.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/18.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:34.129845+00:00",
+      "duration_seconds": 1.0158162919979077,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14452797440,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/19.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:35.149544+00:00",
+      "duration_seconds": 1.0148208749888,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14452719616,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/20.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/20.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:36.168206+00:00",
+      "duration_seconds": 1.0078543749987148,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14452776960,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/21.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/21.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "label": "javac8-jarde-default-ForConditionEffects-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionEffects.class",
+        "--class",
+        "cf11.ForConditionEffects",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:37.181923+00:00",
+      "duration_seconds": 1.017583041015314,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14452584448,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/22.stdout.raw",
+          "bytes": 138377,
+          "sha256": "fac3d150c0aef94fc7cfed4fafedf6929e314e40675bb8c19d3802c128a92ece"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/22.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "label": "javac8-jarde-all-ForConditionEffects-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionEffects.class",
+        "--class",
+        "cf11.ForConditionEffects",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:38.210699+00:00",
+      "duration_seconds": 1.015488250006456,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14451953664,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/23.stdout.raw",
+          "bytes": 146279,
+          "sha256": "b21cfa1907b4304386f7bc616b126bbcd056e58c28002901c1851e867e7e84ab"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/23.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "label": "javac8-jarde-default-ForConditionReads-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionReads.class",
+        "--class",
+        "cf11.ForConditionReads",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:39.240924+00:00",
+      "duration_seconds": 1.0152103750151582,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14451363840,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/24.stdout.raw",
+          "bytes": 124121,
+          "sha256": "db7c7977e82683c7f5cb1188f86e9416e241591e49cc6d415d255cdbbf1e2b64"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/24.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "label": "javac8-jarde-all-ForConditionReads-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionReads.class",
+        "--class",
+        "cf11.ForConditionReads",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:40.259326+00:00",
+      "duration_seconds": 1.0125414579815697,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14622965760,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/25.stdout.raw",
+          "bytes": 129461,
+          "sha256": "b5a8208b7b817b1b76da1a429d86fa66662643c48ab1b3db76fa8e66ef701f6d"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/25.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 26,
+      "label": "javac8-jarde-default-ForConditionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionRefusals.class",
+        "--class",
+        "cf11.ForConditionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:41.275145+00:00",
+      "duration_seconds": 1.0176206250034738,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14590140416,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/26.stdout.raw",
+          "bytes": 60953,
+          "sha256": "f0fa8fa7031a95bab3014c7c9c5625b673d61838d6650f887315ac05b9fd84c6"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/26.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 27,
+      "label": "javac8-jarde-all-ForConditionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionRefusals.class",
+        "--class",
+        "cf11.ForConditionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:42.298110+00:00",
+      "duration_seconds": 1.0152928330062423,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14589878272,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/27.stdout.raw",
+          "bytes": 64669,
+          "sha256": "017bf8ff3dd2ab1e692dafde581f6c24663ef0a50875abd345aabb5b72be45af"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/27.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 28,
+      "label": "javac23-jarde-default-ForConditionEffects-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionEffects.class",
+        "--class",
+        "cf11.ForConditionEffects",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:43.315913+00:00",
+      "duration_seconds": 1.0139467919943854,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14589554688,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/28.stdout.raw",
+          "bytes": 138364,
+          "sha256": "12066804b5cce8a196a49b65bedfb80eb06ff50fbea63b92511afeb548ce1de7"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/28.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 29,
+      "label": "javac23-jarde-all-ForConditionEffects-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionEffects.class",
+        "--class",
+        "cf11.ForConditionEffects",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:44.341929+00:00",
+      "duration_seconds": 1.0162897080008406,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14588960768,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/29.stdout.raw",
+          "bytes": 146280,
+          "sha256": "3c5cbb4bfbe518e64e935cfe1306ac940c26beb53dae7073f01a15d0952a424b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/29.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 30,
+      "label": "javac23-jarde-default-ForConditionReads-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionReads.class",
+        "--class",
+        "cf11.ForConditionReads",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:45.366618+00:00",
+      "duration_seconds": 1.0159599170146976,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14588362752,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/30.stdout.raw",
+          "bytes": 124121,
+          "sha256": "eac76f6f2dd52bc12bf5115f728f6b95a16ee93d3316bc525fde27ad9e096e9b"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/30.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 31,
+      "label": "javac23-jarde-all-ForConditionReads-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionReads.class",
+        "--class",
+        "cf11.ForConditionReads",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:46.393736+00:00",
+      "duration_seconds": 1.0169588749995455,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14587838464,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/31.stdout.raw",
+          "bytes": 129464,
+          "sha256": "ca4558d4759cec4e561c564a94159777356647e25d51e9accb7d1ddca56a7850"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/31.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 32,
+      "label": "javac23-jarde-default-ForConditionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionRefusals.class",
+        "--class",
+        "cf11.ForConditionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:47.422248+00:00",
+      "duration_seconds": 1.0116696670011152,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14586859520,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/32.stdout.raw",
+          "bytes": 60953,
+          "sha256": "c38268eb6b3ace4a187e6cc8548261c01bdeadbeaa9cf3819eb279c024483141"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/32.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 33,
+      "label": "javac23-jarde-all-ForConditionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionRefusals.class",
+        "--class",
+        "cf11.ForConditionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:48.436445+00:00",
+      "duration_seconds": 1.0131791669991799,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14586589184,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/33.stdout.raw",
+          "bytes": 64669,
+          "sha256": "67e57ed34b3b6fa2c07953112e4f8061ff7b31eefad613a99549f82e0b9db3c1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/33.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 34,
+      "label": "javac8-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-combined/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:49.458455+00:00",
+      "duration_seconds": 1.015449999977136,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14587031552,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/34.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/34.stderr.raw",
+          "bytes": 187,
+          "sha256": "22b2371325b6d17cff4152d7221ac9ce855c2d749ea8681b59a8b352e243d020"
+        }
+      }
+    },
+    {
+      "index": 35,
+      "label": "javac8-jarde-default-isolated-ForConditionEffects-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:50.481396+00:00",
+      "duration_seconds": 1.0067750420130324,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14586970112,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/35.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/35.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 36,
+      "label": "javac8-jarde-default-isolated-ForConditionEffects-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:51.489754+00:00",
+      "duration_seconds": 1.0129036250000354,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14586875904,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/36.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/36.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 37,
+      "label": "javac8-jarde-default-isolated-ForConditionReads-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:52.510193+00:00",
+      "duration_seconds": 1.0183430000033695,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14586814464,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/37.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/37.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 38,
+      "label": "javac8-jarde-default-isolated-ForConditionReads-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:53.533441+00:00",
+      "duration_seconds": 1.0088579589792062,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14586753024,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/38.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/38.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 39,
+      "label": "javac8-jarde-default-isolated-ForConditionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionRefusals/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:54.544855+00:00",
+      "duration_seconds": 1.0058830409834627,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14617681920,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/39.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/39.stderr.raw",
+          "bytes": 187,
+          "sha256": "22b2371325b6d17cff4152d7221ac9ce855c2d749ea8681b59a8b352e243d020"
+        }
+      }
+    },
+    {
+      "index": 40,
+      "label": "javac8-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-combined/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:55.553282+00:00",
+      "duration_seconds": 1.0057759580085985,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14538555392,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/40.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/40.stderr.raw",
+          "bytes": 183,
+          "sha256": "0bcc35338372d4d3154e7e8a20d1138eb4664d3cd8db30657a1ebb2609ec478f"
+        }
+      }
+    },
+    {
+      "index": 41,
+      "label": "javac8-jarde-all-isolated-ForConditionEffects-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:56.561397+00:00",
+      "duration_seconds": 1.014126458991086,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14503264256,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/41.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/41.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 42,
+      "label": "javac8-jarde-all-isolated-ForConditionEffects-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:57.577037+00:00",
+      "duration_seconds": 1.008681333012646,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406619136,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/42.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/42.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 43,
+      "label": "javac8-jarde-all-isolated-ForConditionReads-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:58.594713+00:00",
+      "duration_seconds": 1.0136476249899715,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406565888,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/43.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/43.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 44,
+      "label": "javac8-jarde-all-isolated-ForConditionReads-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:09:59.612335+00:00",
+      "duration_seconds": 1.0145644580188673,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406533120,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/44.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/44.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 45,
+      "label": "javac8-jarde-all-isolated-ForConditionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionRefusals/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:00.633755+00:00",
+      "duration_seconds": 1.014898749999702,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406500352,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/45.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/45.stderr.raw",
+          "bytes": 183,
+          "sha256": "0bcc35338372d4d3154e7e8a20d1138eb4664d3cd8db30657a1ebb2609ec478f"
+        }
+      }
+    },
+    {
+      "index": 46,
+      "label": "javac23-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-combined/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:01.656734+00:00",
+      "duration_seconds": 1.0148634579963982,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406483968,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/46.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/46.stderr.raw",
+          "bytes": 431,
+          "sha256": "50520df8a28ca2da8c5a122519f7afaedf2e0958d045f39ef01ce492b564c37e"
+        }
+      }
+    },
+    {
+      "index": 47,
+      "label": "javac23-jarde-default-isolated-ForConditionEffects-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:02.675354+00:00",
+      "duration_seconds": 1.0133458329946734,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406451200,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/47.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/47.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 48,
+      "label": "javac23-jarde-default-isolated-ForConditionEffects-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:03.694260+00:00",
+      "duration_seconds": 1.0068845830101054,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406434816,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/48.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/48.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 49,
+      "label": "javac23-jarde-default-isolated-ForConditionReads-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:04.706282+00:00",
+      "duration_seconds": 1.0139729999937117,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406365184,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/49.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/49.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 50,
+      "label": "javac23-jarde-default-isolated-ForConditionReads-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:05.725967+00:00",
+      "duration_seconds": 1.0152366250113118,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406320128,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/50.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/50.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 51,
+      "label": "javac23-jarde-default-isolated-ForConditionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionRefusals/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:06.752062+00:00",
+      "duration_seconds": 1.015607707988238,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406537216,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/51.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/51.stderr.raw",
+          "bytes": 431,
+          "sha256": "50520df8a28ca2da8c5a122519f7afaedf2e0958d045f39ef01ce492b564c37e"
+        }
+      }
+    },
+    {
+      "index": 52,
+      "label": "javac23-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-combined/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:07.776647+00:00",
+      "duration_seconds": 1.022306667000521,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406287360,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/52.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/52.stderr.raw",
+          "bytes": 427,
+          "sha256": "d8400f24aec4a936e9b48dc88c7220b8cc8021f903871d1c541ae5415cf512af"
+        }
+      }
+    },
+    {
+      "index": 53,
+      "label": "javac23-jarde-all-isolated-ForConditionEffects-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionEffects/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:08.805859+00:00",
+      "duration_seconds": 1.0119398750248365,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406172672,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/53.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/53.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 54,
+      "label": "javac23-jarde-all-isolated-ForConditionEffects-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:09.821146+00:00",
+      "duration_seconds": 1.0140881660045125,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14406012928,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/54.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/54.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 55,
+      "label": "javac23-jarde-all-isolated-ForConditionReads-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionReads/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:10.844664+00:00",
+      "duration_seconds": 1.0154282079893164,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14410371072,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/55.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/55.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 56,
+      "label": "javac23-jarde-all-isolated-ForConditionReads-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:11.865370+00:00",
+      "duration_seconds": 1.014927207987057,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14409330688,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/56.stdout.raw",
+          "bytes": 1705,
+          "sha256": "84e71311154add39efe707518d400d62e77adeebff021585ac90f84f690657d0"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/56.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 57,
+      "label": "javac23-jarde-all-isolated-ForConditionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionRefusals/classes",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+        "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T15:10:12.890732+00:00",
+      "duration_seconds": 1.0166029169922695,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 14409183232,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/57.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/raw/57.stderr.raw",
+          "bytes": 427,
+          "sha256": "d8400f24aec4a936e9b48dc88c7220b8cc8021f903871d1c541ae5415cf512af"
+        }
+      }
+    }
+  ],
+  "original_compile_rows": [
+    {
+      "label": "javac8-original",
+      "compile_command": "javac8-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionEffects.class",
+          "bytes": 1464,
+          "sha256": "fd86990d9e61ed979080851a846c9f57d54fd85ab1c73a3e02ba1ab2e9fb49f5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionReads.class",
+          "bytes": 1382,
+          "sha256": "87fda857c973978038d5b62b2b1a8370eaf4979e2faa55a7e38aab7de7518d24"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "c22cb742215f5ae4866d91b25112677a7b2de28d5fd7fb80f7599feb09a516ca"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-original",
+      "compile_command": "javac23-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionEffects.class",
+          "bytes": 1464,
+          "sha256": "9ef5bc9d7701575e685e1469a41a17d7798cf932d3230a15b276e7d0c69885df"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionReads.class",
+          "bytes": 1382,
+          "sha256": "7664451909614ce76d089ede2cac5b7529c939fc565d4aede24f419825c7925e"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "9afb4eeeb1558845789c2f4b929d3f6adcac237edb3484a11d4a0b68ddc1619b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": null
+    }
+  ],
+  "javap": [
+    {
+      "class": "cf11.ForConditionEffects",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-ForConditionEffects",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/javap-ForConditionEffects.txt",
+        "bytes": 11840,
+        "sha256": "30c9398bef574e807b8be1dcfae60cb3d24e70c984c6bb70ea2213f81585072f"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ForConditionReads",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-ForConditionReads",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/javap-ForConditionReads.txt",
+        "bytes": 8919,
+        "sha256": "7d08b16d98e4df1bb65d6172810858b9567f091ece5c305e6f96d1ed3b6f61ce"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ForConditionRefusals",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-ForConditionRefusals",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-original/javap-ForConditionRefusals.txt",
+        "bytes": 5972,
+        "sha256": "1b8816bba916af6f230b17210e175059944cb4a6450327157e5bfc8107d3766e"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ForConditionEffects",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-ForConditionEffects",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/javap-ForConditionEffects.txt",
+        "bytes": 12205,
+        "sha256": "5b173297d5425005cd26113ea19f9660511f06ee738e07f245bf60a4cafa0c52"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ForConditionReads",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-ForConditionReads",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/javap-ForConditionReads.txt",
+        "bytes": 9237,
+        "sha256": "a30b0411999aa9602b78bb81b0a5896c8c280597ec1a63109c9cd6d47068816f"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ForConditionRefusals",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-ForConditionRefusals",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-original/javap-ForConditionRefusals.txt",
+        "bytes": 6284,
+        "sha256": "b4967e757c2e5c6d95607bcfd9815fed32b54e6fa71bcee5f3eaf3d1c476801f"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jadx": {
+    "version_command": "jadx-version",
+    "version_exit": 0,
+    "version_stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+    "version_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jar_pin": {
+      "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/for-condition-controls.jar",
+      "bytes": 4168,
+      "sha256": "8e438a84913ecbc29c8c296388617b590586956445853c5115fe77b003b04607"
+    },
+    "jar_entries": [
+      "cf11.ForConditionEffects",
+      "cf11.ForConditionReads",
+      "cf11.ForConditionRefusals"
+    ],
+    "profiles": {
+      "default": {
+        "command": "jadx-default",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/default/sources/cf11/ForConditionEffects.java",
+            "bytes": 1654,
+            "sha256": "78196374057cfaa2744bd57b30554ceafd98d5bcc03f3b7a4454e3621e3f6abd"
+          },
+          {
+            "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/default/sources/cf11/ForConditionReads.java",
+            "bytes": 1320,
+            "sha256": "eb0a57841237a0488262a8c1522e36dfe6f8cda3e9b8c0e6cbfa45548d3e5569"
+          },
+          {
+            "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/default/sources/cf11/ForConditionRefusals.java",
+            "bytes": 958,
+            "sha256": "21cc21962c412510067937c4ee730ddb8c1583f1c2fffcf8ef6ca582473bc89d"
+          }
+        ],
+        "names": [
+          "ForConditionEffects.java",
+          "ForConditionReads.java",
+          "ForConditionRefusals.java"
+        ],
+        "packages": [
+          "cf11",
+          "cf11",
+          "cf11"
+        ],
+        "exact_target_sources": true
+      },
+      "none": {
+        "command": "jadx-none",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/none/sources/cf11/ForConditionEffects.java",
+            "bytes": 1654,
+            "sha256": "78196374057cfaa2744bd57b30554ceafd98d5bcc03f3b7a4454e3621e3f6abd"
+          },
+          {
+            "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/none/sources/cf11/ForConditionReads.java",
+            "bytes": 1320,
+            "sha256": "eb0a57841237a0488262a8c1522e36dfe6f8cda3e9b8c0e6cbfa45548d3e5569"
+          },
+          {
+            "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jadx/none/sources/cf11/ForConditionRefusals.java",
+            "bytes": 958,
+            "sha256": "21cc21962c412510067937c4ee730ddb8c1583f1c2fffcf8ef6ca582473bc89d"
+          }
+        ],
+        "names": [
+          "ForConditionEffects.java",
+          "ForConditionReads.java",
+          "ForConditionRefusals.java"
+        ],
+        "packages": [
+          "cf11",
+          "cf11",
+          "cf11"
+        ],
+        "exact_target_sources": true
+      }
+    }
+  },
+  "jadx_compile_rows": [
+    {
+      "label": "javac8-jadx-default",
+      "compile_command": "javac8-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionEffects.java",
+          "bytes": 1654,
+          "sha256": "78196374057cfaa2744bd57b30554ceafd98d5bcc03f3b7a4454e3621e3f6abd"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionReads.java",
+          "bytes": 1320,
+          "sha256": "eb0a57841237a0488262a8c1522e36dfe6f8cda3e9b8c0e6cbfa45548d3e5569"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionRefusals.java",
+          "bytes": 958,
+          "sha256": "21cc21962c412510067937c4ee730ddb8c1583f1c2fffcf8ef6ca582473bc89d"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/classes/cf11/ForConditionEffects.class",
+          "bytes": 1460,
+          "sha256": "09547613b35745578ef955e670fe7e0eb72000103f43e815fc88c7820f86bf3f"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/classes/cf11/ForConditionReads.class",
+          "bytes": 1380,
+          "sha256": "78fa5d541be3773cf866a3566624e92a0dbaad7bd42a9085b82733364ea8c77c"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/classes/cf11/ForConditionRefusals.class",
+          "bytes": 918,
+          "sha256": "fab9f8f1dc7269089d3482a5d3b23e53a4d3f3419deb0a0180375544c6e62854"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-default/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_command": "javac23-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionEffects.java",
+          "bytes": 1654,
+          "sha256": "78196374057cfaa2744bd57b30554ceafd98d5bcc03f3b7a4454e3621e3f6abd"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionReads.java",
+          "bytes": 1320,
+          "sha256": "eb0a57841237a0488262a8c1522e36dfe6f8cda3e9b8c0e6cbfa45548d3e5569"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-default/ForConditionRefusals.java",
+          "bytes": 958,
+          "sha256": "21cc21962c412510067937c4ee730ddb8c1583f1c2fffcf8ef6ca582473bc89d"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/classes/cf11/ForConditionEffects.class",
+          "bytes": 1460,
+          "sha256": "50dbb171f59a621e365d6b083b455720c19777e3b6e094f01984f36f6476a13b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/classes/cf11/ForConditionReads.class",
+          "bytes": 1380,
+          "sha256": "f59f9c7bb8356e0bea7ff84db84c247de7d942b1de9d44384d4a1e02bd8b68dd"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/classes/cf11/ForConditionRefusals.class",
+          "bytes": 918,
+          "sha256": "71f670f191715806148e446ca0dddad28823247fbb6cd46f04fc2a61c2efd926"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-default/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_command": "javac8-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionEffects.java",
+          "bytes": 1654,
+          "sha256": "78196374057cfaa2744bd57b30554ceafd98d5bcc03f3b7a4454e3621e3f6abd"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionReads.java",
+          "bytes": 1320,
+          "sha256": "eb0a57841237a0488262a8c1522e36dfe6f8cda3e9b8c0e6cbfa45548d3e5569"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionRefusals.java",
+          "bytes": 958,
+          "sha256": "21cc21962c412510067937c4ee730ddb8c1583f1c2fffcf8ef6ca582473bc89d"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/classes/cf11/ForConditionEffects.class",
+          "bytes": 1460,
+          "sha256": "09547613b35745578ef955e670fe7e0eb72000103f43e815fc88c7820f86bf3f"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/classes/cf11/ForConditionReads.class",
+          "bytes": 1380,
+          "sha256": "78fa5d541be3773cf866a3566624e92a0dbaad7bd42a9085b82733364ea8c77c"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/classes/cf11/ForConditionRefusals.class",
+          "bytes": 918,
+          "sha256": "fab9f8f1dc7269089d3482a5d3b23e53a4d3f3419deb0a0180375544c6e62854"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jadx-none/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_command": "javac23-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionEffects.java",
+          "bytes": 1654,
+          "sha256": "78196374057cfaa2744bd57b30554ceafd98d5bcc03f3b7a4454e3621e3f6abd"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionReads.java",
+          "bytes": 1320,
+          "sha256": "eb0a57841237a0488262a8c1522e36dfe6f8cda3e9b8c0e6cbfa45548d3e5569"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/jadx-none/ForConditionRefusals.java",
+          "bytes": 958,
+          "sha256": "21cc21962c412510067937c4ee730ddb8c1583f1c2fffcf8ef6ca582473bc89d"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/classes/cf11/ForConditionEffects.class",
+          "bytes": 1460,
+          "sha256": "50dbb171f59a621e365d6b083b455720c19777e3b6e094f01984f36f6476a13b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/classes/cf11/ForConditionReads.class",
+          "bytes": 1380,
+          "sha256": "f59f9c7bb8356e0bea7ff84db84c247de7d942b1de9d44384d4a1e02bd8b68dd"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/classes/cf11/ForConditionRefusals.class",
+          "bytes": 918,
+          "sha256": "71f670f191715806148e446ca0dddad28823247fbb6cd46f04fc2a61c2efd926"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jadx-none/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    }
+  ],
+  "jarde_profiles": [
+    {
+      "label": "javac8-jarde-default-ForConditionEffects",
+      "class": "cf11.ForConditionEffects",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-ForConditionEffects-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "fac3d150c0aef94fc7cfed4fafedf6929e314e40675bb8c19d3802c128a92ece",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionEffects/report.json",
+        "bytes": 418123,
+        "sha256": "05c1b45a8e4b9a4bf61d1f90dff6417010a358be2723a3e4ce2fdd66aa961a75"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionEffects/ForConditionEffects.java",
+        "bytes": 4164,
+        "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2631,
+          "archive_entries": 0,
+          "attribute_bytes": 2101,
+          "class_bytes": 2928,
+          "class_headers": 1,
+          "code_bytes": 237,
+          "dependency_depth": 0,
+          "elapsed_millis": 19,
+          "entry_bytes": 0,
+          "input_bytes": 1464,
+          "ir_edges": 223,
+          "ir_items": 3215,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4389,
+          "read_bytes": 1464,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-ForConditionEffects",
+      "class": "cf11.ForConditionEffects",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-ForConditionEffects-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "b21cfa1907b4304386f7bc616b126bbcd056e58c28002901c1851e867e7e84ab",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionEffects/report.json",
+        "bytes": 436379,
+        "sha256": "0a038d005fff1df08cf287ab09d41382e4fff082226618b3eb291a466b16466b"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionEffects/ForConditionEffects.java",
+        "bytes": 4164,
+        "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2631,
+          "archive_entries": 0,
+          "attribute_bytes": 2101,
+          "class_bytes": 2928,
+          "class_headers": 1,
+          "code_bytes": 237,
+          "dependency_depth": 0,
+          "elapsed_millis": 11,
+          "entry_bytes": 0,
+          "input_bytes": 1464,
+          "ir_edges": 223,
+          "ir_items": 3265,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4389,
+          "read_bytes": 1464,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-ForConditionReads",
+      "class": "cf11.ForConditionReads",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-ForConditionReads-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "db7c7977e82683c7f5cb1188f86e9416e241591e49cc6d415d255cdbbf1e2b64",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionReads/report.json",
+        "bytes": 382938,
+        "sha256": "7de563ec7948e8e7d6c7b55dd09ba620279678ef12cc918afc86fef5088705a7"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionReads/ForConditionReads.java",
+        "bytes": 3518,
+        "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2232,
+          "archive_entries": 0,
+          "attribute_bytes": 2398,
+          "class_bytes": 2764,
+          "class_headers": 1,
+          "code_bytes": 151,
+          "dependency_depth": 0,
+          "elapsed_millis": 9,
+          "entry_bytes": 0,
+          "input_bytes": 1382,
+          "ir_edges": 215,
+          "ir_items": 2854,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3699,
+          "read_bytes": 1382,
+          "result_items": 27
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-ForConditionReads",
+      "class": "cf11.ForConditionReads",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-ForConditionReads-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "b5a8208b7b817b1b76da1a429d86fa66662643c48ab1b3db76fa8e66ef701f6d",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionReads/report.json",
+        "bytes": 396054,
+        "sha256": "ec4333f2527fe05ff6228eea33a03e023d891f1752f7d9260d02e3020d664590"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionReads/ForConditionReads.java",
+        "bytes": 3518,
+        "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2232,
+          "archive_entries": 0,
+          "attribute_bytes": 2398,
+          "class_bytes": 2764,
+          "class_headers": 1,
+          "code_bytes": 151,
+          "dependency_depth": 0,
+          "elapsed_millis": 5,
+          "entry_bytes": 0,
+          "input_bytes": 1382,
+          "ir_edges": 215,
+          "ir_items": 2886,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3699,
+          "read_bytes": 1382,
+          "result_items": 27
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-ForConditionRefusals",
+      "class": "cf11.ForConditionRefusals",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-ForConditionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "f0fa8fa7031a95bab3014c7c9c5625b673d61838d6650f887315ac05b9fd84c6",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionRefusals/report.json",
+        "bytes": 159301,
+        "sha256": "5fd5ddb61e57ed86b2b2c043deb8ad71661093d25714e37f4fe3496bf4ad7290"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+        "bytes": 2589,
+        "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1035,
+          "archive_entries": 0,
+          "attribute_bytes": 1240,
+          "class_bytes": 1788,
+          "class_headers": 1,
+          "code_bytes": 84,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 894,
+          "ir_edges": 86,
+          "ir_items": 1271,
+          "method_bodies": 5,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2411,
+          "read_bytes": 894,
+          "result_items": 23
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-ForConditionRefusals",
+      "class": "cf11.ForConditionRefusals",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-ForConditionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "017bf8ff3dd2ab1e692dafde581f6c24663ef0a50875abd345aabb5b72be45af",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionRefusals/report.json",
+        "bytes": 167597,
+        "sha256": "60a5dc618bdc6cf33ebbe36df165ca0c0d915bfaca4b7dbb15660e1074086da0"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+        "bytes": 2589,
+        "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1035,
+          "archive_entries": 0,
+          "attribute_bytes": 1240,
+          "class_bytes": 1788,
+          "class_headers": 1,
+          "code_bytes": 84,
+          "dependency_depth": 0,
+          "elapsed_millis": 6,
+          "entry_bytes": 0,
+          "input_bytes": 894,
+          "ir_edges": 86,
+          "ir_items": 1291,
+          "method_bodies": 5,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2411,
+          "read_bytes": 894,
+          "result_items": 23
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-ForConditionEffects",
+      "class": "cf11.ForConditionEffects",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-ForConditionEffects-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "12066804b5cce8a196a49b65bedfb80eb06ff50fbea63b92511afeb548ce1de7",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionEffects/report.json",
+        "bytes": 418110,
+        "sha256": "f5ce4d22d6eaf96ffa9136b556deb9172a2b83b95bfcbfba6beb25ea55787ef3"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionEffects/ForConditionEffects.java",
+        "bytes": 4164,
+        "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2631,
+          "archive_entries": 0,
+          "attribute_bytes": 2101,
+          "class_bytes": 2928,
+          "class_headers": 1,
+          "code_bytes": 237,
+          "dependency_depth": 0,
+          "elapsed_millis": 6,
+          "entry_bytes": 0,
+          "input_bytes": 1464,
+          "ir_edges": 223,
+          "ir_items": 3215,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4389,
+          "read_bytes": 1464,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-ForConditionEffects",
+      "class": "cf11.ForConditionEffects",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-ForConditionEffects-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "3c5cbb4bfbe518e64e935cfe1306ac940c26beb53dae7073f01a15d0952a424b",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionEffects/report.json",
+        "bytes": 436380,
+        "sha256": "c133ec37578498ccc2cb2182fc64f7f4a29dc91072c6b0c7e80dc405f4f1a23a"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionEffects/ForConditionEffects.java",
+        "bytes": 4164,
+        "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2631,
+          "archive_entries": 0,
+          "attribute_bytes": 2101,
+          "class_bytes": 2928,
+          "class_headers": 1,
+          "code_bytes": 237,
+          "dependency_depth": 0,
+          "elapsed_millis": 11,
+          "entry_bytes": 0,
+          "input_bytes": 1464,
+          "ir_edges": 223,
+          "ir_items": 3265,
+          "method_bodies": 6,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 4389,
+          "read_bytes": 1464,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-ForConditionReads",
+      "class": "cf11.ForConditionReads",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-ForConditionReads-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "eac76f6f2dd52bc12bf5115f728f6b95a16ee93d3316bc525fde27ad9e096e9b",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionReads/report.json",
+        "bytes": 382938,
+        "sha256": "50d59dc923444d379ccd28a71e06b9c013930350bd51a3995e6feff950609f00"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionReads/ForConditionReads.java",
+        "bytes": 3518,
+        "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2232,
+          "archive_entries": 0,
+          "attribute_bytes": 2398,
+          "class_bytes": 2764,
+          "class_headers": 1,
+          "code_bytes": 151,
+          "dependency_depth": 0,
+          "elapsed_millis": 9,
+          "entry_bytes": 0,
+          "input_bytes": 1382,
+          "ir_edges": 215,
+          "ir_items": 2854,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3699,
+          "read_bytes": 1382,
+          "result_items": 27
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-ForConditionReads",
+      "class": "cf11.ForConditionReads",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-ForConditionReads-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "ca4558d4759cec4e561c564a94159777356647e25d51e9accb7d1ddca56a7850",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionReads/report.json",
+        "bytes": 396057,
+        "sha256": "35bb6414fb45df6505d94c16e8da54d7293994acbee12b362f7ceabab4c3af46"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionReads/ForConditionReads.java",
+        "bytes": 3518,
+        "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2232,
+          "archive_entries": 0,
+          "attribute_bytes": 2398,
+          "class_bytes": 2764,
+          "class_headers": 1,
+          "code_bytes": 151,
+          "dependency_depth": 0,
+          "elapsed_millis": 10,
+          "entry_bytes": 0,
+          "input_bytes": 1382,
+          "ir_edges": 215,
+          "ir_items": 2886,
+          "method_bodies": 7,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 3699,
+          "read_bytes": 1382,
+          "result_items": 27
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-ForConditionRefusals",
+      "class": "cf11.ForConditionRefusals",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-ForConditionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "c38268eb6b3ace4a187e6cc8548261c01bdeadbeaa9cf3819eb279c024483141",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionRefusals/report.json",
+        "bytes": 159301,
+        "sha256": "8888163b2e09418b5002ccaaaf7a235d2f2025a3afdaa66c819d42e0397b0898"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+        "bytes": 2589,
+        "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1035,
+          "archive_entries": 0,
+          "attribute_bytes": 1240,
+          "class_bytes": 1788,
+          "class_headers": 1,
+          "code_bytes": 84,
+          "dependency_depth": 0,
+          "elapsed_millis": 7,
+          "entry_bytes": 0,
+          "input_bytes": 894,
+          "ir_edges": 86,
+          "ir_items": 1271,
+          "method_bodies": 5,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2411,
+          "read_bytes": 894,
+          "result_items": 23
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-ForConditionRefusals",
+      "class": "cf11.ForConditionRefusals",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-ForConditionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "67e57ed34b3b6fa2c07953112e4f8061ff7b31eefad613a99549f82e0b9db3c1",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionRefusals/report.json",
+        "bytes": 167597,
+        "sha256": "0ddcab16b68aece89d2bbb2ff7a0682c9262a91038b37032a0d8f7782a13a3ae"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+        "bytes": 2589,
+        "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 1035,
+          "archive_entries": 0,
+          "attribute_bytes": 1240,
+          "class_bytes": 1788,
+          "class_headers": 1,
+          "code_bytes": 84,
+          "dependency_depth": 0,
+          "elapsed_millis": 3,
+          "entry_bytes": 0,
+          "input_bytes": 894,
+          "ir_edges": 86,
+          "ir_items": 1291,
+          "method_bodies": 5,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 2411,
+          "read_bytes": 894,
+          "result_items": 23
+        }
+      }
+    }
+  ],
+  "jarde_compile_rows": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_command": "javac8-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-combined/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "cf3ccf5f657b463fb6cf52810bc117cab40a456bc3f3bc9f4dc51dcadd9d552b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-combined/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "76326cf5619966304187cc80b565109ef87d105f04f3635654aa5f562ede114f"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ForConditionEffects",
+      "compile_command": "javac8-jarde-default-isolated-ForConditionEffects-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-default-isolated-ForConditionEffects-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "cf3ccf5f657b463fb6cf52810bc117cab40a456bc3f3bc9f4dc51dcadd9d552b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/classes/cf11/ForConditionReads.class",
+          "bytes": 1382,
+          "sha256": "87fda857c973978038d5b62b2b1a8370eaf4979e2faa55a7e38aab7de7518d24"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "c22cb742215f5ae4866d91b25112677a7b2de28d5fd7fb80f7599feb09a516ca"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionEffects/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ForConditionReads",
+      "compile_command": "javac8-jarde-default-isolated-ForConditionReads-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-default-isolated-ForConditionReads-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/classes/cf11/ForConditionEffects.class",
+          "bytes": 1464,
+          "sha256": "fd86990d9e61ed979080851a846c9f57d54fd85ab1c73a3e02ba1ab2e9fb49f5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "76326cf5619966304187cc80b565109ef87d105f04f3635654aa5f562ede114f"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "c22cb742215f5ae4866d91b25112677a7b2de28d5fd7fb80f7599feb09a516ca"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-default-isolated-ForConditionReads/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ForConditionRefusals",
+      "compile_command": "javac8-jarde-default-isolated-ForConditionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_command": "javac8-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-combined/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "cf3ccf5f657b463fb6cf52810bc117cab40a456bc3f3bc9f4dc51dcadd9d552b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-combined/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "76326cf5619966304187cc80b565109ef87d105f04f3635654aa5f562ede114f"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ForConditionEffects",
+      "compile_command": "javac8-jarde-all-isolated-ForConditionEffects-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-all-isolated-ForConditionEffects-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "cf3ccf5f657b463fb6cf52810bc117cab40a456bc3f3bc9f4dc51dcadd9d552b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/classes/cf11/ForConditionReads.class",
+          "bytes": 1382,
+          "sha256": "87fda857c973978038d5b62b2b1a8370eaf4979e2faa55a7e38aab7de7518d24"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "c22cb742215f5ae4866d91b25112677a7b2de28d5fd7fb80f7599feb09a516ca"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionEffects/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ForConditionReads",
+      "compile_command": "javac8-jarde-all-isolated-ForConditionReads-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-all-isolated-ForConditionReads-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/classes/cf11/ForConditionEffects.class",
+          "bytes": 1464,
+          "sha256": "fd86990d9e61ed979080851a846c9f57d54fd85ab1c73a3e02ba1ab2e9fb49f5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "76326cf5619966304187cc80b565109ef87d105f04f3635654aa5f562ede114f"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "c22cb742215f5ae4866d91b25112677a7b2de28d5fd7fb80f7599feb09a516ca"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac8-jarde-all-isolated-ForConditionReads/classes/cf11/Runner.class",
+          "bytes": 4933,
+          "sha256": "aa92b0fe52972750483299e2c0bbc8e6a642fba687cdc1ecb29897b38dc25b8e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ForConditionRefusals",
+      "compile_command": "javac8-jarde-all-isolated-ForConditionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac8-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_command": "javac23-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-combined/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "9e20c752957bad70d8d9723c8c46b20615b4eb3bb71a7ca9fccfce47b757a574"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-combined/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "42076805fcead115bb142bf1ea32c1c76cf98fbec1bb372230769b818d7d1e05"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ForConditionEffects",
+      "compile_command": "javac23-jarde-default-isolated-ForConditionEffects-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-default-isolated-ForConditionEffects-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "9e20c752957bad70d8d9723c8c46b20615b4eb3bb71a7ca9fccfce47b757a574"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/classes/cf11/ForConditionReads.class",
+          "bytes": 1382,
+          "sha256": "7664451909614ce76d089ede2cac5b7529c939fc565d4aede24f419825c7925e"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "9afb4eeeb1558845789c2f4b929d3f6adcac237edb3484a11d4a0b68ddc1619b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionEffects/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ForConditionReads",
+      "compile_command": "javac23-jarde-default-isolated-ForConditionReads-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-default-isolated-ForConditionReads-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/classes/cf11/ForConditionEffects.class",
+          "bytes": 1464,
+          "sha256": "9ef5bc9d7701575e685e1469a41a17d7798cf932d3230a15b276e7d0c69885df"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "42076805fcead115bb142bf1ea32c1c76cf98fbec1bb372230769b818d7d1e05"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "9afb4eeeb1558845789c2f4b929d3f6adcac237edb3484a11d4a0b68ddc1619b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-default-isolated-ForConditionReads/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ForConditionRefusals",
+      "compile_command": "javac23-jarde-default-isolated-ForConditionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-default-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_command": "javac23-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-combined/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "9e20c752957bad70d8d9723c8c46b20615b4eb3bb71a7ca9fccfce47b757a574"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-combined/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "42076805fcead115bb142bf1ea32c1c76cf98fbec1bb372230769b818d7d1e05"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ForConditionEffects",
+      "compile_command": "javac23-jarde-all-isolated-ForConditionEffects-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-all-isolated-ForConditionEffects-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionEffects/ForConditionEffects.java",
+          "bytes": 4164,
+          "sha256": "b9ce13d67d61b3d6081e58fbd2b12134b0e460a5b63e4e4a41c8efd11c4f90af"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/classes/cf11/ForConditionEffects.class",
+          "bytes": 1469,
+          "sha256": "9e20c752957bad70d8d9723c8c46b20615b4eb3bb71a7ca9fccfce47b757a574"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/classes/cf11/ForConditionReads.class",
+          "bytes": 1382,
+          "sha256": "7664451909614ce76d089ede2cac5b7529c939fc565d4aede24f419825c7925e"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "9afb4eeeb1558845789c2f4b929d3f6adcac237edb3484a11d4a0b68ddc1619b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionEffects/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ForConditionReads",
+      "compile_command": "javac23-jarde-all-isolated-ForConditionReads-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-all-isolated-ForConditionReads-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionReads/ForConditionReads.java",
+          "bytes": 3518,
+          "sha256": "eef2714ab5fa688fed5289fc903aaaf1209dd4de19504e4bfcf86892ef25abdc"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionRefusals.java",
+          "bytes": 758,
+          "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [
+        "cf11/ForConditionEffects.class",
+        "cf11/ForConditionReads.class",
+        "cf11/ForConditionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/classes/cf11/ForConditionEffects.class",
+          "bytes": 1464,
+          "sha256": "9ef5bc9d7701575e685e1469a41a17d7798cf932d3230a15b276e7d0c69885df"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/classes/cf11/ForConditionReads.class",
+          "bytes": 1385,
+          "sha256": "42076805fcead115bb142bf1ea32c1c76cf98fbec1bb372230769b818d7d1e05"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/classes/cf11/ForConditionRefusals.class",
+          "bytes": 894,
+          "sha256": "9afb4eeeb1558845789c2f4b929d3f6adcac237edb3484a11d4a0b68ddc1619b"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/legs/javac23-jarde-all-isolated-ForConditionReads/classes/cf11/Runner.class",
+          "bytes": 4930,
+          "sha256": "43414e19288bad79e7f3d228fca742b403c63da485cc5015bb1ce956c5dfd7a7"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ForConditionRefusals",
+      "compile_command": "javac23-jarde-all-isolated-ForConditionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/jarde/javac23-jarde-all-ForConditionRefusals/ForConditionRefusals.java",
+          "bytes": 2589,
+          "sha256": "0f5fc827b873ec32462fc2852adbd3d07d7720f2a1101376dc30c164938ef5f6"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionEffects.java",
+          "bytes": 1551,
+          "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/ForConditionReads.java",
+          "bytes": 1252,
+          "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+        },
+        {
+          "path": "/private/tmp/jarde-for-condition-controls-postfix-root-v1/inputs/Runner.java",
+          "bytes": 9842,
+          "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    }
+  ],
+  "build_receipt": {
+    "path": "/private/tmp/jarde-for-condition-focused-root-v3/execution.json",
+    "bytes": 3058529,
+    "sha256": "5ed65e2bb713fa61795a688bde82752f766189183be88f094400c51694d92e7d"
+  },
+  "build_receipt_cli_binding": {
+    "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+    "bytes": 61213840,
+    "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+    "mode": "0o555"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+    "bytes": 61213840,
+    "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4"
+  },
+  "cli_mode": "0o555",
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "peak_target_sampled": true
+  },
+  "collector_config": {
+    "inputs_dir": "/private/tmp/jarde-for-condition-controls-inputs-root-v1",
+    "inputs_manifest": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/manifest.json",
+    "out": "/private/tmp/jarde-for-condition-controls-postfix-root-v1",
+    "cli": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+    "cli_sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+    "build_receipt": "/private/tmp/jarde-for-condition-focused-root-v3/execution.json",
+    "build_receipt_sha256": "5ed65e2bb713fa61795a688bde82752f766189183be88f094400c51694d92e7d",
+    "receipt_cli_object": "candidate_cli",
+    "receipt_status_key": "status",
+    "receipt_accepted_value": "passed_candidate_build_only",
+    "receipt_mode_key": "mode",
+    "jdk_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jadx_jar": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "jadx_jar_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "guard": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scanner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "classfile_parser": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "classfile_parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "source_tool_pins_before": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/manifest.json",
+      "bytes": 863,
+      "sha256": "99ef0b881f4df678020b9bc99394a5cc2ce409b184e7c74a1eece3b112a7b5ad"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-focused-root-v3/execution.json",
+      "bytes": 3058529,
+      "sha256": "5ed65e2bb713fa61795a688bde82752f766189183be88f094400c51694d92e7d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/ForConditionEffects.java",
+      "bytes": 1551,
+      "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/ForConditionReads.java",
+      "bytes": 1252,
+      "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/ForConditionRefusals.java",
+      "bytes": 758,
+      "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/Runner.java",
+      "bytes": 9842,
+      "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+    }
+  ],
+  "source_tool_pins_after": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/manifest.json",
+      "bytes": 863,
+      "sha256": "99ef0b881f4df678020b9bc99394a5cc2ce409b184e7c74a1eece3b112a7b5ad"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-focused-root-v3/execution.json",
+      "bytes": 3058529,
+      "sha256": "5ed65e2bb713fa61795a688bde82752f766189183be88f094400c51694d92e7d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/ForConditionEffects.java",
+      "bytes": 1551,
+      "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/ForConditionReads.java",
+      "bytes": 1252,
+      "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/ForConditionRefusals.java",
+      "bytes": 758,
+      "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-controls-inputs-root-v1/Runner.java",
+      "bytes": 9842,
+      "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+    }
+  ],
+  "source_tool_inputs_unchanged": true,
+  "actual_command_count": 57
+}

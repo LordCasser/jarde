@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-regression-archive-prep-luna-v1/copy_archive.py",
+    "--destination",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/regression-repair-root-v1",
+    "--apply"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T15:52:15.960002+00:00",
+  "finished_at": "2026-10-11T15:52:16.073916+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-regression-archive-v1/stdout.raw",
+      "bytes": 4462,
+      "sha256": "afab20b8a8b5286520cda4e3834287956266b31edacb2ee5bf1b6470cd6c4ece"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-regression-archive-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

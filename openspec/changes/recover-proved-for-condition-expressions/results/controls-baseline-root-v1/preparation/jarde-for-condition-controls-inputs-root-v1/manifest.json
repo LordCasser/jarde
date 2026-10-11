@@ -1,0 +1,30 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.ForConditionEffects",
+      "source": "ForConditionEffects.java",
+      "bytes": 1551,
+      "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+    },
+    {
+      "class": "cf11.ForConditionReads",
+      "source": "ForConditionReads.java",
+      "bytes": 1252,
+      "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+    },
+    {
+      "class": "cf11.ForConditionRefusals",
+      "source": "ForConditionRefusals.java",
+      "bytes": 758,
+      "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 9842,
+    "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+  }
+}

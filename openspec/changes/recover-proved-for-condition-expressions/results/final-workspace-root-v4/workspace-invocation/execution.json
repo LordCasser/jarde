@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-workspace-root-v4.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T16:00:33.535951+00:00",
+  "finished_at": "2026-10-11T16:12:34.265008+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-workspace-v4/stdout.raw",
+      "bytes": 7040,
+      "sha256": "595de01478ceb5c8640c85954bee41ab2241ac847875fcdcb85297b4822fdaaf"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-workspace-v4/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

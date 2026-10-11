@@ -1,0 +1,45 @@
+{
+  "schema": "cf11-for-condition-collector-preparation-pins-v1",
+  "status": "prepared_not_executed",
+  "files": {
+    "/private/tmp/jarde-for-condition-collector-luna-v1/collect_controls.py": {
+      "path": "/private/tmp/jarde-for-condition-collector-luna-v1/collect_controls.py",
+      "bytes": 17383,
+      "sha256": "f580baa102e107198a84e9d4cfc8ade70d905b0381b6d05ef77604ca02562cf7"
+    },
+    "/private/tmp/jarde-for-condition-collector-luna-v1/check_controls.py": {
+      "path": "/private/tmp/jarde-for-condition-collector-luna-v1/check_controls.py",
+      "bytes": 28872,
+      "sha256": "39bb0da3fce1086273a6a6629705be8643816b8bf7bd53b266bca6606b0a51c5"
+    },
+    "/private/tmp/jarde-for-condition-collector-luna-v1/README.md": {
+      "path": "/private/tmp/jarde-for-condition-collector-luna-v1/README.md",
+      "bytes": 4744,
+      "sha256": "d96858efe1650735681ed0dc7034e3c42f0424db5873d69b3a6f30048431d5e9"
+    }
+  },
+  "input_fixture_manifest": {
+    "path": "/private/tmp/jarde-for-condition-controls-luna-v2/pins.json",
+    "bytes": 600,
+    "sha256": "5794aaf32e1c3badf299581971768c30e3e2a323a6dfee376013c960beaa4ca6"
+  },
+  "input_fixture_files": {
+    "ForConditionEffects.java": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1",
+    "ForConditionReads.java": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5",
+    "ForConditionRefusals.java": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454",
+    "Runner.java": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f",
+    "README.md": "e78dc7115f164a929703dea543ca49411995ef2a9e308ce7c4e68336132d23f5"
+  },
+  "derived_from": {
+    "collector": {
+      "path": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/collect_nested_loops2.py",
+      "bytes": 22751,
+      "sha256": "b77c5848bf567199f11e787d1d580913556b34a07ec441c28259eb15dc95432d"
+    },
+    "checker": {
+      "path": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/check_nested_loops2.py",
+      "bytes": 36347,
+      "sha256": "f4eeff0adfd08b178dd4eb71dae32b6f2882a9ffaf19354dc1cbf64a8b44cd5f"
+    }
+  }
+}

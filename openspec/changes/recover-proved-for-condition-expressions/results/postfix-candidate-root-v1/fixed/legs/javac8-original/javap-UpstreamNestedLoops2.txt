@@ -1,0 +1,137 @@
+Classfile /private/tmp/jarde-for-condition-fixed-postfix-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops2.class
+  Last modified 2026-10-11; size 881 bytes
+  MD5 checksum 85ca7986c12ab738e76dacf21546d6da
+  Compiled from "UpstreamNestedLoops2.java"
+public class cf11.UpstreamNestedLoops2
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#32         // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #33.#34        // java/util/List.size:()I
+   #3 = InterfaceMethodref #33.#35        // java/util/List.get:(I)Ljava/lang/Object;
+   #4 = Class              #36            // java/lang/String
+   #5 = Methodref          #4.#37         // java/lang/String.length:()I
+   #6 = Class              #38            // cf11/UpstreamNestedLoops2
+   #7 = Class              #39            // java/lang/Object
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               LineNumberTable
+  #12 = Utf8               LocalVariableTable
+  #13 = Utf8               this
+  #14 = Utf8               Lcf11/UpstreamNestedLoops2;
+  #15 = Utf8               test
+  #16 = Utf8               (Ljava/util/List;)Z
+  #17 = Utf8               s
+  #18 = Utf8               Ljava/lang/String;
+  #19 = Utf8               i
+  #20 = Utf8               I
+  #21 = Utf8               list
+  #22 = Utf8               Ljava/util/List;
+  #23 = Utf8               j
+  #24 = Utf8               LocalVariableTypeTable
+  #25 = Utf8               Ljava/util/List<Ljava/lang/String;>;
+  #26 = Utf8               StackMapTable
+  #27 = Class              #36            // java/lang/String
+  #28 = Utf8               Signature
+  #29 = Utf8               (Ljava/util/List<Ljava/lang/String;>;)Z
+  #30 = Utf8               SourceFile
+  #31 = Utf8               UpstreamNestedLoops2.java
+  #32 = NameAndType        #8:#9          // "<init>":()V
+  #33 = Class              #40            // java/util/List
+  #34 = NameAndType        #41:#42        // size:()I
+  #35 = NameAndType        #43:#44        // get:(I)Ljava/lang/Object;
+  #36 = Utf8               java/lang/String
+  #37 = NameAndType        #45:#42        // length:()I
+  #38 = Utf8               cf11/UpstreamNestedLoops2
+  #39 = Utf8               java/lang/Object
+  #40 = Utf8               java/util/List
+  #41 = Utf8               size
+  #42 = Utf8               ()I
+  #43 = Utf8               get
+  #44 = Utf8               (I)Ljava/lang/Object;
+  #45 = Utf8               length
+{
+  public cf11.UpstreamNestedLoops2();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/UpstreamNestedLoops2;
+
+  public boolean test(java.util.List<java.lang.String>);
+    descriptor: (Ljava/util/List;)Z
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=5, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: iconst_0
+         3: istore_3
+         4: iload_3
+         5: aload_1
+         6: invokeinterface #2,  1            // InterfaceMethod java/util/List.size:()I
+        11: if_icmpge     47
+        14: aload_1
+        15: iload_3
+        16: invokeinterface #3,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        21: checkcast     #4                  // class java/lang/String
+        24: astore        4
+        26: iload_2
+        27: aload         4
+        29: invokevirtual #5                  // Method java/lang/String.length:()I
+        32: if_icmpge     41
+        35: iinc          2, 1
+        38: goto          26
+        41: iinc          3, 1
+        44: goto          4
+        47: iload_2
+        48: bipush        10
+        50: if_icmple     57
+        53: iconst_1
+        54: goto          58
+        57: iconst_0
+        58: ireturn
+      LineNumberTable:
+        line 5: 0
+        line 6: 2
+        line 7: 14
+        line 8: 26
+        line 9: 35
+        line 6: 41
+        line 12: 47
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           26      15     4     s   Ljava/lang/String;
+            4      43     3     i   I
+            0      59     0  this   Lcf11/UpstreamNestedLoops2;
+            0      59     1  list   Ljava/util/List;
+            2      57     2     j   I
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+            0      59     1  list   Ljava/util/List<Ljava/lang/String;>;
+      StackMapTable: number_of_entries = 6
+        frame_type = 253 /* append */
+          offset_delta = 4
+          locals = [ int, int ]
+        frame_type = 252 /* append */
+          offset_delta = 21
+          locals = [ class java/lang/String ]
+        frame_type = 250 /* chop */
+          offset_delta = 14
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 9 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ int ]
+    Signature: #29                          // (Ljava/util/List<Ljava/lang/String;>;)Z
+}
+SourceFile: "UpstreamNestedLoops2.java"

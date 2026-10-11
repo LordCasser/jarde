@@ -1,0 +1,26 @@
+{
+  "status": "accepted_final_cli_same_bytes_and_fresh_source_binding_only",
+  "runner_sha256": "0e3fb77c11430cf88bdbcaf173f8ad3657570e78ca187f6689dff214a1e0981b",
+  "final_build_execution_sha256": "b4b7bba399b44686da9e990293df3ec99eab36b288ab984b2a9e63a711d8477d",
+  "workspace_execution_sha256": "53d7c05dba8c5de1b18a3ea46c9433c7dd21c34f4540bfe9bb668c99135be16a",
+  "postfix_acceptance_sha256": "0f4745b79e0c1cac31af040c67347538c917e8aefa24ac6773d58416ea9fe2b2",
+  "focused_build_execution_sha256": "5ed65e2bb713fa61795a688bde82752f766189183be88f094400c51694d92e7d",
+  "final_cli": {
+    "path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+    "bytes": 61213840,
+    "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+    "mode": "0o555"
+  },
+  "source_pin_count": 4718,
+  "changes_since_runtime_candidate": [
+    "tests/fixtures/java8/cf11-for-condition/README.md",
+    "tests/p3_crossing_array_read_values.rs",
+    "tests/p3_nested_loop_side_exits.rs",
+    "tests/recover_unicode_identifiers.rs"
+  ],
+  "complete_generated_runtime_success_legs": 28,
+  "actual_postfix_commands": 115,
+  "postfix_runtime_rerun_on_final_path": false,
+  "reason": "Final executable bytes equal the complete-class runtime-tested frozen candidate. Only three test sources and the fixture README changed; all production inputs remain identical. Final lint/build and fresh workspace bind the complete current source closure. Different old CLI bytes and partial Java snippets are not used.",
+  "own_product_ci": "pending"
+}

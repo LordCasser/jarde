@@ -1,6 +1,7 @@
 //! A for header owns only a proved preheader local initialization and one CFG latch update.
 
 use jarde::*;
+use jarde_jvm::ir::{Quality, Representation};
 use jarde_reader::classfile::{MethodSelector, inspect_method_bytecode};
 use std::slice;
 
@@ -15,6 +16,12 @@ const SHARED_STACK_INPUT: &[u8] = include_bytes!(
 const COMPUTED_FOR_CONTROLS: &[u8] = include_bytes!(
     "../openspec/changes/recover-proved-computed-for-initializers/results/controls-baseline-root-v1/actual-controls/javac8/original/ComputedForControls.class"
 );
+const CONDITION_EFFECTS: &[u8] =
+    include_bytes!("fixtures/java8/cf11-for-condition/ForConditionEffects.class");
+const CONDITION_READS: &[u8] =
+    include_bytes!("fixtures/java8/cf11-for-condition/ForConditionReads.class");
+const CONDITION_REFUSALS: &[u8] =
+    include_bytes!("fixtures/java8/cf11-for-condition/ForConditionRefusals.class");
 
 fn class_source_report(
     bytes: &[u8],
@@ -657,5 +664,320 @@ fn computed_for_controls_keep_fallback_boundaries_and_evidence_parity() {
             body.text
         );
         assert_physical_method_coverage(COMPUTED_FOR_CONTROLS, name, descriptor, method, body);
+    }
+}
+
+fn for_header_clauses(source: &str) -> [&str; 3] {
+    let marker = source
+        .find("for (")
+        .unwrap_or_else(|| panic!("missing for header:\n{source}"));
+    let clauses_start = marker + "for (".len();
+    let header_end = source[clauses_start..]
+        .find(") {")
+        .map(|offset| clauses_start + offset)
+        .unwrap_or_else(|| panic!("missing for body after header:\n{source}"));
+    let mut clauses = source[clauses_start..header_end]
+        .splitn(3, ';')
+        .map(str::trim);
+    [
+        clauses.next().expect("for initializer"),
+        clauses.next().expect("for condition"),
+        clauses.next().expect("for update"),
+    ]
+}
+
+fn assert_counted_for_header(source: &str) -> [&str; 3] {
+    assert_eq!(source.matches("for (").count(), 1, "{source}");
+    let clauses = for_header_clauses(source);
+    let initializer = clauses[0];
+    let target = initializer
+        .split_once('=')
+        .unwrap_or_else(|| panic!("for initializer has an assignment: {source}"))
+        .0
+        .trim();
+    let induction = target.strip_prefix("int ").unwrap_or(target);
+    assert!(initializer.contains("= 0"), "initializer is zero: {source}");
+    assert!(
+        (clauses[1].starts_with(induction) || clauses[1].contains(&format!("[{induction}]")))
+            && clauses[1].contains("<"),
+        "condition reads the induction local: {source}"
+    );
+    let (update_target, update_value) = clauses[2]
+        .split_once('=')
+        .unwrap_or_else(|| panic!("for update writes the induction local: {source}"));
+    assert_eq!(update_target.trim(), induction, "{source}");
+    let expected_update = format!("{induction} + 1");
+    assert_eq!(
+        update_value.trim(),
+        expected_update.as_str(),
+        "the exact +1 update is in the header: {source}"
+    );
+    let update_source = format!("{induction} = {induction} + 1");
+    assert_eq!(
+        source.matches(update_source.as_str()).count(),
+        1,
+        "the induction update has one source owner: {source}"
+    );
+    clauses
+}
+
+fn assert_structured_for(method: &ClassSourceMethod, body: &RecoveryReport) {
+    assert!(body.produced(), "{:?}\n{}", body.outcome, method.text);
+    assert_eq!(body.representation, Representation::Java, "{}", method.text);
+    assert_eq!(body.quality, Quality::Structured, "{}", method.text);
+    assert_eq!(
+        body.content,
+        RecoveryContent::ContainsStatements,
+        "{}",
+        method.text
+    );
+    assert!(body.fallbacks.is_empty(), "{}", method.text);
+    assert!(!method.text.contains("@bytecode"), "{}", method.text);
+}
+
+#[test]
+fn condition_effect_producers_remain_ordered_and_the_for_update_is_unique() {
+    let default = class_source_report(CONDITION_EFFECTS, "cf11/ForConditionEffects", None);
+    let all = class_source_report(
+        CONDITION_EFFECTS,
+        "cf11/ForConditionEffects",
+        Some(&RecoveryEvidenceRequest::all()),
+    );
+    assert_eq!(default.text, all.text, "evidence mode changed class text");
+
+    for (name, descriptor) in [
+        ("sumWithFunctionBounds", "()I"),
+        ("sumWithFunctionBoundsAndContinue", "()I"),
+        ("sumWithChangingFieldBound", "()I"),
+    ] {
+        let default_method = class_method(&default, name, descriptor);
+        let method = class_method(&all, name, descriptor);
+        assert_eq!(default_method.text, method.text, "{name}{descriptor}");
+        let default_body = recovered_body(default_method);
+        let body = recovered_body(method);
+        assert_eq!(default_body.text, body.text, "{name}{descriptor}");
+        assert_eq!(
+            default_body.source_map, body.source_map,
+            "{name}{descriptor}"
+        );
+        assert_structured_for(method, body);
+        let clauses = assert_counted_for_header(&method.text);
+        if name == "sumWithChangingFieldBound" {
+            assert!(clauses[1].contains("dynamicLimit"), "{}", method.text);
+            assert!(method.text.contains("dynamicLimit - 1"), "{}", method.text);
+            assert!(!clauses[0].contains("dynamicLimit"), "{}", method.text);
+        } else {
+            assert_eq!(clauses[1].matches("offset()").count(), 1, "{}", method.text);
+            assert_eq!(clauses[1].matches("limit()").count(), 1, "{}", method.text);
+            assert!(
+                clauses[1].find("offset()").expect("offset in header")
+                    < clauses[1].find("limit()").expect("limit in header"),
+                "condition calls retain Java left-to-right order: {}",
+                method.text
+            );
+            if name == "sumWithFunctionBoundsAndContinue" {
+                // javac's continue arm may be projected as if/else followed by the body-tail
+                // update. The semantic invariant here is the unique update in the for header.
+                assert!(method.text.contains("+ 4;"), "{}", method.text);
+                assert!(method.text.contains("+ 3;"), "{}", method.text);
+            }
+        }
+        assert_physical_method_coverage(CONDITION_EFFECTS, name, descriptor, method, body);
+    }
+}
+
+#[test]
+fn field_array_and_negate_reads_are_for_conditions_but_written_local_bound_stays_while() {
+    let default = class_source_report(CONDITION_READS, "cf11/ForConditionReads", None);
+    let all = class_source_report(
+        CONDITION_READS,
+        "cf11/ForConditionReads",
+        Some(&RecoveryEvidenceRequest::all()),
+    );
+    assert_eq!(default.text, all.text, "evidence mode changed class text");
+
+    for (name, descriptor, marker) in [
+        ("sumWithChangingFieldBound", "()I", "fieldBound"),
+        ("sumWithArrayLength", "([I)I", ".length"),
+        ("countWithArrayElement", "([I)I", "values["),
+        ("sumWithNegatedField", "()I", "negativeField"),
+        ("sumWithNegatedParameter", "(I)I", "value"),
+    ] {
+        let default_method = class_method(&default, name, descriptor);
+        let method = class_method(&all, name, descriptor);
+        assert_eq!(default_method.text, method.text, "{name}{descriptor}");
+        let default_body = recovered_body(default_method);
+        let body = recovered_body(method);
+        assert_eq!(default_body.text, body.text, "{name}{descriptor}");
+        assert_eq!(
+            default_body.source_map, body.source_map,
+            "{name}{descriptor}"
+        );
+        assert_structured_for(method, body);
+        let clauses = assert_counted_for_header(&method.text);
+        assert!(
+            clauses[1].contains(marker),
+            "{name}{descriptor}: {}",
+            method.text
+        );
+        if name.starts_with("sumWithNegated") {
+            assert!(
+                clauses[1].contains('-'),
+                "{name}{descriptor}: {}",
+                method.text
+            );
+        }
+        assert_physical_method_coverage(CONDITION_READS, name, descriptor, method, body);
+    }
+
+    let default_method = class_method(&default, "oldWhileWithWrittenLocalBound", "()I");
+    let method = class_method(&all, "oldWhileWithWrittenLocalBound", "()I");
+    assert_eq!(default_method.text, method.text);
+    let default_body = recovered_body(default_method);
+    let body = recovered_body(method);
+    assert_eq!(default_body.text, body.text);
+    assert_eq!(default_body.source_map, body.source_map);
+    assert_eq!(body.quality, Quality::Structured, "{}", method.text);
+    assert_eq!(
+        body.content,
+        RecoveryContent::ContainsStatements,
+        "{}",
+        method.text
+    );
+    assert!(method.text.contains("while ("), "{}", method.text);
+    assert!(!method.text.contains("for ("), "{}", method.text);
+    assert!(method.text.contains("bound = bound - 1"), "{}", method.text);
+    assert_physical_method_coverage(
+        CONDITION_READS,
+        "oldWhileWithWrittenLocalBound",
+        "()I",
+        method,
+        body,
+    );
+}
+
+#[test]
+fn local_assignment_of_a_shared_condition_call_remains_a_structured_while() {
+    let default = class_source_report(CONDITION_REFUSALS, "cf11/ForConditionRefusals", None);
+    let all = class_source_report(
+        CONDITION_REFUSALS,
+        "cf11/ForConditionRefusals",
+        Some(&RecoveryEvidenceRequest::all()),
+    );
+    assert_eq!(default.text, all.text, "evidence mode changed class text");
+    let default_method = class_method(&default, "sumWithAssignedCallBound", "()I");
+    let method = class_method(&all, "sumWithAssignedCallBound", "()I");
+    assert_eq!(default_method.text, method.text);
+    let default_body = recovered_body(default_method);
+    let body = recovered_body(method);
+    assert_eq!(default_body.text, body.text);
+    assert_eq!(default_body.source_map, body.source_map);
+    assert_eq!(body.representation, Representation::Java, "{}", method.text);
+    assert_eq!(body.quality, Quality::Structured, "{}", method.text);
+    assert_eq!(
+        body.content,
+        RecoveryContent::ContainsStatements,
+        "{}",
+        method.text
+    );
+    assert!(method.text.contains("while ("), "{}", method.text);
+    assert!(!method.text.contains("for ("), "{}", method.text);
+    assert!(method.text.contains("bound = limit()"), "{}", method.text);
+    assert_eq!(method.text.matches("limit()").count(), 1, "{}", method.text);
+    assert!(
+        method.text.contains("return sum + bound;"),
+        "{}",
+        method.text
+    );
+    assert_physical_method_coverage(
+        CONDITION_REFUSALS,
+        "sumWithAssignedCallBound",
+        "()I",
+        method,
+        body,
+    );
+
+    let default_method = class_method(&default, "sumWithLeadingTickAndBreak", "()I");
+    let method = class_method(&all, "sumWithLeadingTickAndBreak", "()I");
+    assert_eq!(default_method.text, method.text);
+    let default_body = recovered_body(default_method);
+    let body = recovered_body(method);
+    assert_eq!(default_body.text, body.text);
+    assert_eq!(default_body.source_map, body.source_map);
+    assert_eq!(body.quality, Quality::Fallback, "{}", method.text);
+    assert_eq!(
+        body.content,
+        RecoveryContent::ExplanationOnly,
+        "{}",
+        method.text
+    );
+    assert_eq!(body.syntax_status, SyntaxStatus::NotJava, "{}", method.text);
+    assert_eq!(
+        body.fallbacks,
+        vec![
+            "jre_region_unmet_precondition",
+            "jre_region_uncovered_blocks"
+        ]
+    );
+    assert!(!method.text.contains("for ("), "{}", method.text);
+    assert!(
+        body.text.contains("@bytecode 0 4 14 17 27"),
+        "{}",
+        body.text
+    );
+    let unmet = body
+        .regions
+        .iter()
+        .find(|region| region.bci == 4)
+        .expect("loop test block keeps its exact fallback boundary");
+    assert_eq!(unmet.blocks, vec![4]);
+    assert_eq!(unmet.code, Some("jre_region_unmet_precondition"));
+    assert_eq!(unmet.rule.as_ref().map(|rule| rule.rule()), Some("loop"));
+    assert!(!unmet.structured);
+    let uncovered = body
+        .regions
+        .iter()
+        .find(|region| region.bci == 14)
+        .expect("uncovered blocks keep their exact fallback boundary");
+    assert_eq!(uncovered.blocks, vec![14, 17]);
+    assert_eq!(uncovered.code, Some("jre_region_uncovered_blocks"));
+    assert!(!uncovered.structured);
+    for bci in [0, 4, 14, 17, 27] {
+        assert!(
+            !body.source_map.of_bci(bci).is_empty(),
+            "the existing fallback source anchor at BCI {bci} remains usable"
+        );
+    }
+}
+
+#[test]
+fn long_float_and_double_array_comparisons_keep_their_counted_for_headers() {
+    let bytes = include_bytes!("fixtures/java8/cf11-for-condition/ForConditionNumeric.class");
+    let default = class_source_report(bytes, "cf11/ForConditionNumeric", None);
+    let all = class_source_report(
+        bytes,
+        "cf11/ForConditionNumeric",
+        Some(&RecoveryEvidenceRequest::all()),
+    );
+    assert_eq!(default.text, all.text);
+    for (name, descriptor) in [
+        ("countLong", "([JJ)I"),
+        ("countFloat", "([FF)I"),
+        ("countDouble", "([DD)I"),
+    ] {
+        let original = class_method(&default, name, descriptor);
+        let method = class_method(&all, name, descriptor);
+        let body = recovered_body(method);
+        let original_body = recovered_body(original);
+        assert_eq!(original.text, method.text);
+        assert_eq!(original_body.source_map, body.source_map);
+        assert_structured_for(method, body);
+        let clauses = assert_counted_for_header(&method.text);
+        assert!(
+            clauses[1].contains("values[") && clauses[1].contains("bound"),
+            "{}",
+            method.text
+        );
+        assert_physical_method_coverage(bytes, name, descriptor, method, body);
     }
 }

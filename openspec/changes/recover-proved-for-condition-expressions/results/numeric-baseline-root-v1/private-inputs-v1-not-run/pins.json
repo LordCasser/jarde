@@ -1,0 +1,87 @@
+{
+  "purpose": "Private inputs for exercising the existing NumericComparison condition producer support; no compilation or execution performed.",
+  "oracle_status": "Original runtime oracle pending parent compilation; expected results in review.md are predictions only.",
+  "repo": "/Users/lordcasser/workspace/projects/jarde",
+  "files": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 969855,
+      "sha256": "c905af706bda527881fa99e6a3f1e771164d676900a5c57c1dd154bb9fb63eaa"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/decode.rs",
+      "bytes": 73105,
+      "sha256": "704e6be41edc5dd5d36cb46cf6d7e62d607ae92392e7e231354d2ae5e931425d"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/proposal.md",
+      "bytes": 1774,
+      "sha256": "01ebd2fa7f4dce1d9d3ea7a9e126f8dab530eb7f5a2c114b1fb7e23f2360cea5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/design.md",
+      "bytes": 5023,
+      "sha256": "a8b6a62c5eeda787dd2c66ca3990efadf1d4dd7e4f4a9f2629cb506bcb775543"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/specs/java8-recovery/spec.md",
+      "bytes": 2343,
+      "sha256": "374e9f00ce285cfb5b5d8d740b5f6763d4d043f6a76d1f38c10f263e4b0751b9"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/tasks.md",
+      "bytes": 2698,
+      "sha256": "776c14a4e8a0235a9af6ed3df1bb4ed6023c7fbf8b205ac0f04a3076af0bb597"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/archive-manifest-root-v1.json",
+      "bytes": 47743,
+      "sha256": "330ca05f1c69c909f64b6a9585b6d9f1d1064d94e0b865fd71f9597b53c99a86"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/acceptance.json",
+      "bytes": 4313,
+      "sha256": "b1a4031a62dda63751d080d06b8f8706b231c52d69a3e758072aed97b8ed0c48"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/actual/inputs/ForConditionReads.java",
+      "bytes": 1252,
+      "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/actual/inputs/ForConditionEffects.java",
+      "bytes": 1551,
+      "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/actual/inputs/ForConditionRefusals.java",
+      "bytes": 758,
+      "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/actual/inputs/Runner.java",
+      "bytes": 9842,
+      "sha256": "d4087b123b3cf534323dd968bf38a77d948e70641fb33607c0a29c86749fa94f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-for-condition-expressions/results/controls-baseline-root-v1/actual/inputs/for-condition-controls.jar",
+      "bytes": 4168,
+      "sha256": "8e438a84913ecbc29c8c296388617b590586956445853c5115fe77b003b04607"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-numeric-inputs-luna-v1/ForConditionNumeric.java",
+      "bytes": 621,
+      "sha256": "5cd7a82fa49484a4706270ab4bc63364c81a4725287b9b264b35992d5a641396"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-numeric-inputs-luna-v1/Runner.java",
+      "bytes": 1992,
+      "sha256": "b044d3cd79bebc8f06a2142a047dc368ae356526eda4fc85e45a3801a7f2d7f9"
+    }
+  ]
+}

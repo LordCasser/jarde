@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-focused-root-v2.py", line 20, in <module>
+    q=(p.parent/rel).resolve();assert q.is_relative_to(R) and q.is_file();paths.add(q)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

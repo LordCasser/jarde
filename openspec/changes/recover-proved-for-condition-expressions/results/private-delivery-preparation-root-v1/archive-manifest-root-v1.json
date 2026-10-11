@@ -1,0 +1,113 @@
+{
+  "status": "private_static_preparation_preserved_not_runtime_acceptance",
+  "files": {
+    "README.md": {
+      "bytes": 648,
+      "sha256": "bbf5ecf87542ae4e6ca0cb4fce6b56bcfee6c33841242e77fb8286e869305ff3"
+    },
+    "clean-audit-v1-unrun/README.md": {
+      "bytes": 1763,
+      "sha256": "51b4f3f84c4f626bfb8421578f74ee2894ec1c185a26e3d51daf1e259ac580e4"
+    },
+    "clean-audit-v1-unrun/clean-main-audit.py": {
+      "bytes": 13501,
+      "sha256": "b240ce95a0357dd5e0e22acf1e0a07fb25e42d51f0c3b8ae6d3ba6f9f4e22415"
+    },
+    "clean-audit-v1-unrun/pins.json": {
+      "bytes": 2651,
+      "sha256": "c3f5befef4f3fa5fb4bf22cb921b28f04101aed1fe57f1a0567028e7062a7ffc"
+    },
+    "clean-audit-v1-unrun/review.md": {
+      "bytes": 1959,
+      "sha256": "f271aea1c9bd4b938dd166a4faf00360b3344a8d5cfb06392879cc179dfc6ba1"
+    },
+    "clean-audit-v2-rejected-static-identity-loosening/README.md": {
+      "bytes": 1291,
+      "sha256": "fec340cdeea25eda481475e135c5afc822dd95d7a4cf1fa4b08c29e438686f92"
+    },
+    "clean-audit-v2-rejected-static-identity-loosening/clean-main-audit.py": {
+      "bytes": 13759,
+      "sha256": "c9c8efdf9ec2740d76468b3415eae9173dfaecee7fbdd7b18e0be5f8224b4b9c"
+    },
+    "clean-audit-v2-rejected-static-identity-loosening/pins.json": {
+      "bytes": 2527,
+      "sha256": "4c73f71d69636f8289d2ca0678bbd735f26129e16b285a6a8bec0f2a8f874f50"
+    },
+    "clean-audit-v2-rejected-static-identity-loosening/review.md": {
+      "bytes": 1602,
+      "sha256": "1dba632c82e07b27f0ea0a54887eef3ac18783dec895a95c75bd5e160da3e7a8"
+    },
+    "clean-audit-v3-unrun/README.md": {
+      "bytes": 1311,
+      "sha256": "f4cd9c508b89f620005bc16e5b853e5d2363400f4b8389f9c9fa80851e8ca7e1"
+    },
+    "clean-audit-v3-unrun/clean-main-audit.py": {
+      "bytes": 13541,
+      "sha256": "aaeb3a58f567ab0b388cc8f86315d0c99609653bf147c12de461f107f980f5ba"
+    },
+    "clean-audit-v3-unrun/pins.json": {
+      "bytes": 2800,
+      "sha256": "a125bc0f97b6a18574ba3e7075e9a9b222556e02e74dfb271bab27f6633bd1e1"
+    },
+    "clean-audit-v3-unrun/review.md": {
+      "bytes": 1443,
+      "sha256": "f529c8d090f4e5c5bf62b3e805c717751355919d36d111c96a9baaa99b276a54"
+    },
+    "local-workspace-accept-v2/README.md": {
+      "bytes": 1342,
+      "sha256": "f4ec8749625dc326e48a7bc3e61d28e6fb628a9066124614e1d1270d44ac8d78"
+    },
+    "local-workspace-accept-v2/accept_workspace.py": {
+      "bytes": 23494,
+      "sha256": "bd6861fabda78a3e268cc74b522bf86ccbbef913ac3b5345bbb970b2a4336f66"
+    },
+    "local-workspace-accept-v2/pins.json": {
+      "bytes": 3437,
+      "sha256": "f0ddf283f9b93b5e9ded022397cf053cde68af450e7d58a1d5d8a7139ebcd3bc"
+    },
+    "local-workspace-accept-v2/review.md": {
+      "bytes": 1788,
+      "sha256": "d818533f30d07b74c25f44eda3ef9fa77fd87711df15d73c6c68dff7479deed2"
+    },
+    "local-workspace-accept-v2/root-v3-failure-archive-note.md": {
+      "bytes": 2079,
+      "sha256": "366693d0792a2dab4b1e85b1c6403457a0eb661e77c91f92f7ef95c5185fd326"
+    },
+    "next-round-v1-original/final-build.patch": {
+      "bytes": 2127,
+      "sha256": "1a3f3d3ada9863d35f97b094bdb942684c41b603611c95ef7adcd77725c907c0"
+    },
+    "next-round-v1-original/jarde-for-condition-ci-verifier-luna-v4.py": {
+      "bytes": 33867,
+      "sha256": "cc82f638e0292196020bee8422e62dc033c371565a7afc38c56d2b971e0df673"
+    },
+    "next-round-v1-original/jarde-for-condition-final-lint-build-root-v3.py": {
+      "bytes": 5761,
+      "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e"
+    },
+    "next-round-v1-original/jarde-for-condition-workspace-root-v4.py": {
+      "bytes": 18953,
+      "sha256": "70f4b0f974ea934f0bc761b4b56722aef8ceee010fa7e6027ed9c30b88b8fabd"
+    },
+    "next-round-v1-original/pins.json": {
+      "bytes": 8825,
+      "sha256": "03bbdbdd6d7d3f30b36fa256be89913cbe8823b8b03bc1ca132ac37e96ea47ce"
+    },
+    "next-round-v1-original/review.md": {
+      "bytes": 3970,
+      "sha256": "432a5c68ac0e7a92ae40a5d01d540ff5e0d4a4fc2a6eb79f675a0ad0e14e0c84"
+    },
+    "next-round-v1-original/workspace.patch": {
+      "bytes": 653,
+      "sha256": "944bb862b5a3ba55b50f7615c13aae539209e9560f464a46360ca8437333e390"
+    },
+    "next-round-v2-fact-correction/pins.json": {
+      "bytes": 9031,
+      "sha256": "0e3f3b0af6faf2e11f554b1ba46a876d82deb70266bf5a6ccb76771e9e5301d4"
+    },
+    "next-round-v2-fact-correction/review.md": {
+      "bytes": 1324,
+      "sha256": "f7b9e98117abfc39b4fab3fd9cfbe401774e9845c2244f404bb785e7a2ca4273"
+    }
+  }
+}

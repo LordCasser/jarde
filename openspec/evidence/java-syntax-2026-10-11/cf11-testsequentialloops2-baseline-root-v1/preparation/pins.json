@@ -1,0 +1,36 @@
+{
+  "schema": "cf11-sequential-loops2-collector-preparation-pins-v1",
+  "status": "prepared_static_review_only",
+  "files": {
+    "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/collect_sequential_loops2.py": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/collect_sequential_loops2.py",
+      "bytes": 17384,
+      "sha256": "79fe4e3767f7f3a179956f1f424104b830c26baa8a9e1518b67e7636f71f2a2c"
+    },
+    "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/check_sequential_loops2.py": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/check_sequential_loops2.py",
+      "bytes": 31442,
+      "sha256": "0a23034168b54de3d92c8fc56029b4257984b857c857f5694622dc06caeca57a"
+    },
+    "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/inputs_manifest.json": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/inputs_manifest.json",
+      "bytes": 466,
+      "sha256": "4c36eb25bab8350196997495aaa23a7bbaf44930b5c32fca835e093b5f2c32be"
+    },
+    "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/javap-clinit.patch": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/javap-clinit.patch",
+      "bytes": 495,
+      "sha256": "443270a16ab0b4922ee5660eb17b04cc9e5a5e597d9970a4eb538ecb2a446094"
+    },
+    "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/README.md": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/README.md",
+      "bytes": 3075,
+      "sha256": "d49dab80895ef86f7dbf3da7000e04f7d9c09b1e5c9740aed2d70f6df2a275fc"
+    },
+    "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/review.json": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/review.json",
+      "bytes": 2857,
+      "sha256": "ec82a5bf55d6a199eccb3fae8e8b36a45351d752c36773caef7a194f5e6c39f2"
+    }
+  }
+}

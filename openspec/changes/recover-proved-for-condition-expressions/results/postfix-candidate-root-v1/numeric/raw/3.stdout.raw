@@ -1,0 +1,175 @@
+Classfile /private/tmp/jarde-for-condition-numeric-postfix-root-v1/legs/javac8-original/classes/cf11/ForConditionNumeric.class
+  Last modified 2026-10-11; size 861 bytes
+  MD5 checksum 6e98906e524e3dc6ff1a8f1c54002797
+  Compiled from "ForConditionNumeric.java"
+public class cf11.ForConditionNumeric
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #3.#31         // java/lang/Object."<init>":()V
+   #2 = Class              #32            // cf11/ForConditionNumeric
+   #3 = Class              #33            // java/lang/Object
+   #4 = Utf8               <init>
+   #5 = Utf8               ()V
+   #6 = Utf8               Code
+   #7 = Utf8               LineNumberTable
+   #8 = Utf8               LocalVariableTable
+   #9 = Utf8               this
+  #10 = Utf8               Lcf11/ForConditionNumeric;
+  #11 = Utf8               countLong
+  #12 = Utf8               ([JJ)I
+  #13 = Utf8               i
+  #14 = Utf8               I
+  #15 = Utf8               values
+  #16 = Utf8               [J
+  #17 = Utf8               bound
+  #18 = Utf8               J
+  #19 = Utf8               count
+  #20 = Utf8               StackMapTable
+  #21 = Utf8               countFloat
+  #22 = Utf8               ([FF)I
+  #23 = Utf8               [F
+  #24 = Utf8               F
+  #25 = Utf8               countDouble
+  #26 = Utf8               ([DD)I
+  #27 = Utf8               [D
+  #28 = Utf8               D
+  #29 = Utf8               SourceFile
+  #30 = Utf8               ForConditionNumeric.java
+  #31 = NameAndType        #4:#5          // "<init>":()V
+  #32 = Utf8               cf11/ForConditionNumeric
+  #33 = Utf8               java/lang/Object
+{
+  public cf11.ForConditionNumeric();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/ForConditionNumeric;
+
+  static int countLong(long[], long);
+    descriptor: ([JJ)I
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=5, args_size=2
+         0: iconst_0
+         1: istore_3
+         2: iconst_0
+         3: istore        4
+         5: aload_0
+         6: iload         4
+         8: laload
+         9: lload_1
+        10: lcmp
+        11: ifge          23
+        14: iinc          3, 1
+        17: iinc          4, 1
+        20: goto          5
+        23: iload_3
+        24: ireturn
+      LineNumberTable:
+        line 5: 0
+        line 6: 2
+        line 7: 14
+        line 6: 17
+        line 9: 23
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            5      18     4     i   I
+            0      25     0 values   [J
+            0      25     1 bound   J
+            2      23     3 count   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 5
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 17
+
+  static int countFloat(float[], float);
+    descriptor: ([FF)I
+    flags: ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=2
+         0: iconst_0
+         1: istore_2
+         2: iconst_0
+         3: istore_3
+         4: aload_0
+         5: iload_3
+         6: faload
+         7: fload_1
+         8: fcmpg
+         9: ifge          21
+        12: iinc          2, 1
+        15: iinc          3, 1
+        18: goto          4
+        21: iload_2
+        22: ireturn
+      LineNumberTable:
+        line 13: 0
+        line 14: 2
+        line 15: 12
+        line 14: 15
+        line 17: 21
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            4      17     3     i   I
+            0      23     0 values   [F
+            0      23     1 bound   F
+            2      21     2 count   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 4
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 16
+
+  static int countDouble(double[], double);
+    descriptor: ([DD)I
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=5, args_size=2
+         0: iconst_0
+         1: istore_3
+         2: iconst_0
+         3: istore        4
+         5: aload_0
+         6: iload         4
+         8: daload
+         9: dload_1
+        10: dcmpg
+        11: ifge          23
+        14: iinc          3, 1
+        17: iinc          4, 1
+        20: goto          5
+        23: iload_3
+        24: ireturn
+      LineNumberTable:
+        line 21: 0
+        line 22: 2
+        line 23: 14
+        line 22: 17
+        line 25: 23
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            5      18     4     i   I
+            0      25     0 values   [D
+            0      25     1 bound   D
+            2      23     3 count   I
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 5
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 17
+}
+SourceFile: "ForConditionNumeric.java"

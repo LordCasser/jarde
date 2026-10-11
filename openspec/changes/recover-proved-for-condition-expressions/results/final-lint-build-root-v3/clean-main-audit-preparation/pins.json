@@ -1,0 +1,82 @@
+{
+  "schema": "jarde-for-condition-clean-main-audit-prep-luna-v3-pins",
+  "status": "prepared_only_not_run",
+  "artifacts": {
+    "clean-main-audit.py": {
+      "sha256": "aaeb3a58f567ab0b388cc8f86315d0c99609653bf147c12de461f107f980f5ba",
+      "bytes": 13541
+    },
+    "README.md": {
+      "sha256": "f4cd9c508b89f620005bc16e5b853e5d2363400f4b8389f9c9fa80851e8ca7e1",
+      "bytes": 1311
+    },
+    "review.md": {
+      "sha256": "f529c8d090f4e5c5bf62b3e805c717751355919d36d111c96a9baaa99b276a54",
+      "bytes": 1443
+    }
+  },
+  "inputs": {
+    "source_candidate_v2": {
+      "path": "/private/tmp/jarde-for-condition-clean-main-audit-prep-luna-v2/clean-main-audit.py",
+      "sha256": "c9c8efdf9ec2740d76468b3415eae9173dfaecee7fbdd7b18e0be5f8224b4b9c"
+    },
+    "final_build_runner_root_v3": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3.py",
+      "sha256": "85e25bb6d87a5993305c0fdeb3c58cd9300886701cf8158267df267ce0b92f1e"
+    },
+    "guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    "candidate_cli": {
+      "path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "bytes": 61213840,
+      "mode": "0555",
+      "exists_at_prep": false
+    },
+    "build_receipt": {
+      "path": "/private/tmp/jarde-for-condition-final-lint-build-root-v3/execution.json",
+      "sha256": "runtime_required_as_EXPECTED_BUILD_RECEIPT_SHA256",
+      "exists_at_prep": false
+    }
+  },
+  "contract": {
+    "source_pin_count": 4718,
+    "source_pin_policy": "source_pins_before == source_pins_after",
+    "worktree_count": 15,
+    "free_bytes_min": 5368709120,
+    "commands": [
+      "fmt",
+      "workflow_clippy",
+      "openspec_validate_strict",
+      "cli_build",
+      "clean"
+    ],
+    "candidate_cli_exact_object": {
+      "path": "/private/tmp/jarde-for-condition-final-cli-root-v3",
+      "bytes": 61213840,
+      "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+      "mode": "0555"
+    },
+    "runtime_inputs": [
+      "actual EXPECTED_HEAD",
+      "actual EXPECTED_BUILD_RECEIPT_SHA256"
+    ]
+  },
+  "static_checks": [
+    "ast.parse passed",
+    "symtable.symtable passed"
+  ],
+  "execution_prohibited": [
+    "Git",
+    "Cargo",
+    "JDK",
+    "JADX",
+    "CLI"
+  ]
+}

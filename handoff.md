@@ -8,7 +8,11 @@
 
 产品提交后的clean checkpoint已实际接受：HEAD=main=origin/main=b155877ee，真实远端/本地仅main；15物理checkout仍存在，14辅助detached且为main祖先、全干净，不占功能分支；target/fuzz target均不存在。关闭证据文档推送后以实际新HEAD另做outside-repo final audit，不预写未知commit。资源继续用用户批准的 **5GiB free/target1GiB、一秒进程组守卫、结束clean**；root独占shared/Git/Cargo/JDK/JADX/CLI，Luna仅private准备或只读审查。
 
-**下一固定项：TestNestedLoops2 外层indexed for恢复。** [实际基线](openspec/evidence/java-syntax-2026-10-11/cf11-testnestedloops2-baseline-root-v1/README.md) 已接受29命令/58raw，完整原/JADX default-none/Jarde default-all源码在JDK8/23编译、-Xverify:all运行，九行行为相同。Jarde仍把外层for写成while+尾更新，并因ordinary_generic_source_unproved将List<String>退为raw List；j=max(lengths)，不是长度总和。ForHeader条件白名单拒绝Invoke@6目前只是源码/javap候选，需要同次IR trace确认首拒后，按现有ForHeader/Builder做最小OpenSpec，不增加识别器；泛型body proof单列债务。Luna已准备私有临时诊断，尚未编译/运行/应用生产。其它固定NestedLoops/SequentialLoops2仅静态准备，不算实际对照。
+**当前在制：recover-proved-for-condition-expressions，7/9。** main/origin仍为已推送的593fbcc0b；当前有未提交生产、测试、fixtures和证据改动，不能称当前main干净。生产只补既有ForHeader条件producer match，复用唯一caller的test_is_pure，不改Builder/CFG/init/update/phi/local消费。固定TestNestedLoops2真实基线与同IR Invoke@6首拒、控制旧基线均已接受。
+
+永久五个Java8 fixture及API已root实际通过：新增5classes/24Code/0handlers/41branch targets/0jsr，Reader census1100/4890/468/2953/10及corpus regenerated+sweep通过。定向422/0/2包含重复corpus目标，不当唯一workspace分母；峰值710170385bytes且clean。候选CLI v3 SHA51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4/61213840bytes/0555，实际三组115命令/230raw、28完整生成runtime成功腿，11个获证control for+固定outer for/inner while；全部正例physical来源完整，所有非目标method正文/map/quality同旧。Refusals八个既有compile失败/no runtime和LeadingTickAndBreak缺十二BCI严格相同，不能称三生成类一起可编译。numeric十五oracle含NaN/null/越界/long极值同原。
+
+详情 [当前验收](openspec/changes/recover-proved-for-condition-expressions/verification-root.md)。预算/预取消、完整三方与最终CLI身份绑定、fresh workspace95批/360目标3461-0-97、Clippy/fmt和全局strict352/0均已实际接受并clean。F1/F2与Unicode的旧while断言仅允许同两个准确循环块投影，历史golden及其余全文保持；失败v1/v2/v3原文保留，不能拼接前缀验收。最终CLI与实际115命令/28生成runtime成功腿的candidate逐字节相同，后续仅三份测试源码和README变化；明确没有在最终路径重复运行。当前仍有未提交改动，自身产品提交/CI/clean Git交付待完成。raw List泛型与Refusals既有缺口独立，CF11/71计数不增加。下一固定TestSequentialLoops2已有29命令基线和源码/JADX审阅，尾部new条件臂缺BCI88/94/95/96；实际内部首拒仍待同IR，私有诊断未运行，不能把外部NewShape提示当已确认Copy原因。
 
 以下为上一产品与历史记录，当前在制状态以本段和变更验收记录为准。
 

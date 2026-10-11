@@ -1,0 +1,8 @@
+{
+  "status": "accepted_static_minimal_production_application_only",
+  "actual_region_sha256": "c905af706bda527881fa99e6a3f1e771164d676900a5c57c1dd154bb9fb63eaa",
+  "candidate_byte_equal": true,
+  "baseline": "../controls-baseline-root-v1/acceptance.json",
+  "root_review": "one production caller first test_is_pure; all role/SSA/CFG/local writes/ownership and Builder/cost code unmodified; exact two hunk candidate; no extra helper/dependency",
+  "tests": "not_run_yet"
+}

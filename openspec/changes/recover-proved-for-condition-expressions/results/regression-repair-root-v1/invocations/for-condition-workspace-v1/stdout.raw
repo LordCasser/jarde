@@ -1,0 +1,1 @@
+{"status": "failed", "error": "RuntimeError: refusing to remove out-of-scope test executable: /Users/lordcasser/workspace/projects/jarde/target/debug/examples/navigate_artifact-e1c98b5ab163a06e", "expected_batch_count": 95, "expected_target_count": 360, "workspace_summary_count": null, "workspace_totals": null, "cleanup_status": "passed", "target_absent": true}

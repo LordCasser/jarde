@@ -1,0 +1,105 @@
+{
+  "scope": "read-only source and capture pins; SHA-256 only",
+  "files": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 628063,
+      "sha256": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_new_value.rs",
+      "bytes": 13671,
+      "sha256": "a0c463385ca5fd6148c61d870f39132a4f34a822fc201f2e2674a00360325a48"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/ConstructorVisitor.java",
+      "bytes": 8782,
+      "sha256": "477a662a43413d0e3dd162ee5ddcf6bb739347f678bb4a8c36687e780c74cc3b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/TernaryMod.java",
+      "bytes": 11130,
+      "sha256": "e53ed32d3e4ec109fb68f9f3c90d066ccc400eeec4185506a85127a2067086a1"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/SimplifyVisitor.java",
+      "bytes": 21269,
+      "sha256": "71aede9230b70a162d65b782c9e4c09e1a6d03925927787a6de6603a838798e2"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/codegen/InsnGen.java",
+      "bytes": 35945,
+      "sha256": "c6308a71dd870d7f13bb8ac7efdb58191966cd6a5254aa11e443c95af6bafed6"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestSequentialLoops2.java",
+      "bytes": 1213,
+      "sha256": "adb34f80f7d55cd3309ed7708f0fdb46768cf32e4004dbd13d4e278530306720"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-observations-root-v1.json",
+      "bytes": 9953,
+      "sha256": "0468358465e435067af0c84a2c4aa3e7d84a07f09899982e681e8d490604f4f1"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/jadx/default/sources/cf11/UpstreamSequentialLoops2.java",
+      "bytes": 976,
+      "sha256": "6eb232bf24829c40c91804b8eb96e0e91999d6a7e383049d67a4a5b6185fd84c"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/jarde/javac23-jarde-default-UpstreamSequentialLoops2/report.json",
+      "bytes": 256523,
+      "sha256": "89f9f922efa6d4be3ef99936eb8759ed3bf8fa0b7d0c9b7eec3c595049429e06"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6873,
+      "sha256": "9a9094bfe8356217cf2a029910555185053463d20c9114811a59b15c2e90aaaf"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac8-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6655,
+      "sha256": "cbf0e0a8a788bbebb26c7f72c4201f67120675d4ff3b6bcd0420ed3d16df8796"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/frame.rs",
+      "bytes": 270294,
+      "sha256": "40a72a278a2b08db107b2db597f6f578e3862125b9875a72fb4a64bd18c0ea41"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/facts.rs",
+      "bytes": 58831,
+      "sha256": "40f0410aa75d0cd095f5a70460a5eef9f7dbb2af696a7005b45dcd18a0ff82ef"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-conditional-values/ConditionalBoundaryCases.java",
+      "bytes": 956,
+      "sha256": "c7e83dba887f61b200aa9072a857331eff256efa0a441b79b0a1a5a684c0c347"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-two-exit-return/README.md",
+      "bytes": 3345,
+      "sha256": "a4883ca0bf63cf0dbe934cad55751bc0554126e8c91aa44f0989dc27f6443b33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/types/TestTypeResolver4.java",
+      "bytes": 1164,
+      "sha256": "be8808087f499bab3c5c867415c89dca7468367b555664bf27c51edfe408c2d0"
+    }
+  ]
+}

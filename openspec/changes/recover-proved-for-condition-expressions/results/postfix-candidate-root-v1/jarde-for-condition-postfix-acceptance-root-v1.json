@@ -1,0 +1,633 @@
+{
+  "status": "accepted_candidate_for_condition_scope_only",
+  "cli": {
+    "path": "/private/tmp/jarde-for-condition-candidate-cli-root-v3",
+    "bytes": 61213840,
+    "sha256": "51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4",
+    "mode": "0o555"
+  },
+  "stages": [
+    {
+      "stage": "controls",
+      "commands": 57,
+      "raw_streams": 114,
+      "successful_full_generated_compile_and_runtime_legs": 12,
+      "failed_compile_legs_without_runtime": 8,
+      "changed_loop_methods": [
+        {
+          "label": "javac8-jarde-default-ForConditionEffects",
+          "name": "sumWithFunctionBounds",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionEffects",
+          "name": "sumWithFunctionBoundsAndContinue",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionEffects",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionEffects",
+          "name": "sumWithFunctionBounds",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionEffects",
+          "name": "sumWithFunctionBoundsAndContinue",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionEffects",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "sumWithArrayLength",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "countWithArrayElement",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "sumWithNegatedField",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "sumWithNegatedParameter",
+          "descriptor": "(I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "sumWithArrayLength",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "countWithArrayElement",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "sumWithNegatedField",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "sumWithNegatedParameter",
+          "descriptor": "(I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionEffects",
+          "name": "sumWithFunctionBounds",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionEffects",
+          "name": "sumWithFunctionBoundsAndContinue",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionEffects",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionEffects",
+          "name": "sumWithFunctionBounds",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionEffects",
+          "name": "sumWithFunctionBoundsAndContinue",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionEffects",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "sumWithArrayLength",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "countWithArrayElement",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "sumWithNegatedField",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "sumWithNegatedParameter",
+          "descriptor": "(I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "sumWithChangingFieldBound",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "sumWithArrayLength",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "countWithArrayElement",
+          "descriptor": "([I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "sumWithNegatedField",
+          "descriptor": "()I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "sumWithNegatedParameter",
+          "descriptor": "(I)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        }
+      ],
+      "unchanged_methods": [
+        {
+          "label": "javac8-jarde-default-ForConditionEffects",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionEffects",
+          "name": "offset"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionEffects",
+          "name": "limit"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionEffects",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionEffects",
+          "name": "offset"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionEffects",
+          "name": "limit"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionReads",
+          "name": "oldWhileWithWrittenLocalBound"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionReads",
+          "name": "oldWhileWithWrittenLocalBound"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionRefusals",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionRefusals",
+          "name": "tick"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionRefusals",
+          "name": "limit"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionRefusals",
+          "name": "sumWithLeadingTickAndBreak"
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionRefusals",
+          "name": "sumWithAssignedCallBound"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionRefusals",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionRefusals",
+          "name": "tick"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionRefusals",
+          "name": "limit"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionRefusals",
+          "name": "sumWithLeadingTickAndBreak"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionRefusals",
+          "name": "sumWithAssignedCallBound"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionEffects",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionEffects",
+          "name": "offset"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionEffects",
+          "name": "limit"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionEffects",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionEffects",
+          "name": "offset"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionEffects",
+          "name": "limit"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionReads",
+          "name": "oldWhileWithWrittenLocalBound"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionReads",
+          "name": "oldWhileWithWrittenLocalBound"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionRefusals",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionRefusals",
+          "name": "tick"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionRefusals",
+          "name": "limit"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionRefusals",
+          "name": "sumWithLeadingTickAndBreak"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionRefusals",
+          "name": "sumWithAssignedCallBound"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionRefusals",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionRefusals",
+          "name": "tick"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionRefusals",
+          "name": "limit"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionRefusals",
+          "name": "sumWithLeadingTickAndBreak"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionRefusals",
+          "name": "sumWithAssignedCallBound"
+        }
+      ],
+      "execution_sha256": "3ea6cdcb108287927cb63dc2655f67420db76d4aa6d76cc42ca26c7836616edc",
+      "observations_sha256": "25c109139eb4b8fce4a6848eae51ab3d4c5ce7d082623d72d5c4d6df16a59922",
+      "whole_refusals_behavior_accepted": false
+    },
+    {
+      "stage": "numeric",
+      "commands": 29,
+      "raw_streams": 58,
+      "successful_full_generated_compile_and_runtime_legs": 8,
+      "failed_compile_legs_without_runtime": 0,
+      "changed_loop_methods": [
+        {
+          "label": "javac8-jarde-default-ForConditionNumeric",
+          "name": "countLong",
+          "descriptor": "([JJ)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionNumeric",
+          "name": "countFloat",
+          "descriptor": "([FF)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-default-ForConditionNumeric",
+          "name": "countDouble",
+          "descriptor": "([DD)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionNumeric",
+          "name": "countLong",
+          "descriptor": "([JJ)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionNumeric",
+          "name": "countFloat",
+          "descriptor": "([FF)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionNumeric",
+          "name": "countDouble",
+          "descriptor": "([DD)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionNumeric",
+          "name": "countLong",
+          "descriptor": "([JJ)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionNumeric",
+          "name": "countFloat",
+          "descriptor": "([FF)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionNumeric",
+          "name": "countDouble",
+          "descriptor": "([DD)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionNumeric",
+          "name": "countLong",
+          "descriptor": "([JJ)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionNumeric",
+          "name": "countFloat",
+          "descriptor": "([FF)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionNumeric",
+          "name": "countDouble",
+          "descriptor": "([DD)I",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 0
+        }
+      ],
+      "unchanged_methods": [
+        {
+          "label": "javac8-jarde-default-ForConditionNumeric",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-all-ForConditionNumeric",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-default-ForConditionNumeric",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-all-ForConditionNumeric",
+          "name": "<init>"
+        }
+      ],
+      "execution_sha256": "5ac15f519df308f4d35efee7d5a84ba818f5a10d0b4d91069ce4fc13c35a6d59",
+      "observations_sha256": "8b728acbdd68c96abb973350baaab30254d91982f6002539fe8ea818dce1d945",
+      "whole_refusals_behavior_accepted": null
+    },
+    {
+      "stage": "fixed",
+      "commands": 29,
+      "raw_streams": 58,
+      "successful_full_generated_compile_and_runtime_legs": 8,
+      "failed_compile_legs_without_runtime": 0,
+      "changed_loop_methods": [
+        {
+          "label": "javac8-jarde-default-UpstreamNestedLoops2",
+          "name": "test",
+          "descriptor": "(Ljava/util/List;)Z",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 1
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamNestedLoops2",
+          "name": "test",
+          "descriptor": "(Ljava/util/List;)Z",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 1
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamNestedLoops2",
+          "name": "test",
+          "descriptor": "(Ljava/util/List;)Z",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 1
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamNestedLoops2",
+          "name": "test",
+          "descriptor": "(Ljava/util/List;)Z",
+          "before_for": 0,
+          "after_for": 1,
+          "after_while": 1
+        }
+      ],
+      "unchanged_methods": [
+        {
+          "label": "javac8-jarde-default-UpstreamNestedLoops2",
+          "name": "<init>"
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamNestedLoops2",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamNestedLoops2",
+          "name": "<init>"
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamNestedLoops2",
+          "name": "<init>"
+        }
+      ],
+      "execution_sha256": "53ac1aee01617005af14d16c802e7c23b07ec59ff28ba94b2cc6702b69732b75",
+      "observations_sha256": "9323eb1d7f91692418053448a0d930cb8889dbce62314bdf35f1342c61c1ebbc",
+      "whole_refusals_behavior_accepted": null
+    }
+  ],
+  "actual_commands": 115,
+  "scope": "11 control for loops and fixed outer for/inner while; complete positive physical origins and unchanged negative maps; no whole Refusals generated class acceptance",
+  "final_source_binding_fresh_workspace_own_CI": "pending",
+  "acceptor_sha256": "794c3781aababd784bf658dbcd110dbc71f5177c1582bcea52816dfab81ff51a"
+}

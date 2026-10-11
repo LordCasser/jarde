@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-numeric-baseline-launch-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T15:00:11.189576+00:00",
+  "finished_at": "2026-10-11T15:00:41.363009+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-numeric-baseline-v1/stdout.raw",
+      "bytes": 2134,
+      "sha256": "859cba3c97fbd263d0c9da01d36a3d25ed59e5ca2008e7cbc2d177c793accd8c"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-numeric-baseline-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,10 @@
+
+running 5 tests
+test a_nested_if_remains_in_the_loop_body_after_a_nested_region_returns ... ok
+test a_switch_capturing_a_loop_break_keeps_the_loop_target_and_body_update ... ok
+test an_outer_continue_runs_the_proved_for_update_and_skips_the_body_tail ... ok
+test nested_breaks_stay_in_the_taken_arm_and_outer_break_keeps_its_loop_target ... ok
+test the_for_header_and_continue_keep_their_bytecode_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

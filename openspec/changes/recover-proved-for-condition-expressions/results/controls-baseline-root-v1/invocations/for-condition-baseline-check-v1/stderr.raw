@@ -1,0 +1,17 @@
+CF11 observation verification failed: rendered class digest differs
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-collector-root-v3/check_controls.py", line 336, in <module>
+    try: main()
+         ~~~~^^
+  File "/private/tmp/jarde-for-condition-collector-root-v3/check_controls.py", line 334, in main
+    p=argparse.ArgumentParser(description=__doc__); p.add_argument('--execution',type=Path,required=True); p.add_argument('--out',type=Path,required=True); a=p.parse_args(); out=a.out.resolve(); need(not out.exists(),'refuse overwrite '+str(out)); result=verify(a); result['checker']=pin(Path(__file__).resolve()); out.parent.mkdir(parents=True,exist_ok=True); out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8'); print(json.dumps({'status':result['status'],'execution':result['execution'],'out':str(out)}))
+                                                                                                                                                                                                                                                               ~~~~~~^^^
+  File "/private/tmp/jarde-for-condition-collector-root-v3/check_controls.py", line 275, in verify
+    rows=verify_class(parser,doc,originals[(jdk,cls)],javaps[(jdk,cls)],cls.replace('.','/'))
+  File "/private/tmp/jarde-for-condition-collector-root-v3/check_controls.py", line 74, in verify_class
+    need(identity.get('class_bytes',{}).get('digest')==sha(data),'rendered class digest differs')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-for-condition-collector-root-v3/check_controls.py", line 10, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: rendered class digest differs

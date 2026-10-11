@@ -1,0 +1,59 @@
+{
+  "status": "prepared_static_review_only",
+  "target": "cf11.UpstreamSequentialLoops2 with cf11.Runner",
+  "input_manifest": "inputs_manifest.json",
+  "collector_base": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+  "checker_base": "/private/tmp/jarde-for-condition-checker-root-v5/check_controls.py",
+  "changes": [
+    "Use a one-target target_classes manifest with SHA-256 pins for source and Runner.",
+    "Name the exact Java 23 original-class archive sequential-loops2.jar; checker argv and archive verification use the same name.",
+    "Match javap static {}; followed by descriptor ()V as <clinit>()V; preserve ordinary method and constructor matching.",
+    "Keep root-v5 method-level source-map gaps, behavioral mismatches, and compile failures visible as observations."
+  ],
+  "digest_policy": {
+    "source_and_physical_class_pins": "SHA-256",
+    "rendered_class_bytes_digest": "BLAKE3 format and report-location/owner/default-all consistency only; not independently recomputed",
+    "does_not_conflate_digests": true
+  },
+  "javap_scope": "Fixture contains no tableswitch/lookupswitch; inherited extractor rejects switch blocks to avoid parsing numeric case labels as instruction offsets.",
+  "checks_performed": [
+    "read-only source and checker inspection",
+    "Python ast.parse only",
+    "static patch review"
+  ],
+  "collector_or_checker_executed": false,
+  "toolchain_executed": false,
+  "product_or_behavioral_acceptance_claimed": false,
+  "input_pins": {
+    "UpstreamSequentialLoops2.java": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-input-luna-v2/UpstreamSequentialLoops2.java",
+      "bytes": 542,
+      "sha256": "118617f1cddf04d79f72e12d4d100edf090edebff3695517ceae6b0a022749dd"
+    },
+    "Runner.java": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-input-luna-v2/Runner.java",
+      "bytes": 934,
+      "sha256": "83ab844177d6944d62f4d3ed1d3d4f2ec472ba9e3b54043b9c312db8faa0e1a4"
+    },
+    "pins.json": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-input-luna-v2/pins.json",
+      "bytes": 868,
+      "sha256": "efc4e3fdf6bb9ca24d2ba52e894a298a608a89265da118f61a19e429e7109ccf"
+    }
+  },
+  "inputs_manifest_pin": {
+    "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/inputs_manifest.json",
+    "bytes": 466,
+    "sha256": "4c36eb25bab8350196997495aaa23a7bbaf44930b5c32fca835e093b5f2c32be"
+  },
+  "collector_source_pin": {
+    "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+    "bytes": 17400,
+    "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+  },
+  "checker_source_pin": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v5/check_controls.py",
+    "bytes": 31233,
+    "sha256": "d338d6ae9b4bec67f9b2fa76db0f71dc04ea7d75c82f7155805bb8ba6975c51b"
+  }
+}

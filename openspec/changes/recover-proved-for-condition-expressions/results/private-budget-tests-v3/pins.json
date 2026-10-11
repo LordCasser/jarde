@@ -1,0 +1,28 @@
+{
+  "candidate": "jarde-for-condition-budget-prep-luna-v3",
+  "compiled_or_run_by_agent": false,
+  "base_file": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_loop_side_exits.rs",
+    "sha256": "f5b02152506303a51ac07a1f86d738be41c030625cf48eb97c8cccf376bf2281"
+  },
+  "candidate_files": {
+    "p3_nested_loop_side_exits.rs": "228ced54acf456d548ae922a2302f7089dc623444bd0c1eb098ca8e8955d62ec",
+    "candidate.patch": "13fff049ea88f1ac397e2bed2c3c73dc68359a36e9eb2bdf8deba9bbb26cce41",
+    "REVIEW.md": "c3c16c0c8731d83f7084a93f5c3ff0ccea0aae3cf7feaa7562757ff10fe3a983"
+  },
+  "frozen_inputs": {
+    "ForConditionEffects.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionEffects.class",
+      "sha256": "9ef5bc9d7701575e685e1469a41a17d7798cf932d3230a15b276e7d0c69885df"
+    },
+    "ForConditionEffects.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionEffects.java",
+      "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+    },
+    "UpstreamNestedLoops2.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/UpstreamNestedLoops2.class",
+      "sha256": "1b11e7ac235ff48798edb6bd1f47c02829592bdbcf7f4af0066fec278d095547"
+    }
+  },
+  "verification": "read-only source/API inspection only; no Cargo, Java, JADX, CLI, or Git commands"
+}

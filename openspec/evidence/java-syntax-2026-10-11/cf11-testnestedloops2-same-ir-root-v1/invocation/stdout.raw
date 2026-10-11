@@ -1,0 +1,1 @@
+{"status": "passed_same_real_IR_diagnostic_only", "restored": true, "target_absent": true, "marker_counts": {"CF11_LOOPS2_CLASS": 1, "CF11_LOOPS2_EDGE": 12, "CF11_LOOPS2_NODE": 10, "CF11_LOOPS2_SSA_TABLE": 1, "CF11_LOOPS2_INSN": 28, "CF11_LOOPS2_TRACE": 19, "CF11_LOOPS2_RECOVERY": 1}}

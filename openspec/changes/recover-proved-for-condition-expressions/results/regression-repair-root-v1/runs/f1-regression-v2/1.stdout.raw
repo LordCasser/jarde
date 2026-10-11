@@ -1,0 +1,10 @@
+
+running 5 tests
+test a_budget_starved_variant_run_states_no_recovery ... ok
+test f2_recovers_and_the_unprotected_control_only_projects_its_two_for_headers ... ok
+test the_nested_try_boundary_stays_where_the_region_layer_left_it ... ok
+test the_refused_shapes_keep_their_refusals ... ok
+test the_variant_family_recovers_and_runs_like_the_original ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.07s
+

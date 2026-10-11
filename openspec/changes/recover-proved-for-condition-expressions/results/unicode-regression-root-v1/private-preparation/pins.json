@@ -1,0 +1,33 @@
+{
+  "schema": "unicode-f1-ascii-golden-local-projection-prep-v1",
+  "status": "private_candidate_not_run",
+  "requested_test_name": "fn the_ascii_presentations_only_change_in_the_two_proved_f1_for_headers()",
+  "scope": "only tests/recover_unicode_identifiers.rs; historical F1 golden and all other fixtures remain untouched",
+  "files": {
+    "original": {
+      "path": "/private/tmp/jarde-unicode-f1-for-test-prep-luna-v1/recover_unicode_identifiers.original.rs",
+      "bytes": 17282,
+      "sha256": "9776f2f52eb7324fd83e5f5e389181c0577098b419d8773a7b0212e62dfb0890"
+    },
+    "candidate": {
+      "path": "/private/tmp/jarde-unicode-f1-for-test-prep-luna-v1/recover_unicode_identifiers.rs",
+      "bytes": 18559,
+      "sha256": "d391dbda6da1f5b728335f38a3400aba1bfb35978806fbbd78166c4fbac7d887"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-unicode-f1-for-test-prep-luna-v1/candidate.patch",
+      "bytes": 2269,
+      "sha256": "f2b2df5c6d44325669c4e7173367b08337f77cb31c0a2802dd986e7a6ee23ae5"
+    },
+    "historical_f1_golden": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/recover-unicode-identifiers/ascii/F1.jarde.java",
+      "bytes": 2321,
+      "sha256": "52553f181c599b8d40e7730d0af48b736445917ec616957fc2ea9ee64b3f3b8c"
+    },
+    "workspace_v3_failed_raw": {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v3/75.stdout.raw",
+      "bytes": 79784,
+      "sha256": "382effd5ded17fb8cf02524fa3226564119bf73ed1bbcd5aae18150ca3fce124"
+    }
+  }
+}

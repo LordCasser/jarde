@@ -1,0 +1,9 @@
+--- check_controls.py (root-v5)
++++ check_sequential_loops2.py
+@@
+     for i,line in enumerate(lines):
+         if line.strip()==f'descriptor: {desc}':
++            previous=next((lines[j].strip() for j in range(i-1,-1,-1) if lines[j].strip()),'')
++            if name=='<clinit>' and desc=='()V' and previous in ('static {};','static {}'):
++                target=i; break
+             prior=next((lines[j].strip() for j in range(i-1,max(-1,i-5),-1) if '(' in lines[j] and ')' in lines[j]),'')

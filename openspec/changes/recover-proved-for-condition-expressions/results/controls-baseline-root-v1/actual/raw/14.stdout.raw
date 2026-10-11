@@ -1,0 +1,19 @@
+functions-zero result=0 exception=none events=12 offsetCalls=1 limitCalls=1 dynamicLimit=0
+functions-two result=1 exception=none events=12312312 offsetCalls=3 limitCalls=3 dynamicLimit=0
+offset-first result=- exception=java.lang.IllegalStateException events=1 offsetCalls=1 limitCalls=0 dynamicLimit=0
+offset-later result=- exception=java.lang.IllegalStateException events=1231 offsetCalls=2 limitCalls=1 dynamicLimit=0
+limit-first result=- exception=java.lang.IllegalStateException events=12 offsetCalls=1 limitCalls=1 dynamicLimit=0
+limit-later result=- exception=java.lang.IllegalStateException events=12312 offsetCalls=2 limitCalls=2 dynamicLimit=0
+dynamic-bound result=1 exception=none events=33 offsetCalls=0 limitCalls=0 dynamicLimit=1
+functions-two-continue result=1 exception=none events=12412312 offsetCalls=3 limitCalls=3 dynamicLimit=0
+while-true-tick-break result=1 exception=none counter=3 limitCalls=3
+while-assigned-call-bound result=3 exception=none counter=0 limitCalls=3
+field-bound result=1 exception=none fieldBound=1 negativeField=0
+array-length result=1 exception=none fieldBound=0 negativeField=0
+array-length-null result=- exception=java.lang.NullPointerException fieldBound=0 negativeField=0
+array-element result=1 exception=none fieldBound=0 negativeField=0
+array-element-bounds result=- exception=java.lang.ArrayIndexOutOfBoundsException fieldBound=0 negativeField=0
+array-element-null result=- exception=java.lang.NullPointerException fieldBound=0 negativeField=0
+negated-field result=3 exception=none fieldBound=0 negativeField=-3
+negated-parameter result=3 exception=none fieldBound=0 negativeField=0
+written-local-while result=2 exception=none fieldBound=0 negativeField=0

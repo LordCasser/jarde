@@ -1,0 +1,12 @@
+{
+  "status": "accepted_actual_public_stop_and_zero_precancel",
+  "analysis_steps": 2630,
+  "dimension": "AnalysisSteps",
+  "method": "sumWithChangingFieldBound()I",
+  "stopped_bci": 1,
+  "precancel_counted_usage": "all zero; elapsed_millis normalized only for comparison",
+  "artifact_checks": "no unproduced body text/map and RecoveryContent::NotProduced; precancel no declaration/fields/methods/text",
+  "scope": "earlier completed members remain allowed; not asynchronous cancellation or a pinned production cost",
+  "execution_sha256": "54872b950f909fdc032caf3c5fdd0a4eceaec6f98d9fee08c42e34573968cf97",
+  "complete_source_steps_derived_from_dynamic_limit_plus_one": 2631
+}

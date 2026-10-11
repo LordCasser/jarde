@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-local-workspace-accept-luna-v2/accept_workspace.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T16:13:02.047080+00:00",
+  "finished_at": "2026-10-11T16:13:02.580207+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-local-workspace-accept-v2/stdout.raw",
+      "bytes": 409,
+      "sha256": "c33caa8f2bb81587bf1a52c957e3e6eb2a884638f02efc5a1112596183ec3139"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/for-condition-local-workspace-accept-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

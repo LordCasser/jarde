@@ -1,0 +1,46 @@
+{
+  "fixture": "jarde-for-condition-tests-prep-luna-v2",
+  "compiled_or_run_by_agent": false,
+  "candidate_files": {
+    "p3_for_latch.rs": "875a11ccae3d593af2af79072688c1038fb21d0e5dcbc294bec79bc91e8145c0",
+    "p3_nested_loop_side_exits.rs": "2e0c25671af295898c5ccb1a65bd4dc3bca6ea0fa6d130758b25be5308409d23",
+    "REVIEW.md": "811bb8d5f3d149b2583ae38706d2d9981d04941ef9176d6200a7d79a9c198774",
+    "candidates.patch": "9bd532eb58fd5e8a5c49a906c8889380b1ed9bcf859e7390c5a376b4c0a71b0b"
+  },
+  "root_frozen_java8_class_inputs": {
+    "ForConditionEffects.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionEffects.class",
+      "sha256": "9ef5bc9d7701575e685e1469a41a17d7798cf932d3230a15b276e7d0c69885df"
+    },
+    "ForConditionReads.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionReads.class",
+      "sha256": "7664451909614ce76d089ede2cac5b7529c939fc565d4aede24f419825c7925e"
+    },
+    "ForConditionRefusals.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionRefusals.class",
+      "sha256": "9afb4eeeb1558845789c2f4b929d3f6adcac237edb3484a11d4a0b68ddc1619b"
+    },
+    "UpstreamNestedLoops2.class": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/UpstreamNestedLoops2.class",
+      "sha256": "1b11e7ac235ff48798edb6bd1f47c02829592bdbcf7f4af0066fec278d095547"
+    }
+  },
+  "root_source_inputs": {
+    "ForConditionEffects.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionEffects.java",
+      "sha256": "1955b4a9aaf6787a5d16f3c927dce98888d3322389118f137081a959529c81e1"
+    },
+    "ForConditionReads.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionReads.java",
+      "sha256": "4c30b5e9435e0dfc260a6849cc2f28b5495e7b5a7847615ab59f0a9870be18a5"
+    },
+    "ForConditionRefusals.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/ForConditionRefusals.java",
+      "sha256": "e49e456fd8e128e8cddc108f3f2a5db1e863b1450a3fb8e9523ff3e19886a454"
+    },
+    "UpstreamNestedLoops2.java": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/java8/cf11-for-condition/UpstreamNestedLoops2.java",
+      "sha256": "ee79a454a2e92da4f50dad00a5e6bc1d33388bc00f028d0c5213f0befdca0cf5"
+    }
+  }
+}

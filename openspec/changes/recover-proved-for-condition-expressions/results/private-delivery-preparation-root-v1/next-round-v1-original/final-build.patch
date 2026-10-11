@@ -1,0 +1,22 @@
+--- jarde-for-condition-final-lint-build-root-v2.py
++++ jarde-for-condition-final-lint-build-root-v3.py
+@@ -1,7 +1,7 @@
+ import hashlib,importlib.util,json,os,re,sys,shutil
+ from pathlib import Path
+ sys.dont_write_bytecode=True
+-R=Path('/Users/lordcasser/workspace/projects/jarde');O=Path('/private/tmp/jarde-for-condition-final-lint-build-root-v2');O.mkdir(exist_ok=False)
++R=Path('/Users/lordcasser/workspace/projects/jarde');O=Path('/private/tmp/jarde-for-condition-final-lint-build-root-v3');O.mkdir(exist_ok=False)
+ H=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+ G=R/'openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py';S=R/'openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py'
+ assert H(G)=='51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33' and H(S)=='d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7'
+@@ -44,8 +44,8 @@
+  run(['cargo','build','-p','jarde-cli','--bin','jarde-cli','--locked'])
+  before=json.loads(Path('/private/tmp/jarde-for-condition-focused-root-v3/execution.json').read_text())
+  changed={k for k,v in x['source_pins_before'].items() if before['source_pins_after'].get(k)!=v}
+- assert changed=={'tests/p3_nested_loop_side_exits.rs','tests/fixtures/java8/cf11-for-condition/README.md','tests/p3_crossing_array_read_values.rs'}
+- cli=Path('/private/tmp/jarde-for-condition-final-cli-root-v2');assert not cli.exists();shutil.copy2(R/'target/debug/jarde-cli',cli);cli.chmod(0o555)
++ assert changed=={'tests/p3_nested_loop_side_exits.rs','tests/fixtures/java8/cf11-for-condition/README.md','tests/p3_crossing_array_read_values.rs','tests/recover_unicode_identifiers.rs'}
++ cli=Path('/private/tmp/jarde-for-condition-final-cli-root-v3');assert not cli.exists();shutil.copy2(R/'target/debug/jarde-cli',cli);cli.chmod(0o555)
+  x['candidate_cli']={'path':str(cli),'bytes':cli.stat().st_size,'sha256':H(cli),'mode':oct(cli.stat().st_mode&0o777)}
+  x['changes_since_accepted_candidate']=sorted(changed)
+  x['candidate_byte_identity']=H(cli)==before['candidate_cli']['sha256']
