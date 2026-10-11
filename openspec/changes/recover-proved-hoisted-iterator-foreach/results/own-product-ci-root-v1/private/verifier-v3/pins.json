@@ -1,0 +1,37 @@
+{
+  "schema": "hoisted-iterator-own-ci-verifier-prep-luna-v3",
+  "status": "private_candidate_static_review_only",
+  "candidate": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/verify-own-ci.py",
+    "bytes": 66785,
+    "sha256": "3114ae3c40ab02ac43c91de149495015afa58cab988e461166c2d0045b063954"
+  },
+  "candidate_patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/candidate.patch",
+    "bytes": 4992,
+    "sha256": "18b25b2433ce285383af238cfaa6a8b5ee5588564712f43aba4ae6ae32c8807f",
+    "base": {
+      "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+      "bytes": 64033,
+      "sha256": "d35502364a0aa3ae563587e20a67c8e11c28d20e6ab687e96c4fd7162f20934f"
+    }
+  },
+  "review": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/REVIEW.md",
+    "bytes": 2546,
+    "sha256": "3ac50473fd1f22f76bdb57efb958493aacec6a19283a78a1c19fe82626045cee"
+  },
+  "v2_preserved": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+    "bytes": 64033,
+    "sha256": "d35502364a0aa3ae563587e20a67c8e11c28d20e6ab687e96c4fd7162f20934f"
+  },
+  "static_checks": {
+    "python_ast_parse": "passed",
+    "seed_verifier_comparison": "byte-identical to v2",
+    "verifier_execution": "not run",
+    "workspace_or_git_mutation": "not performed",
+    "cargo_or_toolchain": "not run"
+  },
+  "scope": "Preserve historical 4732-source closure and source pins unchanged; narrowly supplement exactly seven metadata example sources with product Git/live checks."
+}

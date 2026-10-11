@@ -1,0 +1,24 @@
+--- /private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/CF11OuterAssignmentTarget.java	2026-10-12 05:44:33
++++ /private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/CF11OuterAssignmentTarget.java	2026-10-12 05:46:45
+@@ -15,7 +15,7 @@
+     }
+ 
+     public static Object noCastAssign(List values) {
+-        Object target = "seed";
++        Object target = Runner.seed();
+         Iterator iterator = values.iterator();
+         while (iterator.hasNext()) {
+             target = iterator.next();
+--- /private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/Runner.java	2026-10-12 05:44:33
++++ /private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/Runner.java	2026-10-12 05:46:45
+@@ -60,6 +60,10 @@
+         }
+     }
+ 
++    public static Object seed() {
++        return "seed";
++    }
++
+     public static void assigned(String value) {
+         trace.append("assigned=").append(String.valueOf(value)).append(';');
+     }

@@ -1,0 +1,172 @@
+{
+  "files": [
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/capture-execution-root-v2.json",
+      "copy": "capture/capture-execution-root-v2.json",
+      "bytes": 21460,
+      "sha256": "b17b248db9cbddd4851df8a8e990eef0ac0e2139531a4bf68c0e66d5dd6976bc"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-run-v2.json",
+      "copy": "capture/ci-run-v2.json",
+      "bytes": 10113,
+      "sha256": "d316933fe88490593a7a62e2465a573b686b7232b92cdc04dab1281c2e423383"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-run-v2.stderr.raw",
+      "copy": "capture/ci-run-v2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-stable-job-v2.log.gz",
+      "copy": "capture/ci-stable-job-v2.log.gz",
+      "bytes": 282673,
+      "sha256": "1ff8c5f7a5e32362e6b7508be1aa7fb0d2f49073d26b63e8770999612348d6ca"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-stable-job-v2.log.gz.stderr.raw",
+      "copy": "capture/ci-stable-job-v2.log.gz.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-stable-job-v2.log.stdout.raw",
+      "copy": "capture/ci-stable-job-v2.log.stdout.raw",
+      "bytes": 1807158,
+      "sha256": "d8b7786bc80a0f4eba26f3a944eb41f6f62651ed5d331b925f1b76a48ea6fd68"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-supply-job-v2.log.gz",
+      "copy": "capture/ci-supply-job-v2.log.gz",
+      "bytes": 15233,
+      "sha256": "d83181f8abea2170625a534ff87f198a4a4c55f82cd5d6faaa34fd85ecb0860a"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-supply-job-v2.log.gz.stderr.raw",
+      "copy": "capture/ci-supply-job-v2.log.gz.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1/ci-supply-job-v2.log.stdout.raw",
+      "copy": "capture/ci-supply-job-v2.log.stdout.raw",
+      "bytes": 116145,
+      "sha256": "0705eede15760ea01ba2f75d96bf54bc9f0f1d52a64b69ec9808b4848c859448"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-capture-invocation-root-v1/execution.json",
+      "copy": "capture-invocation/execution.json",
+      "bytes": 1052,
+      "sha256": "9e1491a30e13883009d13bfcab3350aa3f28f0235b793cc0662e5e0f57f27f63"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-capture-invocation-root-v1/stderr.raw",
+      "copy": "capture-invocation/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-capture-invocation-root-v1/stdout.raw",
+      "copy": "capture-invocation/stdout.raw",
+      "bytes": 132,
+      "sha256": "cbe02e6fcf3998de270cbf14d75dc827b3f092e1004d8213e422d2fb19c43baf"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v1/execution.json",
+      "copy": "accept-invocation-v1/execution.json",
+      "bytes": 2378,
+      "sha256": "61e672c4cdb5875be9eb5386e81f1b8bc85ac6395894fdf33c90334d6146d915"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v1/stderr.raw",
+      "copy": "accept-invocation-v1/stderr.raw",
+      "bytes": 1704,
+      "sha256": "f413d6dc77555405fae276cb8db670429a41ace061bbeb010a4aa6c44eb8dc7b"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v1/stdout.raw",
+      "copy": "accept-invocation-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v2/execution.json",
+      "copy": "accept-invocation-v2/execution.json",
+      "bytes": 2377,
+      "sha256": "cf8ba7a277580e3fff5d99ca4bf9d63bfd745e6a13c327a643a7f98c2fc2beed"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v2/stderr.raw",
+      "copy": "accept-invocation-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v2/stdout.raw",
+      "copy": "accept-invocation-v2/stdout.raw",
+      "bytes": 312,
+      "sha256": "63553d0b420b0729ad1e27e4a5b230e97fc654cef6f750362228908ede7d6e70"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/README.md",
+      "copy": "private/verifier-v2/README.md",
+      "bytes": 3875,
+      "sha256": "92a783092c4b3f2f4e8ddaec0be639b2cfca837025c6533a62dbda0c18ce5c40"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/candidate.patch",
+      "copy": "private/verifier-v2/candidate.patch",
+      "bytes": 6769,
+      "sha256": "7a1174b8d03cac4d8c783809a5f3831e5aceebe25f85016dd88f96147c0fb2ac"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/pins.json",
+      "copy": "private/verifier-v2/pins.json",
+      "bytes": 4819,
+      "sha256": "9107bdb342b1000f59d936425cf4e111a9c91c77d0de42be496a24741ede5466"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+      "copy": "private/verifier-v2/verify-own-ci.py",
+      "bytes": 64033,
+      "sha256": "d35502364a0aa3ae563587e20a67c8e11c28d20e6ab687e96c4fd7162f20934f"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/REVIEW.md",
+      "copy": "private/verifier-v3/REVIEW.md",
+      "bytes": 2546,
+      "sha256": "3ac50473fd1f22f76bdb57efb958493aacec6a19283a78a1c19fe82626045cee"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/candidate.patch",
+      "copy": "private/verifier-v3/candidate.patch",
+      "bytes": 4992,
+      "sha256": "18b25b2433ce285383af238cfaa6a8b5ee5588564712f43aba4ae6ae32c8807f"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/pins.json",
+      "copy": "private/verifier-v3/pins.json",
+      "bytes": 1626,
+      "sha256": "9df3103a94c0062ae42e2d9df950f939bf873568826f912acf64ec32c61f5757"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v3/verify-own-ci.py",
+      "copy": "private/verifier-v3/verify-own-ci.py",
+      "bytes": 66785,
+      "sha256": "3114ae3c40ab02ac43c91de149495015afa58cab988e461166c2d0045b063954"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-own-ci-acceptance-root-v2.json",
+      "copy": "acceptance.json",
+      "bytes": 1385364,
+      "sha256": "00062be2293871c88f9bb6ccd6b2e7128143cca4ff99bf494d4954f8877c4b68"
+    },
+    {
+      "source": "/private/tmp/jarde-hoisted-iterator-clean-main-prep-luna-v4/audit-clean-main.py",
+      "copy": "private/audit-clean-main.py",
+      "bytes": 23780,
+      "sha256": "6bff946298c386cc39172d3ce1fb1f75b8a797d3e106bd4a3393ee913ee13093"
+    }
+  ]
+}

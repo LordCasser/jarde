@@ -1,0 +1,1253 @@
+{
+  "scope": "actual unchanged old product controlled baseline; v1 compiler failures and failed accept-v1 kept separately; v2 accepted observation only",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/execution.json",
+      "copy": "baseline-v1/capture/execution.json",
+      "bytes": 89196,
+      "sha256": "27ec2eed14e3a547f274ae8eac4dae9fd91b9be549801a9e027cf9c1dfecdad6"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/inputs/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/inputs/CF11OuterAssignmentTarget.java",
+      "bytes": 1322,
+      "sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/inputs/Runner.java",
+      "copy": "baseline-v1/capture/inputs/Runner.java",
+      "bytes": 4283,
+      "sha256": "4ea39b4a79a2b4c9e68c17754e9ef1cf989ed36ab1a9c788d4fce92a43fa0143"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/inputs/for-condition-controls.jar",
+      "copy": "baseline-v1/capture/inputs/for-condition-controls.jar",
+      "bytes": 1644,
+      "sha256": "b1f4da3f670c9d88def52caf553e8b349d9d50718eac1b9ff2f2a475ebb16d2b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/inputs/jadx-default/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/inputs/jadx-default/CF11OuterAssignmentTarget.java",
+      "bytes": 1416,
+      "sha256": "a5315707ab1b89114792b7f24d4d9d3b9ea734f8f5021e51875c2a758ec04d15"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/inputs/jadx-none/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/inputs/jadx-none/CF11OuterAssignmentTarget.java",
+      "bytes": 1416,
+      "sha256": "a5315707ab1b89114792b7f24d4d9d3b9ea734f8f5021e51875c2a758ec04d15"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jadx/default/sources/cf11/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/jadx/default/sources/cf11/CF11OuterAssignmentTarget.java",
+      "bytes": 1416,
+      "sha256": "a5315707ab1b89114792b7f24d4d9d3b9ea734f8f5021e51875c2a758ec04d15"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jadx/none/sources/cf11/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/jadx/none/sources/cf11/CF11OuterAssignmentTarget.java",
+      "bytes": 1416,
+      "sha256": "a5315707ab1b89114792b7f24d4d9d3b9ea734f8f5021e51875c2a758ec04d15"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3262,
+      "sha256": "873ac3a4eeae41a3fd51f2bf6ac44dcd48a9e48a5dd1b9f61df0d835be39deb1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v1/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "bytes": 321711,
+      "sha256": "2a1879d33601404c00bd56e4095aa241c74243f56b01e57615c6ae272e8fc2e2"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3262,
+      "sha256": "873ac3a4eeae41a3fd51f2bf6ac44dcd48a9e48a5dd1b9f61df0d835be39deb1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v1/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "bytes": 313796,
+      "sha256": "595d64c0f75b1bc4454a4001b17ddc32fbff6abfcfddd08e714cdb82e8f4aaf5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3262,
+      "sha256": "873ac3a4eeae41a3fd51f2bf6ac44dcd48a9e48a5dd1b9f61df0d835be39deb1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v1/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "bytes": 321711,
+      "sha256": "af61ff7b452d2595d3ed542d83d9a79a92589d2c3882a136adf21633c08330b7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v1/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3262,
+      "sha256": "873ac3a4eeae41a3fd51f2bf6ac44dcd48a9e48a5dd1b9f61df0d835be39deb1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v1/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "bytes": 313807,
+      "sha256": "e5058bcca6bbb91755b2e0773ab1dcefad05bef967666e35851131d2e9a01caa"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v1/capture/legs/javac23-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1474,
+      "sha256": "87c2a69bd7765b06b1255ad78bda13095413b2f877eb00abbb75c147368a9439"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "copy": "baseline-v1/capture/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "bytes": 4898,
+      "sha256": "a802e588f544d94a44d9f76410a6d0427f5c02cb1a34679d0300fbd2562715fc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v1/capture/legs/javac23-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1474,
+      "sha256": "87c2a69bd7765b06b1255ad78bda13095413b2f877eb00abbb75c147368a9439"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "copy": "baseline-v1/capture/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "bytes": 4898,
+      "sha256": "a802e588f544d94a44d9f76410a6d0427f5c02cb1a34679d0300fbd2562715fc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v1/capture/legs/javac23-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1474,
+      "sha256": "a145c63b58fba3de708617917b2817f6f5a40e92d2957fc643ac8e4d5684794a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-original/classes/cf11/Runner.class",
+      "copy": "baseline-v1/capture/legs/javac23-original/classes/cf11/Runner.class",
+      "bytes": 4898,
+      "sha256": "a802e588f544d94a44d9f76410a6d0427f5c02cb1a34679d0300fbd2562715fc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac23-original/javap-CF11OuterAssignmentTarget.txt",
+      "copy": "baseline-v1/capture/legs/javac23-original/javap-CF11OuterAssignmentTarget.txt",
+      "bytes": 10614,
+      "sha256": "cd99f39f0c5456b58ceaf4272abd2768a20fc8419c13ee445fb7b6747d45affc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v1/capture/legs/javac8-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1483,
+      "sha256": "32c3bd21c4a545a67a26fde5ff523557488ff49367ed337317efe7f504b4ea1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "copy": "baseline-v1/capture/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "bytes": 4907,
+      "sha256": "b832c3b5ebc7145b40b92be3681287b35458e59eb86aca55585713e6e81dc672"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v1/capture/legs/javac8-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1483,
+      "sha256": "32c3bd21c4a545a67a26fde5ff523557488ff49367ed337317efe7f504b4ea1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "copy": "baseline-v1/capture/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "bytes": 4907,
+      "sha256": "b832c3b5ebc7145b40b92be3681287b35458e59eb86aca55585713e6e81dc672"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1483,
+      "sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-original/classes/cf11/Runner.class",
+      "copy": "baseline-v1/capture/legs/javac8-original/classes/cf11/Runner.class",
+      "bytes": 4907,
+      "sha256": "b832c3b5ebc7145b40b92be3681287b35458e59eb86aca55585713e6e81dc672"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/legs/javac8-original/javap-CF11OuterAssignmentTarget.txt",
+      "copy": "baseline-v1/capture/legs/javac8-original/javap-CF11OuterAssignmentTarget.txt",
+      "bytes": 10512,
+      "sha256": "05bf2fd6d0235253e79af931e1f16cde51ac2a34f746c49b8812f6d4e95c49ea"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/1.stderr.raw",
+      "copy": "baseline-v1/capture/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/1.stdout.raw",
+      "copy": "baseline-v1/capture/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/10.stderr.raw",
+      "copy": "baseline-v1/capture/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/10.stdout.raw",
+      "copy": "baseline-v1/capture/raw/10.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/11.stderr.raw",
+      "copy": "baseline-v1/capture/raw/11.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/11.stdout.raw",
+      "copy": "baseline-v1/capture/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/12.stderr.raw",
+      "copy": "baseline-v1/capture/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/12.stdout.raw",
+      "copy": "baseline-v1/capture/raw/12.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/13.stderr.raw",
+      "copy": "baseline-v1/capture/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/13.stdout.raw",
+      "copy": "baseline-v1/capture/raw/13.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/14.stderr.raw",
+      "copy": "baseline-v1/capture/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/14.stdout.raw",
+      "copy": "baseline-v1/capture/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/15.stderr.raw",
+      "copy": "baseline-v1/capture/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/15.stdout.raw",
+      "copy": "baseline-v1/capture/raw/15.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/16.stderr.raw",
+      "copy": "baseline-v1/capture/raw/16.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/16.stdout.raw",
+      "copy": "baseline-v1/capture/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/17.stderr.raw",
+      "copy": "baseline-v1/capture/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/17.stdout.raw",
+      "copy": "baseline-v1/capture/raw/17.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/18.stderr.raw",
+      "copy": "baseline-v1/capture/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/18.stdout.raw",
+      "copy": "baseline-v1/capture/raw/18.stdout.raw",
+      "bytes": 91057,
+      "sha256": "b4de90a412eb8eaa60783126e9428e9628597dd9d79bab00a54778c2d5ed2b7c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/19.stderr.raw",
+      "copy": "baseline-v1/capture/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/19.stdout.raw",
+      "copy": "baseline-v1/capture/raw/19.stdout.raw",
+      "bytes": 94268,
+      "sha256": "8d9a1d83e937c6dc351e490aa89f1e8c615458017aa64af6776758334151b46a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/2.stderr.raw",
+      "copy": "baseline-v1/capture/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/2.stdout.raw",
+      "copy": "baseline-v1/capture/raw/2.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/20.stderr.raw",
+      "copy": "baseline-v1/capture/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/20.stdout.raw",
+      "copy": "baseline-v1/capture/raw/20.stdout.raw",
+      "bytes": 91046,
+      "sha256": "61603ea5b8813966bc7b14dbac72695ac7df5b99cd323442d9f0a2ebabe94f84"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/21.stderr.raw",
+      "copy": "baseline-v1/capture/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/21.stdout.raw",
+      "copy": "baseline-v1/capture/raw/21.stdout.raw",
+      "bytes": 94268,
+      "sha256": "b8ed01f5ed88089797f34a85e3a321ec4342390521aa72b9b8de97a912b4c05c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/22.stderr.raw",
+      "copy": "baseline-v1/capture/raw/22.stderr.raw",
+      "bytes": 305,
+      "sha256": "20d0ce1afbcff8d653fa44b20877ccb8c546418fbae571cf7eb573a4e75f2711"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/22.stdout.raw",
+      "copy": "baseline-v1/capture/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/23.stderr.raw",
+      "copy": "baseline-v1/capture/raw/23.stderr.raw",
+      "bytes": 305,
+      "sha256": "20d0ce1afbcff8d653fa44b20877ccb8c546418fbae571cf7eb573a4e75f2711"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/23.stdout.raw",
+      "copy": "baseline-v1/capture/raw/23.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/24.stderr.raw",
+      "copy": "baseline-v1/capture/raw/24.stderr.raw",
+      "bytes": 301,
+      "sha256": "4c51ffecf03e97c4c0b0673aafb2c92a30449783d0018d35aa4a361562feb8e8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/24.stdout.raw",
+      "copy": "baseline-v1/capture/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/25.stderr.raw",
+      "copy": "baseline-v1/capture/raw/25.stderr.raw",
+      "bytes": 301,
+      "sha256": "4c51ffecf03e97c4c0b0673aafb2c92a30449783d0018d35aa4a361562feb8e8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/25.stdout.raw",
+      "copy": "baseline-v1/capture/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/26.stderr.raw",
+      "copy": "baseline-v1/capture/raw/26.stderr.raw",
+      "bytes": 549,
+      "sha256": "dd6e66aa29cfeddb3ebaaf87bc6c6e5b14b3b4b9a4ddebbfa7017b45db06b25a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/26.stdout.raw",
+      "copy": "baseline-v1/capture/raw/26.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/27.stderr.raw",
+      "copy": "baseline-v1/capture/raw/27.stderr.raw",
+      "bytes": 549,
+      "sha256": "dd6e66aa29cfeddb3ebaaf87bc6c6e5b14b3b4b9a4ddebbfa7017b45db06b25a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/27.stdout.raw",
+      "copy": "baseline-v1/capture/raw/27.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/28.stderr.raw",
+      "copy": "baseline-v1/capture/raw/28.stderr.raw",
+      "bytes": 545,
+      "sha256": "32091ef09e18dc0ba015a05bc2f9c126b1fd484822b842487e248004d26c0978"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/28.stdout.raw",
+      "copy": "baseline-v1/capture/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/29.stderr.raw",
+      "copy": "baseline-v1/capture/raw/29.stderr.raw",
+      "bytes": 545,
+      "sha256": "32091ef09e18dc0ba015a05bc2f9c126b1fd484822b842487e248004d26c0978"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/29.stdout.raw",
+      "copy": "baseline-v1/capture/raw/29.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/3.stderr.raw",
+      "copy": "baseline-v1/capture/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/3.stdout.raw",
+      "copy": "baseline-v1/capture/raw/3.stdout.raw",
+      "bytes": 10512,
+      "sha256": "05bf2fd6d0235253e79af931e1f16cde51ac2a34f746c49b8812f6d4e95c49ea"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/4.stderr.raw",
+      "copy": "baseline-v1/capture/raw/4.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/4.stdout.raw",
+      "copy": "baseline-v1/capture/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/5.stderr.raw",
+      "copy": "baseline-v1/capture/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/5.stdout.raw",
+      "copy": "baseline-v1/capture/raw/5.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/6.stderr.raw",
+      "copy": "baseline-v1/capture/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/6.stdout.raw",
+      "copy": "baseline-v1/capture/raw/6.stdout.raw",
+      "bytes": 10614,
+      "sha256": "cd99f39f0c5456b58ceaf4272abd2768a20fc8419c13ee445fb7b6747d45affc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/7.stderr.raw",
+      "copy": "baseline-v1/capture/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/7.stdout.raw",
+      "copy": "baseline-v1/capture/raw/7.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/8.stderr.raw",
+      "copy": "baseline-v1/capture/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/8.stdout.raw",
+      "copy": "baseline-v1/capture/raw/8.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/9.stderr.raw",
+      "copy": "baseline-v1/capture/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/capture/raw/9.stdout.raw",
+      "copy": "baseline-v1/capture/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/checker.json",
+      "copy": "baseline-v1/checker.json",
+      "bytes": 4977,
+      "sha256": "9e7774b185f7862cdc1313cf69d5bf326a9408387fc945ea8eb32784af60b524"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1/execution.json",
+      "copy": "baseline-v1/execution.json",
+      "bytes": 1526809,
+      "sha256": "d3d434c6f54e14e9072a7a3bacdbad5a018ffa403c51c8cb1347417d7f8b2c6e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v1.py",
+      "copy": "private/launch-v1.py",
+      "bytes": 3685,
+      "sha256": "5370be7e5641642125d954643837d39bcaa38dbe3472fac44da920beacd03c07"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/execution.json",
+      "copy": "baseline-v2/capture/execution.json",
+      "bytes": 85422,
+      "sha256": "07dd9ca9076993df96a2b00c481d656b059eb95558766732e77cd006cd04d783"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/inputs/CF11OuterAssignmentTarget.java",
+      "bytes": 1329,
+      "sha256": "337603aab484593a76c65accf1c3301bc1c5efe194b5016dad2fd8d53d475824"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/Runner.java",
+      "copy": "baseline-v2/capture/inputs/Runner.java",
+      "bytes": 4347,
+      "sha256": "c86c88b5393d489c5dc4104b9049d246f8668567751861c5258d407f79af6713"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/for-condition-controls.jar",
+      "copy": "baseline-v2/capture/inputs/for-condition-controls.jar",
+      "bytes": 1655,
+      "sha256": "7866d4c152f0ce911b51028a4f4fcfc6eb44b4beee0e8627c497c263e9fcce99"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/jadx-default/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/inputs/jadx-default/CF11OuterAssignmentTarget.java",
+      "bytes": 1423,
+      "sha256": "838a8785aba5e7ac930f40e45283bfa0b13b43e50ec6a935df26dd3472f85f53"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/jadx-none/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/inputs/jadx-none/CF11OuterAssignmentTarget.java",
+      "bytes": 1423,
+      "sha256": "838a8785aba5e7ac930f40e45283bfa0b13b43e50ec6a935df26dd3472f85f53"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jadx/default/sources/cf11/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/jadx/default/sources/cf11/CF11OuterAssignmentTarget.java",
+      "bytes": 1423,
+      "sha256": "838a8785aba5e7ac930f40e45283bfa0b13b43e50ec6a935df26dd3472f85f53"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jadx/none/sources/cf11/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/jadx/none/sources/cf11/CF11OuterAssignmentTarget.java",
+      "bytes": 1423,
+      "sha256": "838a8785aba5e7ac930f40e45283bfa0b13b43e50ec6a935df26dd3472f85f53"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3274,
+      "sha256": "16d6b289696a64fe2aa8771f86d7a10bc23d53ec22d3b40df5bd566b58612e3b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v2/capture/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "bytes": 324209,
+      "sha256": "2be722bed361aeca5a26675f0831ac6698a29d06e0b3462dc4e7966a3c4fd7bf"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3274,
+      "sha256": "16d6b289696a64fe2aa8771f86d7a10bc23d53ec22d3b40df5bd566b58612e3b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v2/capture/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "bytes": 316294,
+      "sha256": "5c9c90f91f7f682993b38160152357b3161b59f8a72c6edbb398438a146baba8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3274,
+      "sha256": "16d6b289696a64fe2aa8771f86d7a10bc23d53ec22d3b40df5bd566b58612e3b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v2/capture/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/report.json",
+      "bytes": 324209,
+      "sha256": "09255b0780fd563636c0798263d1f73acf400dd0c2535888709a70e1665ab13c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "copy": "baseline-v2/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+      "bytes": 3274,
+      "sha256": "16d6b289696a64fe2aa8771f86d7a10bc23d53ec22d3b40df5bd566b58612e3b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "copy": "baseline-v2/capture/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/report.json",
+      "bytes": 316300,
+      "sha256": "35a008e6f9e8e3f9c6e4aedc0a68faed1d711ed0ea820d8dc4355ad52c494d48"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac23-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1485,
+      "sha256": "fd0dc02cc1ebf10903c052c5711ff4cd0fe64abff4ddd2c313597b46fe7a1307"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "bytes": 4949,
+      "sha256": "4d84f0a628c89fcf8a856dd068120416cf7d4f91503083bee5da98774f85b01f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac23-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1485,
+      "sha256": "fd0dc02cc1ebf10903c052c5711ff4cd0fe64abff4ddd2c313597b46fe7a1307"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "bytes": 4949,
+      "sha256": "4d84f0a628c89fcf8a856dd068120416cf7d4f91503083bee5da98774f85b01f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jarde-all-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac23-jarde-all-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1489,
+      "sha256": "57ecea537db1c3a76ac6b06e3774205b4960f0a6ad27a20cdfb8f172a4a61202"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jarde-all-combined/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac23-jarde-all-combined/classes/cf11/Runner.class",
+      "bytes": 4949,
+      "sha256": "4d84f0a628c89fcf8a856dd068120416cf7d4f91503083bee5da98774f85b01f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jarde-default-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac23-jarde-default-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1489,
+      "sha256": "57ecea537db1c3a76ac6b06e3774205b4960f0a6ad27a20cdfb8f172a4a61202"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-jarde-default-combined/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac23-jarde-default-combined/classes/cf11/Runner.class",
+      "bytes": 4949,
+      "sha256": "4d84f0a628c89fcf8a856dd068120416cf7d4f91503083bee5da98774f85b01f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac23-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1485,
+      "sha256": "8c40426f3184d7fddf4a6d4e2f55fd4a5e379bf50640cf98368eabd04d487c58"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-original/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac23-original/classes/cf11/Runner.class",
+      "bytes": 4949,
+      "sha256": "4d84f0a628c89fcf8a856dd068120416cf7d4f91503083bee5da98774f85b01f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac23-original/javap-CF11OuterAssignmentTarget.txt",
+      "copy": "baseline-v2/capture/legs/javac23-original/javap-CF11OuterAssignmentTarget.txt",
+      "bytes": 10801,
+      "sha256": "0398109e193d7e9fac5f811a4514ee3cdc1ffa36004043db438993c3abf9f90c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac8-jadx-default/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1494,
+      "sha256": "2028740450c45cde7910c18e9fc5b33288ca093541af92f570554b1a29914ba9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "bytes": 4958,
+      "sha256": "087e151c248598809519b6afecb7dd3b09eabce476947f10fc3b6256688af1a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac8-jadx-none/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1494,
+      "sha256": "2028740450c45cde7910c18e9fc5b33288ca093541af92f570554b1a29914ba9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "bytes": 4958,
+      "sha256": "087e151c248598809519b6afecb7dd3b09eabce476947f10fc3b6256688af1a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jarde-all-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac8-jarde-all-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1498,
+      "sha256": "93d23f27ead52f706946d491d8b5259024cf82426882d52c8fa35c72a7a12264"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jarde-all-combined/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac8-jarde-all-combined/classes/cf11/Runner.class",
+      "bytes": 4958,
+      "sha256": "087e151c248598809519b6afecb7dd3b09eabce476947f10fc3b6256688af1a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jarde-default-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac8-jarde-default-combined/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1498,
+      "sha256": "93d23f27ead52f706946d491d8b5259024cf82426882d52c8fa35c72a7a12264"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-jarde-default-combined/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac8-jarde-default-combined/classes/cf11/Runner.class",
+      "bytes": 4958,
+      "sha256": "087e151c248598809519b6afecb7dd3b09eabce476947f10fc3b6256688af1a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "baseline-v2/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "bytes": 1494,
+      "sha256": "28b92d58ce18fb08362bd39b0558de98c3c41830cc8cbc6bd60ec3a183b21956"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-original/classes/cf11/Runner.class",
+      "copy": "baseline-v2/capture/legs/javac8-original/classes/cf11/Runner.class",
+      "bytes": 4958,
+      "sha256": "087e151c248598809519b6afecb7dd3b09eabce476947f10fc3b6256688af1a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-original/javap-CF11OuterAssignmentTarget.txt",
+      "copy": "baseline-v2/capture/legs/javac8-original/javap-CF11OuterAssignmentTarget.txt",
+      "bytes": 10699,
+      "sha256": "d41ae029250dfd7d8f5bef91a3fea224a6e37ae5c7b1e229513aa320b83ed850"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/1.stderr.raw",
+      "copy": "baseline-v2/capture/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/1.stdout.raw",
+      "copy": "baseline-v2/capture/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/10.stderr.raw",
+      "copy": "baseline-v2/capture/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/10.stdout.raw",
+      "copy": "baseline-v2/capture/raw/10.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/11.stderr.raw",
+      "copy": "baseline-v2/capture/raw/11.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/11.stdout.raw",
+      "copy": "baseline-v2/capture/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/12.stderr.raw",
+      "copy": "baseline-v2/capture/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/12.stdout.raw",
+      "copy": "baseline-v2/capture/raw/12.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/13.stderr.raw",
+      "copy": "baseline-v2/capture/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/13.stdout.raw",
+      "copy": "baseline-v2/capture/raw/13.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/14.stderr.raw",
+      "copy": "baseline-v2/capture/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/14.stdout.raw",
+      "copy": "baseline-v2/capture/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/15.stderr.raw",
+      "copy": "baseline-v2/capture/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/15.stdout.raw",
+      "copy": "baseline-v2/capture/raw/15.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/16.stderr.raw",
+      "copy": "baseline-v2/capture/raw/16.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/16.stdout.raw",
+      "copy": "baseline-v2/capture/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/17.stderr.raw",
+      "copy": "baseline-v2/capture/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/17.stdout.raw",
+      "copy": "baseline-v2/capture/raw/17.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/18.stderr.raw",
+      "copy": "baseline-v2/capture/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/18.stdout.raw",
+      "copy": "baseline-v2/capture/raw/18.stdout.raw",
+      "bytes": 91647,
+      "sha256": "58d6850c5079e2ec3d970030e7686b7f5006e15bd53b90bfeef9618baec69c6c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/19.stderr.raw",
+      "copy": "baseline-v2/capture/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/19.stdout.raw",
+      "copy": "baseline-v2/capture/raw/19.stdout.raw",
+      "bytes": 94863,
+      "sha256": "b613433c9330913a49a93aff0c0ffdf7307e239f6467218b51dcdcffe652defb"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/2.stderr.raw",
+      "copy": "baseline-v2/capture/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/2.stdout.raw",
+      "copy": "baseline-v2/capture/raw/2.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/20.stderr.raw",
+      "copy": "baseline-v2/capture/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/20.stdout.raw",
+      "copy": "baseline-v2/capture/raw/20.stdout.raw",
+      "bytes": 91641,
+      "sha256": "e36ee0cc9c0532a9c6ff6466bd37002507de6a20221dea43a20610597821be23"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/21.stderr.raw",
+      "copy": "baseline-v2/capture/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/21.stdout.raw",
+      "copy": "baseline-v2/capture/raw/21.stdout.raw",
+      "bytes": 94863,
+      "sha256": "570edb766477ceacd6b14db833c7e2f702015641ec2d3be444362bc95ab2e0b3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/22.stderr.raw",
+      "copy": "baseline-v2/capture/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/22.stdout.raw",
+      "copy": "baseline-v2/capture/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/23.stderr.raw",
+      "copy": "baseline-v2/capture/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/23.stdout.raw",
+      "copy": "baseline-v2/capture/raw/23.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/24.stderr.raw",
+      "copy": "baseline-v2/capture/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/24.stdout.raw",
+      "copy": "baseline-v2/capture/raw/24.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/25.stderr.raw",
+      "copy": "baseline-v2/capture/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/25.stdout.raw",
+      "copy": "baseline-v2/capture/raw/25.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/26.stderr.raw",
+      "copy": "baseline-v2/capture/raw/26.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/26.stdout.raw",
+      "copy": "baseline-v2/capture/raw/26.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/27.stderr.raw",
+      "copy": "baseline-v2/capture/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/27.stdout.raw",
+      "copy": "baseline-v2/capture/raw/27.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/28.stderr.raw",
+      "copy": "baseline-v2/capture/raw/28.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/28.stdout.raw",
+      "copy": "baseline-v2/capture/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/29.stderr.raw",
+      "copy": "baseline-v2/capture/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/29.stdout.raw",
+      "copy": "baseline-v2/capture/raw/29.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/3.stderr.raw",
+      "copy": "baseline-v2/capture/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/3.stdout.raw",
+      "copy": "baseline-v2/capture/raw/3.stdout.raw",
+      "bytes": 10699,
+      "sha256": "d41ae029250dfd7d8f5bef91a3fea224a6e37ae5c7b1e229513aa320b83ed850"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/4.stderr.raw",
+      "copy": "baseline-v2/capture/raw/4.stderr.raw",
+      "bytes": 243,
+      "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/4.stdout.raw",
+      "copy": "baseline-v2/capture/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/5.stderr.raw",
+      "copy": "baseline-v2/capture/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/5.stdout.raw",
+      "copy": "baseline-v2/capture/raw/5.stdout.raw",
+      "bytes": 1750,
+      "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/6.stderr.raw",
+      "copy": "baseline-v2/capture/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/6.stdout.raw",
+      "copy": "baseline-v2/capture/raw/6.stdout.raw",
+      "bytes": 10801,
+      "sha256": "0398109e193d7e9fac5f811a4514ee3cdc1ffa36004043db438993c3abf9f90c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/7.stderr.raw",
+      "copy": "baseline-v2/capture/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/7.stdout.raw",
+      "copy": "baseline-v2/capture/raw/7.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/8.stderr.raw",
+      "copy": "baseline-v2/capture/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/8.stdout.raw",
+      "copy": "baseline-v2/capture/raw/8.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/9.stderr.raw",
+      "copy": "baseline-v2/capture/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/9.stdout.raw",
+      "copy": "baseline-v2/capture/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/checker.json",
+      "copy": "baseline-v2/checker.json",
+      "bytes": 5423,
+      "sha256": "d6ea0df2e32b67442b33eac093d942cc41fa675a1c41d8ba00411b5e329f34f7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/execution.json",
+      "copy": "baseline-v2/execution.json",
+      "bytes": 1526809,
+      "sha256": "1f4eb4b3ac98cf1b1a99f2123024c5ab223fba7ab9d13bd7f467ec395ae615a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2.py",
+      "copy": "private/launch-v2.py",
+      "bytes": 3685,
+      "sha256": "5edaafe377f069ab1298a0b42bb71f49d151a6bc3924508506aa2c7cdb8c211a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/CF11OuterAssignmentTarget.java",
+      "copy": "inputs-v2/CF11OuterAssignmentTarget.java",
+      "bytes": 1322,
+      "sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/README.md",
+      "copy": "inputs-v2/README.md",
+      "bytes": 3824,
+      "sha256": "8d30ea0cc80120f148cd4a86aebbbb692406fa48a6ce3b25a399fac97d6d88b3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/Runner.java",
+      "copy": "inputs-v2/Runner.java",
+      "bytes": 4283,
+      "sha256": "4ea39b4a79a2b4c9e68c17754e9ef1cf989ed36ab1a9c788d4fce92a43fa0143"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/manifest.json",
+      "copy": "inputs-v2/manifest.json",
+      "bytes": 470,
+      "sha256": "85115658980bf9d82df7d7b233f7186de64caf98003bcec160b78f79c5e0c8a8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/CF11OuterAssignmentTarget.java",
+      "copy": "inputs-v3/CF11OuterAssignmentTarget.java",
+      "bytes": 1329,
+      "sha256": "337603aab484593a76c65accf1c3301bc1c5efe194b5016dad2fd8d53d475824"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/README.md",
+      "copy": "inputs-v3/README.md",
+      "bytes": 2223,
+      "sha256": "8d18b3a3ab5b7be70640b494f0a324607d9751bf877162d19871f04fadff683f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/Runner.java",
+      "copy": "inputs-v3/Runner.java",
+      "bytes": 4347,
+      "sha256": "c86c88b5393d489c5dc4104b9049d246f8668567751861c5258d407f79af6713"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/manifest.json",
+      "copy": "inputs-v3/manifest.json",
+      "bytes": 470,
+      "sha256": "d5880e687074a94d466b71baeaf5c6430c64b6467d614e4f2e297aba79d36c2d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v3/source-diff.patch",
+      "copy": "inputs-v3/source-diff.patch",
+      "bytes": 954,
+      "sha256": "2922bdf12f303901197f207856cd22aea9636865d28e0dd226341760c9c5ef2b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-accept-v1.py",
+      "copy": "private/accept-v1.py",
+      "bytes": 24624,
+      "sha256": "b122ed7931d6390aa8b416a92ec2d8b8264707e88edf8e13b1d5e048993ed65d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v1/execution.json",
+      "copy": "acceptance-invocation-v1/execution.json",
+      "bytes": 1130,
+      "sha256": "110ec5a12ff32ef385652e6bb8d60263f58298f239a74b2367d352fae4329092"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v1/stderr.raw",
+      "copy": "acceptance-invocation-v1/stderr.raw",
+      "bytes": 40,
+      "sha256": "119f391eee57c33120904d6de673810a8c7367c90076fb0cbf29ad759d9767aa"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v1/stdout.raw",
+      "copy": "acceptance-invocation-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-accept-v2.py",
+      "copy": "private/accept-v2.py",
+      "bytes": 31488,
+      "sha256": "c9346be58d143b0ea0d6817d13c7dc64d36a4f8106771ffceb90493e6f4f51d8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v2/execution.json",
+      "copy": "acceptance-invocation-v2/execution.json",
+      "bytes": 1131,
+      "sha256": "331c2cc35ec563029ece4352e7c0fa18742db3056fd296867a091b2823a43109"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v2/stderr.raw",
+      "copy": "acceptance-invocation-v2/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v2/stdout.raw",
+      "copy": "acceptance-invocation-v2/stdout.raw",
+      "bytes": 194,
+      "sha256": "45b2fe2dbc6196a365b22ddb6142a8f849469fdaa7536a513b6664d4f66caceb"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-root-v1.json",
+      "copy": "acceptance.json",
+      "bytes": 26850,
+      "sha256": "113bf0c5eb089b79f46aa7178ed9253829ead0c85eaffa59e860c992fdecbb9c"
+    }
+  ]
+}

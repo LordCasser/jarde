@@ -1,0 +1,54 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+    "--product-commit",
+    "993e9f8c0f413bb7c31538e6f7c2c92a742e7af4",
+    "--run-id",
+    "38176302604",
+    "--capture",
+    "/private/tmp/jarde-hoisted-iterator-own-product-ci-root-v1",
+    "--workspace",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-run-v4",
+    "--workspace-runner",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace_runner.py",
+    "--workspace-runner-sha256",
+    "711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e",
+    "--workspace-named-manifest",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace-acceptance-v4.json",
+    "--workspace-acceptor",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/accept_workspace.py",
+    "--workspace-acceptor-sha256",
+    "16683decff47cdae9cc73b7abadcbc72bdf1ce9a71733b05d5e715cbdb380df9",
+    "--regression-receipt",
+    "/private/tmp/jarde-hoisted-iterator-regressions-root-v6/execution.json",
+    "--regression-receipt-sha256",
+    "fed09c2295e2a33c40c6599bfc6acdcf62aad500e3eb06a9f640fe9a96b1690f",
+    "--final-build",
+    "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/final-build-v5/execution.json",
+    "--build-runner",
+    "/private/tmp/jarde-hoisted-iterator-final-build-root-v2.py",
+    "--build-runner-sha256",
+    "ce22ee46288d21ec53514743c66b5c26fb7761746ffdb4f442ea31877100ecc3",
+    "--final-cli",
+    "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v2",
+    "--out",
+    "/private/tmp/jarde-hoisted-iterator-own-ci-acceptance-root-v1.json"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T21:57:20.965201+00:00",
+  "finished_at": "2026-10-11T21:57:23.089070+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-hoisted-iterator-own-ci-accept-invocation-root-v1/stderr.raw",
+      "bytes": 1704,
+      "sha256": "f413d6dc77555405fae276cb8db670429a41ace061bbeb010a4aa6c44eb8dc7b"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

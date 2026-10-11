@@ -1,0 +1,84 @@
+--- a/verify-own-ci.py
++++ b/verify-own-ci.py
+@@ -26,6 +26,17 @@
+ WORKSPACE_SCHEMA = 'hoisted-iterator-full-workspace-batched-root-v2'
+ WORKSPACE_SEED: str | None = None
+ EXPECTED_CLI_SHA256 = '8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a'
++# Cargo metadata includes these seven example targets, but the historical 4732-path
++# local source closure did not inventory examples/*.rs. Keep that closure immutable.
++EXAMPLE_SUPPLEMENT_PATHS = {
++    'examples/bulk_scope_sweep.rs',
++    'examples/class_source_file.rs',
++    'examples/demand_workloads.rs',
++    'examples/inspect_class_header.rs',
++    'examples/navigate_artifact.rs',
++    'examples/resolve_and_analyze.rs',
++    'examples/task_operations.rs',
++}
+ CI_SEEDS_RE = re.compile(r'PROPTEST_RNG_SEED:\s*"(\d+)"')
+ WORKSPACE_CMD = 'cargo test --workspace --all-targets --all-features --locked'
+ EXPECTED_JOBS = {'stable / test and specification', 'MSRV 1.88.0', 'supply chain', 'fuzz smoke'}
+@@ -828,16 +839,42 @@
+     need(isinstance(rows, list) and len(rows) == len(inventory),
+          'named-outcomes manifest does not enumerate every metadata target')
+     manifest_by_key = {}
++    supplement_live: dict[str, str] = {}
+     for row in rows:
+         key = tuple(row.get('key', ()))
+         need(key in by_named and key not in manifest_by_key,
+              'named-outcomes manifest has an unknown or duplicate target key: ' + repr(key))
+         meta = by_named[key]
+-        need(row.get('source_path') == meta['source_path'] and
+-             row.get('source_path') in pins and
+-             pins[row['source_path']] == sha_file(ROOT / row['source_path']),
+-             'named-outcomes source path is not the metadata source in the live pinned closure')
++        source = row.get('source_path')
++        need(source == meta['source_path'],
++             'named-outcomes source path differs from Cargo metadata: ' + repr(key))
++        if source in pins:
++            need(pins[source] == sha_file(ROOT / source),
++                 'named-outcomes pinned source differs from its live bytes: ' + source)
++        else:
++            # Narrowly supplement the seven Cargo example targets. Do not synthesize
++            # historical closure entries: bind these only to current product Git and
++            # live bytes, and report their distinct provenance in the result.
++            need(source in EXAMPLE_SUPPLEMENT_PATHS and meta.get('kind') == 'example',
++                 'un-pinned metadata source is outside the exact example supplement: ' + repr(source))
++            rel = Path(source)
++            live_path = ROOT / rel
++            need(not rel.is_absolute() and rel.as_posix() == source and
++                 source.startswith('examples/') and '..' not in rel.parts and
++                 live_path.resolve(strict=True) == live_path and live_path.is_file() and
++                 not live_path.is_symlink(),
++                 'supplemental example source is noncanonical, symlinked, or missing: ' + source)
++            live_sha = sha_file(live_path)
++            need(ci.blob_sha256s(product, {source: live_sha}) == {source: live_sha},
++                 'supplemental example source differs from selected product Git/live bytes: ' + source)
++            supplement_live[source] = live_sha
+         manifest_by_key[key] = row
++    metadata_sources = {meta['source_path'] for meta in by_named.values()}
++    need(set(supplement_live) == EXAMPLE_SUPPLEMENT_PATHS and
++         metadata_sources - set(pins) == EXAMPLE_SUPPLEMENT_PATHS and
++         {meta['source_path'] for meta in by_named.values()
++          if meta.get('kind') == 'example'} == EXAMPLE_SUPPLEMENT_PATHS,
++         'exact seven-example supplement or metadata source coverage differs')
+     local_by_key = {tuple(row['key']): row for row in local_observations}
+     need(set(manifest_by_key) == set(inventory) == set(local_by_key),
+          'metadata, manifest, and local observations do not have identical target coverage')
+@@ -870,7 +907,15 @@
+             'schema': doc['schema'], 'target_count': len(rows),
+             'all_target_outcomes_match_local': True,
+             'required_named_test_count': len(required),
+-            'metadata_sha256_bound_by_execution_and_metadata_stdout': sha(metadata_raw)}
++            'metadata_sha256_bound_by_execution_and_metadata_stdout': sha(metadata_raw),
++            'source_provenance': {
++                'historical_pinned_sources': 'all metadata sources present in the unchanged 4732-path closure are checked against the recorded pin and live bytes',
++                'current_git_live_example_supplement': [
++                    {'path': source, 'sha256': supplement_live[source],
++                     'historical_local_closure': False,
++                     'binding': 'selected product Git blob equals current live file'}
++                    for source in sorted(supplement_live)],
++                'historical_pins_modified_or_synthesized': False}}
+ 
+ 
+ def main() -> int:

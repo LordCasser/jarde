@@ -1,0 +1,18 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.CF11OuterAssignmentTarget",
+      "source": "CF11OuterAssignmentTarget.java",
+      "bytes": 1322,
+      "sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 4283,
+    "sha256": "4ea39b4a79a2b4c9e68c17754e9ef1cf989ed36ab1a9c788d4fce92a43fa0143"
+  }
+}

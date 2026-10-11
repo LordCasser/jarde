@@ -1,0 +1,87 @@
+{
+  "schema": "hoisted-iterator-own-ci-verifier-prep-luna-v2",
+  "status": "private_candidate_static_review_only",
+  "candidate": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py",
+    "bytes": 64033,
+    "sha256": "d35502364a0aa3ae563587e20a67c8e11c28d20e6ab687e96c4fd7162f20934f"
+  },
+  "candidate_patch": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/candidate.patch",
+    "bytes": 6769,
+    "sha256": "7a1174b8d03cac4d8c783809a5f3831e5aceebe25f85016dd88f96147c0fb2ac",
+    "base": {
+      "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/verify-own-ci.py",
+      "sha256": "710da2279b021b5ba4d7914800fc21aebec17cc87daa0e170d4b71ed6242ccf5"
+    }
+  },
+  "v1_preserved": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v1/verify-own-ci.py",
+    "sha256": "710da2279b021b5ba4d7914800fc21aebec17cc87daa0e170d4b71ed6242ccf5",
+    "status": "superseded_after_static_schema_review; not executed"
+  },
+  "review": {
+    "path": "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/README.md",
+    "bytes": 3875,
+    "sha256": "92a783092c4b3f2f4e8ddaec0be639b2cfca837025c6533a62dbda0c18ce5c40"
+  },
+  "producer_inputs": {
+    "workspace_runner": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/workspace_runner.py",
+      "sha256": "711fbd12ba12f8e559340f5dc8bcb3edd6a5dd6b075c9cf54677353565bc506e"
+    },
+    "workspace_acceptor": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/accept_workspace.py",
+      "sha256": "16683decff47cdae9cc73b7abadcbc72bdf1ce9a71733b05d5e715cbdb380df9"
+    },
+    "final_build_runner": {
+      "path": "/private/tmp/jarde-hoisted-iterator-full-validation-prep-luna-v1/final_build_runner.py",
+      "sha256": "48af92704170947376c798a303ed9e8a492b2f55ef55b4762bc2b1439a203ccd"
+    },
+    "regression_receipt": {
+      "path": "/private/tmp/jarde-hoisted-iterator-regressions-root-v3/execution.json",
+      "sha256": "5a5ca9c44f10fa4f1f057b16e2efd3e40687e266eb1b8fee8f762167931a108f",
+      "schema": "hoisted-iterator-regressions-root-v3",
+      "status": "passed_regressions_candidate_only"
+    },
+    "runtime_tested_cli": {
+      "path": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v2",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "source": "final-build-runner static contract"
+    },
+    "regression_cli": {
+      "path": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v3",
+      "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a",
+      "source": "read from actual regression-v3 receipt"
+    },
+    "ci_parser_helper": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca"
+    },
+    "ci_capture_collector": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3"
+    },
+    "resource_guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "target_size_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    }
+  },
+  "static_checks": {
+    "producer_contract_review": "read workspace runner, workspace acceptance producer, final-build runner, and regression receipt fields",
+    "python_ast_parse": "passed",
+    "symbol_table_unresolved_global_audit": "passed; no unresolved globals",
+    "verifier_execution": "not run",
+    "ci_or_release_acceptance": "not performed"
+  },
+  "v2_corrections": [
+    "Final-build runtime CLI and regression receipt CLI are separate recorded paths; v2 checks both files, both modes/sizes/SHA values, and exact byte equality.",
+    "The final CLI argument must resolve to the runtime_tested_cli path and the final build candidate_cli path.",
+    "Final-build helper references are workspace runner, guard, and scanner. The build runner itself is checked via its recorded runner path and before/after SHA fields.",
+    "No target, batch, named-outcome, or aggregate total is predeclared; actual metadata and run records provide the cardinalities."
+  ]
+}

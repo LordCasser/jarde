@@ -1,0 +1,12 @@
+positive-empty|result=seed|exception=none|trace=values.iterator();values.hasNext();
+positive-last-value|result=last|exception=none|trace=values.iterator();values.hasNext();values.next();assigned=first;values.hasNext();values.next();assigned=last;values.hasNext();
+positive-null-element|result=null|exception=none|trace=values.iterator();values.hasNext();values.next();assigned=first;values.hasNext();values.next();assigned=null;values.hasNext();
+positive-wrong-type-after-write|result=null|exception=java.lang.ClassCastException|trace=values.iterator();values.hasNext();values.next();assigned=last-good;values.hasNext();values.next();
+positive-null-iterable|result=null|exception=java.lang.NullPointerException|trace=
+positive-iterator-throws|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();
+positive-hasNext-throws-before-write|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();values.hasNext();
+positive-next-throws-before-write|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();values.hasNext();values.next();
+positive-hasNext-throws-after-write|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();values.hasNext();values.next();assigned=first;values.hasNext();
+control-no-cast-assign|result=two|exception=none|trace=values.iterator();values.hasNext();values.next();values.hasNext();values.next();values.hasNext();
+control-body-effect-before-assign|result=one|exception=none|trace=values.iterator();values.hasNext();before;values.next();assigned=one;values.hasNext();
+control-extra-next-consumption|result=assigned|exception=none|trace=values.iterator();values.hasNext();values.next();values.next();assigned=assigned;values.hasNext();

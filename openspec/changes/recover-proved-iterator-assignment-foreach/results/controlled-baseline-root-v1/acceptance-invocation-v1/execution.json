@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-accept-v1.py",
+    "--launch",
+    "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/execution.json",
+    "--launch-sha256",
+    "1f4eb4b3ac98cf1b1a99f2123024c5ab223fba7ab9d13bd7f467ec395ae615a9",
+    "--out",
+    "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-root-v1.json"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T21:50:20.549927+00:00",
+  "finished_at": "2026-10-11T21:50:21.221945+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-acceptance-invocation-root-v1/stderr.raw",
+      "bytes": 40,
+      "sha256": "119f391eee57c33120904d6de673810a8c7367c90076fb0cbf29ad759d9767aa"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

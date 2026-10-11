@@ -1,0 +1,703 @@
+{
+  "behavioral_acceptance_claimed": false,
+  "capture_execution": {
+    "bytes": 85422,
+    "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/execution.json",
+    "sha256": "07dd9ca9076993df96a2b00c481d656b059eb95558766732e77cd006cd04d783"
+  },
+  "checker_certificate": {
+    "bytes": 5423,
+    "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/checker.json",
+    "sha256": "d6ea0df2e32b67442b33eac093d942cc41fa675a1c41d8ba00411b5e329f34f7"
+  },
+  "compile_failures_remain_observations": true,
+  "current_cli": {
+    "bytes": 61314560,
+    "mode": "0o555",
+    "path": "/private/tmp/jarde-hoisted-iterator-candidate-cli-root-v2",
+    "sha256": "8bdb868ab58e4c9196970438c71de529996c66ba826c84fe216794d328fdfc9a"
+  },
+  "final_build_v5_sha256": "800d88136720ebd68dfe0218532848a45bb2d45983a26bbaa8534e7dd4e5700f",
+  "generated_runtimes": [
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac8-jadx-default-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac23-jadx-default-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac8-jadx-none-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac23-jadx-none-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac8-jarde-default-combined-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac8-jarde-all-combined-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac23-jarde-default-combined-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    },
+    {
+      "case_labels": [
+        "positive-empty",
+        "positive-last-value",
+        "positive-null-element",
+        "positive-wrong-type-after-write",
+        "positive-null-iterable",
+        "positive-iterator-throws",
+        "positive-hasNext-throws-before-write",
+        "positive-next-throws-before-write",
+        "positive-hasNext-throws-after-write",
+        "control-no-cast-assign",
+        "control-body-effect-before-assign",
+        "control-extra-next-consumption"
+      ],
+      "label": "javac23-jarde-all-combined-run",
+      "same_original": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+    }
+  ],
+  "jarde_compile_runs": [
+    {
+      "compile_exit": 0,
+      "label": "javac8-jarde-default-combined",
+      "run_exit": 0,
+      "same_original": true
+    },
+    {
+      "compile_exit": 0,
+      "label": "javac8-jarde-all-combined",
+      "run_exit": 0,
+      "same_original": true
+    },
+    {
+      "compile_exit": 0,
+      "label": "javac23-jarde-default-combined",
+      "run_exit": 0,
+      "same_original": true
+    },
+    {
+      "compile_exit": 0,
+      "label": "javac23-jarde-all-combined",
+      "run_exit": 0,
+      "same_original": true
+    }
+  ],
+  "jarde_default_all_equal": true,
+  "launch_sha256": "1f4eb4b3ac98cf1b1a99f2123024c5ab223fba7ab9d13bd7f467ec395ae615a9",
+  "no_cast_object_seed_preserved": true,
+  "original_oracle": {
+    "case_labels": [
+      "positive-empty",
+      "positive-last-value",
+      "positive-null-element",
+      "positive-wrong-type-after-write",
+      "positive-null-iterable",
+      "positive-iterator-throws",
+      "positive-hasNext-throws-before-write",
+      "positive-next-throws-before-write",
+      "positive-hasNext-throws-after-write",
+      "control-no-cast-assign",
+      "control-body-effect-before-assign",
+      "control-extra-next-consumption"
+    ],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+  },
+  "positive_source_preserved": true,
+  "raw_streams": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/1.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/1.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac8-original-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/2.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/2.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac8-original-javap-CF11OuterAssignmentTarget",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/3.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 10699,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/3.stdout.raw",
+          "sha256": "d41ae029250dfd7d8f5bef91a3fea224a6e37ae5c7b1e229513aa320b83ed850"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac23-original-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 243,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/4.stderr.raw",
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/4.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac23-original-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/5.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/5.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac23-original-javap-CF11OuterAssignmentTarget",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/6.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 10801,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/6.stdout.raw",
+          "sha256": "0398109e193d7e9fac5f811a4514ee3cdc1ffa36004043db438993c3abf9f90c"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "jadx-version",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/7.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 6,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/7.stdout.raw",
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "jadx-default",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/8.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 148,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/8.stdout.raw",
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "javac8-jadx-default-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/9.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/9.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "javac8-jadx-default-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/10.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/10.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "javac23-jadx-default-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 243,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/11.stderr.raw",
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/11.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "javac23-jadx-default-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/12.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/12.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "jadx-none",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/13.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 148,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/13.stdout.raw",
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "javac8-jadx-none-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/14.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/14.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "javac8-jadx-none-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/15.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/15.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "javac23-jadx-none-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 243,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/16.stderr.raw",
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/16.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "javac23-jadx-none-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/17.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/17.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "javac8-jarde-default-CF11OuterAssignmentTarget-render",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/18.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 91647,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/18.stdout.raw",
+          "sha256": "58d6850c5079e2ec3d970030e7686b7f5006e15bd53b90bfeef9618baec69c6c"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "javac8-jarde-all-CF11OuterAssignmentTarget-render",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/19.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 94863,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/19.stdout.raw",
+          "sha256": "b613433c9330913a49a93aff0c0ffdf7307e239f6467218b51dcdcffe652defb"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "javac23-jarde-default-CF11OuterAssignmentTarget-render",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/20.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 91641,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/20.stdout.raw",
+          "sha256": "e36ee0cc9c0532a9c6ff6466bd37002507de6a20221dea43a20610597821be23"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "javac23-jarde-all-CF11OuterAssignmentTarget-render",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/21.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 94863,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/21.stdout.raw",
+          "sha256": "570edb766477ceacd6b14db833c7e2f702015641ec2d3be444362bc95ab2e0b3"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "label": "javac8-jarde-default-combined-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/22.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/22.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "label": "javac8-jarde-default-combined-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/23.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/23.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "label": "javac8-jarde-all-combined-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/24.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/24.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "label": "javac8-jarde-all-combined-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/25.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/25.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 26,
+      "label": "javac23-jarde-default-combined-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 243,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/26.stderr.raw",
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/26.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 27,
+      "label": "javac23-jarde-default-combined-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/27.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/27.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    },
+    {
+      "index": 28,
+      "label": "javac23-jarde-all-combined-compile",
+      "streams": {
+        "stderr": {
+          "bytes": 243,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/28.stderr.raw",
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/28.stdout.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 29,
+      "label": "javac23-jarde-all-combined-run",
+      "streams": {
+        "stderr": {
+          "bytes": 0,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/29.stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1750,
+          "path": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/raw/29.stdout.raw",
+          "sha256": "19b4371e85e777c957ea83abf6a46c014bc7171ebf3c9e1d5334503c648f1715"
+        }
+      }
+    }
+  ],
+  "schema": "cf11-outer-assignment-controls-baseline-accept-v2",
+  "separate_v1_type_inference_debt": "v1 rendered the String-literal-seeded Object local as String; v2 uses Runner.seed() returning Object and checks that this controlled fixture keeps Object. This does not establish a general local type inference fix.",
+  "source_closure_count": 4732,
+  "status": "accepted_controlled_baseline_observation_only",
+  "target_absent": true,
+  "three_negative_controls_remain_while_loops": true
+}

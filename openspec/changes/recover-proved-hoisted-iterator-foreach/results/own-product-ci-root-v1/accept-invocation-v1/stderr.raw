@@ -1,0 +1,22 @@
+hoisted-iterator own-CI verification failed: named-outcomes source path is not the metadata source in the live pinned closure
+Traceback (most recent call last):
+  File "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py", line 1000, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py", line 935, in main
+    manifest = verify_named_manifest(args.workspace_named_manifest, args.product_commit,
+                                     Path(local['metadata']).read_bytes(), metadata,
+                                     local['target_observations'], ex['source_pins_before'],
+                                     local, ex, WORKSPACE_RUNNER, WORKSPACE_RUNNER_SHA256, ci)
+  File "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py", line 836, in verify_named_manifest
+    need(row.get('source_path') == meta['source_path'] and
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         row.get('source_path') in pins and
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         pins[row['source_path']] == sha_file(ROOT / row['source_path']),
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         'named-outcomes source path is not the metadata source in the live pinned closure')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-hoisted-iterator-own-ci-verifier-prep-luna-v2/verify-own-ci.py", line 53, in need
+    raise ValueError(message)
+ValueError: named-outcomes source path is not the metadata source in the live pinned closure
