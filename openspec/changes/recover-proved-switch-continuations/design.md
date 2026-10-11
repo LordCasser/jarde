@@ -48,3 +48,9 @@ conditional 变更独立验收并干净交付后，root 才进行工作区编辑
 ## Pipeline Boundaries
 
 读取和指令解码不改；canonical CFG 与 SSA 的物理事实仍取同一次分析。Java 8 方言准入沿用既有 RecoveryProfile，runtime/JDK 选择仅用于固定输入的编译与差分验证，不扩展产品运行时解析。此变更只补源码结构恢复的证明和消费；解析成功、结构恢复成功、完整源码重编通过及行为一致分别记录，不能互相代替。用户已授权自行构造并执行本项目 Java 对照测试，原始上游 check 不关闭。
+
+## Observed Diagnosis — 2026-10-11
+
+本轮临时test-only诊断已实际完成并移除插桩，详见results/diagnostic-root-v1/acceptance.json。FT2 switch8实际pdom175，outerif0的arm next175/boundary197，现有early-return和prefixed-loop消费者均false；continue_switch_arm在此outerif调用路径未被调用。175→197是一条Normal tail边。至此可按已确认形状准备最小消费扩展；仍需证明/整类验收，不因诊断宣称恢复。
+
+Switch2 switch0没有直接后支配节点，旧线性join搜索在首case48下一块为另一directtarget164处拒绝，随后arms overlap@0和17uncovered。候选164完整Normal incoming来源0/48/56/63/71/137。保留旧线性成功路径为先行结果，仅在旧结果None后试直接target-DAG候选；门槛是至少一个真实非dispatch来源，不能新增“至少两个”这样的无必要收窄。候选证书的真实扫描与唯一性仍待实现测试。

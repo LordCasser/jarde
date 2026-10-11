@@ -1,0 +1,11 @@
+# 真实受控诊断
+
+root在已关闭主线的region基线SHA b34f8549ed8cd598a1b0f45b3ba5157df387882eb8955eaad1dc2ca351575f4c应用仅test-only临时日志和两真实class观察测试。Luna原patch与root补canonical rows/arm visited delta/predecessor的patch均保留，完整candidate可由基线重建。未改生产证明返回、状态或预算准入。
+
+v1临时测试实际1/0/0，但guard记录器的command_stream试图把/private/tmp输出转为仓库相对路径，Path.relative_to抛错，最后clean也在生成同类记录时抛错；runner整体exit1，raw/stdout和clean raw保持，不补造缺失execution。v2只适配command_stream的实际路径，保留原5GiB free/target1GiB一秒进程组守卫与一次stat扫描，从头实际编译/测试/clean；两命令exit0，独立root验核raw hashes与exact测试摘要，峰值153517491bytes、clean341files/146.4MiB。临时代码已按字节完全还原，target不存在。
+
+FT2：switch8 pdom175完整结构，outerif0 arm start8/next175/boundary197，十物理owner与新visited一致，两个既有consumer均false，outerif未调用continue_switch_arm，最后ArmsDoNotMeet@0。canonical明确175只到197。
+
+Switch2：18blocks29Normal rows，switch0 pdom=None，forwardjoin在root临时candidate line13405拒绝：首个case48的下一块164也是另一directtarget。164完整incoming sources为0/48/56/63/71/137。随后SwitchArmsOverlap@0与17uncovered。候选DAG证明尚未实际改造或接受；这一诊断只确定实际失败点。
+
+root据此派发两Luna私有实现（FT2 continuation、Switch2 candidate join），不建分支/worktree，root串行审查合并。旧class编译失败保持历史失败，不宣称恢复成功或CF12完成。
