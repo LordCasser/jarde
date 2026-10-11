@@ -1,0 +1,11 @@
+# TestNestedLoops same-IR diagnostic candidate v2
+
+This private, unapplied v2 preserves v1 and repairs two issues found during static review. Neither v1 nor v2 has been compiled or run.
+
+The v1 logging call read `loop_body.first()` at the later candidate callsite, after `loop_body` had been moved into the constructed loop `StmtKind`; this would fail to compile. V2 adds `foreach_candidate_loop_body(&kind)` and borrows the first statement from the loop body already held by `kind`. It does not clone the body. The v1 test used `ClassNameQuery::internal("cf11.UpstreamNestedLoops")`; `internal` preserves those dotted bytes as-is, while the CLI uses `ClassNameQuery::dotted` for this spelling (`crates/jarde-cli/src/task.rs:1172-1177`). V2 uses the dotted constructor, which derives `cf11/UpstreamNestedLoops` like the CLI.
+
+The temporary test is in module `same_class_generic_call_inventory_tests` at `src/facade.rs.candidate`; its exact test path is `same_class_generic_call_inventory_tests::frozen_upstream_nested_loops_foreach_candidate_diagnostic`. It remains ignored by default. It uses the pinned JDK 23 `UpstreamNestedLoops.class` and public `Engine::class_source()` with the frozen baseline profile: Java 8, MR disabled, Generic, SingleClass, SnapshotAll, loader `app`. The production class-source path supplies the actual declaration, receiver-inclusive parameter slots, descriptor types and Code LVT/LVTT facts.
+
+The explicit logger opt-in remains `JARDE_FOREACH_CANDIDATE_DIAGNOSTIC`. Events distinguish candidate attempt/skip, exact first-level normal refusal gates, grouped post-entry proof `None`, proof completion, rewrite refusal, successful projection, and propagated `StopReason`. The reverse `find_map`'s local `None` results stay unchanged and are never mislabeled as candidate rejection. The later proof closure also retains a conservative grouped `None` label because it uses several `Option` propagations; this candidate makes no interior first-refusal claim.
+
+No shared files changed. Root should review/apply this private diff only when ready for its guarded diagnostic run and restore both shared files afterward. No runner, Rust compiler, test, Git, or other toolchain command was run. Rust compile and runtime behavior remain unverified; the v1 defects were identified by static inspection only.

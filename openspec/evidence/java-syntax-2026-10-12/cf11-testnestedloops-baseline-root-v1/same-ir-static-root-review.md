@@ -1,0 +1,1 @@
+Root静态审阅：v2错误地给instance test(List,List)提供2个parameter slots，并把debug事实作为可选，未运行。真实slot count含receiver，应3。v3已纠正并改用Engine::class_source与实际facade::recovery_facts，保留同class declaration/Code的facts；public class-source入口能避免手工Facts改变候选行为。v2保留为未接受静态原稿，v3只是诊断方案，尚未运行/应用插桩，不能称已经确认首拒或泛型因果。准确baseline和运行验收仍见root-acceptance.json。

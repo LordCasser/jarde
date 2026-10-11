@@ -48,3 +48,18 @@ Jarde 现有相关回归：`CARGO_TARGET_DIR=/tmp/jarde-cf11-target CARGO_INCREM
 审计结论仅限这个首片：三方完整源码重编、验证运行一致，未发现该窄嵌套/顺序形态的差距。JADX 四个 fixture 中三个主要是文本断言；不把它们文本相似本身当作 Jarde 通过证据。更复杂 break/continue、共享状态、不可约图和更深嵌套仍待独立验收。
 
 主线验收：在已合入 CF-06 的 `1422af58` CLI 上重放同一原始 class，Jarde 完整源码 SHA-256 仍为 `1c449e92d3dc9a9069c41b8d9c92b2f6748c6b16b171b72ea6c701c90481de28`，与本目录归档完全一致；三份归档 class 的 `-Xverify:all` 输出均为 `40 / 25`。
+
+## 固定四项当前实测账本（2026-10-12）
+
+四项现在都已经真实编译并采集完整类三方结果，不能再将代表样本的40/25当作四个固定fixture通过。
+
+| 固定用例 | 当前实际结果 | 下一边界 |
+|---|---|---|
+| TestNestedLoops4 | child-loop side-exit窄片11/11接受，产品b155877ee自身CI已接受，完整三方同原 | 其它复杂出口不因此全部关闭 |
+| TestNestedLoops2 | outer for/inner while已恢复，产品02ecd63ff本地7/9、自身CI待；完整双JDK同原 | raw List泛型声明独立 |
+| TestSequentialLoops2 | 原/JADX十行同原；Jarde两循环和clinit正确，尾部new条件值缺BCI88/94/95/96，完整类编译失败无runtime | 同IR已确认outside_readers跳过Phi operand/Sites无读者拒绝；后续Builder未实测，最小所有权方案待审 |
+| TestNestedLoops | [当前29命令基线](../../java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/README.md)，原八case与JADX四腿/Jarde四腿完整类行为同原，来源完整 | Jarde仍两while/raw List，增强for/Signature呈现首拒尚待内部实测 |
+
+四固定输入的loop恢复、泛型声明和构造器条件值分开记账；持续目标与整个CF11/71/612完成数不变。
+
+2026-10-12：for-condition窄片9/9，产品02ecd63ff自身CI38154998619四jobs/52steps/双seed各360目标3461-0-97已独立验收，见[产品验收](../../../changes/recover-proved-for-condition-expressions/results/own-product-ci-clean-root-v1/README.md)。[TestNestedLoops实际入口诊断](../../java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v2/README.md)确认outer Assign入口拒绝、inner后续闭包拒绝仍待精确定位；走Engine真实facts，源码恢复且clean。此片不是整个CF11完成。

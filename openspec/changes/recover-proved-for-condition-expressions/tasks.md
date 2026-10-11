@@ -13,5 +13,5 @@
 
 - [x] 3.1 root冻结最终CLI并核固定和控制双JDK完整三方。验收：实际115命令/28整类生成runtime成功腿，exit/stdout/stderr同原、循环形态与全部physical来源准确；JADX差异独立记录。最终CLI与已实测candidate-v3逐字节相同，4718项当前闭包与fresh workspace绑定，后续仅3份测试源码和README变化；明确复用同字节真实整类结果，没有在最终路径重复115命令，不借不同旧CLI或局部片段。
 - [x] 3.2 完成必要回归、fresh workspace、CI等价Clippy/fmt与全局OpenSpec strict。验收：实际fresh v4 95批/360目标恰好一次，3461/0/97；独立核3558个named outcomes、98命令/196raw、4718闭包与live恒同。fmt/Clippy/strict352/0/finalbuild通过，5GiB free/target1GiB一秒守卫，失败v1/v2/v3全保留，结束clean。
-- [ ] 3.3 提交推送实际产品并独立核它自身CI。验收：准确product head/run全部jobs/steps/双seed与named outcomes同本地闭包，不借旧CI或仅green状态。
-- [ ] 3.4 更新verification/固定账本/handoff并交付干净main。验收：实际HEAD=main=origin/main、分支/worktree/target/冻结CLI核准；generic独立债务和CF11/71未完成范围明确，不新增功能分支占用。
+- [x] 3.3 提交推送实际产品并独立核它自身CI。验收：准确product head/run全部jobs/steps/双seed与named outcomes同本地闭包，不借旧CI或仅green状态。
+- [x] 3.4 更新verification/固定账本/handoff并交付干净main。验收：实际HEAD=main=origin/main、分支/worktree/target/冻结CLI核准；generic独立债务和CF11/71未完成范围明确，不新增功能分支占用。
