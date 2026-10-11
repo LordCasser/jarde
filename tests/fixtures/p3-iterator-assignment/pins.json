@@ -1,0 +1,24 @@
+{
+  "canonical": "Corretto javac8 original class; accepted old product baseline-v2",
+  "capture_execution_sha256": "07dd9ca9076993df96a2b00c481d656b059eb95558766732e77cd006cd04d783",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+      "copy": "CF11OuterAssignmentTarget.class",
+      "bytes": 1494,
+      "sha256": "28b92d58ce18fb08362bd39b0558de98c3c41830cc8cbc6bd60ec3a183b21956"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/CF11OuterAssignmentTarget.java",
+      "copy": "CF11OuterAssignmentTarget.java",
+      "bytes": 1329,
+      "sha256": "337603aab484593a76c65accf1c3301bc1c5efe194b5016dad2fd8d53d475824"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-outer-assignment-controls-baseline-root-v2/capture/inputs/Runner.java",
+      "copy": "Runner.java",
+      "bytes": 4347,
+      "sha256": "c86c88b5393d489c5dc4104b9049d246f8668567751861c5258d407f79af6713"
+    }
+  ]
+}

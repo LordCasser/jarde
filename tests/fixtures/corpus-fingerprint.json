@@ -4946,6 +4946,26 @@
       "path": "tests/fixtures/p3-iterable-foreach/TextIterable.java"
     },
     {
+      "blake3": "a546b568ea8622d372d1f38d23724aeee4d28b43b53902cad764a5025b723f46",
+      "bytes": 1494,
+      "path": "tests/fixtures/p3-iterator-assignment/CF11OuterAssignmentTarget.class"
+    },
+    {
+      "blake3": "d9d4ffa26f84cf74d55ee07f819fd1e89cf27f977e856859c8e4a9b755d68362",
+      "bytes": 1329,
+      "path": "tests/fixtures/p3-iterator-assignment/CF11OuterAssignmentTarget.java"
+    },
+    {
+      "blake3": "916bcda10833ef3de0d3a0609cc74d846ad64982aade1cfa14ba5cc47521c522",
+      "bytes": 4347,
+      "path": "tests/fixtures/p3-iterator-assignment/Runner.java"
+    },
+    {
+      "blake3": "93369a330ea4f4f8253078b0e22a8e9fd4e4829fda039dd9a78d8fdf7b07f363",
+      "bytes": 1083,
+      "path": "tests/fixtures/p3-iterator-assignment/pins.json"
+    },
+    {
       "blake3": "7c7fe9cdb5d6c05350b42d58821c0b6c0454dd958701896256e02a8ccd081a76",
       "bytes": 938,
       "path": "tests/fixtures/p3-join-ownership/Join.java"

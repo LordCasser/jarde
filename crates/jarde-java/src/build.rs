@@ -21497,9 +21497,15 @@ impl Builder<'_> {
                         && target.owner() == "java/util/Iterator"
                         && target.name() == "hasNext"
                         && target.descriptor() == "()Z")
-            || !body
-                .first()
-                .is_some_and(|stmt| matches!(stmt.kind, StmtKind::Declare { value: Some(_), .. }))
+            || !body.first().is_some_and(|stmt| match &stmt.kind {
+                StmtKind::Declare { value: Some(_), .. } => true,
+                StmtKind::Assign { value, .. } => matches!(
+                    &value.kind,
+                    ExprKind::Cast { value, .. }
+                        if matches!(value.kind, ExprKind::Call { .. })
+                ),
+                _ => false,
+            })
         {
             return Ok(None);
         }
@@ -21550,13 +21556,14 @@ impl Builder<'_> {
             let [binding, ..] = body.as_slice() else {
                 return None;
             };
-            let StmtKind::Declare {
-                name: binding_name,
-                value: Some(binding_value),
-                ..
-            } = &binding.kind
-            else {
-                return None;
+            let (binding_name, binding_value) = match &binding.kind {
+                StmtKind::Declare {
+                    name,
+                    value: Some(value),
+                    ..
+                }
+                | StmtKind::Assign { name, value } => (name, value),
+                _ => return None,
             };
             let (next, inline_cast_bci) = match &binding_value.kind {
                 ExprKind::Call { .. } => (binding_value, None),
@@ -21974,14 +21981,15 @@ impl Builder<'_> {
             }
             base = format!("{candidate}_");
         };
-        let Some(Stmt {
-            kind: StmtKind::Declare {
-                value: Some(value), ..
-            },
-            ..
-        }) = body.first_mut()
-        else {
+        let Some(first) = body.first_mut() else {
             return Ok(None);
+        };
+        let value = match &mut first.kind {
+            StmtKind::Declare {
+                value: Some(value), ..
+            }
+            | StmtKind::Assign { value, .. } => value,
+            _ => return Ok(None),
         };
         let next = match &mut value.kind {
             ExprKind::Call { .. } => value,

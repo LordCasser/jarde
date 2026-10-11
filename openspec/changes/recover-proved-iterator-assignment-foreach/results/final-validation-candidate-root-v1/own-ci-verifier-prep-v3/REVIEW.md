@@ -1,0 +1,7 @@
+# Private v3 review
+
+This v3 is an exact one-literal correction to v2. `verify_final_build` previously required the regression receipt status `passed_regressions_candidate_only`; the pinned focused receipt actually records schema `iterator-assignment-regressions-root-v1` and status `passed_candidate_build_only`. The check now requires that actual status while preserving the schema check and all receipt path/SHA, source closure, target-absence, CLI identity, final-build input binding, and later workspace/final validation checks.
+
+Static review of the focused receipt SHA `0d6eb4e83f2b3de6aa250e1b9586b9f19c2f172ba782451b18149f0d2a552a2b` confirmed: 4,744 source pins before/after are equal; format-stage closure has 4,744 entries and its sole content change is `tests/p3_hoisted_iterator_foreach.rs`, matching `formatter_changed_paths`; `regenerator_changed_paths` names only `tests/fixtures/corpus-fingerprint.json`; CLI path/size/SHA/mode match the verifier's candidate contract; `target_absent` is true; `rust_min_stack` is null; runner before/after SHA match `10a3254b8ac200b3de0f4887832cbe4025d2bbe27cad70bd4c771b84789ea1e5`; ten command records have exit code 0 and finish with `cargo clean`; `candidate_differs_from_old_product` is true.
+
+Python syntax compilation and focused-receipt structural assertions passed. No verifier, workspace, CI, or toolchain execution was performed. No claim is made about the unfinished workspace run.

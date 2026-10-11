@@ -1,7 +1,7 @@
-//! Public API regression for the proved elevated inner-iterator declaration.
+//! Public API regression for the proved nested iterator foreach projections.
 //!
-//! Uses the accepted frozen CF11 class. The outer iterator's assignment/while remains outside
-//! this feature; only the existing inner while is eligible for the Object foreach projection.
+//! Uses the accepted frozen CF11 class. The outer iterator keeps its existing assignment and cast
+//! inside the projected loop body while both proven iterator loops become Object foreach loops.
 
 use jarde::*;
 use jarde_jvm::ir::{Quality, Representation};
@@ -13,6 +13,8 @@ use std::slice;
 const FIXTURE: &[u8] = include_bytes!(
     "../openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class"
 );
+const OUTER_ASSIGNMENT_FIXTURE: &[u8] =
+    include_bytes!("fixtures/p3-iterator-assignment/CF11OuterAssignmentTarget.class");
 const INTERNAL_CLASS: &str = "cf11/UpstreamNestedLoops";
 const METHOD: &str = "test";
 const DESCRIPTOR: &str = "(Ljava/util/List;Ljava/util/List;)V";
@@ -36,6 +38,25 @@ fn request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
     }
 }
 
+fn outer_assignment_request(snapshot: &ArtifactSnapshot) -> ClassSourceRequest {
+    ClassSourceRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("cf11/CF11OuterAssignmentTarget"),
+        },
+        environment: EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+    }
+}
+
 fn opened() -> ArtifactSnapshot {
     Engine::new()
         .open(
@@ -43,6 +64,15 @@ fn opened() -> ArtifactSnapshot {
             &mut task_budget(&[]).expect("bounded fixture-open budget"),
         )
         .expect("the frozen Java 8 class opens")
+}
+
+fn opened_outer_assignment_fixture() -> ArtifactSnapshot {
+    Engine::new()
+        .open(
+            ArtifactInput::bytes(OUTER_ASSIGNMENT_FIXTURE.to_vec()),
+            &mut task_budget(&[]).expect("bounded fixture-open budget"),
+        )
+        .expect("the frozen Java 8 outer-assignment controls open")
 }
 
 fn source(
@@ -90,6 +120,28 @@ fn target<'a>(report: &'a ClassSourceReport) -> (&'a ClassSourceMethod, &'a Reco
     (method, report)
 }
 
+fn named_method<'a>(
+    class: &'a ClassSourceReport,
+    name: &str,
+    descriptor: &str,
+) -> (&'a ClassSourceMethod, &'a RecoveryReport) {
+    let method = class
+        .methods
+        .iter()
+        .find(|method| {
+            method.item.name.raw().0 == name.as_bytes()
+                && method.item.descriptor.raw().0 == descriptor.as_bytes()
+        })
+        .unwrap_or_else(|| panic!("the physical method {name}{descriptor} is present"));
+    let ClassSourceOutcome::Recovered { report, .. } = &method.outcome else {
+        panic!(
+            "{name}{descriptor} has a method-local recovery report: {:?}",
+            method.outcome
+        );
+    };
+    (method, report)
+}
+
 fn assert_utf8_map(body: &RecoveryReport) {
     for segment in body.source_map.segments() {
         assert!(segment.start() < segment.end());
@@ -110,19 +162,37 @@ fn assert_target_body(body: &RecoveryReport) {
         body.text
     );
     assert!(body.text.contains(" : l2)"), "{}", body.text);
-    assert_eq!(body.text.matches("for (").count(), 1, "{}", body.text);
+    assert!(body.text.contains("java.lang.String s1;"), "{}", body.text);
+    assert_eq!(body.text.matches("for (").count(), 2, "{}", body.text);
     assert!(
-        body.text.contains("local3 = l1.iterator()"),
+        !body.text.contains("local3 = l1.iterator()"),
         "{}",
         body.text
     );
     assert!(
-        body.text.contains("while (local3.hasNext())"),
+        !body.text.contains("while (local3.hasNext())"),
         "{}",
         body.text
     );
     assert!(!body.text.contains("l2.iterator()"), "{}", body.text);
     assert!(!body.text.contains("local5.hasNext()"), "{}", body.text);
+    let outer_header = "for (java.lang.Object iteratorElement17 : l1)";
+    let outer_start = body
+        .text
+        .find(outer_header)
+        .expect("the exact outer foreach header");
+    let outer_body = outer_start
+        + body.text[outer_start..]
+            .find('{')
+            .expect("the outer foreach body starts")
+        + 1;
+    assert!(
+        body.text[outer_body..]
+            .trim_start()
+            .starts_with("s1 = (java.lang.String) iteratorElement17;"),
+        "{}",
+        body.text
+    );
     assert!(
         body.text
             .contains("s2 = (java.lang.String) iteratorElement"),
@@ -136,7 +206,7 @@ fn assert_target_body(body: &RecoveryReport) {
 }
 
 #[test]
-fn nested_inner_iterator_projects_without_changing_outer_loop_or_binding() {
+fn nested_iterators_project_and_preserve_the_outer_assignment_and_cast() {
     let snapshot = opened();
     let request = request(&snapshot);
     let default = match Engine::new()
@@ -339,5 +409,181 @@ fn nested_foreach_late_stop_and_precancel_leave_no_partial_method_artifact() {
             assert!(report.fields.is_empty());
         }
         OperationOutcome::Ambiguous(_) => unreachable!(),
+    }
+}
+
+#[test]
+fn outer_assignment_foreach_public_api_and_real_controls_stay_conservative() {
+    let snapshot = opened_outer_assignment_fixture();
+    let request = outer_assignment_request(&snapshot);
+    let default = match Engine::new()
+        .class_source(
+            slice::from_ref(&snapshot),
+            &request,
+            &mut task_budget(&[]).expect("bounded task budget"),
+        )
+        .expect("default public API request answers")
+    {
+        OperationOutcome::Performed(report) => report,
+        other => panic!("the fixed controls class binds exactly once: {other:?}"),
+    };
+    let all = source_complete(&snapshot, &request, &RecoveryEvidenceRequest::all());
+    let no_rule_details = source_complete(
+        &snapshot,
+        &request,
+        &RecoveryEvidenceRequest::essential()
+            .with_kind(RecoveryEvidenceKind::SourceMap)
+            .with_kind(RecoveryEvidenceKind::RegionDetails)
+            .with_kind(RecoveryEvidenceKind::NameDetails),
+    );
+    assert_eq!(default.text, all.text);
+    assert_eq!(default.text, no_rule_details.text);
+
+    // The three negative cases cover public output controls only; this test does not label which
+    // internal proof gate rejects each one.
+    let methods = [
+        ("positive", "(Ljava/util/List;)Ljava/lang/String;", true),
+        (
+            "noCastAssign",
+            "(Ljava/util/List;)Ljava/lang/Object;",
+            false,
+        ),
+        (
+            "bodyEffectBeforeAssign",
+            "(Ljava/util/List;)Ljava/lang/String;",
+            false,
+        ),
+        (
+            "extraNextConsumption",
+            "(Ljava/util/List;)Ljava/lang/String;",
+            false,
+        ),
+    ];
+    for (name, descriptor, projects) in methods {
+        let (default_method, default_body) = named_method(&default, name, descriptor);
+        let (all_method, all_body) = named_method(&all, name, descriptor);
+        let (plain_method, plain_body) = named_method(&no_rule_details, name, descriptor);
+        for body in [default_body, all_body, plain_body] {
+            assert!(body.produced(), "{name}: {:?}", body.outcome);
+            assert_eq!(body.representation, Representation::Java, "{name}");
+            assert_eq!(body.quality, Quality::Structured, "{name}");
+            assert!(
+                matches!(&body.execution, ExecutionReport::Complete { .. }),
+                "{name}"
+            );
+            assert_utf8_map(body);
+        }
+        assert_eq!(default_body.text, all_body.text, "{name}");
+        assert_eq!(default_body.text, plain_body.text, "{name}");
+        assert_eq!(default_body.source_map, all_body.source_map, "{name}");
+        assert_eq!(default_body.source_map, plain_body.source_map, "{name}");
+        assert_eq!(
+            default_method.item.identity, all_method.item.identity,
+            "{name}"
+        );
+        assert_eq!(
+            default_method.item.identity, plain_method.item.identity,
+            "{name}"
+        );
+
+        if projects {
+            assert_eq!(
+                all_body.text.matches("for (").count(),
+                1,
+                "{}",
+                all_body.text
+            );
+            assert!(
+                all_body
+                    .text
+                    .contains("for (java.lang.Object iteratorElement"),
+                "{}",
+                all_body.text
+            );
+            assert!(
+                !all_body.text.contains("while (iterator.hasNext())"),
+                "{}",
+                all_body.text
+            );
+            let declaration = all_body
+                .text
+                .find("java.lang.String target;")
+                .expect("positive keeps its String target declaration");
+            let seed = all_body
+                .text
+                .find("target = \"seed\";")
+                .expect("positive keeps its seed assignment");
+            let header = all_body
+                .text
+                .find("for (java.lang.Object iteratorElement")
+                .expect("positive has its one Object foreach header");
+            assert!(declaration < seed && seed < header, "{}", all_body.text);
+            let cast_assignment = all_body
+                .text
+                .find("target = (java.lang.String) iteratorElement")
+                .expect("positive keeps the casted target assignment in the loop body");
+            let assigned_call = all_body
+                .text
+                .find("cf11.Runner.assigned(target);")
+                .expect("positive keeps the body call after the assignment");
+            let return_target = all_body
+                .text
+                .find("return target;")
+                .expect("positive returns the original target");
+            assert!(header < cast_assignment && cast_assignment < assigned_call);
+            assert!(assigned_call < return_target, "{}", all_body.text);
+        } else {
+            assert_eq!(
+                all_body.text.matches("for (").count(),
+                0,
+                "{}",
+                all_body.text
+            );
+            assert!(
+                all_body.text.contains("while (iterator.hasNext())"),
+                "{name}: {}",
+                all_body.text
+            );
+        }
+
+        let mut bytecode_budget = task_budget(&[]).expect("bounded bytecode inspection budget");
+        let physical = inspect_method_bytecode(
+            OUTER_ASSIGNMENT_FIXTURE,
+            MethodSelector {
+                name: JvmBytes(name.as_bytes().to_vec()),
+                descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+            },
+            &mut bytecode_budget,
+        )
+        .unwrap_or_else(|error| panic!("{name} physical instructions inspect: {error:?}"));
+        assert!(
+            physical.stopped_at.is_none(),
+            "{name}: {:?}",
+            physical.stopped_at
+        );
+        assert!(
+            !physical.instructions.is_empty(),
+            "{name} has physical bytecode"
+        );
+        for instruction in &physical.instructions {
+            let segments = all_body.source_map.of_bci(instruction.bci);
+            assert!(
+                !segments.is_empty(),
+                "{name} physical BCI {} has no source-map segment",
+                instruction.bci
+            );
+            assert!(
+                segments.iter().any(|segment| {
+                    std::iter::once(segment.origin().primary())
+                        .chain(segment.origin().derived())
+                        .any(|origin| {
+                            origin.bci() == instruction.bci
+                                && origin.method() == Some(&all_method.item.identity)
+                        })
+                }),
+                "{name} physical BCI {} has no exact method origin: {segments:?}",
+                instruction.bci
+            );
+        }
     }
 }
