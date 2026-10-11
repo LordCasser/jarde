@@ -1,0 +1,19 @@
+{
+  "status": "completed",
+  "argv": [
+    "python3",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/project-integer-constant-names-with-refused-member-family/results/planning-root-v1/jarde-constant-validation-runner-luna-v1.py",
+    "--source-base",
+    "a4b0acf4b04c65360b6a8a8fe7e4a819a62a2db3",
+    "--out",
+    "/private/tmp/jarde-cf12-constant-focused-root-v1",
+    "--frozen-cli",
+    "/private/tmp/jarde-cf12-constant-candidate-cli-root-v1",
+    "--core-test-name",
+    "facade::integer_constant_name_tests::refused_root_without_child_keeps_same_class_integer_constant_names"
+  ],
+  "exit_code": 0,
+  "runner_sha256": "33113471b5936155df232280488fa5320ee1cef55e853afd07a0e840ebccb12d",
+  "stdout_sha256": "463a0f81f82ef80c459978a7d4718a6f5e105d4f93ba7bdd5dc922f4abe8006b",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

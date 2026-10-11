@@ -1,0 +1,25 @@
+
+running 20 tests
+test capture_analysis_stop_keeps_completed_physical_child ... ok
+test child_body_stop_keeps_root_and_child_physical_coverage ... ok
+test declaration_only_static_abstract_member_projects_once_with_physical_anchors ... ok
+test declaration_pair_near_misses_never_publish_half_a_root ... ok
+test declaration_pair_projects_both_physical_members_and_origins_once ... ok
+test disagreeing_child_relation_cannot_authorize_package_private_call ... ok
+test family_call_rerender_restores_effect_and_null_exception_order ... ok
+test family_derived_ranges_keep_exact_source_and_physical_owners ... ok
+test family_output_budget_refusal_keeps_both_physical_texts ... ok
+test member_call_without_early_null_check_retains_physical_source ... ok
+test missing_or_duplicate_selected_child_refuses_family_without_losing_root ... ok
+test outer_super_method_bridge_projects_with_physical_origin ... ok
+test outer_super_overload_requires_direct_source_parameter_and_complete_subclass_chain ... ok
+test projected_stage1_compiles_and_matches_original_and_jadx_java8_behavior ... ok
+test projection_budget_stop_keeps_capture_calls_and_both_physical_reports ... ok
+test qualified_member_call_preserves_internal_and_preceding_effect_positions ... ok
+test selected_family_keeps_two_physical_reports_under_one_budget ... ok
+test static_member_incomplete_targets_never_publish_partial_nested_source ... ok
+test static_member_projects_as_nested_and_keeps_dollar_top_level_independent ... ok
+test two_member_allocations_in_one_caller_get_distinct_source_ranges ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.32s
+

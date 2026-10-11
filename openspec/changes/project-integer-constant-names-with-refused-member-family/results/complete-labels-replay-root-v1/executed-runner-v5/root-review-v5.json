@@ -1,0 +1,5 @@
+{
+  "runner_sha256": "038f8e95c7cc09e6e873f21d5acf12d4becfca21cf7d25b081714a222b82eea6",
+  "change": "read actual pinned JDK manifest legs list and jdk_tools",
+  "failed_prior_execution": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/execution.json"
+}

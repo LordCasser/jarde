@@ -1,0 +1,5 @@
+{
+  "runner_sha256": "c35612010ee3b5a72d2433e79a6a918985aceef012cbfd34396e0dc0c7f272d0",
+  "change": "compare actual CLI path/bytes/SHA identity; mode remains build metadata",
+  "prior_invocation": "/private/tmp/jarde-cf12-labels-full-replay-invocation-root-v3/execution.json"
+}

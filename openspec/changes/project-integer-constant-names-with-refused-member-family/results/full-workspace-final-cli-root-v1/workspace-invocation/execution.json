@@ -1,0 +1,12 @@
+{
+  "status": "completed",
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-compound-workspace-batches-root-v1.py",
+    "/private/tmp/jarde-cf12-constant-workspace-root-v1"
+  ],
+  "exit_code": 0,
+  "runner_sha256": "2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b",
+  "stdout_sha256": "9314ce6313720c8a8be5cec30be302d74759577c171a41527f4c4da1fc849e1d",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

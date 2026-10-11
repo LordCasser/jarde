@@ -1,0 +1,11 @@
+{
+  "scope": "CF12 下一既有 gate 复核，未新增机制或应用补丁",
+  "jadx_head": "2fb1b16386941660fda07e9017285aec40fcb37f",
+  "source": {
+    "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/info/ConstStorage.java",
+    "sha256": "11a138031ede74fecf3eff5869bcddb7ff99f050aab5e94ebef006c3378e5531"
+  },
+  "observed_algorithm": "getConstField 在全局同值命中时可能拒绝当前类候选；随后顺序扫描本类及外类；允许 searchGlobal 才退到global存储。",
+  "architecture_decision": "本片只按本类字段表、唯一 ConstantValue 和物理方法/字段身份投影。RefusedNone 不持有 child text，不应阻止本类已有证明；JADX global 同值拒绝策略不能作为本类绑定的必要条件。外类常量需同时提供外类字节与词法/访问证据，仍是独立后续片。",
+  "delivery": "等待 bafb61a5 自身CI验收及干净主线 checkpoint；常量名私有v5补丁仍未应用。"
+}

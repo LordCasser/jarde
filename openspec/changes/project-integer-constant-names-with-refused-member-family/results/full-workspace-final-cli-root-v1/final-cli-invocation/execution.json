@@ -1,0 +1,18 @@
+{
+  "status": "completed",
+  "actual_head_before": "a4b0acf4b04c65360b6a8a8fe7e4a819a62a2db3",
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-final-cli-build-root-v1/build-final-cli.py",
+    "--source-base",
+    "a4b0acf4b04c65360b6a8a8fe7e4a819a62a2db3",
+    "--out",
+    "/private/tmp/jarde-cf12-constant-final-cli-build-root-v1",
+    "--cli",
+    "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2"
+  ],
+  "runner_sha256": "a72b70a7b2699bf5f936f81b657df4073f105be3fceacf753e865f0ce2d4d79b",
+  "exit_code": 0,
+  "stdout_sha256": "713e949f841cc91753ead9c628f372562efa89ecc5410f888d806ffc67aa1077",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

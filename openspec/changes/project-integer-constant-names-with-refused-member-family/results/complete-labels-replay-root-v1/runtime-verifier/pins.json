@@ -1,0 +1,67 @@
+{
+  "status": "read-only captured-runtime verification passed",
+  "execution": {
+    "path": "/private/tmp/jarde-cf12-labels-full-replay-root-v5/execution.json",
+    "bytes": 1486570,
+    "sha256": "162cb2db7bccec6b4889632b5dba93e5e2473c86564044181d2de7624774645b",
+    "recorded_status": "observed_complete_pending_independent_root_review"
+  },
+  "new_cli": {
+    "path": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+    "bytes": 60820032,
+    "sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b"
+  },
+  "old_cli": {
+    "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+    "bytes": 60820032,
+    "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+  },
+  "new_build_record": {
+    "path": "/private/tmp/jarde-cf12-constant-final-cli-build-root-v1/execution.json",
+    "bytes": 3169360,
+    "sha256": "4105325b3cea9cae9b011c112950907861597ef848f8c0380dc93c3f2de4a872"
+  },
+  "jdk_manifest": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "bytes": 23113,
+    "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+  },
+  "probe_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/Cf12RuntimeProbe.java",
+    "bytes": 2688,
+    "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+  },
+  "jadx_full_source": {
+    "path": "/private/tmp/jarde-cf12-compound-candidate-replay-root-v1/TestSwitchLabels/jdk23_tools/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+    "bytes": 835,
+    "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+  },
+  "frozen_inputs": {
+    "TestSwitchLabels$TestCls$Inner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    "TestSwitchLabels$TestCls": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    }
+  },
+  "verified_counts": {
+    "commands": 32,
+    "fresh_cli_renders": 8,
+    "profiles": 4,
+    "compile_commands": 12,
+    "runtime_commands": 12,
+    "runtime_observation_rows": 120,
+    "live_source_pins": 4695
+  },
+  "artifacts": {
+    "verify_v5.py": "43c25adad541f99ef81baa92bca28a18a40b2a4daf7ea56704073165b03ca678",
+    "verification.json": "556f271dd18e0764ea87d2f8411a68e5a7f1569221a94a9dda6b3df2bd92c1d2",
+    "verification.stderr.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "README.md": "ab1e72ce731d6700e215b903fd4ce7f617abe8b921470bdec4bbee5799596e96",
+    "REVIEW.md": "ad9cd4ff96641679373114f6148938d64388360192b1d984e38b22bcbab0c9bf"
+  }
+}

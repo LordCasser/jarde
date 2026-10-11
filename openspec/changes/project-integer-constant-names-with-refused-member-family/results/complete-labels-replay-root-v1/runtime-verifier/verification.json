@@ -1,0 +1,12 @@
+{
+  "status": "v5_captured_runtime_manifest_verified",
+  "commands": 32,
+  "fresh_cli_renders": 8,
+  "profiles": 4,
+  "compile_commands": 12,
+  "runtime_commands": 12,
+  "runtime_observation_rows": 120,
+  "source_pins_verified": 4695,
+  "runtime_rows_per_profile_side": 10,
+  "note": "read-only verification of captured v5 records; no tools launched"
+}

@@ -1,0 +1,11 @@
+--- /private/tmp/jarde-cf12-labels-full-replay-root-runner-v4/labels_replay.py
++++ /private/tmp/jarde-cf12-labels-full-replay-root-runner-v5/labels_replay.py
+@@ -282,7 +282,7 @@
+   REC['fresh_cli_renders']={'old_bafb':old_render_rows,'new_cf12':new_render_rows}
+   write_record()
+   for jdk,manifest_key in (('jdk8_tools','javac8'),('jdk23_tools','javac23')):
+-   jrow=jdk_manifest['legs'][manifest_key]
++   jrow=next(row['jdk_tools'] for row in jdk_manifest['legs'] if row['leg']==manifest_key)
+    javac=Path(jrow['javac']['path']);java=Path(jrow['java']['path'])
+    tool_pins={k:pin(Path(jrow[k]['path'])) for k in ('javac','java')}
+    for k in ('javac','java'):

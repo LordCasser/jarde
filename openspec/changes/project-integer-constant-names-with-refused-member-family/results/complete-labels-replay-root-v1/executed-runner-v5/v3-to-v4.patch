@@ -1,0 +1,12 @@
+--- /private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py
++++ /private/tmp/jarde-cf12-labels-full-replay-root-runner-v4/labels_replay.py
+@@ -225,7 +225,8 @@
+  record=json.loads(OLD_REPLAY.read_text())
+  if record.get('schema')!='arithmetic-stack-full-report-replay-root-v1' or record.get('status')!='passed' or not record.get('cli_unchanged') or not record.get('target_absent'):
+   raise RuntimeError('old Bafb full-report replay was not accepted/passed/clean')
+- if record.get('cli')!=json.loads(OLD_BUILD.read_text()).get('cli'):raise RuntimeError('old replay CLI differs from old Bafb build receipt')
++ built_cli=json.loads(OLD_BUILD.read_text()).get('cli',{})
++ if record.get('cli')!={k:built_cli.get(k) for k in ('path','bytes','sha256')}:raise RuntimeError('old replay CLI identity differs from old Bafb build receipt')
+  return record
+ 
+ def render_cli(cli,label,inputs):

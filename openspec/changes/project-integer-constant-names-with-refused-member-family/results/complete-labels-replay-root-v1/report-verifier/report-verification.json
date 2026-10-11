@@ -1,0 +1,33 @@
+{
+  "status": "report_comparison_verified",
+  "fresh_old_bafb_cli_sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0",
+  "new_cli_sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b",
+  "input_class_sha256": {
+    "TestSwitchLabels$TestCls": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22",
+    "TestSwitchLabels$TestCls$Inner": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+  },
+  "report_class_digests_blake3": {
+    "TestSwitchLabels$TestCls": "4080d98724a27c977ba6668219e6c010c321aef2f30f88ace3a57070b32095a1",
+    "TestSwitchLabels$TestCls$Inner": "38b78ad84ad58522f6f863102670f46db563c5491374bacbb19ad0eae1ea71b7"
+  },
+  "f1_physical_bcis": {
+    "TestSwitchLabels$TestCls": [
+      0,
+      1,
+      20,
+      23,
+      24,
+      25
+    ],
+    "TestSwitchLabels$TestCls$Inner": [
+      0,
+      1,
+      20,
+      23,
+      24,
+      25
+    ]
+  },
+  "historical_reports": "schema-shape only",
+  "runtime_replay": "not checked here; use the replay verifier after runner-v2 capture"
+}

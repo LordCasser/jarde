@@ -1,0 +1,74 @@
+--- /private/tmp/jarde-cf12-labels-full-replay-luna-v2/labels_replay.py
++++ /private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py
+@@ -109,6 +109,7 @@
+  walk(value);return out
+ def validate_new_build(doc,cli,expected_sha):
+  if doc.get('schema')!='jarde-final-cli-build-clean-root-v1':raise RuntimeError('new receipt is not final CLI clean-build schema')
++ if doc.get('status')!='validation-passed-cli-frozen-target-cleaned':raise RuntimeError('new final CLI build is not recorded as completed/accepted')
+  frozen=doc.get('freeze',{}).get('frozen_cli',{})
+  if Path(frozen.get('path','')).resolve()!=cli or doc.get('frozen_cli_destination')!=str(cli):raise RuntimeError('new CLI path not bound by final build receipt')
+  if (frozen.get('size_bytes'),frozen.get('sha256'))!=(cli.stat().st_size,expected_sha):raise RuntimeError('new CLI differs from final build receipt')
+@@ -160,9 +161,13 @@
+    if not (isinstance(seg.get('start'),int) and isinstance(seg.get('end'),int) and 0<=seg['start']<=seg['end']<=len(report_bytes)):
+     raise RuntimeError('method source-map UTF-8 range is outside physical method text')
+    facts=[];origin=seg.get('origin',{})
+-   for kind in ('primary','derived'):
+-    fact=origin.get(kind)
+-    if fact is None:continue
++   if set(origin)-{'primary','derived'}:raise RuntimeError('unknown source-map origin fields')
++   fact_rows=[]
++   if origin.get('primary') is not None:fact_rows.append(('primary',origin['primary']))
++   derived=origin.get('derived',[])
++   if not isinstance(derived,list):raise RuntimeError('source-map derived origin must be a list')
++   fact_rows.extend(('derived',fact) for fact in derived)
++   for kind,fact in fact_rows:
+     physical=fact.get('method',{});owner2=physical.get('owner',{}).get('class_bytes',{})
+     if owner2.get('digest')!=expected_class_blake3:raise RuntimeError('source-map fact has wrong physical class BLAKE3')
+     facts.append({'kind':kind,'bci':fact.get('bci'),'method_name_bytes':physical.get('name'),'method_descriptor_bytes':physical.get('descriptor'),'owner_blake3':owner2.get('digest')})
+@@ -194,17 +199,27 @@
+  return {'own_field_identities':fields,'method_identities':methods,'physical_source_anchors':anchors,'integer_constant_projections':projections}
+ 
+ def compare_structured(a,b):
+- # Compare only own constant identities and the newly derived name/physical-method anchors.
+- x=field_and_derived(a,a['class']['class_bytes']['digest']);y=field_and_derived(b,b['class']['class_bytes']['digest'])
+- old_names={bytes(f['name_bytes']).decode('utf-8') for f in x['own_field_identities']}
++ # First argument is the new report. Compare its projected names/BCIs with the old own fields/maps.
++ new=field_and_derived(a,a['class']['class_bytes']['digest']);old=field_and_derived(b,b['class']['class_bytes']['digest'])
++ old_names={bytes(f['name_bytes']).decode('utf-8') for f in old['own_field_identities']}
+  old_bcis={(tuple(f['method_name_bytes']),tuple(f['method_descriptor_bytes']),f['owner_blake3'],f['bci'])
+-           for a0 in x['physical_source_anchors'] for f in a0['facts'] if isinstance(f.get('bci'),int)}
+- new_names={p['spelling'] for p in y['integer_constant_projections']}
+- derived_bcis={(tuple(a0['method_name_bytes']),tuple(a0['method_descriptor_bytes']),a0['owner_blake3'],a0['bci'])
+-               for p in y['integer_constant_projections'] for a0 in p['anchors'] if a0['kind']=='method_point'}
+- return (x['own_field_identities']==y['own_field_identities'] and
+-         x['method_identities']==y['method_identities'] and
+-         new_names.issubset(old_names) and all(name in a.get('text','') for name in new_names) and
++           for seg in old['physical_source_anchors'] for f in seg['facts'] if isinstance(f.get('bci'),int)}
++ new_names={p['spelling'] for p in new['integer_constant_projections']}
++ derived_bcis={(tuple(anchor['method_name_bytes']),tuple(anchor['method_descriptor_bytes']),anchor['owner_blake3'],anchor['bci'])
++               for p in new['integer_constant_projections'] for anchor in p['anchors'] if anchor['kind']=='method_point'}
++ def map_signature(facts):
++  rows=[]
++  for seg in facts['physical_source_anchors']:
++   physical=tuple(sorted([(f['kind'],tuple(f['method_name_bytes']),tuple(f['method_descriptor_bytes']),f['owner_blake3'],f['bci'])
++                          for f in seg['facts']],key=repr))
++   identity=seg['method_identity']
++   rows.append((tuple(identity['name_bytes']),tuple(identity['descriptor_bytes']),identity['owner_blake3'],physical))
++  return rows
++ return (new['own_field_identities']==old['own_field_identities'] and
++         new['method_identities']==old['method_identities'] and
++         map_signature(new)==map_signature(old) and
++         bool(new_names) and new_names.issubset(old_names) and
++         all(name in a.get('text','') for name in new_names) and
+          derived_bcis.issubset(old_bcis))
+ def validate_old_replay_chain():
+  record=json.loads(OLD_REPLAY.read_text())
+@@ -332,7 +347,7 @@
+   # Inputs and source/CLI pins are rechecked after all observations.
+   if {n:pin(p) for n,p in inputs.items()}!=REC['captured_inputs_before']:raise RuntimeError('captured inputs changed')
+   if pin(PROBE)!=REC['probe_source'] or pin(jadx_src)!=REC['jadx_full_source']:raise RuntimeError('probe/JADX source changed')
+-  current_new=flatten_source_pins(new_build['source_pins_after']);check_live_pins(current_new,'new CF12 post-run')
++  current_new=collect_grouped_live_pins(new_build['source_pins_after']);check_live_pins(current_new,'new CF12 post-run')
+   if pin(CLI)!=REC['new_cli'] or pin(OLD_CLI)!=REC['old_bafb_cli']:raise RuntimeError('CLI bytes changed during replay')
+   REC['status']='observed_complete_pending_independent_root_review';REC['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();REC['free_bytes_after']=shutil.disk_usage(ROOT).free
+   write_record()

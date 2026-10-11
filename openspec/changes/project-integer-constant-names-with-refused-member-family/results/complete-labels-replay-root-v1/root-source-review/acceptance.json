@@ -1,0 +1,49 @@
+{
+  "status": "accepted_root_source_review",
+  "upstream_source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/sources/jadx-core/src/test/java/jadx/tests/integration/switches/TestSwitchLabels.java",
+    "sha256": "8fad0c3325b33685dbb985bc9e9f55c130c8c678e4e333b60cd66dd02875ed77"
+  },
+  "generated_jarde_source_exactly_equals_report_text": 8,
+  "jadx_source_copies_byte_identical": 4,
+  "jdk_tools_match_frozen_manifest": true,
+  "usage_deltas": [
+    {
+      "mode": "default",
+      "class": "TestSwitchLabels$TestCls$Inner",
+      "observed_class_usage_delta": {
+        "analysis_steps": 2,
+        "ir_items": 15,
+        "output_bytes": 1423
+      }
+    },
+    {
+      "mode": "default",
+      "class": "TestSwitchLabels$TestCls",
+      "observed_class_usage_delta": {
+        "analysis_steps": 2,
+        "ir_items": 15,
+        "output_bytes": 1429
+      }
+    },
+    {
+      "mode": "all",
+      "class": "TestSwitchLabels$TestCls$Inner",
+      "observed_class_usage_delta": {
+        "analysis_steps": 2,
+        "ir_items": 15,
+        "output_bytes": 1423
+      }
+    },
+    {
+      "mode": "all",
+      "class": "TestSwitchLabels$TestCls",
+      "observed_class_usage_delta": {
+        "analysis_steps": 2,
+        "ir_items": 15,
+        "output_bytes": 1429
+      }
+    }
+  ],
+  "scope": "TestSwitchLabels same-class projection only; numeric outer-only 2748 retained; unrelated debt remains."
+}

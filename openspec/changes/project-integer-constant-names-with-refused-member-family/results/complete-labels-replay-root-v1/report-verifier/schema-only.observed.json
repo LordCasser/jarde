@@ -1,0 +1,179 @@
+{
+  "status": "schema_parse_only_nonacceptance",
+  "reports": {
+    "default/TestSwitchLabels$TestCls": {
+      "class_digest_blake3": "4080d98724a27c977ba6668219e6c010c321aef2f30f88ace3a57070b32095a1",
+      "field_identity_rows": [
+        [
+          0,
+          [
+            67,
+            79,
+            78,
+            83,
+            84,
+            95,
+            65,
+            66,
+            67
+          ],
+          [
+            73
+          ]
+        ],
+        [
+          1,
+          [
+            67,
+            79,
+            78,
+            83,
+            84,
+            95,
+            67,
+            68,
+            69
+          ],
+          [
+            73
+          ]
+        ]
+      ],
+      "f1_bci_set_observed": [
+        0,
+        1,
+        20,
+        23,
+        24,
+        25
+      ],
+      "saved_projection_rows": 0
+    },
+    "default/TestSwitchLabels$TestCls$Inner": {
+      "class_digest_blake3": "38b78ad84ad58522f6f863102670f46db563c5491374bacbb19ad0eae1ea71b7",
+      "field_identity_rows": [
+        [
+          0,
+          [
+            67,
+            79,
+            78,
+            83,
+            84,
+            95,
+            67,
+            68,
+            69,
+            95,
+            80,
+            82,
+            73,
+            86,
+            65,
+            84,
+            69
+          ],
+          [
+            73
+          ]
+        ]
+      ],
+      "f1_bci_set_observed": [
+        0,
+        1,
+        20,
+        23,
+        24,
+        25
+      ],
+      "saved_projection_rows": 0
+    },
+    "all/TestSwitchLabels$TestCls": {
+      "class_digest_blake3": "4080d98724a27c977ba6668219e6c010c321aef2f30f88ace3a57070b32095a1",
+      "field_identity_rows": [
+        [
+          0,
+          [
+            67,
+            79,
+            78,
+            83,
+            84,
+            95,
+            65,
+            66,
+            67
+          ],
+          [
+            73
+          ]
+        ],
+        [
+          1,
+          [
+            67,
+            79,
+            78,
+            83,
+            84,
+            95,
+            67,
+            68,
+            69
+          ],
+          [
+            73
+          ]
+        ]
+      ],
+      "f1_bci_set_observed": [
+        0,
+        1,
+        20,
+        23,
+        24,
+        25
+      ],
+      "saved_projection_rows": 0
+    },
+    "all/TestSwitchLabels$TestCls$Inner": {
+      "class_digest_blake3": "38b78ad84ad58522f6f863102670f46db563c5491374bacbb19ad0eae1ea71b7",
+      "field_identity_rows": [
+        [
+          0,
+          [
+            67,
+            79,
+            78,
+            83,
+            84,
+            95,
+            67,
+            68,
+            69,
+            95,
+            80,
+            82,
+            73,
+            86,
+            65,
+            84,
+            69
+          ],
+          [
+            73
+          ]
+        ]
+      ],
+      "f1_bci_set_observed": [
+        0,
+        1,
+        20,
+        23,
+        24,
+        25
+      ],
+      "saved_projection_rows": 0
+    }
+  }
+}

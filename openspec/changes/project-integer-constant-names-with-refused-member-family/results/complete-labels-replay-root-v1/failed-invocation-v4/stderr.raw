@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf12-labels-full-replay-root-runner-v4/labels_replay.py", line 364, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/private/tmp/jarde-cf12-labels-full-replay-root-runner-v4/labels_replay.py", line 363, in main
+    main_body(ap.parse_args())
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-cf12-labels-full-replay-root-runner-v4/labels_replay.py", line 285, in main_body
+    jrow=jdk_manifest['legs'][manifest_key]
+         ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+TypeError: list indices must be integers or slices, not str

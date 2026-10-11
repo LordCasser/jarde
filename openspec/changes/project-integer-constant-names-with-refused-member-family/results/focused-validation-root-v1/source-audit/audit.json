@@ -1,0 +1,22 @@
+{
+  "allowed": [
+    "Absent",
+    "Refused { child: None, .. }"
+  ],
+  "blocked": [
+    "Refused { child: Some(..), .. }",
+    "RefusedPair",
+    "Prepared",
+    "PreparedPair",
+    "PreparedStatic",
+    "PreparedFold"
+  ],
+  "complete_outer_gate_unchanged": true,
+  "sibling_absent_gates_unchanged": true,
+  "refusal_reason_not_read": true,
+  "production_changes_before_tests_only_one_existing_alternative": true,
+  "projector_function_bytes_unchanged": true,
+  "projector_sha256": "88bcb1482ef6fadcb613c0c9ec48b8bc697c6e0aa43c06571fab6a91ab1fdc45",
+  "scope": "source gate audit; existing API fixture tests still pending",
+  "outer_constant_debt": "single class contains no outer field bytes; retain numeric outer-only2748, future proof needs explicit physical outer inputs"
+}

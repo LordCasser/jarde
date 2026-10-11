@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf12-labels-runtime-verifier-luna-v1/verify_v5.py",
+    "/private/tmp/jarde-cf12-labels-full-replay-root-v5/execution.json"
+  ],
+  "exit_code": 0,
+  "script_sha256": "43c25adad541f99ef81baa92bca28a18a40b2a4daf7ea56704073165b03ca678"
+}

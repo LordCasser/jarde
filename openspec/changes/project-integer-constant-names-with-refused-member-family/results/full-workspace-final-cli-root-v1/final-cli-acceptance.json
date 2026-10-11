@@ -1,0 +1,20 @@
+{
+  "status": "accepted",
+  "source_pin_count": 4695,
+  "source_pins_equal_actual_fullworkspace": true,
+  "build_and_clean_exit_codes": [
+    0,
+    0
+  ],
+  "source_base": "a4b0acf4b04c65360b6a8a8fe7e4a819a62a2db3",
+  "execution_sha256": "4105325b3cea9cae9b011c112950907861597ef848f8c0380dc93c3f2de4a872",
+  "frozen_cli": {
+    "path": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+    "size_bytes": 60820032,
+    "sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b",
+    "mode": "0o555"
+  },
+  "same_binary_as_focused": true,
+  "target_absent": true,
+  "peak_target_bytes": 360190581
+}

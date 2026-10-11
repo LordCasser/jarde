@@ -1,0 +1,5 @@
+本轮fresh全workspace实际95批/359目标/3445 passed/0 failed/97 ignored；4695源、literal include及fixture输入前后恒同，独立v2按metadata及actual artifacts逐项接受。合法零测试目标仍以完整artifact及metadata覆盖核验，不当丢失测试。构建后target清理。
+
+随后独立完整输入CLI构建只跑build+clean两命令；同4695输入与workspace/live完全相同。新冻结CLI2为0555、60820032B、SHA8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b，与聚焦CLI逐字相同。实际峰值target360190581bytes。strict349/0。
+
+原记录绝对private路径保留，归档raw按字节复制并由inventory绑定。完整源码/双JDK对照与实际产品自身CI仍待，不把此记录当整CF12完成。

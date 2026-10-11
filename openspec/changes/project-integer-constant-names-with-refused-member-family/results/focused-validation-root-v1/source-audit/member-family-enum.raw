@@ -1,0 +1,45 @@
+pub enum ClassSourceMemberFamily {
+    Absent,
+    Refused {
+        reason: String,
+        /// A resolved child is retained even when the two physical rows disagree.
+        child: Option<Box<ClassSourceReport>>,
+    },
+    RefusedPair {
+        reason: String,
+        /// Every child physically prepared before the joint proof refused.
+        children: Vec<Box<ClassSourceReport>>,
+    },
+    Prepared {
+        relation: ClassSourceMemberRelation,
+        child: Box<ClassSourceReport>,
+        /// Capture evidence only; a refused capture keeps both physical reports intact.
+        capture: ClassSourceMemberCapture,
+        /// Family-local construction verdicts; original method bodies remain physical.
+        calls: ClassSourceMemberCalls,
+        /// Source-unit projection is separate from the physical relation and local certificates.
+        projection: ClassSourceMemberProjection,
+    },
+    PreparedPair {
+        /// The root's InnerClasses order, retained with each selected physical child.
+        members: [ClassSourceMemberChild; 2],
+        projection: ClassSourceMemberProjection,
+    },
+    /// The direct static member family a fold projection renders: every child stays its own
+    /// physical report, and only `projection: Projected` states that the root's text carries
+    /// the nested declarations. The members are in the root's InnerClasses row order.
+    PreparedStatic {
+        members: Vec<ClassSourceMemberChild>,
+        projection: ClassSourceMemberProjection,
+    },
+    /// The member family a fold projection renders with proved non-static rows beside its
+    /// static ones: the root's text carries every nested declaration, the synthetic outer
+    /// capture (constructor parameter, field and write) is elided inside that scope, and the
+    /// javac access bridges the family proved are hidden with their call sites re-spelled. The
+    /// members are in the root's InnerClasses row order.
+    PreparedFold {
+        members: Vec<ClassSourceMemberChild>,
+        projection: ClassSourceMemberProjection,
+    },
+}
+

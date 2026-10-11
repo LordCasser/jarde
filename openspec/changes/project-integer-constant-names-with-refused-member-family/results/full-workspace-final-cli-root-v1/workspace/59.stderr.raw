@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.82s
+[1m[92m     Running[0m tests/p3_twr_catch.rs (target/debug/deps/p3_twr_catch-fc3f6af899a59005)
+[1m[92m     Running[0m tests/p3_twr_discarded_call.rs (target/debug/deps/p3_twr_discarded_call-6dd69404bc06b8c5)
+[1m[92m     Running[0m tests/p3_twr_enclosing_catch.rs (target/debug/deps/p3_twr_enclosing_catch-901f3ffb02d54815)
+[1m[92m     Running[0m tests/p3_twr_enclosing_catch_call.rs (target/debug/deps/p3_twr_enclosing_catch_call-928128cd43f51775)

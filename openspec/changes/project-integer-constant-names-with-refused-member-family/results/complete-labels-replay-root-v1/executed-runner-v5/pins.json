@@ -1,0 +1,67 @@
+{
+  "schema": "cf12-labels-replay-private-v3-pins",
+  "artifacts": [
+    {
+      "path": "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py",
+      "bytes": 27335,
+      "sha256": "767b67a1e256eeed7bf4b03256346604b471c56bfa065ad11a7e15c6b831765a"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/v2-to-v3.patch",
+      "bytes": 5884,
+      "sha256": "85b9ed9ff71f37162faf6162079f9170fc1c9eb651842f15c9a12176c4ea8e34"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/FINAL.md",
+      "bytes": 2414,
+      "sha256": "00e52d7aaddf7a17dc659b201b8a57942c36dd041840a7cb8df07104609b6015"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-cf12-labels-full-replay-luna-v2/labels_replay.py",
+      "bytes": 26274,
+      "sha256": "f8fdf4a4635be93010629ac1cc07862f42f635b870890fe90ef02d3cf8a6d363"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/execution.json",
+      "bytes": 184361,
+      "sha256": "b720fdf4ba11e04eea63baac682d13ba5c35d5dcab2b47458a5179391cc5eea8"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/11.stdout.raw",
+      "bytes": 20818,
+      "sha256": "82b07edd86fabf5df72e12b3c86f93e8cf3ae468e59c63a7e05ab2f6c4c76d57"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/12.stdout.raw",
+      "bytes": 21419,
+      "sha256": "6cf8f01a94ab9ad12400e4da88fe7af658689b76c4f6d407f7b4a92b44b8c6ff"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/13.stdout.raw",
+      "bytes": 21826,
+      "sha256": "b40237d228a5a7ce6e8e8b87ca812e4368a9b1e6fa66e727a3c8ac81fcd5190f"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/14.stdout.raw",
+      "bytes": 22407,
+      "sha256": "cad1526f99ea72ee38e14af0a0ff30e7d10938788ee338dc8ea19ee7623a3b64"
+    },
+    {
+      "path": "/private/tmp/jarde-cf12-constant-final-cli-build-root-v1/execution.json",
+      "bytes": 3169360,
+      "sha256": "4105325b3cea9cae9b011c112950907861597ef848f8c0380dc93c3f2de4a872"
+    }
+  ],
+  "new_cli_expected_from_actual_receipt": {
+    "path": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+    "bytes": 60820032,
+    "sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b"
+  },
+  "old_cli_expected": {
+    "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+    "bytes": 60820032,
+    "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+  }
+}

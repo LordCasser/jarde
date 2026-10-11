@@ -1,0 +1,134 @@
+{
+  "status": "report-only verification passed; runtime replay/dual-JDK acceptance not checked",
+  "execution_json": {
+    "path": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/execution.json",
+    "sha256": "d60d005be7347571695da56604337dc6c87b5b7e55b4cebb5f012b0eee0dd7f0"
+  },
+  "runner_status": "failed",
+  "runner_failure": {
+    "type": "TypeError",
+    "message": "list indices must be integers or slices, not str",
+    "time": "2026-10-11T08:13:50.534164+00:00"
+  },
+  "cli": {
+    "old": {
+      "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "bytes": 60820032,
+      "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+    },
+    "new": {
+      "path": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+      "bytes": 60820032,
+      "sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b"
+    }
+  },
+  "fresh_render_rows": [
+    {
+      "group": "old_bafb",
+      "mode": "default",
+      "class": "TestSwitchLabels$TestCls$Inner",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls$Inner",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0000.old-bafb-default-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "raw_bytes": 20818,
+      "raw_sha256": "047a7826b102cfc00a742a538872d0fb5854c85a6a71e616a1896372d453a876"
+    },
+    {
+      "group": "old_bafb",
+      "mode": "default",
+      "class": "TestSwitchLabels$TestCls",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0001.old-bafb-default-TestSwitchLabels$TestCls-render.stdout.raw",
+      "raw_bytes": 21419,
+      "raw_sha256": "cc0cecaabadc32a44156af182f4f134b0c767efcf8ec414ae71b890822b4e347"
+    },
+    {
+      "group": "old_bafb",
+      "mode": "all",
+      "class": "TestSwitchLabels$TestCls$Inner",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls$Inner",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0002.old-bafb-all-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "raw_bytes": 21826,
+      "raw_sha256": "4de3ef5ba12742ad2dff33109317752042617f25b41a8b0ed7aabcdc93a173f0"
+    },
+    {
+      "group": "old_bafb",
+      "mode": "all",
+      "class": "TestSwitchLabels$TestCls",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0003.old-bafb-all-TestSwitchLabels$TestCls-render.stdout.raw",
+      "raw_bytes": 22407,
+      "raw_sha256": "53cde92dcc5ab37162f7191c0eb50044f0d0902f2cb35ce26408d88519a17754"
+    },
+    {
+      "group": "new_cf12",
+      "mode": "default",
+      "class": "TestSwitchLabels$TestCls$Inner",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls$Inner",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0004.new-cf12-default-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "raw_bytes": 21656,
+      "raw_sha256": "c2c17710223b3260518ca7b425e2d66bcc5825d33e79bde9cb10a8bf5cded36b"
+    },
+    {
+      "group": "new_cf12",
+      "mode": "default",
+      "class": "TestSwitchLabels$TestCls",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0005.new-cf12-default-TestSwitchLabels$TestCls-render.stdout.raw",
+      "raw_bytes": 23011,
+      "raw_sha256": "7ab659b73adede0ff56c909e54f9159dc4c22df99b3600445f26d9aad36d5d66"
+    },
+    {
+      "group": "new_cf12",
+      "mode": "all",
+      "class": "TestSwitchLabels$TestCls$Inner",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls$Inner",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0006.new-cf12-all-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "raw_bytes": 22661,
+      "raw_sha256": "2f918df9ae9bc19162160475bafb6364a4f81532df18ad556153b07528cbf9a3"
+    },
+    {
+      "group": "new_cf12",
+      "mode": "all",
+      "class": "TestSwitchLabels$TestCls",
+      "exit_code": 0,
+      "argv0": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+      "class_arg": "jadx.tests.integration.switches.TestSwitchLabels$TestCls",
+      "input": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+      "raw_json": "/private/tmp/jarde-cf12-labels-full-replay-root-v4/raw/0007.new-cf12-all-TestSwitchLabels$TestCls-render.stdout.raw",
+      "raw_bytes": 23999,
+      "raw_sha256": "0e305c6ce94f940b661d7f0e7a0e93e0055abb207d738752915f1edee5a18413"
+    }
+  ],
+  "verifier_sha256": "3a44f5ce56c76ef169b7ca2c4685bd1e38deb1de175abd3f9a89a2ff7af76296",
+  "verification_sha256": "5cad9804b207776e026c3f4ba337f219db7ce55f0d03c15f2890b808f42b2d03",
+  "artifacts": {
+    "verify_reports.py": "3a44f5ce56c76ef169b7ca2c4685bd1e38deb1de175abd3f9a89a2ff7af76296",
+    "verify_replay_manifest.py": "d2b4892eaa93ae701aa324e4739541c7ac5d6024dc8938bd3bd57cfd7fb40336",
+    "check_saved_schema.py": "7c3b692ba8124effe1eee305a461e49e0033c35093026d21a72f1c000d4bff82",
+    "README.md": "ad520b0a18a6e1dc3b186fd9dc0b668c3655edd3e5d9421ee67063a58b4656ba",
+    "REVIEW.md": "011d36c8c2f49837aa6c35291c273326bdf771bdd085818fa020de51b99d2cbe",
+    "report-verification.json": "5cad9804b207776e026c3f4ba337f219db7ce55f0d03c15f2890b808f42b2d03",
+    "report-verification.stderr.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

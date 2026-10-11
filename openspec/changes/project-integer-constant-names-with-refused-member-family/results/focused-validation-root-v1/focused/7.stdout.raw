@@ -1,0 +1,12 @@
+
+running 7 tests
+test cancellation_stops_before_any_nested_declaration_is_published ... ok
+test child_budget_stop_does_not_publish_a_partial_annotation ... ok
+test dollar_name_without_an_owner_row_remains_top_level ... ok
+test malformed_child_kind_refuses_projection_but_keeps_the_child_report ... ok
+test missing_duplicate_and_conflicting_owner_rows_never_project ... ok
+test proved_annotation_is_nested_and_the_physical_child_is_preserved ... ok
+test truncated_default_attribute_refuses_projection_and_keeps_child ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

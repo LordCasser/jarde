@@ -1,0 +1,19 @@
+{
+  "status": "completed",
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf12-labels-full-replay-root-runner-v4/labels_replay.py",
+    "--cli",
+    "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+    "--cli-sha256",
+    "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b",
+    "--build-record",
+    "/private/tmp/jarde-cf12-constant-final-cli-build-root-v1/execution.json",
+    "--out",
+    "/private/tmp/jarde-cf12-labels-full-replay-root-v4"
+  ],
+  "runner_sha256": "c35612010ee3b5a72d2433e79a6a918985aceef012cbfd34396e0dc0c7f272d0",
+  "exit_code": 1,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "4eb0f9945b24e559ae551da98b875f818c5f7930b465410f0939e0bd489cfce0"
+}

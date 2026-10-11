@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py", line 363, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py", line 362, in main
+    main_body(ap.parse_args())
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py", line 254, in main_body
+    old_build,old_pins=validate_old_bafb();old_record=validate_old_replay_chain()
+                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/private/tmp/jarde-cf12-labels-full-replay-luna-v3/labels_replay.py", line 228, in validate_old_replay_chain
+    if record.get('cli')!=json.loads(OLD_BUILD.read_text()).get('cli'):raise RuntimeError('old replay CLI differs from old Bafb build receipt')
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: old replay CLI differs from old Bafb build receipt

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf12-labels-independent-verifier-luna-v3/verify_reports.py",
+    "--execution",
+    "/private/tmp/jarde-cf12-labels-full-replay-root-v5/execution.json",
+    "--old-cli",
+    "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+    "--old-cli-sha256",
+    "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0",
+    "--new-cli",
+    "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+    "--new-cli-sha256",
+    "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b"
+  ],
+  "exit_code": 0,
+  "script_sha256": "3a44f5ce56c76ef169b7ca2c4685bd1e38deb1de175abd3f9a89a2ff7af76296"
+}

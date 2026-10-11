@@ -1,0 +1,834 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 668,
+      "sha256": "49c7e657dc78e0c3d46b5a8acf8eec620f0ac74806bdaa3e3a1ba6472b91fd81"
+    },
+    {
+      "path": "executed-runner-v5/FINAL.md",
+      "bytes": 2414,
+      "sha256": "00e52d7aaddf7a17dc659b201b8a57942c36dd041840a7cb8df07104609b6015"
+    },
+    {
+      "path": "executed-runner-v5/labels_replay.py",
+      "bytes": 27462,
+      "sha256": "038f8e95c7cc09e6e873f21d5acf12d4becfca21cf7d25b081714a222b82eea6"
+    },
+    {
+      "path": "executed-runner-v5/pins.json",
+      "bytes": 2532,
+      "sha256": "0b9509836fb9d6ab0fbe0b349335868cf557b84a845083bf2aca1a87092a9481"
+    },
+    {
+      "path": "executed-runner-v5/root-review-v5.json",
+      "bytes": 258,
+      "sha256": "62871a5a6e7c47527587d73bb6672bc87ae57595a91445f09d04b96fd5547c1b"
+    },
+    {
+      "path": "executed-runner-v5/root-review.json",
+      "bytes": 279,
+      "sha256": "87065d6202e36c44fbf4e12164418a5bf6b52b57ea3f2de79c1af82ef145f9e4"
+    },
+    {
+      "path": "executed-runner-v5/v2-to-v3.patch",
+      "bytes": 5884,
+      "sha256": "85b9ed9ff71f37162faf6162079f9170fc1c9eb651842f15c9a12176c4ea8e34"
+    },
+    {
+      "path": "executed-runner-v5/v3-to-v4.patch",
+      "bytes": 893,
+      "sha256": "13773aa708d403cd934f7771c5db9c922e5691c020ba3553979fa7afd03820c5"
+    },
+    {
+      "path": "executed-runner-v5/v4-to-v5.patch",
+      "bytes": 668,
+      "sha256": "3ff77df73c3a6f098ce5677f31ea20081af0755eb626d527002948c5c429bcf4"
+    },
+    {
+      "path": "failed-invocation-v3/execution.json",
+      "bytes": 752,
+      "sha256": "3d1825d2f2320adc7ea08f238ca1b86c31b517aec37fbe0ef2081536313707d5"
+    },
+    {
+      "path": "failed-invocation-v3/stderr.raw",
+      "bytes": 1098,
+      "sha256": "5d57e57a2f8305fd1234445a0ae130fac76bdc08905c1c61328c582d40538bac"
+    },
+    {
+      "path": "failed-invocation-v3/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-invocation-v4/execution.json",
+      "bytes": 759,
+      "sha256": "012d1ebdc3b2787bc89c6a2b8c993a5b54494601d50afcaed4b5236de5a2a0be"
+    },
+    {
+      "path": "failed-invocation-v4/stderr.raw",
+      "bytes": 633,
+      "sha256": "4eb0f9945b24e559ae551da98b875f818c5f7930b465410f0939e0bd489cfce0"
+    },
+    {
+      "path": "failed-invocation-v4/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/execution.json",
+      "bytes": 1204402,
+      "sha256": "d60d005be7347571695da56604337dc6c87b5b7e55b4cebb5f012b0eee0dd7f0"
+    },
+    {
+      "path": "failed-replay-v4/raw/0000.old-bafb-default-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0000.old-bafb-default-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 20818,
+      "sha256": "047a7826b102cfc00a742a538872d0fb5854c85a6a71e616a1896372d453a876"
+    },
+    {
+      "path": "failed-replay-v4/raw/0001.old-bafb-default-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0001.old-bafb-default-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 21419,
+      "sha256": "cc0cecaabadc32a44156af182f4f134b0c767efcf8ec414ae71b890822b4e347"
+    },
+    {
+      "path": "failed-replay-v4/raw/0002.old-bafb-all-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0002.old-bafb-all-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 21826,
+      "sha256": "4de3ef5ba12742ad2dff33109317752042617f25b41a8b0ed7aabcdc93a173f0"
+    },
+    {
+      "path": "failed-replay-v4/raw/0003.old-bafb-all-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0003.old-bafb-all-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 22407,
+      "sha256": "53cde92dcc5ab37162f7191c0eb50044f0d0902f2cb35ce26408d88519a17754"
+    },
+    {
+      "path": "failed-replay-v4/raw/0004.new-cf12-default-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0004.new-cf12-default-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 21656,
+      "sha256": "c2c17710223b3260518ca7b425e2d66bcc5825d33e79bde9cb10a8bf5cded36b"
+    },
+    {
+      "path": "failed-replay-v4/raw/0005.new-cf12-default-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0005.new-cf12-default-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 23011,
+      "sha256": "7ab659b73adede0ff56c909e54f9159dc4c22df99b3600445f26d9aad36d5d66"
+    },
+    {
+      "path": "failed-replay-v4/raw/0006.new-cf12-all-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0006.new-cf12-all-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 22661,
+      "sha256": "2f918df9ae9bc19162160475bafb6364a4f81532df18ad556153b07528cbf9a3"
+    },
+    {
+      "path": "failed-replay-v4/raw/0007.new-cf12-all-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "failed-replay-v4/raw/0007.new-cf12-all-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 23999,
+      "sha256": "0e305c6ce94f940b661d7f0e7a0e93e0055abb207d738752915f1edee5a18413"
+    },
+    {
+      "path": "invocation-v5/execution.json",
+      "bytes": 759,
+      "sha256": "6dd9219b316580f16d088b83951ac07c1172883e19de2e554e5f51f4248f68d5"
+    },
+    {
+      "path": "invocation-v5/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "invocation-v5/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/execution.json",
+      "bytes": 1486570,
+      "sha256": "162cb2db7bccec6b4889632b5dba93e5e2473c86564044181d2de7624774645b"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "ca4b07b06d47c4c67d95b81d79d818224f4b8d3edb7b4b9ae85068fbca46535f"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "5f9fad0d18c28bafa397fd0b0ea07f37b5a463a7c2354a483122bd9aed0366fa"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1301,
+      "sha256": "2d920ee5de25d88b73e96681c06b9c601c878c3054669155f9660a082da0874c"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1310,
+      "sha256": "43ae477fed21d75a0a4645fbea216f7fa66819ff882c6357357696722d792a12"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/runtime-probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/all/runtime-probe/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "ca4b07b06d47c4c67d95b81d79d818224f4b8d3edb7b4b9ae85068fbca46535f"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "5f9fad0d18c28bafa397fd0b0ea07f37b5a463a7c2354a483122bd9aed0366fa"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "7c90f0be4b0b7d0fac12d7e6d5ee01abd43be1c5c63e4e0049554f71ffd87a19"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "bafced41efb6dca5c609fb7ebbeb19fe07721015434ecd64e804ce0d1b39c8ae"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1301,
+      "sha256": "2d920ee5de25d88b73e96681c06b9c601c878c3054669155f9660a082da0874c"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1310,
+      "sha256": "43ae477fed21d75a0a4645fbea216f7fa66819ff882c6357357696722d792a12"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/runtime-probe/Cf12RuntimeProbe.class",
+      "bytes": 4368,
+      "sha256": "373cd27decd3bac08204eebd33ab752a64ce0205fa44a19367707e8b5c16a92f"
+    },
+    {
+      "path": "replay-v5/jdk23_tools/default/runtime-probe/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "38216c4c2c8ff5ffb9e17f7531b13817c238a2cf9109d63ca771c9127913065b"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "ceea14b70de511cd474231a38bef564790f058c4cbd95c3957555c3ee0af2e94"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "8453dbfdf5ce75aa77ecc278cff0d84d33e21e8a24c0266c87b38c070ca7a925"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "338725d08b64977bfcea75e5c18396128f8a5af8888eb6d6110e1c3d66f8129e"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1301,
+      "sha256": "2d920ee5de25d88b73e96681c06b9c601c878c3054669155f9660a082da0874c"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1310,
+      "sha256": "43ae477fed21d75a0a4645fbea216f7fa66819ff882c6357357696722d792a12"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/runtime-probe/Cf12RuntimeProbe.class",
+      "bytes": 4377,
+      "sha256": "ef4f000f803b6cc1a81b11e3e414c4a3eef15515eb0f946e5424baf188287ac2"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/all/runtime-probe/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 680,
+      "sha256": "38216c4c2c8ff5ffb9e17f7531b13817c238a2cf9109d63ca771c9127913065b"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jadx/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 689,
+      "sha256": "ceea14b70de511cd474231a38bef564790f058c4cbd95c3957555c3ee0af2e94"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jadx/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 835,
+      "sha256": "e02dc71ee0e8de7205abff9e356dccf28083b33a85f2bd6f8cda0ae3dc2f185e"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 589,
+      "sha256": "8453dbfdf5ce75aa77ecc278cff0d84d33e21e8a24c0266c87b38c070ca7a925"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jarde/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 586,
+      "sha256": "338725d08b64977bfcea75e5c18396128f8a5af8888eb6d6110e1c3d66f8129e"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.java",
+      "bytes": 1301,
+      "sha256": "2d920ee5de25d88b73e96681c06b9c601c878c3054669155f9660a082da0874c"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/jarde/sources/jadx/tests/integration/switches/TestSwitchLabels$TestCls.java",
+      "bytes": 1310,
+      "sha256": "43ae477fed21d75a0a4645fbea216f7fa66819ff882c6357357696722d792a12"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls$Inner.class",
+      "bytes": 744,
+      "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/original/classes/jadx/tests/integration/switches/TestSwitchLabels$TestCls.class",
+      "bytes": 753,
+      "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/runtime-probe/Cf12RuntimeProbe.class",
+      "bytes": 4377,
+      "sha256": "ef4f000f803b6cc1a81b11e3e414c4a3eef15515eb0f946e5424baf188287ac2"
+    },
+    {
+      "path": "replay-v5/jdk8_tools/default/runtime-probe/Cf12RuntimeProbe.java",
+      "bytes": 2688,
+      "sha256": "ecde9fd8af4108e5aa1bae2c1e95bf2ef6f31bdacae1a53ced27e343cc902093"
+    },
+    {
+      "path": "replay-v5/raw/0000.old-bafb-default-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0000.old-bafb-default-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 20818,
+      "sha256": "047a7826b102cfc00a742a538872d0fb5854c85a6a71e616a1896372d453a876"
+    },
+    {
+      "path": "replay-v5/raw/0001.old-bafb-default-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0001.old-bafb-default-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 21419,
+      "sha256": "f58254180a03c5660607e02fbf81308ba4cdb3729c0ca786b816a2498039e761"
+    },
+    {
+      "path": "replay-v5/raw/0002.old-bafb-all-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0002.old-bafb-all-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 21826,
+      "sha256": "293ebc1c8fb723e16c7001695ccbaebd98fd4e9fa2a5f9ef1c7236b3835d64ab"
+    },
+    {
+      "path": "replay-v5/raw/0003.old-bafb-all-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0003.old-bafb-all-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 22407,
+      "sha256": "c4b8373e5b1a482c9f9cb7656fe0ca64a3efe00e89c4b2a405bab5c883bc4cd1"
+    },
+    {
+      "path": "replay-v5/raw/0004.new-cf12-default-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0004.new-cf12-default-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 21658,
+      "sha256": "b9d418655df71d7a8c7b90b13f650c7ae99aab27a5d97c8b33ee377a2dee28b2"
+    },
+    {
+      "path": "replay-v5/raw/0005.new-cf12-default-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0005.new-cf12-default-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 23011,
+      "sha256": "76d7b5f7542390521a57a1553f744f087d0b8906790fd19204ab51739763df2b"
+    },
+    {
+      "path": "replay-v5/raw/0006.new-cf12-all-TestSwitchLabels$TestCls$Inner-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0006.new-cf12-all-TestSwitchLabels$TestCls$Inner-render.stdout.raw",
+      "bytes": 22661,
+      "sha256": "2adc099fd39f9ef3878971cdb0d27999e70ab4201a1b184e8b588b8f2adc546a"
+    },
+    {
+      "path": "replay-v5/raw/0007.new-cf12-all-TestSwitchLabels$TestCls-render.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0007.new-cf12-all-TestSwitchLabels$TestCls-render.stdout.raw",
+      "bytes": 23999,
+      "sha256": "3684cf2fc5bac857e313316124969f3b22e69776adfc8ee56031e376fff3dfaa"
+    },
+    {
+      "path": "replay-v5/raw/0008.jdk8_tools-default-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0008.jdk8_tools-default-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0009.jdk8_tools-default-jarde-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0009.jdk8_tools-default-jarde-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0010.jdk8_tools-default-probe-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0010.jdk8_tools-default-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0011.jdk8_tools-default-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0011.jdk8_tools-default-original-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0012.jdk8_tools-default-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0012.jdk8_tools-default-jadx-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0013.jdk8_tools-default-jarde-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0013.jdk8_tools-default-jarde-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0014.jdk8_tools-all-jadx-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0014.jdk8_tools-all-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0015.jdk8_tools-all-jarde-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0015.jdk8_tools-all-jarde-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0016.jdk8_tools-all-probe-compile.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0016.jdk8_tools-all-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0017.jdk8_tools-all-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0017.jdk8_tools-all-original-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0018.jdk8_tools-all-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0018.jdk8_tools-all-jadx-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0019.jdk8_tools-all-jarde-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0019.jdk8_tools-all-jarde-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0020.jdk23_tools-default-jadx-compile.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "path": "replay-v5/raw/0020.jdk23_tools-default-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0021.jdk23_tools-default-jarde-compile.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "path": "replay-v5/raw/0021.jdk23_tools-default-jarde-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0022.jdk23_tools-default-probe-compile.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "path": "replay-v5/raw/0022.jdk23_tools-default-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0023.jdk23_tools-default-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0023.jdk23_tools-default-original-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0024.jdk23_tools-default-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0024.jdk23_tools-default-jadx-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0025.jdk23_tools-default-jarde-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0025.jdk23_tools-default-jarde-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0026.jdk23_tools-all-jadx-compile.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "path": "replay-v5/raw/0026.jdk23_tools-all-jadx-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0027.jdk23_tools-all-jarde-compile.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "path": "replay-v5/raw/0027.jdk23_tools-all-jarde-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0028.jdk23_tools-all-probe-compile.stderr.raw",
+      "bytes": 253,
+      "sha256": "747b70e581cc4a1d5ea0a9c75e9fa4ce1f45534db6d38bfc15a06ec333b22e6d"
+    },
+    {
+      "path": "replay-v5/raw/0028.jdk23_tools-all-probe-compile.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0029.jdk23_tools-all-original-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0029.jdk23_tools-all-original-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0030.jdk23_tools-all-jadx-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0030.jdk23_tools-all-jadx-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "replay-v5/raw/0031.jdk23_tools-all-jarde-runtime.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "replay-v5/raw/0031.jdk23_tools-all-jarde-runtime.stdout.raw",
+      "bytes": 334,
+      "sha256": "c8e175f84e7b7243b913db32aebcb0670201d9cfdfc5f7b5cf9f4799bbabebbe"
+    },
+    {
+      "path": "report-verifier/README.md",
+      "bytes": 1398,
+      "sha256": "ad520b0a18a6e1dc3b186fd9dc0b668c3655edd3e5d9421ee67063a58b4656ba"
+    },
+    {
+      "path": "report-verifier/REVIEW.md",
+      "bytes": 944,
+      "sha256": "011d36c8c2f49837aa6c35291c273326bdf771bdd085818fa020de51b99d2cbe"
+    },
+    {
+      "path": "report-verifier/check_saved_schema.py",
+      "bytes": 3035,
+      "sha256": "7c3b692ba8124effe1eee305a461e49e0033c35093026d21a72f1c000d4bff82"
+    },
+    {
+      "path": "report-verifier/pins.json",
+      "bytes": 7859,
+      "sha256": "d3781f0bfe274f4353467078763baecbcd1d9d8fce4636b92dee345afb31041b"
+    },
+    {
+      "path": "report-verifier/report-verification.json",
+      "bytes": 1077,
+      "sha256": "5cad9804b207776e026c3f4ba337f219db7ce55f0d03c15f2890b808f42b2d03"
+    },
+    {
+      "path": "report-verifier/report-verification.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "report-verifier/schema-only.observed.json",
+      "bytes": 3083,
+      "sha256": "143695c1b1e2e85512630cf9d4d44fe6797faf272668263df30f95617dc1eb3c"
+    },
+    {
+      "path": "report-verifier/verify_replay_manifest.py",
+      "bytes": 8249,
+      "sha256": "d2b4892eaa93ae701aa324e4739541c7ac5d6024dc8938bd3bd57cfd7fb40336"
+    },
+    {
+      "path": "report-verifier/verify_reports.py",
+      "bytes": 21766,
+      "sha256": "3a44f5ce56c76ef169b7ca2c4685bd1e38deb1de175abd3f9a89a2ff7af76296"
+    },
+    {
+      "path": "root-report-acceptance/invocation.json",
+      "bytes": 669,
+      "sha256": "bbde98bada43aebfc88d90b88d9ede358f5332e606ee82029782292add7e269c"
+    },
+    {
+      "path": "root-report-acceptance/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "root-report-acceptance/stdout.raw",
+      "bytes": 1077,
+      "sha256": "5cad9804b207776e026c3f4ba337f219db7ce55f0d03c15f2890b808f42b2d03"
+    },
+    {
+      "path": "root-runtime-acceptance/invocation.json",
+      "bytes": 288,
+      "sha256": "4b4c3a4d1976832cd1d4ccd768813fb9f14a27613066d014b2012183694e9081"
+    },
+    {
+      "path": "root-runtime-acceptance/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "root-runtime-acceptance/stdout.raw",
+      "bytes": 353,
+      "sha256": "556f271dd18e0764ea87d2f8411a68e5a7f1569221a94a9dda6b3df2bd92c1d2"
+    },
+    {
+      "path": "root-source-review/acceptance.json",
+      "bytes": 1507,
+      "sha256": "20e270689ad8b424bbefee3b86a3593b9497e205d635bab308f280679400c679"
+    },
+    {
+      "path": "runtime-verifier/README.md",
+      "bytes": 1221,
+      "sha256": "ab1e72ce731d6700e215b903fd4ce7f617abe8b921470bdec4bbee5799596e96"
+    },
+    {
+      "path": "runtime-verifier/REVIEW.md",
+      "bytes": 877,
+      "sha256": "ad9cd4ff96641679373114f6148938d64388360192b1d984e38b22bcbab0c9bf"
+    },
+    {
+      "path": "runtime-verifier/pins.json",
+      "bytes": 3247,
+      "sha256": "86f80f7e48570fe71480e45a945b5dad46d515c5c28f8f7cace989246a6b5d77"
+    },
+    {
+      "path": "runtime-verifier/verification.json",
+      "bytes": 353,
+      "sha256": "556f271dd18e0764ea87d2f8411a68e5a7f1569221a94a9dda6b3df2bd92c1d2"
+    },
+    {
+      "path": "runtime-verifier/verification.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runtime-verifier/verify_v5.py",
+      "bytes": 15437,
+      "sha256": "43c25adad541f99ef81baa92bca28a18a40b2a4daf7ea56704073165b03ca678"
+    }
+  ]
+}

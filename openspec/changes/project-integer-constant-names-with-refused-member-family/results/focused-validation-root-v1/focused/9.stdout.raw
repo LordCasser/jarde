@@ -1,0 +1,13 @@
+
+running 8 tests
+test budget_and_cancellation_stop_the_whole_fold_atomically ... ok
+test cross_class_presenter_and_missing_child_keep_the_flattened_presentations ... ok
+test grandchild_stays_outside_the_fold_and_keeps_its_own_presentation ... ok
+test interface_call_owner_anchors_the_fold_and_an_unnamed_segment_still_refuses ... ok
+test interface_child_and_sibling_inheritance_fold_with_source_spellings ... ok
+test multi_child_family_folds_five_declarations_and_reproduces_the_baseline ... ok
+test non_static_member_child_never_enters_the_static_fold ... ok
+test single_child_family_folds_when_the_narrow_certificate_refuses ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.23s
+

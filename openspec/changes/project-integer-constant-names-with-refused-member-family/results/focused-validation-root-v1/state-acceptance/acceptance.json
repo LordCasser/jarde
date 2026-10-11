@@ -1,0 +1,76 @@
+{
+  "status": "accepted",
+  "named_fixture_passes": [
+    {
+      "command_index": 3,
+      "name": "nested_enum_projection_is_proved_and_budget_stop_is_atomic",
+      "raw_pass_line": "test facade::enum_constant_body_relation_tests::nested_enum_projection_is_proved_and_budget_stop_is_atomic ... ok"
+    },
+    {
+      "command_index": 3,
+      "name": "nested_enum_with_unproved_body_obligations_stays_field_by_field",
+      "raw_pass_line": "test facade::enum_constant_body_relation_tests::nested_enum_with_unproved_body_obligations_stays_field_by_field ... ok"
+    },
+    {
+      "command_index": 5,
+      "name": "child_body_stop_keeps_root_and_child_physical_coverage",
+      "raw_pass_line": "test child_body_stop_keeps_root_and_child_physical_coverage ... ok"
+    },
+    {
+      "command_index": 5,
+      "name": "capture_analysis_stop_keeps_completed_physical_child",
+      "raw_pass_line": "test capture_analysis_stop_keeps_completed_physical_child ... ok"
+    },
+    {
+      "command_index": 5,
+      "name": "selected_family_keeps_two_physical_reports_under_one_budget",
+      "raw_pass_line": "test selected_family_keeps_two_physical_reports_under_one_budget ... ok"
+    },
+    {
+      "command_index": 5,
+      "name": "declaration_pair_near_misses_never_publish_half_a_root",
+      "raw_pass_line": "test declaration_pair_near_misses_never_publish_half_a_root ... ok"
+    },
+    {
+      "command_index": 5,
+      "name": "missing_or_duplicate_selected_child_refuses_family_without_losing_root",
+      "raw_pass_line": "test missing_or_duplicate_selected_child_refuses_family_without_losing_root ... ok"
+    },
+    {
+      "command_index": 6,
+      "name": "proved_two_level_anonymous_interfaces_project_as_one_nested_root_expression",
+      "raw_pass_line": "test proved_two_level_anonymous_interfaces_project_as_one_nested_root_expression ... ok"
+    },
+    {
+      "command_index": 7,
+      "name": "proved_annotation_is_nested_and_the_physical_child_is_preserved",
+      "raw_pass_line": "test proved_annotation_is_nested_and_the_physical_child_is_preserved ... ok"
+    },
+    {
+      "command_index": 7,
+      "name": "malformed_child_kind_refuses_projection_but_keeps_the_child_report",
+      "raw_pass_line": "test malformed_child_kind_refuses_projection_but_keeps_the_child_report ... ok"
+    },
+    {
+      "command_index": 8,
+      "name": "n1_folds_stat_and_inner_together_with_the_synthetics_elided",
+      "raw_pass_line": "test n1_folds_stat_and_inner_together_with_the_synthetics_elided ... ok"
+    },
+    {
+      "command_index": 9,
+      "name": "multi_child_family_folds_five_declarations_and_reproduces_the_baseline",
+      "raw_pass_line": "test multi_child_family_folds_five_declarations_and_reproduces_the_baseline ... ok"
+    }
+  ],
+  "anonymous_interface_refusal_passes": [
+    "test anonymous_interface_projection_refuses_a_cross_class_use_of_the_same_child ... ok",
+    "test anonymous_interface_projection_refuses_a_mixed_quality_child_method ... ok",
+    "test anonymous_interface_projection_refuses_a_second_non_direct_same_class_allocation ... ok",
+    "test anonymous_interface_projection_refuses_an_incomplete_child_method ... ok",
+    "test anonymous_interface_projection_refuses_fields_and_constructor_effects ... ok",
+    "test anonymous_interface_projection_refuses_non_source_child_method_flags ... ok"
+  ],
+  "projector_whole_function_unchanged_sha256": "675302b409c58a6e66cdc1de72386c0f1087adaf88e49b13b73ca3c6d4665264",
+  "source_gate_audit": "/private/tmp/jarde-cf12-constant-gate-source-audit-root-v1/audit.json",
+  "boundary": "These tests prove real family states and physical/presentation behavior. They do not each prove integer candidates plus a non-Absent sibling end-to-end. Exact three sibling Absent gates and all projector early returns, AST quality checks, shadow/duplicate handling, ordinary-writer rebuild and derived anchors are unchanged, proved by source review and whole-function byte equality. Outer lookup remains excluded."
+}

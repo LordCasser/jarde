@@ -1,0 +1,9 @@
+
+running 4 tests
+test budget_and_cancellation_stop_the_mixed_fold_atomically ... ok
+test mixed_variants_recompile_as_their_folded_units_and_reproduce_the_baseline ... ok
+test n1_folds_stat_and_inner_together_with_the_synthetics_elided ... ok
+test pure_non_static_family_folds_too ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.19s
+
