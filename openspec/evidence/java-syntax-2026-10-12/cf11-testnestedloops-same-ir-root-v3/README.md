@@ -1,0 +1,7 @@
+# TestNestedLoops foreach 后续首拒实测
+
+在v2确认入口后，root实际运行仅加stage记录的v3：Engine::class_source准确facts、frozen JDK23 class、Java8 Generic SingleClass SnapshotAll、默认Rust栈；1/0/0/两命令，结束两源恢复与全部4718输入恒同，target clean。执行 receipt、4raw及invocation见actual/和invocation/。
+
+内层branch42首Declare通过入口，真实第一个后续拒绝stage=iterator_declaration_before_init，即当前self.stmts范围内寻找初始化之前的Iterator无初值声明失败。外层branch13首Assign仍在body_first_not_initialized_declaration拒绝。实际完整生成源码是外层之前声明local5、外层内部执行local5=l2.iterator()；不是初始化时直接声明。由源码/Builder当前范围进一步推导为跨构建范围的声明查找问题，具体祖先声明所有权和liveness尚待审阅，不能声称后续SSA/effect/handler gates均通过。
+
+private v4在v3 Rust candidate上仅加36个ordered stage赋值和最后refusal消息，不改变?或None关系；nested find_map局部None不被记成总体首拒。private patch/pins足以从已pin基础源码还原，不重复保存大型基础源码。实际拒绝不是ordinary_generic_source_unproved的泛型投影拒绝；泛型债务保持单列。

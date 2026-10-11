@@ -1,5 +1,19 @@
 # HANDOFF — jarde 主线接续入口
 
+当前在制断点（2026-10-12）：持续目标 active，用户明确继续当前聊天。上一交付产品 `02ecd63ff` 自身 CI 已接受；关闭记录 `b9ae717831ff75c2622f205f1fd00e3ecad015e7` 已推送并通过其真实 HEAD clean audit。**当前构造条件值改动未提交，工作区有修改；不得借上一产品 CI 宣称当前产品已通过。**
+
+OpenSpec [recover-proved-constructor-conditional-values](openspec/changes/recover-proved-constructor-conditional-values/tasks.md) 当前 **6/9**。生产复用 Site 的严格一跳 constructor→live 二输入 stack Phi→同 join 唯一消费者，完整 CFG/branch/effect 仍由既有 Builder 证明；最终 AST 单次扫描只认准确 method-local Direct constructor New，summary/gap/record共用同一判定。普通 Site 路径和 foreach/generic 债务独立。
+
+当前 v6 验证实际通过公开API5/0/0、fingerprint updater1与check5/0/1、CLI build/clean；相同production/fixture绑定v4库360/0/0、reader census1/0/0。Late Stop确实在目标asciiToLowerCase BCI72/AnalysisSteps，目标无部分正文/map/news/content，pre-cancel零计费另验。X4三候选0呈现3拒绝、最终ExplanationOnly和Region fallback平面区分正确。夹具manifest仅新增本轮7输入文件、原条目不变。[定向验收](openspec/changes/recover-proved-constructor-conditional-values/results/focused-acceptance-root-v6/README.md)保留先前v4/v5真实失败与测试假设修订。
+
+新CLI `/private/tmp/jarde-constructor-conditional-candidate-cli-root-v6`（61286928B/0555/SHA256 `a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241`，4727源闭包）已fresh完成72命令/144raw双JDK三方：固定SequentialLoops2四Jarde完整生成class与十行oracle同；Positive四Jarde same-source isolated完整class与十九行oracle同，包含identity/null/异常/调用顺序/field不写失败值。控制combined/Refusals八compile失败/no runtime、shared/nested/handler物理缺口保留，不宣称整个拒绝类行为通过。见[当前CLI对照验收](openspec/changes/recover-proved-constructor-conditional-values/results/current-cli-runtime-acceptance-root-v6/README.md)。
+
+完整workspace actual runner与独立acceptor已exit0：95批/361目标、3473/0/97、3570named/98命令/196raw与metadata/closure逐项核，target峰值707988645B并clean。当前fmt/CI范围Clippy/global strict/finalCLI正运行，产品提交推送/自身CI和真实main clean交付仍待。root独占shared/Git/Cargo/JDK/JADX/CLI，Luna仅private准备，默认Rust栈、用户批准5GiB free/target1GiB一秒守卫并clean；不新branch/worktree。71单元/612测试计数不变。
+
+foreach 的 [真实 v3 首拒](openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/README.md)已确认：inner BCI42 在 `iterator_declaration_before_init`，Iterator 空声明位于祖先 region、初始化 Assign 位于当前 loop body；outer BCI13 因首条元素 Assign 被入口拒绝。静态 [声明所有权审阅](openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/declaration-ownership-review/analysis.md)建议复用 LocalVariable/DeclarationPlacement，不能把祖先 Vec 下标当当前删除下标。后续 SSA/effect 门仍未实测；generic Signature 拒绝独立，不混入当前构造条件值片。71 单元/612 测试计数不变，不新增分支/worktree。
+
+以下上一交付记录作为历史保留。
+
 当前断点（2026-10-12）：持续目标 active，用户明确继续当前聊天。产品 **02ecd63ff33270cea4413793db2f99d6927dc65c** 已提交推送 main，自身 [CI 38154998619](https://github.com/LordCasser/jarde/actions/runs/38154998619) 已 root 独立接受四 jobs/52 steps、双 seed 各360目标/3461-0-97、全部3558 named outcomes、4718输入与产品Git/live/最终CLI绑定。[for-condition窄片](openspec/changes/recover-proved-for-condition-expressions/verification-root.md) **9/9**，原始证据见 [自身CI与产品clean checkpoint](openspec/changes/recover-proved-for-condition-expressions/results/own-product-ci-clean-root-v1/README.md)。
 
 生产只扩既有ForHeader条件producer match，复用唯一caller的test_is_pure；CFG/init/update/phi/local消费门保持。固定TestNestedLoops2 outer for/inner while和11个控制for接受。最终CLI `/private/tmp/jarde-for-condition-final-cli-root-v3`，61213840 bytes/0555/SHA256 `51c9a1326031fd10444f7e18a055c6daecef233423c90478257becf24d1e0bd4`；与实际115命令/28完整生成runtime成功腿candidate字节相同，明确未在final路径重跑。fresh workspace v4从零95批/360目标3461/0/97，fmt/Clippy/global strict352/0/finalbuild接受并clean。原Refusals八compile失败/no runtime和12BCI缺口独立保留，整个CF11/71/612计数不增加。

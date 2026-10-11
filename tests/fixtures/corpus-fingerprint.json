@@ -1461,6 +1461,41 @@
       "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
     },
     {
+      "blake3": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+      "bytes": 2092,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class"
+    },
+    {
+      "blake3": "7be71491606bca7dd7e0eaab8594b547d489b686317405c654e20d556e55240e",
+      "bytes": 2168,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.java"
+    },
+    {
+      "blake3": "65f4a58ab648fd0f503a355c10ff94f0512a3729c2172cd438f75f933f5bc0be",
+      "bytes": 2516,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class"
+    },
+    {
+      "blake3": "c8ec571b8a496e20dabf6afd198d3173dd322b0b43c8b7664f4d363b57c567a2",
+      "bytes": 2748,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.java"
+    },
+    {
+      "blake3": "a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7",
+      "bytes": 931,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class"
+    },
+    {
+      "blake3": "d426947634edfd9568b15896a4ff0f683630e2f5154c53dce81dce561c1ea7eb",
+      "bytes": 542,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.java"
+    },
+    {
+      "blake3": "fc269e2d5ecd45f1134ca20ceca3739ff51dc08c6ced5278620d8db412eb1e37",
+      "bytes": 1592,
+      "path": "tests/fixtures/java8/cf11-conditional-constructor-values/pins.json"
+    },
+    {
       "blake3": "ab0ab0c3a4de5393f7a916103d4103cb45521b4b4b3b8d5acf8e701b3a319e86",
       "bytes": 1464,
       "path": "tests/fixtures/java8/cf11-for-condition/ForConditionEffects.class"

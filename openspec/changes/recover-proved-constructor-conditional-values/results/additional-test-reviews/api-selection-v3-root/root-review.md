@@ -1,0 +1,3 @@
+Root逐项核private reviewed input pins后应用测试候选；不改生产。目标range与正文/摘要/缺口/records/physical identity/map匹配分开于非目标member既有range拒绝。X4以ExplanationOnly/Mixed/Fallback和structured Region无fallback的真实平面断言替代错误假设。
+
+Root发现Luna将Positive constructor也列作invalid，与v5实际left整类raw（super()/return完整）矛盾；实际first physical instruction与frozen javac23 all map首BCI均0，排除record positions的mapped选择仍0..1。当前condition/argument起始getstatic宽3，end1不合法；constructor aload0宽1，end1合法。因此共享修订去除此expectedinvalid条目，当前候选待v6实际验收。旧failure与private候选原样保留，no success预写。
