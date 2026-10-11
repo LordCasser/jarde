@@ -397,3 +397,5 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-11 conditional窄片7/7已关闭：自身产品CI准确接受，证据提交69cff3bd299feb71a820917be866db05b63b57dc实际clean审计接受15worktrees/仅main/无target；整CF12尚未接受，71单元完成数不变。
 
 2026-10-11：CF12同类常量名称窄片 `project-integer-constant-names-with-refused-member-family` 11/13；只扩既有Absent/RefusedNone准入，真实root/独立Inner派生字段/方法BCI锚通过。fresh95批359 targets/3445-0-97、4695完整输入CLI、32命令双JDK/default-all完整原/JADX/Jarde源码与120行运行观察已root独立接受。outer-only2748数字保留，自身产品CI/clean交付待完成；整CF12与71/612分母不变。详[窄片验收](../../changes/project-integer-constant-names-with-refused-member-family/verification-root.md)。
+
+2026-10-11：CF12同类常量名称窄片13/13关闭，精确产品74b02d205c6b99f223c5fe2dbc5095d370825972自身CI38124713388已root实际接受4jobs/52steps、双seed各359 targets/3445-0-97，4695输入与产品Git/live/最终CLI一致；后继checkpoint630313b96已clean审计，仅main、15物理checkout无target/14辅助detached祖先。整CF12/71单元完成数不变，下一项为既有computed-for OpenSpec。

@@ -1,0 +1,40 @@
+{
+  "status": "workspace_and_final_cli_bound_to_actual_product",
+  "product_commit": "74b02d205c6b99f223c5fe2dbc5095d370825972",
+  "workspace": {
+    "execution": "/private/tmp/jarde-cf12-constant-workspace-root-v1/execution.json",
+    "execution_sha256": "a59a6b452b60fbca88090aade14aaa67f12bdf637c6eaa8b02a513d6b45ebcb2",
+    "metadata": "/private/tmp/jarde-cf12-constant-workspace-root-v1/metadata.json",
+    "metadata_sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248",
+    "seed": "5350648285461741569",
+    "target_count": 359,
+    "batch_count": 95,
+    "workspace_totals": [
+      3445,
+      0,
+      97
+    ],
+    "source_pin_count": 4695,
+    "fixture_and_literal_input_count": 4691
+  },
+  "cli": {
+    "build_path": "/private/tmp/jarde-cf12-constant-final-cli-build-root-v1/execution.json",
+    "build_sha256": "4105325b3cea9cae9b011c112950907861597ef848f8c0380dc93c3f2de4a872",
+    "cli": {
+      "path": "/private/tmp/jarde-cf12-constant-candidate-cli-root-v2",
+      "size_bytes": 60820032,
+      "sha256": "8e70234797af43e114e94cd08ba0a8f120d59d0e9c638a20a8cf64e9876fd64b",
+      "mode": "0o555"
+    },
+    "source_base": "a4b0acf4b04c65360b6a8a8fe7e4a819a62a2db3",
+    "product_source_pin_count": 4695,
+    "product_source_pins_match_workspace": true,
+    "runner_path": "/private/tmp/jarde-final-cli-build-root-v1/build-final-cli.py",
+    "runner_sha256": "a72b70a7b2699bf5f936f81b657df4073f105be3fceacf753e865f0ce2d4d79b",
+    "guard_template_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "target_scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "commands": 2,
+    "target_absent_after_clean": true
+  },
+  "ci": "not_checked_yet"
+}

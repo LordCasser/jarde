@@ -24,5 +24,5 @@
 
 - [x] 4.1 在5GiB机器余量/target1GiB一秒守卫下，对改动文件执行仓库要求的格式检查；运行同范围 Clippy 与有限的整数常量、class-source/source-map、family相关回归。根据共享代码影响和本仓要求决定是否补全 workspace 检查；记录准确命令与结果，不预设聚合数字。
 - [x] 4.2 运行冻结 CLI / full replay 对照并检查完整源码差异；按本仓 OpenSpec strict 流程验证 proposal/spec/tasks与实现一致。确认结论只覆盖该 change与实际运行的冻结 case，不称整 CF12完成。
-- [ ] 4.3 在本地实现、检查与冻结对照均可审查后，由root为实际产品改动创建准确提交并推送；随后独立验收该提交对应的自身CI全部job/step/测试结果，不借用conditional或其他提交CI。提交不得包含 private 草案或无关改动。
-- [ ] 4.4 按 root 当前工作流清理 main checkout、worktrees及handoff遗留状态；确认交付分支/提交、工作区和相关运行目录处于预期状态，再完成交接。记录清理事实，不改写未涉及的架构债务。
+- [x] 4.3 在本地实现、检查与冻结对照均可审查后，由root为实际产品改动创建准确提交并推送；随后独立验收该提交对应的自身CI全部job/step/测试结果，不借用conditional或其他提交CI。提交不得包含 private 草案或无关改动。
+- [x] 4.4 按 root 当前工作流清理 main checkout、worktrees及handoff遗留状态；确认交付分支/提交、工作区和相关运行目录处于预期状态，再完成交接。记录清理事实，不改写未涉及的架构债务。

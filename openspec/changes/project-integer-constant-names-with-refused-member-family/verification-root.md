@@ -1,6 +1,6 @@
 # Root 验收记录
 
-当前 11/13；本地实现与完整对照已接受，自身产品 CI 和最终主线交付待完成。持续目标及整 CF12 保持开放。
+当前 13/13；本地实现、完整对照、精确产品自身 CI 与 clean 主线交付已接受。持续目标及整 CF12 保持开放。
 
 生产只在 `src/facade.rs` 既有调用 gate 增加 `Refused { child: None }` alternative。Complete、三个 sibling Absent 条件及整数名称投影函数字节不变；childSome、RefusedPair、所有 Prepared variants 仍排除。没有新增机制、依赖、入口或 reason 分支。唯一新增核心测试读真实冻结 root/独立 Inner，核对字段、物理方法、派生 UTF8 spans 和 BCI。真实 family fixtures 验证各状态自身，未冒充每一种状态同时存在整数名称候选。
 
@@ -12,4 +12,4 @@
 
 v3 在 CLI 前因旧记录额外 mode 字段失败；v4 八次 render 后因 JDK manifest legs 为列表失败。这些真实失败与原 raw 保留，未计作完整 replay 通过。证据分别在 `results/focused-validation-root-v1/`、`results/full-workspace-final-cli-root-v1/`、`results/complete-labels-replay-root-v1/`，原 absolute private 路径不改写，归档 inventory 绑定按字节复制的文件。
 
-所有 Rust 构建遵守用户批准的 5GiB free/target1GiB、一秒进程组守卫；完整 workspace 观察峰值444242729 bytes，最终CLI峰值360190581 bytes，完成后 target 不存在。下一步为准确产品 commit/push、自身 CI 全部 jobs/steps/双 seed 完整目标日志验收及主线清理。
+所有 Rust 构建遵守用户批准的 5GiB free/target1GiB、一秒进程组守卫；完整 workspace 观察峰值444242729 bytes，最终CLI峰值360190581 bytes，完成后 target 不存在。产品74b已实际提交推送；自身CI38124713388独立接受4jobs/52steps、双seed各359目标/3445-0-97，4695动态输入绑定产品Git/live及冻结CLI。后继分析checkpoint630313b965223bb2ec4531d36b8e3646182beddf已实际clean audit：main=origin、仅main、15物理checkout无target，14辅助detached在main祖先，不冒称物理删除。详[自身CI与清理](results/own-product-ci-clean-root-v1/README.md)。关闭文档提交后仍核最终HEAD才应用下一项。
