@@ -1,0 +1,9 @@
+{
+  "base_sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade",
+  "candidate_sha256": "6e832d7e803e13a7a22fe8798f3950dadb43759f023339bbbad1f6615ee526ea",
+  "body_whitespace_identical": true,
+  "comparison_helper_removed": true,
+  "dispatch_and_common_declaration_preserved": true,
+  "cross_path_patch_check_passed_after_helper_reversal_sha256": "7144ec385795251fdc2de3aeda5938ac4d2d031c1bf62063f1cac54a5d10cdd6",
+  "no_toolchain_run_yet": true
+}

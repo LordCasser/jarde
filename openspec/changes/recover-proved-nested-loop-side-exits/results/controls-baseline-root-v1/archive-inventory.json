@@ -1,0 +1,1484 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/execution.json",
+    "archived": "captures/v1/execution.json",
+    "bytes": 38251,
+    "sha256": "429bc2bb875609db2c7d032aea3a2bd2b00e0949767d9ebd5c8d8ff31664c2d1"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/inputs/NestedLoopSideExitControls.jar",
+    "archived": "captures/v1/inputs/NestedLoopSideExitControls.jar",
+    "bytes": 1220,
+    "sha256": "9360b6303ee63dafdcf44991fb4f9634cffab1bbcc36ef5b17f73a775ec5fe41"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/inputs/NestedLoopSideExitControls.java",
+    "archived": "captures/v1/inputs/NestedLoopSideExitControls.java",
+    "bytes": 851,
+    "sha256": "2edf338cf0adfb76d8a62d15440ee5d5a9950336e87fe025705a881aa9304e01"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/inputs/Runner.java",
+    "archived": "captures/v1/inputs/Runner.java",
+    "bytes": 717,
+    "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/inputs/jadx-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v1/inputs/jadx-default/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/inputs/jadx-none/NestedLoopSideExitControls.java",
+    "archived": "captures/v1/inputs/jadx-none/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+    "archived": "captures/v1/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+    "archived": "captures/v1/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/jarde/javac8-jarde-default/report.json",
+    "archived": "captures/v1/jarde/javac8-jarde-default/report.json",
+    "bytes": 168227,
+    "sha256": "6cec4bdca559a87de42b6328bcc880570a50f4524b07e7dc0c1dc0f66c0de0ca"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v1/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "df583c9fbeb1c5573b99e9621d5a68fd5cdd3898572688a1a7e79a5e9436e8fe"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-jadx-default/classes/cf11/Runner.class",
+    "archived": "captures/v1/legs/javac23-jadx-default/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v1/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "df583c9fbeb1c5573b99e9621d5a68fd5cdd3898572688a1a7e79a5e9436e8fe"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-jadx-none/classes/cf11/Runner.class",
+    "archived": "captures/v1/legs/javac23-jadx-none/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v1/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "b880de488b261f83b58f3b9106d4b32a5ac805fba2c3edf8c656999ecbf90a30"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-original/classes/cf11/Runner.class",
+    "archived": "captures/v1/legs/javac23-original/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-original/javap.txt",
+    "archived": "captures/v1/legs/javac23-original/javap.txt",
+    "bytes": 7685,
+    "sha256": "2aa92c10f87ef62ab9af35d37516580289506136f85ff16c17f3bc9d178a47fa"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v1/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "603ee690c998ccd12b7b3e2ea13014d52bd1649022e4e601f21c6c46d51ccfa8"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-jadx-default/classes/cf11/Runner.class",
+    "archived": "captures/v1/legs/javac8-jadx-default/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v1/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "603ee690c998ccd12b7b3e2ea13014d52bd1649022e4e601f21c6c46d51ccfa8"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-jadx-none/classes/cf11/Runner.class",
+    "archived": "captures/v1/legs/javac8-jadx-none/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v1/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "edbd9b5747d5049c090879dd8e880e31a3576cc22d68dbebd1566bd122d46f38"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-original/classes/cf11/Runner.class",
+    "archived": "captures/v1/legs/javac8-original/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac8-original/javap.txt",
+    "archived": "captures/v1/legs/javac8-original/javap.txt",
+    "bytes": 7412,
+    "sha256": "b4643935eca073fb136c401ffae31283f82ea629418104abd6cb0cd277337e97"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/1.stderr.raw",
+    "archived": "captures/v1/raw/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/1.stdout.raw",
+    "archived": "captures/v1/raw/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/10.stderr.raw",
+    "archived": "captures/v1/raw/10.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/10.stdout.raw",
+    "archived": "captures/v1/raw/10.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/11.stderr.raw",
+    "archived": "captures/v1/raw/11.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/11.stdout.raw",
+    "archived": "captures/v1/raw/11.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/12.stderr.raw",
+    "archived": "captures/v1/raw/12.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/12.stdout.raw",
+    "archived": "captures/v1/raw/12.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/13.stderr.raw",
+    "archived": "captures/v1/raw/13.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/13.stdout.raw",
+    "archived": "captures/v1/raw/13.stdout.raw",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/14.stderr.raw",
+    "archived": "captures/v1/raw/14.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/14.stdout.raw",
+    "archived": "captures/v1/raw/14.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/15.stderr.raw",
+    "archived": "captures/v1/raw/15.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/15.stdout.raw",
+    "archived": "captures/v1/raw/15.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/16.stderr.raw",
+    "archived": "captures/v1/raw/16.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/16.stdout.raw",
+    "archived": "captures/v1/raw/16.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/17.stderr.raw",
+    "archived": "captures/v1/raw/17.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/17.stdout.raw",
+    "archived": "captures/v1/raw/17.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/18.stderr.raw",
+    "archived": "captures/v1/raw/18.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/18.stdout.raw",
+    "archived": "captures/v1/raw/18.stdout.raw",
+    "bytes": 58042,
+    "sha256": "e136bb0eb3c1603cf1626905156317aea5fa53c07a0361b925ad897ba466c8e3"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/2.stderr.raw",
+    "archived": "captures/v1/raw/2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/2.stdout.raw",
+    "archived": "captures/v1/raw/2.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/3.stderr.raw",
+    "archived": "captures/v1/raw/3.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/3.stdout.raw",
+    "archived": "captures/v1/raw/3.stdout.raw",
+    "bytes": 7412,
+    "sha256": "b4643935eca073fb136c401ffae31283f82ea629418104abd6cb0cd277337e97"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/4.stderr.raw",
+    "archived": "captures/v1/raw/4.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/4.stdout.raw",
+    "archived": "captures/v1/raw/4.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/5.stderr.raw",
+    "archived": "captures/v1/raw/5.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/5.stdout.raw",
+    "archived": "captures/v1/raw/5.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/6.stderr.raw",
+    "archived": "captures/v1/raw/6.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/6.stdout.raw",
+    "archived": "captures/v1/raw/6.stdout.raw",
+    "bytes": 7685,
+    "sha256": "2aa92c10f87ef62ab9af35d37516580289506136f85ff16c17f3bc9d178a47fa"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/7.stderr.raw",
+    "archived": "captures/v1/raw/7.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/7.stdout.raw",
+    "archived": "captures/v1/raw/7.stdout.raw",
+    "bytes": 6,
+    "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/8.stderr.raw",
+    "archived": "captures/v1/raw/8.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/8.stdout.raw",
+    "archived": "captures/v1/raw/8.stdout.raw",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/9.stderr.raw",
+    "archived": "captures/v1/raw/9.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/raw/9.stdout.raw",
+    "archived": "captures/v1/raw/9.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v1/NestedLoopSideExitControls.java",
+    "archived": "programs/collector-v1/NestedLoopSideExitControls.java",
+    "bytes": 851,
+    "sha256": "2edf338cf0adfb76d8a62d15440ee5d5a9950336e87fe025705a881aa9304e01"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v1/Runner.java",
+    "archived": "programs/collector-v1/Runner.java",
+    "bytes": 717,
+    "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v1/collect.py",
+    "archived": "programs/collector-v1/collect.py",
+    "bytes": 17035,
+    "sha256": "e1a79d4e53d8a4c8c38e5ef67b83f54040460c4f10e2530a71c70e75e24f0bb3"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v1/expected-observations.md",
+    "archived": "programs/collector-v1/expected-observations.md",
+    "bytes": 1256,
+    "sha256": "2842f3d1bfaf54893c79e6481eedd45aa9b2387ac4b80f3434de7757c9b2a8ab"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1.stdout",
+    "archived": "invocations/jarde-cf11-side-exits-controls-baseline-root-v1.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1.stderr",
+    "archived": "invocations/jarde-cf11-side-exits-controls-baseline-root-v1.stderr",
+    "bytes": 814,
+    "sha256": "b16000d7ebd06ea8e258f7475e9c012952f9b0e8f48c73a82a720f31744c183d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/execution.json",
+    "archived": "captures/v2/execution.json",
+    "bytes": 810275,
+    "sha256": "62c18855bf0d8490918db67b68ea71efb701ea35f4604e689cc5cd605e58dcd3"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/file-inventory.json",
+    "archived": "captures/v2/file-inventory.json",
+    "bytes": 12187,
+    "sha256": "87ca1ef20fef97b0f684f2fe52ed0dd9fe79f177113a9a6a1bdde5d24fcd9804"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/inputs/NestedLoopSideExitControls.jar",
+    "archived": "captures/v2/inputs/NestedLoopSideExitControls.jar",
+    "bytes": 1220,
+    "sha256": "9360b6303ee63dafdcf44991fb4f9634cffab1bbcc36ef5b17f73a775ec5fe41"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/inputs/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/inputs/NestedLoopSideExitControls.java",
+    "bytes": 851,
+    "sha256": "2edf338cf0adfb76d8a62d15440ee5d5a9950336e87fe025705a881aa9304e01"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/inputs/Runner.java",
+    "archived": "captures/v2/inputs/Runner.java",
+    "bytes": 717,
+    "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/inputs/jadx-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/inputs/jadx-default/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/inputs/jadx-none/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/inputs/jadx-none/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+    "bytes": 1448,
+    "sha256": "1104d8542196a2e319660cf02ae5afd13dfbedb46835bc2387e8c26c22772b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac23-jarde-all/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/jarde/javac23-jarde-all/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac23-jarde-all/report.json",
+    "archived": "captures/v2/jarde/javac23-jarde-all/report.json",
+    "bytes": 171663,
+    "sha256": "cec73f309a5e1fd193c5b1f763a122efbadd4faab3396e2579b64addf784378b"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac23-jarde-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/jarde/javac23-jarde-default/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac23-jarde-default/report.json",
+    "archived": "captures/v2/jarde/javac23-jarde-default/report.json",
+    "bytes": 168223,
+    "sha256": "efce8a26df0fa13a5eb431ebaefc22103daa9e7372b7b668813c58f0fa7e8cec"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac8-jarde-all/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/jarde/javac8-jarde-all/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac8-jarde-all/report.json",
+    "archived": "captures/v2/jarde/javac8-jarde-all/report.json",
+    "bytes": 171667,
+    "sha256": "87e47f8adb824e0db0f4b35d13dfcb56d7a3d15a057df82d0a4811de50081eb2"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac8-jarde-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v2/jarde/javac8-jarde-default/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/jarde/javac8-jarde-default/report.json",
+    "archived": "captures/v2/jarde/javac8-jarde-default/report.json",
+    "bytes": 168228,
+    "sha256": "3cc90348b4083358b438615c00b95b6b93e63b7b092795d2b30caa41fde6af4c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v2/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "df583c9fbeb1c5573b99e9621d5a68fd5cdd3898572688a1a7e79a5e9436e8fe"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-jadx-default/classes/cf11/Runner.class",
+    "archived": "captures/v2/legs/javac23-jadx-default/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v2/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "df583c9fbeb1c5573b99e9621d5a68fd5cdd3898572688a1a7e79a5e9436e8fe"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-jadx-none/classes/cf11/Runner.class",
+    "archived": "captures/v2/legs/javac23-jadx-none/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v2/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "b880de488b261f83b58f3b9106d4b32a5ac805fba2c3edf8c656999ecbf90a30"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-original/classes/cf11/Runner.class",
+    "archived": "captures/v2/legs/javac23-original/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac23-original/javap.txt",
+    "archived": "captures/v2/legs/javac23-original/javap.txt",
+    "bytes": 7685,
+    "sha256": "8625e14c946b3dd2f2e366a924a181a6b1fae5c784fd8b289e274f48879c867d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v2/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "603ee690c998ccd12b7b3e2ea13014d52bd1649022e4e601f21c6c46d51ccfa8"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-jadx-default/classes/cf11/Runner.class",
+    "archived": "captures/v2/legs/javac8-jadx-default/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v2/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "603ee690c998ccd12b7b3e2ea13014d52bd1649022e4e601f21c6c46d51ccfa8"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-jadx-none/classes/cf11/Runner.class",
+    "archived": "captures/v2/legs/javac8-jadx-none/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v2/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1048,
+    "sha256": "edbd9b5747d5049c090879dd8e880e31a3576cc22d68dbebd1566bd122d46f38"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-original/classes/cf11/Runner.class",
+    "archived": "captures/v2/legs/javac8-original/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/legs/javac8-original/javap.txt",
+    "archived": "captures/v2/legs/javac8-original/javap.txt",
+    "bytes": 7412,
+    "sha256": "fcf5894057de04a37783a078f2442dc1c514543224a093e125f776a015a69477"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/1.stderr.raw",
+    "archived": "captures/v2/raw/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/1.stdout.raw",
+    "archived": "captures/v2/raw/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/10.stderr.raw",
+    "archived": "captures/v2/raw/10.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/10.stdout.raw",
+    "archived": "captures/v2/raw/10.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/11.stderr.raw",
+    "archived": "captures/v2/raw/11.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/11.stdout.raw",
+    "archived": "captures/v2/raw/11.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/12.stderr.raw",
+    "archived": "captures/v2/raw/12.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/12.stdout.raw",
+    "archived": "captures/v2/raw/12.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/13.stderr.raw",
+    "archived": "captures/v2/raw/13.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/13.stdout.raw",
+    "archived": "captures/v2/raw/13.stdout.raw",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/14.stderr.raw",
+    "archived": "captures/v2/raw/14.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/14.stdout.raw",
+    "archived": "captures/v2/raw/14.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/15.stderr.raw",
+    "archived": "captures/v2/raw/15.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/15.stdout.raw",
+    "archived": "captures/v2/raw/15.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/16.stderr.raw",
+    "archived": "captures/v2/raw/16.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/16.stdout.raw",
+    "archived": "captures/v2/raw/16.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/17.stderr.raw",
+    "archived": "captures/v2/raw/17.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/17.stdout.raw",
+    "archived": "captures/v2/raw/17.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/18.stderr.raw",
+    "archived": "captures/v2/raw/18.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/18.stdout.raw",
+    "archived": "captures/v2/raw/18.stdout.raw",
+    "bytes": 58043,
+    "sha256": "940b51ba716826518b21f7b5cf098a807b35565746c0e1dd4123a94ecb61f246"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/19.stderr.raw",
+    "archived": "captures/v2/raw/19.stderr.raw",
+    "bytes": 338,
+    "sha256": "82b4dd38cdd0f4ca50e54ac127c26681cb4b1afe38eb322733e0d01bdef83506"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/19.stdout.raw",
+    "archived": "captures/v2/raw/19.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/2.stderr.raw",
+    "archived": "captures/v2/raw/2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/2.stdout.raw",
+    "archived": "captures/v2/raw/2.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/20.stderr.raw",
+    "archived": "captures/v2/raw/20.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/20.stdout.raw",
+    "archived": "captures/v2/raw/20.stdout.raw",
+    "bytes": 59477,
+    "sha256": "a9b35211ca677c752944597a405f7b75c55d17b63949ae543e0cfe9d86cd4e53"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/21.stderr.raw",
+    "archived": "captures/v2/raw/21.stderr.raw",
+    "bytes": 330,
+    "sha256": "75537662e6b8ebc4d77a4edab6777b23a4e809fd36080b222faf50bec347fe91"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/21.stdout.raw",
+    "archived": "captures/v2/raw/21.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/22.stderr.raw",
+    "archived": "captures/v2/raw/22.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/22.stdout.raw",
+    "archived": "captures/v2/raw/22.stdout.raw",
+    "bytes": 58038,
+    "sha256": "d9d89585c6dc33ad109d0b229fd8a73399c5a1a62f47502633daee97e5d7c117"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/23.stderr.raw",
+    "archived": "captures/v2/raw/23.stderr.raw",
+    "bytes": 340,
+    "sha256": "3c06ef310eae952c1e8b9482b9081e94f46349627e5754e9f9e39f1f5efccfb1"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/23.stdout.raw",
+    "archived": "captures/v2/raw/23.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/24.stderr.raw",
+    "archived": "captures/v2/raw/24.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/24.stdout.raw",
+    "archived": "captures/v2/raw/24.stdout.raw",
+    "bytes": 59473,
+    "sha256": "093c12a13874fe065b0c90a47eb090b1e133bf92d95b059f58d30d8f75be59df"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/25.stderr.raw",
+    "archived": "captures/v2/raw/25.stderr.raw",
+    "bytes": 332,
+    "sha256": "9f3983db1b5dd5baee2b181d5680b96178f72a5a25f1691c5153542444a4c1ca"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/25.stdout.raw",
+    "archived": "captures/v2/raw/25.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/3.stderr.raw",
+    "archived": "captures/v2/raw/3.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/3.stdout.raw",
+    "archived": "captures/v2/raw/3.stdout.raw",
+    "bytes": 7412,
+    "sha256": "fcf5894057de04a37783a078f2442dc1c514543224a093e125f776a015a69477"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/4.stderr.raw",
+    "archived": "captures/v2/raw/4.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/4.stdout.raw",
+    "archived": "captures/v2/raw/4.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/5.stderr.raw",
+    "archived": "captures/v2/raw/5.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/5.stdout.raw",
+    "archived": "captures/v2/raw/5.stdout.raw",
+    "bytes": 153,
+    "sha256": "9d17695a75283d4a3b8e300c7f050357f1f934da8df36bee3b9cdc7332315a85"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/6.stderr.raw",
+    "archived": "captures/v2/raw/6.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/6.stdout.raw",
+    "archived": "captures/v2/raw/6.stdout.raw",
+    "bytes": 7685,
+    "sha256": "8625e14c946b3dd2f2e366a924a181a6b1fae5c784fd8b289e274f48879c867d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/7.stderr.raw",
+    "archived": "captures/v2/raw/7.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/7.stdout.raw",
+    "archived": "captures/v2/raw/7.stdout.raw",
+    "bytes": 6,
+    "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/8.stderr.raw",
+    "archived": "captures/v2/raw/8.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/8.stdout.raw",
+    "archived": "captures/v2/raw/8.stdout.raw",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/9.stderr.raw",
+    "archived": "captures/v2/raw/9.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2/raw/9.stdout.raw",
+    "archived": "captures/v2/raw/9.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v2/NestedLoopSideExitControls.java",
+    "archived": "programs/collector-v2/NestedLoopSideExitControls.java",
+    "bytes": 851,
+    "sha256": "2edf338cf0adfb76d8a62d15440ee5d5a9950336e87fe025705a881aa9304e01"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v2/Runner.java",
+    "archived": "programs/collector-v2/Runner.java",
+    "bytes": 717,
+    "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v2/collect.py",
+    "archived": "programs/collector-v2/collect.py",
+    "bytes": 17050,
+    "sha256": "ce3284ba501851de65273045583ca1fc3059da91cb6ed9533521c4c10cea72e9"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v2/expected-observations.md",
+    "archived": "programs/collector-v2/expected-observations.md",
+    "bytes": 1256,
+    "sha256": "2842f3d1bfaf54893c79e6481eedd45aa9b2387ac4b80f3434de7757c9b2a8ab"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2.stdout",
+    "archived": "invocations/jarde-cf11-side-exits-controls-baseline-root-v2.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v2.stderr",
+    "archived": "invocations/jarde-cf11-side-exits-controls-baseline-root-v2.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/execution.json",
+    "archived": "captures/v3/execution.json",
+    "bytes": 810251,
+    "sha256": "ba0ccfc7588807e5189df92920bf71f27ec4bdc8064b7fba671dd2111a020b87"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/file-inventory.json",
+    "archived": "captures/v3/file-inventory.json",
+    "bytes": 12187,
+    "sha256": "b4f7c5ce60a2834377c3a8f9eb14bb3d3bf5d56ffa360e4047624779b80ef0b9"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/inputs/NestedLoopSideExitControls.jar",
+    "archived": "captures/v3/inputs/NestedLoopSideExitControls.jar",
+    "bytes": 1218,
+    "sha256": "f0ae95eaccd1379867cc0d86042dfc86f2cd407ef8f58474b4b1d33f521c2d87"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/inputs/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/inputs/NestedLoopSideExitControls.java",
+    "bytes": 849,
+    "sha256": "abae32ecc259e310eb4e8fc9f9184e350a5a12aab9f8f7acaab51f6c4862ceb4"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/inputs/Runner.java",
+    "archived": "captures/v3/inputs/Runner.java",
+    "bytes": 717,
+    "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/inputs/jadx-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/inputs/jadx-default/NestedLoopSideExitControls.java",
+    "bytes": 1440,
+    "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/inputs/jadx-none/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/inputs/jadx-none/NestedLoopSideExitControls.java",
+    "bytes": 1440,
+    "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+    "bytes": 1440,
+    "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+    "bytes": 1440,
+    "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac23-jarde-all/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/jarde/javac23-jarde-all/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac23-jarde-all/report.json",
+    "archived": "captures/v3/jarde/javac23-jarde-all/report.json",
+    "bytes": 171626,
+    "sha256": "e26204f661c2e2c5fbea2490a4b1953e81048363b89b3d785de45ff67e1e83f0"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac23-jarde-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/jarde/javac23-jarde-default/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac23-jarde-default/report.json",
+    "archived": "captures/v3/jarde/javac23-jarde-default/report.json",
+    "bytes": 168223,
+    "sha256": "cd4fb4a163e303a1e700e7e408460cd2fe1e70b1408e76a27a96feab1666351b"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac8-jarde-all/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/jarde/javac8-jarde-all/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac8-jarde-all/report.json",
+    "archived": "captures/v3/jarde/javac8-jarde-all/report.json",
+    "bytes": 171626,
+    "sha256": "292fe4a1231cfd057a6a0fe3a9d61af15100829afc94f798851e923823d95273"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac8-jarde-default/NestedLoopSideExitControls.java",
+    "archived": "captures/v3/jarde/javac8-jarde-default/NestedLoopSideExitControls.java",
+    "bytes": 2049,
+    "sha256": "7f7b4971fbfb71fc8d7b3087bdd7fa809a1cf3b7e996365d0b5d7c8069d028fc"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/jarde/javac8-jarde-default/report.json",
+    "archived": "captures/v3/jarde/javac8-jarde-default/report.json",
+    "bytes": 168230,
+    "sha256": "8bc51d0ffea7bbab4fde07d5f70d29d277bd32e732e936be9b07dcdb87b79f63"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v3/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1046,
+    "sha256": "c530bbc5e06f5e62c84d4a9d5a703b86c68008a83dbc91eb53053a849ac93056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-jadx-default/classes/cf11/Runner.class",
+    "archived": "captures/v3/legs/javac23-jadx-default/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v3/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1046,
+    "sha256": "c530bbc5e06f5e62c84d4a9d5a703b86c68008a83dbc91eb53053a849ac93056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-jadx-none/classes/cf11/Runner.class",
+    "archived": "captures/v3/legs/javac23-jadx-none/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v3/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1046,
+    "sha256": "fbf49a129f265f29232573d26de656afa68ec2b79cdca3a9b759889b5224a987"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-original/classes/cf11/Runner.class",
+    "archived": "captures/v3/legs/javac23-original/classes/cf11/Runner.class",
+    "bytes": 1478,
+    "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac23-original/javap.txt",
+    "archived": "captures/v3/legs/javac23-original/javap.txt",
+    "bytes": 7617,
+    "sha256": "59116592ac906a462990fa6ee4c0f1410d841f30699c4e41a72f38c524d80939"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v3/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1046,
+    "sha256": "c47a3850149b88838afa4c090362cb0fa6ec964a56137654046ac7db52648431"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-jadx-default/classes/cf11/Runner.class",
+    "archived": "captures/v3/legs/javac8-jadx-default/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v3/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1046,
+    "sha256": "c47a3850149b88838afa4c090362cb0fa6ec964a56137654046ac7db52648431"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-jadx-none/classes/cf11/Runner.class",
+    "archived": "captures/v3/legs/javac8-jadx-none/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+    "archived": "captures/v3/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+    "bytes": 1046,
+    "sha256": "219e4fb9a9b50c98695ecb9c8c023001604362f1bb70c1f6b535ce58c83a45a9"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-original/classes/cf11/Runner.class",
+    "archived": "captures/v3/legs/javac8-original/classes/cf11/Runner.class",
+    "bytes": 1481,
+    "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/legs/javac8-original/javap.txt",
+    "archived": "captures/v3/legs/javac8-original/javap.txt",
+    "bytes": 7344,
+    "sha256": "beefa48da2df033f4075d4784f5695857fa52084cbf6d4b120be5b3f9594989b"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/1.stderr.raw",
+    "archived": "captures/v3/raw/1.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/1.stdout.raw",
+    "archived": "captures/v3/raw/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/10.stderr.raw",
+    "archived": "captures/v3/raw/10.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/10.stdout.raw",
+    "archived": "captures/v3/raw/10.stdout.raw",
+    "bytes": 161,
+    "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/11.stderr.raw",
+    "archived": "captures/v3/raw/11.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/11.stdout.raw",
+    "archived": "captures/v3/raw/11.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/12.stderr.raw",
+    "archived": "captures/v3/raw/12.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/12.stdout.raw",
+    "archived": "captures/v3/raw/12.stdout.raw",
+    "bytes": 161,
+    "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/13.stderr.raw",
+    "archived": "captures/v3/raw/13.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/13.stdout.raw",
+    "archived": "captures/v3/raw/13.stdout.raw",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/14.stderr.raw",
+    "archived": "captures/v3/raw/14.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/14.stdout.raw",
+    "archived": "captures/v3/raw/14.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/15.stderr.raw",
+    "archived": "captures/v3/raw/15.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/15.stdout.raw",
+    "archived": "captures/v3/raw/15.stdout.raw",
+    "bytes": 161,
+    "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/16.stderr.raw",
+    "archived": "captures/v3/raw/16.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/16.stdout.raw",
+    "archived": "captures/v3/raw/16.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/17.stderr.raw",
+    "archived": "captures/v3/raw/17.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/17.stdout.raw",
+    "archived": "captures/v3/raw/17.stdout.raw",
+    "bytes": 161,
+    "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/18.stderr.raw",
+    "archived": "captures/v3/raw/18.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/18.stdout.raw",
+    "archived": "captures/v3/raw/18.stdout.raw",
+    "bytes": 58045,
+    "sha256": "3b486d3ff370c54ef732f10ca89adb979b0c08dad4d76527301713cceede9c65"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/19.stderr.raw",
+    "archived": "captures/v3/raw/19.stderr.raw",
+    "bytes": 338,
+    "sha256": "dd6562b93c66a669218ff32480d2da6abc0bd2b7b82fe24492377649872f3650"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/19.stdout.raw",
+    "archived": "captures/v3/raw/19.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/2.stderr.raw",
+    "archived": "captures/v3/raw/2.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/2.stdout.raw",
+    "archived": "captures/v3/raw/2.stdout.raw",
+    "bytes": 161,
+    "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/20.stderr.raw",
+    "archived": "captures/v3/raw/20.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/20.stdout.raw",
+    "archived": "captures/v3/raw/20.stdout.raw",
+    "bytes": 59470,
+    "sha256": "776f925ebd940f90e2c73014af51b156e61c421069b824bbb90ee57947c85a61"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/21.stderr.raw",
+    "archived": "captures/v3/raw/21.stderr.raw",
+    "bytes": 330,
+    "sha256": "f1c37cc7daf66f9a00783599864619e5a66e230b14dfd39ba09ce93c560d064a"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/21.stdout.raw",
+    "archived": "captures/v3/raw/21.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/22.stderr.raw",
+    "archived": "captures/v3/raw/22.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/22.stdout.raw",
+    "archived": "captures/v3/raw/22.stdout.raw",
+    "bytes": 58038,
+    "sha256": "ae3e1e940d77e6b65ac6ebca9ad4fb0b294142bdcaae75085ac175351a4114b1"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/23.stderr.raw",
+    "archived": "captures/v3/raw/23.stderr.raw",
+    "bytes": 340,
+    "sha256": "1c1301f54685d02f866275fb1f56489387656aa3e7b8f32d56f37ee43673a9cd"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/23.stdout.raw",
+    "archived": "captures/v3/raw/23.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/24.stderr.raw",
+    "archived": "captures/v3/raw/24.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/24.stdout.raw",
+    "archived": "captures/v3/raw/24.stdout.raw",
+    "bytes": 59470,
+    "sha256": "220c9ea2ae273c02c6d0d0214f95f4074cb823db22a9a47908f8a6d775d55235"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/25.stderr.raw",
+    "archived": "captures/v3/raw/25.stderr.raw",
+    "bytes": 332,
+    "sha256": "47ba6cf3f6744bc748ddc31c6edf6de40a8e8daf8e509e07bb973aaf7908ca99"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/25.stdout.raw",
+    "archived": "captures/v3/raw/25.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/3.stderr.raw",
+    "archived": "captures/v3/raw/3.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/3.stdout.raw",
+    "archived": "captures/v3/raw/3.stdout.raw",
+    "bytes": 7344,
+    "sha256": "beefa48da2df033f4075d4784f5695857fa52084cbf6d4b120be5b3f9594989b"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/4.stderr.raw",
+    "archived": "captures/v3/raw/4.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/4.stdout.raw",
+    "archived": "captures/v3/raw/4.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/5.stderr.raw",
+    "archived": "captures/v3/raw/5.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/5.stdout.raw",
+    "archived": "captures/v3/raw/5.stdout.raw",
+    "bytes": 161,
+    "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/6.stderr.raw",
+    "archived": "captures/v3/raw/6.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/6.stdout.raw",
+    "archived": "captures/v3/raw/6.stdout.raw",
+    "bytes": 7617,
+    "sha256": "59116592ac906a462990fa6ee4c0f1410d841f30699c4e41a72f38c524d80939"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/7.stderr.raw",
+    "archived": "captures/v3/raw/7.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/7.stdout.raw",
+    "archived": "captures/v3/raw/7.stdout.raw",
+    "bytes": 6,
+    "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/8.stderr.raw",
+    "archived": "captures/v3/raw/8.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/8.stdout.raw",
+    "archived": "captures/v3/raw/8.stdout.raw",
+    "bytes": 148,
+    "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/9.stderr.raw",
+    "archived": "captures/v3/raw/9.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3/raw/9.stdout.raw",
+    "archived": "captures/v3/raw/9.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v3/NestedLoopSideExitControls.java",
+    "archived": "programs/collector-v3/NestedLoopSideExitControls.java",
+    "bytes": 849,
+    "sha256": "abae32ecc259e310eb4e8fc9f9184e350a5a12aab9f8f7acaab51f6c4862ceb4"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v3/Runner.java",
+    "archived": "programs/collector-v3/Runner.java",
+    "bytes": 717,
+    "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v3/collect.py",
+    "archived": "programs/collector-v3/collect.py",
+    "bytes": 17050,
+    "sha256": "b2a5690fcd60ae506926b2d1f28ba0ce780e6af32a5446f911dd473e80324688"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-root-v3/review.md",
+    "archived": "programs/collector-v3/review.md",
+    "bytes": 307,
+    "sha256": "e71b223eb53c78944f6ad32a8113e057b4b2344bf26b0319afb923fc44da438a"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3.stdout",
+    "archived": "invocations/jarde-cf11-side-exits-controls-baseline-root-v3.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v3.stderr",
+    "archived": "invocations/jarde-cf11-side-exits-controls-baseline-root-v3.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-verifier-root-v1.py",
+    "archived": "programs/jarde-cf11-side-exits-controls-verifier-root-v1.py",
+    "bytes": 28095,
+    "sha256": "551aa08c64239d155fd7a553460ccceb4ba46c5a0e54321ec569a67ac3367e28"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-acceptance-root-v1.stdout",
+    "archived": "invocations/jarde-cf11-side-exits-controls-acceptance-root-v1.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-acceptance-root-v1.stderr",
+    "archived": "invocations/jarde-cf11-side-exits-controls-acceptance-root-v1.stderr",
+    "bytes": 1365,
+    "sha256": "c50bd77819be25e7f10bb15da1d0006585c45b5d45b3eb58abb6cbb46b4abaaf"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-verifier-root-v2.py",
+    "archived": "programs/jarde-cf11-side-exits-controls-verifier-root-v2.py",
+    "bytes": 29846,
+    "sha256": "b6ff9574193b67e1f1785a76ecfb1df547c5dbb3709e6f3192da42e34d83a9af"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-acceptance-root-v2.stdout",
+    "archived": "invocations/jarde-cf11-side-exits-controls-acceptance-root-v2.stdout",
+    "bytes": 326,
+    "sha256": "80816ab76226b8133b05a5eea4c770519d847a16b38aed618c0da7fa7a773f01"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-acceptance-root-v2.stderr",
+    "archived": "invocations/jarde-cf11-side-exits-controls-acceptance-root-v2.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-acceptance-root-v2.json",
+    "archived": "verification/jarde-cf11-side-exits-controls-acceptance-root-v2.json",
+    "bytes": 18930,
+    "sha256": "211afce5092538829d68dd556e82f7fcffaf959bd4c77dc136de3505dfdf8a43"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-controls-archive-root-v1.py",
+    "archived": "programs/jarde-cf11-side-exits-controls-archive-root-v1.py",
+    "bytes": 3984,
+    "sha256": "5eb123af6e0b242561bc342cfa83bb36d8b3482cc572dc43409f0b786af86078"
+  }
+]

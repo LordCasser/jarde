@@ -1,0 +1,436 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -5333,21 +5333,50 @@
+             let Some(natural) = natural else {
+                 return Ok(None);
+             };
++            let region_tree_scan_bound = u64::try_from(
++                self.view
++                    .len()
++                    .saturating_add(self.canonical.edges().len())
++                    .saturating_mul(MAX_REGION_DEPTH),
++            )
++            .unwrap_or(u64::MAX);
++            poll(self.budget, Some(child_header_id.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(natural.len()).unwrap_or(u64::MAX),
++                Some(child_header_id.bci()),
++            )?;
+             let mut child_expected = natural.clone();
+             child_expected.extend(proof.return_leaves.iter().copied());
++            poll(self.budget, Some(child_header_id.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                region_tree_scan_bound.saturating_mul(4),
++                Some(child_header_id.bci()),
++            )?;
+             let child_actual = child_loop
+                 .blocks()
+                 .iter()
+                 .filter_map(|id| self.view.index_of(id))
+                 .collect::<Vec<_>>();
+             let child_actual_set = child_actual.iter().copied().collect::<BTreeSet<_>>();
+-            if child_actual.len() != child_actual_set.len()
++            let invalid_child_region = child_actual.len() != child_actual_set.len()
+                 || child_actual_set != child_expected
+-                || !child_loop.is_structured()
+-            {
++                || !child_loop.is_structured();
++            poll(self.budget, Some(child_header_id.bci()))?;
++            if invalid_child_region {
+                 return Ok(None);
+             }
+             let (gateway_run, gateway_next) = self.region_at(&gateway_id, frame)?;
++            poll(self.budget, Some(gateway_id.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                region_tree_scan_bound.saturating_mul(3),
++                Some(gateway_id.bci()),
++            )?;
+             let has_gateway_owner = gateway_run.iter().any(|region| {
+                 matches!(region, Region::Straight { blocks } if blocks == std::slice::from_ref(&gateway_id))
+             });
+@@ -5356,13 +5385,21 @@
+                     (Region::Straight { blocks }, Region::LoopBreak { loop_header, .. })
+                     if blocks == std::slice::from_ref(&gateway_id) && loop_header == &parent_header_id)
+             });
+-            if gateway_next.is_some()
++            let invalid_gateway_region = gateway_next.is_some()
+                 || !has_gateway_owner
+                 || !has_exact_break
+-                || gateway_run.iter().any(|region| !region.is_structured())
+-            {
++                || gateway_run.iter().any(|region| !region.is_structured());
++            poll(self.budget, Some(gateway_id.bci()))?;
++            if invalid_gateway_region {
+                 return Ok(None);
+             }
++            poll(self.budget, Some(child_header_id.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                region_tree_scan_bound.saturating_mul(4),
++                Some(child_header_id.bci()),
++            )?;
+             let actual = child_run
+                 .iter()
+                 .chain(gateway_run.iter())
+@@ -5370,6 +5407,13 @@
+                 .filter_map(|id| self.view.index_of(id))
+                 .collect::<Vec<_>>();
+             let actual_set = actual.iter().copied().collect::<BTreeSet<_>>();
++            poll(self.budget, Some(child_header_id.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(prefix.len()).unwrap_or(u64::MAX),
++                Some(child_header_id.bci()),
++            )?;
+             let prefix_nodes = prefix
+                 .iter()
+                 .filter_map(|id| self.view.index_of(id))
+@@ -5382,11 +5426,19 @@
+             if actual.len() != actual_set.len() || actual_set != expected {
+                 return Ok(None);
+             }
++            poll(self.budget, Some(child_header_id.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(self.visited.len()).unwrap_or(u64::MAX),
++                Some(child_header_id.bci()),
++            )?;
+             let newly_visited = self
+                 .visited
+                 .difference(visited_before)
+                 .copied()
+                 .collect::<BTreeSet<_>>();
++            poll(self.budget, Some(child_header_id.bci()))?;
+             if newly_visited != proof.owners {
+                 return Ok(None);
+             }
+@@ -12792,6 +12844,14 @@
+         self.include_fragmented_catch_scope(&mut body_frame, header_node);
+         let mut body_blocks = blocks.clone();
+         if let Some(proof) = &side_exit {
++            poll(self.budget, Some(header.bci()))?;
++            charge(
++                self.budget,
++                CountedBudgetDimension::AnalysisSteps,
++                u64::try_from(proof.owners.len().saturating_mul(4))
++                    .unwrap_or(u64::MAX),
++                Some(header.bci()),
++            )?;
+             let mut proof_owners = proof
+                 .prefix
+                 .iter()
+@@ -12824,6 +12884,7 @@
+                 .expect("loop body frame has a scope")
+                 .extend(proof.owners.iter().copied());
+             body_blocks.extend(proof.owners.iter().copied());
++            poll(self.budget, Some(header.bci()))?;
+         }
+         let body_state = side_exit.as_ref().map(|_| {
+             (
+@@ -12846,6 +12907,33 @@
+                 return Err(stop);
+             }
+         };
++        if let Some(proof) = &side_exit {
++            let expected_build_bound = blocks
++                .len()
++                .saturating_add(body.len())
++                .saturating_add(terminal_returns.len())
++                .saturating_add(proof.owners.len())
++                .saturating_add(2);
++            let check = poll(self.budget, Some(header.bci())).and_then(|()| {
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    u64::try_from(expected_build_bound)
++                        .unwrap_or(u64::MAX)
++                        .saturating_mul(2),
++                    Some(header.bci()),
++                )
++            });
++            if let Err(stop) = check {
++                if let Some((visited, unclosed_tail, catch_joins, fragmented)) = &body_state {
++                    self.visited = visited.clone();
++                    self.unclosed_tail_at = *unclosed_tail;
++                    self.catch_joins = catch_joins.clone();
++                    self.fragmented = fragmented.clone();
++                }
++                return Err(stop);
++            }
++        }
+         self.visited.insert(header_node);
+         let mut expected = blocks.clone();
+         expected.remove(&header_node);
+@@ -12856,21 +12944,31 @@
+         if let Some(proof) = &side_exit {
+             expected.extend(proof.owners.iter().copied());
+         }
+-        if side_exit.is_some()
+-            && let Err(stop) = charge(
+-                self.budget,
+-                CountedBudgetDimension::AnalysisSteps,
+-                u64::try_from(expected.len().saturating_add(body.len())).unwrap_or(u64::MAX),
+-                Some(header.bci()),
++        if side_exit.is_some() {
++            let side_region_scan_bound = u64::try_from(
++                self.view
++                    .len()
++                    .saturating_add(self.canonical.edges().len())
++                    .saturating_mul(MAX_REGION_DEPTH),
+             )
+-        {
+-            if let Some((visited, unclosed_tail, catch_joins, fragmented)) = &body_state {
+-                self.visited = visited.clone();
+-                self.unclosed_tail_at = *unclosed_tail;
+-                self.catch_joins = catch_joins.clone();
+-                self.fragmented = fragmented.clone();
+-            }
+-            return Err(stop);
++            .unwrap_or(u64::MAX);
++            let check = poll(self.budget, Some(header.bci())).and_then(|()| {
++                charge(
++                    self.budget,
++                    CountedBudgetDimension::AnalysisSteps,
++                    side_region_scan_bound.saturating_mul(3),
++                    Some(header.bci()),
++                )
++            });
++            if let Err(stop) = check {
++                if let Some((visited, unclosed_tail, catch_joins, fragmented)) = &body_state {
++                    self.visited = visited.clone();
++                    self.unclosed_tail_at = *unclosed_tail;
++                    self.catch_joins = catch_joins.clone();
++                    self.fragmented = fragmented.clone();
++                }
++                return Err(stop);
++            }
+         }
+         let exact_side_owners = side_exit.as_ref().is_none_or(|_| {
+             let actual = body
+@@ -12883,6 +12981,17 @@
+                 nodes.len() == actual_set.len() && actual_set == expected
+             })
+         });
++        if side_exit.is_some()
++            && let Err(stop) = poll(self.budget, Some(header.bci()))
++        {
++            if let Some((visited, unclosed_tail, catch_joins, fragmented)) = &body_state {
++                self.visited = visited.clone();
++                self.unclosed_tail_at = *unclosed_tail;
++                self.catch_joins = catch_joins.clone();
++                self.fragmented = fragmented.clone();
++            }
++            return Err(stop);
++        }
+         if !self.covers(&expected) || !exact_side_owners {
+             // The loop's shape is refused, and every block the body's walk claimed goes into the
+             // refusal with it: the body region is dropped here, so naming its blocks is the only
+@@ -14544,14 +14653,19 @@
+         let Some(child_loop) = self.view.loop_entered_at(child_header) else {
+             return Ok(None);
+         };
+-        let child_blocks = child_loop.blocks().clone();
++        let natural_child_blocks = child_loop.blocks();
++        let child_block_steps = u64::try_from(natural_child_blocks.len()).unwrap_or(u64::MAX);
++        // One pass clones the NaturalLoop set; three more scan it for overlap, nested headers and
++        // path/scope validity. Charge before the clone, then poll around the grouped predicates.
++        poll(self.budget, Some(branch_id.bci()))?;
+         charge(
+             self.budget,
+             CountedBudgetDimension::AnalysisSteps,
+-            u64::try_from(child_blocks.len()).unwrap_or(u64::MAX),
++            child_block_steps.saturating_mul(4),
+             Some(branch_id.bci()),
+         )?;
+-        if child_blocks.contains(&parent_header)
++        let child_blocks = natural_child_blocks.clone();
++        let invalid_child_set = child_blocks.contains(&parent_header)
+             || child_blocks.iter().any(|node| parent_blocks.contains(node))
+             || child_blocks
+                 .iter()
+@@ -14561,14 +14675,22 @@
+                     .id_of(*node)
+                     .is_none_or(|id| id.path() != branch_id.path())
+                     || !scope.contains(node)
+-            })
+-        {
++            });
++        poll(self.budget, Some(branch_id.bci()))?;
++        if invalid_child_set {
+             return Ok(None);
+         }
+         let child_successors = self.view.successors(child_header);
+         if child_successors.len() != 2 {
+             return Ok(None);
+         }
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(child_successors.len()).unwrap_or(u64::MAX).saturating_mul(2),
++            Some(branch_id.bci()),
++        )?;
+         let child_inside: Vec<_> = child_successors
+             .iter()
+             .copied()
+@@ -14579,6 +14701,7 @@
+             .copied()
+             .filter(|successor| !child_blocks.contains(successor))
+             .collect();
++        poll(self.budget, Some(branch_id.bci()))?;
+         let ([_], [child_exit]) = (child_inside.as_slice(), child_outside.as_slice()) else {
+             return Ok(None);
+         };
+@@ -14593,7 +14716,17 @@
+         if return_leaves.len() > 1 {
+             return Ok(None);
+         }
++        let child_exit_scan_steps = child_block_steps
++            .saturating_add(u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX));
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            child_exit_scan_steps,
++            Some(branch_id.bci()),
++        )?;
+         let child_exits = self.loop_exit_nodes(&child_blocks);
++        poll(self.budget, Some(branch_id.bci()))?;
+         let expected_child_exits: BTreeSet<_> =
+             return_leaves.iter().copied().chain([*child_exit]).collect();
+         if child_exits != expected_child_exits
+@@ -14607,6 +14740,14 @@
+         {
+             return Ok(None);
+         }
++        let prefix_scan_steps = u64::try_from(prefix_nodes.len()).unwrap_or(u64::MAX);
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            prefix_scan_steps.saturating_mul(2),
++            Some(branch_id.bci()),
++        )?;
+         let prefix: Vec<_> = prefix_nodes
+             .iter()
+             .filter_map(|node| self.view.id_of(*node).cloned())
+@@ -14614,7 +14755,9 @@
+         let Some(child_header_id) = self.view.id_of(child_header).cloned() else {
+             return Ok(None);
+         };
+-        if prefix.iter().any(|id| id.path() != branch_id.path()) {
++        let mixed_prefix_path = prefix.iter().any(|id| id.path() != branch_id.path());
++        poll(self.budget, Some(branch_id.bci()))?;
++        if mixed_prefix_path {
+             return Ok(None);
+         }
+         let prefix_edges = self
+@@ -14632,11 +14775,36 @@
+         )? {
+             return Ok(None);
+         }
++        let owner_build_steps = u64::try_from(
++            prefix_nodes
++                .len()
++                .saturating_add(child_blocks.len())
++                .saturating_add(return_leaves.len())
++                .saturating_add(1),
++        )
++        .unwrap_or(u64::MAX);
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            owner_build_steps,
++            Some(branch_id.bci()),
++        )?;
+         let mut owners = prefix_nodes.iter().copied().collect::<BTreeSet<_>>();
+         let mut side_owners = child_blocks.clone();
+         side_owners.extend(return_leaves.iter().copied());
+         side_owners.insert(*child_exit);
+-        if owners.iter().any(|node| self.visited.contains(node))
++        let owner_scan_steps = u64::try_from(owners.len().saturating_add(side_owners.len()))
++            .unwrap_or(u64::MAX)
++            .saturating_mul(2);
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            owner_scan_steps,
++            Some(branch_id.bci()),
++        )?;
++        let invalid_owner_set = owners.iter().any(|node| self.visited.contains(node))
+             || side_owners.iter().any(|node| {
+                 parent_blocks.contains(node)
+                     || owners.contains(node)
+@@ -14646,11 +14814,30 @@
+                         .view
+                         .id_of(*node)
+                         .is_none_or(|id| id.path() != branch_id.path())
+-            })
+-        {
+-            return Ok(None);
+-        }
++            });
++        poll(self.budget, Some(branch_id.bci()))?;
++        if invalid_owner_set {
++            return Ok(None);
++        }
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(side_owners.len()).unwrap_or(u64::MAX),
++            Some(branch_id.bci()),
++        )?;
+         owners.extend(side_owners);
++        poll(self.budget, Some(branch_id.bci()))?;
++        let internal_scan_steps = prefix_scan_steps
++            .saturating_add(child_block_steps)
++            .saturating_add(u64::try_from(self.canonical.edges().len()).unwrap_or(u64::MAX));
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            internal_scan_steps,
++            Some(branch_id.bci()),
++        )?;
+         let mut internal_edges = prefix
+             .iter()
+             .enumerate()
+@@ -14660,6 +14847,7 @@
+             })
+             .collect::<BTreeSet<_>>();
+         for &from in &child_blocks {
++            poll(self.budget, Some(branch_id.bci()))?;
+             let Some(from_id) = self.view.id_of(from) else {
+                 return Ok(None);
+             };
+@@ -14672,10 +14860,18 @@
+                 }
+             }
+         }
++        poll(self.budget, Some(branch_id.bci()))?;
++        charge(
++            self.budget,
++            CountedBudgetDimension::AnalysisSteps,
++            u64::try_from(owners.len()).unwrap_or(u64::MAX),
++            Some(branch_id.bci()),
++        )?;
+         let owner_ids = owners
+             .iter()
+             .filter_map(|node| self.view.id_of(*node).cloned())
+             .collect::<BTreeSet<_>>();
++        poll(self.budget, Some(branch_id.bci()))?;
+         if owner_ids.len() != owners.len() {
+             return Ok(None);
+         }

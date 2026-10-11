@@ -1,0 +1,50 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/0.stderr.raw",
+    "archived": "0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/0.stdout.raw",
+    "archived": "0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/1.stderr.raw",
+    "archived": "1.stderr.raw",
+    "bytes": 2768,
+    "sha256": "cbacbf70a9d94105260c5e620c208d02f09a2678c6410f2eef420dd2ae74586d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/1.stdout.raw",
+    "archived": "1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/2.stderr.raw",
+    "archived": "2.stderr.raw",
+    "bytes": 52,
+    "sha256": "1aa564eaf373c13d77084dca2bba44fdb6251da91abadefc32ba7d34e44cee2d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/2.stdout.raw",
+    "archived": "2.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/execution.json",
+    "archived": "execution.json",
+    "bytes": 2276225,
+    "sha256": "fb807e1dc4cd3598f07ae962b2ad5940c65a63646626931c8454423481f0213d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-cli-build-root-v9.py",
+    "archived": "runner.py",
+    "bytes": 6200,
+    "sha256": "4e2e9aa40d7bb67a3bdb86013bd1380a799a7772abe6686c27523e21d46f282a"
+  }
+]

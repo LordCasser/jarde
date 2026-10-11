@@ -1,0 +1,22 @@
+{
+  "build.rs.base": {
+    "sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade",
+    "bytes": 1743943
+  },
+  "build.rs.candidate": {
+    "sha256": "6e832d7e803e13a7a22fe8798f3950dadb43759f023339bbbad1f6615ee526ea",
+    "bytes": 1742612
+  },
+  "build.rs.patch": {
+    "sha256": "eb57f2e2ba3ef229c516630dde13e6087cca586d30d301334b1cee6f3762a63b",
+    "bytes": 22308
+  },
+  "review.md": {
+    "sha256": "139a89f6e389ca4ad03e127c97baca1d1bf82feb44b0b0b0e62a8d5cfb854814",
+    "bytes": 1930
+  },
+  "repo_source": "crates/jarde-java/src/build.rs",
+  "source_sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade",
+  "change": "bound-structured-region-render-stack-frames",
+  "openspec_progress": "0/6"
+}

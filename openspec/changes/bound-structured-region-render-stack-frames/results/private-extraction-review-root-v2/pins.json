@@ -1,0 +1,39 @@
+{
+  "build.rs.base": {
+    "sha256": "582685682efcd19462996ccc826f3a516dc8b148d7b1112d029ec5a1520fd565",
+    "bytes": 1742537
+  },
+  "build.rs.candidate": {
+    "sha256": "3846fa0ad016052ff9c2f2792a498795ce4badf20cb44d2cd2891602f778e062",
+    "bytes": 1729412
+  },
+  "build.rs.patch": {
+    "sha256": "463c8b0492985c2e0f2375ad7067d16842d52777b3ce19808300ada7342e85ab",
+    "bytes": 181103
+  },
+  "review.md": {
+    "sha256": "79f0c4c9004fc71343e6f2b461718dde090c08ba3f15de3f30d69aa107e2d82c",
+    "bytes": 2123
+  },
+  "repo_source": "crates/jarde-java/src/build.rs",
+  "source_sha256": "582685682efcd19462996ccc826f3a516dc8b148d7b1112d029ec5a1520fd565",
+  "previous_try_candidate_sha256": "6e832d7e803e13a7a22fe8798f3950dadb43759f023339bbbad1f6615ee526ea",
+  "extracted_arms": {
+    "Loop": {
+      "source_lines": "18648-18913",
+      "body_lines": 255
+    },
+    "Guard": {
+      "source_lines": "18994-20458",
+      "body_lines": 1458
+    }
+  },
+  "unchanged_arm_line_counts": {
+    "If": 92,
+    "CompoundIf": 96,
+    "StringSwitch": 142,
+    "Switch": 158
+  },
+  "change": "bound-structured-region-render-stack-frames",
+  "openspec_progress": "0/6"
+}

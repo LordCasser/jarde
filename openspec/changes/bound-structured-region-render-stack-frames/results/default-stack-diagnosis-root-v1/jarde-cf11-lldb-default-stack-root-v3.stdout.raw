@@ -1,0 +1,80 @@
+(lldb) target create "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+Current executable set to '/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin' (arm64).
+(lldb) process launch -- --exact a_late_public_budget_stop_and_precancellation_publish_no_partial_body --nocapture
+
+running 1 test
+Process 15902 launched: '/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin' (arm64)
+Process 15902 stopped
+* thread #2, name = 'a_late_public_budget_stop_and_precancellation_publish_no_partia', stop reason = EXC_BAD_ACCESS (code=2, address=0x16fe03dc0)
+       frame #0: 0x0000000100675324 failed-api-0.bin`<jarde_java::build::Builder>::render_value_definition + 20
+failed-api-0.bin`<jarde_java::build::Builder>::render_value_definition:
+->  0x100675324 <+20>: str    xzr, [sp]
+    0x100675328 <+24>: cmp    sp, x9
+    0x10067532c <+28>: b.ne   0x100675320               ; <+16>
+    0x100675330 <+32>: sub    sp, sp, #0x5f0
+Target 0: (failed-api-0.bin) stopped.
+(lldb) thread backtrace all -c 45
+  thread #1, name = 'main', queue = 'com.apple.main-thread'
+       frame #0: 0x0000000193204bb4 libsystem_kernel.dylib`semaphore_timedwait_trap + 8
+       frame #1: 0x00000001930be328 libdispatch.dylib`_dispatch_sema4_timedwait + 64
+       frame #2: 0x000000019308aaf0 libdispatch.dylib`_dispatch_semaphore_wait_slow + 76
+       frame #3: 0x00000001010a5ce4 failed-api-0.bin`<std::thread::thread::Thread>::park_timeout + 100
+       frame #4: 0x0000000100029714 failed-api-0.bin`<std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv::{closure#1} + 208
+       frame #5: 0x00000001000325e8 failed-api-0.bin`<std::sync::mpmc::list::Channel<test::event::CompletedTest>>::recv + 440
+       frame #6: 0x000000010003c570 failed-api-0.bin`test::console::run_tests_console + 5480
+       frame #7: 0x000000010002c7ac failed-api-0.bin`test::test_main_static + 516
+       frame #8: 0x0000000100002734 failed-api-0.bin`p3_nested_loop_side_exits::main + 28
+       frame #9: 0x0000000100017af8 failed-api-0.bin`<fn() as core::ops::function::FnOnce<()>>::call_once + 16
+       frame #10: 0x0000000100000968 failed-api-0.bin`std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()> + 16
+       frame #11: 0x00000001000112d0 failed-api-0.bin`std::rt::lang_start::<()>::{closure#0} + 16
+       frame #12: 0x00000001010aecf0 failed-api-0.bin`std::rt::lang_start_internal + 952
+       frame #13: 0x00000001000111a4 failed-api-0.bin`std::rt::lang_start::<()> + 60
+       frame #14: 0x000000010000946c failed-api-0.bin`main + 36
+       frame #15: 0x0000000192e73e80 dyld`start + 6688
+* thread #2, name = 'a_late_public_budget_stop_and_precancellation_publish_no_partia', stop reason = EXC_BAD_ACCESS (code=2, address=0x16fe03dc0)
+   * frame #0: 0x0000000100675324 failed-api-0.bin`<jarde_java::build::Builder>::render_value_definition + 20
+     frame #1: 0x000000010065ccb0 failed-api-0.bin`<jarde_java::build::Builder>::render_value + 2188
+     frame #2: 0x0000000100651558 failed-api-0.bin`<jarde_java::build::Builder>::instruction + 4472
+     frame #3: 0x000000010069aa2c failed-api-0.bin`<jarde_java::build::Builder>::block + 2528
+     frame #4: 0x000000010069db60 failed-api-0.bin`<jarde_java::build::Builder>::region + 11364
+     frame #5: 0x000000010069da30 failed-api-0.bin`<jarde_java::build::Builder>::region + 11060
+     frame #6: 0x0000000100699aec failed-api-0.bin`<jarde_java::build::Builder>::arm + 152
+     frame #7: 0x000000010069df7c failed-api-0.bin`<jarde_java::build::Builder>::region + 12416
+     frame #8: 0x0000000100631454 failed-api-0.bin`<jarde_java::build::Builder>::region::{closure#13} + 136
+     frame #9: 0x0000000100d0d598 failed-api-0.bin`core::iter::traits::iterator::Iterator::try_for_each::call::<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0} + 12
+     frame #10: 0x00000001009d4020 failed-api-0.bin`<core::iter::adapters::enumerate::Enumerate<_> as core::iter::traits::iterator::Iterator>::try_fold::enumerate::<&jarde_java::region::Region, (), core::result::Result<(), jarde_java::stop::StopReason>, core::iter::traits::iterator::Iterator::try_for_each::call<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0}>::{closure#0} + 40
+     frame #11: 0x000000010077f6b0 failed-api-0.bin`<core::slice::iter::Iter<jarde_java::region::Region> as core::iter::traits::iterator::Iterator>::try_fold::<(), <core::iter::adapters::enumerate::Enumerate<_> as core::iter::traits::iterator::Iterator>::try_fold::enumerate<&jarde_java::region::Region, (), core::result::Result<(), jarde_java::stop::StopReason>, core::iter::traits::iterator::Iterator::try_for_each::call<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0}>::{closure#0}, core::result::Result<(), jarde_java::stop::StopReason>> + 128
+     frame #12: 0x00000001009c56b0 failed-api-0.bin`<core::iter::adapters::enumerate::Enumerate<core::slice::iter::Iter<jarde_java::region::Region>> as core::iter::traits::iterator::Iterator>::try_fold::<(), core::iter::traits::iterator::Iterator::try_for_each::call<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0}, core::result::Result<(), jarde_java::stop::StopReason>> + 44
+     frame #13: 0x00000001009cb524 failed-api-0.bin`<core::iter::adapters::enumerate::Enumerate<core::slice::iter::Iter<jarde_java::region::Region>> as core::iter::traits::iterator::Iterator>::try_for_each::<<jarde_java::build::Builder>::region::{closure#13}, core::result::Result<(), jarde_java::stop::StopReason>> + 12
+     frame #14: 0x00000001006a3b2c failed-api-0.bin`<jarde_java::build::Builder>::region + 35888
+     frame #15: 0x000000010069da30 failed-api-0.bin`<jarde_java::build::Builder>::region + 11060
+     frame #16: 0x0000000100699aec failed-api-0.bin`<jarde_java::build::Builder>::arm + 152
+     frame #17: 0x000000010069df7c failed-api-0.bin`<jarde_java::build::Builder>::region + 12416
+     frame #18: 0x0000000100631454 failed-api-0.bin`<jarde_java::build::Builder>::region::{closure#13} + 136
+     frame #19: 0x0000000100d0d598 failed-api-0.bin`core::iter::traits::iterator::Iterator::try_for_each::call::<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0} + 12
+     frame #20: 0x00000001009d4020 failed-api-0.bin`<core::iter::adapters::enumerate::Enumerate<_> as core::iter::traits::iterator::Iterator>::try_fold::enumerate::<&jarde_java::region::Region, (), core::result::Result<(), jarde_java::stop::StopReason>, core::iter::traits::iterator::Iterator::try_for_each::call<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0}>::{closure#0} + 40
+     frame #21: 0x000000010077f6b0 failed-api-0.bin`<core::slice::iter::Iter<jarde_java::region::Region> as core::iter::traits::iterator::Iterator>::try_fold::<(), <core::iter::adapters::enumerate::Enumerate<_> as core::iter::traits::iterator::Iterator>::try_fold::enumerate<&jarde_java::region::Region, (), core::result::Result<(), jarde_java::stop::StopReason>, core::iter::traits::iterator::Iterator::try_for_each::call<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0}>::{closure#0}, core::result::Result<(), jarde_java::stop::StopReason>> + 128
+     frame #22: 0x00000001009c56b0 failed-api-0.bin`<core::iter::adapters::enumerate::Enumerate<core::slice::iter::Iter<jarde_java::region::Region>> as core::iter::traits::iterator::Iterator>::try_fold::<(), core::iter::traits::iterator::Iterator::try_for_each::call<(usize, &jarde_java::region::Region), core::result::Result<(), jarde_java::stop::StopReason>, <jarde_java::build::Builder>::region::{closure#13}>::{closure#0}, core::result::Result<(), jarde_java::stop::StopReason>> + 44
+     frame #23: 0x00000001009cb524 failed-api-0.bin`<core::iter::adapters::enumerate::Enumerate<core::slice::iter::Iter<jarde_java::region::Region>> as core::iter::traits::iterator::Iterator>::try_for_each::<<jarde_java::build::Builder>::region::{closure#13}, core::result::Result<(), jarde_java::stop::StopReason>> + 12
+     frame #24: 0x00000001006a3b2c failed-api-0.bin`<jarde_java::build::Builder>::region + 35888
+     frame #25: 0x0000000100716884 failed-api-0.bin`jarde_java::build::build + 20880
+     frame #26: 0x000000010095f684 failed-api-0.bin`jarde_java::report::recover_inner + 13560
+     frame #27: 0x00000001009a15e8 failed-api-0.bin`jarde_java::report::recover_for_class_source_with_anonymous_ast + 1052
+     frame #28: 0x00000001001519d8 failed-api-0.bin`jarde::facade::recovery_from_with_class_candidates + 7636
+     frame #29: 0x0000000100152fcc failed-api-0.bin`jarde::facade::recovery_presented_for_class_source + 284
+     frame #30: 0x00000001000e8e40 failed-api-0.bin`jarde::facade::recover_prepared_member + 1972
+     frame #31: 0x000000010009b1d0 failed-api-0.bin`<jarde::facade::Engine>::prepare_physical_class_source + 29604
+     frame #32: 0x00000001000895d4 failed-api-0.bin`<jarde::facade::Engine>::class_source_with_evidence + 2228
+     frame #33: 0x000000010000105c failed-api-0.bin`p3_nested_loop_side_exits::class_source + 496
+     frame #34: 0x0000000100003194 failed-api-0.bin`p3_nested_loop_side_exits::a_late_public_budget_stop_and_precancellation_publish_no_partial_body + 108
+     frame #35: 0x0000000100000d74 failed-api-0.bin`p3_nested_loop_side_exits::a_late_public_budget_stop_and_precancellation_publish_no_partial_body::{closure#0} + 20
+     frame #36: 0x0000000100017bdc failed-api-0.bin`<p3_nested_loop_side_exits::a_late_public_budget_stop_and_precancellation_publish_no_partial_body::{closure#0} as core::ops::function::FnOnce<()>>::call_once + 20
+     frame #37: 0x000000010001d974 failed-api-0.bin`test::__rust_begin_short_backtrace::<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> + 24
+     frame #38: 0x0000000100028ca8 failed-api-0.bin`test::run_test::{closure#0} + 952
+     frame #39: 0x0000000100024988 failed-api-0.bin`std::sys::backtrace::__rust_begin_short_backtrace::<test::run_test::{closure#1}, ()> + 132
+     frame #40: 0x000000010002b170 failed-api-0.bin`<std::thread::lifecycle::spawn_unchecked<test::run_test::{closure#1}, ()>::{closure#1} as core::ops::function::FnOnce<()>>::call_once::{shim:vtable#0} + 64
+     frame #41: 0x00000001010b59e4 failed-api-0.bin`<std::sys::thread::unix::Thread>::new::thread_start + 392
+     frame #42: 0x0000000193249d00 libsystem_pthread.dylib`_pthread_start + 136
+(lldb) register read sp fp
+      sp = 0x000000016fe03dc0
+      fp = 0x000000016fe08dd0

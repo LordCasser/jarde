@@ -1,0 +1,68 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/1.stderr.raw",
+    "archived": "capture/1.stderr.raw",
+    "bytes": 2614,
+    "sha256": "c2860bf3ac2b02056ba6f0ba656e4727e7af102516d59e070eef0b14310e0f24"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/0.stdout.raw",
+    "archived": "capture/0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/2.stdout.raw",
+    "archived": "capture/2.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/1.stdout.raw",
+    "archived": "capture/1.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/0.stderr.raw",
+    "archived": "capture/0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/2.stderr.raw",
+    "archived": "capture/2.stderr.raw",
+    "bytes": 51,
+    "sha256": "f99384b222495776277eeef08d419d254d206e6295f2d2af30e3010c03ee2dd6"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v2/execution.json",
+    "archived": "capture/execution.json",
+    "bytes": 2276764,
+    "sha256": "9f60b463cb804f62bb262a1fa2413ecb953df3754549b75232ec5c3bf0c5ca44"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-clippy-first-check-luna-v1/candidate.patch",
+    "archived": "private/candidate.patch",
+    "bytes": 462,
+    "sha256": "82504c38f87dc679087ee49499de1240c759a04b960ab820d0e63a7d1b3c0639"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-clippy-first-check-luna-v1/region.rs.base",
+    "archived": "private/region.rs.base",
+    "bytes": 969159,
+    "sha256": "26f785844eba008150acd4debdba3133642090202a177322af5a87d782dd2e43"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-clippy-first-check-luna-v1/region.rs.candidate",
+    "archived": "private/region.rs.candidate",
+    "bytes": 969152,
+    "sha256": "c9021b57bce4d8968efc8b65f60d2a7c9aaa5a9df9494f6604609b4a611b9582"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-clippy-first-check-luna-v1/review.md",
+    "archived": "private/review.md",
+    "bytes": 680,
+    "sha256": "bc529066459de8be6d66e35fb6692ddf61b6c001cccf9ee5fadc8d51f5243a41"
+  }
+]

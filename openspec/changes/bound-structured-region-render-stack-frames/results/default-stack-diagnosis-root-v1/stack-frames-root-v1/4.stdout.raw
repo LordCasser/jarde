@@ -1,0 +1,38 @@
+
+/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+000000010089f11c <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker30continue_nested_loop_side_exit>:
+10089f11c: a9be6ffc    	stp	x28, x27, [sp, #-0x20]!
+10089f120: a9017bfd    	stp	x29, x30, [sp, #0x10]
+10089f124: 910043fd    	add	x29, sp, #0x10
+10089f128: d11a83ff    	sub	sp, sp, #0x6a0
+10089f12c: f90003ff    	str	xzr, [sp]
+10089f130: 910a63e9    	add	x9, sp, #0x298
+10089f134: f90063e9    	str	x9, [sp, #0xc0]
+10089f138: f90067e8    	str	x8, [sp, #0xc8]
+10089f13c: f9006be0    	str	x0, [sp, #0xd0]
+10089f140: aa0103e0    	mov	x0, x1
+10089f144: f9006fe0    	str	x0, [sp, #0xd8]
+10089f148: f90073e2    	str	x2, [sp, #0xe0]
+10089f14c: f90077e3    	str	x3, [sp, #0xe8]
+10089f150: f9007be4    	str	x4, [sp, #0xf0]
+10089f154: f9007fe5    	str	x5, [sp, #0xf8]
+10089f158: f90083e6    	str	x6, [sp, #0x100]
+10089f15c: 381be3bf    	sturb	wzr, [x29, #-0x42]
+10089f160: 381bd3bf    	sturb	wzr, [x29, #-0x43]
+10089f164: 381bc3bf    	sturb	wzr, [x29, #-0x44]
+10089f168: 381bf3bf    	sturb	wzr, [x29, #-0x41]
+10089f16c: 381bb3bf    	sturb	wzr, [x29, #-0x45]
+10089f170: 97fce865    	bl	0x1007d9304 <__RNvMs_NtCs26gtQGs340n_5alloc3vecINtB4_3VecNtNtCsbU8wQe3oRmL_10jarde_java6region6RegionE8as_sliceBI_>
+10089f174: f90087e0    	str	x0, [sp, #0x108]
+10089f178: f1000428    	subs	x8, x1, #0x1
+10089f17c: 540000e0    	b.eq	0x10089f198 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker30continue_nested_loop_side_exit+0x7c>
+10089f180: 14000001    	b	0x10089f184 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker30continue_nested_loop_side_exit+0x68>
+10089f184: f94067e9    	ldr	x9, [sp, #0xc8]
+10089f188: 3900213f    	strb	wzr, [x9, #0x8]
+10089f18c: 92800008    	mov	x8, #-0x1               ; =-1
+10089f190: f9000128    	str	x8, [x9]
+10089f194: 14000277    	b	0x10089fb70 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker30continue_nested_loop_side_exit+0xa54>
+10089f198: f94087e8    	ldr	x8, [sp, #0x108]

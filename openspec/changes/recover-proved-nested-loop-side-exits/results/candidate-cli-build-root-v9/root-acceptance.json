@@ -1,0 +1,13 @@
+{
+  "status": "accepted_candidate_build_only",
+  "source_count": 4707,
+  "cli": {
+    "path": "/private/tmp/jarde-cf11-side-exits-candidate-cli-root-v9",
+    "bytes": 61213840,
+    "sha256": "9fc77590ab671ac141dc7fb243e77b7fc103ffc87465c629ca0cf8f43e3da0b3",
+    "mode": "0o555"
+  },
+  "runner_sha": "4e2e9aa40d7bb67a3bdb86013bd1380a799a7772abe6686c27523e21d46f282a",
+  "byte_equal_v8": true,
+  "scope_caveat": "original scope label inherited same-closure wording; actual focused_source_difference shows exact reader test census-only tuple/comment change. Entire focused closure differs in this test file; production bytes identical. Workspace v1 failed preserved; fresh v2 still required."
+}

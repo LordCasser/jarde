@@ -1,0 +1,116 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -22298,6 +22298,113 @@
+             .expect("interior-entry row check completes"),
+             "a second child-interior entry is refused; normal-flow facts are not rebuilt"
+         );
++        // Obtain the non-empty path from Reader's real legacy-jsr class. CanonicalBlockId itself
++        // carries only BCI/path, not class identity; this local row mutation does not create a
++        // mixed-class CanonicalCfg.
++        const LEGACY_CLONE: &[u8] = include_bytes!(
++            "../../../tests/fixtures/p3-conditional-switch-boundaries/legacy-clone/Test.class"
++        );
++        assert_eq!(LEGACY_CLONE.len(), 114);
++        assert_eq!(
++            blake3::hash(LEGACY_CLONE).to_hex().to_string(),
++            "dac91477a63e8c8e43acbf4e56916bab8a7415f862314f47eb5e904ef1adc019"
++        );
++        let real_clone_path_id = {
++            let snapshot = ArtifactSnapshot::open(
++                ArtifactInput::bytes(LEGACY_CLONE.to_vec()),
++                &mut reader_budget,
++            )
++            .expect("the existing whole legacy-clone fixture opens");
++            let definition = PhysicalDefinitionId {
++                location: PhysicalClassLocation::StandaloneRoot {
++                    snapshot: snapshot.id().clone(),
++                },
++                class_bytes: ClassBytesId {
++                    digest: Digest(blake3::hash(LEGACY_CLONE).to_hex().to_string()),
++                    length: LEGACY_CLONE.len() as u64,
++                },
++                variant: PhysicalVariant::Base,
++            };
++            let domain = LoadDomain {
++                loader: LoaderId("app".to_owned()),
++                parent_loader: None,
++                delegation: DelegationPolicy::ParentFirst,
++                roots: vec![LoadRoot::StandaloneClass {
++                    snapshot: snapshot.id().clone(),
++                }],
++                module_mode: ModuleMode::ClassPath,
++                external_override: RuntimeUncertainty::None,
++                runtime_transformation: RuntimeUncertainty::None,
++            };
++            let analysis = analyze_method_ir(
++                &[snapshot.clone()],
++                &MethodAnalysisRequest {
++                    environment: ResolutionEnvironment {
++                        runtime: RuntimeView {
++                            physical: PhysicalView {
++                                snapshot: snapshot.id().clone(),
++                                scope: PhysicalScope::SnapshotAll,
++                            },
++                            profile: RuntimeProfile {
++                                java_release: 8,
++                                multi_release: MultiReleasePolicy::Disabled,
++                                layout: LayoutMode::Generic,
++                            },
++                            load_domain: domain.clone(),
++                        },
++                        domains: vec![domain],
++                        providers: Vec::new(),
++                    },
++                    method: PhysicalMethodId {
++                        owner: definition,
++                        name: JvmBytes(b"method".to_vec()),
++                        descriptor: JvmBytes(b"()V".to_vec()),
++                    },
++                    stages: AnalysisStage::ALL.to_vec(),
++                },
++                &mut reader_budget,
++            )
++            .expect("Reader analyzes the existing real legacy-subroutine method");
++            let legacy = analysis.ir().canonical().expect("Reader canonicalizes jsr clones");
++            let id = legacy
++                .blocks()
++                .iter()
++                .map(|block| block.id())
++                .find(|id| id.bci() == 7 && id.path() == [3])
++                .expect("Reader produced the real clone at BCI 7, call path [3]");
++            assert!(id.is_clone());
++            id.clone()
++        };
++        assert_eq!(real_clone_path_id.path(), &[3]);
++
++        // A local row metamorphism only: replace the real CF11 owner-entry row's target with
++        // the Reader-produced clone identity. This is neither a valid class graph nor a rebuilt
++        // CanonicalCfg/NormalFlowView. The owner-incident row must fail the exact path-bound
++        // policy because it is neither an allowed internal edge nor the proved gateway.
++        let mut cross_path_rows = real_rows.clone();
++        let entry_row = cross_path_rows
++            .iter()
++            .position(|(from, kind, to)| {
++                *from == branch_id && *kind == CanonicalEdgeKind::Normal && *to == entry_id
++            })
++            .expect("real branch-to-prefix entry row exists");
++        cross_path_rows[entry_row] = (branch_id, CanonicalEdgeKind::Normal, &real_clone_path_id);
++        let mut cross_path_budget = Budget::new(Limits {
++            analysis_steps: 1 << 20,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        assert!(
++            !nested_side_exit_edge_rows_proved(
++                cross_path_rows.iter().copied(),
++                cross_path_rows.len(),
++                &edge_policy,
++                &mut cross_path_budget,
++                23,
++            )
++            .expect("cross-path owner-row check completes"),
++            "an incident row crossing to a real non-empty canonical path is refused"
++        );
+         // Exercise the real child/gateway continuation consumer with the already proved route.
+         // The prefix is the only owner claimed before this consumer is entered.
+         let mut continuation_frame = frame.clone();

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf11-side-exits-focused-root-v3.py", line 37, in <module>
+    run(['cargo','test','-p','jarde-java','--lib','--locked','real_cf11_side_exit','--','--nocapture'])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-cf11-side-exits-focused-root-v3.py", line 32, in run
+    assert c['exit_code']==0 and c['guard_stop'] is None
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

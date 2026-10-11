@@ -1,0 +1,8 @@
+[1m[31m[-] failed to find out terminal size.
+[!] lldbinit is best experienced with a terminal size at least 125x25[0m
+[32m[+] Loaded lldbinit version 3.2.436 @ lldb-2103.0 (apple version)[0m
+(lldbinit) target create "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+Current executable set to '/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin' (arm64).
+(lldbinit) settings set target.run-args --exact a_late_public_budget_stop_and_precancellation_publish_no_partial_body --nocapture
+                                        ˄˜˜˜˜˜˜
+                                        ╰─ error: unknown or ambiguous option

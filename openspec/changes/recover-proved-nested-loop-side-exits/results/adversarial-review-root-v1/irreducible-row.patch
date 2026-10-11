@@ -1,0 +1,27 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -22352,6 +22352,24 @@
+             .expect("interior-entry row check completes"),
+             "a second child-interior entry is refused; normal-flow facts are not rebuilt"
+         );
++        let mut child_to_prefix_rows = real_rows.clone();
++        child_to_prefix_rows.push((block(39), CanonicalEdgeKind::Normal, block(28)));
++        let mut child_to_prefix_budget = Budget::new(Limits {
++            analysis_steps: 1 << 20,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        assert!(
++            !nested_side_exit_edge_rows_proved(
++                child_to_prefix_rows.iter().copied(),
++                child_to_prefix_rows.len(),
++                &edge_policy,
++                &mut child_to_prefix_budget,
++                23,
++            )
++            .expect("child-to-prefix row check completes"),
++            "an unproved child-interior-to-prefix backedge is refused by the local closure policy; NormalFlow is unchanged"
++        );
+         // Obtain the non-empty path from Reader's real legacy-jsr class. CanonicalBlockId itself
+         // carries only BCI/path, not class identity; this local row mutation does not create a
+         // mixed-class CanonicalCfg.

@@ -1,0 +1,34 @@
+
+running 5 tests
+test a_branching_protected_body_stays_inside_structured_finally ... ok
+test a_divergent_copy_or_narrowed_range_stays_quoted ... ok
+test a_stack_value_crossing_the_protected_boundary_is_quoted ... ok
+test a_straight_lead_stays_before_the_protected_snapshot_return ... ok
+test a_straight_proved_copy_has_one_cleanup_and_returns_the_saved_local ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 2 tests
+test a_handler_value_read_after_its_clause_is_still_refused ... ok
+test two_rows_that_begin_at_one_instruction_and_nest_are_a_try_inside_a_try ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 5 tests
+test changed_field_increment_or_protection_cannot_claim_one_finally ... ok
+test changed_rows_targets_or_extra_completion_cannot_claim_one_finally ... ok
+test field_candidate_budget_and_cancellation_publish_no_partial_finally ... ok
+test shared_call_has_one_source_finally_and_all_physical_origins ... ok
+test shared_field_has_one_source_finally_and_all_physical_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 2 tests
+test a_copy_whose_proof_fails_does_not_claim_a_resource_header ... ok
+test a_java_nine_resource_is_declared_from_the_copy_the_compiler_made ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

@@ -1,0 +1,15 @@
+(lldb) target create "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+Current executable set to '/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin' (arm64).
+(lldb) process launch -- --exact a_late_public_budget_stop_and_precancellation_publish_no_partial_body --nocapture
+
+running 1 test
+Process 15455 launched: '/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin' (arm64)
+Process 15455 stopped
+* thread #2, name = 'a_late_public_budget_stop_and_precancellation_publish_no_partia', stop reason = EXC_BAD_ACCESS (code=2, address=0x16fe03dc0)
+       frame #0: 0x0000000100675324 failed-api-0.bin`<jarde_java::build::Builder>::render_value_definition + 20
+failed-api-0.bin`<jarde_java::build::Builder>::render_value_definition:
+->  0x100675324 <+20>: str    xzr, [sp]
+    0x100675328 <+24>: cmp    sp, x9
+    0x10067532c <+28>: b.ne   0x100675320               ; <+16>
+    0x100675330 <+32>: sub    sp, sp, #0x5f0
+Target 0: (failed-api-0.bin) stopped.

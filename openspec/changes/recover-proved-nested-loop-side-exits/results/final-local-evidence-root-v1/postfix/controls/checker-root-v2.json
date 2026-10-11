@@ -1,0 +1,23 @@
+{
+  "schema": "cf11-side-exits-postfix-check-v1",
+  "status": "accepted_postfix_observation",
+  "execution": {
+    "path": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/execution.json",
+    "bytes": 1248103,
+    "sha256": "1722c6415c0b9ea1596646d9c35d2d018662ae4947abd7984984b7e722058637"
+  },
+  "command_count": 29,
+  "raw_stream_count": 58,
+  "subject": "side-exit-controls",
+  "class": "cf11.NestedLoopSideExitControls",
+  "ten_case_model_checked": true,
+  "original_oracle_sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce",
+  "physical_method_maps_checked": true,
+  "whole_class_default_all_identity_checked": true,
+  "full_source_compile_runtime_matrix": 4,
+  "checker": {
+    "path": "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py",
+    "bytes": 30496,
+    "sha256": "d274af6c34bf72d8ef292fe51ad262d22c2e32b94748a5b1f4d902c9ce5ffeaf"
+  }
+}

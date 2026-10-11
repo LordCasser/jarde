@@ -1,0 +1,8 @@
+
+running 3 tests
+test a_late_public_budget_stop_and_precancellation_publish_no_partial_body ... ok
+test controlled_returns_keep_full_class_maps_for_both_physical_methods ... ok
+test upstream_nested_loops4_is_structured_with_complete_physical_sources ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

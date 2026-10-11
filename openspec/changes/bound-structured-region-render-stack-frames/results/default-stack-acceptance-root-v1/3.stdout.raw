@@ -1,0 +1,66 @@
+
+running 6 tests
+test complete_java8_classes_keep_supplier_and_element_execution_order ... ok
+test low_work_budget_and_cancellation_publish_no_partial_array_loop ... ok
+test primitive_and_reference_arrays_project_but_unsafe_shapes_do_not ... ok
+test projected_origins_and_body_are_identical_under_essential_and_all_evidence ... ok
+test reused_array_and_int_slot_recompile_with_and_without_debug_names ... ok
+test same_slot_later_local_declaration_survives_array_projection ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.14s
+
+
+running 8 tests
+test a_post_loop_use_or_another_update_refuses_the_header_projection ... ok
+test computed_for_controls_keep_fallback_boundaries_and_evidence_parity ... ok
+test computed_init_return_leaf_and_latch_keep_one_physical_for_source ... ok
+test computed_initializer_call_order_matches_physical_store_anchors ... ok
+test direct_call_initializer_is_written_once_in_the_for_header ... ok
+test for_proof_obeys_the_request_budget_and_cancellation ... ok
+test shared_stack_initializer_refuses_a_for_header_with_complete_physical_sources ... ok
+test the_single_induction_update_is_a_for_header ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+
+running 5 tests
+test complete_java8_debug_and_nodebug_classes_match_original_execution ... ok
+test direct_iterable_projects_with_or_without_debug_names_and_preserves_cast ... ok
+test platform_collection_owners_project_only_with_matching_proof_and_preserve_execution ... ok
+test source_selection_and_bounded_stops_keep_the_loop_atomic ... ok
+test subtype_owners_project_and_extra_next_or_iterator_escape_refuse ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.06s
+
+
+running 4 tests
+test a_second_loop_entry_or_different_exit_keeps_the_method_quoted ... ok
+test budget_and_cancellation_do_not_publish_a_partial_loop_arm ... ok
+test extra_loop_transfers_do_not_claim_the_inner_join_tail ... ok
+test loop_arm_joins_before_the_outer_arm_tail_once ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test a_nested_if_remains_in_the_loop_body_after_a_nested_region_returns ... ok
+test a_switch_capturing_a_loop_break_keeps_the_loop_target_and_body_update ... ok
+test an_outer_continue_runs_the_proved_for_update_and_skips_the_body_tail ... ok
+test nested_breaks_stay_in_the_taken_arm_and_outer_break_keeps_its_loop_target ... ok
+test the_for_header_and_continue_keep_their_bytecode_origins ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 8 tests
+test business_form_behavior_matches_the_original_class ... ok
+test business_form_with_inner_break_recovers ... ok
+test exits_that_leave_the_loop_past_its_back_edge_stay_refused ... ok
+test labeled_continue_outer_form_recovers_the_same_way ... ok
+test overlap_with_inner_two_jump_body_stays_refused ... ok
+test shared_latch_double_loop_recovers_and_spells_the_continue ... ok
+test three_level_composition_recovers_and_behaves ... ok
+test untouched_single_continue_and_no_jump_shapes_stay_byte_identical ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+

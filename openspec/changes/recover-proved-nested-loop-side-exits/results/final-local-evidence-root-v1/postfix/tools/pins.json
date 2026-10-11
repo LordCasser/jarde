@@ -1,0 +1,14 @@
+{
+  "collect_postfix.py": {
+    "bytes": 22402,
+    "sha256": "eb25e7db637f64b740d2d9586744e7b70d33fa6f42555e8c573173cef5dc4905"
+  },
+  "check_postfix.py": {
+    "bytes": 30496,
+    "sha256": "d274af6c34bf72d8ef292fe51ad262d22c2e32b94748a5b1f4d902c9ce5ffeaf"
+  },
+  "README.md": {
+    "bytes": 1132,
+    "sha256": "49d7c286640ecc01266dee5e0da9a31556dd94687bf1423401fb7f54c6e139d1"
+  }
+}

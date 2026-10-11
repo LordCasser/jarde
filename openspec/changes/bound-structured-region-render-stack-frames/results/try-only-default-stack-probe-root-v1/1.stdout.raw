@@ -1,0 +1,6 @@
+
+running 1 test
+test region::tests::real_cf11_side_exit_proof_uses_the_reader_graph_and_has_a_real_stop_boundary ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 352 filtered out; finished in 0.01s
+

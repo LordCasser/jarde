@@ -1,0 +1,55 @@
+{
+  "status": "preserved_actual_diagnostic_failure",
+  "files": [
+    {
+      "path": "0.stderr.raw",
+      "bytes": 77356,
+      "sha256": "624fcb27a4203cb276eb71afd28f9e8c4d066208e4b6eec096eb147716bc52ba"
+    },
+    {
+      "path": "0.stdout.raw",
+      "bytes": 529,
+      "sha256": "e87277705f7ba796b51981c4fe7d2c69ac6fd1f433a3a1aa9dd6c6819ba319e6"
+    },
+    {
+      "path": "1.stderr.raw",
+      "bytes": 52,
+      "sha256": "d7172c05ecbb25ce51c11d1644256d6ec9c277189def4702c32a5ad6aeaff9da"
+    },
+    {
+      "path": "1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "README.md",
+      "bytes": 489,
+      "sha256": "1469bdc55e6346d391e0efc6bba3626df886fb5f8a8709b1a7d506db709711e2"
+    },
+    {
+      "path": "compiled-api.rs.txt",
+      "bytes": 11231,
+      "sha256": "ca0158dfc7b034dfceef5a4ff6503b38a615736d3b0acfd8a8c1225fd8481e9c"
+    },
+    {
+      "path": "execution.json",
+      "bytes": 2274222,
+      "sha256": "2a22893c25ca1300c6f6392f1e23456f6268e7fda32ee4ee08d46cccfb83d3f6"
+    },
+    {
+      "path": "jarde-cf11-side-exits-stack-diagnostic-root-v1.py",
+      "bytes": 3221,
+      "sha256": "ccf2065c3a8aa6867e77824e74d5659f14c474648cb7caf5411cc04370aafe5c"
+    },
+    {
+      "path": "jarde-cf11-side-exits-stack-diagnostic-root-v1.stderr.raw",
+      "bytes": 685,
+      "sha256": "1cc0f1440801f49ba42ede7fe9f67df16db236daa9f985a965f700b15e19d0de"
+    },
+    {
+      "path": "jarde-cf11-side-exits-stack-diagnostic-root-v1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,449 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -20456,219 +20456,7 @@
+                     }
+                 }
+             }
+-            Region::Try {
+-                prefix,
+-                lead,
+-                body,
+-                catches,
+-                normal_exit_bci,
+-                transparent,
+-            } => {
+-                let mut transparent_checkpoint =
+-                    transparent.as_ref().map(|_| self.finally_checkpoint());
+-                let shared = self
+-                    .shared_finally
+-                    .as_ref()
+-                    .filter(|shared| shared.path == *path)
+-                    .cloned();
+-                for block in prefix {
+-                    self.block(block)?;
+-                }
+-                // The statement's own block may hold what ran before the protected range began —
+-                // `int x = 1;` in front of `try { … }` — and those instructions are not part of the
+-                // range: they are written here, before the `try`, exactly like the block's own lead
+-                // in front of an `if`. The body still begins in that same block, so the instructions
+-                // this wrote are the ones it must not write again.
+-                self.range(*lead)?;
+-                let lead: BTreeSet<u32> = self
+-                    .instructions
+-                    .range(lead.0..lead.1)
+-                    .map(|(bci, _)| *bci)
+-                    .collect();
+-                // The clause headers come from the class file's own facts and are read **before**
+-                // anything is written: a clause whose type or parameter cannot be named leaves the
+-                // whole region quoted rather than writing half a `try` with a header the text cannot
+-                // state.
+-                let mut headers = Vec::with_capacity(catches.len());
+-                for clause in catches {
+-                    match self.catch_header(clause) {
+-                        Ok(header) => headers.push(header),
+-                        Err(reason) => {
+-                            let at = clause.handler().bci();
+-                            let bcis = if transparent.is_some() {
+-                                self.transparent_try_bcis(region)?
+-                            } else {
+-                                self.region_quote(region, at)
+-                            };
+-                            if let Some(checkpoint) = transparent_checkpoint.take() {
+-                                self.restore_finally(checkpoint);
+-                            }
+-                            return self.fallback(bcis, &reason, at);
+-                        }
+-                    }
+-                }
+-                let mut body_statements = Vec::new();
+-                let outer = std::mem::replace(&mut self.settled, lead);
+-                let previous_finally = (self.body_span, self.finally_return);
+-                if let Some(shared) = &shared {
+-                    self.body_span = Some(shared.protected);
+-                    self.finally_return = match &shared.completion {
+-                        Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
+-                            Some(returns[0])
+-                        }
+-                        Some(guard::SharedFinallyCompletion::Joined { .. })
+-                        | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
+-                        | None => None,
+-                    };
+-                }
+-                let walked = self.arm(body, &mut body_statements, &child(path, 0));
+-                self.body_span = previous_finally.0;
+-                self.finally_return = previous_finally.1;
+-                self.settled = outer;
+-                walked?;
+-                let mut written = Vec::with_capacity(catches.len());
+-                for (index, (clause, (ty, name))) in catches.iter().zip(headers).enumerate() {
+-                    let outer_declared = self.declared.clone();
+-                    // The header declares the local the handler's own entry store fills: the store is
+-                    // therefore not a statement of the body, and every later read of that local is a
+-                    // read of the name this header states.
+-                    self.declared
+-                        .insert(LocalVariable::whole(clause.parameter()));
+-                    self.clause_parameters.insert(clause.handler().bci());
+-                    let mut handler = Vec::new();
+-                    let previous_finally = (self.body_span, self.finally_return);
+-                    if let Some(shared) = &shared {
+-                        if let Some((empty, saved)) = shared.two_catch {
+-                            self.body_span =
+-                                Some(if index == 0 { empty } else { shared.catch_body });
+-                            self.finally_return = (index == 1).then_some(saved);
+-                        } else {
+-                            self.body_span = Some(shared.catch_body);
+-                            self.finally_return = match &shared.completion {
+-                                Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
+-                                    Some(returns[1])
+-                                }
+-                                Some(guard::SharedFinallyCompletion::Joined { .. })
+-                                | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
+-                                | None => None,
+-                            };
+-                        }
+-                    }
+-                    let empty_catch = shared.as_ref().is_some_and(|shared| {
+-                        shared.empty_catch || (shared.two_catch.is_some() && index == 0)
+-                    });
+-                    let walked = if empty_catch {
+-                        Ok(())
+-                    } else {
+-                        self.arm(
+-                            clause.body(),
+-                            &mut handler,
+-                            &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
+-                        )
+-                    };
+-                    self.body_span = previous_finally.0;
+-                    self.finally_return = previous_finally.1;
+-                    walked?;
+-                    // P3 2.2's third negative: a clause whose body walk wrote **no** statement
+-                    // while the body's own region still holds instructions the header and the
+-                    // control flow do not account for is not an empty catch. The handler body is
+-                    // what this build could not present, so the clause keeps its header and the
+-                    // body becomes the BCI reference any refused region writes — empty braces
+-                    // would state a handler that runs nothing, and the dropped statements would
+-                    // be named nowhere.
+-                    if handler.is_empty()
+-                        && !empty_catch
+-                        && let Some((reason, bcis)) =
+-                            self.unpresented_clause_body(clause.body(), clause.handler().bci())?
+-                    {
+-                        let at = bcis
+-                            .first()
+-                            .copied()
+-                            .unwrap_or_else(|| clause.handler().bci());
+-                        let origin = bcis
+-                            .iter()
+-                            .filter(|bci| **bci != at)
+-                            .fold(OriginSet::new(Origin::direct(at)), |origin, bci| {
+-                                origin.plus_derived(Origin::derived(*bci))
+-                            });
+-                        self.push_into(
+-                            &mut handler,
+-                            Stmt::new(StmtKind::Fallback { reason, bcis }, origin),
+-                        )?;
+-                    }
+-                    // A catch parameter is visible through its own clause body only. The builder's
+-                    // `declared` set is a construction aid, so restore the enclosing lexical scope
+-                    // before the next handler or the code following this try is built.
+-                    self.declared = outer_declared;
+-                    written.push(crate::ast::CatchClause {
+-                        ty,
+-                        name,
+-                        body: handler,
+-                    });
+-                }
+-                if let Some(proof) = transparent {
+-                    let mut stated = Vec::new();
+-                    for statement in &body_statements {
+-                        stated_by_statement(statement, &mut Vec::new(), &mut stated);
+-                    }
+-                    let complete = !body_statements.is_empty()
+-                        && !body_statements.iter().any(statement_has_fallback)
+-                        && written
+-                            .iter()
+-                            .all(|clause| !clause.body.iter().any(statement_has_fallback))
+-                        && self
+-                            .instructions
+-                            .range(proof.range.0..proof.range.1)
+-                            .all(|(bci, _)| stated.contains(bci));
+-                    if !complete {
+-                        self.restore_finally(
+-                            transparent_checkpoint
+-                                .take()
+-                                .expect("transparent try checkpoint"),
+-                        );
+-                        let bcis = self.transparent_try_bcis(region)?;
+-                        return self.fallback(
+-                            bcis,
+-                            "the transparent catch-all has no complete try and catch presentation",
+-                            proof.range.0,
+-                        );
+-                    }
+-                }
+-                // The statement is the protected range's own start; every clause adds the handler
+-                // entry it was read from, so the table's own rows are the anchors of the text that
+-                // states them.
+-                let mut origin = OriginSet::new(Origin::direct(
+-                    body.blocks().first().map(|block| block.bci()).unwrap_or(0),
+-                ));
+-                for clause in catches {
+-                    origin = origin.plus_derived(Origin::derived(clause.handler().bci()));
+-                }
+-                if let Some(bci) = normal_exit_bci {
+-                    origin = origin.plus_derived(Origin::derived(*bci));
+-                }
+-                if let Some(proof) = transparent {
+-                    for bci in proof.bcis.into_iter().chain(proof.normal_exits) {
+-                        origin = origin.plus_derived(Origin::derived(bci));
+-                    }
+-                }
+-                let finally_body = if let Some(shared) = &shared {
+-                    for bci in &shared.facts {
+-                        origin = origin.plus_derived(Origin::derived(*bci));
+-                    }
+-                    Some(self.body_range(shared.normal_cleanup)?)
+-                } else {
+-                    None
+-                };
+-                self.push(Stmt::new(
+-                    StmtKind::Try {
+-                        resources: Vec::new(),
+-                        catches: written,
+-                        body: body_statements,
+-                        finally_body,
+-                    },
+-                    origin,
+-                ))
+-            }
++            Region::Try { .. } => self.try_region(region, path),
+             Region::ShortCircuitValue { .. } => {
+                 unreachable!("short-circuit regions use the whole-source fallback path above")
+             }
+@@ -20705,6 +20493,225 @@
+         }
+     }
+ 
++    /// Render one try region after the shared declaration entry has run.
++    fn try_region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
++        let Region::Try {
++            prefix,
++            lead,
++            body,
++            catches,
++            normal_exit_bci,
++            transparent,
++        } = region
++        else {
++            unreachable!("try_region is dispatched only for Region::Try")
++        };
++        let mut transparent_checkpoint =
++            transparent.as_ref().map(|_| self.finally_checkpoint());
++        let shared = self
++            .shared_finally
++            .as_ref()
++            .filter(|shared| shared.path == *path)
++            .cloned();
++        for block in prefix {
++            self.block(block)?;
++        }
++        // The statement's own block may hold what ran before the protected range began —
++        // `int x = 1;` in front of `try { … }` — and those instructions are not part of the
++        // range: they are written here, before the `try`, exactly like the block's own lead
++        // in front of an `if`. The body still begins in that same block, so the instructions
++        // this wrote are the ones it must not write again.
++        self.range(*lead)?;
++        let lead: BTreeSet<u32> = self
++            .instructions
++            .range(lead.0..lead.1)
++            .map(|(bci, _)| *bci)
++            .collect();
++        // The clause headers come from the class file's own facts and are read **before**
++        // anything is written: a clause whose type or parameter cannot be named leaves the
++        // whole region quoted rather than writing half a `try` with a header the text cannot
++        // state.
++        let mut headers = Vec::with_capacity(catches.len());
++        for clause in catches {
++            match self.catch_header(clause) {
++                Ok(header) => headers.push(header),
++                Err(reason) => {
++                    let at = clause.handler().bci();
++                    let bcis = if transparent.is_some() {
++                        self.transparent_try_bcis(region)?
++                    } else {
++                        self.region_quote(region, at)
++                    };
++                    if let Some(checkpoint) = transparent_checkpoint.take() {
++                        self.restore_finally(checkpoint);
++                    }
++                    return self.fallback(bcis, &reason, at);
++                }
++            }
++        }
++        let mut body_statements = Vec::new();
++        let outer = std::mem::replace(&mut self.settled, lead);
++        let previous_finally = (self.body_span, self.finally_return);
++        if let Some(shared) = &shared {
++            self.body_span = Some(shared.protected);
++            self.finally_return = match &shared.completion {
++                Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
++                    Some(returns[0])
++                }
++                Some(guard::SharedFinallyCompletion::Joined { .. })
++                | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
++                | None => None,
++            };
++        }
++        let walked = self.arm(body, &mut body_statements, &child(path, 0));
++        self.body_span = previous_finally.0;
++        self.finally_return = previous_finally.1;
++        self.settled = outer;
++        walked?;
++        let mut written = Vec::with_capacity(catches.len());
++        for (index, (clause, (ty, name))) in catches.iter().zip(headers).enumerate() {
++            let outer_declared = self.declared.clone();
++            // The header declares the local the handler's own entry store fills: the store is
++            // therefore not a statement of the body, and every later read of that local is a
++            // read of the name this header states.
++            self.declared
++                .insert(LocalVariable::whole(clause.parameter()));
++            self.clause_parameters.insert(clause.handler().bci());
++            let mut handler = Vec::new();
++            let previous_finally = (self.body_span, self.finally_return);
++            if let Some(shared) = &shared {
++                if let Some((empty, saved)) = shared.two_catch {
++                    self.body_span =
++                        Some(if index == 0 { empty } else { shared.catch_body });
++                    self.finally_return = (index == 1).then_some(saved);
++                } else {
++                    self.body_span = Some(shared.catch_body);
++                    self.finally_return = match &shared.completion {
++                        Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
++                            Some(returns[1])
++                        }
++                        Some(guard::SharedFinallyCompletion::Joined { .. })
++                        | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
++                        | None => None,
++                    };
++                }
++            }
++            let empty_catch = shared.as_ref().is_some_and(|shared| {
++                shared.empty_catch || (shared.two_catch.is_some() && index == 0)
++            });
++            let walked = if empty_catch {
++                Ok(())
++            } else {
++                self.arm(
++                    clause.body(),
++                    &mut handler,
++                    &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
++                )
++            };
++            self.body_span = previous_finally.0;
++            self.finally_return = previous_finally.1;
++            walked?;
++            // P3 2.2's third negative: a clause whose body walk wrote **no** statement
++            // while the body's own region still holds instructions the header and the
++            // control flow do not account for is not an empty catch. The handler body is
++            // what this build could not present, so the clause keeps its header and the
++            // body becomes the BCI reference any refused region writes — empty braces
++            // would state a handler that runs nothing, and the dropped statements would
++            // be named nowhere.
++            if handler.is_empty()
++                && !empty_catch
++                && let Some((reason, bcis)) =
++                    self.unpresented_clause_body(clause.body(), clause.handler().bci())?
++            {
++                let at = bcis
++                    .first()
++                    .copied()
++                    .unwrap_or_else(|| clause.handler().bci());
++                let origin = bcis
++                    .iter()
++                    .filter(|bci| **bci != at)
++                    .fold(OriginSet::new(Origin::direct(at)), |origin, bci| {
++                        origin.plus_derived(Origin::derived(*bci))
++                    });
++                self.push_into(
++                    &mut handler,
++                    Stmt::new(StmtKind::Fallback { reason, bcis }, origin),
++                )?;
++            }
++            // A catch parameter is visible through its own clause body only. The builder's
++            // `declared` set is a construction aid, so restore the enclosing lexical scope
++            // before the next handler or the code following this try is built.
++            self.declared = outer_declared;
++            written.push(crate::ast::CatchClause {
++                ty,
++                name,
++                body: handler,
++            });
++        }
++        if let Some(proof) = transparent {
++            let mut stated = Vec::new();
++            for statement in &body_statements {
++                stated_by_statement(statement, &mut Vec::new(), &mut stated);
++            }
++            let complete = !body_statements.is_empty()
++                && !body_statements.iter().any(statement_has_fallback)
++                && written
++                    .iter()
++                    .all(|clause| !clause.body.iter().any(statement_has_fallback))
++                && self
++                    .instructions
++                    .range(proof.range.0..proof.range.1)
++                    .all(|(bci, _)| stated.contains(bci));
++            if !complete {
++                self.restore_finally(
++                    transparent_checkpoint
++                        .take()
++                        .expect("transparent try checkpoint"),
++                );
++                let bcis = self.transparent_try_bcis(region)?;
++                return self.fallback(
++                    bcis,
++                    "the transparent catch-all has no complete try and catch presentation",
++                    proof.range.0,
++                );
++            }
++        }
++        // The statement is the protected range's own start; every clause adds the handler
++        // entry it was read from, so the table's own rows are the anchors of the text that
++        // states them.
++        let mut origin = OriginSet::new(Origin::direct(
++            body.blocks().first().map(|block| block.bci()).unwrap_or(0),
++        ));
++        for clause in catches {
++            origin = origin.plus_derived(Origin::derived(clause.handler().bci()));
++        }
++        if let Some(bci) = normal_exit_bci {
++            origin = origin.plus_derived(Origin::derived(*bci));
++        }
++        if let Some(proof) = transparent {
++            for bci in proof.bcis.into_iter().chain(proof.normal_exits) {
++                origin = origin.plus_derived(Origin::derived(bci));
++            }
++        }
++        let finally_body = if let Some(shared) = &shared {
++            for bci in &shared.facts {
++                origin = origin.plus_derived(Origin::derived(*bci));
++            }
++            Some(self.body_range(shared.normal_cleanup)?)
++        } else {
++            None
++        };
++        self.push(Stmt::new(
++            StmtKind::Try {
++                resources: Vec::new(),
++                catches: written,
++                body: body_statements,
++                finally_body,
++            },
++            origin,
++        ))
++    }
++
+     /// A refused two-exit node quotes every decoded instruction, including fused blocks' inner
+     /// instructions and both shared return leaves. No prefix or test is emitted first.
+     fn two_exit_return_quote(&mut self, region: &Region, at: u32) -> Result<Vec<u32>, StopReason> {

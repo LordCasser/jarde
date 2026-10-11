@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf11-side-exits-controls-root-v1/collect.py", line 280, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/private/tmp/jarde-cf11-side-exits-controls-root-v1/collect.py", line 238, in main
+    src = OUT / 'jarde' / label / (CLASS + '.java'); src.parent.mkdir(parents=True); src.write_text(text, encoding='utf-8')
+                                                     ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 1011, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/jarde/javac8-jarde-default'

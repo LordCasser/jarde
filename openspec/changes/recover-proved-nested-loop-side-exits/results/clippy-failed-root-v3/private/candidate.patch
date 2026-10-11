@@ -1,0 +1,15 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -22186,8 +22186,10 @@
+             .expect("real parent natural loop")
+             .blocks()
+             .clone();
+-        let mut frame = Frame::default();
+-        frame.scope = Some((0..view.len()).collect());
++        let mut frame = Frame {
++            scope: Some((0..view.len()).collect()),
++            ..Frame::default()
++        };
+         frame.loop_targets.push(LoopTarget {
+             header,
+             exits: BTreeSet::from([exit]),

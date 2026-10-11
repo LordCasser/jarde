@@ -1,0 +1,246 @@
+Classfile /private/tmp/jarde-cf11-side-exits-controls-baseline-root-v1/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class
+  Last modified 2026年10月11日; size 1048 bytes
+  SHA-256 checksum b880de488b261f83b58f3b9106d4b32a5ac805fba2c3edf8c656999ecbf90a30
+  Compiled from "NestedLoopSideExitControls.java"
+public class cf11.NestedLoopSideExitControls
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #7                          // cf11/NestedLoopSideExitControls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 0, methods: 3, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Class              #8             // cf11/NestedLoopSideExitControls
+   #8 = Utf8               cf11/NestedLoopSideExitControls
+   #9 = Utf8               Code
+  #10 = Utf8               LineNumberTable
+  #11 = Utf8               LocalVariableTable
+  #12 = Utf8               this
+  #13 = Utf8               Lcf11/NestedLoopSideExitControls;
+  #14 = Utf8               testFor
+  #15 = Utf8               (III)I
+  #16 = Utf8               k
+  #17 = Utf8               I
+  #18 = Utf8               j
+  #19 = Utf8               i
+  #20 = Utf8               returnThreshold
+  #21 = Utf8               bound
+  #22 = Utf8               window
+  #23 = Utf8               tmp
+  #24 = Utf8               StackMapTable
+  #25 = Utf8               runCounts
+  #26 = Utf8               ticks
+  #27 = Utf8               SourceFile
+  #28 = Utf8               NestedLoopSideExitControls.java
+{
+  public cf11.NestedLoopSideExitControls();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 2: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/NestedLoopSideExitControls;
+
+  public int testFor(int, int, int);
+    descriptor: (III)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=8, args_size=4
+         0: iconst_1
+         1: istore        4
+         3: bipush        10
+         5: istore        5
+         7: iload         5
+         9: iconst_m1
+        10: if_icmple     81
+        13: iload         5
+        15: iload         4
+        17: if_icmple     75
+        20: iconst_0
+        21: istore        6
+        23: iload         6
+        25: iload_2
+        26: if_icmpge     72
+        29: iload         5
+        31: iload         6
+        33: if_icmpge     66
+        36: iload         6
+        38: istore        7
+        40: iload         7
+        42: iload         6
+        44: iload_3
+        45: iadd
+        46: if_icmpge     63
+        49: iload_1
+        50: iload         7
+        52: if_icmple     57
+        55: iconst_0
+        56: ireturn
+        57: iinc          7, 1
+        60: goto          40
+        63: goto          72
+        66: iinc          6, 4
+        69: goto          23
+        72: iinc          4, 1
+        75: iinc          5, -1
+        78: goto          7
+        81: iload         4
+        83: ireturn
+      LineNumberTable:
+        line 4: 0
+        line 5: 3
+        line 6: 13
+        line 7: 20
+        line 8: 29
+        line 9: 36
+        line 10: 49
+        line 11: 55
+        line 9: 57
+        line 14: 63
+        line 7: 66
+        line 17: 72
+        line 5: 75
+        line 20: 81
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           40      23     7     k   I
+           23      49     6     j   I
+            7      74     5     i   I
+            0      84     0  this   Lcf11/NestedLoopSideExitControls;
+            0      84     1 returnThreshold   I
+            0      84     2 bound   I
+            0      84     3 window   I
+            3      81     4   tmp   I
+      StackMapTable: number_of_entries = 9
+        frame_type = 253 /* append */
+          offset_delta = 7
+          locals = [ int, int ]
+        frame_type = 252 /* append */
+          offset_delta = 15
+          locals = [ int ]
+        frame_type = 252 /* append */
+          offset_delta = 16
+          locals = [ int ]
+        frame_type = 16 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 2 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 2 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+
+  public int runCounts(int, int, int);
+    descriptor: (III)I
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=9, args_size=4
+         0: iconst_1
+         1: istore        4
+         3: iconst_0
+         4: istore        5
+         6: bipush        10
+         8: istore        6
+        10: iload         6
+        12: iconst_m1
+        13: if_icmple     88
+        16: iload         6
+        18: iload         4
+        20: if_icmple     82
+        23: iconst_0
+        24: istore        7
+        26: iload         7
+        28: iload_2
+        29: if_icmpge     79
+        32: iload         6
+        34: iload         7
+        36: if_icmpge     73
+        39: iload         7
+        41: istore        8
+        43: iload         8
+        45: iload         7
+        47: iload_3
+        48: iadd
+        49: if_icmpge     70
+        52: iinc          5, 1
+        55: iload_1
+        56: iload         8
+        58: if_icmple     64
+        61: iload         5
+        63: ireturn
+        64: iinc          8, 1
+        67: goto          43
+        70: goto          79
+        73: iinc          7, 4
+        76: goto          26
+        79: iinc          4, 1
+        82: iinc          6, -1
+        85: goto          10
+        88: iload         4
+        90: sipush        1000
+        93: imul
+        94: iload         5
+        96: iadd
+        97: ireturn
+      LineNumberTable:
+        line 24: 0
+        line 25: 3
+        line 26: 6
+        line 27: 16
+        line 28: 23
+        line 29: 32
+        line 30: 39
+        line 31: 52
+        line 32: 55
+        line 33: 61
+        line 30: 64
+        line 36: 70
+        line 28: 73
+        line 39: 79
+        line 26: 82
+        line 42: 88
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           43      27     8     k   I
+           26      53     7     j   I
+           10      78     6     i   I
+            0      98     0  this   Lcf11/NestedLoopSideExitControls;
+            0      98     1 returnThreshold   I
+            0      98     2 bound   I
+            0      98     3 window   I
+            3      95     4   tmp   I
+            6      92     5 ticks   I
+      StackMapTable: number_of_entries = 9
+        frame_type = 254 /* append */
+          offset_delta = 10
+          locals = [ int, int, int ]
+        frame_type = 252 /* append */
+          offset_delta = 15
+          locals = [ int ]
+        frame_type = 252 /* append */
+          offset_delta = 16
+          locals = [ int ]
+        frame_type = 20 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 2 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 2 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+}
+SourceFile: "NestedLoopSideExitControls.java"

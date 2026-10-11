@@ -1,0 +1,75 @@
+{
+  "status": "preserved_actual_failed_probe",
+  "files": [
+    {
+      "path": "0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "1.stderr.raw",
+      "bytes": 1940,
+      "sha256": "cdc8d6f1b8d126956cfa774e24e439aaa8736cde864d95299eab162f635a6eb5"
+    },
+    {
+      "path": "1.stdout.raw",
+      "bytes": 218,
+      "sha256": "8796fcff3b4f55600c714a2c0a3c3218b19195439e2e281b321d0e93d46a11e2"
+    },
+    {
+      "path": "2.stderr.raw",
+      "bytes": 2480,
+      "sha256": "d0d641d4ed50f581c290df89e106df5ccf0258f299888d75914bfa2587d77002"
+    },
+    {
+      "path": "2.stdout.raw",
+      "bytes": 96,
+      "sha256": "5b7cae8205bac56d471d7835049968233144d3ca78423e4ee991f8c95d953368"
+    },
+    {
+      "path": "3.stderr.raw",
+      "bytes": 52,
+      "sha256": "1919f86c320e2c896f68b2ad669e92678d6d56db337e8355476e03a0c4766954"
+    },
+    {
+      "path": "3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "README.md",
+      "bytes": 421,
+      "sha256": "17902acf2742e0101d3c0fc589a01254b724e0ecc2a5185e8a26d68a49587b15"
+    },
+    {
+      "path": "compiled-region.rs.txt",
+      "bytes": 934245,
+      "sha256": "7d7de2c1b3640e1365f21776ca67867a2077debfde61b087e85ccb2384265025"
+    },
+    {
+      "path": "execution.json",
+      "bytes": 2276500,
+      "sha256": "ebc69e3436137a71907b788eff684e3a713f65ebcd194a279f62e2fef7db9da6"
+    },
+    {
+      "path": "jarde-cf11-side-exits-focused-root-v1.py",
+      "bytes": 4078,
+      "sha256": "1f53556adcdd13b837221ea02c8078091441be8131a5158c596bc97e7d21c016"
+    },
+    {
+      "path": "jarde-cf11-side-exits-focused-root-v1.stderr.raw",
+      "bytes": 667,
+      "sha256": "d86dc3a0f88ca8a10a96f1072f2311cd9f2ee644c3c9c41dde42e0edc7a6a661"
+    },
+    {
+      "path": "jarde-cf11-side-exits-focused-root-v1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

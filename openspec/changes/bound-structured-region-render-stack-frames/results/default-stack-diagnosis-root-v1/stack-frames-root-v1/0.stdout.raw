@@ -1,0 +1,38 @@
+
+/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000100847a98 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker11loop_region>:
+100847a98: a9be6ffc    	stp	x28, x27, [sp, #-0x20]!
+100847a9c: a9017bfd    	stp	x29, x30, [sp, #0x10]
+100847aa0: 910043fd    	add	x29, sp, #0x10
+100847aa4: d13b83ff    	sub	sp, sp, #0xee0
+100847aa8: f90003ff    	str	xzr, [sp]
+100847aac: 911543e9    	add	x9, sp, #0x550
+100847ab0: f9010be9    	str	x9, [sp, #0x210]
+100847ab4: f9010fe8    	str	x8, [sp, #0x218]
+100847ab8: f90113e0    	str	x0, [sp, #0x220]
+100847abc: f90117e1    	str	x1, [sp, #0x228]
+100847ac0: f9011be3    	str	x3, [sp, #0x230]
+100847ac4: f9011fe2    	str	x2, [sp, #0x238]
+100847ac8: 39365fff    	strb	wzr, [sp, #0xd97]
+100847acc: 39365bff    	strb	wzr, [sp, #0xd96]
+100847ad0: 393657ff    	strb	wzr, [sp, #0xd95]
+100847ad4: 393653ff    	strb	wzr, [sp, #0xd94]
+100847ad8: 39364fff    	strb	wzr, [sp, #0xd93]
+100847adc: 39364bff    	strb	wzr, [sp, #0xd92]
+100847ae0: f9406800    	ldr	x0, [x0, #0xd0]
+100847ae4: f9411fe1    	ldr	x1, [sp, #0x238]
+100847ae8: 9407fff5    	bl	0x100a47abc <__RNvMs_NtCsbU8wQe3oRmL_10jarde_java11normal_flowNtB4_14NormalFlowView15loop_entered_at>
+100847aec: 910e83e8    	add	x8, sp, #0x3a0
+100847af0: 940d1d23    	bl	0x100b8ef7c <__RNvMs1_NtCsedRpiqSkYaQ_4core6optionINtB5_6OptionRNtNtCsbU8wQe3oRmL_10jarde_java11normal_flow11NaturalLoopE6clonedBP_>
+100847af4: 394f63e8    	ldrb	w8, [sp, #0x3d8]
+100847af8: 71000908    	subs	w8, w8, #0x2
+100847afc: 9a9f07e8    	cset	x8, ne
+100847b00: 36000188    	tbz	w8, #0x0, 0x100847b30 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker11loop_region+0x98>
+100847b04: 14000001    	b	0x100847b08 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker11loop_region+0x70>
+100847b08: 910d83e0    	add	x0, sp, #0x360
+100847b0c: f90103e0    	str	x0, [sp, #0x200]
+100847b10: 910e83e1    	add	x1, sp, #0x3a0
+100847b14: 52800808    	mov	w8, #0x40               ; =64

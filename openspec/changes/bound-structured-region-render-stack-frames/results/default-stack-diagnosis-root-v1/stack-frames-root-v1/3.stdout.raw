@@ -1,0 +1,38 @@
+
+/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000100872e60 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker20comparison_region_at>:
+100872e60: a9be6ffc    	stp	x28, x27, [sp, #-0x20]!
+100872e64: a9017bfd    	stp	x29, x30, [sp, #0x10]
+100872e68: 910043fd    	add	x29, sp, #0x10
+100872e6c: d1401be9    	sub	x9, sp, #0x6, lsl #12   ; =0x6000
+100872e70: d14007ff    	sub	sp, sp, #0x1, lsl #12   ; =0x1000
+100872e74: f90003ff    	str	xzr, [sp]
+100872e78: eb2963ff    	cmp	sp, x9
+100872e7c: 54ffffa1    	b.ne	0x100872e70 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker20comparison_region_at+0x10>
+100872e80: d13b43ff    	sub	sp, sp, #0xed0
+100872e84: f90003ff    	str	xzr, [sp]
+100872e88: 91401be9    	add	x9, sp, #0x6, lsl #12   ; =0x6000
+100872e8c: 912d8129    	add	x9, x9, #0xb60
+100872e90: f90533e9    	str	x9, [sp, #0xa60]
+100872e94: 91401be9    	add	x9, sp, #0x6, lsl #12   ; =0x6000
+100872e98: 911c6929    	add	x9, x9, #0x71a
+100872e9c: f90537e9    	str	x9, [sp, #0xa68]
+100872ea0: 914017ea    	add	x10, sp, #0x5, lsl #12  ; =0x5000
+100872ea4: 910a814a    	add	x10, x10, #0x2a0
+100872ea8: f9053bea    	str	x10, [sp, #0xa70]
+100872eac: 914017ea    	add	x10, sp, #0x5, lsl #12  ; =0x5000
+100872eb0: 9103394a    	add	x10, x10, #0xce
+100872eb4: f9053fea    	str	x10, [sp, #0xa78]
+100872eb8: 91400bea    	add	x10, sp, #0x2, lsl #12  ; =0x2000
+100872ebc: 9130014a    	add	x10, x10, #0xc00
+100872ec0: f90543ea    	str	x10, [sp, #0xa80]
+100872ec4: 91400bea    	add	x10, sp, #0x2, lsl #12  ; =0x2000
+100872ec8: 9106d94a    	add	x10, x10, #0x1b6
+100872ecc: f90547ea    	str	x10, [sp, #0xa88]
+100872ed0: 912dc3ea    	add	x10, sp, #0xb70
+100872ed4: f9054bea    	str	x10, [sp, #0xa90]
+100872ed8: f9054fe8    	str	x8, [sp, #0xa98]
+100872edc: f90553e0    	str	x0, [sp, #0xaa0]

@@ -1,0 +1,74 @@
+[
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/0.stderr.raw",
+    "archived": "0.stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/0.stdout.raw",
+    "archived": "0.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/1.stderr.raw",
+    "archived": "1.stderr.raw",
+    "bytes": 3276,
+    "sha256": "95c6097c6ab1fade463b7c3127f23fb5b72bbd8ae9f4a0725f3c37a2b97fe0fa"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/1.stdout.raw",
+    "archived": "1.stdout.raw",
+    "bytes": 154,
+    "sha256": "9782aea54df5dc7e42c5711dd2ba8953a2028e049b23c5304debba32458aa627"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/2.stderr.raw",
+    "archived": "2.stderr.raw",
+    "bytes": 190,
+    "sha256": "2a484182d5294042a66244c00c0aab52df9a48bc22558accb625cb6d31f62d3d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/2.stdout.raw",
+    "archived": "2.stdout.raw",
+    "bytes": 565,
+    "sha256": "b2cd6657316a85fa24dc9080f62eeadad46517771848cdf12dd19e0849c9541f"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/3.stderr.raw",
+    "archived": "3.stderr.raw",
+    "bytes": 52,
+    "sha256": "9f576f77900f07ae352d9519ad001a40b047dd7f09cce0188a8a26ac74a78842"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/3.stdout.raw",
+    "archived": "3.stdout.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1/execution.json",
+    "archived": "execution.json",
+    "bytes": 3033477,
+    "sha256": "98dba80863299986a7880437a94a32fc7f040c9d4fd772c4693b16e094673e43"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1.py",
+    "archived": "jarde-cf11-fixture-registration-root-v1.py",
+    "bytes": 3574,
+    "sha256": "5cb39ebbbaa295af65b1b22c56fd54375f0c17ddc5c32402e1349d28d3dbd123"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1.stdout",
+    "archived": "jarde-cf11-fixture-registration-root-v1.stdout",
+    "bytes": 125,
+    "sha256": "43b34c0d160f33b2b888dee91f68adec120ca8b43b7c672622ae0923345fa38d"
+  },
+  {
+    "source": "/private/tmp/jarde-cf11-fixture-registration-root-v1.stderr",
+    "archived": "jarde-cf11-fixture-registration-root-v1.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

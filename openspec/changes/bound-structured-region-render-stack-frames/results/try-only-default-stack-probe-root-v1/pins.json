@@ -1,0 +1,78 @@
+{
+  "0.stderr.raw": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "0.stdout.raw": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "1.stderr.raw": {
+    "bytes": 2856,
+    "sha256": "3a61673be98b074a721b1b7ea31ff170dc371b05ccf4e6ffde9ad8860f236ee4"
+  },
+  "1.stdout.raw": {
+    "bytes": 218,
+    "sha256": "8796fcff3b4f55600c714a2c0a3c3218b19195439e2e281b321d0e93d46a11e2"
+  },
+  "2.stderr.raw": {
+    "bytes": 2480,
+    "sha256": "811323114b3abcd0e752abac7f4f0dc0080257fdb0bfe5fa220dc17294bafe87"
+  },
+  "2.stdout.raw": {
+    "bytes": 96,
+    "sha256": "5b7cae8205bac56d471d7835049968233144d3ca78423e4ee991f8c95d953368"
+  },
+  "3.stderr.raw": {
+    "bytes": 52,
+    "sha256": "79380d31fad568c696be0ad223d9e353a9110064ad0a6669465cdc152bca6572"
+  },
+  "3.stdout.raw": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "README.md": {
+    "bytes": 566,
+    "sha256": "448d36282c29498c82ceba93c48621c0aca6b4be0bf5fabfa6e6e460caaea0ca"
+  },
+  "compiled-api.rs.txt": {
+    "bytes": 11274,
+    "sha256": "09f9ecdb8a5c58692595378c343da428033471c4bed730f570d1c0db1cb51141"
+  },
+  "compiled-build.rs.txt": {
+    "bytes": 1742537,
+    "sha256": "582685682efcd19462996ccc826f3a516dc8b148d7b1112d029ec5a1520fd565"
+  },
+  "execution.json": {
+    "bytes": 2276946,
+    "sha256": "6c5aebc6b12eb1fe47d5e4a5293a196c6d53132f366b5de9c0121710a486202c"
+  },
+  "frame-measurement/0.stderr.raw": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frame-measurement/0.stdout.raw": {
+    "bytes": 1188,
+    "sha256": "21412d7695a95ba66dad250a5738b57997dc0959fe01653f34bab4e85126ec8f"
+  },
+  "frame-measurement/1.stderr.raw": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frame-measurement/1.stdout.raw": {
+    "bytes": 1274,
+    "sha256": "f56c5964f926071b0bb2e8e9f6995a9c961c920a6b71ed480b927db0bf5c5890"
+  },
+  "frame-measurement/execution.json": {
+    "bytes": 1128,
+    "sha256": "a2daf92ef510b0462ad34e0828725f63ed44692ab7c5a8838b0c810cb6ae0bf3"
+  },
+  "frame-measurement/nm.stderr.raw": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runner.py": {
+    "bytes": 4881,
+    "sha256": "cedda79afdde503c3c046f7b1839c5cb49241edbd570074a0b455de9b7b17464"
+  }
+}

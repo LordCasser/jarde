@@ -1,0 +1,6 @@
+{
+  "comparison_body_equivalent": "token whitespace/trailing comma and rustfmt single-expression closure braces only",
+  "restored_arm_from": "/private/tmp/jarde-cf11-side-exits-implementation-luna-v5/region.rs.v4",
+  "restored_arm_source_sha256": "bbf7bd7821f6e5b9848d9da6c803af3579e513407d9d28c12e4f18f50d3f519c",
+  "region_sha256_after": "7144ec385795251fdc2de3aeda5938ac4d2d031c1bf62063f1cac54a5d10cdd6"
+}

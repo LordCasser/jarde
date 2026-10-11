@@ -1,0 +1,8 @@
+{
+  "base_sha256": "582685682efcd19462996ccc826f3a516dc8b148d7b1112d029ec5a1520fd565",
+  "luna_candidate_sha256": "3846fa0ad016052ff9c2f2792a498795ce4badf20cb44d2cd2891602f778e062",
+  "applied_candidate_sha256": "76ff636577ab5e64796139d68eb17f919f184d1a015cb6834382afe5f2cc8a23",
+  "Loop_Guard_bodies_whitespace_identical": true,
+  "checkpoint_retains_ownership_order": "only mut removed from dispatcher; moved to helper by value once",
+  "default_stack_pending": true
+}

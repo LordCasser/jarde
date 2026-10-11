@@ -1,0 +1,32 @@
+{
+  "binary": {
+    "path": "/private/tmp/jarde-cf11-side-exits-focused-root-v5/failed-api-0.bin",
+    "bytes": 50861600,
+    "sha256": "03145023369ff9d67510791bcb07def4b2a2101ab18e853253f9f5232ceae3b5"
+  },
+  "nm_exit": 0,
+  "commands": [
+    {
+      "symbol": "000000010064be88 t __RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder10try_region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4301569672",
+        "--stop-address=4301569752",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v5/failed-api-0.bin"
+      ],
+      "exit_code": 0
+    },
+    {
+      "symbol": "000000010069d464 t __RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder6region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4301902948",
+        "--stop-address=4301903028",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v5/failed-api-0.bin"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

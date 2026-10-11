@@ -1,0 +1,38 @@
+
+/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+00000001008a8f48 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at>:
+1008a8f48: d10343ff    	sub	sp, sp, #0xd0
+1008a8f4c: a90c7bfd    	stp	x29, x30, [sp, #0xc0]
+1008a8f50: 910303fd    	add	x29, sp, #0xc0
+1008a8f54: f9000be8    	str	x8, [sp, #0x10]
+1008a8f58: f90017e0    	str	x0, [sp, #0x28]
+1008a8f5c: f9000fe1    	str	x1, [sp, #0x18]
+1008a8f60: f90013e2    	str	x2, [sp, #0x20]
+1008a8f64: f9406800    	ldr	x0, [x0, #0xd0]
+1008a8f68: 940680b2    	bl	0x100a49230 <__RNvMs_NtCsbU8wQe3oRmL_10jarde_java11normal_flowNtB4_14NormalFlowView8index_of>
+1008a8f6c: f94013e2    	ldr	x2, [sp, #0x20]
+1008a8f70: f94017e8    	ldr	x8, [sp, #0x28]
+1008a8f74: 91058103    	add	x3, x8, #0x160
+1008a8f78: 940b05a7    	bl	0x100b6a614 <__RINvMNtCsedRpiqSkYaQ_4core6optionINtB3_6OptionjE11is_some_andNCNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB15_6Walker9region_at0EB17_>
+1008a8f7c: aa0003e8    	mov	x8, x0
+1008a8f80: f94017e0    	ldr	x0, [sp, #0x28]
+1008a8f84: b90037e8    	str	w8, [sp, #0x34]
+1008a8f88: f940bc08    	ldr	x8, [x0, #0x178]
+1008a8f8c: f1008108    	subs	x8, x8, #0x20
+1008a8f90: 540000a2    	b.hs	0x1008a8fa4 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0x5c>
+1008a8f94: 14000001    	b	0x1008a8f98 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0x50>
+1008a8f98: b94037e8    	ldr	w8, [sp, #0x34]
+1008a8f9c: 360000a8    	tbz	w8, #0x0, 0x1008a8fb0 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0x68>
+1008a8fa0: 14000001    	b	0x1008a8fa4 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0x5c>
+1008a8fa4: b94037e8    	ldr	w8, [sp, #0x34]
+1008a8fa8: 37000768    	tbnz	w8, #0x0, 0x1008a9094 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0x14c>
+1008a8fac: 14000034    	b	0x1008a907c <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0x134>
+1008a8fb0: f94017e8    	ldr	x8, [sp, #0x28]
+1008a8fb4: f940bd09    	ldr	x9, [x8, #0x178]
+1008a8fb8: 91000528    	add	x8, x9, #0x1
+1008a8fbc: f90007e8    	str	x8, [sp, #0x8]
+1008a8fc0: eb090108    	subs	x8, x8, x9
+1008a8fc4: 54000203    	b.lo	0x1008a9004 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker9region_at+0xbc>

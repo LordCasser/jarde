@@ -1,0 +1,23 @@
+{
+  "schema": "cf11-side-exits-postfix-check-v1",
+  "status": "accepted_postfix_observation",
+  "execution": {
+    "path": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/execution.json",
+    "bytes": 621742,
+    "sha256": "0f98f2cbe7524d7bec0a5ef2cbbe5311e9ff103b361cd522181a17533b37ecac"
+  },
+  "command_count": 29,
+  "raw_stream_count": 58,
+  "subject": "nested-loops4",
+  "class": "cf11.UpstreamNestedLoops4",
+  "ten_case_model_checked": false,
+  "original_oracle_sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5",
+  "physical_method_maps_checked": true,
+  "whole_class_default_all_identity_checked": true,
+  "full_source_compile_runtime_matrix": 4,
+  "checker": {
+    "path": "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py",
+    "bytes": 30496,
+    "sha256": "d274af6c34bf72d8ef292fe51ad262d22c2e32b94748a5b1f4d902c9ce5ffeaf"
+  }
+}

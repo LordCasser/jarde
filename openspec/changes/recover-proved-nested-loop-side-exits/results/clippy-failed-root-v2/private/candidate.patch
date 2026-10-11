@@ -1,0 +1,11 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -5291,7 +5291,7 @@
+         };
+         if prefix != &proof.prefix
+             || self.view.index_of(branch) != Some(proof.branch)
+-            || prefix.first().is_none()
++            || prefix.is_empty()
+             || self.view.index_of(next) != Some(proof.child_header)
+             || branch.path() != child_header_id.path()
+             || frame.boundary != Some(proof.stay)

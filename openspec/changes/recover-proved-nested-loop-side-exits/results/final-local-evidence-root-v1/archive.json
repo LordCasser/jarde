@@ -1,0 +1,1385 @@
+{
+  "scope": "actual final CLI build, lint and both final-CLI postfix observations; workspace v3, own product CI and clean delivery remain pending",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/0.stderr.raw",
+      "archive": "cli-build/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/0.stdout.raw",
+      "archive": "cli-build/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/1.stderr.raw",
+      "archive": "cli-build/1.stderr.raw",
+      "bytes": 2768,
+      "sha256": "e42b925cc993a8b3c7c06051fb2b89fe4b31a13f9770127fe7660fe726cb72f5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/1.stdout.raw",
+      "archive": "cli-build/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/2.stderr.raw",
+      "archive": "cli-build/2.stderr.raw",
+      "bytes": 52,
+      "sha256": "1aa564eaf373c13d77084dca2bba44fdb6251da91abadefc32ba7d34e44cee2d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/2.stdout.raw",
+      "archive": "cli-build/2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/execution.json",
+      "archive": "cli-build/execution.json",
+      "bytes": 2276631,
+      "sha256": "c4955d789f6c26177bc2015a898fac0f0beb5fd856ffc00e7c030b76ed91cd0f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/0.stderr.raw",
+      "archive": "lint/0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/0.stdout.raw",
+      "archive": "lint/0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/1.stderr.raw",
+      "archive": "lint/1.stderr.raw",
+      "bytes": 3835,
+      "sha256": "fa6dd5fe0f0cd8d755ca31a47590e9fd6f2d792846db8953b1cc9409b147a010"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/1.stdout.raw",
+      "archive": "lint/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/2.stderr.raw",
+      "archive": "lint/2.stderr.raw",
+      "bytes": 16,
+      "sha256": "5bc31df123a2e521acdd2c0d9477b367feec506471a91065d0a6b32c09089ed5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/2.stdout.raw",
+      "archive": "lint/2.stdout.raw",
+      "bytes": 16161,
+      "sha256": "2b3a5381888aebfca6c11565c0561f36cc069c5eb166245271f38ec2a57ef1d2"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/3.stderr.raw",
+      "archive": "lint/3.stderr.raw",
+      "bytes": 53,
+      "sha256": "9322c394c800ad899fce2aa57c1f8edc68b165a9a3a8b9b9885afb4a5eee4230"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/3.stdout.raw",
+      "archive": "lint/3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exits-lint-root-v4/execution.json",
+      "archive": "lint/execution.json",
+      "bytes": 2278207,
+      "sha256": "c701d54876f0843bb18465d570af332241290e2cfe6d4914eee6a1b180be1d61"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/checker-root-v2.json",
+      "archive": "postfix/fixed/checker-root-v2.json",
+      "bytes": 887,
+      "sha256": "c1efa0a8d34371c5f8a2e476ba13dba05ce012c7562c866039dddee5640543ec"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/execution.json",
+      "archive": "postfix/fixed/execution.json",
+      "bytes": 621742,
+      "sha256": "0f98f2cbe7524d7bec0a5ef2cbbe5311e9ff103b361cd522181a17533b37ecac"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/inputs/Runner.java",
+      "archive": "postfix/fixed/inputs/Runner.java",
+      "bytes": 174,
+      "sha256": "260b8ca393470fed1e50eb97ae243405df22dd649a609f42f0bb8bf586f6fda8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/inputs/TestNestedLoops4.java",
+      "archive": "postfix/fixed/inputs/TestNestedLoops4.java",
+      "bytes": 819,
+      "sha256": "b84dbf9988e1343f6d26f06345a4e8ba8b17993b4dc33419c86d9e9194968cca"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/inputs/UpstreamNestedLoops4.jar",
+      "archive": "postfix/fixed/inputs/UpstreamNestedLoops4.jar",
+      "bytes": 762,
+      "sha256": "aac64520071607fb0486124bc444848d5b80945247c0bd16a02ac17b7c92c7a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/inputs/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/inputs/UpstreamNestedLoops4.java",
+      "bytes": 378,
+      "sha256": "cd29e7cf0a8886048f2aa73d2612d86bf42281b1d9ad06bf087e91a4af756ca0"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/inputs/jadx-default/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/inputs/jadx-default/UpstreamNestedLoops4.java",
+      "bytes": 677,
+      "sha256": "d2000a04df0fcffce27cdf31934e08597dab5ca2631074b637739856c2ea4e34"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/inputs/jadx-none/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/inputs/jadx-none/UpstreamNestedLoops4.java",
+      "bytes": 677,
+      "sha256": "d2000a04df0fcffce27cdf31934e08597dab5ca2631074b637739856c2ea4e34"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jadx/default/sources/cf11/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/jadx/default/sources/cf11/UpstreamNestedLoops4.java",
+      "bytes": 677,
+      "sha256": "d2000a04df0fcffce27cdf31934e08597dab5ca2631074b637739856c2ea4e34"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jadx/none/sources/cf11/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/jadx/none/sources/cf11/UpstreamNestedLoops4.java",
+      "bytes": 677,
+      "sha256": "d2000a04df0fcffce27cdf31934e08597dab5ca2631074b637739856c2ea4e34"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac23-jarde-all/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/jarde/javac23-jarde-all/UpstreamNestedLoops4.java",
+      "bytes": 1599,
+      "sha256": "df2e870b2cad4d8afce40b9c6416320ebc17b9a06613565246bbb2f488e436e8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac23-jarde-all/report.json",
+      "archive": "postfix/fixed/jarde/javac23-jarde-all/report.json",
+      "bytes": 129934,
+      "sha256": "037f97ee375ce81dc6eb637bc266526c7b4aae10a5a37b1b9afa27e0d65a80a2"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac23-jarde-default/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/jarde/javac23-jarde-default/UpstreamNestedLoops4.java",
+      "bytes": 1599,
+      "sha256": "df2e870b2cad4d8afce40b9c6416320ebc17b9a06613565246bbb2f488e436e8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac23-jarde-default/report.json",
+      "archive": "postfix/fixed/jarde/javac23-jarde-default/report.json",
+      "bytes": 126888,
+      "sha256": "78c7cb05b5d0d453c429e399f4539d7c4197374a515988113f6781e47daf8103"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac8-jarde-all/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/jarde/javac8-jarde-all/UpstreamNestedLoops4.java",
+      "bytes": 1599,
+      "sha256": "df2e870b2cad4d8afce40b9c6416320ebc17b9a06613565246bbb2f488e436e8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac8-jarde-all/report.json",
+      "archive": "postfix/fixed/jarde/javac8-jarde-all/report.json",
+      "bytes": 129934,
+      "sha256": "514026cb8087495a654b38873060fa5b73962018e831c837afde808e250bc2df"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac8-jarde-default/UpstreamNestedLoops4.java",
+      "archive": "postfix/fixed/jarde/javac8-jarde-default/UpstreamNestedLoops4.java",
+      "bytes": 1599,
+      "sha256": "df2e870b2cad4d8afce40b9c6416320ebc17b9a06613565246bbb2f488e436e8"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/jarde/javac8-jarde-default/report.json",
+      "archive": "postfix/fixed/jarde/javac8-jarde-default/report.json",
+      "bytes": 126893,
+      "sha256": "fca697d3f85d6e17685825f7acc2d2f6794ae1e15b3b9ed7a87df9fe3d67aa01"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "698a639bb961d8c8838eab0ba6988094fdaa65cee578595d645903193a8e5cb3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jadx-default/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac23-jadx-default/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 602,
+      "sha256": "08f9761b22fe04b7509fb91ef0bdd69993df6c0c246f8e76d18151201dbbcbdd"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "698a639bb961d8c8838eab0ba6988094fdaa65cee578595d645903193a8e5cb3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jadx-none/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac23-jadx-none/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 602,
+      "sha256": "08f9761b22fe04b7509fb91ef0bdd69993df6c0c246f8e76d18151201dbbcbdd"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jarde-all/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac23-jarde-all/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "698a639bb961d8c8838eab0ba6988094fdaa65cee578595d645903193a8e5cb3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jarde-all/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac23-jarde-all/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 610,
+      "sha256": "7cac586fa79553ad419ce922b4aef3c93ca90d331470ef07dcb61d8a1115448d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jarde-default/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac23-jarde-default/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "698a639bb961d8c8838eab0ba6988094fdaa65cee578595d645903193a8e5cb3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-jarde-default/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac23-jarde-default/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 610,
+      "sha256": "7cac586fa79553ad419ce922b4aef3c93ca90d331470ef07dcb61d8a1115448d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-original/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac23-original/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "698a639bb961d8c8838eab0ba6988094fdaa65cee578595d645903193a8e5cb3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-original/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac23-original/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 602,
+      "sha256": "8152aa6a52958eff721ff237f8783dca4572764ac750cc2de909b31ef6c036b5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac23-original/javap.txt",
+      "archive": "postfix/fixed/legs/javac23-original/javap.txt",
+      "bytes": 4358,
+      "sha256": "ee3c0ff3b4675af388f2276c32d8bab9d2fc93cd7fdd44c7ff5034c5f8396e7f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "4a37b25c58540e67ea58c50eb762773b3643da2f384e75755b5f549aafee1fa3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jadx-default/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac8-jadx-default/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 602,
+      "sha256": "e6bad72364b81ec7bf5478045c8cd14e151f785ab254aba2e375959d655eb4ea"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "4a37b25c58540e67ea58c50eb762773b3643da2f384e75755b5f549aafee1fa3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jadx-none/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac8-jadx-none/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 602,
+      "sha256": "e6bad72364b81ec7bf5478045c8cd14e151f785ab254aba2e375959d655eb4ea"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jarde-all/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac8-jarde-all/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "4a37b25c58540e67ea58c50eb762773b3643da2f384e75755b5f549aafee1fa3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jarde-all/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac8-jarde-all/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 610,
+      "sha256": "962c5bdb6a829f73d0173995329c9518df05484d59e05b47b4818e254f3a23b2"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jarde-default/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac8-jarde-default/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "4a37b25c58540e67ea58c50eb762773b3643da2f384e75755b5f549aafee1fa3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-jarde-default/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac8-jarde-default/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 610,
+      "sha256": "962c5bdb6a829f73d0173995329c9518df05484d59e05b47b4818e254f3a23b2"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-original/classes/cf11/Runner.class",
+      "archive": "postfix/fixed/legs/javac8-original/classes/cf11/Runner.class",
+      "bytes": 802,
+      "sha256": "4a37b25c58540e67ea58c50eb762773b3643da2f384e75755b5f549aafee1fa3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-original/classes/cf11/UpstreamNestedLoops4.class",
+      "archive": "postfix/fixed/legs/javac8-original/classes/cf11/UpstreamNestedLoops4.class",
+      "bytes": 602,
+      "sha256": "217cd75f0f6698001498b407783c06e821b10a54eaa8eb33560ac1f0c577dd8e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/legs/javac8-original/javap.txt",
+      "archive": "postfix/fixed/legs/javac8-original/javap.txt",
+      "bytes": 4100,
+      "sha256": "d77d651b68c5ea03ea48a491d7aad9eb08736a68a2ca5ba159085556c6f1b6ed"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/1.stderr.raw",
+      "archive": "postfix/fixed/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/1.stdout.raw",
+      "archive": "postfix/fixed/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/10.stderr.raw",
+      "archive": "postfix/fixed/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/10.stdout.raw",
+      "archive": "postfix/fixed/raw/10.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/11.stderr.raw",
+      "archive": "postfix/fixed/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/11.stdout.raw",
+      "archive": "postfix/fixed/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/12.stderr.raw",
+      "archive": "postfix/fixed/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/12.stdout.raw",
+      "archive": "postfix/fixed/raw/12.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/13.stderr.raw",
+      "archive": "postfix/fixed/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/13.stdout.raw",
+      "archive": "postfix/fixed/raw/13.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/14.stderr.raw",
+      "archive": "postfix/fixed/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/14.stdout.raw",
+      "archive": "postfix/fixed/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/15.stderr.raw",
+      "archive": "postfix/fixed/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/15.stdout.raw",
+      "archive": "postfix/fixed/raw/15.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/16.stderr.raw",
+      "archive": "postfix/fixed/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/16.stdout.raw",
+      "archive": "postfix/fixed/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/17.stderr.raw",
+      "archive": "postfix/fixed/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/17.stdout.raw",
+      "archive": "postfix/fixed/raw/17.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/18.stderr.raw",
+      "archive": "postfix/fixed/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/18.stdout.raw",
+      "archive": "postfix/fixed/raw/18.stdout.raw",
+      "bytes": 46526,
+      "sha256": "797ff8e3483fcf1ee58e0201bc90bc1e4b509b3a529a4fb8a3af94c6213944a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/19.stderr.raw",
+      "archive": "postfix/fixed/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/19.stdout.raw",
+      "archive": "postfix/fixed/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/2.stderr.raw",
+      "archive": "postfix/fixed/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/2.stdout.raw",
+      "archive": "postfix/fixed/raw/2.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/20.stderr.raw",
+      "archive": "postfix/fixed/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/20.stdout.raw",
+      "archive": "postfix/fixed/raw/20.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/21.stderr.raw",
+      "archive": "postfix/fixed/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/21.stdout.raw",
+      "archive": "postfix/fixed/raw/21.stdout.raw",
+      "bytes": 47702,
+      "sha256": "6d45fe76616cde37d67f83a4bb8f4695ab2f49b1cf96867a5415f83f8c268572"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/22.stderr.raw",
+      "archive": "postfix/fixed/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/22.stdout.raw",
+      "archive": "postfix/fixed/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/23.stderr.raw",
+      "archive": "postfix/fixed/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/23.stdout.raw",
+      "archive": "postfix/fixed/raw/23.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/24.stderr.raw",
+      "archive": "postfix/fixed/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/24.stdout.raw",
+      "archive": "postfix/fixed/raw/24.stdout.raw",
+      "bytes": 46521,
+      "sha256": "04e8e810d11330b3d3890f966966001ef0e3cd4f57cde2bd8386e9eb67a37092"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/25.stderr.raw",
+      "archive": "postfix/fixed/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/25.stdout.raw",
+      "archive": "postfix/fixed/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/26.stderr.raw",
+      "archive": "postfix/fixed/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/26.stdout.raw",
+      "archive": "postfix/fixed/raw/26.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/27.stderr.raw",
+      "archive": "postfix/fixed/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/27.stdout.raw",
+      "archive": "postfix/fixed/raw/27.stdout.raw",
+      "bytes": 47702,
+      "sha256": "cc2f614992d6cc9223af8c4f5870a8c260a0eaa1c69b96161efa754b150f015d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/28.stderr.raw",
+      "archive": "postfix/fixed/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/28.stdout.raw",
+      "archive": "postfix/fixed/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/29.stderr.raw",
+      "archive": "postfix/fixed/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/29.stdout.raw",
+      "archive": "postfix/fixed/raw/29.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/3.stderr.raw",
+      "archive": "postfix/fixed/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/3.stdout.raw",
+      "archive": "postfix/fixed/raw/3.stdout.raw",
+      "bytes": 4100,
+      "sha256": "d77d651b68c5ea03ea48a491d7aad9eb08736a68a2ca5ba159085556c6f1b6ed"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/4.stderr.raw",
+      "archive": "postfix/fixed/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/4.stdout.raw",
+      "archive": "postfix/fixed/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/5.stderr.raw",
+      "archive": "postfix/fixed/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/5.stdout.raw",
+      "archive": "postfix/fixed/raw/5.stdout.raw",
+      "bytes": 11,
+      "sha256": "562eb99249e6fbc19ea3f629dacecbbf40362d1badbe2dd945aa1a15c7b467a5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/6.stderr.raw",
+      "archive": "postfix/fixed/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/6.stdout.raw",
+      "archive": "postfix/fixed/raw/6.stdout.raw",
+      "bytes": 4358,
+      "sha256": "ee3c0ff3b4675af388f2276c32d8bab9d2fc93cd7fdd44c7ff5034c5f8396e7f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/7.stderr.raw",
+      "archive": "postfix/fixed/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/7.stdout.raw",
+      "archive": "postfix/fixed/raw/7.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/8.stderr.raw",
+      "archive": "postfix/fixed/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/8.stdout.raw",
+      "archive": "postfix/fixed/raw/8.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/9.stderr.raw",
+      "archive": "postfix/fixed/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/raw/9.stdout.raw",
+      "archive": "postfix/fixed/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/checker-root-v2.json",
+      "archive": "postfix/controls/checker-root-v2.json",
+      "bytes": 903,
+      "sha256": "1ae273c3a19565b46237ce7eaaac414014bcf40b26c54cf6c7bec36902246b9d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/execution.json",
+      "archive": "postfix/controls/execution.json",
+      "bytes": 1248103,
+      "sha256": "1722c6415c0b9ea1596646d9c35d2d018662ae4947abd7984984b7e722058637"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/inputs/NestedLoopSideExitControls.jar",
+      "archive": "postfix/controls/inputs/NestedLoopSideExitControls.jar",
+      "bytes": 1218,
+      "sha256": "f0ae95eaccd1379867cc0d86042dfc86f2cd407ef8f58474b4b1d33f521c2d87"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/inputs/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/inputs/NestedLoopSideExitControls.java",
+      "bytes": 849,
+      "sha256": "abae32ecc259e310eb4e8fc9f9184e350a5a12aab9f8f7acaab51f6c4862ceb4"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/inputs/Runner.java",
+      "archive": "postfix/controls/inputs/Runner.java",
+      "bytes": 717,
+      "sha256": "1d00c4ee333b43e01d251ca5944e4b1352c2a76df163789353aa6e8be28523b6"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/inputs/jadx-default/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/inputs/jadx-default/NestedLoopSideExitControls.java",
+      "bytes": 1440,
+      "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/inputs/jadx-none/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/inputs/jadx-none/NestedLoopSideExitControls.java",
+      "bytes": 1440,
+      "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/jadx/default/sources/cf11/NestedLoopSideExitControls.java",
+      "bytes": 1440,
+      "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/jadx/none/sources/cf11/NestedLoopSideExitControls.java",
+      "bytes": 1440,
+      "sha256": "2049e068a385934838bc8a018576068ebafaf155cbfdf78c0f32798d1378dded"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac23-jarde-all/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/jarde/javac23-jarde-all/NestedLoopSideExitControls.java",
+      "bytes": 2764,
+      "sha256": "0bcd7dbc855fa89721df13dbfd7251987483f6c95e87f6717f0603b4b319be78"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac23-jarde-all/report.json",
+      "archive": "postfix/controls/jarde/javac23-jarde-all/report.json",
+      "bytes": 271711,
+      "sha256": "a4c96791afe1998c5ed4cfa82325c00fd15828954d6100e6d64fce93803eacc7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac23-jarde-default/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/jarde/javac23-jarde-default/NestedLoopSideExitControls.java",
+      "bytes": 2764,
+      "sha256": "0bcd7dbc855fa89721df13dbfd7251987483f6c95e87f6717f0603b4b319be78"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac23-jarde-default/report.json",
+      "archive": "postfix/controls/jarde/javac23-jarde-default/report.json",
+      "bytes": 266780,
+      "sha256": "6e248cfc6a37e17bb3d6fc53492dc7f21717b9f61dc29d46dda259aefac598a0"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac8-jarde-all/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/jarde/javac8-jarde-all/NestedLoopSideExitControls.java",
+      "bytes": 2764,
+      "sha256": "0bcd7dbc855fa89721df13dbfd7251987483f6c95e87f6717f0603b4b319be78"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac8-jarde-all/report.json",
+      "archive": "postfix/controls/jarde/javac8-jarde-all/report.json",
+      "bytes": 271708,
+      "sha256": "fbb830e2de7a97bae123cdb99a0d6f60d94726062cdd3e3201954ec0d0a0d311"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac8-jarde-default/NestedLoopSideExitControls.java",
+      "archive": "postfix/controls/jarde/javac8-jarde-default/NestedLoopSideExitControls.java",
+      "bytes": 2764,
+      "sha256": "0bcd7dbc855fa89721df13dbfd7251987483f6c95e87f6717f0603b4b319be78"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/jarde/javac8-jarde-default/report.json",
+      "archive": "postfix/controls/jarde/javac8-jarde-default/report.json",
+      "bytes": 266780,
+      "sha256": "a310d94987597c56db9eeb09045d074f7469e1f5080ec8c37787de6136dfef3c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac23-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1046,
+      "sha256": "c530bbc5e06f5e62c84d4a9d5a703b86c68008a83dbc91eb53053a849ac93056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "bytes": 1478,
+      "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac23-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1046,
+      "sha256": "c530bbc5e06f5e62c84d4a9d5a703b86c68008a83dbc91eb53053a849ac93056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "bytes": 1478,
+      "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jarde-all/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac23-jarde-all/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1073,
+      "sha256": "1ed14746ee53c47ac75eed67803544b6633c3217026438056f7a2534188845f1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jarde-all/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac23-jarde-all/classes/cf11/Runner.class",
+      "bytes": 1478,
+      "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jarde-default/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac23-jarde-default/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1073,
+      "sha256": "1ed14746ee53c47ac75eed67803544b6633c3217026438056f7a2534188845f1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-jarde-default/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac23-jarde-default/classes/cf11/Runner.class",
+      "bytes": 1478,
+      "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac23-original/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1046,
+      "sha256": "fbf49a129f265f29232573d26de656afa68ec2b79cdca3a9b759889b5224a987"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-original/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac23-original/classes/cf11/Runner.class",
+      "bytes": 1478,
+      "sha256": "639655c2e08c6f7cc62c128ddc8bddbbc6651958847a03a91737aa18b8aad056"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac23-original/javap.txt",
+      "archive": "postfix/controls/legs/javac23-original/javap.txt",
+      "bytes": 7615,
+      "sha256": "761d16ca9af2cdfe4d61ea450e6abb88cd917f9c2ec39d0ac2d12c40eca3be51"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac8-jadx-default/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1046,
+      "sha256": "c47a3850149b88838afa4c090362cb0fa6ec964a56137654046ac7db52648431"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "bytes": 1481,
+      "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac8-jadx-none/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1046,
+      "sha256": "c47a3850149b88838afa4c090362cb0fa6ec964a56137654046ac7db52648431"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "bytes": 1481,
+      "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jarde-all/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac8-jarde-all/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1073,
+      "sha256": "dca0289ee2668bdd0f077f89279a425cf0dba9ba99449b1a7ac54f40b4856b2a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jarde-all/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac8-jarde-all/classes/cf11/Runner.class",
+      "bytes": 1481,
+      "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jarde-default/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac8-jarde-default/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1073,
+      "sha256": "dca0289ee2668bdd0f077f89279a425cf0dba9ba99449b1a7ac54f40b4856b2a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-jarde-default/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac8-jarde-default/classes/cf11/Runner.class",
+      "bytes": 1481,
+      "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+      "archive": "postfix/controls/legs/javac8-original/classes/cf11/NestedLoopSideExitControls.class",
+      "bytes": 1046,
+      "sha256": "219e4fb9a9b50c98695ecb9c8c023001604362f1bb70c1f6b535ce58c83a45a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-original/classes/cf11/Runner.class",
+      "archive": "postfix/controls/legs/javac8-original/classes/cf11/Runner.class",
+      "bytes": 1481,
+      "sha256": "fb0a63860c2227c70aa5428604283ebeb2def67d94e11122b12c22a477a60b1c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/legs/javac8-original/javap.txt",
+      "archive": "postfix/controls/legs/javac8-original/javap.txt",
+      "bytes": 7342,
+      "sha256": "f3598913e3af851a50e6377c26c7e42c26cf7e5e0d3976f8dd0632359d919d19"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/1.stderr.raw",
+      "archive": "postfix/controls/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/1.stdout.raw",
+      "archive": "postfix/controls/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/10.stderr.raw",
+      "archive": "postfix/controls/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/10.stdout.raw",
+      "archive": "postfix/controls/raw/10.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/11.stderr.raw",
+      "archive": "postfix/controls/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/11.stdout.raw",
+      "archive": "postfix/controls/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/12.stderr.raw",
+      "archive": "postfix/controls/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/12.stdout.raw",
+      "archive": "postfix/controls/raw/12.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/13.stderr.raw",
+      "archive": "postfix/controls/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/13.stdout.raw",
+      "archive": "postfix/controls/raw/13.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/14.stderr.raw",
+      "archive": "postfix/controls/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/14.stdout.raw",
+      "archive": "postfix/controls/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/15.stderr.raw",
+      "archive": "postfix/controls/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/15.stdout.raw",
+      "archive": "postfix/controls/raw/15.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/16.stderr.raw",
+      "archive": "postfix/controls/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/16.stdout.raw",
+      "archive": "postfix/controls/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/17.stderr.raw",
+      "archive": "postfix/controls/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/17.stdout.raw",
+      "archive": "postfix/controls/raw/17.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/18.stderr.raw",
+      "archive": "postfix/controls/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/18.stdout.raw",
+      "archive": "postfix/controls/raw/18.stdout.raw",
+      "bytes": 90203,
+      "sha256": "4274dd18f1b19544cf92da54cc461b89d9132b31ac0d57f771949e4bebc54854"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/19.stderr.raw",
+      "archive": "postfix/controls/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/19.stdout.raw",
+      "archive": "postfix/controls/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/2.stderr.raw",
+      "archive": "postfix/controls/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/2.stdout.raw",
+      "archive": "postfix/controls/raw/2.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/20.stderr.raw",
+      "archive": "postfix/controls/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/20.stdout.raw",
+      "archive": "postfix/controls/raw/20.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/21.stderr.raw",
+      "archive": "postfix/controls/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/21.stdout.raw",
+      "archive": "postfix/controls/raw/21.stdout.raw",
+      "bytes": 92074,
+      "sha256": "bdaae7382aee6bcd502247b6353f7ba06775e753ff837b9691169163004c97f0"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/22.stderr.raw",
+      "archive": "postfix/controls/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/22.stdout.raw",
+      "archive": "postfix/controls/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/23.stderr.raw",
+      "archive": "postfix/controls/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/23.stdout.raw",
+      "archive": "postfix/controls/raw/23.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/24.stderr.raw",
+      "archive": "postfix/controls/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/24.stdout.raw",
+      "archive": "postfix/controls/raw/24.stdout.raw",
+      "bytes": 90203,
+      "sha256": "4fdd72f0ab443d52e6102c93f302890df747377209de2f3df18928188918de96"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/25.stderr.raw",
+      "archive": "postfix/controls/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/25.stdout.raw",
+      "archive": "postfix/controls/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/26.stderr.raw",
+      "archive": "postfix/controls/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/26.stdout.raw",
+      "archive": "postfix/controls/raw/26.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/27.stderr.raw",
+      "archive": "postfix/controls/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/27.stdout.raw",
+      "archive": "postfix/controls/raw/27.stdout.raw",
+      "bytes": 92077,
+      "sha256": "c7f4e4787aede84e334538179018d45f08c9380c93676d941942f091cf7df3a7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/28.stderr.raw",
+      "archive": "postfix/controls/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/28.stdout.raw",
+      "archive": "postfix/controls/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/29.stderr.raw",
+      "archive": "postfix/controls/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/29.stdout.raw",
+      "archive": "postfix/controls/raw/29.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/3.stderr.raw",
+      "archive": "postfix/controls/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/3.stdout.raw",
+      "archive": "postfix/controls/raw/3.stdout.raw",
+      "bytes": 7342,
+      "sha256": "f3598913e3af851a50e6377c26c7e42c26cf7e5e0d3976f8dd0632359d919d19"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/4.stderr.raw",
+      "archive": "postfix/controls/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/4.stdout.raw",
+      "archive": "postfix/controls/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/5.stderr.raw",
+      "archive": "postfix/controls/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/5.stdout.raw",
+      "archive": "postfix/controls/raw/5.stdout.raw",
+      "bytes": 161,
+      "sha256": "6c8c30f582876c884ee2bca15c8ce48b8fe3ac94125c13c9d6d2de80f1234dce"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/6.stderr.raw",
+      "archive": "postfix/controls/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/6.stdout.raw",
+      "archive": "postfix/controls/raw/6.stdout.raw",
+      "bytes": 7615,
+      "sha256": "761d16ca9af2cdfe4d61ea450e6abb88cd917f9c2ec39d0ac2d12c40eca3be51"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/7.stderr.raw",
+      "archive": "postfix/controls/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/7.stdout.raw",
+      "archive": "postfix/controls/raw/7.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/8.stderr.raw",
+      "archive": "postfix/controls/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/8.stdout.raw",
+      "archive": "postfix/controls/raw/8.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/9.stderr.raw",
+      "archive": "postfix/controls/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/raw/9.stdout.raw",
+      "archive": "postfix/controls/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/check-both.py",
+      "archive": "postfix/invocation/check-both.py",
+      "bytes": 942,
+      "sha256": "9fb7667853b60aa33fa57da83a69db4bf412b6673c236bebb56d2f43899a122a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/check-execution.json",
+      "archive": "postfix/invocation/check-execution.json",
+      "bytes": 1716,
+      "sha256": "d664fb984b80c31faa5a20e242302ab8aa0cb4b5e95abdbe244c6563a5c0a3f4"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/execution.json",
+      "archive": "postfix/invocation/execution.json",
+      "bytes": 5622,
+      "sha256": "48949f50182fdc0fb0277ae580329173b43086ccd6fa1f3ba27b006ef000bd57"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/jobs.json",
+      "archive": "postfix/invocation/jobs.json",
+      "bytes": 5723,
+      "sha256": "b0beb44a0562613813100ad39b97570de949550b969952fcd92e3aa842f2382d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/launch.py",
+      "archive": "postfix/invocation/launch.py",
+      "bytes": 562,
+      "sha256": "d478be414742b43939a925688ce6af49c9efb5b847b7f65c9169f916fbbceaba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/nested-loops4-check.stderr.raw",
+      "archive": "postfix/invocation/nested-loops4-check.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/nested-loops4-check.stdout.raw",
+      "archive": "postfix/invocation/nested-loops4-check.stdout.raw",
+      "bytes": 318,
+      "sha256": "27cc925085f26df998d36eef1cd7cf6017affa9207677db9f311a225c5b9ac34"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/nested-loops4.stderr.raw",
+      "archive": "postfix/invocation/nested-loops4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/nested-loops4.stdout.raw",
+      "archive": "postfix/invocation/nested-loops4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/side-exit-controls-check.stderr.raw",
+      "archive": "postfix/invocation/side-exit-controls-check.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/side-exit-controls-check.stdout.raw",
+      "archive": "postfix/invocation/side-exit-controls-check.stdout.raw",
+      "bytes": 329,
+      "sha256": "ba6bc86034e3cbca94c8aa9eb4a86fb31812d961ca99754443b494f3fe2a4668"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/side-exit-controls.stderr.raw",
+      "archive": "postfix/invocation/side-exit-controls.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-run-root-v2/side-exit-controls.stdout.raw",
+      "archive": "postfix/invocation/side-exit-controls.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-tools-root-v4/README.md",
+      "archive": "postfix/tools/README.md",
+      "bytes": 1132,
+      "sha256": "49d7c286640ecc01266dee5e0da9a31556dd94687bf1423401fb7f54c6e139d1"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py",
+      "archive": "postfix/tools/check_postfix.py",
+      "bytes": 30496,
+      "sha256": "d274af6c34bf72d8ef292fe51ad262d22c2e32b94748a5b1f4d902c9ce5ffeaf"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-tools-root-v4/collect_postfix.py",
+      "archive": "postfix/tools/collect_postfix.py",
+      "bytes": 22402,
+      "sha256": "eb25e7db637f64b740d2d9586744e7b70d33fa6f42555e8c573173cef5dc4905"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-postfix-tools-root-v4/pins.json",
+      "archive": "postfix/tools/pins.json",
+      "bytes": 387,
+      "sha256": "afba10901c2b3d7f9d091551a8c455e7c0bf84c57f8e313ebfd66b48a43aede6"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-cli-build-root-v10.py",
+      "archive": "jarde-cf11-cli-build-root-v10.py",
+      "bytes": 7148,
+      "sha256": "6ac9b86ad5ea5be20c0f65f0613fec14fead0c3d55b8340c5675e29b26c1ba3a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-lint-root-v4.py",
+      "archive": "jarde-cf11-lint-root-v4.py",
+      "bytes": 5411,
+      "sha256": "057b924c67d057ae8945754e061d871a2076ad9ed4eb28489a0605ba7839faa2"
+    }
+  ]
+}

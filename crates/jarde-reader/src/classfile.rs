@@ -12231,7 +12231,9 @@ mod tests {
             // 176 Code bodies, with no handlers, branches or subroutines.
             // The conditional-switch boundary fixtures add six classes, 31 Code bodies, five
             // handlers, 167 branch/switch targets, and the legacy control's two jsr calls.
-            (1093, 4861, 468, 2882, 10),
+            // CF11 fixed/controls: two classes, five Code bodies, no handlers, thirty
+            // branch targets (10 + 20), no jsr; independently counted from accepted javap.
+            (1095, 4866, 468, 2912, 10),
             "fixture population changed: re-measure these counts"
         );
     }

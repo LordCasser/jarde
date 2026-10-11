@@ -1,0 +1,102 @@
+{
+  "binary": {
+    "path": "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin",
+    "bytes": 50863536,
+    "sha256": "2efc005ee5562bfd0daf049afdbeddd91302fe24781cc305ed739b87b6bf232b"
+  },
+  "compiled_region_sha256": "9d0f8d057a9c47da7c85c9acde525a0b3e14dc3a653c0f737fd3c3a14b6dc0be",
+  "tool_sha256": "83b32f39e5475ee168927eb1509c82978e08e0100ec8c6fafeca588d9960773c",
+  "commands": [
+    {
+      "function": "loop_region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4303649432",
+        "--stop-address=4303649560",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "466c68baecf77582d97352c9e0777417a9a97cc6b6ae672bff6bb1fd91ad3c7e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "function": "region_at_inner",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4303669748",
+        "--stop-address=4303669876",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a21c9d8f3f326b77136ab997831b4a9cfa7051f41d1f40728e2cee417cdf3a27",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "function": "header_tested_loop",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4303754708",
+        "--stop-address=4303754836",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "3fef0857ed7f9afc67186e2de30add9f3a1515323720a63c67a55c5d3368b43a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "function": "comparison_region_at",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4303826528",
+        "--stop-address=4303826656",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c796c3225dafd9f95ea219ebb2f64e44f7f5da7869ca70cf79335e9863c458ed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "function": "continue_nested_loop_side_exit",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4304007452",
+        "--stop-address=4304007580",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "3d465c482c1e0c8e3839da0883af5e69d1c791d1bba55eb1a0e232607bc43638",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "function": "continue_nested_loop_parent_arm",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4304013924",
+        "--stop-address=4304014052",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "86af4b7557e1417c238c7762741a00d5de86be4eead98b23dd5cbe5d24f56b3a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "function": "region_at",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4304047944",
+        "--stop-address=4304048072",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7578cfa76e1b304a6e1608892e335b27b7b43cf23dbb2044ee0d8aa982f97df4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+
+running 55 tests
+test a_body_the_graph_accounts_for_names_the_copy_nothing_reaches ... ok
+test a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied ... ok
+test a_body_without_debug_metadata_gets_deterministic_names ... ok
+test a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope ... ok
+test a_bound_receiver_without_capture_proof_is_refused_and_a_static_reference_is_adapted ... ok
+test a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing ... ok
+test a_cancelled_run_produces_nothing_and_says_it_was_cancelled ... ok
+test a_capture_the_shape_may_not_replay_is_refused_under_the_declared_precondition ... ok
+test a_captured_lambda_is_written_with_its_capture_in_order_before_the_sam_parameters ... ok
+test a_committed_straight_line_body_is_presented_from_its_own_decode ... ok
+test a_discarded_construction_with_a_dynamic_argument_stays_refused ... ok
+test a_do_while_loop_runs_its_body_before_the_test ... ok
+test a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason ... ok
+test a_handlers_instructions_a_dead_node_holds_are_accounted_for ... ok
+test a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so ... ok
+test a_lambda_body_without_debug_metadata_is_named_deterministically ... ok
+test a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted ... ok
+test a_member_that_cannot_be_presented_leaves_the_member_that_can_alone ... ok
+test a_newarray_capture_is_written_with_the_array_type_its_instruction_states ... ok
+test a_newarray_capture_whose_implementation_disagrees_still_refuses ... ok
+test a_nullable_bound_constructor_argument_preserves_its_creation_time_check ... ok
+test a_nullable_direct_bound_reference_keeps_creation_and_consumer_producers_quoted ... ok
+test a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_empty_body ... ok
+test a_profile_that_does_not_present_java_8_is_refused_the_lambda_rule ... ok
+test a_reused_array_length_value_keeps_the_loop_test_quoted ... ok
+test a_sam_that_the_implementation_does_not_line_up_with_is_refused ... ok
+test a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name ... ok
+test a_straight_line_body_with_a_call_reaches_text_and_a_segment_table ... ok
+test a_tableswitch_becomes_one_arm_per_target_with_its_keys_and_default ... ok
+test a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures ... ok
+test a_verifier_valid_unrelated_dynamic_creation_is_not_guessed_as_a_constructor_argument ... ok
+test a_while_loop_keeps_its_test_inside_the_statement_and_its_body_in_order ... ok
+test an_alt_metafactory_flag_word_and_an_unread_instance_are_both_refused ... ok
+test an_arbitrary_bootstrap_is_never_presented_as_a_lambda ... ok
+test an_array_length_duplicate_carried_out_of_the_test_keeps_the_loop_quoted ... ok
+test an_array_length_with_an_extra_test_effect_keeps_the_loop_quoted ... ok
+test an_earlier_materialized_lambda_remains_outside_the_constructor_expression ... ok
+test an_if_else_is_written_with_the_arm_the_branch_really_picks ... ok
+test an_unconsumed_array_length_keeps_the_loop_test_quoted ... ok
+test an_unrelated_dynamic_argument_effect_stays_inside_the_constructor_fallback ... ok
+test an_untyped_bound_reference_stays_refused_inside_a_constructor_argument ... ok
+test array_helper_candidate_rejects_non_metafactory_and_foreign_implementation_handles ... ok
+test cf16_named_catch_owns_complete_switch_and_range_end_transfer ... ok
+test cf16_partial_case_ranges_and_real_resource_keep_their_boundaries ... ok
+test cf16_stopped_runs_do_not_publish_a_partial_try ... ok
+test cf18_budget_and_cancellation_never_publish_partial_source ... ok
+test cf18_fixed_methods_preserve_rows_dispatch_and_presented_origins ... ok
+test cf18_same_run_facts ... ignored, CF-18 evidence dump
+test cf18_verifier_valid_near_misses_refuse_the_whole_method ... ok
+test crossing_exception_records_are_quoted_with_the_priority_the_table_states ... ok
+test execution_quality_and_representation_each_state_their_own_thing ... ok
+test javac_bound_reference_nonnull_proofs_preserve_safe_forms_and_reject_class_dup ... ok
+test proved_entry_this_keeps_bound_method_reference ... ok
+test the_output_bound_is_checked_at_the_write_and_a_stop_produces_nothing ... ok
+test two_captures_are_written_in_the_order_the_site_reads_them ... ok
+
+test result: ok. 54 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+
+running 15 tests
+test cf07_if_join_origin_rejects_nonjoin_and_nontransfer_terminals ... ok
+test cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source ... ok
+test cf07_nonempty_if_join_goto_is_derived_from_complete_if ... ok
+test cf07_return_arm_latch_budget_and_cancellation_publish_no_partial_source ... ok
+test cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn ... ok
+test cf07_return_arm_loop_latch_is_derived_from_complete_for ... ok
+test cf08_gateway_budget_and_cancellation_publish_no_partial_source ... ok
+test cf08_two_gateways_have_one_loop_owner_and_complete_sources ... ok
+test cf08_unproved_gateways_keep_physical_quotes ... ok
+test no_prefix_latch_budget_and_cancellation_publish_no_partial_source ... ok
+test no_prefix_while_latch_keeps_physical_source_and_one_owner ... ok
+test non_backedge_transfer_does_not_gain_a_loop_latch_origin ... ok
+test one_arm_straight_prefix_loop_and_optional_tail_are_closed ... ok
+test prefixed_one_arm_loop_budget_and_cancellation_publish_no_partial_source ... ok
+test rejected_for_update_slot_keeps_the_independent_while_latch ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

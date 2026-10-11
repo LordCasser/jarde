@@ -1,0 +1,1 @@
+Root实际8MiB线程栈诊断，仅诊断非产品验收。晚Stop/预取消测试passed；另两测试在map比较处失败：测试用了essential()未请求SourceMap，与all()比较不等。架构evidence.rs essential明确无optional evidence，公开facade默认请求SourceMap；需修测试选择为essential.with_kind(SourceMap)，非放宽产品来源。未发生栈溢出，不能据此通过默认2MiB。所有raw保留，4707 closure同字节、finally clean/target absent。

@@ -1,0 +1,59 @@
+{
+  "binary": {
+    "path": "/private/tmp/jarde-cf11-side-exits-focused-root-v7/failed-api-0.bin",
+    "bytes": 50880144,
+    "sha256": "d087c330a62ddb6a7ebd51d52a8118364d7e3346a886fbd6999e45f574f55617"
+  },
+  "binary_naming_note": "v7 captured these successfully tested binaries after later CLI wrong-bin argument error; API tests themselves passed",
+  "source_receipt": {
+    "path": "/private/tmp/jarde-cf11-side-exits-focused-root-v7/execution.json",
+    "sha256": "8e5b91a07c4b9d93f0288d3a357fe464ce51213b360f062380a4f1696dd98356"
+  },
+  "nm_exit": 0,
+  "commands": [
+    {
+      "symbol": "000000010064c14c t __RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder10try_region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4301570380",
+        "--stop-address=4301570460",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v7/failed-api-0.bin"
+      ],
+      "exit_code": 0
+    },
+    {
+      "symbol": "000000010065c9f0 t __RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder11loop_region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4301638128",
+        "--stop-address=4301638208",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v7/failed-api-0.bin"
+      ],
+      "exit_code": 0
+    },
+    {
+      "symbol": "000000010066181c t __RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder12guard_region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4301658140",
+        "--stop-address=4301658220",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v7/failed-api-0.bin"
+      ],
+      "exit_code": 0
+    },
+    {
+      "symbol": "00000001006ae8e4 t __RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder6region",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump",
+        "-d",
+        "--start-address=4301973732",
+        "--stop-address=4301973812",
+        "/private/tmp/jarde-cf11-side-exits-focused-root-v7/failed-api-0.bin"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+
+/private/tmp/jarde-cf11-side-exits-focused-root-v4/failed-api-0.bin:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+00000001008a0a64 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker31continue_nested_loop_parent_arm>:
+1008a0a64: a9be6ffc    	stp	x28, x27, [sp, #-0x20]!
+1008a0a68: a9017bfd    	stp	x29, x30, [sp, #0x10]
+1008a0a6c: 910043fd    	add	x29, sp, #0x10
+1008a0a70: d11343ff    	sub	sp, sp, #0x4d0
+1008a0a74: f90003ff    	str	xzr, [sp]
+1008a0a78: f90027e8    	str	x8, [sp, #0x48]
+1008a0a7c: f9002be0    	str	x0, [sp, #0x50]
+1008a0a80: aa0103e0    	mov	x0, x1
+1008a0a84: f9002fe0    	str	x0, [sp, #0x58]
+1008a0a88: f90033e2    	str	x2, [sp, #0x60]
+1008a0a8c: f90037e3    	str	x3, [sp, #0x68]
+1008a0a90: f9003be4    	str	x4, [sp, #0x70]
+1008a0a94: f9003fe5    	str	x5, [sp, #0x78]
+1008a0a98: f90043e6    	str	x6, [sp, #0x80]
+1008a0a9c: 381bf3bf    	sturb	wzr, [x29, #-0x41]
+1008a0aa0: 381be3bf    	sturb	wzr, [x29, #-0x42]
+1008a0aa4: 381bd3bf    	sturb	wzr, [x29, #-0x43]
+1008a0aa8: 97fce217    	bl	0x1007d9304 <__RNvMs_NtCs26gtQGs340n_5alloc3vecINtB4_3VecNtNtCsbU8wQe3oRmL_10jarde_java6region6RegionE8as_sliceBI_>
+1008a0aac: f90047e0    	str	x0, [sp, #0x88]
+1008a0ab0: f1000428    	subs	x8, x1, #0x1
+1008a0ab4: 540000e0    	b.eq	0x1008a0ad0 <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker31continue_nested_loop_parent_arm+0x6c>
+1008a0ab8: 14000001    	b	0x1008a0abc <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker31continue_nested_loop_parent_arm+0x58>
+1008a0abc: f94027e9    	ldr	x9, [sp, #0x48]
+1008a0ac0: 3900213f    	strb	wzr, [x9, #0x8]
+1008a0ac4: 92800008    	mov	x8, #-0x1               ; =-1
+1008a0ac8: f9000128    	str	x8, [x9]
+1008a0acc: 140001a0    	b	0x1008a114c <__RNvMs3_NtCsbU8wQe3oRmL_10jarde_java6regionNtB5_6Walker31continue_nested_loop_parent_arm+0x6e8>
+1008a0ad0: f94047e8    	ldr	x8, [sp, #0x88]
+1008a0ad4: f940010a    	ldr	x10, [x8]
+1008a0ad8: d2f00008    	mov	x8, #-0x8000000000000000 ; =-9223372036854775808
+1008a0adc: 8b080148    	add	x8, x10, x8
+1008a0ae0: d2f0000b    	mov	x11, #-0x8000000000000000 ; =-9223372036854775808

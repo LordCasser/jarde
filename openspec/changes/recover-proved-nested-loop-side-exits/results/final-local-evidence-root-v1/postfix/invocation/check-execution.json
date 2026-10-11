@@ -1,0 +1,50 @@
+[
+  {
+    "subject": "nested-loops4",
+    "argv": [
+      "python3",
+      "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py",
+      "--execution",
+      "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/execution.json",
+      "--out",
+      "/private/tmp/jarde-cf11-nested-loops4-postfix-root-v2/checker-root-v2.json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/private/tmp/jarde-cf11-postfix-run-root-v2/nested-loops4-check.stdout.raw",
+        "bytes": 318,
+        "sha256": "27cc925085f26df998d36eef1cd7cf6017affa9207677db9f311a225c5b9ac34"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-cf11-postfix-run-root-v2/nested-loops4-check.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "subject": "side-exit-controls",
+    "argv": [
+      "python3",
+      "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py",
+      "--execution",
+      "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/execution.json",
+      "--out",
+      "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v2/checker-root-v2.json"
+    ],
+    "exit_code": 0,
+    "streams": {
+      "stdout": {
+        "path": "/private/tmp/jarde-cf11-postfix-run-root-v2/side-exit-controls-check.stdout.raw",
+        "bytes": 329,
+        "sha256": "ba6bc86034e3cbca94c8aa9eb4a86fb31812d961ca99754443b494f3fe2a4668"
+      },
+      "stderr": {
+        "path": "/private/tmp/jarde-cf11-postfix-run-root-v2/side-exit-controls-check.stderr.raw",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+]

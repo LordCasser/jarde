@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py",
+    "--execution",
+    "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v1/execution.json",
+    "--out",
+    "/private/tmp/jarde-cf11-side-exit-controls-postfix-root-v1/checker-root-v1.json"
+  ],
+  "exit_code": 0
+}

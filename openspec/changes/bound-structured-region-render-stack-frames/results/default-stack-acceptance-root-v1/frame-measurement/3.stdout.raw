@@ -1,0 +1,26 @@
+
+/private/tmp/jarde-cf11-side-exits-focused-root-v7/failed-api-0.bin:	file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+00000001006ae8e4 <__RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder6region>:
+1006ae8e4: a9be6ffc    	stp	x28, x27, [sp, #-0x20]!
+1006ae8e8: a9017bfd    	stp	x29, x30, [sp, #0x10]
+1006ae8ec: 910043fd    	add	x29, sp, #0x10
+1006ae8f0: d1402be9    	sub	x9, sp, #0xa, lsl #12   ; =0xa000
+1006ae8f4: d14007ff    	sub	sp, sp, #0x1, lsl #12   ; =0x1000
+1006ae8f8: f90003ff    	str	xzr, [sp]
+1006ae8fc: eb2963ff    	cmp	sp, x9
+1006ae900: 54ffffa1    	b.ne	0x1006ae8f4 <__RNvMsk_NtCsbU8wQe3oRmL_10jarde_java5buildNtB5_7Builder6region+0x10>
+1006ae904: d13e03ff    	sub	sp, sp, #0xf80
+1006ae908: f90003ff    	str	xzr, [sp]
+1006ae90c: 91402be9    	add	x9, sp, #0xa, lsl #12   ; =0xa000
+1006ae910: 910a8129    	add	x9, x9, #0x2a0
+1006ae914: f90793e9    	str	x9, [sp, #0xf20]
+1006ae918: 91402be9    	add	x9, sp, #0xa, lsl #12   ; =0xa000
+1006ae91c: 91012d29    	add	x9, x9, #0x4b
+1006ae920: f907bbe9    	str	x9, [sp, #0xf70]
+1006ae924: 914023e9    	add	x9, sp, #0x8, lsl #12   ; =0x8000
+1006ae928: 91364129    	add	x9, x9, #0xd90
+1006ae92c: f90797e9    	str	x9, [sp, #0xf28]
+1006ae930: 914023e9    	add	x9, sp, #0x8, lsl #12   ; =0x8000

@@ -1,0 +1,1 @@
+真实Clippy101/clean0：production lib已通过，new lib-test Frame default后scope赋值触发field_reassign_with_default。仅改同值Frame struct initializer，mut保留；原raw/sourceclosure及private候选保留，未加allow。

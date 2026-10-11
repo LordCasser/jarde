@@ -1,0 +1,13 @@
+{
+  "status": "accepted_previous_fixed_baseline_and_same_ir_for_task_1_1",
+  "archive_inventory_sha256": "fcfdd3bf2816e9dba2a7e86b38b8778af0a6a12a852cfff0794063d103bec0b8",
+  "archive_files_checked": 26,
+  "same_ir_execution_sha256": "a861b50306e81f0290897cc53aef2c6803506dcc0ca9ae06306e2ed440ca1c55",
+  "source_inputs_rechecked": 4700,
+  "physical_instructions": 40,
+  "canonical_nodes": 15,
+  "normal_edges": 19,
+  "runtime_coverage_return0_claimed": false,
+  "internal_join_gate_evidence": "observed Region shape plus actual source inference; not direct helper instrumentation",
+  "target_absent": true
+}

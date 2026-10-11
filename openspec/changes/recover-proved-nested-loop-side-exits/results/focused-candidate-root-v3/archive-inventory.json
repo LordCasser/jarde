@@ -1,0 +1,65 @@
+{
+  "status": "preserved_actual_compile_failure",
+  "files": [
+    {
+      "path": "0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "1.stderr.raw",
+      "bytes": 3678,
+      "sha256": "7a990f96a0797d0f95b6fb35b615087b4cc215011d5299dd6d71963241b74fec"
+    },
+    {
+      "path": "1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "2.stderr.raw",
+      "bytes": 52,
+      "sha256": "4c473056611ec6f0c3e151e4f49ac523f96ea575fb90ce785e38bdaaf0892f0e"
+    },
+    {
+      "path": "2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "README.md",
+      "bytes": 305,
+      "sha256": "8fdc680d560c31127c85f2635bb0e6cf4515282c08d9e43c7f40123d95aa0fbe"
+    },
+    {
+      "path": "compiled-region.rs.txt",
+      "bytes": 934382,
+      "sha256": "403df3e177e17681f5ec60a67cc6ec23df1f4f8529b0c260ca377b894edf818b"
+    },
+    {
+      "path": "execution.json",
+      "bytes": 2275247,
+      "sha256": "d8b9c94e82bd8eadb7c42d905579d30a677a1e124269ccad8b5612d3be2b6780"
+    },
+    {
+      "path": "jarde-cf11-side-exits-focused-root-v3.py",
+      "bytes": 4441,
+      "sha256": "97f65d90e2745e7c84d818381b6b1af64df03b879cd87a2b90c6cb5a59d7ca47"
+    },
+    {
+      "path": "jarde-cf11-side-exits-focused-root-v3.stderr.raw",
+      "bytes": 537,
+      "sha256": "b0453195d85eecdaa20cbdce151e7ee63530eba96d84f51d0db753f26bf797d2"
+    },
+    {
+      "path": "jarde-cf11-side-exits-focused-root-v3.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

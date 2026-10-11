@@ -1,0 +1,19 @@
+CF11 controls verifier failed: <init>: parsed classfile owner differs
+Traceback (most recent call last):
+  File "/private/tmp/jarde-cf11-side-exits-controls-verifier-root-v1.py", line 336, in <module>
+    try: main()
+         ~~~~^^
+  File "/private/tmp/jarde-cf11-side-exits-controls-verifier-root-v1.py", line 329, in main
+    result=verify(args.execution)
+  File "/private/tmp/jarde-cf11-side-exits-controls-verifier-root-v1.py", line 283, in verify
+    target_map=check_method_maps(v,doc,original_classes[jdk],raw[3 if jdk=='javac8' else 6]['stdout'],[(name,desc,signature)])
+  File "/private/tmp/jarde-cf11-side-exits-controls-verifier-root-v1.py", line 108, in check_method_maps
+    data,physical,origins=v.verify_map(doc,method,report,class_path,name,desc,offsets)
+                          ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-cf11-testnestedloops4-verifier-root-v1.py", line 143, in verify_map
+    need(physical['owner']=='cf11/UpstreamNestedLoops4',f'{name}: parsed classfile owner differs')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-cf11-testnestedloops4-verifier-root-v1.py", line 46, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: <init>: parsed classfile owner differs

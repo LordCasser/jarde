@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.99s
+[1m[92m     Running[0m tests/p3_finally_straight.rs (target/debug/deps/p3_finally_straight-5f193bbbcbc8cc09)
+[1m[92m     Running[0m tests/p3_nested_try.rs (target/debug/deps/p3_nested_try-fa34226eed491d29)
+[1m[92m     Running[0m tests/p3_shared_catchall_finally.rs (target/debug/deps/p3_shared_catchall_finally-e92ad2d51b82f258)
+[1m[92m     Running[0m tests/p3_try_local.rs (target/debug/deps/p3_try_local-0bb86beaa1a21e86)

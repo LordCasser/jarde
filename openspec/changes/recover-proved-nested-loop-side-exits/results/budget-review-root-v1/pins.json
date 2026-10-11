@@ -1,0 +1,9 @@
+{
+  "workspace_source": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+  "workspace_source_sha256": "1852b39f34153772700cc3854a336ca087c05f07389f44f0ec172d29c508ede3",
+  "private_files_sha256": {
+    "region.rs.base": "1852b39f34153772700cc3854a336ca087c05f07389f44f0ec172d29c508ede3",
+    "region.rs.candidate": "1d3a7f404358adf829ad9193394a4aae9768bff4d98ff5602d95403af2255b20",
+    "candidate.patch": "7682139974a8d6b58c2815d7170ae907d12095757421d28da09368308cb5a945"
+  }
+}

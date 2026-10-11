@@ -1,0 +1,93 @@
+{
+  "scope": "default-stack API, regression and Java library only; CLI and workspace/CI pending",
+  "same_source_pins_unchanged": true,
+  "rust_min_stack": null,
+  "all_first_7_commands_exit0": true,
+  "observed_test_counts": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0
+    ],
+    [
+      6,
+      0,
+      0
+    ],
+    [
+      8,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0
+    ],
+    [
+      8,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      54,
+      0,
+      1
+    ],
+    [
+      15,
+      0,
+      0
+    ],
+    [
+      353,
+      0,
+      0
+    ]
+  ],
+  "sum_including_repeated_library_unit": [
+    476,
+    0,
+    1
+  ],
+  "target_absent": true,
+  "later_cli_error": "no bin named jarde; separate corrected build",
+  "proof_stop": "limit3/usage3@23; no owner mutation",
+  "consumer_stop": "complete12332/limit12331/usage12326@31; all4 state restored",
+  "public_late_stop": "source17858/limit17857/usage17857 AnalysisSteps Partial; precancel usage0"
+}
