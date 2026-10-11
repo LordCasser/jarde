@@ -1,0 +1,9 @@
+hit-after-g-mutates-end:2:12:2
+miss:-1:12:2
+f-throws-before-g:-2:1:6
+g-throws-after-f:-2:12:2
+shared-f-value:599:12:2
+post-loop-read:-1:1:6
+post-loop-write:0:1:6
+nested-scope-enter:-1:1:6
+nested-scope-skip:-7:0:6

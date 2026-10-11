@@ -1,0 +1,298 @@
+Classfile /private/tmp/jarde-computed-for-controls-root-v1/javac23/pending/ComputedForControls.class
+  Last modified 2026年10月11日; size 1081 bytes
+  SHA-256 checksum 325dee2da3e623b3bac2bef1219b8dfca95a166d9f58315f65003859d277f14e
+final class ComputedForControls
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #8                          // ComputedForControls
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 4, methods: 9, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // ComputedForControls.trace:I
+   #8 = Class              #10            // ComputedForControls
+   #9 = NameAndType        #11:#12        // trace:I
+  #10 = Utf8               ComputedForControls
+  #11 = Utf8               trace
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // ComputedForControls.mode:I
+  #14 = NameAndType        #15:#12        // mode:I
+  #15 = Utf8               mode
+  #16 = Fieldref           #8.#17         // ComputedForControls.FAILURE:Ljava/lang/RuntimeException;
+  #17 = NameAndType        #18:#19        // FAILURE:Ljava/lang/RuntimeException;
+  #18 = Utf8               FAILURE
+  #19 = Utf8               Ljava/lang/RuntimeException;
+  #20 = Fieldref           #8.#21         // ComputedForControls.end:I
+  #21 = NameAndType        #22:#12        // end:I
+  #22 = Utf8               end
+  #23 = Methodref          #8.#24         // ComputedForControls.f:()I
+  #24 = NameAndType        #25:#26        // f:()I
+  #25 = Utf8               f
+  #26 = Utf8               ()I
+  #27 = Methodref          #8.#28         // ComputedForControls.g:()V
+  #28 = NameAndType        #29:#6         // g:()V
+  #29 = Utf8               g
+  #30 = Class              #31            // java/lang/RuntimeException
+  #31 = Utf8               java/lang/RuntimeException
+  #32 = Class              #33            // java/lang/IllegalStateException
+  #33 = Utf8               java/lang/IllegalStateException
+  #34 = String             #35            // chosen
+  #35 = Utf8               chosen
+  #36 = Methodref          #32.#37        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #37 = NameAndType        #5:#38         // "<init>":(Ljava/lang/String;)V
+  #38 = Utf8               (Ljava/lang/String;)V
+  #39 = Utf8               Code
+  #40 = Utf8               StackMapTable
+  #41 = Utf8               find
+  #42 = Utf8               ([III)I
+  #43 = Class              #44            // "[I"
+  #44 = Utf8               [I
+  #45 = Utf8               shared
+  #46 = Utf8               (I)I
+  #47 = Utf8               observedAfter
+  #48 = Utf8               externalWrite
+  #49 = Utf8               scoped
+  #50 = Utf8               (IZ)I
+  #51 = Utf8               <clinit>
+{
+  static int end;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static int trace;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static int mode;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static final java.lang.RuntimeException FAILURE;
+    descriptor: Ljava/lang/RuntimeException;
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+
+  ComputedForControls();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static int f();
+    descriptor: ()I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #7                  // Field trace:I
+        11: getstatic     #13                 // Field mode:I
+        14: iconst_1
+        15: if_icmpne     22
+        18: getstatic     #16                 // Field FAILURE:Ljava/lang/RuntimeException;
+        21: athrow
+        22: getstatic     #20                 // Field end:I
+        25: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 22 /* same */
+
+  static void g();
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field trace:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field trace:I
+        11: iconst_2
+        12: putstatic     #20                 // Field end:I
+        15: getstatic     #13                 // Field mode:I
+        18: iconst_2
+        19: if_icmpne     26
+        22: getstatic     #16                 // Field FAILURE:Ljava/lang/RuntimeException;
+        25: athrow
+        26: return
+      StackMapTable: number_of_entries = 1
+        frame_type = 26 /* same */
+
+  static int find(int[], int, int);
+    descriptor: ([III)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: invokestatic  #23                 // Method f:()I
+         3: iconst_1
+         4: isub
+         5: invokestatic  #27                 // Method g:()V
+         8: istore_3
+         9: iload_3
+        10: iload_2
+        11: if_icmplt     29
+        14: aload_0
+        15: iload_3
+        16: iaload
+        17: iload_1
+        18: if_icmpne     23
+        21: iload_3
+        22: ireturn
+        23: iinc          3, -1
+        26: goto          9
+        29: iconst_m1
+        30: ireturn
+        31: astore_3
+        32: aload_3
+        33: getstatic     #16                 // Field FAILURE:Ljava/lang/RuntimeException;
+        36: if_acmpne     44
+        39: bipush        -2
+        41: goto          46
+        44: bipush        -3
+        46: ireturn
+      Exception table:
+         from    to  target type
+             0    22    31   Class java/lang/RuntimeException
+            23    30    31   Class java/lang/RuntimeException
+      StackMapTable: number_of_entries = 6
+        frame_type = 252 /* append */
+          offset_delta = 9
+          locals = [ int ]
+        frame_type = 13 /* same */
+        frame_type = 5 /* same */
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = [ class "[I", int, int ]
+          stack = [ class java/lang/RuntimeException ]
+        frame_type = 252 /* append */
+          offset_delta = 12
+          locals = [ class java/lang/RuntimeException ]
+        frame_type = 65 /* same_locals_1_stack_item */
+          stack = [ int ]
+
+  static int shared(int);
+    descriptor: (I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: invokestatic  #23                 // Method f:()I
+         3: dup
+         4: istore_1
+         5: iconst_1
+         6: isub
+         7: invokestatic  #27                 // Method g:()V
+        10: istore_2
+        11: iload_2
+        12: iload_0
+        13: if_icmplt     22
+        16: iinc          2, -1
+        19: goto          11
+        22: iload_1
+        23: bipush        100
+        25: imul
+        26: iload_2
+        27: iadd
+        28: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 253 /* append */
+          offset_delta = 11
+          locals = [ int, int ]
+        frame_type = 10 /* same */
+
+  static int observedAfter(int);
+    descriptor: (I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: invokestatic  #23                 // Method f:()I
+         3: iconst_1
+         4: isub
+         5: istore_1
+         6: iload_1
+         7: iload_0
+         8: if_icmplt     17
+        11: iinc          1, -1
+        14: goto          6
+        17: iload_1
+        18: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 6
+          locals = [ int ]
+        frame_type = 10 /* same */
+
+  static int externalWrite(int);
+    descriptor: (I)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: invokestatic  #23                 // Method f:()I
+         3: iconst_1
+         4: isub
+         5: istore_1
+         6: iload_1
+         7: iload_0
+         8: if_icmplt     17
+        11: iinc          1, -1
+        14: goto          6
+        17: iload_0
+        18: istore_1
+        19: iload_1
+        20: ireturn
+      StackMapTable: number_of_entries = 2
+        frame_type = 252 /* append */
+          offset_delta = 6
+          locals = [ int ]
+        frame_type = 10 /* same */
+
+  static int scoped(int, boolean);
+    descriptor: (IZ)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2
+         0: iload_1
+         1: ifeq          23
+         4: invokestatic  #23                 // Method f:()I
+         7: iconst_1
+         8: isub
+         9: istore_2
+        10: iload_2
+        11: iload_0
+        12: if_icmplt     21
+        15: iinc          2, -1
+        18: goto          10
+        21: iload_2
+        22: ireturn
+        23: bipush        -7
+        25: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 10
+          locals = [ int ]
+        frame_type = 10 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 1
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=3, locals=0, args_size=0
+         0: new           #32                 // class java/lang/IllegalStateException
+         3: dup
+         4: ldc           #34                 // String chosen
+         6: invokespecial #36                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+         9: putstatic     #16                 // Field FAILURE:Ljava/lang/RuntimeException;
+        12: return
+}

@@ -1,0 +1,42 @@
+{
+  "scope": "planning and existing current CLI two-case patrol only; implementation 0/10",
+  "commands": [
+    {
+      "argv": [
+        "openspec",
+        "validate",
+        "recover-proved-computed-for-initializers",
+        "--strict",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d3d4e293dd39f5924b8c6314a88939b409e52e8425bfb0e5304a03dc9acfccf6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "openspec",
+        "status",
+        "--change",
+        "recover-proved-computed-for-initializers",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "da951c66df1fdb7bf8c0cbcdb476a750cad66c01aacb59b0db7ae67567ef55ac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "openspec",
+        "instructions",
+        "apply",
+        "--change",
+        "recover-proved-computed-for-initializers",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c860a1f12ed6da951355e62501658e7a0b25fe893feb1e3c49a64edb616751e8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

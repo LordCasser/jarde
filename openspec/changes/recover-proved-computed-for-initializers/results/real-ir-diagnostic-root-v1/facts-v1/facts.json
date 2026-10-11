@@ -1,0 +1,242 @@
+{
+  "scope": "task 1.1 real-IR/SSA sub-evidence only; Builder-produced statement/materialization not diagnosed",
+  "execution_record": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/execution.json",
+  "runner_sha256": "e6d4c2798e719f1f4dd4a26c1bcb1b86849e798fd1423ae22eb4e5d7d3aa2a13",
+  "class": {
+    "method": "lastIndexOf([IIII)I",
+    "bytes": 419,
+    "blake3": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+    "class_sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33"
+  },
+  "ssa_init": [
+    {
+      "bci": 0,
+      "opcode": 29,
+      "instruction": "iload_3",
+      "reads": [
+        {
+          "slot": "Local(3)",
+          "value": "ValueId(3)"
+        }
+      ],
+      "writes": [
+        {
+          "slot": "Stack(0)",
+          "value": "ValueId(9)"
+        }
+      ],
+      "value9": {
+        "def": "Entry(Local(3))",
+        "uses": [
+          "bci 2 read Stack(0)"
+        ]
+      }
+    },
+    {
+      "bci": 1,
+      "opcode": 4,
+      "instruction": "iconst_1",
+      "reads": [],
+      "writes": [
+        {
+          "slot": "Stack(1)",
+          "value": "ValueId(10)"
+        }
+      ],
+      "value10": {
+        "def": "Instruction(block 0,bci 1)",
+        "uses": [
+          "bci 2 read Stack(1)"
+        ]
+      }
+    },
+    {
+      "bci": 2,
+      "opcode": 100,
+      "instruction": "isub",
+      "reads": [
+        {
+          "slot": "Stack(1)",
+          "value": "ValueId(10)"
+        },
+        {
+          "slot": "Stack(0)",
+          "value": "ValueId(9)"
+        }
+      ],
+      "writes": [
+        {
+          "slot": "Stack(0)",
+          "value": "ValueId(11)"
+        }
+      ],
+      "value11": {
+        "def": "Instruction(block 0,bci 2)",
+        "uses": [
+          "bci 3 read Stack(0)"
+        ]
+      }
+    },
+    {
+      "bci": 3,
+      "opcode": 54,
+      "instruction": "istore 4",
+      "reads": [
+        {
+          "slot": "Stack(0)",
+          "value": "ValueId(11)"
+        }
+      ],
+      "writes": [
+        {
+          "slot": "Local(4)",
+          "value": "ValueId(12)"
+        }
+      ],
+      "value12": {
+        "def": "Instruction(block 0,bci 3)",
+        "uses": [
+          "header block 5 phi input; bci None"
+        ]
+      }
+    }
+  ],
+  "header_phi": {
+    "block_bci": 5,
+    "slot": "Local(4)",
+    "value": "ValueId(8)",
+    "inputs": [
+      "ValueId(12)",
+      "ValueId(21)"
+    ],
+    "uses": [
+      "bci 5",
+      "bci 12",
+      "bci 19",
+      "bci 22"
+    ]
+  },
+  "local4_accesses": [
+    {
+      "bci": 3,
+      "write": "ValueId(12)"
+    },
+    {
+      "bci": 5,
+      "read": "ValueId(8)"
+    },
+    {
+      "bci": 12,
+      "read": "ValueId(8)"
+    },
+    {
+      "bci": 19,
+      "read": "ValueId(8)"
+    },
+    {
+      "bci": 22,
+      "read": "ValueId(8)",
+      "write": "ValueId(21)"
+    }
+  ],
+  "update_value": {
+    "bci": 22,
+    "opcode": 132,
+    "reads": [
+      "Local(4):ValueId(8)"
+    ],
+    "writes": [
+      "Local(4):ValueId(21)"
+    ],
+    "value21_def": "Instruction(block 22,bci 22)",
+    "value21_use": "header block 5 phi input"
+  },
+  "natural_loop": {
+    "header_node": 1,
+    "block_nodes": [
+      1,
+      2,
+      5
+    ],
+    "block_bcis": [
+      5,
+      11,
+      22
+    ],
+    "latch_nodes": [
+      5
+    ],
+    "latch_bcis": [
+      22
+    ],
+    "irreducible": false
+  },
+  "return_leaf": {
+    "incoming_node": 4,
+    "block_bci": 19,
+    "terminal_bci": 21,
+    "terminal_opcode": 172,
+    "normal_exit_node": 3,
+    "frame": "Frame::default() at method entry; used for loop_terminal_returns",
+    "edges": [
+      "Normal 11 -> 19"
+    ],
+    "outgoing_edges": []
+  },
+  "update_goto_edges": [
+    "Normal 11 -> 22",
+    "Normal 22 -> 5"
+  ],
+  "test": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "jarde-java",
+      "--lib",
+      "--locked",
+      "region::tests::cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "7d1966aac0756d87b2a1143cfbe5b4cd45f4e6556c691b01dd86b02c4a975f45",
+    "stderr_sha256": "27cbe73f88864e7e3c58cf516e17871b78369902619221a56a5bbf4d036d9818",
+    "stdout_bytes": 207,
+    "stderr_bytes": 57551
+  },
+  "source_state": {
+    "before_region_sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168",
+    "during_region_sha256": "c368ba49d7f5d922c1bde4513fe391d54de28d615d58d7637fe6f6e11cb7b188",
+    "after_region_sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168",
+    "before_after_all_132_pins_equal": true,
+    "only_temporary_pin_difference": [
+      "crates/jarde-java/src/region.rs"
+    ]
+  },
+  "temporary_candidate": {
+    "base_sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168",
+    "candidate_sha256": "c368ba49d7f5d922c1bde4513fe391d54de28d615d58d7637fe6f6e11cb7b188",
+    "patch_sha256": "3c3f6ae3d20b9e64e64f2511bde69b407084dd9c456e6a163eff98bd38a19e32"
+  },
+  "cleanup": {
+    "restored": true,
+    "clean_argv": [
+      "cargo",
+      "clean"
+    ],
+    "clean_exit_code": 0,
+    "target_absent": true,
+    "marker_counts": {
+      "CF07_INIT_INSN": 4,
+      "CF07_INIT_VALUE": 8,
+      "CF07_RELEVANT_PHI": 5,
+      "CF07_SLOT4_ACCESS": 5,
+      "CF07_NATURAL_LOOP": 1,
+      "CF07_RETURN_LEAVES": 1,
+      "CF07_UPDATE_LATCH": 1,
+      "CF07_UPDATE_EDGE": 2
+    }
+  }
+}

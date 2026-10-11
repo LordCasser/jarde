@@ -1,0 +1,82 @@
+{
+  "schema": "private-adapter-pins-v1",
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-compound-own-ci-verifier-luna-v5/verify-own-ci.py",
+      "bytes": 29635,
+      "sha256": "6746cbb67d6e79003bd7c9333b32eb5b174a2a0a0011867e8e7983dc4883475a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "bytes": 43302,
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/capture-conditional-ci-root-v3.py",
+      "bytes": 6778,
+      "sha256": "ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-ci-public-labels-root-v1.py",
+      "bytes": 3697,
+      "sha256": "d7a6bcebb703b1520332cf4c7419c50d21d919d6a0c6123162d0d4d78bbcac65"
+    },
+    {
+      "path": "/private/tmp/jarde-compound-own-ci-audit-luna-v2/ci-handoff-checklist.md",
+      "bytes": 9505,
+      "sha256": "c64e9928cfeef595cf4c1132ceb43b0287773fe8e84c47c3223a94a54a108563"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-build-evidence-luna-v2/build_evidence.py",
+      "bytes": 8627,
+      "sha256": "9d3c76233f23757522a3edbd52017c3a845f188f34e1086269502d43f43b2afb"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2.py",
+      "bytes": 11044,
+      "sha256": "dc0c74fa9e5944a2cc19a7968bed6c66e700ba7f1c798cab6d32167f04f24844"
+    },
+    {
+      "path": "/private/tmp/jarde-compound-workspace-batches-root-v1.py",
+      "bytes": 8178,
+      "sha256": "2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1743943,
+      "sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_immediate_functional_receivers.rs",
+      "bytes": 59225,
+      "sha256": "881c186b4d1f16bb4bea58a8f22f72956a7f04a1648f8087740b0666dd6dd54d"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/verify-own-ci.py",
+      "bytes": 29981,
+      "sha256": "bacc079842691181b3e6df3625fcd8a531cf61af4188c6f2a45cc7c569c0a014"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/ci-handoff-checklist.md",
+      "bytes": 9847,
+      "sha256": "b7a0a8860ec8347b721bbb59583159d111dab9825178504b93ddfe3ae8d881bf"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/adapter.patch",
+      "bytes": 4568,
+      "sha256": "02f23d359e81127ebaebe501eb58d832164c1dbb99fe8df328ed1b189024ba4d"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/checklist.patch",
+      "bytes": 5476,
+      "sha256": "a9f127f46d9aa684934c51cc0e885f185cbf97b0b6184127731037f2002fec8f"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/FINAL.md",
+      "bytes": 1622,
+      "sha256": "e9b9381a221156b581e5e2ae856bfe5bd6a870b1c3dcfb40bb6c7e11c2e5f0ce"
+    }
+  ]
+}

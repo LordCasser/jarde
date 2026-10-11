@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v5/verify_diagnostic.py"
+  ],
+  "exit_code": 1,
+  "verifier_sha256": "a4407063c28e74ecf3e4866284659ef85a1ae7a347fe5ccd9c75b0d68a39946a",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "c61d42cf66fa7265e074099cd334350f82853ac84f059acf4d59d2eaa04c1ead",
+  "scope": "read-only facts verifier; typed phi-use coordinate comparison failed"
+}

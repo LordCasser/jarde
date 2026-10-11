@@ -1,0 +1,130 @@
+{
+  "status": "passed_fresh_JADX_full_LoopCases_both_JDKs",
+  "scope": "fresh full frozen LoopCases JADX comparison supplement; same bafb original/Jarde baseline",
+  "runner_sha256": "ff01c85e354eb5d867e9a64c13f6dd326195880fea3a3882a560c16a8db0d285",
+  "input_pins": {
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/cf07-loop-latch-baseline/baseline-root-v2/manifest.json": "1a374647a971b416635bc114b9c197d05c855c51eeabd274f3ee571e868a64ee",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/cf07-loop-latch-baseline/baseline-root-v2/jadx-input/cf07/LoopCases.class.jar": "d0915afd9cb92f3c232c73005912bce0641a5f01f9081736bd08342cd650e9a3",
+    "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+    "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/src/Runner.java": "28b0a08ceb89b6ff31d12056831a2d7cc62bfda0a61ebc39835d2f62bc89bdf5",
+    "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5",
+    "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd",
+    "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1",
+    "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+  },
+  "commands": [
+    {
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "jadx-decompile",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/out",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-10/cf07-loop-latch-baseline/baseline-root-v2/jadx-input/cf07/LoopCases.class.jar"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-d",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac8/classes",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac8/LoopCases.java",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac8/Runner.java"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac8/classes",
+        "cf07.Runner"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-d",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac23/classes",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac23/LoopCases.java",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac23/Runner.java"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-computed-for-cf07-jadx-root-v1/javac23/classes",
+        "cf07.Runner"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "runtime_legs": [
+    {
+      "jdk": "javac8",
+      "oracle_path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original-runtime.stdout.raw",
+      "oracle_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "equal": true,
+      "generated_classes": {
+        "cf07/LoopCases.class": "89908ecb88720e8661f441dd14e60780aa0adb8a9b4994de65148a468fc134c0",
+        "cf07/Runner.class": "e7bfc3ab84bcda94c346257e874f01a3522ee66efc3e5ed1e620837a4dbde4de"
+      }
+    },
+    {
+      "jdk": "javac23",
+      "oracle_path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original-runtime.stdout.raw",
+      "oracle_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "equal": true,
+      "generated_classes": {
+        "cf07/LoopCases.class": "b057b1e5000e18d5c1040970b4b5794d2dfb9f13055a32e55a34a9ac30b623d3",
+        "cf07/Runner.class": "1f268f57af5cfce1252719aa160a436875517d9532cb321da5dc5ada8cefdedf"
+      }
+    }
+  ],
+  "generated_source_sha256": "4d5023782e6d10dae9bd8b786ad18ec62d8029e08cea9eebec38f8036e815fc2"
+}

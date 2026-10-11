@@ -1,0 +1,117 @@
+{
+  "purpose": "typed-evidence comparison repair only; verifier AST-parsed but not executed",
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/execution.json",
+      "bytes": 68774,
+      "sha256": "b1f80c35a708166c376285857f9c24f38b22aa004c5ea9e446a37abb8abe5cea"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/0.stdout.raw",
+      "bytes": 207,
+      "sha256": "7d1966aac0756d87b2a1143cfbe5b4cd45f4e6556c691b01dd86b02c4a975f45"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 57551,
+      "sha256": "27cbe73f88864e7e3c58cf516e17871b78369902619221a56a5bbf4d036d9818"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "a3c7b46d141f495f2c3ce8ae359f0704ed40e11ea7cf88bf930fe029578be640"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/apply-0.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/apply-0.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/apply-1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3/apply-1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-independent-root-v2/execution.json",
+      "bytes": 470,
+      "sha256": "e398f69f478419fee4c6d6fa3f4608d251c43f761c4ef68eca845355e8c5804e"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-independent-root-v2/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-independent-root-v2/stderr.raw",
+      "bytes": 32,
+      "sha256": "906391d7a151be935e56556de9b5b81aa8cb104d2a836b6e7a107c1e90f3edd0"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/base-region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/candidate-region.rs",
+      "bytes": 855626,
+      "sha256": "c368ba49d7f5d922c1bde4513fe391d54de28d615d58d7637fe6f6e11cb7b188"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/diagnostic.patch",
+      "bytes": 4434,
+      "sha256": "3c3f6ae3d20b9e64e64f2511bde69b407084dd9c456e6a163eff98bd38a19e32"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v2/facts.json",
+      "bytes": 6662,
+      "sha256": "d30fb395f8a9aa59e39dfe4ff251531ac0e228245c0a645acb7fefea18e99b85"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v2/verify_diagnostic.py",
+      "bytes": 15537,
+      "sha256": "ad8a85b91811b56fcfdf08a407f4d8fa384e76d53332ecf8924917004e14e18e"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v3/facts.json",
+      "bytes": 6662,
+      "sha256": "d30fb395f8a9aa59e39dfe4ff251531ac0e228245c0a645acb7fefea18e99b85"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v3/analysis.md",
+      "bytes": 1807,
+      "sha256": "40ff0984080a6890ec26249be6606a21cd0b0cfb110e8b163024697031595a56"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v3/verify_diagnostic.py",
+      "bytes": 17237,
+      "sha256": "7582e09991ba321fde4788c49c0f5d5a948e6556d674fed0c0c347f06f3340be"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v3/v2-to-v3.patch",
+      "bytes": 3830,
+      "sha256": "1caad34bf442b71dbc24da637062e430cd4afe4cef69c111c80d9b51d379fc88"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v3/FINAL.md",
+      "bytes": 988,
+      "sha256": "62ca8348b00cac02464dbdc24a174bdffb46caf8e8d5a83e0d1f4f4702dffa8e"
+    }
+  ]
+}

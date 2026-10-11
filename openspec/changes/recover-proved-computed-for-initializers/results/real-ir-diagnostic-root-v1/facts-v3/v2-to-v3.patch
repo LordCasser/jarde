@@ -1,0 +1,61 @@
+--- v2/verify_diagnostic.py
++++ v3/verify_diagnostic.py
+@@ -36,6 +36,31 @@
+     for match in pattern.finditer(section):
+         found.append({"block_bci": int(match.group(1)), "bci": int(match.group(2)) if match.group(2) else None})
+     return found
++
++
++def fact_uses_match(raw_uses, expected_uses, value_id):
++    """Compare typed use coordinates; permit only the documented phi-input annotation."""
++    projected = []
++    saw_phi_annotation = False
++    for use in expected_uses:
++        need(isinstance(use, dict), f"ValueId({value_id}) use must be an object")
++        keys = set(use)
++        unknown_keys = sorted(keys - {"block_bci", "bci", "as"})
++        need(not unknown_keys, f"ValueId({value_id}) has unknown use annotation keys: {unknown_keys}")
++        need({"block_bci", "bci"} <= keys, f"ValueId({value_id}) use lacks typed coordinates")
++        need(isinstance(use["block_bci"], int) and (use["bci"] is None or isinstance(use["bci"], int)), f"ValueId({value_id}) use coordinate types")
++        projected.append({"block_bci": use["block_bci"], "bci": use["bci"]})
++        if "as" in use:
++            need(use["as"] == "phi input", f"ValueId({value_id}) has unsupported use annotation")
++            need(use["bci"] is None, f"ValueId({value_id}) phi input must have no instruction BCI")
++            phi = FACTS["header_phi"]
++            need(use["block_bci"] == phi["block_bci"], f"ValueId({value_id}) annotation is not at its recorded phi block")
++            need(any(item["value"] == f"ValueId({value_id})" for item in phi["inputs"]), f"ValueId({value_id}) annotation lacks matching phi input")
++            saw_phi_annotation = True
++    need(raw_uses == projected, f"ValueId({value_id}) typed use coordinates bound to raw")
++    # Each annotated use is now separately tied to the exact input value in the frozen header phi.
++    if saw_phi_annotation:
++        need(any(item["value"] == f"ValueId({value_id})" for item in FACTS["header_phi"]["inputs"]), f"ValueId({value_id}) phi annotation target")
+ 
+ 
+ def value_section(value_id, bci, slot, marker_kind="CF07_INIT_VALUE"):
+@@ -126,7 +151,7 @@
+     value_id = int(re.search(r"ValueId\((\d+)\)", write["value"]).group(1))
+     raw_value = value_section(value_id, entry["bci"], write["slot"])
+     need(def_from(raw_value) == entry[value_key]["def"], f"{value_key} definition bound to raw")
+-    need(uses_from(raw_value) == entry[value_key]["uses"], f"{value_key} uses bound to raw")
++    fact_uses_match(uses_from(raw_value), entry[value_key]["uses"], value_id)
+ source_value = value_section(3, 0, "Local(3)")
+ need(def_from(source_value) == init[0]["source_value3"]["def"], "entry argument ValueId(3) definition bound to raw")
+ need(uses_from(source_value) == init[0]["source_value3"]["uses"], "entry argument ValueId(3) uses bound to raw")
+@@ -146,7 +171,7 @@
+ need(raw_inputs == [entry["value"] for entry in phi_fact["inputs"]], "header phi inputs in order")
+ phi_value = value_section(8, 5, "Local(4)", "CF07_SLOT4_VALUE")
+ need(def_from(phi_value) == phi_fact["definition"], "header phi definition bound to raw")
+-need(uses_from(phi_value) == phi_fact["uses"], "all header phi uses bound to raw")
++fact_uses_match(uses_from(phi_value), phi_fact["uses"], 8)
+ 
+ # Bind every local-4 read/write and the update's instruction definition/use.
+ expected_slot4 = []
+@@ -160,7 +185,7 @@
+ update = FACTS["update_value"]
+ update_text = value_section(21, 22, "Local(4)", "CF07_SLOT4_VALUE")
+ need(def_from(update_text) == update["value21_def"], "update definition bound to raw")
+-need(uses_from(update_text) == [update["value21_use"]], "update phi use bound to raw")
++fact_uses_match(uses_from(update_text), [update["value21_use"]], 21)
+ 
+ # Bind loop node IDs/BCIs, return leaf/frame, and canonical edge endpoints.
+ loop_fact = FACTS["natural_loop"]

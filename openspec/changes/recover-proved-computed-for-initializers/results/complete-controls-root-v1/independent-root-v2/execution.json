@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-controls-jadx-luna-v1/verify-v2.py"
+  ],
+  "exit_code": 0,
+  "verifier_sha256": "10063da84e6571f28c5db29286c4e9ebb831c5946e0effd99654ee5db9a86322",
+  "stdout_sha256": "a566862502d9d65388361b86695eba5a59e8e616bcd849121a8d991b2c936379",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

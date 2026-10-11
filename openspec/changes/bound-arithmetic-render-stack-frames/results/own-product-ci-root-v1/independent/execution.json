@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/verify-own-ci.py",
+    "--product-commit",
+    "bafb61a5ec58b49f0040ea3a55420a56801bbe9c",
+    "--run-id",
+    "38119159950",
+    "--capture",
+    "/private/tmp/jarde-arithmetic-stack-own-ci-capture-root-v1",
+    "--workspace",
+    "/private/tmp/jarde-arithmetic-stack-full-workspace-root-v1",
+    "--out",
+    "/private/tmp/jarde-arithmetic-stack-own-ci-independent-root-v1/acceptance.json"
+  ],
+  "exit_code": 0,
+  "verifier_sha256": "bacc079842691181b3e6df3625fcd8a531cf61af4188c6f2a45cc7c569c0a014",
+  "stdout_sha256": "9e6d9bc1a2d23a84ce7cebd0867d49cacf4cde7fd0d12b0aebc6b3286d9fc346",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

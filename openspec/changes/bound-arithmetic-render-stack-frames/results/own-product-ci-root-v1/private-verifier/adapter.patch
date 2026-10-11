@@ -1,0 +1,69 @@
+--- /private/tmp/jarde-compound-own-ci-verifier-luna-v5/verify-own-ci.py
++++ /private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/verify-own-ci.py
+@@ -17,16 +17,16 @@
+ CAPTURE_SHA = 'ed889bf6af08247efcce3c889cd1c790d6829d0ea12e9c0d053bdef801994be3'
+ PUBLIC_LABEL_RULE = Path('/private/tmp/jarde-conditional-ci-public-labels-root-v1.py')
+ PUBLIC_LABEL_RULE_SHA = 'd7a6bcebb703b1520332cf4c7419c50d21d919d6a0c6123162d0d4d78bbcac65'
+-CHECKLIST = Path('/private/tmp/jarde-compound-own-ci-audit-luna-v2/ci-handoff-checklist.md')
+-CHECKLIST_SHA = 'c64e9928cfeef595cf4c1132ceb43b0287773fe8e84c47c3223a94a54a108563'
+-BUILD_EVIDENCE = Path('/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py')
+-BUILD_EVIDENCE_SHA = '8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3'
+-BUILD_RUNNER = Path('/private/tmp/jarde-compound-condition-focused-and-cli-runner-root-v5.py')
+-BUILD_RUNNER_SHA = 'd82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93'
++CHECKLIST = Path('/private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/ci-handoff-checklist.md')
++CHECKLIST_SHA = 'b7a0a8860ec8347b721bbb59583159d111dab9825178504b93ddfe3ae8d881bf'
++BUILD_EVIDENCE = Path('/private/tmp/jarde-arithmetic-stack-build-evidence-luna-v2/build_evidence.py')
++BUILD_EVIDENCE_SHA = '9d3c76233f23757522a3edbd52017c3a845f188f34e1086269502d43f43b2afb'
++BUILD_RUNNER = Path('/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2.py')
++BUILD_RUNNER_SHA = 'dc0c74fa9e5944a2cc19a7968bed6c66e700ba7f1c798cab6d32167f04f24844'
+ FAILED_WORKSPACE_V3 = Path('/private/tmp/jarde-compound-full-workspace-root-v3').resolve()
+ WORKSPACE_RUNNER = Path('/private/tmp/jarde-compound-workspace-batches-root-v1.py')
+ WORKSPACE_RUNNER_SHA = '2ac64ccdf7ed6c8f90f37b8ae34693eb16206cba493ca4a3e261de993a08235b'
+-BUILD_RECORD = Path('/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json')
++BUILD_RECORD = Path('/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2/execution.json')
+ WORKSPACE_SCHEMA = 'compound-full-workspace-batched-root-v1'
+ SEEDS = ('5350648285461741569', '5350648285461741570')
+ WORKSPACE_CMD = 'cargo test --workspace --all-targets --all-features --locked'
+@@ -183,8 +183,8 @@
+ 
+ 
+ def verify_product_build(product: str, workspace_pins: dict[str, str]):
+-    need(sha_file(BUILD_EVIDENCE) == BUILD_EVIDENCE_SHA, 'frozen build-evidence helper pin mismatch')
+-    need(sha_file(BUILD_RUNNER) == BUILD_RUNNER_SHA, 'frozen v5 CLI build runner pin mismatch')
++    need(sha_file(BUILD_EVIDENCE) == BUILD_EVIDENCE_SHA, 'frozen arithmetic-stack v2 build-evidence helper pin mismatch')
++    need(sha_file(BUILD_RUNNER) == BUILD_RUNNER_SHA, 'frozen arithmetic-stack v2 CLI build runner pin mismatch')
+     build_raw = BUILD_RECORD.read_bytes()
+     build = json.loads(build_raw)
+     cli_pin = build.get('cli')
+@@ -193,8 +193,10 @@
+     product_pins = build.get('product_pins_before')
+     need(isinstance(product_pins, dict) and product_pins == build.get('product_pins_after'),
+          'candidate CLI production source pins changed during build')
+-    need(result.get('product_source_pin_count') == 124,
+-         'candidate CLI does not have the reviewed 124 dynamic production source pins')
++    dynamic_paths = set(result.get('dynamic_product_paths', []))
++    need(dynamic_paths and set(product_pins) == dynamic_paths and
++         result.get('product_source_pin_count') == len(dynamic_paths),
++         'candidate CLI production source pins differ from the current v2 runner dynamic selection')
+     need(set(product_pins) <= set(workspace_pins) and
+          all(workspace_pins[path] == digest for path, digest in product_pins.items()),
+          'CLI production source pins are not contained in the full workspace pins')
+@@ -255,6 +257,9 @@
+         'compound_pre_cancelled_public_recovery_publishes_no_partial_artifact',
+     ),
+     'tests/p3_reference_slot_lifetimes.rs': (RENAMED_NULL_TEST,),
++    'tests/p3_immediate_functional_receivers.rs': (
++        'an_overdeep_lambda_helper_renames_instead_of_walking_an_unbounded_body',
++    ),
+ }
+ 
+ 
+@@ -443,7 +448,7 @@
+     ci_result = verify_ci_capture(args.capture.resolve(), args.product_commit, args.run_id,
+                                   local['target_observations'])
+     acceptance = {
+-        'schema': 'compound-own-ci-current-product-acceptance-luna-v2',
++        'schema': 'arithmetic-stack-own-ci-current-product-acceptance-luna-v1',
+         'status': 'accepted',
+         'product_commit': args.product_commit,
+         'run_id': int(args.run_id),

@@ -1,0 +1,1 @@
+Root修正runpy返回namespace副本问题：更新解析函数实际__globals__，使typed SSA解析读root-v2同IR raw而非先前root-v3 raw。其余证据门保持。

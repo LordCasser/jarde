@@ -1,0 +1,1 @@
+FAIL: ValueId(8) typed use coordinates bound to raw: raw=[{'block_bci': 5, 'bci': 5}, {'block_bci': 11, 'bci': 12}, {'block_bci': 19, 'bci': 19}, {'block_bci': 22, 'bci': 22}] facts=[{'block_bci': 0, 'bci': 5}, {'block_bci': 11, 'bci': 12}, {'block_bci': 19, 'bci': 19}, {'block_bci': 22, 'bci': 22}]

@@ -1,0 +1,72 @@
+{
+  "purpose": "private read-only verification/summary of root-v2 task-1.1 diagnostic; no product implementation",
+  "root_v2_execution": {
+    "status": "passed_same_IR_SSA_and_Builder_diagnostic_only",
+    "runner_sha256": "79b79dfc118a1905ea1da4bd931b4b2be5fe14138997b59f29b9f0bb70d136e1",
+    "base_region_sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168",
+    "candidate_region_sha256": "f447538b3289e0de3ac8d601474c1a6442318f378c8367247a486377ffa99e81",
+    "base_build_sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade",
+    "candidate_build_sha256": "02ca60d51e84c5869fe30535629dde842148e6e089e334b2197a4091590fb95b",
+    "patch_sha256": "1f0dd07276bc1e05525c430ec390d8fd66d79ade7d3fe70745f43e6435ac0ba7",
+    "source_pin_count": 132,
+    "restored": true,
+    "target_absent": true
+  },
+  "artifacts": [
+    {
+      "label": "root-v2 stdout raw",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-root-v2/0.stdout.raw",
+      "bytes": 207,
+      "sha256": "e297a79518c1bb7522a9461fa618c1652b459a8ad185dc6b197a0d54bb29dae6"
+    },
+    {
+      "label": "root-v2 stderr raw",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-root-v2/0.stderr.raw",
+      "bytes": 96127,
+      "sha256": "c89b01868d51ccfd326c26c2c6ed0e77e7f6beeda338b506bbb791eefa530520"
+    },
+    {
+      "label": "root-v2 clean stderr raw",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-root-v2/1.stderr.raw",
+      "bytes": 52,
+      "sha256": "a3c7b46d141f495f2c3ce8ae359f0704ed40e11ea7cf88bf930fe029578be640"
+    },
+    {
+      "label": "root-v1 compile failure raw",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-root-v1/0.stderr.raw",
+      "bytes": 3624,
+      "sha256": "9bbaa7c2c0cf1d2f2b60f71f931068a23c00b10307c63d58ebcc90dec0f889fa"
+    },
+    {
+      "label": "root-v3-facts-v9 facts",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v9/facts.json",
+      "bytes": 6662,
+      "sha256": "86015ff262fca2c68ea51ecc57c3b1705c27402fc52d2d8ad1fc11d1ef912e46"
+    },
+    {
+      "label": "root-v3-facts-v9 verifier",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v9/verify_diagnostic.py",
+      "bytes": 17573,
+      "sha256": "d6b90c66d2e9c0ba42af8346096fe5b2685fb1a3ac570a77a9f2e168ca9b235e"
+    },
+    {
+      "label": "our verifier",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-audit-luna-v1/verify_root_v2.py",
+      "bytes": 14534,
+      "sha256": "7d74dbc8754c39a7ea4131dddfab0cf95e9a3c004bafee2fc79f624f88cd89ab"
+    },
+    {
+      "label": "verification output",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-audit-luna-v1/verification.raw",
+      "bytes": 463,
+      "sha256": "6247e63781b08e1fc32ab09fe596004940c58ba21cab1fb03964ad21ee3389bb"
+    },
+    {
+      "label": "facts summary",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-audit-luna-v1/facts.md",
+      "bytes": 4680,
+      "sha256": "3611d006cdda432871786738470f4031ac12ce0e0960caa58eacad03f82e09d5"
+    }
+  ],
+  "validation_scope": "Python-only read/verification; did not invoke Git, Cargo, JDK, or CLI."
+}

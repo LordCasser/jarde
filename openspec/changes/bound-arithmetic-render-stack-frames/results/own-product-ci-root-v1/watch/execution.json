@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "gh",
+    "run",
+    "watch",
+    "38119159950",
+    "--exit-status",
+    "--interval",
+    "30"
+  ],
+  "product_commit": "bafb61a5ec58b49f0040ea3a55420a56801bbe9c",
+  "status": "watch_completed",
+  "started_at": "2026-10-11T06:50:41.823337+00:00",
+  "exit_code": 0,
+  "completed_at": "2026-10-11T07:30:28.037676+00:00",
+  "stdout": {
+    "path": "/private/tmp/jarde-arithmetic-stack-ci-watch-root-v1/stdout.raw",
+    "bytes": 165893,
+    "sha256": "e97f0c739496d88a8b40d3112c7795aedbdf6664148c3bccb578320af1895560"
+  },
+  "stderr": {
+    "path": "/private/tmp/jarde-arithmetic-stack-ci-watch-root-v1/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

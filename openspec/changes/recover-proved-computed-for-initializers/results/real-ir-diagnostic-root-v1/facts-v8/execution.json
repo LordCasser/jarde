@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v8/verify_diagnostic.py"
+  ],
+  "exit_code": 1,
+  "verifier_sha256": "e08785de92be3f43a3dbe9fd7827a3d11d09edfff86dd21c9754eacf80c463b5",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7a9089f7382ef9f20ad4d820b5973234dfab32b78fc3bfeb95934da0adcba257",
+  "scope": "read-only verifier ran with old v2 FACT_DIR after attempted path replacement failed"
+}

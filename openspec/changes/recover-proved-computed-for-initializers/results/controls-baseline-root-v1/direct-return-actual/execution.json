@@ -1,0 +1,325 @@
+{
+  "status": "passed_original_legality_current_cli_baseline_only",
+  "scope": "minimal call-init original legality and current CLI baseline only",
+  "runner_sha256": "6b074b1f77dec9b47241fd0b1a80383ee82c14c9ef49e984171a47b941941898",
+  "input_pins": [
+    {
+      "path": "/private/tmp/jarde-computed-for-controls-independent-luna-v1/v2/ComputedForDirectReturn.java",
+      "sha256": "d85aafe32c8b486d42843504b22152ae1871430ac53b386735199b9d353ea476"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-controls-independent-luna-v1/v2/ComputedForDirectReturnRunner.java",
+      "sha256": "a1c5205a662d19d34e1ab4f329753f59dcd366f2ebac221c52d9c2089add89dc"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    }
+  ],
+  "commands": [
+    {
+      "label": "javac8-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-d",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac8/classes",
+        "/private/tmp/jarde-computed-for-controls-independent-luna-v1/v2/ComputedForDirectReturn.java",
+        "/private/tmp/jarde-computed-for-controls-independent-luna-v1/v2/ComputedForDirectReturnRunner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.2753390419820789,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-v",
+        "-c",
+        "-p",
+        "-classpath",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac8/classes",
+        "ComputedForDirectReturn"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.1380664999887813,
+      "stdout_sha256": "ba58f9b098722383a830ae60cfd38ff0138f4b5ce8559efc2beb32210374f770",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac8/classes",
+        "ComputedForDirectReturnRunner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.05326733400579542,
+      "stdout_sha256": "0911e2372bf61bbad92416a165131a8c323352bad01cf834f092502ab4d204f9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-default-render",
+      "argv": [
+        "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac8/classes/ComputedForDirectReturn.class",
+        "--class",
+        "ComputedForDirectReturn",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.01625883299857378,
+      "stdout_sha256": "e311fa4a9bd34ddd685ab788414f0d94cfaea8545a3092cc13c277d142dd639c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-all-render",
+      "argv": [
+        "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac8/classes/ComputedForDirectReturn.class",
+        "--class",
+        "ComputedForDirectReturn",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.008492833003401756,
+      "stdout_sha256": "fccc8505550f29cd1b49ab80483eee2f2b4500e891f60508a52378e2f4be176c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-d",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac23/classes",
+        "/private/tmp/jarde-computed-for-controls-independent-luna-v1/v2/ComputedForDirectReturn.java",
+        "/private/tmp/jarde-computed-for-controls-independent-luna-v1/v2/ComputedForDirectReturnRunner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.35070408301544376,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "javac23-javap",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-v",
+        "-c",
+        "-p",
+        "-classpath",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac23/classes",
+        "ComputedForDirectReturn"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.15474716600147076,
+      "stdout_sha256": "7939dfc623799f8cfd617a8260fda7fcb03da337299766257d828b90fc2e0b0d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac23/classes",
+        "ComputedForDirectReturnRunner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.07354458299232647,
+      "stdout_sha256": "0911e2372bf61bbad92416a165131a8c323352bad01cf834f092502ab4d204f9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-default-render",
+      "argv": [
+        "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac23/classes/ComputedForDirectReturn.class",
+        "--class",
+        "ComputedForDirectReturn",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.008536583976820111,
+      "stdout_sha256": "601572117aa1569969fc9afbe4a913749259791800849d3ec0caa012bff6e724",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-all-render",
+      "argv": [
+        "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-computed-for-direct-return-root-v1/javac23/classes/ComputedForDirectReturn.class",
+        "--class",
+        "ComputedForDirectReturn",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.007449208002071828,
+      "stdout_sha256": "ce15588cbf35250d6a7e4e4d0367e7a39480cccb535e6e21124b5da0c2a56626",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "profiles": [
+    {
+      "profile": "javac8",
+      "evidence": "default",
+      "input_class_sha256": "8f68e9bf708ef04bbe726646bfd227fcbe51e80fdda4bd93da04f6d53d644735",
+      "source_sha256": "b3365be044bf9c488bc86954211aff939127bbc32928f593a082fd35aeedcfff",
+      "methods": [
+        {
+          "name": "<init>",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "limit",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "find",
+          "quality": "structured",
+          "has_for": false
+        }
+      ]
+    },
+    {
+      "profile": "javac8",
+      "evidence": "all",
+      "input_class_sha256": "8f68e9bf708ef04bbe726646bfd227fcbe51e80fdda4bd93da04f6d53d644735",
+      "source_sha256": "b3365be044bf9c488bc86954211aff939127bbc32928f593a082fd35aeedcfff",
+      "methods": [
+        {
+          "name": "<init>",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "limit",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "find",
+          "quality": "structured",
+          "has_for": false
+        }
+      ]
+    },
+    {
+      "profile": "javac23",
+      "evidence": "default",
+      "input_class_sha256": "8badd52db458312f3dfc4a60f591b85eeef502a5d5afaba5ef0a21d8505f4efe",
+      "source_sha256": "b3365be044bf9c488bc86954211aff939127bbc32928f593a082fd35aeedcfff",
+      "methods": [
+        {
+          "name": "<init>",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "limit",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "find",
+          "quality": "structured",
+          "has_for": false
+        }
+      ]
+    },
+    {
+      "profile": "javac23",
+      "evidence": "all",
+      "input_class_sha256": "8badd52db458312f3dfc4a60f591b85eeef502a5d5afaba5ef0a21d8505f4efe",
+      "source_sha256": "b3365be044bf9c488bc86954211aff939127bbc32928f593a082fd35aeedcfff",
+      "methods": [
+        {
+          "name": "<init>",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "limit",
+          "quality": "structured",
+          "has_for": false
+        },
+        {
+          "name": "find",
+          "quality": "structured",
+          "has_for": false
+        }
+      ]
+    }
+  ]
+}

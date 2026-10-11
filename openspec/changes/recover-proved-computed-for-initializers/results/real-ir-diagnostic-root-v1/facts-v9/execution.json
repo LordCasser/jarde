@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v9/verify_diagnostic.py"
+  ],
+  "exit_code": 0,
+  "verifier_sha256": "d6b90c66d2e9c0ba42af8346096fe5b2685fb1a3ac570a77a9f2e168ca9b235e",
+  "stdout": {
+    "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v9/stdout.raw",
+    "bytes": 78,
+    "sha256": "7101de95b8e189f7127d501624dfaffc7eb13e90f90ea19186502c1380c428a4"
+  },
+  "stderr": {
+    "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v9/stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "read-only Python verifier over frozen root v3 record and raw; no toolchain command invoked"
+}

@@ -1,0 +1,71 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -16807,6 +16807,68 @@
+             };
+         }
+ 
++        // Private diagnostic only: this reuses the frozen class and the real artifacts already
++        // built by this test. It adds no assertions and does not change recovery decisions.
++        eprintln!("CF07_REAL_IR_DIAG class_bytes={} class_blake3={}", CLASS.len(), blake3::hash(CLASS).to_hex());
++        eprintln!("CF07_REAL_IR_DIAG method=lastIndexOf([IIII)I header={header:?} root_frame={:?}", Frame::default());
++        for block in ssa.blocks() {
++            for instruction in block.instructions().iter().filter(|instruction| (0..=3).contains(&instruction.bci())) {
++                eprintln!("CF07_INIT_INSN block={:?} instruction={instruction:#?}", block.block());
++                for (slot, value_id) in instruction.reads().iter().chain(instruction.writes()) {
++                    eprintln!("CF07_INIT_VALUE bci={} access_slot={slot:?} value_id={value_id:?} value={:#?}", instruction.bci(), ssa.value(*value_id));
++                }
++            }
++        }
++        for phi in ssa.phis().iter().filter(|phi| phi.slot() == Slot::Local(4) || phi.block().bci() == 5) {
++            eprintln!("CF07_RELEVANT_PHI {phi:#?} value={:#?}", ssa.value(phi.value()));
++        }
++        for block in ssa.blocks() {
++            for instruction in block.instructions() {
++                let local_accesses: Vec<_> = instruction.reads().iter().chain(instruction.writes())
++                    .filter(|(slot, _)| *slot == Slot::Local(4)).collect();
++                if !local_accesses.is_empty() {
++                    eprintln!("CF07_SLOT4_ACCESS block={:?} instruction={instruction:#?}", block.block());
++                    for (slot, value_id) in local_accesses {
++                        eprintln!("CF07_SLOT4_VALUE bci={} slot={slot:?} value_id={value_id:?} value={:#?}", instruction.bci(), ssa.value(*value_id));
++                    }
++                }
++            }
++        }
++        let natural = view.loop_entered_at(header_node).expect("same real natural loop at recovered header");
++        let natural_blocks = natural.blocks().clone();
++        eprintln!("CF07_NATURAL_LOOP {natural:#?}");
++        for node in &natural_blocks {
++            let id = view.id_of(*node).expect("natural-loop node has canonical identity");
++            let instructions = ssa.block(id).map(|block| block.instructions());
++            eprintln!("CF07_LOOP_BLOCK node={node} id={id:?} instructions={instructions:#?}");
++        }
++        let normal_exit = match loop_region {
++            Region::Loop { exit: Some(exit), .. } => view.index_of(exit),
++            Region::Loop { exit: None, .. } => None,
++            _ => unreachable!(),
++        };
++        let mut diagnostic_budget = steps(1 << 20);
++        let return_leaves = real_walker!(diagnostic_budget)
++            .loop_terminal_returns(&natural_blocks, normal_exit, &Frame::default())
++            .expect("diagnostic recomputes the existing terminal-return certificate on the same real artifacts");
++        eprintln!("CF07_RETURN_LEAVES nodes={return_leaves:?} normal_exit={normal_exit:?}");
++        for node in &return_leaves {
++            let id = view.id_of(*node).expect("return leaf has canonical identity");
++            eprintln!("CF07_RETURN_LEAF node={node} id={id:?} instructions={:#?}", ssa.block(id).map(|block| block.instructions()));
++            for edge in canonical.edges().iter().filter(|edge| edge.from() == id || edge.to() == id) {
++                eprintln!("CF07_RETURN_LEAF_EDGE {edge:#?}");
++            }
++        }
++        for block in ssa.blocks() {
++            let has_update_or_goto = block.instructions().iter().any(|instruction| matches!(instruction.bci(), 22 | 25));
++            if has_update_or_goto || natural.latches().contains(&view.index_of(block.block()).unwrap_or(usize::MAX)) {
++                eprintln!("CF07_UPDATE_LATCH block={:?} instructions={:#?}", block.block(), block.instructions());
++                for edge in canonical.edges().iter().filter(|edge| edge.from() == block.block() || edge.to() == block.block()) {
++                    eprintln!("CF07_UPDATE_EDGE {edge:#?}");
++                }
++            }
++        }
++
+         let mut no_steps = steps(0);
+         let stop = real_walker!(no_steps)
+             .implicit_tail_latch_origin(header_node, body, None)

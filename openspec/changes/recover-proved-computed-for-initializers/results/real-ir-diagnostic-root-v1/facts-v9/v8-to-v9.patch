@@ -1,0 +1,11 @@
+--- v8/verify_diagnostic.py
++++ v9/verify_diagnostic.py
+@@ -6,7 +6,7 @@
+ from pathlib import Path
+ 
+ ROOT = Path("/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3")
+-FACT_DIR = Path("/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v2")
++FACT_DIR = Path("/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v9")
+ FACTS = json.loads((FACT_DIR / "facts.json").read_text())
+ RECORD = json.loads((ROOT / "execution.json").read_text())
+ STDOUT = (ROOT / "0.stdout.raw").read_text()

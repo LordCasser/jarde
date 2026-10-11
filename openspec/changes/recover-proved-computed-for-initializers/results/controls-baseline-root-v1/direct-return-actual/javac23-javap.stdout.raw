@@ -1,0 +1,95 @@
+Classfile /private/tmp/jarde-computed-for-direct-return-root-v1/javac23/classes/ComputedForDirectReturn.class
+  Last modified 2026年10月11日; size 357 bytes
+  SHA-256 checksum 8badd52db458312f3dfc4a60f591b85eeef502a5d5afaba5ef0a21d8505f4efe
+final class ComputedForDirectReturn
+  minor version: 0
+  major version: 52
+  flags: (0x0030) ACC_FINAL, ACC_SUPER
+  this_class: #8                          // ComputedForDirectReturn
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 2, methods: 3, attributes: 0
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // ComputedForDirectReturn.calls:I
+   #8 = Class              #10            // ComputedForDirectReturn
+   #9 = NameAndType        #11:#12        // calls:I
+  #10 = Utf8               ComputedForDirectReturn
+  #11 = Utf8               calls
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // ComputedForDirectReturn.end:I
+  #14 = NameAndType        #15:#12        // end:I
+  #15 = Utf8               end
+  #16 = Methodref          #8.#17         // ComputedForDirectReturn.limit:()I
+  #17 = NameAndType        #18:#19        // limit:()I
+  #18 = Utf8               limit
+  #19 = Utf8               ()I
+  #20 = Utf8               Code
+  #21 = Utf8               find
+  #22 = Utf8               ([III)I
+  #23 = Utf8               StackMapTable
+{
+  static int end;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  static int calls;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+
+  ComputedForDirectReturn();
+    descriptor: ()V
+    flags: (0x0000)
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  static int limit();
+    descriptor: ()I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=0, args_size=0
+         0: getstatic     #7                  // Field calls:I
+         3: iconst_1
+         4: iadd
+         5: putstatic     #7                  // Field calls:I
+         8: getstatic     #13                 // Field end:I
+        11: ireturn
+
+  static int find(int[], int, int);
+    descriptor: ([III)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=4, args_size=3
+         0: invokestatic  #16                 // Method limit:()I
+         3: iconst_1
+         4: isub
+         5: istore_3
+         6: iload_3
+         7: iload_2
+         8: if_icmplt     26
+        11: aload_0
+        12: iload_3
+        13: iaload
+        14: iload_1
+        15: if_icmpne     20
+        18: iload_3
+        19: ireturn
+        20: iinc          3, -1
+        23: goto          6
+        26: iconst_m1
+        27: ireturn
+      StackMapTable: number_of_entries = 3
+        frame_type = 252 /* append */
+          offset_delta = 6
+          locals = [ int ]
+        frame_type = 13 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 5
+}

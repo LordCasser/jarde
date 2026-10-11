@@ -1,0 +1,83 @@
+{
+  "changeName": "recover-proved-computed-for-initializers",
+  "changeDir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "proposal": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/proposal.md"
+    ],
+    "specs": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/specs/java8-recovery/spec.md"
+    ],
+    "design": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/design.md"
+    ],
+    "tasks": [
+      "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/tasks.md"
+    ]
+  },
+  "progress": {
+    "total": 10,
+    "complete": 0,
+    "remaining": 10
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "description": "1.1 在冻结 lastIndexOf 的同一次真实 IR 中确认初值 store/read/def/use、header phi、所有 induction-slot 读写、自然环/return leaf/frame、准确 update/goto 与已生成初始化语句。验收：root 实际诊断 raw、class/source/tool pins 与现有 reader/API 恒同，不凭 Java 文本推断 SSA。",
+      "done": false
+    },
+    {
+      "id": "2",
+      "description": "1.2 固定原/JADX/Jarde 完整类基线及副作用边界；复用已有 fixture 机制构造合法 pending-stack producer/独立调用和共享值 class。验收：root 双 JDK `-Xverify:all` 确认原 class 合法，记录调用/异常顺序及 materialization 或准确拒绝；不把手造 IR 当可验证 class。",
+      "done": false
+    },
+    {
+      "id": "3",
+      "description": "2.1 Luna 私有候选，root 审查后复用准确 preheader Store 的既有 SSA/语句消费，取消 Push(Int) 专用门并保持唯一消费者、phi/update/类型/上下文约束。验收：真实 computed-init 正例与额外消费者/上下文反例通过，不新增 expression walker/purity 表，不重排或重复 producer。",
+      "done": false
+    },
+    {
+      "id": "4",
+      "description": "2.2 在准确 frame 下提前计算一次已有 terminal-return 集合，允许其中仅 induction-slot 读取，并复用于 body frame。验收：真实 return leaf 准入，外部写、其他外部读、额外前驱仍拒绝，CFG/natural blocks 与 exactly-once 所有权不变。",
+      "done": false
+    },
+    {
+      "id": "5",
+      "description": "2.3 扩展既有最终 direct return/latch If 来源证明至准确 ForHeader update block。验收：goto@25 绑定完整 For span，准确 update/return/完整 canonical 出边与唯一自然环都核对；错目标、额外边、嵌套或 multi-block tail 不获新来源，原 Straight/while 控制保持。",
+      "done": false
+    },
+    {
+      "id": "6",
+      "description": "2.4 用永久真实 reader/API 与 IR 回归覆盖 for 正文、所有物理来源、初始化声明/赋值作用域、效果物化及可靠拒绝。验收：一条 for、两条 return、准确 return -1；pending/shared/throwing/handler 控制不重排或重复；ForBoundaries 的 observedAfter/twoUpdates/varyingBound/noUpdate 及 foreach/loop-transfer 控制保持。",
+      "done": false
+    },
+    {
+      "id": "7",
+      "description": "2.5 核预算与取消原子性。验收：实际 Stop dimension/location/usage、准确费用与取消阶段可追溯，没有正文/map/循环半产物，不以预取消代替证明内停止。",
+      "done": false
+    },
+    {
+      "id": "8",
+      "description": "3.1 root 冻结实际候选 CLI，双 JDK 运行完整原/JADX/Jarde 类与固定 runner，核 default/all、所有物理 BCI/identity、UTF8 span 以及新增效果输入。验收：实际完整源码原样重编/运行，逐条 raw 结果一致；单独记录 JADX/环境失败，不称整个 CF07 或 71 单元完成。",
+      "done": false
+    },
+    {
+      "id": "9",
+      "description": "3.2 按 5 GiB free/target 1 GiB 一秒守卫执行格式、适用库与 integration 测试、同 CI Clippy、必要 workspace 检查及 OpenSpec strict。验收：真实源码 pins 前后相同，准确命令结果通过，冻结 CLI 后 clean；不借旧版本结果。",
+      "done": false
+    },
+    {
+      "id": "10",
+      "description": "3.3 提交推送实际产品并验收其自身全部 CI job/step/测试，再更新 ledger/verification/handoff 完成 clean main 交付。验收：精确 head、实际 CI raw 与分支/worktree/target 状态，不关闭尚未实际接受的任务。",
+      "done": false
+    }
+  ],
+  "state": "ready",
+  "instruction": "Read context files, work through pending tasks, mark complete as you go.\nPause if you hit blockers or need clarification.",
+  "context": "Language: zh-CN\nAll artifacts must be written in zh-CN.\nKeep OpenSpec structural headings and SHALL/MUST keywords in English.\nProject: jarde, a pure Rust library-first JVM artifact analysis engine.\nArchitecture reference: JVM_Rust_Engine_Final_Architecture.md.\nKeep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend\nintegration are thin outward adapters that depend on jarde; the core must not\ndepend on CLI, MCP, or host/backend protocol types.\nP0-P5 and crate layering are archived within their recorded scope; 18 main specs are promoted.\nStage archival is not blanket product completion. The 2026-09-20 completion review found two\nrecovery correctness gaps (nested-expression evaluation position, fallback producer retention);\nclose-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,\nacceptance.md and the support matrix for the current status. Preserve historical archives.\nThe review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;\npreserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign\nthen found two engine defects, now tracked as bound-recovery-recursion (process abort,\nfixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,\nbeing fixed); a third change, clarify-structural-output-planes, records the read-rule\ngaps those findings exposed. optimize-demand-workloads remains an unfinished\ninvestigation program even though its O1 child bound-container-lookup is archived.\nQuery and Decompiler share readers and identities but do not start each other.\nPreserve physical origins and raw facts; distinguish symbolic references,\ndefinition resolution, dispatch, output quality, coverage and execution state.\nDo not execute target code or download target dependencies automatically.\nAll input processing, dependency expansion and output need explicit budgets.\nPrefer maintained libraries that pass our conformance gates; see dependencies.md.\nKeep the smallest complete change. Do not create speculative crates or abstractions.\nFavor long-term architecture; do not maintain backward compatibility by default.\nRecord unrelated architectural debt separately instead of expanding a change.\n",
+  "root": {
+    "path": "/Users/lordcasser/workspace/projects/jarde",
+    "source": "nearest"
+  }
+}

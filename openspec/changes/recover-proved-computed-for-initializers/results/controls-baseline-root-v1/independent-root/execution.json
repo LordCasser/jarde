@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-controls-independent-luna-v1/verify.py"
+  ],
+  "exit_code": 0,
+  "verifier_sha256": "cfee2559d89110705b61dc96cf71314fef98effca1dd0f3245e10b13c477bc0c",
+  "stdout_sha256": "ce6eeb156b6666377c8fb51ec2abc1dea7c9b53bb8c76e5ce473f92b882312d9",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "original/pending legality and baseline observations only"
+}

@@ -1,0 +1,50 @@
+{
+  "product_commit": "bafb61a5ec58b49f0040ea3a55420a56801bbe9c",
+  "cli_sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0",
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+        "--class",
+        "cf07.LoopCases",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "input_sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33",
+      "stdout_sha256": "6ba78b8e7c21c093513ab632e31e6a7e3917fa88a29841c749ef024d026a0348",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/original/cf13/SwitchLoopExits.class",
+        "--class",
+        "cf13.SwitchLoopExits",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "input_sha256": "c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b",
+      "stdout_sha256": "592def832056151ba92282361b324fd0ac95bf40b7bf57f878c540ecbcbda6f3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

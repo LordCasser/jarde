@@ -1,0 +1,1 @@
+{'patched_methods': [{'method': 'find', 'descriptor': '([III)I', 'bci': 3, 'before': '04643eb8001b', 'after': '0464b8001b3e'}, {'method': 'shared', 'descriptor': '(I)I', 'bci': 5, 'before': '04643db8001b', 'after': '0464b8001b3d'}], 'output_bytes': 1081}

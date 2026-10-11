@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v3/verify_diagnostic.py"
+  ],
+  "exit_code": 1,
+  "verifier_sha256": "7582e09991ba321fde4788c49c0f5d5a948e6556d674fed0c0c347f06f3340be",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "aa3356d840ae85ce6bf5e646df5cac2fe09ac8166b278537c8ea716108d38575",
+  "scope": "real SSA facts only; Builder context pending"
+}

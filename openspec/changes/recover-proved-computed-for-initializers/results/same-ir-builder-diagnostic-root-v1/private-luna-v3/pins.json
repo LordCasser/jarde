@@ -1,0 +1,90 @@
+{
+  "purpose": "combined private test-only computed-for task 1.1 diagnostics; v3 corrects two root-reported API compile errors; not executed",
+  "inputs": [
+    {
+      "label": "region.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "label": "build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1743943,
+      "sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade"
+    },
+    {
+      "label": "design.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/design.md",
+      "bytes": 6087,
+      "sha256": "f9e3e0aee40992bf49e36bde586b9d4620a4c6978485c424c9b2eea018a9ba67"
+    },
+    {
+      "label": "tasks.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/tasks.md",
+      "bytes": 3153,
+      "sha256": "bc3a4cd9f749c33f942582a49750d6f872f2020d06e4b7e29f1e44e54918f2c9"
+    },
+    {
+      "label": "builder-v1-compile-failure",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-root-v1/0.stderr.raw",
+      "bytes": 3624,
+      "sha256": "9bbaa7c2c0cf1d2f2b60f71f931068a23c00b10307c63d58ebcc90dec0f889fa"
+    }
+  ],
+  "artifacts": [
+    {
+      "label": "base-region.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/base-region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "label": "candidate-region.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/candidate-region.rs",
+      "bytes": 860655,
+      "sha256": "f447538b3289e0de3ac8d601474c1a6442318f378c8367247a486377ffa99e81"
+    },
+    {
+      "label": "base-build.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/base-build.rs",
+      "bytes": 1743943,
+      "sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade"
+    },
+    {
+      "label": "candidate-build.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/candidate-build.rs",
+      "bytes": 1744788,
+      "sha256": "02ca60d51e84c5869fe30535629dde842148e6e089e334b2197a4091590fb95b"
+    },
+    {
+      "label": "region.patch",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/region.patch",
+      "bytes": 9742,
+      "sha256": "351ce2fd7546f74762c9791158836af203170a1e0ee52a7e63f3bbc930852488"
+    },
+    {
+      "label": "build.patch",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/build.patch",
+      "bytes": 1110,
+      "sha256": "60dfe61277c4e9177ce651b9f623efa2cfb95f5e977fc8d8bf0f4c4368a12d19"
+    },
+    {
+      "label": "combined.patch",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/combined.patch",
+      "bytes": 10852,
+      "sha256": "1f0dd07276bc1e05525c430ec390d8fd66d79ade7d3fe70745f43e6435ac0ba7"
+    },
+    {
+      "label": "review.md",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v3/review.md",
+      "bytes": 1547,
+      "sha256": "839ca89de927af4f19d657446ac28188a91ebe467b8f235ad470e70ecd5d2553"
+    }
+  ],
+  "status": {
+    "repository_modified": false,
+    "compiled_or_executed": false,
+    "root_must_restore_both_files_to_pins": true
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "status": "passed_two_current_cli_cases_only",
+  "verifier": {
+    "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/luna-audit/verify.py",
+    "sha256": "1b26e7fede29ce409fb76aa864bad6de28b669dc6f3616a4bfa108fbfa0c3c93",
+    "exit_code": 0
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2.py",
+    "sha256": "3cc2156da72201a5486388df89f130e7165235ad5d3bf755cd635b04d4c52959"
+  },
+  "execution_sha256": "c1c6a86b8fe30ba3ff41dc197d1596965b56c6171d35ed29fd73a9ff21bdefc4",
+  "patrol_sha256": "ad097b318e5259171520977de7172140500cfdeb9ac513a2185178a464a9b14d",
+  "commands": 16,
+  "paired_runtime_legs": 4,
+  "generated_classes": [
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/classes/cf07/Runner.class",
+      "bytes": 637,
+      "sha256": "aa84bdbc9a182411903b71a815aaf80dfb086587fb22f3639a6e78c11a851ea0"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/classes/cf07/LoopCases.class",
+      "bytes": 419,
+      "sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-jarde/classes/cf07/Runner.class",
+      "bytes": 637,
+      "sha256": "aa84bdbc9a182411903b71a815aaf80dfb086587fb22f3639a6e78c11a851ea0"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-jarde/classes/cf07/LoopCases.class",
+      "bytes": 594,
+      "sha256": "39f9dcb2179177c346bdc94e1db6f346d3fe9a5ad4aa888a05edb205f03e872e"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original/classes/cf07/Runner.class",
+      "bytes": 637,
+      "sha256": "8c35257c48c864109aa768b1875945de9e540aa361878b883639bfa80cecb484"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original/classes/cf07/LoopCases.class",
+      "bytes": 419,
+      "sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-jarde/classes/cf07/Runner.class",
+      "bytes": 637,
+      "sha256": "8c35257c48c864109aa768b1875945de9e540aa361878b883639bfa80cecb484"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-jarde/classes/cf07/LoopCases.class",
+      "bytes": 594,
+      "sha256": "8879614a5c463853b96582b07c20fd04834df02de0e35bf0ae4ffda11c9a0590"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-original/classes/cf13/SwitchLoopExitsRunner.class",
+      "bytes": 471,
+      "sha256": "d328b159cd201d3a4f98116215e2947a4eddaf6190e955f6885a5d0f32837b24"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-original/classes/cf13/SwitchLoopExits.class",
+      "bytes": 533,
+      "sha256": "c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-jarde/classes/cf13/SwitchLoopExitsRunner.class",
+      "bytes": 471,
+      "sha256": "d328b159cd201d3a4f98116215e2947a4eddaf6190e955f6885a5d0f32837b24"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-jarde/classes/cf13/SwitchLoopExits.class",
+      "bytes": 412,
+      "sha256": "95f4fbaa9e3d9ca71f96a52e9754095fb7c5b51052609ad8cc11a65bf5b153f1"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-original/classes/cf13/SwitchLoopExitsRunner.class",
+      "bytes": 471,
+      "sha256": "287103d9989e792f027e7e807a3a7fd435b49afcde74c35c4ad0f7aa72db21db"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-original/classes/cf13/SwitchLoopExits.class",
+      "bytes": 533,
+      "sha256": "c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-jarde/classes/cf13/SwitchLoopExitsRunner.class",
+      "bytes": 471,
+      "sha256": "287103d9989e792f027e7e807a3a7fd435b49afcde74c35c4ad0f7aa72db21db"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-jarde/classes/cf13/SwitchLoopExits.class",
+      "bytes": 412,
+      "sha256": "0e716265dc54e345e5c322f8f75a020b405de21fd24d850d0024caa66a445c3c"
+    }
+  ],
+  "scope": "No fresh JADX execution, no whole CF07/CF13 completion; precise argv/input/source/raw validation."
+}

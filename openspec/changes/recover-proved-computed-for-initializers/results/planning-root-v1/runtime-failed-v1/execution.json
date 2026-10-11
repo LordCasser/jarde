@@ -1,0 +1,30 @@
+{
+  "product_commit": "bafb61a5ec58b49f0040ea3a55420a56801bbe9c",
+  "cli_sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0",
+  "status": "failed",
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+      "sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/cf07-candidate-root-v1/original-sources/Runner.java",
+      "sha256": "28b0a08ceb89b6ff31d12056831a2d7cc62bfda0a61ebc39835d2f62bc89bdf5"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-cli-patrol-root-v1/cf07.stdout.raw",
+      "sha256": "6ba78b8e7c21c093513ab632e31e6a7e3917fa88a29841c749ef024d026a0348"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-cli-patrol-root-v1/cf07.java",
+      "sha256": "ecbd892b39e3f36d634509de8bec9c4a5b811e96fe5a20033cc38ce896655b23"
+    }
+  ],
+  "commands": [],
+  "results": [],
+  "scope": "Current frozen CLI source-map and complete-class runtime patrol; no fresh JADX execution, no whole-unit completion."
+}

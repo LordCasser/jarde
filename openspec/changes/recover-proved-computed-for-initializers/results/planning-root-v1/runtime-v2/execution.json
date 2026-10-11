@@ -1,0 +1,372 @@
+{
+  "product_commit": "bafb61a5ec58b49f0040ea3a55420a56801bbe9c",
+  "cli_sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0",
+  "status": "passed_current_cli_two_cases_only",
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+      "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-for-latch-origins/results/cf07-candidate-root-v1/cases/javac23-original/classes/cf07/LoopCases.class",
+      "sha256": "004e99baeb062861f95a4dac13e3a78399a66efd31f2589b0028cfe50432ae33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-if-arm-join-origins/results/cf07-candidate-root-v1/original-sources/Runner.java",
+      "sha256": "28b0a08ceb89b6ff31d12056831a2d7cc62bfda0a61ebc39835d2f62bc89bdf5"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-cli-patrol-root-v1/cf07.stdout.raw",
+      "sha256": "6ba78b8e7c21c093513ab632e31e6a7e3917fa88a29841c749ef024d026a0348"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-cli-patrol-root-v1/cf07.java",
+      "sha256": "ecbd892b39e3f36d634509de8bec9c4a5b811e96fe5a20033cc38ce896655b23"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/original/cf13/SwitchLoopExits.class",
+      "sha256": "c5ae0cf54694e47fc025bb5268ea5220a321b40ed5e47cd21b6cecb93250833b"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-09-27/cf13-switch-exits/input/SwitchLoopExitsRunner.java",
+      "sha256": "9f792f062fb8bbd6ccad80bf6b661898870f44632c3f8ade05064c7fbd968998"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-cli-patrol-root-v1/cf13.stdout.raw",
+      "sha256": "592def832056151ba92282361b324fd0ac95bf40b7bf57f878c540ecbcbda6f3"
+    },
+    {
+      "path": "/private/tmp/jarde-cf07-cf13-current-cli-patrol-root-v1/cf13.java",
+      "sha256": "31d8374396c39b604bdc09923c6fa556b9823f72d3a1e0b68c15b3f48b363b2c"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    }
+  ],
+  "commands": [
+    {
+      "label": "cf07-javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/classes",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/src/Runner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.27633695799158886,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf07-javac8-original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-original/classes",
+        "cf07.Runner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.0524440000008326,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf07-javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-jarde/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-jarde/src/LoopCases.java",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-jarde/src/Runner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.18194741700426675,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf07-javac8-jarde-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac8-jarde/classes",
+        "cf07.Runner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.044693042000290006,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf07-javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original/classes",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original/src/Runner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.31960225000511855,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "cf07-javac23-original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-original/classes",
+        "cf07.Runner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.07168845800333656,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf07-javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-jarde/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-jarde/src/LoopCases.java",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-jarde/src/Runner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.21394100002362393,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "cf07-javac23-jarde-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf07-javac23-jarde/classes",
+        "cf07.Runner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.05007608301821165,
+      "stdout_sha256": "854873551b17b0274c2f34ab9ca6ce78d0e8d67dece8695dafb0b6337154e41c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf13-javac8-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-original/classes",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-original/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-original/src/SwitchLoopExitsRunner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.17672841699095443,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf13-javac8-original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-original/classes",
+        "cf13.SwitchLoopExitsRunner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.04677570899366401,
+      "stdout_sha256": "a2c6c14110a317833ac8f2fbae7080ee844af7469b2aa702876548dcf4c58077",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf13-javac8-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-jarde/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-jarde/src/SwitchLoopExits.java",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-jarde/src/SwitchLoopExitsRunner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.1857991669967305,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf13-javac8-jarde-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac8-jarde/classes",
+        "cf13.SwitchLoopExitsRunner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.04501770800561644,
+      "stdout_sha256": "a2c6c14110a317833ac8f2fbae7080ee844af7469b2aa702876548dcf4c58077",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf13-javac23-original-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-original/classes",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-original/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-original/src/SwitchLoopExitsRunner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.20352533398545347,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "cf13-javac23-original-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-original/classes",
+        "cf13.SwitchLoopExitsRunner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.046977416990557685,
+      "stdout_sha256": "a2c6c14110a317833ac8f2fbae7080ee844af7469b2aa702876548dcf4c58077",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cf13-javac23-jarde-compile",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-d",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-jarde/classes",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-jarde/src/SwitchLoopExits.java",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-jarde/src/SwitchLoopExitsRunner.java"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.21135479101212695,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+    },
+    {
+      "label": "cf13-javac23-jarde-runtime",
+      "argv": [
+        "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-cf07-cf13-current-runtime-root-v2/cf13-javac23-jarde/classes",
+        "cf13.SwitchLoopExitsRunner"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.04842858301708475,
+      "stdout_sha256": "a2c6c14110a317833ac8f2fbae7080ee844af7469b2aa702876548dcf4c58077",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "results": [
+    {
+      "case": "cf07",
+      "profile": "javac8",
+      "equal": true,
+      "stdout": "0\n10\n39\n63\n9\n3\n-1\n3\n"
+    },
+    {
+      "case": "cf07",
+      "profile": "javac23",
+      "equal": true,
+      "stdout": "0\n10\n39\n63\n9\n3\n-1\n3\n"
+    },
+    {
+      "case": "cf13",
+      "profile": "javac8",
+      "equal": true,
+      "stdout": "38\n"
+    },
+    {
+      "case": "cf13",
+      "profile": "javac23",
+      "equal": true,
+      "stdout": "38\n"
+    }
+  ],
+  "scope": "Current frozen CLI source-map and complete-class runtime patrol; no fresh JADX execution, no whole-unit completion."
+}

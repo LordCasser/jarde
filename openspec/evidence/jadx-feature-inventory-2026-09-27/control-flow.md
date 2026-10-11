@@ -140,3 +140,10 @@ CF-18 于 2026-09-28 完成上述固定形态的受证恢复：两份完整 Java
 2026-10-11 CF-12 完整清单巡查：剩余 `TestSwitch2/3/4/Simple/WithFallThroughCase2` 五类已经按固定上游源码实际捕获并完成完整类对照，见[新增五类独立记录](../java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/README.md)。Jarde `3/4/Simple` default/all 六profile重编运行同原，另两类结构拒绝且编译失败；JADX TestSwitch4编译成功但运行1234检查得到2234，Jarde此例正确。JADX FTCase2的重复代码warning导致JUnit失败，完整重编check及68输入则同原。root核32完整对照命令/15行、13方法map对/238UTF8段；此批采用conditional产品6476b56，其自身CI现已接受4jobs/52steps、双seed各3422/0/97（GitHub公开测试名脱敏通过两处唯一绑定，原始raw保留）。十个上游测试类现均有实际对照记录，但旧五类分属先前冻结产品，整单元仍未接受，不改71单元完成数。后续优先早返回case共享continuation和外层if内switch尾语句，两项内部具体拒绝原因需受控诊断，不为本批已正确的副作用顺序新增机制。
 
 2026-10-11 conditional窄片7/7已关闭：自身产品CI准确接受，证据提交69cff3bd299feb71a820917be866db05b63b57dc实际clean审计接受15worktrees/仅main/无target；整CF12尚未接受，71单元完成数不变。
+
+
+### 2026-10-11 当前主线复核及计算初值规划
+
+bafb 产品自身 CI 38119159950 已实际独立验收四job/52step、双seed各359目标/3444-0-97；stack 最小递归帧修复使三个父片产品交付条件闭合。当前同CLI完整CF07 counted@20派生If来源与CF13 walk switch/continue复核16条命令，双JDK原/Jarde四组输出一致；这两项旧缺口已修，历史失败和来源遗漏记录保留，不能重复派发。lastIndexOf 计算初值仍为while，独立 [computed-init for](../../changes/recover-proved-computed-for-initializers/design.md) 规划复用SSA/Builder/返回叶/来源证书，不加新pass。
+
+新字节码副作用控制还确认 JADX 会把普通javac f()-1 初始化跨过独立g调用，双JDK正常/异常顺序与原版不同。Jarde对此类仍fallback；无handler独立limit调用初值完整重编运行同原但仍while。准确证据与后续边界验收存入该change，不增加整个CF07/CF13或71单元完成数。

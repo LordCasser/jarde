@@ -1,0 +1,97 @@
+{
+  "purpose": "combined private test-only computed-for task 1.1 real-IR plus Builder diagnostic; not executed",
+  "inputs": [
+    {
+      "label": "region.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "label": "build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1743943,
+      "sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade"
+    },
+    {
+      "label": "design.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/design.md",
+      "bytes": 6087,
+      "sha256": "f9e3e0aee40992bf49e36bde586b9d4620a4c6978485c424c9b2eea018a9ba67"
+    },
+    {
+      "label": "tasks.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/tasks.md",
+      "bytes": 3153,
+      "sha256": "bc3a4cd9f749c33f942582a49750d6f872f2020d06e4b7e29f1e44e54918f2c9"
+    },
+    {
+      "label": "prior-real-ir-candidate",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/candidate-region.rs",
+      "bytes": 855626,
+      "sha256": "c368ba49d7f5d922c1bde4513fe391d54de28d615d58d7637fe6f6e11cb7b188"
+    },
+    {
+      "label": "prior-real-ir-patch",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/diagnostic.patch",
+      "bytes": 4434,
+      "sha256": "3c3f6ae3d20b9e64e64f2511bde69b407084dd9c456e6a163eff98bd38a19e32"
+    }
+  ],
+  "artifacts": [
+    {
+      "label": "base-region.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/base-region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "label": "candidate-region.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/candidate-region.rs",
+      "bytes": 860667,
+      "sha256": "21ca70b24ec77ccc8ba16a9564f689002296b10e10de26d40f325103b38446e1"
+    },
+    {
+      "label": "base-build.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/base-build.rs",
+      "bytes": 1743943,
+      "sha256": "f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade"
+    },
+    {
+      "label": "candidate-build.rs",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/candidate-build.rs",
+      "bytes": 1744788,
+      "sha256": "02ca60d51e84c5869fe30535629dde842148e6e089e334b2197a4091590fb95b"
+    },
+    {
+      "label": "region.patch",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/region.patch",
+      "bytes": 9754,
+      "sha256": "22553927031587a873faeb65b0a543d2982c66e744a304542365d3165457cffd"
+    },
+    {
+      "label": "build.patch",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/build.patch",
+      "bytes": 1110,
+      "sha256": "60dfe61277c4e9177ce651b9f623efa2cfb95f5e977fc8d8bf0f4c4368a12d19"
+    },
+    {
+      "label": "combined.patch",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/combined.patch",
+      "bytes": 10864,
+      "sha256": "77eb153dbd6532f57f6c773d591b13282ce58ba539a67cbb05f7cd28dff846cc"
+    },
+    {
+      "label": "review.md",
+      "path": "/private/tmp/jarde-computed-for-builder-diagnostic-luna-v2/review.md",
+      "bytes": 1960,
+      "sha256": "f452fd79013b07f5285dfdd5ad30ba21f2420e50bd2b144195ceed09c1f1a694"
+    }
+  ],
+  "status": {
+    "repository_modified": false,
+    "compiled_or_executed": false,
+    "parent_reports_prior_standalone_real_ir_test_passed": true,
+    "root_must_restore_both_files_to_pins": true
+  }
+}

@@ -1,0 +1,2177 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 29.31s
+[1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/jarde_java-9c368dde3446805c)
+CF07_REAL_IR_DIAG class_bytes=419 class_blake3=52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19
+CF07_REAL_IR_DIAG method=lastIndexOf([IIII)I header=CanonicalBlockId { bci: 5, path: [] } root_frame=Frame { boundary: None, if_arm: None, shared_tail: None, scope: None, own_loop: None, allow_own_loop_entry: false, own_try: None, own_finally: None, segmented_finally_rows: None, multi_return_finally_rows: None, void_loop_finally: false, lock_guard_finally: false, nested_finally_row: None, case_entries: None, loop_exit: None, loop_targets: [], transfer_source_bci: None, switch_join: None, switch_branch_bci: None, switch_fallthrough_target: None, switch_continue: None }
+CF07_INIT_INSN block=CanonicalBlockId { bci: 0, path: [] } instruction=SsaInstruction {
+    bci: 0,
+    opcode: 29,
+    reads: [
+        (
+            Local(
+                3,
+            ),
+            ValueId(
+                3,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                9,
+            ),
+        ),
+    ],
+}
+CF07_INIT_VALUE bci=0 access_slot=Local(3) value_id=ValueId(3) value=SsaValue {
+    ty: Int,
+    def: Entry {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        slot: Local(
+            3,
+        ),
+    },
+    origin: OriginSet {
+        members: [],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                0,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: None,
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_VALUE bci=0 access_slot=Stack(0) value_id=ValueId(9) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 0,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 0,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                2,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_INSN block=CanonicalBlockId { bci: 0, path: [] } instruction=SsaInstruction {
+    bci: 1,
+    opcode: 4,
+    reads: [],
+    writes: [
+        (
+            Stack(
+                1,
+            ),
+            ValueId(
+                10,
+            ),
+        ),
+    ],
+}
+CF07_INIT_VALUE bci=1 access_slot=Stack(1) value_id=ValueId(10) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 1,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 1,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                2,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_INSN block=CanonicalBlockId { bci: 0, path: [] } instruction=SsaInstruction {
+    bci: 2,
+    opcode: 100,
+    reads: [
+        (
+            Stack(
+                1,
+            ),
+            ValueId(
+                10,
+            ),
+        ),
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                9,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                11,
+            ),
+        ),
+    ],
+}
+CF07_INIT_VALUE bci=2 access_slot=Stack(1) value_id=ValueId(10) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 1,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 1,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                2,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_VALUE bci=2 access_slot=Stack(0) value_id=ValueId(9) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 0,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 0,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                2,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_VALUE bci=2 access_slot=Stack(0) value_id=ValueId(11) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 2,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 2,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                3,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_INSN block=CanonicalBlockId { bci: 0, path: [] } instruction=SsaInstruction {
+    bci: 3,
+    opcode: 54,
+    reads: [
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                11,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                12,
+            ),
+        ),
+    ],
+}
+CF07_INIT_VALUE bci=3 access_slot=Stack(0) value_id=ValueId(11) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 2,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 2,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: [],
+            },
+            bci: Some(
+                3,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_INIT_VALUE bci=3 access_slot=Local(4) value_id=ValueId(12) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 3,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 3,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: None,
+        },
+    ],
+    replaced_by: None,
+}
+CF07_RELEVANT_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 5,
+        path: [],
+    },
+    slot: Local(
+        0,
+    ),
+    value: ValueId(
+        4,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                0,
+            ),
+        ),
+        Itself,
+    ],
+} value=SsaValue {
+    ty: Ref(
+        Named {
+            name: [
+                91,
+                73,
+            ],
+            loader: LoaderId(
+                "app",
+            ),
+        },
+    ),
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            0,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [],
+    replaced_by: Some(
+        ValueId(
+            0,
+        ),
+    ),
+}
+CF07_RELEVANT_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 5,
+        path: [],
+    },
+    slot: Local(
+        1,
+    ),
+    value: ValueId(
+        5,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                1,
+            ),
+        ),
+        Itself,
+    ],
+} value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            1,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [],
+    replaced_by: Some(
+        ValueId(
+            1,
+        ),
+    ),
+}
+CF07_RELEVANT_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 5,
+        path: [],
+    },
+    slot: Local(
+        2,
+    ),
+    value: ValueId(
+        6,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                2,
+            ),
+        ),
+        Itself,
+    ],
+} value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            2,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [],
+    replaced_by: Some(
+        ValueId(
+            2,
+        ),
+    ),
+}
+CF07_RELEVANT_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 5,
+        path: [],
+    },
+    slot: Local(
+        3,
+    ),
+    value: ValueId(
+        7,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                3,
+            ),
+        ),
+        Itself,
+    ],
+} value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            3,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [],
+    replaced_by: Some(
+        ValueId(
+            3,
+        ),
+    ),
+}
+CF07_RELEVANT_PHI SsaPhi {
+    block: CanonicalBlockId {
+        bci: 5,
+        path: [],
+    },
+    slot: Local(
+        4,
+    ),
+    value: ValueId(
+        8,
+    ),
+    inputs: [
+        Value(
+            ValueId(
+                12,
+            ),
+        ),
+        Value(
+            ValueId(
+                21,
+            ),
+        ),
+    ],
+} value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            4,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: Some(
+                5,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 11,
+                path: [],
+            },
+            bci: Some(
+                12,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 19,
+                path: [],
+            },
+            bci: Some(
+                19,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 22,
+                path: [],
+            },
+            bci: Some(
+                22,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_SLOT4_ACCESS block=CanonicalBlockId { bci: 0, path: [] } instruction=SsaInstruction {
+    bci: 3,
+    opcode: 54,
+    reads: [
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                11,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                12,
+            ),
+        ),
+    ],
+}
+CF07_SLOT4_VALUE bci=3 slot=Local(4) value_id=ValueId(12) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 0,
+            path: [],
+        },
+        bci: 3,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 3,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: None,
+        },
+    ],
+    replaced_by: None,
+}
+CF07_SLOT4_ACCESS block=CanonicalBlockId { bci: 5, path: [] } instruction=SsaInstruction {
+    bci: 5,
+    opcode: 21,
+    reads: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                8,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                13,
+            ),
+        ),
+    ],
+}
+CF07_SLOT4_VALUE bci=5 slot=Local(4) value_id=ValueId(8) value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            4,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: Some(
+                5,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 11,
+                path: [],
+            },
+            bci: Some(
+                12,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 19,
+                path: [],
+            },
+            bci: Some(
+                19,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 22,
+                path: [],
+            },
+            bci: Some(
+                22,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_SLOT4_ACCESS block=CanonicalBlockId { bci: 11, path: [] } instruction=SsaInstruction {
+    bci: 12,
+    opcode: 21,
+    reads: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                8,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Stack(
+                1,
+            ),
+            ValueId(
+                16,
+            ),
+        ),
+    ],
+}
+CF07_SLOT4_VALUE bci=12 slot=Local(4) value_id=ValueId(8) value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            4,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: Some(
+                5,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 11,
+                path: [],
+            },
+            bci: Some(
+                12,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 19,
+                path: [],
+            },
+            bci: Some(
+                19,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 22,
+                path: [],
+            },
+            bci: Some(
+                22,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_SLOT4_ACCESS block=CanonicalBlockId { bci: 19, path: [] } instruction=SsaInstruction {
+    bci: 19,
+    opcode: 21,
+    reads: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                8,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Stack(
+                0,
+            ),
+            ValueId(
+                20,
+            ),
+        ),
+    ],
+}
+CF07_SLOT4_VALUE bci=19 slot=Local(4) value_id=ValueId(8) value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            4,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: Some(
+                5,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 11,
+                path: [],
+            },
+            bci: Some(
+                12,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 19,
+                path: [],
+            },
+            bci: Some(
+                19,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 22,
+                path: [],
+            },
+            bci: Some(
+                22,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_SLOT4_ACCESS block=CanonicalBlockId { bci: 22, path: [] } instruction=SsaInstruction {
+    bci: 22,
+    opcode: 132,
+    reads: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                8,
+            ),
+        ),
+    ],
+    writes: [
+        (
+            Local(
+                4,
+            ),
+            ValueId(
+                21,
+            ),
+        ),
+    ],
+}
+CF07_SLOT4_VALUE bci=22 slot=Local(4) value_id=ValueId(8) value=SsaValue {
+    ty: Int,
+    def: Phi {
+        block: CanonicalBlockId {
+            bci: 5,
+            path: [],
+        },
+        slot: Local(
+            4,
+        ),
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 5,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: Some(
+                5,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 11,
+                path: [],
+            },
+            bci: Some(
+                12,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 19,
+                path: [],
+            },
+            bci: Some(
+                19,
+            ),
+        },
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 22,
+                path: [],
+            },
+            bci: Some(
+                22,
+            ),
+        },
+    ],
+    replaced_by: None,
+}
+CF07_SLOT4_VALUE bci=22 slot=Local(4) value_id=ValueId(21) value=SsaValue {
+    ty: Int,
+    def: Instruction {
+        block: CanonicalBlockId {
+            bci: 22,
+            path: [],
+        },
+        bci: 22,
+    },
+    origin: OriginSet {
+        members: [
+            MethodPoint {
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: StandaloneRoot {
+                            snapshot: SnapshotId(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                        },
+                        class_bytes: ClassBytesId {
+                            digest: Digest(
+                                "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                            ),
+                            length: 419,
+                        },
+                        variant: Base,
+                    },
+                    name: JvmBytes(
+                        [
+                            108,
+                            97,
+                            115,
+                            116,
+                            73,
+                            110,
+                            100,
+                            101,
+                            120,
+                            79,
+                            102,
+                        ],
+                    ),
+                    descriptor: JvmBytes(
+                        [
+                            40,
+                            91,
+                            73,
+                            73,
+                            73,
+                            73,
+                            41,
+                            73,
+                        ],
+                    ),
+                },
+                bci: 22,
+            },
+        ],
+    },
+    uses: [
+        SsaUse {
+            block: CanonicalBlockId {
+                bci: 5,
+                path: [],
+            },
+            bci: None,
+        },
+    ],
+    replaced_by: None,
+}
+CF07_NATURAL_LOOP NaturalLoop {
+    header: 1,
+    blocks: {
+        1,
+        2,
+        5,
+    },
+    latches: {
+        5,
+    },
+    irreducible: false,
+}
+CF07_LOOP_BLOCK node=1 id=CanonicalBlockId { bci: 5, path: [] } instructions=Some(
+    [
+        SsaInstruction {
+            bci: 5,
+            opcode: 21,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        8,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        13,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 7,
+            opcode: 28,
+            reads: [
+                (
+                    Local(
+                        2,
+                    ),
+                    ValueId(
+                        2,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        14,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 8,
+            opcode: 161,
+            reads: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        14,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        13,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+)
+CF07_LOOP_BLOCK node=2 id=CanonicalBlockId { bci: 11, path: [] } instructions=Some(
+    [
+        SsaInstruction {
+            bci: 11,
+            opcode: 42,
+            reads: [
+                (
+                    Local(
+                        0,
+                    ),
+                    ValueId(
+                        0,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        15,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 12,
+            opcode: 21,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        8,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        16,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 14,
+            opcode: 46,
+            reads: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        16,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        15,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        17,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 15,
+            opcode: 27,
+            reads: [
+                (
+                    Local(
+                        1,
+                    ),
+                    ValueId(
+                        1,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        18,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 16,
+            opcode: 160,
+            reads: [
+                (
+                    Stack(
+                        1,
+                    ),
+                    ValueId(
+                        18,
+                    ),
+                ),
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        17,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+)
+CF07_LOOP_BLOCK node=5 id=CanonicalBlockId { bci: 22, path: [] } instructions=Some(
+    [
+        SsaInstruction {
+            bci: 22,
+            opcode: 132,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        8,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        21,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 25,
+            opcode: 167,
+            reads: [],
+            writes: [],
+        },
+    ],
+)
+CF07_RETURN_LEAVES nodes={4} normal_exit=Some(3)
+CF07_RETURN_LEAF node=4 id=CanonicalBlockId { bci: 19, path: [] } instructions=Some(
+    [
+        SsaInstruction {
+            bci: 19,
+            opcode: 21,
+            reads: [
+                (
+                    Local(
+                        4,
+                    ),
+                    ValueId(
+                        8,
+                    ),
+                ),
+            ],
+            writes: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        20,
+                    ),
+                ),
+            ],
+        },
+        SsaInstruction {
+            bci: 21,
+            opcode: 172,
+            reads: [
+                (
+                    Stack(
+                        0,
+                    ),
+                    ValueId(
+                        20,
+                    ),
+                ),
+            ],
+            writes: [],
+        },
+    ],
+)
+CF07_RETURN_LEAF_EDGE CanonicalEdge {
+    from: CanonicalBlockId {
+        bci: 11,
+        path: [],
+    },
+    to: CanonicalBlockId {
+        bci: 19,
+        path: [],
+    },
+    kind: Normal,
+}
+CF07_UPDATE_LATCH block=CanonicalBlockId { bci: 22, path: [] } instructions=[
+    SsaInstruction {
+        bci: 22,
+        opcode: 132,
+        reads: [
+            (
+                Local(
+                    4,
+                ),
+                ValueId(
+                    8,
+                ),
+            ),
+        ],
+        writes: [
+            (
+                Local(
+                    4,
+                ),
+                ValueId(
+                    21,
+                ),
+            ),
+        ],
+    },
+    SsaInstruction {
+        bci: 25,
+        opcode: 167,
+        reads: [],
+        writes: [],
+    },
+]
+CF07_UPDATE_EDGE CanonicalEdge {
+    from: CanonicalBlockId {
+        bci: 11,
+        path: [],
+    },
+    to: CanonicalBlockId {
+        bci: 22,
+        path: [],
+    },
+    kind: Normal,
+}
+CF07_UPDATE_EDGE CanonicalEdge {
+    from: CanonicalBlockId {
+        bci: 22,
+        path: [],
+    },
+    to: CanonicalBlockId {
+        bci: 5,
+        path: [],
+    },
+    kind: Normal,
+}

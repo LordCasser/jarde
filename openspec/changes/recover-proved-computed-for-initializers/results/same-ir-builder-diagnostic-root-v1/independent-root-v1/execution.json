@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-builder-diagnostic-audit-luna-v1/verify_root_v2.py"
+  ],
+  "exit_code": 0,
+  "verifier_sha256": "7d74dbc8754c39a7ea4131dddfab0cf95e9a3c004bafee2fc79f624f88cd89ab",
+  "stdout_sha256": "6247e63781b08e1fc32ab09fe596004940c58ba21cab1fb03964ad21ee3389bb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

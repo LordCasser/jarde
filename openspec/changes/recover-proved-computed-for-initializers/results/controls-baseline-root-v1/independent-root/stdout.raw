@@ -1,0 +1,1 @@
+PASS: 20 argv/raw records; input/CLI/JDK pins; two exact equal-length Code edits only; StackMap/CP and runner unchanged; javap BCI; 9 raw output rows × two JDKs; 8 report/source profiles and default/all text/maps

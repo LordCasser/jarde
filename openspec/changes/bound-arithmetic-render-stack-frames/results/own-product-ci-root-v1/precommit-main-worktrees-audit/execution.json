@@ -1,0 +1,529 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c91429f7f59cf193619b0413a5dd69048bc0a3047b8c76d19de453fa8d99527d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/workspace/projects/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "aa1328246e9b5594f22e6faefe91546e2e97fb88f2bb942797fb1dc39e01b57d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/workspace/projects/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "2d94be284e7f3a76aaf24d1aaa029309067fcea36f9b5f9220b38392f6ef5b17",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "37fcf516ff175911e003b515c611c89010b4fbbb12f0996663456e1eb241efe5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0268513109a264a3f31bc9339db0dc6049a2cc63d3315eb7dd637f014dd39330",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--format=%(refname:short)"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "6403203dd5a0867eb14d104ee8a73730bd72dd9ad92e78d996a6dba0a5dcfc01",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "origin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "51747fc8d1f976bb541110b5a84c670ee2b8be4cbcd5b4dd73e7a6724f09ff0a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "status": "passed_auxiliary_clean_and_current_product_pins",
+  "worktrees": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde",
+      "head": "bafb61a5ec58b49f0040ea3a55420a56801bbe9c",
+      "clean": false,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt08-local-capture/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt09-anon-init-impl/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt12-enum-constant-bodies/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt13-nested-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt16-generic-null/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt26-captured-lambda/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/dt29-branched-concat/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/effectful-loop-exits/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/enum-constant-bodies/jarde",
+      "head": "698a219ec580819e12af487c4c8a3771e9baaa85",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/inner-this-baseline/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/plain-enum-arities/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/same-package-field-writes/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/shared-catchall-finally/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    },
+    {
+      "path": "/Users/lordcasser/.codex/worktrees/string-ternary-enum/jarde",
+      "head": "b3a01e24c86755dfe9a356f4ffc72636194eda70",
+      "clean": true,
+      "main_ancestor": true,
+      "targets": []
+    }
+  ],
+  "local_branches": [
+    "main"
+  ],
+  "remote_heads": [
+    "bafb61a5ec58b49f0040ea3a55420a56801bbe9c\trefs/heads/main"
+  ],
+  "source_pin_count": 4693,
+  "current_main_expected_documentation_pending": true,
+  "target_absent": true,
+  "free_bytes": 21222625280
+}

@@ -1,0 +1,61 @@
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:3: 错误: 找不到符号
+        ComputedForControls.end = 6;
+        ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:4: 错误: 找不到符号
+        ComputedForControls.trace = 0;
+        ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:5: 错误: 找不到符号
+        ComputedForControls.mode = selectedMode;
+        ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:13: 错误: 找不到符号
+                case 0: result = ComputedForControls.find(new int[] {2, 4, 6, 8, 10, 12}, target, 0); break;
+                                 ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:14: 错误: 找不到符号
+                case 1: result = ComputedForControls.shared(0); break;
+                                 ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:15: 错误: 找不到符号
+                case 2: result = ComputedForControls.observedAfter(0); break;
+                                 ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:16: 错误: 找不到符号
+                case 3: result = ComputedForControls.externalWrite(0); break;
+                                 ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:17: 错误: 找不到符号
+                case 4: result = ComputedForControls.scoped(0, target != 0); break;
+                                 ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:20: 错误: 找不到符号
+            System.out.println(label + ":" + result + ":" + ComputedForControls.trace + ":" + ComputedForControls.end);
+                                                            ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:20: 错误: 找不到符号
+            System.out.println(label + ":" + result + ":" + ComputedForControls.trace + ":" + ComputedForControls.end);
+                                                                                              ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:22: 错误: 找不到符号
+            System.out.println(label + ":throw:" + (failure == ComputedForControls.FAILURE) + ":" + ComputedForControls.trace);
+                                                               ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/controls-javac8-pending/javac8/ComputedForControlsRunner.java:22: 错误: 找不到符号
+            System.out.println(label + ":throw:" + (failure == ComputedForControls.FAILURE) + ":" + ComputedForControls.trace);
+                                                                                                    ^
+  符号:   变量 ComputedForControls
+  位置: 类 ComputedForControlsRunner
+12 个错误

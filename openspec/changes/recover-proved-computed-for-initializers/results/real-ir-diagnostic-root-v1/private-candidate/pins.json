@@ -1,0 +1,43 @@
+{
+  "purpose": "test-only private diagnostic candidate; not executed",
+  "inputs": [
+    {
+      "label": "crates/jarde-java/src/region.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "label": "openspec/changes/recover-proved-computed-for-initializers/design.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/design.md",
+      "bytes": 5148,
+      "sha256": "dd7a13682cb247178b7b76be0ab950e77ec1b10ca96b70e020e753b72b535ec2"
+    },
+    {
+      "label": "openspec/changes/recover-proved-computed-for-initializers/tasks.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-computed-for-initializers/tasks.md",
+      "bytes": 3153,
+      "sha256": "bc3a4cd9f749c33f942582a49750d6f872f2020d06e4b7e29f1e44e54918f2c9"
+    }
+  ],
+  "artifacts": [
+    {
+      "label": "base-region.rs",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/base-region.rs",
+      "bytes": 851531,
+      "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168"
+    },
+    {
+      "label": "candidate-region.rs",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/candidate-region.rs",
+      "bytes": 855626,
+      "sha256": "c368ba49d7f5d922c1bde4513fe391d54de28d615d58d7637fe6f6e11cb7b188"
+    },
+    {
+      "label": "diagnostic.patch",
+      "path": "/private/tmp/jarde-computed-for-real-ir-diagnostic-luna-v1/diagnostic.patch",
+      "bytes": 4434,
+      "sha256": "3c3f6ae3d20b9e64e64f2511bde69b407084dd9c456e6a163eff98bd38a19e32"
+    }
+  ]
+}

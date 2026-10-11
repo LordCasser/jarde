@@ -1,0 +1,83 @@
+{
+  "segment": {
+    "end": 391,
+    "origin": {
+      "derived": [
+        {
+          "bci": 20,
+          "cp": null,
+          "method": {
+            "descriptor": [
+              40,
+              73,
+              73,
+              41,
+              73
+            ],
+            "name": [
+              99,
+              111,
+              117,
+              110,
+              116,
+              101,
+              100
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+                "length": 419
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "provenance": "Derived"
+        }
+      ],
+      "primary": {
+        "bci": 14,
+        "cp": null,
+        "method": {
+          "descriptor": [
+            40,
+            73,
+            73,
+            41,
+            73
+          ],
+          "name": [
+            99,
+            111,
+            117,
+            110,
+            116,
+            101,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19",
+              "length": 419
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "52ddcc0b5ab5de0702266901380266b53498433df87ca02f4861c61c7f4c9b19"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "provenance": "Direct"
+      }
+    },
+    "start": 271
+  },
+  "exact_slice": "        if (local3 == 7) {\n            local2 = local2 + 2;\n        } else {\n            local2 = local2 * 2;\n        }\n"
+}

@@ -1,5 +1,9 @@
 # Root 验收记录
 
+当前产品 bafb61a5ec58b49f0040ea3a55420a56801bbe9c 的自身 CI 38119159950 已由 root 实际独立接受：4 jobs/52 steps，双 seed 各359目标、3444 passed/0 failed/97 ignored，完整具名结果绑定 fresh95批4693输入及132条构建输入。证据见 [stack 自身 CI](../bound-arithmetic-render-stack-frames/results/own-product-ci-root-v1/README.md)。本片实现及CI条件已闭合，进度 6/6；本轮交付文档的提交推送/clean checkpoint 仍须按实际 Git 终审记录确认。e041 的真实 stack overflow/SIGABRT 原样保留，不覆盖为成功，不宣称整个 CF12/71 单元完成。
+
+以下为此前验收阶段的历史记录。
+
 当前 5/6的本地构建和初步报告比较已执行；产品尚未提交，本片和三个父片的自身 CI 交付任务继续开放。e041b7635 的 CI 38116415118 确实失败，不能覆盖为成功。
 
 最小修复只移动既有 Arithmetic 分支并抽取其余 Definition 分派。共享前置与 MAX_VALUE_DEPTH=24 不变；构造 site 仍先于执行算术。独立审查指出 site_of 是线性搜索，root 先过滤 Arithmetic 再检查 site，避免给非算术额外扫描。没有新 charge/poll、公开 IR 或恢复机制。

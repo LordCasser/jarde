@@ -1,0 +1,9 @@
+{
+  "status": "accepted",
+  "commands": 6,
+  "full_JADX_source_sha256": "4d5023782e6d10dae9bd8b786ad18ec62d8029e08cea9eebec38f8036e815fc2",
+  "runtime_legs": 2,
+  "source_package": "cf07",
+  "stdout": "0\n10\n39\n63\n9\n3\n-1\n3\n",
+  "scope": "fresh supplement to exact current original/Jarde baseline"
+}

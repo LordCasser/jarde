@@ -1,0 +1,279 @@
+{
+  "jadx_direct_return_matches": 4,
+  "jadx_full_class_compiles": 12,
+  "jadx_full_class_verified_runs": 12,
+  "jadx_original_mismatches": 4,
+  "jadx_pending_matches": 4,
+  "jarde_controls_full_source_compile_failures": 8,
+  "jarde_controls_runtime_attempts": 0,
+  "jarde_default_all_text_maps_quality_equal": true,
+  "jarde_direct_return_full_compile_and_runtime_successes": 4,
+  "jarde_quality_by_case": {
+    "controls-javac23-original": {
+      "default_all_maps_equal": true,
+      "default_all_text_equal": true,
+      "methods": [
+        {
+          "content": "contains_statements",
+          "name": "<init>",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "f",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "g",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "find",
+          "quality": "fallback"
+        },
+        {
+          "content": "explanation_only",
+          "name": "shared",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "observedAfter",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "externalWrite",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "scoped",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "<clinit>",
+          "quality": "structured"
+        }
+      ]
+    },
+    "controls-javac23-pending": {
+      "default_all_maps_equal": true,
+      "default_all_text_equal": true,
+      "methods": [
+        {
+          "content": "contains_statements",
+          "name": "<init>",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "f",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "g",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "find",
+          "quality": "fallback"
+        },
+        {
+          "content": "explanation_only",
+          "name": "shared",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "observedAfter",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "externalWrite",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "scoped",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "<clinit>",
+          "quality": "structured"
+        }
+      ]
+    },
+    "controls-javac8-original": {
+      "default_all_maps_equal": true,
+      "default_all_text_equal": true,
+      "methods": [
+        {
+          "content": "contains_statements",
+          "name": "<init>",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "f",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "g",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "find",
+          "quality": "fallback"
+        },
+        {
+          "content": "explanation_only",
+          "name": "shared",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "observedAfter",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "externalWrite",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "scoped",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "<clinit>",
+          "quality": "structured"
+        }
+      ]
+    },
+    "controls-javac8-pending": {
+      "default_all_maps_equal": true,
+      "default_all_text_equal": true,
+      "methods": [
+        {
+          "content": "contains_statements",
+          "name": "<init>",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "f",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "g",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "find",
+          "quality": "fallback"
+        },
+        {
+          "content": "explanation_only",
+          "name": "shared",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "observedAfter",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "externalWrite",
+          "quality": "structured"
+        },
+        {
+          "content": "explanation_only",
+          "name": "scoped",
+          "quality": "fallback"
+        },
+        {
+          "content": "contains_statements",
+          "name": "<clinit>",
+          "quality": "structured"
+        }
+      ]
+    },
+    "direct-return-javac23-original": {
+      "default_all_maps_equal": true,
+      "default_all_text_equal": true,
+      "methods": [
+        {
+          "content": "contains_statements",
+          "name": "<init>",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "limit",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "find",
+          "quality": "structured"
+        }
+      ]
+    },
+    "direct-return-javac8-original": {
+      "default_all_maps_equal": true,
+      "default_all_text_equal": true,
+      "methods": [
+        {
+          "content": "contains_statements",
+          "name": "<init>",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "limit",
+          "quality": "structured"
+        },
+        {
+          "content": "contains_statements",
+          "name": "find",
+          "quality": "structured"
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "JADX original controls sources compile but their fresh runtime is observably wrong on the first four source-order/exception rows; this is distinct from v1 package compile failure.",
+    "Jarde controls output is full-class fallback source and javac rejects it; no Jarde runtime result is claimed.",
+    "Jarde direct-return only establishes its separate computed-initializer control, not the computed-for proposal."
+  ],
+  "original_mismatch_rows": {
+    "f-throws-before-g": "-2:21:2",
+    "g-throws-after-f": "-2:2:2",
+    "hit-after-g-mutates-end": "-1:21:2",
+    "miss": "-1:21:2"
+  },
+  "status": "verified",
+  "v1_package_harness_context": {
+    "all_12_jadx_source_compiles_failed": true,
+    "cause": "Runner remained in unnamed package while all six complete JADX sources declared defpackage; no JADX runtime was run",
+    "command_count": 47,
+    "jarde_controls_compile_failures": 8,
+    "jarde_direct_compile_runtime_successes": 4
+  },
+  "v2_commands": 59
+}

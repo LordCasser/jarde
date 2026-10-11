@@ -15,4 +15,4 @@
 
 - [x] 3.1 root编译执行有副作用、异常路径和浮点NaN的受控完整类，对比源码、JADX、Jarde及调用日志。验收：Jarde每条测试路径与原class调用次数/顺序、异常位置和结果相同，JADX差异独立记录，不更改原check。
 - [x] 3.2 冻结同一新CLI，重新比较十个CF12原类/JADX/default/all，核验Switch2状态矩阵及FT2控制、完整生成类集合和物理来源。验收：Switch2与FT2整类真实通过；环境不可用单列，不能用跨版本或其他JDK结果替代。
-- [ ] 3.3 完成root格式化/适用测试lint、OpenSpec strict与自身产品CI独立验收，更新两个变更verification及handoff后提交推送并清理target。验收：实际命令/raw/pins可追溯，main干净、无功能分支占用，不超额宣称CF12或71单元完成。
+- [x] 3.3 完成root格式化/适用测试lint、OpenSpec strict与自身产品CI独立验收，更新两个变更verification及handoff后提交推送并清理target。验收：实际命令/raw/pins可追溯，main干净、无功能分支占用，不超额宣称CF12或71单元完成。

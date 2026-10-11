@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-real-ir-diagnostic-root-v3-facts-v4/verify_diagnostic.py"
+  ],
+  "exit_code": 1,
+  "verifier_sha256": "dcee75bb69aac930935008f3504626ff3107c4befea28e1ce9e3f397b3ea59f7",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ee677a61583adb1c816eea68a983fb16cedb759a3a53ee4261503024224b7906",
+  "scope": "read-only facts verifier; failed on slot-4 marker field name"
+}

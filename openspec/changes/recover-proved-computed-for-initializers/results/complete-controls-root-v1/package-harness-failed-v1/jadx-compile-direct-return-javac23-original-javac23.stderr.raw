@@ -1,0 +1,25 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/direct-return-javac23-original/javac23/ComputedForDirectReturnRunner.java:3: 错误: 找不到符号
+        ComputedForDirectReturn.end = values.length;
+        ^
+  符号:   变量 ComputedForDirectReturn
+  位置: 类 ComputedForDirectReturnRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/direct-return-javac23-original/javac23/ComputedForDirectReturnRunner.java:4: 错误: 找不到符号
+        ComputedForDirectReturn.calls = 0;
+        ^
+  符号:   变量 ComputedForDirectReturn
+  位置: 类 ComputedForDirectReturnRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/direct-return-javac23-original/javac23/ComputedForDirectReturnRunner.java:5: 错误: 找不到符号
+        int result = ComputedForDirectReturn.find(values, target, lower);
+                     ^
+  符号:   变量 ComputedForDirectReturn
+  位置: 类 ComputedForDirectReturnRunner
+/private/tmp/jarde-computed-for-controls-jadx-root-v1/jadx-build/direct-return-javac23-original/javac23/ComputedForDirectReturnRunner.java:6: 错误: 找不到符号
+        System.out.println(label + ":" + result + ":" + ComputedForDirectReturn.calls);
+                                                        ^
+  符号:   变量 ComputedForDirectReturn
+  位置: 类 ComputedForDirectReturnRunner
+4 个错误
+3 个警告

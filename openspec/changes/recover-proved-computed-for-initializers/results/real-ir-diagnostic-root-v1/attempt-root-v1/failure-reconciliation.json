@@ -1,0 +1,7 @@
+{
+  "status": "failed_before_cargo_start",
+  "reason": "wrong target scanner API AttributeError; scanner.target_bytes(root) is the actual API",
+  "region_restored_sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168",
+  "target_absent": true,
+  "scope": "root reconciliation after exception, original execution.json remains as emitted; no diagnostic result accepted"
+}

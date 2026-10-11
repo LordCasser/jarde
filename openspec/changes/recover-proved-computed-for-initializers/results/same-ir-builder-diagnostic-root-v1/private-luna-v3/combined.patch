@@ -1,0 +1,206 @@
+--- a/crates/jarde-java/src/region.rs
++++ b/crates/jarde-java/src/region.rs
+@@ -16737,6 +16737,107 @@
+         )
+         .expect("the real method region walk completes");
+ 
++        // Private task-1.1 diagnostic: build statements from these exact reader-backed facts and
++        // print the statement whose origin covers the preheader Store, together with SSA frame
++        // types and the Builder's deferred/materialization state. This adds no assertion.
++        let method_facts = crate::facts::MethodFacts::new("lastIndexOf", "([IIII)I", 4);
++        let parameter_types = method_facts.parameter_types();
++        let parameter_count = method_facts.parameters();
++        let resources = BTreeSet::new();
++        let mut builder_budget = Budget::new(jarde_reader::budget::Limits {
++            analysis_steps: 1 << 20,
++            ir_edges: 1 << 20,
++            ir_items: 1 << 20,
++            elapsed_millis: u64::MAX,
++            ..jarde_reader::budget::Limits::default()
++        });
++        let reuse = crate::reuse::plan(
++            ssa,
++            canonical,
++            &operations,
++            &recovered.regions,
++            code.max_locals,
++            parameter_count,
++            &[],
++            &resources,
++            &mut builder_budget,
++        )
++        .expect("the same real method's local-use plan completes");
++        let names = crate::names::NameTable::build(parameter_count, code.max_locals, reuse.evidence());
++        let fields = crate::field::Plan::empty();
++        let sites = crate::init::Sites::empty();
++        let prologues = crate::init::Prologues::none();
++        let enums = crate::enumswitch::Plan::empty();
++        let program = crate::build::build(
++            canonical,
++            ssa,
++            &operations,
++            crate::build::Inputs {
++                code,
++                pool: ir.constant_pool(),
++                bootstrap: ir.bootstrap_methods(),
++                profile: crate::pass::JAVA_8.clone(),
++                parameters: parameter_count,
++                has_receiver: false,
++                parameter_types: &parameter_types,
++                return_type: Some(crate::ast::Type::Int),
++                method_access_flags: Some(0x0009),
++                debug_locals: &[],
++                names: &names,
++                reuse: &reuse,
++                chains: &chains,
++                field_copies: &crate::build::FieldCopies::default(),
++                members: None,
++                member_inner_targets: &[],
++                typed_functional_target: None,
++                interface_super_calls: &[],
++                reference_overload_calls: &[],
++                snapshot_hierarchy_widenings: &[],
++                captured_outer_reads: &[],
++                outer_super_calls: &[],
++                nested_class_members: &[],
++                pool_spelled_members: false,
++                physical_method: Some(&request.method),
++                declaring_class: Some("cf07/LoopCases"),
++                direct_super_class: ir.direct_super_class(),
++                direct_interfaces: ir.direct_interfaces(),
++                class_methods: ir.class_methods(),
++                class_fields: ir.class_fields(),
++                bridge: None,
++                sites: &sites,
++                prologues: &prologues,
++                fields: &fields,
++                array_initializers: crate::build::ArrayInitializers::default(),
++                enums: &enums,
++                allow_array_constructor_method_references: false,
++            },
++            &recovered.regions,
++            &mut builder_budget,
++        )
++        .expect("the real recovered lastIndexOf statement build completes");
++        let init_store_bci = ssa.blocks().iter().flat_map(|block| block.instructions()).find_map(|instruction| {
++            (instruction.bci() <= 3
++                && matches!(operations.get(instruction.bci()), Some(Operation::Store { slot: 4 })))
++                .then_some(instruction.bci())
++        });
++        eprintln!("CF07_BUILDER_PROGRAM init_store_bci={init_store_bci:?} statements={} ragged={}", program.statements, program.ragged);
++        for statement in &program.stmts {
++            let presents_init_store = Some(statement.origin.primary().bci()) == init_store_bci
++                || statement.origin.derived().iter().any(|origin| Some(origin.bci()) == init_store_bci);
++            if presents_init_store {
++                eprintln!("CF07_BUILDER_INIT_STMT {statement:#?}");
++            }
++        }
++        eprintln!("CF07_BUILDER_ALL_STMTS {:#?}", program.stmts);
++        for block in ssa.blocks() {
++            for instruction in block.instructions().iter().filter(|instruction| (0..=3).contains(&instruction.bci())) {
++                eprintln!("CF07_BUILDER_FRAME bci={} operation={:?} instruction={:#?}", instruction.bci(), operations.get(instruction.bci()), instruction);
++                for (slot, value_id) in instruction.reads().iter().chain(instruction.writes()) {
++                    eprintln!("CF07_BUILDER_FRAME_VALUE bci={} slot={slot:?} id={value_id:?} ty={:?} def={:?} uses={:?}", instruction.bci(), ssa.value(*value_id).ty(), ssa.value(*value_id).def(), ssa.value(*value_id).uses());
++                }
++            }
++        }
++
+         let loop_region = recovered
+             .regions
+             .iter()
+@@ -16807,6 +16908,68 @@
+             };
+         }
+ 
++        // Private diagnostic only: this reuses the frozen class and the real artifacts already
++        // built by this test. It adds no assertions and does not change recovery decisions.
++        eprintln!("CF07_REAL_IR_DIAG class_bytes={} class_blake3={}", CLASS.len(), blake3::hash(CLASS).to_hex());
++        eprintln!("CF07_REAL_IR_DIAG method=lastIndexOf([IIII)I header={header:?} root_frame={:?}", Frame::default());
++        for block in ssa.blocks() {
++            for instruction in block.instructions().iter().filter(|instruction| (0..=3).contains(&instruction.bci())) {
++                eprintln!("CF07_INIT_INSN block={:?} instruction={instruction:#?}", block.block());
++                for (slot, value_id) in instruction.reads().iter().chain(instruction.writes()) {
++                    eprintln!("CF07_INIT_VALUE bci={} access_slot={slot:?} value_id={value_id:?} value={:#?}", instruction.bci(), ssa.value(*value_id));
++                }
++            }
++        }
++        for phi in ssa.phis().iter().filter(|phi| phi.slot() == Slot::Local(4) || phi.block().bci() == 5) {
++            eprintln!("CF07_RELEVANT_PHI {phi:#?} value={:#?}", ssa.value(phi.value()));
++        }
++        for block in ssa.blocks() {
++            for instruction in block.instructions() {
++                let local_accesses: Vec<_> = instruction.reads().iter().chain(instruction.writes())
++                    .filter(|(slot, _)| *slot == Slot::Local(4)).collect();
++                if !local_accesses.is_empty() {
++                    eprintln!("CF07_SLOT4_ACCESS block={:?} instruction={instruction:#?}", block.block());
++                    for (slot, value_id) in local_accesses {
++                        eprintln!("CF07_SLOT4_VALUE bci={} slot={slot:?} value_id={value_id:?} value={:#?}", instruction.bci(), ssa.value(*value_id));
++                    }
++                }
++            }
++        }
++        let natural = view.loop_entered_at(header_node).expect("same real natural loop at recovered header");
++        let natural_blocks = natural.blocks().clone();
++        eprintln!("CF07_NATURAL_LOOP {natural:#?}");
++        for node in &natural_blocks {
++            let id = view.id_of(*node).expect("natural-loop node has canonical identity");
++            let instructions = ssa.block(id).map(|block| block.instructions());
++            eprintln!("CF07_LOOP_BLOCK node={node} id={id:?} instructions={instructions:#?}");
++        }
++        let normal_exit = match loop_region {
++            Region::Loop { exit: Some(exit), .. } => view.index_of(exit),
++            Region::Loop { exit: None, .. } => None,
++            _ => unreachable!(),
++        };
++        let mut diagnostic_budget = steps(1 << 20);
++        let return_leaves = real_walker!(diagnostic_budget)
++            .loop_terminal_returns(&natural_blocks, normal_exit, &Frame::default())
++            .expect("diagnostic recomputes the existing terminal-return certificate on the same real artifacts");
++        eprintln!("CF07_RETURN_LEAVES nodes={return_leaves:?} normal_exit={normal_exit:?}");
++        for node in &return_leaves {
++            let id = view.id_of(*node).expect("return leaf has canonical identity");
++            eprintln!("CF07_RETURN_LEAF node={node} id={id:?} instructions={:#?}", ssa.block(id).map(|block| block.instructions()));
++            for edge in canonical.edges().iter().filter(|edge| edge.from() == id || edge.to() == id) {
++                eprintln!("CF07_RETURN_LEAF_EDGE {edge:#?}");
++            }
++        }
++        for block in ssa.blocks() {
++            let has_update_or_goto = block.instructions().iter().any(|instruction| matches!(instruction.bci(), 22 | 25));
++            if has_update_or_goto || natural.latches().contains(&view.index_of(block.block()).unwrap_or(usize::MAX)) {
++                eprintln!("CF07_UPDATE_LATCH block={:?} instructions={:#?}", block.block(), block.instructions());
++                for edge in canonical.edges().iter().filter(|edge| edge.from() == block.block() || edge.to() == block.block()) {
++                    eprintln!("CF07_UPDATE_EDGE {edge:#?}");
++                }
++            }
++        }
++
+         let mut no_steps = steps(0);
+         let stop = real_walker!(no_steps)
+             .implicit_tail_latch_origin(header_node, body, None)
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -8473,6 +8473,24 @@
+         inputs.has_receiver,
+         builder.budget,
+     )?;
++    // Temporary task-1.1 diagnostic only. The existing frozen reader-backed region test selects
++    // this member and prints the real Builder's statement, deferred value, materialization plan,
++    // committed bindings and refusal state. This is cfg(test)-only and changes no decisions.
++    #[cfg(test)]
++    if inputs.physical_method.is_some_and(|method| {
++        method.name.0.as_slice() == b"lastIndexOf"
++            && method.descriptor.0.as_slice() == b"([IIII)I"
++    }) {
++        eprintln!(
++            "CF07_BUILDER_MATERIALIZATION stmts={:#?} deferred={:?} plans={:?} bindings={:?} rejected={:?} binding_refused={:?}",
++            builder.stmts,
++            builder.deferred,
++            builder.binding_plans,
++            builder.bindings,
++            builder.binding_rejections,
++            builder.binding_refused,
++        );
++    }
+     Ok(Program {
+         field_increments,
+         statements: builder.statements,

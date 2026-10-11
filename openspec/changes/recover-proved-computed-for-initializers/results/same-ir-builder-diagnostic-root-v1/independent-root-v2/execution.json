@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-computed-for-builder-diagnostic-independent-root-v2/verify.py"
+  ],
+  "exit_code": 0,
+  "base_verifier_sha256": "7d74dbc8754c39a7ea4131dddfab0cf95e9a3c004bafee2fc79f624f88cd89ab",
+  "verifier_sha256": "1dd3362ed97f8a64b9453fb94a087bbfe207b8b7575044fd7eb08e83dec4952f",
+  "stdout_sha256": "6247e63781b08e1fc32ab09fe596004940c58ba21cab1fb03964ad21ee3389bb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

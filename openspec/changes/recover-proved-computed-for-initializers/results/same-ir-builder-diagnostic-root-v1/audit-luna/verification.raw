@@ -1,0 +1,4 @@
+PASS: captured record, command/raw pins, and all key SSA facts are consistent
+PASS: root-v2 raw, run/source pins, v9 typed SSA facts, Builder statement/materialization, restore and cleanup verified
+TEST_ARGV=["cargo","test","-p","jarde-java","--lib","--locked","region::tests::cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir","--","--exact","--nocapture"]
+SCOPE=task 1.1 diagnostic evidence only; computed-for 2.x implementation not established

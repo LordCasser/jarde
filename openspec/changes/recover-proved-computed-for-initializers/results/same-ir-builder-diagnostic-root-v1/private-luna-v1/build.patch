@@ -1,0 +1,27 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -8473,6 +8473,24 @@
+         inputs.has_receiver,
+         builder.budget,
+     )?;
++    // Temporary task-1.1 diagnostic only. The existing frozen reader-backed region test selects
++    // this member and prints the real Builder's statement, deferred value, materialization plan,
++    // committed bindings and refusal state. This is cfg(test)-only and changes no decisions.
++    #[cfg(test)]
++    if inputs.physical_method.is_some_and(|method| {
++        method.name.0.as_slice() == b"lastIndexOf"
++            && method.descriptor.0.as_slice() == b"([IIII)I"
++    }) {
++        eprintln!(
++            "CF07_BUILDER_MATERIALIZATION stmts={:#?} deferred={:?} plans={:?} bindings={:?} rejected={:?} binding_refused={:?}",
++            builder.stmts,
++            builder.deferred,
++            builder.binding_plans,
++            builder.bindings,
++            builder.binding_rejections,
++            builder.binding_refused,
++        );
++    }
+     Ok(Program {
+         field_increments,
+         statements: builder.statements,
