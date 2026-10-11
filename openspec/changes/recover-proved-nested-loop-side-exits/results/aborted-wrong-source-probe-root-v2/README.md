@@ -1,0 +1,3 @@
+# 错误源码探测，已中止
+
+私有v4 candidate在准备v5时被覆盖，root应用SHA断言失败后不应启动探测。本次实际跑的是v1+已修正API请求，不是v4。root发现后SIGTERM进程组；fmt0、Cargo -15、finally clean0、target absent，source closure见execution。此记录不能作为任何v4成功或失败验收。原v4后以独立临时文件和原子replace恢复，SHA bbf7bd7821f6e5b9848d9da6c803af3579e513407d9d28c12e4f18f50d3f519c。

@@ -1,0 +1,5 @@
+# Root新增扫描计费审查
+
+私有draft错误将NormalFlow NaturalLoop blocks误当Region blocks，root静态拒绝，未编译未应用；最终候选保留BTreeSet<usize> clone前4×长度收费。Region consumer才使用全canonical nodes+edges ×既有MAX_REGION_DEPTH上界，各验证阶段预付扫描pass倍数并前后poll。phase上界包含结构wrapper/transfer和深度重复聚合，不以proof owners替代全visited。遵循stop.rs允许整图算法预付输入的现有约定，不新增walker或Budget维度。
+
+body扩展后post-walk计费/poll失败各恢复visited/unclosed/catch/fragmented；预扩展只改局部scope/frame。child退出nodes扫描与邻接构造支付node+canonical edges，owner/prefix变化按集合数量预付。owner/边/flow判据未放宽。快照copy成本是既有snapshot convention债务，不借本片新增统一内存成本模型。默认API/实际晚Stop/fresh回归尚待运行，不能用旧v5停点代替新收费验收。

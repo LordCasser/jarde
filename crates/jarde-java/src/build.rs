@@ -18138,7 +18138,7 @@ impl Builder<'_> {
             let at = bcis.first().copied().unwrap_or(0);
             return self.fallback(bcis, &reason, at);
         }
-        let mut finally_checkpoint = matches!(region, Region::Guard { body: Some(_), .. })
+        let finally_checkpoint = matches!(region, Region::Guard { body: Some(_), .. })
             .then(|| self.finally_checkpoint());
         self.declare_at(path)?;
         match region {
@@ -18645,272 +18645,7 @@ impl Builder<'_> {
                 }
                 self.push(Stmt::new(StmtKind::Switch { value, arms }, origin))
             }
-            Region::Loop {
-                header,
-                tests,
-                test_operator,
-                form,
-                for_header,
-                body,
-                gateway_origins,
-                ..
-            } => {
-                // The test is written *inside* the loop statement, so the values it reads and the
-                // calls it makes run once per evaluation — the loop's own count, not the count of a
-                // hoisted copy. Which of the two senses continues the loop is a decode fact
-                // (`Continuation`), and the condition is that sense, not its negation.
-                let first_test_bci = match (form, tests.first()) {
-                    (LoopForm::Endless, None)
-                        if test_operator.is_none() && for_header.is_none() =>
-                    {
-                        header.bci()
-                    }
-                    (LoopForm::Endless, _) => {
-                        let bcis = self.region_quote(region, header.bci());
-                        return self.fallback(
-                            bcis,
-                            "the endless loop has unexpected header tests",
-                            header.bci(),
-                        );
-                    }
-                    (_, Some((_, bci, _))) => *bci,
-                    (_, None) => {
-                        let bcis = self.region_quote(region, header.bci());
-                        return self.fallback(bcis, "the loop has no proved test", header.bci());
-                    }
-                };
-                let cond = if *form == LoopForm::Endless {
-                    Expr::new(
-                        ExprKind::Boolean(true),
-                        OriginSet::new(Origin::derived(header.bci())),
-                    )
-                } else {
-                    let mut cond = None;
-                    for (_, test_bci, continuation) in tests {
-                        let test_bci = *test_bci;
-                        let taken = *continuation == Continuation::Taken;
-                        let test = match self.test_expr(test_bci, taken) {
-                            Ok(test) => test.derived_from(test_bci),
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, test_bci);
-                                return self.fallback(bcis, &reason, test_bci);
-                            }
-                        };
-                        cond = Some(match cond {
-                            None => test,
-                            Some(left) => {
-                                let Some(operator) = test_operator else {
-                                    let bcis = self.region_quote(region, test_bci);
-                                    return self.fallback(
-                                        bcis,
-                                        "multiple loop tests have no proved short-circuit operator",
-                                        test_bci,
-                                    );
-                                };
-                                binary(*operator, left, test, first_test_bci).derived_from(test_bci)
-                            }
-                        });
-                    }
-                    cond.expect("the loop's test list was checked non-empty")
-                };
-                if tests.len() == 1 && test_operator.is_some() {
-                    let bcis = self.region_quote(region, first_test_bci);
-                    return self.fallback(
-                        bcis,
-                        "one loop test cannot own a short-circuit operator",
-                        first_test_bci,
-                    );
-                }
-                let for_init_index = for_header.as_ref().and_then(|proof| {
-                    let index = self.stmts.iter().rposition(|stmt| {
-                        stmt.origin.primary().bci() == proof.init_bci
-                            && matches!(
-                                stmt.kind,
-                                StmtKind::Declare { value: Some(_), .. } | StmtKind::Assign { .. }
-                            )
-                    })?;
-                    self.stmts[index + 1..]
-                        .iter()
-                        .all(|stmt| matches!(stmt.kind, StmtKind::Declare { value: None, .. }))
-                        .then_some(index)
-                });
-                if let Some(proof) = for_header {
-                    if tests.len() != 1 {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the counted-loop proof covers only one test",
-                            first_test_bci,
-                        );
-                    }
-                    if for_init_index.is_none() {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the counted loop's preceding local initialisation did not produce one Java header clause",
-                            first_test_bci,
-                        );
-                    }
-                    self.settled.insert(proof.update_bci);
-                }
-                let header_bci = header.bci();
-                self.loop_headers.push(header_bci);
-                let outer = std::mem::take(&mut self.stmts);
-                let outer_declared = self.declared.clone();
-                let walked = body.iter().enumerate().try_for_each(|(index, region)| {
-                    self.region(
-                        region,
-                        &child(path, u32::try_from(index).unwrap_or(u32::MAX)),
-                    )
-                });
-                let loop_body = std::mem::replace(&mut self.stmts, outer);
-                self.declared = outer_declared;
-                self.loop_headers.pop();
-                walked?;
-                let label = self
-                    .labeled_loop_headers
-                    .contains(&header_bci)
-                    .then(|| self.loop_label(header_bci));
-                let kind = if let Some(proof) = for_header {
-                    self.settled.remove(&proof.update_bci);
-                    let Some(update_instruction) =
-                        self.instructions.get(&proof.update_bci).copied()
-                    else {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the proved for update has no SSA instruction",
-                            first_test_bci,
-                        );
-                    };
-                    let outer = std::mem::take(&mut self.stmts);
-                    let built = self.instruction(update_instruction);
-                    let mut update_stmts = std::mem::replace(&mut self.stmts, outer);
-                    built?;
-                    let Some(update) = update_stmts.pop() else {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the proved for update made no Java assignment",
-                            first_test_bci,
-                        );
-                    };
-                    if !update_stmts.is_empty() || !matches!(update.kind, StmtKind::Assign { .. }) {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the proved for update did not make one local assignment",
-                            first_test_bci,
-                        );
-                    }
-                    let Some(initial) = for_init_index.and_then(|index| self.stmts.get(index))
-                    else {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the proved for initialisation is absent",
-                            first_test_bci,
-                        );
-                    };
-                    let init_name = match &initial.kind {
-                        StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. } => name,
-                        _ => unreachable!("initialisation checked before building loop body"),
-                    };
-                    let StmtKind::Assign {
-                        name: update_name, ..
-                    } = &update.kind
-                    else {
-                        unreachable!("update checked above")
-                    };
-                    if init_name != update_name {
-                        let bcis = self.region_quote(region, first_test_bci);
-                        return self.fallback(
-                            bcis,
-                            "the for initialisation and update name different locals",
-                            first_test_bci,
-                        );
-                    }
-                    let initial = self
-                        .stmts
-                        .remove(for_init_index.expect("checked initialisation index"));
-                    self.statements = self.statements.saturating_sub(1);
-                    self.statements = self.statements.saturating_sub(1);
-                    StmtKind::For {
-                        label,
-                        init: Box::new(initial),
-                        cond,
-                        update: Box::new(update),
-                        body: loop_body,
-                    }
-                } else {
-                    match form {
-                        LoopForm::While => StmtKind::While {
-                            label,
-                            cond,
-                            body: loop_body,
-                        },
-                        LoopForm::DoWhile => StmtKind::DoWhile {
-                            label,
-                            cond,
-                            body: loop_body,
-                        },
-                        LoopForm::Endless => StmtKind::While {
-                            label,
-                            cond,
-                            body: loop_body,
-                        },
-                    }
-                };
-                let projected =
-                    if let Some(proof) = for_header.as_ref().filter(|_| tests.len() == 1) {
-                        self.array_for_each_candidate(proof, first_test_bci, path, &kind, body)?
-                    } else {
-                        None
-                    };
-                let iterable_projected = if for_header.is_none() && tests.len() == 1 {
-                    self.iterable_for_each_candidate(first_test_bci, &kind, body)?
-                } else {
-                    None
-                };
-                let (kind, origin) =
-                    if let Some((kind, origin, removed_element, declarations)) = projected {
-                        for index in declarations.iter().rev().copied() {
-                            self.stmts.remove(index);
-                        }
-                        self.stmts.pop(); // The proved, otherwise unused length cache.
-                        self.statements = self.statements.saturating_sub(
-                            if removed_element { 2 } else { 1 } + declarations.len(),
-                        );
-                        if !removed_element {
-                            let StmtKind::ForEach { name, .. } = &kind else {
-                                unreachable!("array projection produces an enhanced for")
-                            };
-                            self.synthetic_names.insert(name.clone());
-                        }
-                        (kind, origin)
-                    } else if let Some((kind, origin, mut remove, name)) = iterable_projected {
-                        remove.sort_unstable_by(|left, right| right.cmp(left));
-                        for index in remove {
-                            self.stmts.remove(index);
-                            self.statements = self.statements.saturating_sub(1);
-                        }
-                        self.synthetic_names.insert(name);
-                        (kind, origin)
-                    } else {
-                        (
-                            kind,
-                            OriginSet::new(if *form == LoopForm::Endless {
-                                Origin::derived(first_test_bci)
-                            } else {
-                                Origin::direct(first_test_bci)
-                            }),
-                        )
-                    };
-                let origin = gateway_origins.iter().fold(origin, |origin, bci| {
-                    origin.plus_derived(Origin::derived(*bci))
-                });
-                self.push(Stmt::new(kind, origin))
-            }
+            Region::Loop { .. } => self.loop_region(region, path),
             Region::SwitchBreak {
                 source_bci,
                 switch_bci,
@@ -18991,1684 +18726,8 @@ impl Builder<'_> {
                     OriginSet::new(Origin::direct(*source_bci)),
                 ))
             }
-            Region::Guard {
-                prefix,
-                plan,
-                body: structured_body,
-                finally_body: structured_finally_body,
-            } => {
-                // The walk wrote nothing of the statement's own header: the first resource's
-                // initialisation (or the monitor's entry) is the last block it reached, and the
-                // region owns it now.
-                for block in prefix {
-                    self.block(block)?;
-                }
-                self.range(plan.lead())?;
-                match plan.shape() {
-                    guard::Shape::Resources {
-                        resources,
-                        returns,
-                        inner_finally,
-                        trailing_finally,
-                        trail,
-                        ..
-                    } => {
-                        let mut declarations = Vec::with_capacity(resources.len());
-                        for resource in resources {
-                            match self.resource_declaration(resource) {
-                                Ok(declaration) => declarations.push(declaration),
-                                Err(reason) => {
-                                    let at = resource.close_bci();
-                                    let bcis = self.region_quote(region, at);
-                                    return self.fallback(bcis, &reason, at);
-                                }
-                            }
-                        }
-                        // The body's statements are written between the braces, in the order the
-                        // instructions run: the closes the normal path performs are *not* written
-                        // here — the compiler writes them for the resource the header declares,
-                        // which is what makes each close run exactly once per path.
-                        let mut body = self.body_range(plan.body())?;
-                        // The body's own `return`, when the normal path ends the method in one:
-                        // written inside the braces — the inner statement's own when the body
-                        // holds a proved `finally`, the statement's own otherwise.
-                        if let Some(return_bci) = returns {
-                            let statement = match self.guarded_return(*return_bci) {
-                                Ok(statement) => statement,
-                                Err(reason) => {
-                                    let bcis = self.region_quote(region, *return_bci);
-                                    return self.fallback(bcis, &reason, *return_bci);
-                                }
-                            };
-                            body.push(statement);
-                        }
-                        // The explicit inner `finally`: the body's statement list is one nested
-                        // `try { … } finally { … }` — the resources the inner statement's own
-                        // header declares inside its braces, the enclosing header keeping the
-                        // rest — written with the same `StmtKind::Try` a proved copy's own
-                        // presentation is, the mid cleanup as its `finally` body.
-                        if let Some(finally) = inner_finally {
-                            let finally_body = match self.body_range(finally.normal_cleanup()) {
-                                Ok(statements) => statements,
-                                Err(stop) => return Err(stop),
-                            };
-                            let split = finally.split().min(declarations.len());
-                            let inner_resources = declarations.split_off(split);
-                            let inner_origin = plan
-                                .facts()
-                                .iter()
-                                .filter(|bci| {
-                                    finally.normal_cleanup().0 <= **bci
-                                        && **bci < finally.handler_cleanup().1
-                                })
-                                .fold(
-                                    OriginSet::new(Origin::direct(plan.body().0)),
-                                    |origin, bci| origin.plus_derived(Origin::derived(*bci)),
-                                );
-                            body = vec![Stmt::new(
-                                StmtKind::Try {
-                                    resources: inner_resources,
-                                    catches: Vec::new(),
-                                    body,
-                                    finally_body: Some(finally_body),
-                                },
-                                inner_origin,
-                            )];
-                        }
-                        // The `finally` clause the statement itself carries: the header keeps its
-                        // own resources and the clause's body renders after the braces, from the
-                        // normal copy the lowering placed past the close chain — the same
-                        // `StmtKind::Try` a proved copy's own presentation is, no new
-                        // presentation function.
-                        let mut finally_body = None;
-                        if let Some(finally) = trailing_finally {
-                            finally_body = Some(self.body_range(finally.normal_cleanup())?);
-                        }
-                        // The clause the proof carried: the `catch` a compiler wound around the
-                        // whole lowering. Its header spells the row's class and the name the
-                        // parameter's slot carries; its body is the handler's one straight block,
-                        // written as ordinary statements with the binding store left to the header
-                        // — the same discipline a `try`/`catch` statement's own clauses follow.
-                        let mut catches = Vec::new();
-                        if let Some(clause) = plan.enclosing() {
-                            let (ty, name) = match self.enclosing_catch_header(clause) {
-                                Ok(header) => header,
-                                Err(reason) => {
-                                    let at = clause.body().0;
-                                    let bcis = self.region_quote(region, at);
-                                    return self.fallback(bcis, &reason, at);
-                                }
-                            };
-                            let outer_declared = self.declared.clone();
-                            // The header declares the local the handler's own entry store fills:
-                            // the store is therefore not a statement of the body, and every later
-                            // read of that local is a read of the name this header states.
-                            self.declared
-                                .insert(LocalVariable::whole(clause.parameter()));
-                            self.clause_parameters.insert(clause.body().0);
-                            let handler = match self.body_range(clause.body()) {
-                                Ok(statements) => statements,
-                                Err(stop) => {
-                                    self.declared = outer_declared;
-                                    return Err(stop);
-                                }
-                            };
-                            self.declared = outer_declared;
-                            catches.push(crate::ast::CatchClause {
-                                ty,
-                                name,
-                                body: handler,
-                            });
-                        }
-                        let mut origin = OriginSet::new(Origin::direct(
-                            resources
-                                .first()
-                                .map(|resource| resource.init().0)
-                                .unwrap_or(0),
-                        ));
-                        for bci in plan.facts() {
-                            // Every instruction the proof read — the closes, the suppressions, the
-                            // rethrows — is an anchor of the text that took its place, so the
-                            // relationship the statement preserves is answerable from the artifact.
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        if let Some(clause) = plan.enclosing() {
-                            // The clause's handler entry is an anchor of the statement beside the
-                            // proof's own readings, the way a `try`/`catch` clause's is.
-                            origin = origin.plus_derived(Origin::derived(clause.body().0));
-                        }
-                        let pushed = self.push(Stmt::new(
-                            StmtKind::Try {
-                                resources: declarations,
-                                // The one clause the proof carried: a `catch` whose whole-construct
-                                // row and straight handler both proved. Every other shape beside a
-                                // `try` header stays the `Unexplained` refusal, and this node is
-                                // only written where that proof succeeded.
-                                catches,
-                                body,
-                                finally_body,
-                            },
-                            origin,
-                        ));
-                        // The fused continuation the statement claims with its own last close
-                        // group: ordinary statements the block holds past the chain, rendered
-                        // after the statement in the order the run reaches them. The proof
-                        // admitted them only where the block ends the method there, so nothing
-                        // else of the method's own follows.
-                        if pushed.is_ok()
-                            && let Some((trail_start, trail_end)) = trail
-                        {
-                            self.range((*trail_start, *trail_end))?;
-                        }
-                        pushed
-                    }
-                    guard::Shape::Monitor {
-                        enter_bci,
-                        returns,
-                        nested,
-                        ..
-                    } => {
-                        let lock = match self.lock_expr(*enter_bci) {
-                            Ok(lock) => lock,
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, *enter_bci);
-                                return self.fallback(bcis, &reason, *enter_bci);
-                            }
-                        };
-                        // The nested pair: the whole body — its own statements, the structure
-                        // around the inner block and the inner block itself — is one region
-                        // tree, rendered with the pair's braces opened and closed where its
-                        // span sits in the walk ([`NestedPairBraces`]). The lock is the same
-                        // `lock_expr` reading the outer's is; no new presentation.
-                        let mut body = match (nested.as_deref(), structured_body.as_deref()) {
-                            (None, _) => self.body_range(plan.body())?,
-                            (Some(pair), Some(tree)) => {
-                                let inner_lock = match self.lock_expr(pair.enter_bci()) {
-                                    Ok(lock) => lock,
-                                    Err(reason) => {
-                                        let bcis = self.region_quote(region, pair.enter_bci());
-                                        return self.fallback(bcis, &reason, pair.enter_bci());
-                                    }
-                                };
-                                let mut origin = OriginSet::new(Origin::direct(pair.enter_bci()));
-                                for bci in plan.facts() {
-                                    if pair.span().0 <= *bci && *bci < pair.span().1 {
-                                        origin = origin.plus_derived(Origin::derived(*bci));
-                                    }
-                                }
-                                let checkpoint = self.finally_checkpoint();
-                                let enclosing = std::mem::take(&mut self.stmts);
-                                self.body_span = Some(plan.body());
-                                self.nested_pair = Some(NestedPairBraces {
-                                    span: pair.span(),
-                                    body: pair.body(),
-                                    lock: inner_lock,
-                                    origin,
-                                    returns: pair.returns(),
-                                    closed_without_return: false,
-                                    opened: None,
-                                    engaged_once: false,
-                                });
-                                let walked = self.region(tree, &child(path, 0));
-                                // A pair whose header the walk never reached is not presented
-                                // unbraced: the close is either the first instruction past the
-                                // span or this one, and a body that rendered no header at all is
-                                // a shape this arm does not write.
-                                let engaged = self
-                                    .nested_pair
-                                    .as_ref()
-                                    .is_some_and(|pair| pair.engaged_once);
-                                // The pair's own `return`, where its proof read one: the statement
-                                // is the plan's own `guarded_return`, written **inside** the inner
-                                // braces — before the inner `monitorexit` the pair proves — because
-                                // the proof read the returned value as the inner body's own
-                                // production. It is rendered here, where the body's run left the
-                                // names its expression reads, and closed with the block below.
-                                let inner_return = if engaged {
-                                    match pair.returns() {
-                                        Some(return_bci) => match self.guarded_return(return_bci) {
-                                            Ok(statement) => Some(statement),
-                                            Err(reason) => {
-                                                self.nested_pair = None;
-                                                self.restore_finally(checkpoint);
-                                                let bcis = self.region_quote(region, return_bci);
-                                                return self.fallback(bcis, &reason, return_bci);
-                                            }
-                                        },
-                                        None => None,
-                                    }
-                                } else {
-                                    None
-                                };
-                                let closed = if engaged {
-                                    self.close_nested_pair(inner_return)
-                                } else {
-                                    Ok(())
-                                };
-                                let rendered = self.nested_pair.take();
-                                self.body_span = None;
-                                let body = std::mem::replace(&mut self.stmts, enclosing);
-                                if let Err(stop) = walked.or(closed) {
-                                    self.restore_finally(checkpoint);
-                                    return Err(stop);
-                                }
-                                if rendered.is_none()
-                                    || !engaged
-                                    || (self.ragged && !checkpoint.ragged)
-                                {
-                                    self.restore_finally(checkpoint);
-                                    let at = pair.enter_bci();
-                                    let bcis = self.region_quote(region, at);
-                                    return self.fallback(
-                                        bcis,
-                                        "the nested synchronized body rendered no complete \
-                                         statement",
-                                        at,
-                                    );
-                                }
-                                if rendered
-                                    .as_ref()
-                                    .is_some_and(|rendered| rendered.closed_without_return)
-                                {
-                                    // The walk closed the braces before this arm could write the
-                                    // `return` the pair's proof read for them: the block that close
-                                    // wrote is missing the statement, and publishing it would move
-                                    // the return's evaluation past the inner exit.
-                                    self.restore_finally(checkpoint);
-                                    let at = pair.enter_bci();
-                                    let bcis = self.region_quote(region, at);
-                                    return self.fallback(
-                                        bcis,
-                                        "the nested synchronized body closed before the return its \
-                                         proof read could be written",
-                                        at,
-                                    );
-                                }
-                                body
-                            }
-                            // A plan with a nested pair always carries its body tree: the walk
-                            // built it before the region was published, or the claim fell back.
-                            (Some(pair), None) => {
-                                let at = pair.enter_bci();
-                                let bcis = self.region_quote(region, at);
-                                return self.fallback(
-                                    bcis,
-                                    "the nested synchronized body has no region tree",
-                                    at,
-                                );
-                            }
-                        };
-                        // The `return` shape: the normal path returns the value the body's own
-                        // instructions left on the stack, and the statement has to end with that
-                        // `return` **inside** its braces — the field read it names is written here,
-                        // where the value is consumed, and not where the `getfield` runs, so the
-                        // member is read exactly once and no local is invented for it.
-                        //
-                        // A pair whose own proof read that same return as the inner body's own
-                        // production wrote it inside the inner braces ([`NestedPairBraces`]), where
-                        // the evaluation the return consumes stays before the inner `monitorexit`:
-                        // the outer braces end there, and nothing is appended after the inner block.
-                        let written_in_inner = nested
-                            .as_deref()
-                            .is_some_and(|pair| pair.returns().is_some());
-                        if let Some(return_bci) = *returns
-                            && !written_in_inner
-                        {
-                            let statement = match self.guarded_return(return_bci) {
-                                Ok(statement) => statement,
-                                Err(reason) => {
-                                    let bcis = self.region_quote(region, return_bci);
-                                    return self.fallback(bcis, &reason, return_bci);
-                                }
-                            };
-                            body.push(statement);
-                        }
-                        let mut origin = OriginSet::new(Origin::direct(*enter_bci));
-                        for bci in plan.facts() {
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        self.push(Stmt::new(StmtKind::Synchronized { lock, body }, origin))
-                    }
-                    guard::Shape::MonitorBranches {
-                        enter_bci,
-                        branch_bci,
-                        then_exit_bci,
-                        then_return_bci,
-                        else_exit_bci,
-                        else_return_bci,
-                    } => {
-                        let lock = match self.lock_expr(*enter_bci) {
-                            Ok(lock) => lock,
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, *enter_bci);
-                                return self.fallback(bcis, &reason, *enter_bci);
-                            }
-                        };
-                        let cond = match self.test_expr(*branch_bci, false) {
-                            Ok(cond) => cond.derived_from(*branch_bci),
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, *branch_bci);
-                                return self.fallback(bcis, &reason, *branch_bci);
-                            }
-                        };
-                        let then_statement = match self.guarded_return(*then_return_bci) {
-                            Ok(statement) => statement,
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, *then_return_bci);
-                                return self.fallback(bcis, &reason, *then_return_bci);
-                            }
-                        };
-                        let else_statement = match self.guarded_return(*else_return_bci) {
-                            Ok(statement) => statement,
-                            Err(reason) => {
-                                let bcis = self.region_quote(region, *else_return_bci);
-                                return self.fallback(bcis, &reason, *else_return_bci);
-                            }
-                        };
-                        let branch = Stmt::new(
-                            StmtKind::If {
-                                cond,
-                                then_body: vec![then_statement],
-                                else_body: vec![else_statement],
-                            },
-                            OriginSet::new(Origin::direct(*branch_bci))
-                                .plus_derived(Origin::derived(*then_exit_bci))
-                                .plus_derived(Origin::derived(*then_return_bci))
-                                .plus_derived(Origin::derived(*else_exit_bci))
-                                .plus_derived(Origin::derived(*else_return_bci)),
-                        );
-                        let mut origin = OriginSet::new(Origin::direct(*enter_bci));
-                        for bci in plan.facts() {
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        self.push(Stmt::new(
-                            StmtKind::Synchronized {
-                                lock,
-                                body: vec![branch],
-                            },
-                            origin,
-                        ))
-                    }
-                    guard::Shape::LoopFinally { normal_cleanup, .. } => {
-                        let Some(Region::Loop { .. }) = structured_finally_body.as_deref() else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("loop finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the iterable finally has no bounded loop",
-                                plan.body().0,
-                            );
-                        };
-                        let body = self.body_range(plan.body())?;
-                        let outer = std::mem::take(&mut self.stmts);
-                        let built = self.range((normal_cleanup.0, 11)).and_then(|()| {
-                            self.region(
-                                structured_finally_body.as_deref().unwrap(),
-                                &child(path, 1),
-                            )
-                        });
-                        let cleanup = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = built {
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("loop finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        if body.iter().any(statement_has_fallback)
-                            || cleanup.iter().any(statement_has_fallback)
-                            || !cleanup.iter().any(|stmt| {
-                                matches!(
-                                    stmt.kind,
-                                    StmtKind::ForEach { .. } | StmtKind::While { .. }
-                                )
-                            })
-                        {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("loop finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the iterable finally is not completely presentable",
-                                plan.body().0,
-                            );
-                        }
-                        let origin = plan.facts().iter().copied().fold(
-                            OriginSet::new(Origin::direct(plan.body().0)),
-                            |origin, bci| origin.plus_derived(Origin::derived(bci)),
-                        );
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                catches: Vec::new(),
-                                body,
-                                finally_body: Some(cleanup),
-                            },
-                            origin,
-                        );
-                        if undeclared_local(&statement, &self.undeclared).is_some() {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("loop finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the iterable finally reads an undeclared local",
-                                plan.body().0,
-                            );
-                        }
-                        let pushed = self.push(statement);
-                        if pushed.is_err() {
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("loop finally checkpoint"),
-                            );
-                        }
-                        pushed
-                    }
-                    guard::Shape::Finally {
-                        normal_cleanup,
-                        completion,
-                        ..
-                    } => {
-                        let saved_return = match completion {
-                            guard::FinallyCompletion::SavedReturn { save, returns } => {
-                                Some((*save, *returns))
-                            }
-                            // A void completion saves no stack value and joins no named catch:
-                            // the body's own statements and the cleanup copy are the whole shape.
-                            guard::FinallyCompletion::Joined { .. }
-                            | guard::FinallyCompletion::Void { .. } => None,
-                        };
-                        let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
-                        let body = if let Some(inner) = structured_body {
-                            let outer = std::mem::take(&mut self.stmts);
-                            self.body_span = Some(plan.body());
-                            self.finally_return = saved_return;
-                            self.finally_catch_pop = match completion {
-                                guard::FinallyCompletion::Joined { catch_pop, .. } => {
-                                    Some(*catch_pop)
-                                }
-                                guard::FinallyCompletion::SavedReturn { .. }
-                                | guard::FinallyCompletion::Void { .. } => None,
-                            };
-                            let walked = self.region(inner, &child(path, 0));
-                            self.body_span = None;
-                            self.finally_return = None;
-                            self.finally_catch_pop = None;
-                            let body = std::mem::replace(&mut self.stmts, outer);
-                            if let Err(stop) = walked {
-                                self.restore_finally(
-                                    finally_checkpoint
-                                        .take()
-                                        .expect("structured finally checkpoint"),
-                                );
-                                return Err(stop);
-                            }
-                            body
-                        } else {
-                            let mut body = self.body_range(plan.body())?;
-                            let Some((_, returns)) = saved_return else {
-                                let bcis = self.region_quote(region, at);
-                                return self.fallback(
-                                    bcis,
-                                    "the joined finally has no bounded nested catch",
-                                    at,
-                                );
-                            };
-                            let return_stmt = match self.guarded_return(returns) {
-                                Ok(statement) => statement,
-                                Err(reason) => {
-                                    let bcis = self.region_quote(region, returns);
-                                    return self.fallback(bcis, &reason, returns);
-                                }
-                            };
-                            body.push(return_stmt);
-                            body
-                        };
-                        let finally_body = match self.body_range(*normal_cleanup) {
-                            Ok(body) => body,
-                            Err(stop) => {
-                                if let Some(checkpoint) = finally_checkpoint.take() {
-                                    self.restore_finally(checkpoint);
-                                }
-                                return Err(stop);
-                            }
-                        };
-                        let nested_complete = saved_return.is_some()
-                            || matches!(completion, guard::FinallyCompletion::Void { .. })
-                            || body.iter().any(|statement| {
-                                matches!(&statement.kind, StmtKind::Try { catches, .. } if catches.len() == 1)
-                            });
-                        if !nested_complete
-                            || body.iter().chain(&finally_body).any(statement_has_fallback)
-                        {
-                            let bcis = self.region_quote(region, at);
-                            if let Some(checkpoint) = finally_checkpoint.take() {
-                                self.restore_finally(checkpoint);
-                            }
-                            return self.fallback(
-                                bcis,
-                                "the proved finally contains an instruction this Java writer cannot state",
-                                at,
-                            );
-                        }
-                        let mut origin = OriginSet::new(Origin::direct(plan.body().0));
-                        for bci in plan.facts() {
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                catches: Vec::new(),
-                                body,
-                                finally_body: Some(finally_body),
-                            },
-                            origin,
-                        );
-                        if structured_body.is_some()
-                            && (undeclared_local(&statement, &self.undeclared).is_some()
-                                || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
-                                    self.stmts[checkpoint.stmts.len()..]
-                                        .iter()
-                                        .any(statement_has_fallback)
-                                }))
-                        {
-                            let bcis = self.region_quote(region, at);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("structured finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the proved finally has an unpresented declaration or lead",
-                                at,
-                            );
-                        }
-                        let fused_return =
-                            if let guard::FinallyCompletion::Joined { continuation, .. } =
-                                completion
-                                && plan.join().is_none()
-                            {
-                                let Some(instruction) =
-                                    self.instructions.get(continuation).copied()
-                                else {
-                                    let bcis = self.region_quote(region, *continuation);
-                                    if let Some(checkpoint) = finally_checkpoint.take() {
-                                        self.restore_finally(checkpoint);
-                                    }
-                                    return self.fallback(
-                                        bcis,
-                                        "the joined finally continuation has no names record",
-                                        *continuation,
-                                    );
-                                };
-                                if !matches!(
-                                    self.operations.get(*continuation),
-                                    Some(Operation::Return)
-                                ) || !stack_operands(instruction).is_empty()
-                                {
-                                    let bcis = self.region_quote(region, *continuation);
-                                    if let Some(checkpoint) = finally_checkpoint.take() {
-                                        self.restore_finally(checkpoint);
-                                    }
-                                    return self.fallback(
-                                        bcis,
-                                        "the joined finally continuation is not a void return",
-                                        *continuation,
-                                    );
-                                }
-                                Some(Stmt::new(
-                                    StmtKind::Return { value: None },
-                                    OriginSet::new(Origin::direct(*continuation)),
-                                ))
-                            } else {
-                                None
-                            };
-                        let pushed = self.push(statement).and_then(|()| {
-                            if let Some(return_stmt) = fused_return {
-                                self.push(return_stmt)?;
-                            }
-                            Ok(())
-                        });
-                        if pushed.is_err()
-                            && let Some(checkpoint) = finally_checkpoint.take()
-                        {
-                            self.restore_finally(checkpoint);
-                        }
-                        pushed
-                    }
-                    guard::Shape::LockGuardFinally {
-                        normal_cleanup,
-                        completion,
-                        ..
-                    }
-                    | guard::Shape::ResourceGuardFinally {
-                        normal_cleanup,
-                        completion,
-                        ..
-                    } => {
-                        // The statement is the one `try { … } finally { … }` the certificate
-                        // proved: the protected body is the walk's own region tree (a loop
-                        // included), the saved value's return is the body's last statement where
-                        // the shape saves one, and the normal release copy is the `finally` body.
-                        // The exceptional copy and the handler are folded away, exactly as the
-                        // resource shapes' copies are. Both guard certificates write this arm; the
-                        // lock guard's completion states a value-less return where the resource
-                        // guard's `Joined` form continues at the plan's own join.
-                        let Some(inner) = structured_body.as_deref() else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("lock guard checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the lock guard has no bounded protected body",
-                                plan.body().0,
-                            );
-                        };
-                        let saved_return = match completion {
-                            guard::LockGuardCompletion::SavedReturn { save, returns } => {
-                                Some((*save, *returns))
-                            }
-                            guard::LockGuardCompletion::Void { .. }
-                            | guard::LockGuardCompletion::Continues { .. } => None,
-                        };
-                        let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
-                        let outer = std::mem::take(&mut self.stmts);
-                        self.body_span = Some(plan.body());
-                        self.finally_return = saved_return;
-                        let walked = self.region(inner, &child(path, 0));
-                        self.body_span = None;
-                        self.finally_return = None;
-                        let body = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = walked {
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("lock guard checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let finally_body = match self.body_range(*normal_cleanup) {
-                            Ok(body) => body,
-                            Err(stop) => {
-                                if let Some(checkpoint) = finally_checkpoint.take() {
-                                    self.restore_finally(checkpoint);
-                                }
-                                return Err(stop);
-                            }
-                        };
-                        // The saved value's return is the body's own completion: the block the
-                        // store stands in wrote it where the store ran (`finally_return`), so the
-                        // body must hold one — a body that wrote no return would drop the value.
-                        if saved_return.is_some()
-                            && !body
-                                .iter()
-                                .any(|statement| matches!(statement.kind, StmtKind::Return { .. }))
-                        {
-                            let bcis = self.region_quote(region, at);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("lock guard checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the lock guard's saved return is not a statement of the body",
-                                at,
-                            );
-                        }
-                        if body.iter().chain(&finally_body).any(statement_has_fallback) {
-                            let bcis = self.region_quote(region, at);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("lock guard checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the lock guard contains an instruction this Java writer cannot state",
-                                at,
-                            );
-                        }
-                        let mut origin = OriginSet::new(Origin::direct(plan.body().0));
-                        for bci in plan.facts() {
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                catches: Vec::new(),
-                                body,
-                                finally_body: Some(finally_body),
-                            },
-                            origin,
-                        );
-                        if undeclared_local(&statement, &self.undeclared).is_some()
-                            || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
-                                self.stmts[checkpoint.stmts.len()..]
-                                    .iter()
-                                    .any(statement_has_fallback)
-                            })
-                        {
-                            let bcis = self.region_quote(region, at);
-                            self.restore_finally(
-                                finally_checkpoint.take().expect("lock guard checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the lock guard has an unpresented declaration or lead",
-                                at,
-                            );
-                        }
-                        let pushed = self.push(statement).and_then(|()| {
-                            // The statement's own continuation, where the body's completion is
-                            // carried past the release: the transfer's own block's tail — the
-                            // `goto`'s target was fused into it — written after the `try` as the
-                            // statements the bytecode runs there, the `return` the method answers
-                            // included (`recover-loop-test-copy-store`).
-                            if let guard::LockGuardCompletion::Continues {
-                                continuation: guard::Continuation::Tail { span },
-                                ..
-                            } = completion
-                            {
-                                self.range(*span)?;
-                            }
-                            Ok(())
-                        });
-                        if pushed.is_err()
-                            && let Some(checkpoint) = finally_checkpoint.take()
-                        {
-                            self.restore_finally(checkpoint);
-                        }
-                        pushed
-                    }
-                    guard::Shape::ConditionalFinally { normal_return, .. }
-                    | guard::Shape::NullableResourceFinally {
-                        saved_return: (_, normal_return),
-                        ..
-                    }
-                    | guard::Shape::FlagConditionalFinally {
-                        saved_return: (_, normal_return),
-                        ..
-                    }
-                    | guard::Shape::LocalNullConditionalFinally {
-                        saved_return: (_, normal_return),
-                        ..
-                    } => {
-                        let (Some(body_region), Some(cleanup_region @ Region::If { .. })) = (
-                            structured_body.as_deref(),
-                            structured_finally_body.as_deref(),
-                        ) else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("conditional finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the conditional finally has no two bounded if regions",
-                                plan.body().0,
-                            );
-                        };
-                        let outer = std::mem::take(&mut self.stmts);
-                        self.body_span = Some(plan.body());
-                        let built_body = self.region(body_region, &child(path, 0));
-                        self.body_span = None;
-                        let body = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = built_body {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("conditional finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let mut body = body;
-                        if matches!(
-                            plan.shape(),
-                            guard::Shape::NullableResourceFinally { .. }
-                                | guard::Shape::FlagConditionalFinally { .. }
-                                | guard::Shape::LocalNullConditionalFinally { .. }
-                        ) {
-                            match self.guarded_return(*normal_return) {
-                                Ok(statement) => body.push(statement),
-                                Err(reason) => {
-                                    let bcis = self.region_quote(region, *normal_return);
-                                    self.restore_finally(
-                                        finally_checkpoint
-                                            .take()
-                                            .expect("nullable finally checkpoint"),
-                                    );
-                                    return self.fallback(bcis, &reason, *normal_return);
-                                }
-                            }
-                        }
-                        let outer = std::mem::take(&mut self.stmts);
-                        if let guard::Shape::NullableResourceFinally { normal_cleanup, .. }
-                        | guard::Shape::FlagConditionalFinally { normal_cleanup, .. }
-                        | guard::Shape::LocalNullConditionalFinally {
-                            normal_cleanup, ..
-                        } = plan.shape()
-                        {
-                            self.body_span = Some(*normal_cleanup);
-                        }
-                        let built_cleanup = self.region(cleanup_region, &child(path, 1));
-                        self.body_span = None;
-                        let finally_body = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = built_cleanup {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("conditional finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let mut origin = OriginSet::new(Origin::direct(plan.body().0))
-                            .plus_derived(Origin::derived(*normal_return));
-                        for bci in plan.facts() {
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                catches: Vec::new(),
-                                body,
-                                finally_body: Some(finally_body),
-                            },
-                            origin,
-                        );
-                        if statement_has_fallback(&statement)
-                            || undeclared_local(&statement, &self.undeclared).is_some()
-                        {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("conditional finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the conditional finally has an unpresented body or cleanup",
-                                plan.body().0,
-                            );
-                        }
-                        let pushed = self.push(statement);
-                        if pushed.is_err() {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("conditional finally checkpoint"),
-                            );
-                        }
-                        pushed
-                    }
-                    guard::Shape::MultiReturnLoopFinally {
-                        cleanup, returns, ..
-                    } => {
-                        let Some(inner) = structured_body.as_deref() else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("multi-return finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the two-return finally has no bounded loop body",
-                                plan.body().0,
-                            );
-                        };
-                        let outer = std::mem::take(&mut self.stmts);
-                        self.body_span = Some(plan.body());
-                        self.multi_return_finally = Some(*returns);
-                        let walked = self.region(inner, &child(path, 0));
-                        self.body_span = None;
-                        self.multi_return_finally = None;
-                        let body = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = walked {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("multi-return finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let cleanup_body = match self.body_range(cleanup[0]) {
-                            Ok(body) => body,
-                            Err(stop) => {
-                                self.restore_finally(
-                                    finally_checkpoint
-                                        .take()
-                                        .expect("multi-return finally checkpoint"),
-                                );
-                                return Err(stop);
-                            }
-                        };
-                        let origin = plan.facts().iter().copied().fold(
-                            OriginSet::new(Origin::direct(plan.body().0)),
-                            |origin, bci| origin.plus_derived(Origin::derived(bci)),
-                        );
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                catches: Vec::new(),
-                                body,
-                                finally_body: Some(cleanup_body),
-                            },
-                            origin,
-                        );
-                        if statement_has_fallback(&statement)
-                            || undeclared_local(&statement, &self.undeclared).is_some()
-                        {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("multi-return finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the two-return finally has an unpresented body or local",
-                                plan.body().0,
-                            );
-                        }
-                        let pushed = self.push(statement);
-                        if pushed.is_err() {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("multi-return finally checkpoint"),
-                            );
-                        }
-                        pushed
-                    }
-                    guard::Shape::SegmentedNullLeadFinally {
-                        normal_cleanup,
-                        early_cleanup,
-                        early_return,
-                        returns,
-                        ..
-                    } => {
-                        let (Some(body_region), Some(cleanup_region @ Region::Straight { .. })) = (
-                            structured_body.as_deref(),
-                            structured_finally_body.as_deref(),
-                        ) else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented null-lead finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the segmented null-lead finally has no bounded body and cleanup",
-                                plan.body().0,
-                            );
-                        };
-                        let outer = std::mem::take(&mut self.stmts);
-                        self.body_span = Some(plan.body());
-                        self.segmented_null_lead = Some(SegmentedNullLeadCompletion {
-                            early_cleanup: *early_cleanup,
-                            early_return: *early_return,
-                            returns: *returns,
-                        });
-                        let built_body = self.region(body_region, &child(path, 0));
-                        self.body_span = None;
-                        self.segmented_null_lead = None;
-                        let body = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = built_body {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented null-lead finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let outer = std::mem::take(&mut self.stmts);
-                        self.body_span = Some(*normal_cleanup);
-                        let built_cleanup = self.region(cleanup_region, &child(path, 1));
-                        self.body_span = None;
-                        let finally_body = std::mem::replace(&mut self.stmts, outer);
-                        if let Err(stop) = built_cleanup {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented null-lead finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let mut origin = OriginSet::new(Origin::direct(plan.body().0))
-                            .plus_derived(Origin::derived(*early_return));
-                        for bci in plan.facts() {
-                            origin = origin.plus_derived(Origin::derived(*bci));
-                        }
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                catches: Vec::new(),
-                                body,
-                                finally_body: Some(finally_body),
-                            },
-                            origin,
-                        );
-                        if statement_has_fallback(&statement)
-                            || undeclared_local(&statement, &self.undeclared).is_some()
-                        {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented null-lead finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the segmented null-lead finally has an unpresented body or cleanup",
-                                plan.body().0,
-                            );
-                        }
-                        let pushed = self.push(statement);
-                        if pushed.is_err() {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented null-lead finally checkpoint"),
-                            );
-                        }
-                        pushed
-                    }
-                    guard::Shape::SegmentedFinally {
-                        catch_body,
-                        cleanup,
-                        early_return,
-                        transfers,
-                        ..
-                    } => {
-                        let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref()
-                        else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the segmented finally has no bounded try and catch",
-                                plan.body().0,
-                            );
-                        };
-                        if catches.len() != 1 {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the segmented finally has no unique named catch",
-                                plan.body().0,
-                            );
-                        }
-                        let nested_path = child(path, 0);
-                        let mark = self.stmts.len();
-                        self.shared_finally = Some(SharedFinallyBuild {
-                            path: nested_path.clone(),
-                            protected: plan.body(),
-                            catch_body: *catch_body,
-                            completion: Some(guard::SharedFinallyCompletion::Joined {
-                                transfers: *transfers,
-                            }),
-                            normal_cleanup: cleanup[1],
-                            facts: plan.facts().to_vec(),
-                            segmented: Some((cleanup[0], *early_return)),
-                            empty_catch: false,
-                            two_catch: None,
-                        });
-                        let built = self.region(inner, &nested_path);
-                        self.shared_finally = None;
-                        if let Err(stop) = built {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let complete = self.stmts[mark..].iter().all(|statement| {
-                            !statement_has_fallback(statement)
-                                && undeclared_local(statement, &self.undeclared).is_none()
-                        }) && self.stmts[mark..].iter().any(|statement| {
-                            matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
-                                if body.len() == 1 && catches.len() == 1)
-                        });
-                        if !complete {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("segmented finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the segmented finally has an unpresented body, declaration, or cleanup",
-                                plan.body().0,
-                            );
-                        }
-                        Ok(())
-                    }
-                    guard::Shape::TwoCatchReturnFinally {
-                        catches,
-                        cleanup,
-                        saved_return,
-                        ..
-                    } => {
-                        let Some(
-                            inner @ Region::Try {
-                                catches: regions, ..
-                            },
-                        ) = structured_body.as_deref()
-                        else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("two-catch finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the two-catch finally has no bounded try",
-                                plan.body().0,
-                            );
-                        };
-                        if regions.len() != 2 {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("two-catch finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the two-catch finally has no two named catches",
-                                plan.body().0,
-                            );
-                        }
-                        let nested_path = child(path, 0);
-                        let mark = self.stmts.len();
-                        self.shared_finally = Some(SharedFinallyBuild {
-                            path: nested_path.clone(),
-                            protected: plan.body(),
-                            catch_body: (catches[1].0.bci(), cleanup[2].0),
-                            completion: None,
-                            normal_cleanup: cleanup[0],
-                            facts: plan.facts().to_vec(),
-                            segmented: None,
-                            empty_catch: false,
-                            two_catch: Some((
-                                (catches[0].0.bci(), catches[0].0.bci()),
-                                *saved_return,
-                            )),
-                        });
-                        let built = self.region(inner, &nested_path);
-                        self.shared_finally = None;
-                        if let Err(stop) = built {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("two-catch finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let complete = self.stmts[mark..].iter().all(|statement| {
-                            !statement_has_fallback(statement)
-                                && undeclared_local(statement, &self.undeclared).is_none()
-                        }) && self.stmts[mark..].iter().any(|statement| {
-                            matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
-                                if body.len() == 1 && catches.len() == 2
-                                    && catches[0].body.is_empty()
-                                    && matches!(catches[1].body.as_slice(), [Stmt { kind: StmtKind::Return { .. }, .. }]))
-                        });
-                        if !complete {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("two-catch finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the two-catch finally has an unpresented body or cleanup",
-                                plan.body().0,
-                            );
-                        }
-                        Ok(())
-                    }
-                    guard::Shape::NestedCleanupFinally { cleanup, .. } => {
-                        let Some(Region::Try { catches, .. }) = structured_finally_body.as_deref()
-                        else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("nested cleanup checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the nested cleanup has no bounded catch",
-                                plan.body().0,
-                            );
-                        };
-                        let [clause] = catches.as_slice() else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("nested cleanup checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the nested cleanup has no unique catch",
-                                plan.body().0,
-                            );
-                        };
-                        let (ty, name) = match self.catch_header(clause) {
-                            Ok(header) if header.0 == "java.io.IOException" => header,
-                            _ => {
-                                let bcis = self.region_quote(region, clause.handler().bci());
-                                self.restore_finally(
-                                    finally_checkpoint
-                                        .take()
-                                        .expect("nested cleanup checkpoint"),
-                                );
-                                return self.fallback(
-                                    bcis,
-                                    "the nested cleanup catch is not a bindable IOException",
-                                    clause.handler().bci(),
-                                );
-                            }
-                        };
-                        let body = match self.body_range(plan.body()) {
-                            Ok(body) => body,
-                            Err(stop) => {
-                                self.restore_finally(
-                                    finally_checkpoint
-                                        .take()
-                                        .expect("nested cleanup checkpoint"),
-                                );
-                                return Err(stop);
-                            }
-                        };
-                        let cleanup_body = match self.body_range(*cleanup) {
-                            Ok(body) => body,
-                            Err(stop) => {
-                                self.restore_finally(
-                                    finally_checkpoint
-                                        .take()
-                                        .expect("nested cleanup checkpoint"),
-                                );
-                                return Err(stop);
-                            }
-                        };
-                        let inner = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                body: cleanup_body,
-                                catches: vec![crate::ast::CatchClause {
-                                    ty,
-                                    name,
-                                    body: Vec::new(),
-                                }],
-                                finally_body: None,
-                            },
-                            OriginSet::new(Origin::direct(cleanup.0))
-                                .plus_derived(Origin::derived(clause.handler().bci())),
-                        );
-                        let origin = plan.facts().iter().copied().fold(
-                            OriginSet::new(Origin::direct(plan.body().0)),
-                            |origin, bci| origin.plus_derived(Origin::derived(bci)),
-                        );
-                        let statement = Stmt::new(
-                            StmtKind::Try {
-                                resources: Vec::new(),
-                                body,
-                                catches: Vec::new(),
-                                finally_body: Some(vec![inner]),
-                            },
-                            origin,
-                        );
-                        if statement_has_fallback(&statement)
-                            || undeclared_local(&statement, &self.undeclared).is_some()
-                        {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("nested cleanup checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the nested cleanup has an unpresented statement or local",
-                                plan.body().0,
-                            );
-                        }
-                        let pushed = self.push(statement);
-                        if pushed.is_err() {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("nested cleanup checkpoint"),
-                            );
-                        }
-                        pushed
-                    }
-                    guard::Shape::SharedFinally { .. }
-                    | guard::Shape::EmptyCatchCallFinally { .. } => {
-                        let (catch_body, normal_cleanup, completion, empty_catch) =
-                            match plan.shape() {
-                                guard::Shape::SharedFinally {
-                                    catch_body,
-                                    normal_cleanup,
-                                    completion,
-                                    ..
-                                } => (*catch_body, *normal_cleanup, completion.clone(), false),
-                                guard::Shape::EmptyCatchCallFinally {
-                                    catch_handler,
-                                    cleanup,
-                                    transfers,
-                                    ..
-                                } => (
-                                    (catch_handler.bci(), catch_handler.bci()),
-                                    cleanup[0],
-                                    guard::SharedFinallyCompletion::Joined {
-                                        transfers: *transfers,
-                                    },
-                                    true,
-                                ),
-                                _ => unreachable!(),
-                            };
-                        let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref()
-                        else {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("shared finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the shared finally has no bounded catch structure",
-                                plan.body().0,
-                            );
-                        };
-                        if catches.len() != 1 {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("shared finally checkpoint"),
-                            );
-                            return self.fallback(
-                                bcis,
-                                "the shared finally has no unique named catch",
-                                plan.body().0,
-                            );
-                        }
-                        let nested_path = child(path, 0);
-                        let mark = self.stmts.len();
-                        self.shared_finally = Some(SharedFinallyBuild {
-                            path: nested_path.clone(),
-                            protected: plan.body(),
-                            catch_body,
-                            completion: Some(completion),
-                            normal_cleanup,
-                            facts: plan.facts().to_vec(),
-                            segmented: None,
-                            empty_catch,
-                            two_catch: None,
-                        });
-                        let built = self.region(inner, &nested_path);
-                        self.shared_finally = None;
-                        if let Err(stop) = built {
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("shared finally checkpoint"),
-                            );
-                            return Err(stop);
-                        }
-                        let complete = self.stmts[mark..].iter().all(|statement| {
-                            !statement_has_fallback(statement)
-                                && undeclared_local(statement, &self.undeclared).is_none()
-                        }) && self.stmts[mark..].iter().any(|statement| {
-                            matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
-                                if body.len() == 1 && catches.len() == 1)
-                        });
-                        if !complete {
-                            let bcis = self.region_quote(region, plan.body().0);
-                            self.restore_finally(
-                                finally_checkpoint
-                                    .take()
-                                    .expect("shared finally checkpoint"),
-                            );
-                            return self.fallback(bcis, "the shared finally has an unpresented body, declaration, or cleanup", plan.body().0);
-                        }
-                        Ok(())
-                    }
-                }
-            }
-            Region::Try {
-                prefix,
-                lead,
-                body,
-                catches,
-                normal_exit_bci,
-                transparent,
-            } => {
-                let mut transparent_checkpoint =
-                    transparent.as_ref().map(|_| self.finally_checkpoint());
-                let shared = self
-                    .shared_finally
-                    .as_ref()
-                    .filter(|shared| shared.path == *path)
-                    .cloned();
-                for block in prefix {
-                    self.block(block)?;
-                }
-                // The statement's own block may hold what ran before the protected range began —
-                // `int x = 1;` in front of `try { … }` — and those instructions are not part of the
-                // range: they are written here, before the `try`, exactly like the block's own lead
-                // in front of an `if`. The body still begins in that same block, so the instructions
-                // this wrote are the ones it must not write again.
-                self.range(*lead)?;
-                let lead: BTreeSet<u32> = self
-                    .instructions
-                    .range(lead.0..lead.1)
-                    .map(|(bci, _)| *bci)
-                    .collect();
-                // The clause headers come from the class file's own facts and are read **before**
-                // anything is written: a clause whose type or parameter cannot be named leaves the
-                // whole region quoted rather than writing half a `try` with a header the text cannot
-                // state.
-                let mut headers = Vec::with_capacity(catches.len());
-                for clause in catches {
-                    match self.catch_header(clause) {
-                        Ok(header) => headers.push(header),
-                        Err(reason) => {
-                            let at = clause.handler().bci();
-                            let bcis = if transparent.is_some() {
-                                self.transparent_try_bcis(region)?
-                            } else {
-                                self.region_quote(region, at)
-                            };
-                            if let Some(checkpoint) = transparent_checkpoint.take() {
-                                self.restore_finally(checkpoint);
-                            }
-                            return self.fallback(bcis, &reason, at);
-                        }
-                    }
-                }
-                let mut body_statements = Vec::new();
-                let outer = std::mem::replace(&mut self.settled, lead);
-                let previous_finally = (self.body_span, self.finally_return);
-                if let Some(shared) = &shared {
-                    self.body_span = Some(shared.protected);
-                    self.finally_return = match &shared.completion {
-                        Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
-                            Some(returns[0])
-                        }
-                        Some(guard::SharedFinallyCompletion::Joined { .. })
-                        | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
-                        | None => None,
-                    };
-                }
-                let walked = self.arm(body, &mut body_statements, &child(path, 0));
-                self.body_span = previous_finally.0;
-                self.finally_return = previous_finally.1;
-                self.settled = outer;
-                walked?;
-                let mut written = Vec::with_capacity(catches.len());
-                for (index, (clause, (ty, name))) in catches.iter().zip(headers).enumerate() {
-                    let outer_declared = self.declared.clone();
-                    // The header declares the local the handler's own entry store fills: the store is
-                    // therefore not a statement of the body, and every later read of that local is a
-                    // read of the name this header states.
-                    self.declared
-                        .insert(LocalVariable::whole(clause.parameter()));
-                    self.clause_parameters.insert(clause.handler().bci());
-                    let mut handler = Vec::new();
-                    let previous_finally = (self.body_span, self.finally_return);
-                    if let Some(shared) = &shared {
-                        if let Some((empty, saved)) = shared.two_catch {
-                            self.body_span =
-                                Some(if index == 0 { empty } else { shared.catch_body });
-                            self.finally_return = (index == 1).then_some(saved);
-                        } else {
-                            self.body_span = Some(shared.catch_body);
-                            self.finally_return = match &shared.completion {
-                                Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
-                                    Some(returns[1])
-                                }
-                                Some(guard::SharedFinallyCompletion::Joined { .. })
-                                | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
-                                | None => None,
-                            };
-                        }
-                    }
-                    let empty_catch = shared.as_ref().is_some_and(|shared| {
-                        shared.empty_catch || (shared.two_catch.is_some() && index == 0)
-                    });
-                    let walked = if empty_catch {
-                        Ok(())
-                    } else {
-                        self.arm(
-                            clause.body(),
-                            &mut handler,
-                            &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
-                        )
-                    };
-                    self.body_span = previous_finally.0;
-                    self.finally_return = previous_finally.1;
-                    walked?;
-                    // P3 2.2's third negative: a clause whose body walk wrote **no** statement
-                    // while the body's own region still holds instructions the header and the
-                    // control flow do not account for is not an empty catch. The handler body is
-                    // what this build could not present, so the clause keeps its header and the
-                    // body becomes the BCI reference any refused region writes — empty braces
-                    // would state a handler that runs nothing, and the dropped statements would
-                    // be named nowhere.
-                    if handler.is_empty()
-                        && !empty_catch
-                        && let Some((reason, bcis)) =
-                            self.unpresented_clause_body(clause.body(), clause.handler().bci())?
-                    {
-                        let at = bcis
-                            .first()
-                            .copied()
-                            .unwrap_or_else(|| clause.handler().bci());
-                        let origin = bcis
-                            .iter()
-                            .filter(|bci| **bci != at)
-                            .fold(OriginSet::new(Origin::direct(at)), |origin, bci| {
-                                origin.plus_derived(Origin::derived(*bci))
-                            });
-                        self.push_into(
-                            &mut handler,
-                            Stmt::new(StmtKind::Fallback { reason, bcis }, origin),
-                        )?;
-                    }
-                    // A catch parameter is visible through its own clause body only. The builder's
-                    // `declared` set is a construction aid, so restore the enclosing lexical scope
-                    // before the next handler or the code following this try is built.
-                    self.declared = outer_declared;
-                    written.push(crate::ast::CatchClause {
-                        ty,
-                        name,
-                        body: handler,
-                    });
-                }
-                if let Some(proof) = transparent {
-                    let mut stated = Vec::new();
-                    for statement in &body_statements {
-                        stated_by_statement(statement, &mut Vec::new(), &mut stated);
-                    }
-                    let complete = !body_statements.is_empty()
-                        && !body_statements.iter().any(statement_has_fallback)
-                        && written
-                            .iter()
-                            .all(|clause| !clause.body.iter().any(statement_has_fallback))
-                        && self
-                            .instructions
-                            .range(proof.range.0..proof.range.1)
-                            .all(|(bci, _)| stated.contains(bci));
-                    if !complete {
-                        self.restore_finally(
-                            transparent_checkpoint
-                                .take()
-                                .expect("transparent try checkpoint"),
-                        );
-                        let bcis = self.transparent_try_bcis(region)?;
-                        return self.fallback(
-                            bcis,
-                            "the transparent catch-all has no complete try and catch presentation",
-                            proof.range.0,
-                        );
-                    }
-                }
-                // The statement is the protected range's own start; every clause adds the handler
-                // entry it was read from, so the table's own rows are the anchors of the text that
-                // states them.
-                let mut origin = OriginSet::new(Origin::direct(
-                    body.blocks().first().map(|block| block.bci()).unwrap_or(0),
-                ));
-                for clause in catches {
-                    origin = origin.plus_derived(Origin::derived(clause.handler().bci()));
-                }
-                if let Some(bci) = normal_exit_bci {
-                    origin = origin.plus_derived(Origin::derived(*bci));
-                }
-                if let Some(proof) = transparent {
-                    for bci in proof.bcis.into_iter().chain(proof.normal_exits) {
-                        origin = origin.plus_derived(Origin::derived(bci));
-                    }
-                }
-                let finally_body = if let Some(shared) = &shared {
-                    for bci in &shared.facts {
-                        origin = origin.plus_derived(Origin::derived(*bci));
-                    }
-                    Some(self.body_range(shared.normal_cleanup)?)
-                } else {
-                    None
-                };
-                self.push(Stmt::new(
-                    StmtKind::Try {
-                        resources: Vec::new(),
-                        catches: written,
-                        body: body_statements,
-                        finally_body,
-                    },
-                    origin,
-                ))
-            }
+            Region::Guard { .. } => self.guard_region(region, path, finally_checkpoint),
+            Region::Try { .. } => self.try_region(region, path),
             Region::ShortCircuitValue { .. } => {
                 unreachable!("short-circuit regions use the whole-source fallback path above")
             }
@@ -20703,6 +18762,1928 @@ impl Builder<'_> {
                 self.fallback(bcis, reason.message(), at)
             }
         }
+    }
+
+    fn loop_region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
+        let Region::Loop {
+            header,
+            tests,
+            test_operator,
+            form,
+            for_header,
+            body,
+            gateway_origins,
+            ..
+        } = region
+        else {
+            unreachable!("loop_region is dispatched only for Region::Loop")
+        };
+        // The test is written *inside* the loop statement, so the values it reads and the
+        // calls it makes run once per evaluation — the loop's own count, not the count of a
+        // hoisted copy. Which of the two senses continues the loop is a decode fact
+        // (`Continuation`), and the condition is that sense, not its negation.
+        let first_test_bci = match (form, tests.first()) {
+            (LoopForm::Endless, None) if test_operator.is_none() && for_header.is_none() => {
+                header.bci()
+            }
+            (LoopForm::Endless, _) => {
+                let bcis = self.region_quote(region, header.bci());
+                return self.fallback(
+                    bcis,
+                    "the endless loop has unexpected header tests",
+                    header.bci(),
+                );
+            }
+            (_, Some((_, bci, _))) => *bci,
+            (_, None) => {
+                let bcis = self.region_quote(region, header.bci());
+                return self.fallback(bcis, "the loop has no proved test", header.bci());
+            }
+        };
+        let cond = if *form == LoopForm::Endless {
+            Expr::new(
+                ExprKind::Boolean(true),
+                OriginSet::new(Origin::derived(header.bci())),
+            )
+        } else {
+            let mut cond = None;
+            for (_, test_bci, continuation) in tests {
+                let test_bci = *test_bci;
+                let taken = *continuation == Continuation::Taken;
+                let test = match self.test_expr(test_bci, taken) {
+                    Ok(test) => test.derived_from(test_bci),
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, test_bci);
+                        return self.fallback(bcis, &reason, test_bci);
+                    }
+                };
+                cond = Some(match cond {
+                    None => test,
+                    Some(left) => {
+                        let Some(operator) = test_operator else {
+                            let bcis = self.region_quote(region, test_bci);
+                            return self.fallback(
+                                bcis,
+                                "multiple loop tests have no proved short-circuit operator",
+                                test_bci,
+                            );
+                        };
+                        binary(*operator, left, test, first_test_bci).derived_from(test_bci)
+                    }
+                });
+            }
+            cond.expect("the loop's test list was checked non-empty")
+        };
+        if tests.len() == 1 && test_operator.is_some() {
+            let bcis = self.region_quote(region, first_test_bci);
+            return self.fallback(
+                bcis,
+                "one loop test cannot own a short-circuit operator",
+                first_test_bci,
+            );
+        }
+        let for_init_index = for_header.as_ref().and_then(|proof| {
+            let index = self.stmts.iter().rposition(|stmt| {
+                stmt.origin.primary().bci() == proof.init_bci
+                    && matches!(
+                        stmt.kind,
+                        StmtKind::Declare { value: Some(_), .. } | StmtKind::Assign { .. }
+                    )
+            })?;
+            self.stmts[index + 1..]
+                .iter()
+                .all(|stmt| matches!(stmt.kind, StmtKind::Declare { value: None, .. }))
+                .then_some(index)
+        });
+        if let Some(proof) = for_header {
+            if tests.len() != 1 {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the counted-loop proof covers only one test",
+                    first_test_bci,
+                );
+            }
+            if for_init_index.is_none() {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the counted loop's preceding local initialisation did not produce one Java header clause",
+                    first_test_bci,
+                );
+            }
+            self.settled.insert(proof.update_bci);
+        }
+        let header_bci = header.bci();
+        self.loop_headers.push(header_bci);
+        let outer = std::mem::take(&mut self.stmts);
+        let outer_declared = self.declared.clone();
+        let walked = body.iter().enumerate().try_for_each(|(index, region)| {
+            self.region(
+                region,
+                &child(path, u32::try_from(index).unwrap_or(u32::MAX)),
+            )
+        });
+        let loop_body = std::mem::replace(&mut self.stmts, outer);
+        self.declared = outer_declared;
+        self.loop_headers.pop();
+        walked?;
+        let label = self
+            .labeled_loop_headers
+            .contains(&header_bci)
+            .then(|| self.loop_label(header_bci));
+        let kind = if let Some(proof) = for_header {
+            self.settled.remove(&proof.update_bci);
+            let Some(update_instruction) = self.instructions.get(&proof.update_bci).copied() else {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the proved for update has no SSA instruction",
+                    first_test_bci,
+                );
+            };
+            let outer = std::mem::take(&mut self.stmts);
+            let built = self.instruction(update_instruction);
+            let mut update_stmts = std::mem::replace(&mut self.stmts, outer);
+            built?;
+            let Some(update) = update_stmts.pop() else {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the proved for update made no Java assignment",
+                    first_test_bci,
+                );
+            };
+            if !update_stmts.is_empty() || !matches!(update.kind, StmtKind::Assign { .. }) {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the proved for update did not make one local assignment",
+                    first_test_bci,
+                );
+            }
+            let Some(initial) = for_init_index.and_then(|index| self.stmts.get(index)) else {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the proved for initialisation is absent",
+                    first_test_bci,
+                );
+            };
+            let init_name = match &initial.kind {
+                StmtKind::Declare { name, .. } | StmtKind::Assign { name, .. } => name,
+                _ => unreachable!("initialisation checked before building loop body"),
+            };
+            let StmtKind::Assign {
+                name: update_name, ..
+            } = &update.kind
+            else {
+                unreachable!("update checked above")
+            };
+            if init_name != update_name {
+                let bcis = self.region_quote(region, first_test_bci);
+                return self.fallback(
+                    bcis,
+                    "the for initialisation and update name different locals",
+                    first_test_bci,
+                );
+            }
+            let initial = self
+                .stmts
+                .remove(for_init_index.expect("checked initialisation index"));
+            self.statements = self.statements.saturating_sub(1);
+            self.statements = self.statements.saturating_sub(1);
+            StmtKind::For {
+                label,
+                init: Box::new(initial),
+                cond,
+                update: Box::new(update),
+                body: loop_body,
+            }
+        } else {
+            match form {
+                LoopForm::While => StmtKind::While {
+                    label,
+                    cond,
+                    body: loop_body,
+                },
+                LoopForm::DoWhile => StmtKind::DoWhile {
+                    label,
+                    cond,
+                    body: loop_body,
+                },
+                LoopForm::Endless => StmtKind::While {
+                    label,
+                    cond,
+                    body: loop_body,
+                },
+            }
+        };
+        let projected = if let Some(proof) = for_header.as_ref().filter(|_| tests.len() == 1) {
+            self.array_for_each_candidate(proof, first_test_bci, path, &kind, body)?
+        } else {
+            None
+        };
+        let iterable_projected = if for_header.is_none() && tests.len() == 1 {
+            self.iterable_for_each_candidate(first_test_bci, &kind, body)?
+        } else {
+            None
+        };
+        let (kind, origin) = if let Some((kind, origin, removed_element, declarations)) = projected
+        {
+            for index in declarations.iter().rev().copied() {
+                self.stmts.remove(index);
+            }
+            self.stmts.pop(); // The proved, otherwise unused length cache.
+            self.statements = self
+                .statements
+                .saturating_sub(if removed_element { 2 } else { 1 } + declarations.len());
+            if !removed_element {
+                let StmtKind::ForEach { name, .. } = &kind else {
+                    unreachable!("array projection produces an enhanced for")
+                };
+                self.synthetic_names.insert(name.clone());
+            }
+            (kind, origin)
+        } else if let Some((kind, origin, mut remove, name)) = iterable_projected {
+            remove.sort_unstable_by(|left, right| right.cmp(left));
+            for index in remove {
+                self.stmts.remove(index);
+                self.statements = self.statements.saturating_sub(1);
+            }
+            self.synthetic_names.insert(name);
+            (kind, origin)
+        } else {
+            (
+                kind,
+                OriginSet::new(if *form == LoopForm::Endless {
+                    Origin::derived(first_test_bci)
+                } else {
+                    Origin::direct(first_test_bci)
+                }),
+            )
+        };
+        let origin = gateway_origins.iter().fold(origin, |origin, bci| {
+            origin.plus_derived(Origin::derived(*bci))
+        });
+        self.push(Stmt::new(kind, origin))
+    }
+
+    fn guard_region(
+        &mut self,
+        region: &Region,
+        path: &RegionPath,
+        mut finally_checkpoint: Option<FinallyCheckpoint>,
+    ) -> Result<(), StopReason> {
+        let Region::Guard {
+            prefix,
+            plan,
+            body: structured_body,
+            finally_body: structured_finally_body,
+        } = region
+        else {
+            unreachable!("guard_region is dispatched only for Region::Guard")
+        };
+        // The walk wrote nothing of the statement's own header: the first resource's
+        // initialisation (or the monitor's entry) is the last block it reached, and the
+        // region owns it now.
+        for block in prefix {
+            self.block(block)?;
+        }
+        self.range(plan.lead())?;
+        match plan.shape() {
+            guard::Shape::Resources {
+                resources,
+                returns,
+                inner_finally,
+                trailing_finally,
+                trail,
+                ..
+            } => {
+                let mut declarations = Vec::with_capacity(resources.len());
+                for resource in resources {
+                    match self.resource_declaration(resource) {
+                        Ok(declaration) => declarations.push(declaration),
+                        Err(reason) => {
+                            let at = resource.close_bci();
+                            let bcis = self.region_quote(region, at);
+                            return self.fallback(bcis, &reason, at);
+                        }
+                    }
+                }
+                // The body's statements are written between the braces, in the order the
+                // instructions run: the closes the normal path performs are *not* written
+                // here — the compiler writes them for the resource the header declares,
+                // which is what makes each close run exactly once per path.
+                let mut body = self.body_range(plan.body())?;
+                // The body's own `return`, when the normal path ends the method in one:
+                // written inside the braces — the inner statement's own when the body
+                // holds a proved `finally`, the statement's own otherwise.
+                if let Some(return_bci) = returns {
+                    let statement = match self.guarded_return(*return_bci) {
+                        Ok(statement) => statement,
+                        Err(reason) => {
+                            let bcis = self.region_quote(region, *return_bci);
+                            return self.fallback(bcis, &reason, *return_bci);
+                        }
+                    };
+                    body.push(statement);
+                }
+                // The explicit inner `finally`: the body's statement list is one nested
+                // `try { … } finally { … }` — the resources the inner statement's own
+                // header declares inside its braces, the enclosing header keeping the
+                // rest — written with the same `StmtKind::Try` a proved copy's own
+                // presentation is, the mid cleanup as its `finally` body.
+                if let Some(finally) = inner_finally {
+                    let finally_body = match self.body_range(finally.normal_cleanup()) {
+                        Ok(statements) => statements,
+                        Err(stop) => return Err(stop),
+                    };
+                    let split = finally.split().min(declarations.len());
+                    let inner_resources = declarations.split_off(split);
+                    let inner_origin = plan
+                        .facts()
+                        .iter()
+                        .filter(|bci| {
+                            finally.normal_cleanup().0 <= **bci
+                                && **bci < finally.handler_cleanup().1
+                        })
+                        .fold(
+                            OriginSet::new(Origin::direct(plan.body().0)),
+                            |origin, bci| origin.plus_derived(Origin::derived(*bci)),
+                        );
+                    body = vec![Stmt::new(
+                        StmtKind::Try {
+                            resources: inner_resources,
+                            catches: Vec::new(),
+                            body,
+                            finally_body: Some(finally_body),
+                        },
+                        inner_origin,
+                    )];
+                }
+                // The `finally` clause the statement itself carries: the header keeps its
+                // own resources and the clause's body renders after the braces, from the
+                // normal copy the lowering placed past the close chain — the same
+                // `StmtKind::Try` a proved copy's own presentation is, no new
+                // presentation function.
+                let mut finally_body = None;
+                if let Some(finally) = trailing_finally {
+                    finally_body = Some(self.body_range(finally.normal_cleanup())?);
+                }
+                // The clause the proof carried: the `catch` a compiler wound around the
+                // whole lowering. Its header spells the row's class and the name the
+                // parameter's slot carries; its body is the handler's one straight block,
+                // written as ordinary statements with the binding store left to the header
+                // — the same discipline a `try`/`catch` statement's own clauses follow.
+                let mut catches = Vec::new();
+                if let Some(clause) = plan.enclosing() {
+                    let (ty, name) = match self.enclosing_catch_header(clause) {
+                        Ok(header) => header,
+                        Err(reason) => {
+                            let at = clause.body().0;
+                            let bcis = self.region_quote(region, at);
+                            return self.fallback(bcis, &reason, at);
+                        }
+                    };
+                    let outer_declared = self.declared.clone();
+                    // The header declares the local the handler's own entry store fills:
+                    // the store is therefore not a statement of the body, and every later
+                    // read of that local is a read of the name this header states.
+                    self.declared
+                        .insert(LocalVariable::whole(clause.parameter()));
+                    self.clause_parameters.insert(clause.body().0);
+                    let handler = match self.body_range(clause.body()) {
+                        Ok(statements) => statements,
+                        Err(stop) => {
+                            self.declared = outer_declared;
+                            return Err(stop);
+                        }
+                    };
+                    self.declared = outer_declared;
+                    catches.push(crate::ast::CatchClause {
+                        ty,
+                        name,
+                        body: handler,
+                    });
+                }
+                let mut origin = OriginSet::new(Origin::direct(
+                    resources
+                        .first()
+                        .map(|resource| resource.init().0)
+                        .unwrap_or(0),
+                ));
+                for bci in plan.facts() {
+                    // Every instruction the proof read — the closes, the suppressions, the
+                    // rethrows — is an anchor of the text that took its place, so the
+                    // relationship the statement preserves is answerable from the artifact.
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                if let Some(clause) = plan.enclosing() {
+                    // The clause's handler entry is an anchor of the statement beside the
+                    // proof's own readings, the way a `try`/`catch` clause's is.
+                    origin = origin.plus_derived(Origin::derived(clause.body().0));
+                }
+                let pushed = self.push(Stmt::new(
+                    StmtKind::Try {
+                        resources: declarations,
+                        // The one clause the proof carried: a `catch` whose whole-construct
+                        // row and straight handler both proved. Every other shape beside a
+                        // `try` header stays the `Unexplained` refusal, and this node is
+                        // only written where that proof succeeded.
+                        catches,
+                        body,
+                        finally_body,
+                    },
+                    origin,
+                ));
+                // The fused continuation the statement claims with its own last close
+                // group: ordinary statements the block holds past the chain, rendered
+                // after the statement in the order the run reaches them. The proof
+                // admitted them only where the block ends the method there, so nothing
+                // else of the method's own follows.
+                if pushed.is_ok()
+                    && let Some((trail_start, trail_end)) = trail
+                {
+                    self.range((*trail_start, *trail_end))?;
+                }
+                pushed
+            }
+            guard::Shape::Monitor {
+                enter_bci,
+                returns,
+                nested,
+                ..
+            } => {
+                let lock = match self.lock_expr(*enter_bci) {
+                    Ok(lock) => lock,
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, *enter_bci);
+                        return self.fallback(bcis, &reason, *enter_bci);
+                    }
+                };
+                // The nested pair: the whole body — its own statements, the structure
+                // around the inner block and the inner block itself — is one region
+                // tree, rendered with the pair's braces opened and closed where its
+                // span sits in the walk ([`NestedPairBraces`]). The lock is the same
+                // `lock_expr` reading the outer's is; no new presentation.
+                let mut body = match (nested.as_deref(), structured_body.as_deref()) {
+                    (None, _) => self.body_range(plan.body())?,
+                    (Some(pair), Some(tree)) => {
+                        let inner_lock = match self.lock_expr(pair.enter_bci()) {
+                            Ok(lock) => lock,
+                            Err(reason) => {
+                                let bcis = self.region_quote(region, pair.enter_bci());
+                                return self.fallback(bcis, &reason, pair.enter_bci());
+                            }
+                        };
+                        let mut origin = OriginSet::new(Origin::direct(pair.enter_bci()));
+                        for bci in plan.facts() {
+                            if pair.span().0 <= *bci && *bci < pair.span().1 {
+                                origin = origin.plus_derived(Origin::derived(*bci));
+                            }
+                        }
+                        let checkpoint = self.finally_checkpoint();
+                        let enclosing = std::mem::take(&mut self.stmts);
+                        self.body_span = Some(plan.body());
+                        self.nested_pair = Some(NestedPairBraces {
+                            span: pair.span(),
+                            body: pair.body(),
+                            lock: inner_lock,
+                            origin,
+                            returns: pair.returns(),
+                            closed_without_return: false,
+                            opened: None,
+                            engaged_once: false,
+                        });
+                        let walked = self.region(tree, &child(path, 0));
+                        // A pair whose header the walk never reached is not presented
+                        // unbraced: the close is either the first instruction past the
+                        // span or this one, and a body that rendered no header at all is
+                        // a shape this arm does not write.
+                        let engaged = self
+                            .nested_pair
+                            .as_ref()
+                            .is_some_and(|pair| pair.engaged_once);
+                        // The pair's own `return`, where its proof read one: the statement
+                        // is the plan's own `guarded_return`, written **inside** the inner
+                        // braces — before the inner `monitorexit` the pair proves — because
+                        // the proof read the returned value as the inner body's own
+                        // production. It is rendered here, where the body's run left the
+                        // names its expression reads, and closed with the block below.
+                        let inner_return = if engaged {
+                            match pair.returns() {
+                                Some(return_bci) => match self.guarded_return(return_bci) {
+                                    Ok(statement) => Some(statement),
+                                    Err(reason) => {
+                                        self.nested_pair = None;
+                                        self.restore_finally(checkpoint);
+                                        let bcis = self.region_quote(region, return_bci);
+                                        return self.fallback(bcis, &reason, return_bci);
+                                    }
+                                },
+                                None => None,
+                            }
+                        } else {
+                            None
+                        };
+                        let closed = if engaged {
+                            self.close_nested_pair(inner_return)
+                        } else {
+                            Ok(())
+                        };
+                        let rendered = self.nested_pair.take();
+                        self.body_span = None;
+                        let body = std::mem::replace(&mut self.stmts, enclosing);
+                        if let Err(stop) = walked.or(closed) {
+                            self.restore_finally(checkpoint);
+                            return Err(stop);
+                        }
+                        if rendered.is_none() || !engaged || (self.ragged && !checkpoint.ragged) {
+                            self.restore_finally(checkpoint);
+                            let at = pair.enter_bci();
+                            let bcis = self.region_quote(region, at);
+                            return self.fallback(
+                                bcis,
+                                "the nested synchronized body rendered no complete \
+                                 statement",
+                                at,
+                            );
+                        }
+                        if rendered
+                            .as_ref()
+                            .is_some_and(|rendered| rendered.closed_without_return)
+                        {
+                            // The walk closed the braces before this arm could write the
+                            // `return` the pair's proof read for them: the block that close
+                            // wrote is missing the statement, and publishing it would move
+                            // the return's evaluation past the inner exit.
+                            self.restore_finally(checkpoint);
+                            let at = pair.enter_bci();
+                            let bcis = self.region_quote(region, at);
+                            return self.fallback(
+                                bcis,
+                                "the nested synchronized body closed before the return its \
+                                 proof read could be written",
+                                at,
+                            );
+                        }
+                        body
+                    }
+                    // A plan with a nested pair always carries its body tree: the walk
+                    // built it before the region was published, or the claim fell back.
+                    (Some(pair), None) => {
+                        let at = pair.enter_bci();
+                        let bcis = self.region_quote(region, at);
+                        return self.fallback(
+                            bcis,
+                            "the nested synchronized body has no region tree",
+                            at,
+                        );
+                    }
+                };
+                // The `return` shape: the normal path returns the value the body's own
+                // instructions left on the stack, and the statement has to end with that
+                // `return` **inside** its braces — the field read it names is written here,
+                // where the value is consumed, and not where the `getfield` runs, so the
+                // member is read exactly once and no local is invented for it.
+                //
+                // A pair whose own proof read that same return as the inner body's own
+                // production wrote it inside the inner braces ([`NestedPairBraces`]), where
+                // the evaluation the return consumes stays before the inner `monitorexit`:
+                // the outer braces end there, and nothing is appended after the inner block.
+                let written_in_inner = nested
+                    .as_deref()
+                    .is_some_and(|pair| pair.returns().is_some());
+                if let Some(return_bci) = *returns
+                    && !written_in_inner
+                {
+                    let statement = match self.guarded_return(return_bci) {
+                        Ok(statement) => statement,
+                        Err(reason) => {
+                            let bcis = self.region_quote(region, return_bci);
+                            return self.fallback(bcis, &reason, return_bci);
+                        }
+                    };
+                    body.push(statement);
+                }
+                let mut origin = OriginSet::new(Origin::direct(*enter_bci));
+                for bci in plan.facts() {
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                self.push(Stmt::new(StmtKind::Synchronized { lock, body }, origin))
+            }
+            guard::Shape::MonitorBranches {
+                enter_bci,
+                branch_bci,
+                then_exit_bci,
+                then_return_bci,
+                else_exit_bci,
+                else_return_bci,
+            } => {
+                let lock = match self.lock_expr(*enter_bci) {
+                    Ok(lock) => lock,
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, *enter_bci);
+                        return self.fallback(bcis, &reason, *enter_bci);
+                    }
+                };
+                let cond = match self.test_expr(*branch_bci, false) {
+                    Ok(cond) => cond.derived_from(*branch_bci),
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, *branch_bci);
+                        return self.fallback(bcis, &reason, *branch_bci);
+                    }
+                };
+                let then_statement = match self.guarded_return(*then_return_bci) {
+                    Ok(statement) => statement,
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, *then_return_bci);
+                        return self.fallback(bcis, &reason, *then_return_bci);
+                    }
+                };
+                let else_statement = match self.guarded_return(*else_return_bci) {
+                    Ok(statement) => statement,
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, *else_return_bci);
+                        return self.fallback(bcis, &reason, *else_return_bci);
+                    }
+                };
+                let branch = Stmt::new(
+                    StmtKind::If {
+                        cond,
+                        then_body: vec![then_statement],
+                        else_body: vec![else_statement],
+                    },
+                    OriginSet::new(Origin::direct(*branch_bci))
+                        .plus_derived(Origin::derived(*then_exit_bci))
+                        .plus_derived(Origin::derived(*then_return_bci))
+                        .plus_derived(Origin::derived(*else_exit_bci))
+                        .plus_derived(Origin::derived(*else_return_bci)),
+                );
+                let mut origin = OriginSet::new(Origin::direct(*enter_bci));
+                for bci in plan.facts() {
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                self.push(Stmt::new(
+                    StmtKind::Synchronized {
+                        lock,
+                        body: vec![branch],
+                    },
+                    origin,
+                ))
+            }
+            guard::Shape::LoopFinally { normal_cleanup, .. } => {
+                let Some(Region::Loop { .. }) = structured_finally_body.as_deref() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint.take().expect("loop finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the iterable finally has no bounded loop",
+                        plan.body().0,
+                    );
+                };
+                let body = self.body_range(plan.body())?;
+                let outer = std::mem::take(&mut self.stmts);
+                let built = self.range((normal_cleanup.0, 11)).and_then(|()| {
+                    self.region(structured_finally_body.as_deref().unwrap(), &child(path, 1))
+                });
+                let cleanup = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = built {
+                    self.restore_finally(
+                        finally_checkpoint.take().expect("loop finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                if body.iter().any(statement_has_fallback)
+                    || cleanup.iter().any(statement_has_fallback)
+                    || !cleanup.iter().any(|stmt| {
+                        matches!(stmt.kind, StmtKind::ForEach { .. } | StmtKind::While { .. })
+                    })
+                {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint.take().expect("loop finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the iterable finally is not completely presentable",
+                        plan.body().0,
+                    );
+                }
+                let origin = plan.facts().iter().copied().fold(
+                    OriginSet::new(Origin::direct(plan.body().0)),
+                    |origin, bci| origin.plus_derived(Origin::derived(bci)),
+                );
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: Vec::new(),
+                        body,
+                        finally_body: Some(cleanup),
+                    },
+                    origin,
+                );
+                if undeclared_local(&statement, &self.undeclared).is_some() {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint.take().expect("loop finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the iterable finally reads an undeclared local",
+                        plan.body().0,
+                    );
+                }
+                let pushed = self.push(statement);
+                if pushed.is_err() {
+                    self.restore_finally(
+                        finally_checkpoint.take().expect("loop finally checkpoint"),
+                    );
+                }
+                pushed
+            }
+            guard::Shape::Finally {
+                normal_cleanup,
+                completion,
+                ..
+            } => {
+                let saved_return = match completion {
+                    guard::FinallyCompletion::SavedReturn { save, returns } => {
+                        Some((*save, *returns))
+                    }
+                    // A void completion saves no stack value and joins no named catch:
+                    // the body's own statements and the cleanup copy are the whole shape.
+                    guard::FinallyCompletion::Joined { .. }
+                    | guard::FinallyCompletion::Void { .. } => None,
+                };
+                let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
+                let body = if let Some(inner) = structured_body {
+                    let outer = std::mem::take(&mut self.stmts);
+                    self.body_span = Some(plan.body());
+                    self.finally_return = saved_return;
+                    self.finally_catch_pop = match completion {
+                        guard::FinallyCompletion::Joined { catch_pop, .. } => Some(*catch_pop),
+                        guard::FinallyCompletion::SavedReturn { .. }
+                        | guard::FinallyCompletion::Void { .. } => None,
+                    };
+                    let walked = self.region(inner, &child(path, 0));
+                    self.body_span = None;
+                    self.finally_return = None;
+                    self.finally_catch_pop = None;
+                    let body = std::mem::replace(&mut self.stmts, outer);
+                    if let Err(stop) = walked {
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("structured finally checkpoint"),
+                        );
+                        return Err(stop);
+                    }
+                    body
+                } else {
+                    let mut body = self.body_range(plan.body())?;
+                    let Some((_, returns)) = saved_return else {
+                        let bcis = self.region_quote(region, at);
+                        return self.fallback(
+                            bcis,
+                            "the joined finally has no bounded nested catch",
+                            at,
+                        );
+                    };
+                    let return_stmt = match self.guarded_return(returns) {
+                        Ok(statement) => statement,
+                        Err(reason) => {
+                            let bcis = self.region_quote(region, returns);
+                            return self.fallback(bcis, &reason, returns);
+                        }
+                    };
+                    body.push(return_stmt);
+                    body
+                };
+                let finally_body = match self.body_range(*normal_cleanup) {
+                    Ok(body) => body,
+                    Err(stop) => {
+                        if let Some(checkpoint) = finally_checkpoint.take() {
+                            self.restore_finally(checkpoint);
+                        }
+                        return Err(stop);
+                    }
+                };
+                let nested_complete = saved_return.is_some()
+                    || matches!(completion, guard::FinallyCompletion::Void { .. })
+                    || body.iter().any(|statement| {
+                        matches!(&statement.kind, StmtKind::Try { catches, .. } if catches.len() == 1)
+                    });
+                if !nested_complete || body.iter().chain(&finally_body).any(statement_has_fallback)
+                {
+                    let bcis = self.region_quote(region, at);
+                    if let Some(checkpoint) = finally_checkpoint.take() {
+                        self.restore_finally(checkpoint);
+                    }
+                    return self.fallback(
+                        bcis,
+                        "the proved finally contains an instruction this Java writer cannot state",
+                        at,
+                    );
+                }
+                let mut origin = OriginSet::new(Origin::direct(plan.body().0));
+                for bci in plan.facts() {
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: Vec::new(),
+                        body,
+                        finally_body: Some(finally_body),
+                    },
+                    origin,
+                );
+                if structured_body.is_some()
+                    && (undeclared_local(&statement, &self.undeclared).is_some()
+                        || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
+                            self.stmts[checkpoint.stmts.len()..]
+                                .iter()
+                                .any(statement_has_fallback)
+                        }))
+                {
+                    let bcis = self.region_quote(region, at);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("structured finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the proved finally has an unpresented declaration or lead",
+                        at,
+                    );
+                }
+                let fused_return = if let guard::FinallyCompletion::Joined { continuation, .. } =
+                    completion
+                    && plan.join().is_none()
+                {
+                    let Some(instruction) = self.instructions.get(continuation).copied() else {
+                        let bcis = self.region_quote(region, *continuation);
+                        if let Some(checkpoint) = finally_checkpoint.take() {
+                            self.restore_finally(checkpoint);
+                        }
+                        return self.fallback(
+                            bcis,
+                            "the joined finally continuation has no names record",
+                            *continuation,
+                        );
+                    };
+                    if !matches!(self.operations.get(*continuation), Some(Operation::Return))
+                        || !stack_operands(instruction).is_empty()
+                    {
+                        let bcis = self.region_quote(region, *continuation);
+                        if let Some(checkpoint) = finally_checkpoint.take() {
+                            self.restore_finally(checkpoint);
+                        }
+                        return self.fallback(
+                            bcis,
+                            "the joined finally continuation is not a void return",
+                            *continuation,
+                        );
+                    }
+                    Some(Stmt::new(
+                        StmtKind::Return { value: None },
+                        OriginSet::new(Origin::direct(*continuation)),
+                    ))
+                } else {
+                    None
+                };
+                let pushed = self.push(statement).and_then(|()| {
+                    if let Some(return_stmt) = fused_return {
+                        self.push(return_stmt)?;
+                    }
+                    Ok(())
+                });
+                if pushed.is_err()
+                    && let Some(checkpoint) = finally_checkpoint.take()
+                {
+                    self.restore_finally(checkpoint);
+                }
+                pushed
+            }
+            guard::Shape::LockGuardFinally {
+                normal_cleanup,
+                completion,
+                ..
+            }
+            | guard::Shape::ResourceGuardFinally {
+                normal_cleanup,
+                completion,
+                ..
+            } => {
+                // The statement is the one `try { … } finally { … }` the certificate
+                // proved: the protected body is the walk's own region tree (a loop
+                // included), the saved value's return is the body's last statement where
+                // the shape saves one, and the normal release copy is the `finally` body.
+                // The exceptional copy and the handler are folded away, exactly as the
+                // resource shapes' copies are. Both guard certificates write this arm; the
+                // lock guard's completion states a value-less return where the resource
+                // guard's `Joined` form continues at the plan's own join.
+                let Some(inner) = structured_body.as_deref() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(finally_checkpoint.take().expect("lock guard checkpoint"));
+                    return self.fallback(
+                        bcis,
+                        "the lock guard has no bounded protected body",
+                        plan.body().0,
+                    );
+                };
+                let saved_return = match completion {
+                    guard::LockGuardCompletion::SavedReturn { save, returns } => {
+                        Some((*save, *returns))
+                    }
+                    guard::LockGuardCompletion::Void { .. }
+                    | guard::LockGuardCompletion::Continues { .. } => None,
+                };
+                let at = saved_return.map_or(plan.body().0, |(_, returns)| returns);
+                let outer = std::mem::take(&mut self.stmts);
+                self.body_span = Some(plan.body());
+                self.finally_return = saved_return;
+                let walked = self.region(inner, &child(path, 0));
+                self.body_span = None;
+                self.finally_return = None;
+                let body = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = walked {
+                    self.restore_finally(finally_checkpoint.take().expect("lock guard checkpoint"));
+                    return Err(stop);
+                }
+                let finally_body = match self.body_range(*normal_cleanup) {
+                    Ok(body) => body,
+                    Err(stop) => {
+                        if let Some(checkpoint) = finally_checkpoint.take() {
+                            self.restore_finally(checkpoint);
+                        }
+                        return Err(stop);
+                    }
+                };
+                // The saved value's return is the body's own completion: the block the
+                // store stands in wrote it where the store ran (`finally_return`), so the
+                // body must hold one — a body that wrote no return would drop the value.
+                if saved_return.is_some()
+                    && !body
+                        .iter()
+                        .any(|statement| matches!(statement.kind, StmtKind::Return { .. }))
+                {
+                    let bcis = self.region_quote(region, at);
+                    self.restore_finally(finally_checkpoint.take().expect("lock guard checkpoint"));
+                    return self.fallback(
+                        bcis,
+                        "the lock guard's saved return is not a statement of the body",
+                        at,
+                    );
+                }
+                if body.iter().chain(&finally_body).any(statement_has_fallback) {
+                    let bcis = self.region_quote(region, at);
+                    self.restore_finally(finally_checkpoint.take().expect("lock guard checkpoint"));
+                    return self.fallback(
+                        bcis,
+                        "the lock guard contains an instruction this Java writer cannot state",
+                        at,
+                    );
+                }
+                let mut origin = OriginSet::new(Origin::direct(plan.body().0));
+                for bci in plan.facts() {
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: Vec::new(),
+                        body,
+                        finally_body: Some(finally_body),
+                    },
+                    origin,
+                );
+                if undeclared_local(&statement, &self.undeclared).is_some()
+                    || finally_checkpoint.as_ref().is_some_and(|checkpoint| {
+                        self.stmts[checkpoint.stmts.len()..]
+                            .iter()
+                            .any(statement_has_fallback)
+                    })
+                {
+                    let bcis = self.region_quote(region, at);
+                    self.restore_finally(finally_checkpoint.take().expect("lock guard checkpoint"));
+                    return self.fallback(
+                        bcis,
+                        "the lock guard has an unpresented declaration or lead",
+                        at,
+                    );
+                }
+                let pushed = self.push(statement).and_then(|()| {
+                    // The statement's own continuation, where the body's completion is
+                    // carried past the release: the transfer's own block's tail — the
+                    // `goto`'s target was fused into it — written after the `try` as the
+                    // statements the bytecode runs there, the `return` the method answers
+                    // included (`recover-loop-test-copy-store`).
+                    if let guard::LockGuardCompletion::Continues {
+                        continuation: guard::Continuation::Tail { span },
+                        ..
+                    } = completion
+                    {
+                        self.range(*span)?;
+                    }
+                    Ok(())
+                });
+                if pushed.is_err()
+                    && let Some(checkpoint) = finally_checkpoint.take()
+                {
+                    self.restore_finally(checkpoint);
+                }
+                pushed
+            }
+            guard::Shape::ConditionalFinally { normal_return, .. }
+            | guard::Shape::NullableResourceFinally {
+                saved_return: (_, normal_return),
+                ..
+            }
+            | guard::Shape::FlagConditionalFinally {
+                saved_return: (_, normal_return),
+                ..
+            }
+            | guard::Shape::LocalNullConditionalFinally {
+                saved_return: (_, normal_return),
+                ..
+            } => {
+                let (Some(body_region), Some(cleanup_region @ Region::If { .. })) = (
+                    structured_body.as_deref(),
+                    structured_finally_body.as_deref(),
+                ) else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("conditional finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the conditional finally has no two bounded if regions",
+                        plan.body().0,
+                    );
+                };
+                let outer = std::mem::take(&mut self.stmts);
+                self.body_span = Some(plan.body());
+                let built_body = self.region(body_region, &child(path, 0));
+                self.body_span = None;
+                let body = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = built_body {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("conditional finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let mut body = body;
+                if matches!(
+                    plan.shape(),
+                    guard::Shape::NullableResourceFinally { .. }
+                        | guard::Shape::FlagConditionalFinally { .. }
+                        | guard::Shape::LocalNullConditionalFinally { .. }
+                ) {
+                    match self.guarded_return(*normal_return) {
+                        Ok(statement) => body.push(statement),
+                        Err(reason) => {
+                            let bcis = self.region_quote(region, *normal_return);
+                            self.restore_finally(
+                                finally_checkpoint
+                                    .take()
+                                    .expect("nullable finally checkpoint"),
+                            );
+                            return self.fallback(bcis, &reason, *normal_return);
+                        }
+                    }
+                }
+                let outer = std::mem::take(&mut self.stmts);
+                if let guard::Shape::NullableResourceFinally { normal_cleanup, .. }
+                | guard::Shape::FlagConditionalFinally { normal_cleanup, .. }
+                | guard::Shape::LocalNullConditionalFinally { normal_cleanup, .. } = plan.shape()
+                {
+                    self.body_span = Some(*normal_cleanup);
+                }
+                let built_cleanup = self.region(cleanup_region, &child(path, 1));
+                self.body_span = None;
+                let finally_body = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = built_cleanup {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("conditional finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let mut origin = OriginSet::new(Origin::direct(plan.body().0))
+                    .plus_derived(Origin::derived(*normal_return));
+                for bci in plan.facts() {
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: Vec::new(),
+                        body,
+                        finally_body: Some(finally_body),
+                    },
+                    origin,
+                );
+                if statement_has_fallback(&statement)
+                    || undeclared_local(&statement, &self.undeclared).is_some()
+                {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("conditional finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the conditional finally has an unpresented body or cleanup",
+                        plan.body().0,
+                    );
+                }
+                let pushed = self.push(statement);
+                if pushed.is_err() {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("conditional finally checkpoint"),
+                    );
+                }
+                pushed
+            }
+            guard::Shape::MultiReturnLoopFinally {
+                cleanup, returns, ..
+            } => {
+                let Some(inner) = structured_body.as_deref() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("multi-return finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the two-return finally has no bounded loop body",
+                        plan.body().0,
+                    );
+                };
+                let outer = std::mem::take(&mut self.stmts);
+                self.body_span = Some(plan.body());
+                self.multi_return_finally = Some(*returns);
+                let walked = self.region(inner, &child(path, 0));
+                self.body_span = None;
+                self.multi_return_finally = None;
+                let body = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = walked {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("multi-return finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let cleanup_body = match self.body_range(cleanup[0]) {
+                    Ok(body) => body,
+                    Err(stop) => {
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("multi-return finally checkpoint"),
+                        );
+                        return Err(stop);
+                    }
+                };
+                let origin = plan.facts().iter().copied().fold(
+                    OriginSet::new(Origin::direct(plan.body().0)),
+                    |origin, bci| origin.plus_derived(Origin::derived(bci)),
+                );
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: Vec::new(),
+                        body,
+                        finally_body: Some(cleanup_body),
+                    },
+                    origin,
+                );
+                if statement_has_fallback(&statement)
+                    || undeclared_local(&statement, &self.undeclared).is_some()
+                {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("multi-return finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the two-return finally has an unpresented body or local",
+                        plan.body().0,
+                    );
+                }
+                let pushed = self.push(statement);
+                if pushed.is_err() {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("multi-return finally checkpoint"),
+                    );
+                }
+                pushed
+            }
+            guard::Shape::SegmentedNullLeadFinally {
+                normal_cleanup,
+                early_cleanup,
+                early_return,
+                returns,
+                ..
+            } => {
+                let (Some(body_region), Some(cleanup_region @ Region::Straight { .. })) = (
+                    structured_body.as_deref(),
+                    structured_finally_body.as_deref(),
+                ) else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented null-lead finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the segmented null-lead finally has no bounded body and cleanup",
+                        plan.body().0,
+                    );
+                };
+                let outer = std::mem::take(&mut self.stmts);
+                self.body_span = Some(plan.body());
+                self.segmented_null_lead = Some(SegmentedNullLeadCompletion {
+                    early_cleanup: *early_cleanup,
+                    early_return: *early_return,
+                    returns: *returns,
+                });
+                let built_body = self.region(body_region, &child(path, 0));
+                self.body_span = None;
+                self.segmented_null_lead = None;
+                let body = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = built_body {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented null-lead finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let outer = std::mem::take(&mut self.stmts);
+                self.body_span = Some(*normal_cleanup);
+                let built_cleanup = self.region(cleanup_region, &child(path, 1));
+                self.body_span = None;
+                let finally_body = std::mem::replace(&mut self.stmts, outer);
+                if let Err(stop) = built_cleanup {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented null-lead finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let mut origin = OriginSet::new(Origin::direct(plan.body().0))
+                    .plus_derived(Origin::derived(*early_return));
+                for bci in plan.facts() {
+                    origin = origin.plus_derived(Origin::derived(*bci));
+                }
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        catches: Vec::new(),
+                        body,
+                        finally_body: Some(finally_body),
+                    },
+                    origin,
+                );
+                if statement_has_fallback(&statement)
+                    || undeclared_local(&statement, &self.undeclared).is_some()
+                {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented null-lead finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the segmented null-lead finally has an unpresented body or cleanup",
+                        plan.body().0,
+                    );
+                }
+                let pushed = self.push(statement);
+                if pushed.is_err() {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented null-lead finally checkpoint"),
+                    );
+                }
+                pushed
+            }
+            guard::Shape::SegmentedFinally {
+                catch_body,
+                cleanup,
+                early_return,
+                transfers,
+                ..
+            } => {
+                let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the segmented finally has no bounded try and catch",
+                        plan.body().0,
+                    );
+                };
+                if catches.len() != 1 {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the segmented finally has no unique named catch",
+                        plan.body().0,
+                    );
+                }
+                let nested_path = child(path, 0);
+                let mark = self.stmts.len();
+                self.shared_finally = Some(SharedFinallyBuild {
+                    path: nested_path.clone(),
+                    protected: plan.body(),
+                    catch_body: *catch_body,
+                    completion: Some(guard::SharedFinallyCompletion::Joined {
+                        transfers: *transfers,
+                    }),
+                    normal_cleanup: cleanup[1],
+                    facts: plan.facts().to_vec(),
+                    segmented: Some((cleanup[0], *early_return)),
+                    empty_catch: false,
+                    two_catch: None,
+                });
+                let built = self.region(inner, &nested_path);
+                self.shared_finally = None;
+                if let Err(stop) = built {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let complete = self.stmts[mark..].iter().all(|statement| {
+                    !statement_has_fallback(statement)
+                        && undeclared_local(statement, &self.undeclared).is_none()
+                }) && self.stmts[mark..].iter().any(|statement| {
+                    matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
+                        if body.len() == 1 && catches.len() == 1)
+                });
+                if !complete {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("segmented finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the segmented finally has an unpresented body, declaration, or cleanup",
+                        plan.body().0,
+                    );
+                }
+                Ok(())
+            }
+            guard::Shape::TwoCatchReturnFinally {
+                catches,
+                cleanup,
+                saved_return,
+                ..
+            } => {
+                let Some(
+                    inner @ Region::Try {
+                        catches: regions, ..
+                    },
+                ) = structured_body.as_deref()
+                else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("two-catch finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the two-catch finally has no bounded try",
+                        plan.body().0,
+                    );
+                };
+                if regions.len() != 2 {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("two-catch finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the two-catch finally has no two named catches",
+                        plan.body().0,
+                    );
+                }
+                let nested_path = child(path, 0);
+                let mark = self.stmts.len();
+                self.shared_finally = Some(SharedFinallyBuild {
+                    path: nested_path.clone(),
+                    protected: plan.body(),
+                    catch_body: (catches[1].0.bci(), cleanup[2].0),
+                    completion: None,
+                    normal_cleanup: cleanup[0],
+                    facts: plan.facts().to_vec(),
+                    segmented: None,
+                    empty_catch: false,
+                    two_catch: Some(((catches[0].0.bci(), catches[0].0.bci()), *saved_return)),
+                });
+                let built = self.region(inner, &nested_path);
+                self.shared_finally = None;
+                if let Err(stop) = built {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("two-catch finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let complete = self.stmts[mark..].iter().all(|statement| {
+                    !statement_has_fallback(statement)
+                        && undeclared_local(statement, &self.undeclared).is_none()
+                }) && self.stmts[mark..].iter().any(|statement| {
+                    matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
+                        if body.len() == 1 && catches.len() == 2
+                            && catches[0].body.is_empty()
+                            && matches!(catches[1].body.as_slice(), [Stmt { kind: StmtKind::Return { .. }, .. }]))
+                });
+                if !complete {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("two-catch finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the two-catch finally has an unpresented body or cleanup",
+                        plan.body().0,
+                    );
+                }
+                Ok(())
+            }
+            guard::Shape::NestedCleanupFinally { cleanup, .. } => {
+                let Some(Region::Try { catches, .. }) = structured_finally_body.as_deref() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("nested cleanup checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the nested cleanup has no bounded catch",
+                        plan.body().0,
+                    );
+                };
+                let [clause] = catches.as_slice() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("nested cleanup checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the nested cleanup has no unique catch",
+                        plan.body().0,
+                    );
+                };
+                let (ty, name) = match self.catch_header(clause) {
+                    Ok(header) if header.0 == "java.io.IOException" => header,
+                    _ => {
+                        let bcis = self.region_quote(region, clause.handler().bci());
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("nested cleanup checkpoint"),
+                        );
+                        return self.fallback(
+                            bcis,
+                            "the nested cleanup catch is not a bindable IOException",
+                            clause.handler().bci(),
+                        );
+                    }
+                };
+                let body = match self.body_range(plan.body()) {
+                    Ok(body) => body,
+                    Err(stop) => {
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("nested cleanup checkpoint"),
+                        );
+                        return Err(stop);
+                    }
+                };
+                let cleanup_body = match self.body_range(*cleanup) {
+                    Ok(body) => body,
+                    Err(stop) => {
+                        self.restore_finally(
+                            finally_checkpoint
+                                .take()
+                                .expect("nested cleanup checkpoint"),
+                        );
+                        return Err(stop);
+                    }
+                };
+                let inner = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        body: cleanup_body,
+                        catches: vec![crate::ast::CatchClause {
+                            ty,
+                            name,
+                            body: Vec::new(),
+                        }],
+                        finally_body: None,
+                    },
+                    OriginSet::new(Origin::direct(cleanup.0))
+                        .plus_derived(Origin::derived(clause.handler().bci())),
+                );
+                let origin = plan.facts().iter().copied().fold(
+                    OriginSet::new(Origin::direct(plan.body().0)),
+                    |origin, bci| origin.plus_derived(Origin::derived(bci)),
+                );
+                let statement = Stmt::new(
+                    StmtKind::Try {
+                        resources: Vec::new(),
+                        body,
+                        catches: Vec::new(),
+                        finally_body: Some(vec![inner]),
+                    },
+                    origin,
+                );
+                if statement_has_fallback(&statement)
+                    || undeclared_local(&statement, &self.undeclared).is_some()
+                {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("nested cleanup checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the nested cleanup has an unpresented statement or local",
+                        plan.body().0,
+                    );
+                }
+                let pushed = self.push(statement);
+                if pushed.is_err() {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("nested cleanup checkpoint"),
+                    );
+                }
+                pushed
+            }
+            guard::Shape::SharedFinally { .. } | guard::Shape::EmptyCatchCallFinally { .. } => {
+                let (catch_body, normal_cleanup, completion, empty_catch) = match plan.shape() {
+                    guard::Shape::SharedFinally {
+                        catch_body,
+                        normal_cleanup,
+                        completion,
+                        ..
+                    } => (*catch_body, *normal_cleanup, completion.clone(), false),
+                    guard::Shape::EmptyCatchCallFinally {
+                        catch_handler,
+                        cleanup,
+                        transfers,
+                        ..
+                    } => (
+                        (catch_handler.bci(), catch_handler.bci()),
+                        cleanup[0],
+                        guard::SharedFinallyCompletion::Joined {
+                            transfers: *transfers,
+                        },
+                        true,
+                    ),
+                    _ => unreachable!(),
+                };
+                let Some(inner @ Region::Try { catches, .. }) = structured_body.as_deref() else {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("shared finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the shared finally has no bounded catch structure",
+                        plan.body().0,
+                    );
+                };
+                if catches.len() != 1 {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("shared finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the shared finally has no unique named catch",
+                        plan.body().0,
+                    );
+                }
+                let nested_path = child(path, 0);
+                let mark = self.stmts.len();
+                self.shared_finally = Some(SharedFinallyBuild {
+                    path: nested_path.clone(),
+                    protected: plan.body(),
+                    catch_body,
+                    completion: Some(completion),
+                    normal_cleanup,
+                    facts: plan.facts().to_vec(),
+                    segmented: None,
+                    empty_catch,
+                    two_catch: None,
+                });
+                let built = self.region(inner, &nested_path);
+                self.shared_finally = None;
+                if let Err(stop) = built {
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("shared finally checkpoint"),
+                    );
+                    return Err(stop);
+                }
+                let complete = self.stmts[mark..].iter().all(|statement| {
+                    !statement_has_fallback(statement)
+                        && undeclared_local(statement, &self.undeclared).is_none()
+                }) && self.stmts[mark..].iter().any(|statement| {
+                    matches!(&statement.kind, StmtKind::Try { finally_body: Some(body), catches, .. }
+                        if body.len() == 1 && catches.len() == 1)
+                });
+                if !complete {
+                    let bcis = self.region_quote(region, plan.body().0);
+                    self.restore_finally(
+                        finally_checkpoint
+                            .take()
+                            .expect("shared finally checkpoint"),
+                    );
+                    return self.fallback(
+                        bcis,
+                        "the shared finally has an unpresented body, declaration, or cleanup",
+                        plan.body().0,
+                    );
+                }
+                Ok(())
+            }
+        }
+    }
+
+    /// Render one try region after the shared declaration entry has run.
+    fn try_region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
+        let Region::Try {
+            prefix,
+            lead,
+            body,
+            catches,
+            normal_exit_bci,
+            transparent,
+        } = region
+        else {
+            unreachable!("try_region is dispatched only for Region::Try")
+        };
+        let mut transparent_checkpoint = transparent.as_ref().map(|_| self.finally_checkpoint());
+        let shared = self
+            .shared_finally
+            .as_ref()
+            .filter(|shared| shared.path == *path)
+            .cloned();
+        for block in prefix {
+            self.block(block)?;
+        }
+        // The statement's own block may hold what ran before the protected range began —
+        // `int x = 1;` in front of `try { … }` — and those instructions are not part of the
+        // range: they are written here, before the `try`, exactly like the block's own lead
+        // in front of an `if`. The body still begins in that same block, so the instructions
+        // this wrote are the ones it must not write again.
+        self.range(*lead)?;
+        let lead: BTreeSet<u32> = self
+            .instructions
+            .range(lead.0..lead.1)
+            .map(|(bci, _)| *bci)
+            .collect();
+        // The clause headers come from the class file's own facts and are read **before**
+        // anything is written: a clause whose type or parameter cannot be named leaves the
+        // whole region quoted rather than writing half a `try` with a header the text cannot
+        // state.
+        let mut headers = Vec::with_capacity(catches.len());
+        for clause in catches {
+            match self.catch_header(clause) {
+                Ok(header) => headers.push(header),
+                Err(reason) => {
+                    let at = clause.handler().bci();
+                    let bcis = if transparent.is_some() {
+                        self.transparent_try_bcis(region)?
+                    } else {
+                        self.region_quote(region, at)
+                    };
+                    if let Some(checkpoint) = transparent_checkpoint.take() {
+                        self.restore_finally(checkpoint);
+                    }
+                    return self.fallback(bcis, &reason, at);
+                }
+            }
+        }
+        let mut body_statements = Vec::new();
+        let outer = std::mem::replace(&mut self.settled, lead);
+        let previous_finally = (self.body_span, self.finally_return);
+        if let Some(shared) = &shared {
+            self.body_span = Some(shared.protected);
+            self.finally_return = match &shared.completion {
+                Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => Some(returns[0]),
+                Some(guard::SharedFinallyCompletion::Joined { .. })
+                | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
+                | None => None,
+            };
+        }
+        let walked = self.arm(body, &mut body_statements, &child(path, 0));
+        self.body_span = previous_finally.0;
+        self.finally_return = previous_finally.1;
+        self.settled = outer;
+        walked?;
+        let mut written = Vec::with_capacity(catches.len());
+        for (index, (clause, (ty, name))) in catches.iter().zip(headers).enumerate() {
+            let outer_declared = self.declared.clone();
+            // The header declares the local the handler's own entry store fills: the store is
+            // therefore not a statement of the body, and every later read of that local is a
+            // read of the name this header states.
+            self.declared
+                .insert(LocalVariable::whole(clause.parameter()));
+            self.clause_parameters.insert(clause.handler().bci());
+            let mut handler = Vec::new();
+            let previous_finally = (self.body_span, self.finally_return);
+            if let Some(shared) = &shared {
+                if let Some((empty, saved)) = shared.two_catch {
+                    self.body_span = Some(if index == 0 { empty } else { shared.catch_body });
+                    self.finally_return = (index == 1).then_some(saved);
+                } else {
+                    self.body_span = Some(shared.catch_body);
+                    self.finally_return = match &shared.completion {
+                        Some(guard::SharedFinallyCompletion::SavedReturns(returns)) => {
+                            Some(returns[1])
+                        }
+                        Some(guard::SharedFinallyCompletion::Joined { .. })
+                        | Some(guard::SharedFinallyCompletion::JoinedValue { .. })
+                        | None => None,
+                    };
+                }
+            }
+            let empty_catch = shared.as_ref().is_some_and(|shared| {
+                shared.empty_catch || (shared.two_catch.is_some() && index == 0)
+            });
+            let walked = if empty_catch {
+                Ok(())
+            } else {
+                self.arm(
+                    clause.body(),
+                    &mut handler,
+                    &child(path, u32::try_from(index + 1).unwrap_or(u32::MAX)),
+                )
+            };
+            self.body_span = previous_finally.0;
+            self.finally_return = previous_finally.1;
+            walked?;
+            // P3 2.2's third negative: a clause whose body walk wrote **no** statement
+            // while the body's own region still holds instructions the header and the
+            // control flow do not account for is not an empty catch. The handler body is
+            // what this build could not present, so the clause keeps its header and the
+            // body becomes the BCI reference any refused region writes — empty braces
+            // would state a handler that runs nothing, and the dropped statements would
+            // be named nowhere.
+            if handler.is_empty()
+                && !empty_catch
+                && let Some((reason, bcis)) =
+                    self.unpresented_clause_body(clause.body(), clause.handler().bci())?
+            {
+                let at = bcis
+                    .first()
+                    .copied()
+                    .unwrap_or_else(|| clause.handler().bci());
+                let origin = bcis
+                    .iter()
+                    .filter(|bci| **bci != at)
+                    .fold(OriginSet::new(Origin::direct(at)), |origin, bci| {
+                        origin.plus_derived(Origin::derived(*bci))
+                    });
+                self.push_into(
+                    &mut handler,
+                    Stmt::new(StmtKind::Fallback { reason, bcis }, origin),
+                )?;
+            }
+            // A catch parameter is visible through its own clause body only. The builder's
+            // `declared` set is a construction aid, so restore the enclosing lexical scope
+            // before the next handler or the code following this try is built.
+            self.declared = outer_declared;
+            written.push(crate::ast::CatchClause {
+                ty,
+                name,
+                body: handler,
+            });
+        }
+        if let Some(proof) = transparent {
+            let mut stated = Vec::new();
+            for statement in &body_statements {
+                stated_by_statement(statement, &mut Vec::new(), &mut stated);
+            }
+            let complete = !body_statements.is_empty()
+                && !body_statements.iter().any(statement_has_fallback)
+                && written
+                    .iter()
+                    .all(|clause| !clause.body.iter().any(statement_has_fallback))
+                && self
+                    .instructions
+                    .range(proof.range.0..proof.range.1)
+                    .all(|(bci, _)| stated.contains(bci));
+            if !complete {
+                self.restore_finally(
+                    transparent_checkpoint
+                        .take()
+                        .expect("transparent try checkpoint"),
+                );
+                let bcis = self.transparent_try_bcis(region)?;
+                return self.fallback(
+                    bcis,
+                    "the transparent catch-all has no complete try and catch presentation",
+                    proof.range.0,
+                );
+            }
+        }
+        // The statement is the protected range's own start; every clause adds the handler
+        // entry it was read from, so the table's own rows are the anchors of the text that
+        // states them.
+        let mut origin = OriginSet::new(Origin::direct(
+            body.blocks().first().map(|block| block.bci()).unwrap_or(0),
+        ));
+        for clause in catches {
+            origin = origin.plus_derived(Origin::derived(clause.handler().bci()));
+        }
+        if let Some(bci) = normal_exit_bci {
+            origin = origin.plus_derived(Origin::derived(*bci));
+        }
+        if let Some(proof) = transparent {
+            for bci in proof.bcis.into_iter().chain(proof.normal_exits) {
+                origin = origin.plus_derived(Origin::derived(bci));
+            }
+        }
+        let finally_body = if let Some(shared) = &shared {
+            for bci in &shared.facts {
+                origin = origin.plus_derived(Origin::derived(*bci));
+            }
+            Some(self.body_range(shared.normal_cleanup)?)
+        } else {
+            None
+        };
+        self.push(Stmt::new(
+            StmtKind::Try {
+                resources: Vec::new(),
+                catches: written,
+                body: body_statements,
+                finally_body,
+            },
+            origin,
+        ))
     }
 
     /// A refused two-exit node quotes every decoded instruction, including fused blocks' inner

@@ -658,6 +658,30 @@
       "carriers": [
         {
           "kind": "file",
+          "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/java8/cf11/NestedLoopSideExitControls.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/java8/cf11/NestedLoopSideExitControls.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/java8/cf11/Runner.java"
+        },
+        {
+          "kind": "record",
+          "path": "tests/fixtures/java8/cf11/README.md"
+        },
+        {
+          "kind": "file",
           "path": "tests/fixtures/proved-varargs-calls/v8/VarargsCalls.class"
         },
         {
@@ -1435,6 +1459,31 @@
       "blake3": "188e1103d1f4eccb0d119d6877a0ca59a9ff74af6f33d6337af81b0ee758fb9b",
       "bytes": 303,
       "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "1002f7e1fad216ac36426d11c2e0371dd18512f1a3d88984f28c94eba87d6dfb",
+      "bytes": 1046,
+      "path": "tests/fixtures/java8/cf11/NestedLoopSideExitControls.class"
+    },
+    {
+      "blake3": "ca65aa5e38974dfedf03716eb14cb651c5ccbe0ff52fd68edf07df15cf43d92e",
+      "bytes": 849,
+      "path": "tests/fixtures/java8/cf11/NestedLoopSideExitControls.java"
+    },
+    {
+      "blake3": "908a4a1148af882105af27efb79aa4a643218d4d6b8a635ec8f851ef7a4ad8d4",
+      "bytes": 717,
+      "path": "tests/fixtures/java8/cf11/Runner.java"
+    },
+    {
+      "blake3": "16dae86edbd64b941bead529ecfbcbdeb6d6242ae6218a423ff3b513987b96a2",
+      "bytes": 602,
+      "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.class"
+    },
+    {
+      "blake3": "1934b36b1659b5b764ff15ecd54da97a3dd0bb78094495c0e5e0b86b969a712c",
+      "bytes": 378,
+      "path": "tests/fixtures/java8/cf11/UpstreamNestedLoops4.java"
     },
     {
       "blake3": "9102cd0d30c33781f2f1b3dde476d484c63a380601fc4a557c1504c664065e03",

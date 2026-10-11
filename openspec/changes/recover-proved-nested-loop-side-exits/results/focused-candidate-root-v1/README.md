@@ -1,0 +1,1 @@
+Root实际编译探测，非实现验收。真实Reader证明1 passed；public API首测试stack overflow/SIGABRT，cargo exit101。5GiB/target1GiB守卫无中止，finally clean exit0，4707输入closure格式化后至清理恒同。默认测试线程栈失败未掩盖。尚未执行后续旧回归/全库/CLI构建；候选已知静态回滚/计费问题待v4。compiled-region.rs.txt准确保存本次编译源码。

@@ -1,0 +1,1 @@
+Root v3 keeps the upstream outer-loop continuation placement: tmp++ executes after the i>tmp condition, on every outer iteration. v1/v2 controls placed it inside that condition (observed normal6); their raw runs are preserved as different controls, not accepted task1.2. v3 has no unexecuted output claims.

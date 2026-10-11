@@ -1,0 +1,9 @@
+# Private Builder try-arm frame candidate
+
+This private candidate applies only to `crates/jarde-java/src/build.rs` from the exact repo source SHA in `pins.json`. It extracts the existing `Region::Try` match arm from `Builder::region` into private `try_region(&mut self, region, path)`.
+
+The common entry in `region` remains in place and runs once: early special-region dispatches, incomplete-declaration refusal, Guard checkpoint setup, and `declare_at(path)` all remain before the match. The Try arm now dispatches to `try_region`; its first operation is the same `Region::Try` destructure, followed by the original `transparent_checkpoint` creation and remaining body. The moved arm body compares byte-for-byte after indentation normalization. No new type, public API, dependency, stack wrapper, or recursion/depth rule was added. Loop and other arms remain unchanged so this candidate tests the narrowest large variant extraction first.
+
+The private method retains the original order for prefix/lead writes, catch-header reads, `settled` swap, body scope setup and restoration, catch parameter scope, transparent-finally checkpoint restore, origin construction, shared-finally cleanup, and final Try statement push. The `try_region` call occurs only for `Region::Try`, so ordinary Sequence/If/Loop descent no longer allocates the Try arm's locals in the `region` dispatcher frame. Nested Try bodies still hold their own helper frame during recursion; default-stack acceptance and measured frame reduction must be checked by root.
+
+Static checks: source body exact after indentation normalization; shared source SHA unchanged at `f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade`. No Cargo/Rust compiler/formatter, JDK, JADX, CLI, or Git command was run. OpenSpec status is `ready`, 0/6 tasks complete; this candidate is private preparation for task 2.1, not evidence that the change is implemented or accepted.
