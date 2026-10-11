@@ -10,7 +10,7 @@
 
 旧片提升 iterator 声明产品 **993e9f8c0f413bb7c31538e6f7c2c92a742e7af4** / [CI38176302604](https://github.com/LordCasser/jarde/actions/runs/38176302604) 和关闭文档2246f6719最终clean已实际接受、9/9，仅作上一交付。15物理checkout/14aux detached干净main祖先、仅main，未称目录全部删除；四旧pinned附件归档拒绝未绕过。此前39份退役CLI无损gzip净回收约1.6GiB，本轮三份旧重复CLI再回收145652418B，必要冻结CLI及原始证据保留。
 
-下一固定诊断是 [引用局部首写错误收窄债务](openspec/evidence/jadx-feature-inventory-2026-09-27/local-reference-type-narrowing-loop-debt.md)。私有same-IR observation-v2已准备但未应用/编译/运行，需等当前片clean交付后串行执行并恢复4744输入。普通LVT descriptor可能未进入DebugLocal（仅唯一LVTT匹配附type metadata），须观测真实writes/Phi/identity/consumers，再追元数据传播；不能把raw LVT Object直接当源码类型证明。
+下一固定诊断是 [引用局部首写错误收窄债务](openspec/evidence/jadx-feature-inventory-2026-09-27/local-reference-type-narrowing-loop-debt.md)。等待产品 CI 期间，root 已串行运行 observation-v2：单测实际1/0/0且日志完整，但结束余量5352644608B低于5GiB，guard拒绝，runner/invocation exit1，不接受为正式诊断成功。两文件原字节恢复、4744→4745→4744、finally clean exit0、target不存在。原始证据见[类型路径诊断](openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-root-v1/README.md)。same local1/index0先String常量写、后Object next写、Unknown Phi，经首次写入规则仍决定String；普通LVT descriptor在facade普通映射未传播，LVTT唯一匹配才传type metadata。后续需核全生命周期赋值兼容性与读约束，不能按raw LVT或无条件Object化修复。固定TestNestedLoops真实method Signature含List<String>，当前双foreach已恢复但raw方法头/ordinary_generic_source_unproved仍在，另作准确泛型拒绝子门诊断。未新增机制或类型修复，71/612不变。
 
 以下上一交付记录作为历史保留。
 
