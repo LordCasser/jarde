@@ -423,3 +423,6 @@ typed候选两轮实际2/1，无守卫中止，峰值204,220,969 bytes。null/St
 2026-10-12 for-condition窄片9/9：产品02ecd63ff33270cea4413793db2f99d6927dc65c自身CI38154998619已root独立接受四jobs/52steps、双seed各360目标3461-0-97、全部3558 named outcomes和4718输入同产品Git/live/finalbuild/CLI。产品clean checkpoint仅main/15checkout/14辅助detached祖先干净无target；物理目录仍在。关闭docs随后按真实HEAD执行仓库外final audit。见[自身验收](../../changes/recover-proved-for-condition-expressions/results/own-product-ci-clean-root-v1/README.md)。TestNestedLoops真实foreach入口诊断1/0/0确认outer Assign gate、inner后续闭包拒绝待定位，全部源码恢复/clean，见[诊断](../java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v2/README.md)。整个CF11/71/612计数不变。
 
 2026-10-12 构造条件值窄片8/9：c956050611f63a06f57caf0b1280238e81faeb80自身CI38163820457 root独立接受4jobs/52steps、双seed361targets/3473-0-97、全部3570named outcomes同本地、4727inputs同Git/live/最终CLI。固定完整class和Positive同源isolated class双JDK行为相等，Refusals八compile失败/no runtime保留。关闭docs clean audit待本次提交推送后真实HEAD执行；整个CF11/71/612计数不变。下一foreach已有准确提升声明owner与Phi97历史operand首拒；written-gap控制实证JADX四runtime错误0→1，不照搬其重排。详本片verification-root.md、下一片spec和handoff入口。
+
+
+2026-10-12 CF11 foreach外层Assign窄片：产品73adae72自身CI38181427452已root独立接受4jobs/52steps、双seed各362targets/3481-0-97/3578named、20required及4744Git/live输入/准确CLI字节绑定。当前7/8，最终干净main待审计。仅窄片接受，固定71单元/612文件及整CF11完成数不增加。证据：`../../changes/recover-proved-iterator-assignment-foreach/results/own-product-ci-clean-root-v1/README.md`。

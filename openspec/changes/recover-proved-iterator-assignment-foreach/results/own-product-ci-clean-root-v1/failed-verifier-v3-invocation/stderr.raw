@@ -1,0 +1,19 @@
+iterator-assignment own-CI verification failed: final build helper references differ from the pinned runner/guard/scanner set
+Traceback (most recent call last):
+  File "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/verify-own-ci.py", line 1029, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/verify-own-ci.py", line 971, in main
+    build = verify_final_build(args.product_commit, ex['source_pins_before'],
+                               args.final_build.resolve(strict=True), args.final_cli,
+    ...<3 lines>...
+                               workspace_receipt, workspace_sha256,
+                               workspace_acceptance, workspace_acceptance_sha256, ci)
+  File "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/verify-own-ci.py", line 592, in verify_final_build
+    need({row.get('path'): row.get('sha256') for row in references} == expected_references,
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         'final build helper references differ from the pinned runner/guard/scanner set')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-iterator-assignment-own-ci-verifier-prep-luna-v3/verify-own-ci.py", line 53, in need
+    raise ValueError(message)
+ValueError: final build helper references differ from the pinned runner/guard/scanner set

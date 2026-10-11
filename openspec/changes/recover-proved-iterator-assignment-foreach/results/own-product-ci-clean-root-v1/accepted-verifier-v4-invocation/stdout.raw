@@ -1,0 +1,1 @@
+{"status": "accepted_local_own_ci_observation", "product_commit": "73adae72c6d89e8eba0a34e3cd92fe81e899cb3e", "run_id": 38181427452, "jobs": 4, "steps": 52, "target_count": 362, "batch_count": 96, "source_closure_count_at_start": 4744, "workspace_totals": [[3481, 0, 97], [3481, 0, 97]], "required_tests": 20, "masked_public_labels": 2}
