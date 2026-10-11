@@ -1,0 +1,11 @@
+# 条件内部独立写回：观察与独立债务
+
+root实际执行21条整类命令，双JDK original各8/8正确；JADX可编译运行但各4/8正确；Jarde default/all完整类均编译失败，尚未恢复Java源码。default/all方法正文与map恒同，目标方法整体保留字节码解释；这是可靠拒绝观察，不是结构化恢复或运行通过。
+
+source中的prefixIncrement和localAssignment均为两个语句payload的if。javap真实iinc位于16，赋值写回为istore21（20是dup）；两个方法分别36/39个唯一instruction BCI。此处先记录root原始观察，最终物理来源接受由独立verifier实际运行决定。不能把这个整方法fallback当作已到达Builder新增purity guard；proof会将独立写回视为语句出口，最终ownership闭合拒绝。
+
+独立后续债务：恢复含内部++x/局部赋值的短路语句条件及其共享条件后缀，必须在不重复求值、不丢写回的前提下证明表达式写回与SSA合流、出口归属。JADX错误嵌套else if导致a=false路径一律miss，此算法不能照搬。当前compound design明确不做赋值内联；不得为了追平此例放松现有纯测试规则。完成当前有限语句条件里程碑后，另建OpenSpec，以真实36/39指令和双JDK八条oracle为输入，先核现有assignment expression/SSA消费者能否复用，再决定表示是否有确切缺口。
+
+独立verifier v3实际exit1：74字面pins中的六对JDK符号链接与真实路径被误判重复，已保留失败原稿/raw；不能因该包装器失败将负向观察写为已独立接受。完整class BLAKE3 oracle实际exit0，1116bytes，fdbd3d61fdf62235a03924217a1b81d4e96454d5d927b209a0ab77dba5a4b34a，独立记录已归档；新包装器必须闭合真实digest，而非仅比length。
+
+root独立v6实际exit0，21cmd/74字面pins（68resolved、精确6工具别名）、双JDK original8/8、JADX4/8、Jarde四compilefailed、全部class/Runner/CLI/raw/完整引用及36/39 unique BCI和ownerclassBLAKE3已核。只接受negative观察与完整来源，不计结构化恢复或Builder guard被触达。前v4/v5因copy-pin集合归属和class结构schema失败原稿/raw均保留，实际v6接受在verification-root-v4。

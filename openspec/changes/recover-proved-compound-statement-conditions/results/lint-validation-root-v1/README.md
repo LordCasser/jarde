@@ -1,0 +1,3 @@
+root实际workspace/alltargets/allfeatures Clippy按CI allowlist运行exit101，三处测试pool字段冗余（region.rs16219/16258/16300）。格式化通过，守卫未触发，cargo clean且target不存在。失败保留；不会增加allowlist。
+
+root修正三处测试pool字段简写后，CI同范围workspace/alltargets/allfeatures/locked Clippy按原allowlist实际exit0，fmtcheck0，守卫未触发，cargo clean且target不存在。包括当前closure helper、精准Builder Stop和public修订；后续bytecode负向测试尚未集成，此记录不是最终产品CI。

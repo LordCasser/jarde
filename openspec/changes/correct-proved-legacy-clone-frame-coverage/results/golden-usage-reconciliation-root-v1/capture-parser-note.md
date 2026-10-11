@@ -1,0 +1,1 @@
+首条ROOT_LEGACY_JSON与Rust test名称在同一stdout行；第一版startswith只读8条而拒绝更新。后续改为在每行匹配实际marker，九条均可严格JSON解析。第一次永久golden仍以原期待7/2失败，保存。未修改Rust测试/生产契约。

@@ -1,0 +1,1 @@
+第一轮实际 fmt exit0、jarde-jvm 全库 243/0/0。jarde-java 编译 exit101：既有精确 Stop 私稿比较 Option<FragmentedCatch>，该类型未实现 PartialEq。root 仅将初始与停止后都检查 is_none，保持最小测试改动；不新增生产 trait。该轮 cargo clean 成功且 target 不存在。尚不能称 Java 回归或 clone region guard 通过。

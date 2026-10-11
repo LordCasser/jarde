@@ -1,0 +1,14 @@
+# Root architecture rejection before application
+
+v2私有候选未应用，未跑Rust工具链，2.1–2.5未勾选。region32ff44a16e70a90f9c3503c9754289ac88e98d9b79d96ed2f1298b17577f8bad/buildcf6fffaca9ae1eb24b3ba45e5e5fd034c886e84644722a5cff3ba5b3bb266670；combined patch870e855af60bf26a1fad090acdada715eb2d9ded0896bc82fbaa76273c916110。v1的candidate在patch生成后继续改动导致元数据过期，明确不使用；v2已单独冻结。
+
+Root完整读归约、integration和Builder。以下问题足以拒绝，不靠执行通过来覆盖架构偏离：
+
+1. reduce先构造 `test&&then || !test&&otherwise`，memo clone共享条件，再模板simplify；违背design3两个出口摘要直接对齐且tests disjoint的算法。写死共享尾表达式形状与新增96节点限值不是设计批准的机制。
+2. Proof只允许exits含join与一个payload，integration只解析then payload/else空。已规划的两个普通语句arm及实际受控else fixture不能恢复，不能缩减fixture来勾选任务。
+3. tests先插visited，后续region_at/charge/poll用?早返，错误可能绕过恢复snapshot；必须在实际integration阶段覆盖late Stop而非只测无副作用的proof helper。
+4. Builder只test_expr，没有完整内部指令依赖闭合/boolean验证。旧test_is_pure对Arithmetic等无条件白名单不足以证明每条指令属于条件；内点producer可能独立/延后。需要准确前置证明，不把旧valuePhi消费者前提照搬。
+5. local_assignments把每个test都当Structure，内部短路赋值可能Split，emitter却只root test_effects。现有ragged保护可能在最终拒绝，因此不宣称已证明错误Java；仍违反位置前提。当前片不新增赋值inline范围，内部store需保守拒绝。
+6. prefix先输出，再condition拒绝quote整个Region，可能留下prefix和重复fallback来源。需利用已有stage/checkpoint保证失败没有省略producer或部分源码。
+
+Root要求另v3修订：直接child出口对齐优先，必要时反转，AND共else/OR共then，只在direct未对齐时有限递归；两ordinary arm复用walker、互不重叠、join外置；全Err/None回滚；前置dependency/statement闭合与Java boolean核验。spec/design未缩小，仍2/10。独立Luna审查指出同一visited/赋值/依赖/prefix问题，原报告待归档。实际v3工具链和完整类对照仍待。

@@ -1,0 +1,5 @@
+# JDK8 helper supplement observations
+
+root实际将未修改JadxAssertions原源码用冻结JDK23 --release8编译，精确唯一class为major52；原21helper/63jar完全不变。有限补测实际2命令：FallThrough原class运行0，stdout与旧JDK23原class逐字节同；JADX完整类javac8仍exit1，准确错误是ICodeInfo参数类型来自jadx-core-dev.jar major55，应为52，未运行生成类且停止其他样例。只接受这两个实际观察，未解决整个JDK8环境，也不算生成类恢复成功。
+
+root补强overlay真实class目录/空sourcepath/对称sourcepins；补测入口第一次因同一JDK符号链接path字符串不同失败，第二次修正后因候选pin(CLI)变量未定义失败，raw保留。最终rootv5实际执行；独立verifier实际exit0核全部pins、raw、原class复制字节、major52、准确55/52编译错误与原运行基线。无stub、无伪造overload、未改check、target不存在。原记录private绝对路径保留，inventory是仓库备份。

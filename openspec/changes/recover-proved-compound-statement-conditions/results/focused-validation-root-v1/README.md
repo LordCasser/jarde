@@ -1,0 +1,17 @@
+# 初次真实编译失败
+
+区域v5/Builder v4经root串行应用与cargo fmt后，守卫下执行fmt check通过，region lib test因三个新增测试类型错误编译exit101：FragmentedCatch没有PartialEq，catch_joins实际为tuple集合。另有未用op警告。未运行任何Rust test，未计任务完成。原始输出/pins保留；cargo clean实际exit0且target不存在。已派发Luna只修这些编译问题，禁止为测试扩大生产PartialEq/API。
+
+## 第二轮：15/2/0，核心未通过
+
+最小编译修正后lib编译成功，region实跑15通过/2失败，public integration目标未执行。Switch2永久测试仍混用block入口98和物理branch BCI；双普通payload方法仍OwnerOverlap@62。实际diag-v1排除了内部依赖/纯度假设：29/40/51各全闭合且pure Ok，join83正确。diag-v2证明四test出口归约及canonical闭合实际成功，integration返回Ok(None)。源码进一步确认existing region_at达到frame boundary时next=None；新integration误要求Some(join)。后续修正应复用该真实契约并保留arm全部canonical边和唯一owner检查，禁止因失败盲目放宽依赖或边界。两次诊断只为观察，执行后源码均按base原字节恢复；每轮cargo clean exit0、target不存在。
+
+## 第三轮：16/1/0，双普通arm通过
+
+existing walker boundary契约修正后，真实two-payload方法通过；actual focused-v3 region16/1/0，Switch2仍在proof拒绝，public target未执行。diag-v3实际记录：physical root108、tests108/115/121/128，payload131→join136的Normal边因source不属于test/尚未visited被首轮proof过早拒绝。根要求将普通payload入join的owner核验放在arm解析后的完整canonical验证，保留nonNormal及其他所有外部入边/跨臂拒绝。源码按base原字节恢复SHA5e8020ac63bf54fd53b64f857dd1bdb7c55a1338042f2aa8e984ff79541fed4a，targetclean。另核StopReason::Budget.written记录output_bytes而非AnalysisSteps，后续测试须按现有契约核输出0并分别核analysis usage，不混入公共Stop API改造。
+
+## 第四轮：复合条件helper通过，包围arm接续仍失败
+
+focused-v4 region16/1/0；Switch2的四test proof、statement integration、late Stop/取消及frame/case边界断言均已走过，整体失败前移至ArmsDoNotMeet@71。diag-v4证明拒绝并不来自two-arm continuation分支；diag-v5实际记录one-armed branch71/physical75、next136、outer boundary164：run为单If78/physical95，then为CompoundIf(98/111/118/124)，else为空，两个结构join均为136。既有continue_early_return_arm仅布尔ireturn及两Straight，continue_inner_join_arm只支持有normal后继的straight tail，不能消费本shape的单void return。
+
+root已按实际证据用openspec-update-change将四个现有planning artifacts细化为design4a/共享void-return scenario；strict实际valid、apply ready2/10。仅允许单If包围已证明CompoundIf的fresh shared单0xb1 return，全canonical入边准确Normal且来源owned、同scope/path、唯一claim，所有失败/Stop回滚，budget保留；不通用化boolean/Phi返回证明。诊断后按base原字节恢复SHA761582f7ea807969083ecdb2ff16efbbe276e93f39a5996c202398fc68e8ca87，targetclean。当前只是分析及私有实现派发，不计核心整体/产品通过。

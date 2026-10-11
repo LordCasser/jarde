@@ -1,0 +1,1 @@
+Root读取实际v1/v2源码及v3/v4差异，拒绝固定failed WSv3、错source的crosscase名字、错package的Null target。最终v4 SHA05c0bc76f46c3de5ce453374e7cf716deed3d7da1d9670950e2896c0d17528b5已root实际AST parse/import，并以当前metadata逐项调用source→target映射，25名字对应source实际存在、Null为jarde root test。仅准备验收适配器，不是CI已通过。必须完整95批359target本地passed、完整Git/live绑定与CLI124pins，两CIseed全named outcomes、4jobs52steps。

@@ -104,7 +104,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 154,
+          "analysis_steps": 186,
           "archive_entries": 0,
           "attribute_bytes": 143,
           "class_bytes": 258,
@@ -114,7 +114,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 29,
-          "ir_items": 540,
+          "ir_items": 552,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 2,
@@ -238,7 +238,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 154,
+            "analysis_steps": 186,
             "archive_entries": 0,
             "attribute_bytes": 143,
             "class_bytes": 258,
@@ -248,7 +248,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 29,
-            "ir_items": 540,
+            "ir_items": 552,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 2,
@@ -562,7 +562,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 154,
+          "analysis_steps": 186,
           "archive_entries": 0,
           "attribute_bytes": 143,
           "class_bytes": 258,
@@ -572,7 +572,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 29,
-          "ir_items": 540,
+          "ir_items": 552,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 2,
@@ -696,7 +696,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 154,
+            "analysis_steps": 186,
             "archive_entries": 0,
             "attribute_bytes": 143,
             "class_bytes": 258,
@@ -706,7 +706,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 29,
-            "ir_items": 540,
+            "ir_items": 552,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 2,
@@ -1020,7 +1020,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 154,
+          "analysis_steps": 186,
           "archive_entries": 0,
           "attribute_bytes": 143,
           "class_bytes": 258,
@@ -1030,7 +1030,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 29,
-          "ir_items": 540,
+          "ir_items": 552,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 2,
@@ -1154,7 +1154,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 154,
+            "analysis_steps": 186,
             "archive_entries": 0,
             "attribute_bytes": 143,
             "class_bytes": 258,
@@ -1164,7 +1164,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 29,
-            "ir_items": 540,
+            "ir_items": 552,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 2,
@@ -1478,7 +1478,7 @@
         ],
         "syntax_status": "not_java",
         "usage": {
-          "analysis_steps": 154,
+          "analysis_steps": 186,
           "archive_entries": 0,
           "attribute_bytes": 143,
           "class_bytes": 258,
@@ -1488,7 +1488,7 @@
           "entry_bytes": 0,
           "input_bytes": 0,
           "ir_edges": 29,
-          "ir_items": 540,
+          "ir_items": 552,
           "method_bodies": 1,
           "nested_depth": 0,
           "normalization_clones": 2,
@@ -1612,7 +1612,7 @@
         "execution": {
           "status": "complete",
           "usage": {
-            "analysis_steps": 154,
+            "analysis_steps": 186,
             "archive_entries": 0,
             "attribute_bytes": 143,
             "class_bytes": 258,
@@ -1622,7 +1622,7 @@
             "entry_bytes": 0,
             "input_bytes": 0,
             "ir_edges": 29,
-            "ir_items": 540,
+            "ir_items": 552,
             "method_bodies": 1,
             "nested_depth": 0,
             "normalization_clones": 2,

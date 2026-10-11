@@ -1,0 +1,7 @@
+# Real non-tree condition negative validation
+
+Private v3 supplies three complete classfiles pinned in fixtures/metadata-private-v3.json. Root actual `observed-bytecode-v1` commands 0–17 accept cycle, irreducible and no-repeat variants on JDK8/JDK23 under Class.forName/getDeclaredMethods/-Xverify:all; modified methods are never invoked. Commands18–20 separately test legacy clone private v1; JDK8 rejects it with Multiple returns to single jsr. Overall execution status remains failed, not all-fixture acceptance.
+
+Root initial installation failed on a nonexistent private manifest before applying Rust candidate. Consequently `observed-baseline-lib-v3` 348/0 only repeats the unchanged prior baseline and is not negative coverage. Corrected installation applies v3 then formats; `observed-lib-v4` compiles but fails 348/1 at a presumed canonical block lookup. target cleaned and no guard interruption. Negative test remains unaccepted pending reader identity diagnosis. Both failures are preserved.
+
+V4 root actual observed-lib-v5 still fails348/1: irreducible variant has canonical IDs0/29/40/62/51/74, no original block83 and no unreachable nodes. Redirecting goto71 removes the only explicit target83, so raw block74 includes the suffix83/return97. Prior fusion hypothesis was wrong and is preserved as hypothesis, not accepted fact. Pending correction must use actual decoded block coverage rather than invent a join83 identity.
