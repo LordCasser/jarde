@@ -1,0 +1,1 @@
+当前finalCLI a71c31e...实际fresh 29命令/58raw，双JDK原2+JADX4+Jarde4共10完整class runtime腿八case同原（不是8个Jarde腿）；v7及root独立acceptor actualexit0。4727闭包与finalbuildbefore/after/live恒同，target不存在。Jarde两structured while/raw List/generic refusal，JADX两String foreach/List<String>；未实现本片，不宣称后续SSA/effect已通过。详root-acceptance.json和capture完整raw。

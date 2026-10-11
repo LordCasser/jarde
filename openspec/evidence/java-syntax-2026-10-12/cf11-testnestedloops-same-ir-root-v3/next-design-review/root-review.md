@@ -3,3 +3,5 @@ Root实际读当前Builder loop/iterable helper与ordinary generic projection后
 v1没有说清当前foreach呈现；root最初按String直接头提出raw List类型顾虑，随后实际读完helper末尾确认现有代码已使用synthetic Object iteratorElement+保留String cast/body binding。因此无需新增element转换机制，也不应以该错误假设要求generic前置。v2纠正这一点；typed String header/List<String>源码质量仍单列。JADX可变type fix不替代本仓proof。
 
 现有sameIR仅首拒已测，余下SSA/effect/handlers尚未运行；不得把静态owner设计当新实现或完整class重编成功。外层Assign元素绑定另片。current constructor production完全不混入这些修改。
+
+Root已审阅private-v3：只覆盖inner42的LocalVariable/DeclarationPlacement owner消费，outer13保持Assign入口拒绝；不新增AST跨frame删除、泛型或cast机制。后续每个SSA/Phi/readers/handlers门必须同冻结class实测，当前未知不能勾实现或完整runtime任务。private-v3仅静态设计，未创建实施change/未改生产。

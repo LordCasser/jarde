@@ -1,0 +1,13 @@
+# Hoisted iterator diagnostic: private acceptance-prep review
+
+This is a private verifier/archive preparation for the already-recorded `hoisted-iterator-same-ir-diagnostic-root-v1` run. It does not establish a successful foreach rewrite, Builder acceptance, or completion of any later proof gate.
+
+`accept_diagnostic.py` reads the execution receipt and raw streams, the root runner, candidate prep, final-build receipt, and the live workspace. It independently enumerates the frozen source closure (including in-tree Rust includes), requires exactly 4,727 matching source paths, compares every live source SHA to both the diagnostic restore pins and final-build pins, and checks the recorded two-file candidate/restore boundary. It verifies the exact ignored test command followed by `cargo clean`, every raw stream's path/size/SHA, default Rust stack, the fixed seed, the 5 GiB / 1 GiB / 1-second guard, and the pinned final-build record and raw streams.
+
+The diagnostic checks are deliberately limited to observed facts: inner test BCI 42 at `[1, 1]`, identical init/test/next `LocalVariable { slot: 5, index: 0 }`, `Elevated { owner: [1] }`, owner declaration present in `at_region` and emitted, then first refusal `iterator_value_and_phi_use_ownership`; outer test BCI 13 still begins with `Assign` and refuses at `body_first_not_initialized_declaration`. The snapshot checks V37's three `None` uses at block 97 and header Phi V12's `[Value(V37), Itself]` inputs and replacement by V37. The verifier never treats these facts as evidence that later candidate gates passed.
+
+The required `--execution`, `--runner`, and `--out` options allow the same evidence shape to be reviewed against a later run; `--expected-execution-sha256` and `--expected-schema` must be supplied for a newly pinned v3 record. Additional diagnostic lines such as a later `phi_use_expansion` are tolerated, while the known first-refusal and ownership facts remain required. A changed command shape or changed evidence schema requires a deliberate verifier revision.
+
+The archive output is required to resolve outside the shared workspace, and existing output/staging paths are refused. Validation completes before the archive directory is published by rename; failures remove the staging directory. This script has **not** been run against the execution record and does not contain a prewritten acceptance result.
+
+Static checks performed on this preparation only: Python AST parse passed; `symtable` found no unresolved function globals. No Git, Cargo, JDK, JADX, CLI, network, or verifier execution was performed. The verifier checks worktree file hashes and independent closure; it does not invoke Git or claim Git-blob identity.

@@ -1,0 +1,1 @@
+Root实际同IR诊断v3与独立acceptor-v3已exit0；只接受owner/SSA事实与首拒，不接受新foreach。精确test1/0/0+guardedclean，4727源恢复、默认栈/5GiB free/target1GiB，target不存在。root-acceptance.json和execution/raw保留，验收脚本及invocation在父results。规划文件在实际恢复与验收后按新事实修订，private candidate pins所含旧规划SHA是该次执行的冻结上下文。

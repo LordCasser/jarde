@@ -1,0 +1,3 @@
+产品c956050611f63a06f57caf0b1280238e81faeb80自身[CI38163820457](https://github.com/LordCasser/jarde/actions/runs/38163820457)已root独立接受：4jobs/52steps、双seed各361targets/3473-0-97，全部3570named outcomes同95批本地结果，4727完整输入同Git/live/workspace/focused/finalbuild/CLI；12关键tests及2脱敏label准确绑定。actual-ci-capture、capture/accept-invocation与root-acceptance.json为实际成功证据。
+
+preflight-v1因ignored便利status/完整reason比较失败；v2只归一便利status，仍逐项核raw全文/原因/summary，actualexit0。c956产品clean checkpoint实际接受，但关闭docs须以其真实HEAD另作仓外最终audit。resource-cleanup记录守卫拒绝/受pinned保护的worktree及39退役CLI无损压缩；15物理checkout仍在、14aux detached干净main祖先，不占功能分支。
