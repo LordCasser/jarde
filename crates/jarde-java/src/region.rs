@@ -4707,7 +4707,7 @@ impl Walker<'_> {
         let allowed_latch_origin = if gateway_origins.is_empty() {
             true
         } else if *form == LoopForm::While && gateway_origins.len() == 1 {
-            self.implicit_tail_latch_origin(header_node, body, for_header.as_ref())?
+            self.implicit_tail_latch_origin(header_node, body, for_header.as_ref(), None)?
                 == gateway_origins.first().copied()
         } else {
             false
@@ -11596,6 +11596,7 @@ impl Walker<'_> {
         header_node: usize,
         body: &[Region],
         for_header: Option<&ForHeader>,
+        terminal_returns: Option<&BTreeSet<usize>>,
     ) -> Result<Option<u32>, StopReason> {
         let Some(tail) = body.last() else {
             return Ok(None);
@@ -11613,7 +11614,7 @@ impl Walker<'_> {
                 else_arm,
                 join: None,
                 ..
-            } if for_header.is_none() => {
+            } if for_header.is_none() || terminal_returns.is_some() => {
                 // This direct, no-join form is the one bounded exception to a final Straight
                 // child: exactly one single-block arm returns and the other can be the latch.
                 charge(
@@ -11653,6 +11654,14 @@ impl Walker<'_> {
                 let (Some(return_id), Some(latch_id)) = (return_id, latch_id) else {
                     return Ok(None);
                 };
+                if for_header.is_some() && terminal_returns.is_some() {
+                    let Some(return_node) = self.view.index_of(return_id) else {
+                        return Ok(None);
+                    };
+                    if !terminal_returns.is_some_and(|returns| returns.contains(&return_node)) {
+                        return Ok(None);
+                    }
+                }
                 (latch_id, Some(return_id))
             }
             _ => return Ok(None),
@@ -11802,7 +11811,7 @@ impl Walker<'_> {
                     )));
                 }
                 let gateway_origins = self
-                    .implicit_tail_latch_origin(header_node, &body, None)?
+                    .implicit_tail_latch_origin(header_node, &body, None, None)?
                     .into_iter()
                     .collect();
                 return Ok(Some((
@@ -11887,7 +11896,10 @@ impl Walker<'_> {
         };
         let exit_node = self.view.index_of(&outside);
         let exit_gateway = self.loop_exit_gateway_pair(header_node, exit_node, blocks, frame)?;
-        let for_header = self.prove_for_header(header, header_node, blocks)?;
+        // The exact exit/frame-scoped return certificate is shared by the induction proof, body
+        // frame, coverage accounting, and final tail-latch source check.
+        let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
+        let for_header = self.prove_for_header(header, header_node, blocks, &terminal_returns)?;
         let exits = self.loop_exit_nodes(blocks);
         let mut all_exits: BTreeSet<usize> = frame
             .loop_targets
@@ -11910,7 +11922,6 @@ impl Walker<'_> {
         if let Some((gateway, _, _)) = exit_gateway {
             transfer_sources.insert(gateway);
         }
-        let terminal_returns = self.loop_terminal_returns(blocks, exit_node, frame)?;
         let mut body_frame = frame.loop_body(
             blocks,
             header_node,
@@ -11957,7 +11968,7 @@ impl Walker<'_> {
         if let Some((gateway, _, _)) = exit_gateway {
             expected.insert(gateway);
         }
-        expected.extend(terminal_returns);
+        expected.extend(terminal_returns.iter().copied());
         if !self.covers(&expected) {
             // The loop's shape is refused, and every block the body's walk claimed goes into the
             // refusal with it: the body region is dropped here, so naming its blocks is the only
@@ -11978,9 +11989,12 @@ impl Walker<'_> {
         {
             gateway_origins.push(proof.update_transfer_bci);
         }
-        if let Some(latch_bci) =
-            self.implicit_tail_latch_origin(header_node, &body, for_header.as_ref())?
-            && !gateway_origins.contains(&latch_bci)
+        if let Some(latch_bci) = self.implicit_tail_latch_origin(
+            header_node,
+            &body,
+            for_header.as_ref(),
+            Some(&terminal_returns),
+        )? && !gateway_origins.contains(&latch_bci)
         {
             gateway_origins.push(latch_bci);
         }
@@ -12362,6 +12376,7 @@ impl Walker<'_> {
         header: &CanonicalBlockId,
         header_node: usize,
         blocks: &BTreeSet<usize>,
+        terminal_returns: &BTreeSet<usize>,
     ) -> Result<Option<ForHeader>, StopReason> {
         let at = Some(header.bci());
         poll(self.budget, at)?;
@@ -12379,7 +12394,7 @@ impl Walker<'_> {
             u64::try_from(items).unwrap_or(u64::MAX),
             at,
         )?;
-        self.for_header_candidate(header, header_node, blocks)
+        self.for_header_candidate(header, header_node, blocks, terminal_returns)
     }
 
     fn for_header_candidate(
@@ -12387,6 +12402,7 @@ impl Walker<'_> {
         header: &CanonicalBlockId,
         header_node: usize,
         blocks: &BTreeSet<usize>,
+        terminal_returns: &BTreeSet<usize>,
     ) -> Result<Option<ForHeader>, StopReason> {
         let Some((proof, preheader, invariants)) = (|| {
             let loop_fact = self.view.loop_entered_at(header_node)?;
@@ -12536,15 +12552,13 @@ impl Walker<'_> {
             }
             let preheader_block = self.view.id_of(*preheader)?;
             let initial_instructions = self.ssa.block(preheader_block)?.instructions();
-            let tail = initial_instructions.get(initial_instructions.len().checked_sub(2)?..)?;
-            let [producer, initial] = tail else {
+            let Some(initial) = initial_instructions.last() else {
                 return None;
             };
             if !matches!(
-                self.operations.get(producer.bci()),
-                Some(Operation::Push(crate::facts::ConstantValue::Int(_)))
-            ) || !matches!(self.operations.get(initial.bci()), Some(Operation::Store { slot: target }) if *target == slot)
-            {
+                self.operations.get(initial.bci()),
+                Some(Operation::Store { slot: target }) if *target == slot
+            ) {
                 return None;
             }
             let init_value = initial
@@ -12555,11 +12569,44 @@ impl Walker<'_> {
                 .writes()
                 .iter()
                 .find_map(|(at, value)| (*at == Slot::Local(slot)).then_some(*value))?;
-            let stack_input = initial
+            let mut stack_reads = initial
                 .reads()
                 .iter()
-                .find_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value))?;
-            if !matches!(self.ssa.value(stack_input).def(), Definition::Instruction { bci, .. } if *bci == producer.bci())
+                .filter_map(|(at, value)| matches!(at, Slot::Stack(_)).then_some(*value));
+            let stack_input = stack_reads.next()?;
+            if stack_reads.next().is_some() {
+                return None;
+            }
+            let Definition::Instruction {
+                block: producer_block,
+                bci: producer_bci,
+            } = self.ssa.value(stack_input).def()
+            else {
+                return None;
+            };
+            let Some(producer) = self
+                .ssa
+                .block(producer_block)
+                .filter(|_| producer_block == preheader_block)
+                .and_then(|block| {
+                    block
+                        .instructions()
+                        .iter()
+                        .find(|instruction| instruction.bci() == *producer_bci)
+                })
+            else {
+                return None;
+            };
+            let [store_use] = self.ssa.value(stack_input).uses() else {
+                return None;
+            };
+            if !producer
+                .writes()
+                .iter()
+                .any(|(_, value)| *value == stack_input)
+                || store_use.block() != preheader_block
+                || store_use.bci() != Some(initial.bci())
+                || stack_input == init_value
             {
                 return None;
             }
@@ -12650,15 +12697,23 @@ impl Walker<'_> {
                 {
                     return Ok(None);
                 }
-                if !blocks.contains(&node)
-                    && node != preheader
-                    && instruction
+                if !blocks.contains(&node) && node != preheader {
+                    let reads_induction = instruction
                         .reads()
                         .iter()
-                        .chain(instruction.writes())
-                        .any(|(at, _)| *at == Slot::Local(proof.slot))
-                {
-                    return Ok(None);
+                        .any(|(at, _)| *at == Slot::Local(proof.slot));
+                    let writes_induction = instruction
+                        .writes()
+                        .iter()
+                        .any(|(at, _)| *at == Slot::Local(proof.slot));
+                    if reads_induction || writes_induction {
+                        let certified_return_read = terminal_returns.contains(&node)
+                            && reads_induction
+                            && !writes_induction;
+                        if !certified_return_read {
+                            return Ok(None);
+                        }
+                    }
                 }
             }
         }
@@ -16605,6 +16660,244 @@ mod tests {
     }
 
     #[test]
+    fn shared_stack_initializer_has_two_real_dup_outputs_before_builder_refusal() {
+        use jarde_jvm::engine::analyze_method_ir;
+        use jarde_jvm::environment::ResolutionEnvironment;
+        use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest};
+        use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+        use jarde_reader::budget::Limits;
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalMethodId, PhysicalVariant,
+        };
+        use jarde_reader::view::{
+            DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+            MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile, RuntimeUncertainty,
+            RuntimeView,
+        };
+
+        const CLASS: &[u8] = include_bytes!(
+            "../../../openspec/changes/recover-proved-computed-for-initializers/results/shared-stack-input-root-v1/javac8/original/classes/SharedStoreInput.class"
+        );
+        let mut budget = Budget::new(Limits {
+            input_bytes: 1 << 20,
+            archive_entries: 100,
+            entry_bytes: 1 << 20,
+            read_bytes: 1 << 20,
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            result_items: 1 << 20,
+            output_bytes: 1 << 20,
+            class_headers: 100,
+            method_bodies: 100,
+            ir_items: 1 << 20,
+            ir_edges: 1 << 20,
+            analysis_steps: 1 << 20,
+            normalization_clones: 1 << 20,
+            nested_depth: 32,
+            dependency_depth: 32,
+            elapsed_millis: u64::MAX,
+        });
+        let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(CLASS.to_vec()), &mut budget)
+            .expect("frozen SharedStoreInput class opens");
+        let definition = PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(CLASS).to_hex().to_string()),
+                length: u64::try_from(CLASS.len()).expect("fixture length fits u64"),
+            },
+            variant: PhysicalVariant::Base,
+        };
+        let domain = LoadDomain {
+            loader: LoaderId("app".to_string()),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots: vec![LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            }],
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        let request = MethodAnalysisRequest {
+            environment: ResolutionEnvironment {
+                runtime: RuntimeView {
+                    physical: PhysicalView {
+                        snapshot: snapshot.id().clone(),
+                        scope: PhysicalScope::SnapshotAll,
+                    },
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    load_domain: domain.clone(),
+                },
+                domains: vec![domain],
+                providers: Vec::new(),
+            },
+            method: PhysicalMethodId {
+                owner: definition,
+                name: JvmBytes(b"find".to_vec()),
+                descriptor: JvmBytes(b"([III)I".to_vec()),
+            },
+            stages: AnalysisStage::ALL.to_vec(),
+        };
+        let analysis = analyze_method_ir(&[snapshot], &request, &mut budget)
+            .expect("frozen find method has real JVM analysis");
+        let ir = analysis.ir();
+        let canonical = ir.canonical().expect("canonical CFG");
+        let ssa = ir.ssa().expect("real method SSA");
+        let code = ir.code().expect("decoded method");
+        let operations = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::plan_four_conditional_strings(
+            ssa,
+            canonical,
+            &operations,
+            &crate::build::FieldCopies::default(),
+            &mut budget,
+        )
+        .expect("concat plan completes");
+        let view = crate::normal_flow::NormalFlowView::build(canonical, &mut budget)
+            .expect("normal-flow view builds");
+        let instruction = |bci| {
+            ssa.blocks()
+                .iter()
+                .flat_map(|block| block.instructions())
+                .find(|instruction| instruction.bci() == bci)
+                .unwrap_or_else(|| panic!("real SSA instruction at BCI {bci}"))
+        };
+        let subtract = instruction(4);
+        let duplicate = instruction(5);
+        let field_write = instruction(6);
+        let store = instruction(9);
+        assert!(matches!(
+            operations.get(4),
+            Some(Operation::Arithmetic {
+                op: crate::facts::ArithmeticOp::Subtract
+            })
+        ));
+        assert!(matches!(operations.get(5), Some(Operation::Duplicate)));
+        assert!(matches!(operations.get(6), Some(Operation::Field {
+            access: crate::facts::FieldAccess::Write, is_static: true, owner, name, ..
+        }) if owner == "SharedStoreInput" && name == "savedField"));
+        assert!(matches!(
+            operations.get(9),
+            Some(Operation::Store { slot: 3 })
+        ));
+        let [(Slot::Stack(0), subtract_value)] = subtract.writes() else {
+            panic!("isub@4 writes one stack value: {:?}", subtract.writes());
+        };
+        assert!(
+            duplicate
+                .reads()
+                .iter()
+                .any(|(slot, value)| *slot == Slot::Stack(0) && value == subtract_value)
+        );
+        let duplicate_low = duplicate
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| (*slot == Slot::Stack(0)).then_some(*value))
+            .expect("dup output for local store");
+        let duplicate_high = duplicate
+            .writes()
+            .iter()
+            .find_map(|(slot, value)| (*slot == Slot::Stack(1)).then_some(*value))
+            .expect("dup output for putstatic");
+        assert_ne!(duplicate_low, duplicate_high);
+        assert!(matches!(
+            ssa.value(duplicate_low).def(),
+            Definition::Instruction { bci: 5, .. }
+        ));
+        assert!(matches!(
+            ssa.value(duplicate_high).def(),
+            Definition::Instruction { bci: 5, .. }
+        ));
+        assert!(store.reads().contains(&(Slot::Stack(0), duplicate_low)));
+        assert!(
+            field_write
+                .reads()
+                .contains(&(Slot::Stack(1), duplicate_high))
+        );
+        assert_eq!(ssa.value(duplicate_low).uses().len(), 1);
+        assert_eq!(ssa.value(duplicate_low).uses()[0].bci(), Some(9));
+        assert_eq!(ssa.value(duplicate_high).uses().len(), 1);
+        assert_eq!(ssa.value(duplicate_high).uses()[0].bci(), Some(6));
+
+        let header = canonical
+            .blocks()
+            .iter()
+            .find(|block| block.id().bci() == 10)
+            .expect("actual loop header BCI 10");
+        let header_id = header.id();
+        let header_node = view
+            .index_of(header_id)
+            .expect("header has normal-flow node");
+        let natural = view
+            .loop_entered_at(header_node)
+            .expect("header has a natural loop");
+        let blocks = natural.blocks().clone();
+        let sites = crate::init::Sites::empty();
+        let mut walk_budget = Budget::new(Limits {
+            analysis_steps: 1 << 20,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        let mut walker = Walker {
+            canonical,
+            view: &view,
+            ssa,
+            operations: &operations,
+            pool: ir.constant_pool(),
+            chains: &chains,
+            sites: &sites,
+            code,
+            method_synchronized: Some(false),
+            has_reachable_explicit_monitor: false,
+            return_is_boolean: false,
+            handlers: &code.exception_handlers,
+            profile: &crate::pass::JAVA_8,
+            budget: &mut walk_budget,
+            catch_joins: BTreeSet::new(),
+            fragmented: None,
+            excluded_edge_nodes: BTreeSet::new(),
+            visited: BTreeSet::new(),
+            unclosed_tail_at: None,
+            own_monitor: None,
+            depth: 0,
+        };
+        let outside = view
+            .successor_ids(header_id)
+            .into_iter()
+            .find(|successor| {
+                view.index_of(successor)
+                    .is_some_and(|node| !blocks.contains(&node))
+            })
+            .expect("real header has one external exit");
+        let terminal_returns = walker
+            .loop_terminal_returns(&blocks, view.index_of(&outside), &Frame::default())
+            .expect("same real loop's return certificate completes");
+        assert_eq!(
+            terminal_returns
+                .iter()
+                .filter_map(|node| view.id_of(*node).map(CanonicalBlockId::bci))
+                .collect::<Vec<_>>(),
+            vec![22]
+        );
+        let candidate = walker
+            .for_header_candidate(header_id, header_node, &blocks, &terminal_returns)
+            .expect("real candidate analysis completes");
+        assert!(
+            candidate.is_some(),
+            "the duplicate stack value is locally single-use; Builder refusal is checked by public API"
+        );
+        assert_eq!(candidate.expect("observed candidate").init_bci, 9);
+    }
+
+    #[test]
     fn cf07_return_arm_latch_proof_stops_at_shape_and_edges_from_real_ir() {
         use jarde_jvm::engine::analyze_method_ir;
         use jarde_jvm::environment::ResolutionEnvironment;
@@ -16752,7 +17045,10 @@ mod tests {
         else {
             unreachable!()
         };
-        assert!(for_header.is_none());
+        assert!(
+            for_header.is_some(),
+            "actual computed ForHeader is recovered"
+        );
         assert_eq!(gateway_origins, &[25]);
         let Some(Region::If {
             branch_bci: 16,
@@ -16809,7 +17105,7 @@ mod tests {
 
         let mut no_steps = steps(0);
         let stop = real_walker!(no_steps)
-            .implicit_tail_latch_origin(header_node, body, None)
+            .implicit_tail_latch_origin(header_node, body, None, None)
             .expect_err("the two branch-shape charges must stop before arm proof");
         assert!(matches!(
             stop,
@@ -16823,7 +17119,7 @@ mod tests {
 
         let mut two_steps = steps(2);
         let stop = real_walker!(two_steps)
-            .implicit_tail_latch_origin(header_node, body, None)
+            .implicit_tail_latch_origin(header_node, body, None, None)
             .expect_err("the unique-latch charge must stop before edge scanning");
         assert!(matches!(
             stop,
@@ -16837,7 +17133,7 @@ mod tests {
 
         let mut three_steps = steps(3);
         let stop = real_walker!(three_steps)
-            .implicit_tail_latch_origin(header_node, body, None)
+            .implicit_tail_latch_origin(header_node, body, None, None)
             .expect_err("the full canonical-edge charge must stop before scanning");
         assert!(matches!(
             stop,
@@ -16862,16 +17158,344 @@ mod tests {
         );
         token.cancel();
         let stop = real_walker!(cancelled_budget)
-            .implicit_tail_latch_origin(header_node, body, None)
+            .implicit_tail_latch_origin(header_node, body, None, None)
             .expect_err("post-analysis cancellation must stop the proof walk");
         assert_eq!(stop, StopReason::Cancelled { at: Some(16) });
         let mut complete = steps(1 << 20);
         assert_eq!(
             real_walker!(complete)
-                .implicit_tail_latch_origin(header_node, body, None)
+                .implicit_tail_latch_origin(header_node, body, None, None)
                 .expect("complete direct proof"),
             Some(25)
         );
+
+        // Keep the same captured LoopCases IR and recovered body, but exercise the new combined
+        // return-leaf/ForHeader/latch path directly. All observed costs and stop locations below
+        // are pinned to the root-observed execution of this same fixture.
+        let natural = view
+            .loop_entered_at(header_node)
+            .expect("real canonical header has its natural loop");
+        let blocks = natural.blocks().clone();
+        let outside = view
+            .successor_ids(header)
+            .into_iter()
+            .find(|successor| {
+                view.index_of(successor)
+                    .is_some_and(|node| !blocks.contains(&node))
+            })
+            .expect("real header has one external exit");
+        let exit_node = view.index_of(&outside);
+        assert!(
+            code.exception_handlers.is_empty(),
+            "top-level CF07 method has no handler frame"
+        );
+        let frame = Frame::default();
+
+        let mut return_scan = steps(1 << 20);
+        let terminal_returns = real_walker!(return_scan)
+            .loop_terminal_returns(&blocks, exit_node, &frame)
+            .expect("real loop return certificate completes");
+        assert!(
+            !terminal_returns.is_empty(),
+            "the loop has a proved physical return leaf"
+        );
+        let return_bcis: Vec<_> = terminal_returns
+            .iter()
+            .filter_map(|node| view.id_of(*node).map(CanonicalBlockId::bci))
+            .collect();
+        let return_scan_steps = return_scan.usage().analysis_steps;
+        assert_eq!(return_bcis, vec![19]);
+        assert_eq!(return_scan_steps, 15);
+
+        // One step below the observed certificate cost stops at the exact charged edge.
+        let return_limit = return_scan_steps - 1;
+        assert_eq!(return_limit, 14);
+        let mut limited_returns = steps(return_limit);
+        let return_stop = real_walker!(limited_returns)
+            .loop_terminal_returns(&blocks, exit_node, &frame)
+            .expect_err("one fewer charged step stops the real return certificate");
+        assert_eq!(
+            return_stop,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                written: 0,
+                limit: 14,
+                at: Some(22),
+            }
+        );
+        assert_eq!(limited_returns.usage().analysis_steps, 14);
+
+        let mut proof_budget = steps(1 << 20);
+        let for_proof = real_walker!(proof_budget)
+            .prove_for_header(header, header_node, &blocks, &terminal_returns)
+            .expect("real ForHeader proof completes")
+            .expect("computed init and return leaf prove one ForHeader");
+        let proof_steps = proof_budget.usage().analysis_steps;
+        assert_eq!(proof_steps, 47);
+
+        // The real proof must not infer a return leaf when its exact terminal certificate is
+        // absent, even though this method's CFG/SSA are otherwise unchanged.
+        let no_terminal_returns = BTreeSet::new();
+        let mut missing_leaf_proof_budget = steps(1 << 20);
+        assert!(
+            real_walker!(missing_leaf_proof_budget)
+                .prove_for_header(header, header_node, &blocks, &no_terminal_returns)
+                .expect("missing terminal certificate is a refusal, not a budget stop")
+                .is_none()
+        );
+
+        let mut missing_leaf_latch_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(missing_leaf_latch_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    body,
+                    Some(&for_proof),
+                    Some(&no_terminal_returns),
+                )
+                .expect("missing terminal certificate is a refusal"),
+            None,
+        );
+        let wrong_return_leaf = BTreeSet::from([header_node]);
+        let mut wrong_leaf_latch_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(wrong_leaf_latch_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    body,
+                    Some(&for_proof),
+                    Some(&wrong_return_leaf),
+                )
+                .expect("a non-return block cannot stand in for the proved return leaf"),
+            None,
+        );
+
+        let mut wrong_update_block = for_proof.clone();
+        wrong_update_block.update_block = header.clone();
+        let mut wrong_update_block_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(wrong_update_block_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    body,
+                    Some(&wrong_update_block),
+                    Some(&terminal_returns),
+                )
+                .expect("a different update block refuses the combined certificate"),
+            None,
+        );
+        let mut wrong_update_bci = for_proof.clone();
+        wrong_update_bci.update_bci += 1;
+        let mut wrong_update_bci_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(wrong_update_bci_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    body,
+                    Some(&wrong_update_bci),
+                    Some(&terminal_returns),
+                )
+                .expect("a different update BCI refuses the combined certificate"),
+            None,
+        );
+        assert!(
+            for_header.is_some(),
+            "the recovered real loop carries the same ForHeader"
+        );
+        let reported = for_header.as_ref().expect("recovered ForHeader");
+        assert_eq!(reported.init_bci, for_proof.init_bci);
+        assert_eq!(reported.update_bci, for_proof.update_bci);
+        assert_eq!(reported.update_block, for_proof.update_block);
+        assert_eq!(reported.slot, for_proof.slot);
+
+        let proof_limit = proof_steps - 1;
+        assert_eq!(proof_limit, 46);
+        assert_eq!(header.bci(), 5);
+        let mut limited_proof = steps(proof_limit);
+        let stop = real_walker!(limited_proof)
+            .prove_for_header(header, header_node, &blocks, &terminal_returns)
+            .expect_err("one fewer AnalysisSteps stops the real ForHeader proof atomically");
+        assert_eq!(
+            stop,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                written: 0,
+                limit: proof_limit,
+                at: Some(header.bci()),
+            }
+        );
+        assert_eq!(limited_proof.usage().analysis_steps, 0);
+
+        // The proof's cancellation check is reached only after opening, JVM analysis, recovering
+        // the loop and preparing its exact return-leaf certificate above.
+        let proof_cancel = CancellationToken::new();
+        let mut cancelled_proof = Budget::with_cancellation_token(
+            Limits {
+                analysis_steps: u64::MAX,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            proof_cancel.clone(),
+        );
+        let mut cancelled_proof_walker = real_walker!(cancelled_proof);
+        proof_cancel.cancel();
+        let stop = cancelled_proof_walker
+            .prove_for_header(header, header_node, &blocks, &terminal_returns)
+            .expect_err("post-facts cancellation stops at ForHeader proof entry");
+        assert_eq!(
+            stop,
+            StopReason::Cancelled {
+                at: Some(header.bci())
+            }
+        );
+        assert_eq!(cancelled_proof_walker.budget.usage().analysis_steps, 0);
+
+        let mut latch_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(latch_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    body,
+                    Some(&for_proof),
+                    Some(&terminal_returns),
+                )
+                .expect("real ForHeader return/latch certificate completes"),
+            Some(25),
+        );
+        let latch_steps = latch_budget.usage().analysis_steps;
+        assert_eq!(latch_steps, 9);
+
+        // The actual CF07 tail has a no-join If whose two arms are one-block Straight regions.
+        // Keep its canonical CFG/SSA intact and perturb only that offered Region shape: nested
+        // content and a multi-block arm must refuse before any latch-source attribution.
+        let mut nested_tail = body.to_vec();
+        let Region::If { then_arm, .. } = nested_tail.last_mut().expect("real body has a tail")
+        else {
+            panic!("real body tail is the checked no-join If");
+        };
+        let nested_arm = std::mem::replace(
+            then_arm,
+            Box::new(Region::Sequence {
+                regions: Vec::new(),
+            }),
+        );
+        *then_arm = Box::new(Region::Sequence {
+            regions: vec![*nested_arm],
+        });
+        let mut nested_tail_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(nested_tail_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    &nested_tail,
+                    Some(&for_proof),
+                    Some(&terminal_returns),
+                )
+                .expect("nested tail is an ordinary shape refusal"),
+            None,
+        );
+
+        let return_leaf = view
+            .id_of(
+                *terminal_returns
+                    .iter()
+                    .next()
+                    .expect("one real return leaf"),
+            )
+            .expect("real return leaf has canonical identity")
+            .clone();
+        let mut multi_block_tail = body.to_vec();
+        let Region::If { then_arm, .. } =
+            multi_block_tail.last_mut().expect("real body has a tail")
+        else {
+            panic!("real body tail is the checked no-join If");
+        };
+        *then_arm = Box::new(Region::Straight {
+            blocks: vec![return_leaf, for_proof.update_block.clone()],
+        });
+        let mut multi_block_tail_budget = steps(1 << 20);
+        assert_eq!(
+            real_walker!(multi_block_tail_budget)
+                .implicit_tail_latch_origin(
+                    header_node,
+                    &multi_block_tail,
+                    Some(&for_proof),
+                    Some(&terminal_returns),
+                )
+                .expect("multi-block tail is an ordinary shape refusal"),
+            None,
+        );
+
+        let latch_limit = latch_steps - 1;
+        assert_eq!(latch_limit, 8);
+        let mut limited_latch = steps(latch_limit);
+        let mut limited_latch_walker = real_walker!(limited_latch);
+        let before_visited = limited_latch_walker.visited.clone();
+        let before_tail = limited_latch_walker.unclosed_tail_at;
+        let before_catches = limited_latch_walker.catch_joins.clone();
+        let before_excluded = limited_latch_walker.excluded_edge_nodes.clone();
+        let stop = limited_latch_walker
+            .implicit_tail_latch_origin(
+                header_node,
+                body,
+                Some(&for_proof),
+                Some(&terminal_returns),
+            )
+            .expect_err("one fewer AnalysisSteps stops the actual ForHeader latch proof");
+        assert_eq!(
+            stop,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::AnalysisSteps,
+                written: 0,
+                limit: 8,
+                at: Some(25),
+            }
+        );
+        assert_eq!(limited_latch_walker.budget.usage().analysis_steps, 3);
+        assert_eq!(limited_latch_walker.visited, before_visited);
+        assert_eq!(limited_latch_walker.unclosed_tail_at, before_tail);
+        assert_eq!(limited_latch_walker.catch_joins, before_catches);
+        assert_eq!(limited_latch_walker.excluded_edge_nodes, before_excluded);
+        assert!(limited_latch_walker.fragmented.is_none());
+
+        // Cancellation is requested after the real facts are prepared and immediately before
+        // the proof call, exercising post-facts proof-entry cancellation.
+        let latch_cancel = CancellationToken::new();
+        let mut cancelled_latch = Budget::with_cancellation_token(
+            Limits {
+                analysis_steps: u64::MAX,
+                elapsed_millis: u64::MAX,
+                ..Limits::default()
+            },
+            latch_cancel.clone(),
+        );
+        let mut cancelled_latch_walker = real_walker!(cancelled_latch);
+        latch_cancel.cancel();
+        let stop = cancelled_latch_walker
+            .implicit_tail_latch_origin(
+                header_node,
+                body,
+                Some(&for_proof),
+                Some(&terminal_returns),
+            )
+            .expect_err("post-facts cancellation stops the actual latch proof");
+        let expected_branch = match body.last().expect("actual loop body tail") {
+            Region::If {
+                branch_bci,
+                join: None,
+                ..
+            } => *branch_bci,
+            other => panic!("expected the actual no-join return/latch tail: {other:#?}"),
+        };
+        assert_eq!(
+            stop,
+            StopReason::Cancelled {
+                at: Some(expected_branch)
+            }
+        );
+        assert_eq!(cancelled_latch_walker.budget.usage().analysis_steps, 0);
+        assert_eq!(cancelled_latch_walker.visited, BTreeSet::new());
+        assert!(cancelled_latch_walker.fragmented.is_none());
     }
     #[test]
     fn cf12_switch_certificate_accepts_real_paths_and_rejects_edge_row_variants() {

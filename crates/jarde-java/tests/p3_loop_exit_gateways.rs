@@ -307,10 +307,15 @@ fn cf07_nonempty_if_join_goto_is_derived_from_complete_if() {
     // `braced_body` ends immediately before the else closing brace. Include that brace and
     // the emitter's following newline in the complete If statement span.
     let if_end = else_body.end + 2;
-    let outer_while_body = braced_body(&all.text, "while (");
+    let (outer_loop_form, _, outer_loop_body) = loop_form_header_and_body(&all.text);
+    assert_eq!(
+        outer_loop_form, "for",
+        "expected the proven counted for header: {}",
+        all.text
+    );
     assert!(
-        if_start >= outer_while_body.start && if_end <= outer_while_body.end,
-        "complete If statement is outside the outer while body: {}",
+        if_start >= outer_loop_body.start && if_end <= outer_loop_body.end,
+        "complete If statement is outside the outer for body: {}",
         all.text
     );
     let if_spans = all
@@ -337,8 +342,8 @@ fn cf07_nonempty_if_join_goto_is_derived_from_complete_if() {
         all.source_map
             .derived_of_bci(30)
             .iter()
-            .any(|segment| { segment.text(&all.text).trim_start().starts_with("while (") }),
-        "outer while latch@30 lost its source: {}",
+            .any(|segment| { segment.text(&all.text).trim_start().starts_with("for (") }),
+        "outer for latch@30 lost its source: {}",
         all.text
     );
 
@@ -531,7 +536,7 @@ fn cf07_if_join_proof_budget_and_cancellation_publish_no_partial_source() {
 }
 
 #[test]
-fn cf07_return_arm_loop_latch_is_derived_from_complete_while() {
+fn cf07_return_arm_loop_latch_is_derived_from_complete_for() {
     const LAST_INDEX_BCIS: [u32; 18] = [
         0, 1, 2, 3, 5, 7, 8, 11, 12, 14, 15, 16, 19, 21, 22, 25, 28, 29,
     ];
@@ -564,35 +569,43 @@ fn cf07_return_arm_loop_latch_is_derived_from_complete_while() {
         );
     }
 
-    let while_keyword = all
-        .text
-        .find("while (")
-        .expect("lastIndexOf recovered while");
-    let while_start = all.text[..while_keyword]
+    let (loop_form, loop_header, loop_body) = loop_form_header_and_body(&all.text);
+    assert_eq!(
+        loop_form, "for",
+        "lastIndexOf did not retain its proved for header: {}",
+        all.text
+    );
+    assert_eq!(
+        loop_header.matches(';').count(),
+        2,
+        "unexpected for header: {loop_header}"
+    );
+    let for_keyword = all.text.find("for (").expect("lastIndexOf recovered for");
+    let for_start = all.text[..for_keyword]
         .rfind('\n')
         .map_or(0, |newline| newline + 1);
-    let while_body = braced_body(&all.text, "while (");
     // The source span includes the loop's closing brace and the emitter's following newline.
-    let while_end = while_body.end + 2;
-    let while_span = while_start..while_end;
-    assert_one_structured_owner_in(&all, while_span.clone(), &[5, 11, 19, 22], "while (", &[25]);
+    let for_end = loop_body.end + 2;
+    let for_span = for_start..for_end;
+    assert_one_structured_owner_in(&all, for_span.clone(), &[5, 11, 19, 22], "for (", &[25]);
     let latch_spans: Vec<_> = all
         .source_map
         .derived_of_bci(25)
         .into_iter()
-        .filter(|segment| segment.start() == while_span.start && segment.end() == while_span.end)
+        .filter(|segment| segment.start() == for_span.start && segment.end() == for_span.end)
         .collect();
     assert_eq!(
         latch_spans.len(),
         1,
-        "goto@25 must point to exactly the complete while span {while_span:?}: {}",
+        "goto@25 must point to exactly the complete for span {for_span:?}: {}",
         all.text
     );
     assert!(
-        all.source_map.of_bci(8).iter().any(|segment| {
-            segment.start() >= while_span.start && segment.end() <= while_span.end
-        }),
-        "while condition@8 lost its source: {}",
+        all.source_map
+            .of_bci(8)
+            .iter()
+            .any(|segment| { segment.start() >= for_span.start && segment.end() <= for_span.end }),
+        "for condition@8 lost its source: {}",
         all.text
     );
     assert!(
@@ -662,10 +675,8 @@ fn cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn()
 
     let has_no_loop_origin = |report: &jarde_java::RecoveryReport| {
         !report.source_map.derived_of_bci(25).iter().any(|segment| {
-            segment
-                .text(&report.text)
-                .trim_start()
-                .starts_with("while (")
+            let text = segment.text(&report.text).trim_start();
+            text.starts_with("for (") || text.starts_with("while (")
         })
     };
 
@@ -698,7 +709,8 @@ fn cf07_return_arm_latch_origin_rejects_wrong_target_nonterminal_and_nonreturn()
     );
     // Redirecting the only backedge removes the natural loop. The preexisting no-loop
     // If presentation has no source for this transfer; that independent gap is not a
-    // latch origin and this slice must not assign it to an invented while.
+    // latch origin and this slice must not assign it to an invented loop.
+    assert!(!wrong_target_report.text.contains("for ("));
     assert!(!wrong_target_report.text.contains("while ("));
     assert!(wrong_target_report.source_map.of_bci(25).is_empty());
 
