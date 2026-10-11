@@ -25,3 +25,9 @@ Fresh v2从头95批/360实际metadata targets，3455 passed/0 failed/97 ignored�
 最终lint v4的fmt/CI全范围Clippy/global strict351/0/clean均实际exit0；最终CLI v10已重新构建冻结且用其字节实际完成固定/控制各29条双JDK完整三方，root独立checker接受。与focused-v7的Reader census及region两等价Clippy差异保留精确逆变换；最终fresh workspace v3仍在执行，不能借修正前workspace v2通过关闭3.1。共享证据在CF11 results/final-local-evidence-root-v1。
 
 最终fresh workspace v3已root独立接受95批/360目标/3455-0-97，完整4707 inputs同最终CLI/lint，target峰值814346343bytes且clean后不存在；实际raw/hash/动态exact-once目标核验均通过。共享证据CF11 results/final-workspace-root-v3。任务3.1接受，本片5/6；自身产品CI和干净主线3.2仍待。
+
+## 3.2 产品自身 CI 与主线（6/6）
+
+共用实际产品 b155877ee9a3b1894b053e70ffbf1cbf0a9512fa 自身CI38144212651：root独立验收4 jobs/52 steps，双seed各360目标/3455-0-97，named outcomes与fresh workspace相同，完整4707 inputs绑定产品Git/live/最终CLI。共享全部原raw及真实调用见../recover-proved-nested-loop-side-exits/results/own-product-ci-clean-root-v1。本债务6/6，只接受保持预算、作用域与执行顺序的Try/Loop/Guard私有frame抽取；不代表跨平台统一栈上界，也不关闭CF11/71。
+
+实际产品clean checkpoint已接受main=origin/main、仅main、15checkout干净且14辅助detached/main祖先、无target。关闭文档推送后的实际新HEAD另在outside-repo执行final audit；不得将产品checkpoint写成尚未发生的文档HEAD审计。

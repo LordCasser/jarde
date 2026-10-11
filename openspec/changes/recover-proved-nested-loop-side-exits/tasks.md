@@ -15,5 +15,5 @@
 
 - [x] 3.1 root冻结新CLI，对固定上游及受控输入做双JDK完整原/JADX/Jarde对照。验收：生成完整类原样重编运行exit/stdout/stderr同原，实际覆盖threshold早return与计数；default/all全文/map一致，所有物理BCI/准确方法身份/UTF8 span/loop gateway来源闭合，JADX失败单列。
 - [x] 3.2 执行必要库/integration、fresh workspace、同CI Clippy、fmt及OpenSpec strict。验收：5GiB free/target1GiB一秒守卫、源码完整closure前后恒同、准确命令与原失败记录保留，最终CLI绑定该完整closure并clean；旧计费pin仅按实测修正。
-- [ ] 3.3 提交推送实际产品，验收它自身全部CI job/step/双seed及named outcomes。验收：精确head、CI raw与本地closure/测试绑定，不能借旧产品或仅GitHub绿色状态。
-- [ ] 3.4 更新ledger/verification/handoff并交付干净main。验收：实际HEAD=main=origin/main、分支/worktree/target/冻结CLI核验；CF11/71整单元完成数不因该窄片改变。
+- [x] 3.3 提交推送实际产品，验收它自身全部CI job/step/双seed及named outcomes。验收：精确head、CI raw与本地closure/测试绑定，不能借旧产品或仅GitHub绿色状态。
+- [x] 3.4 更新ledger/verification/handoff并交付干净main。验收：实际HEAD=main=origin/main、分支/worktree/target/冻结CLI核验；CF11/71整单元完成数不因该窄片改变。

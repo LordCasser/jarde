@@ -11,4 +11,4 @@
 ## 3. 同版本交付
 
 - [x] 3.1 执行fresh workspace、CI等价Clippy/fmt/OpenSpec strict和新CLI对照。验收：完整source closure恒同，5GiB/target1GiB一秒守卫且结束clean；可与CF11同版本检查共用实测，不能借旧产品结果。
-- [ ] 3.2 提交推送实际产品并核它自身CI与干净主线交接。验收：HEAD=main=origin/main及所有own CI jobs/steps核准；handoff区分本债务和未关闭CF11/71单元。
+- [x] 3.2 提交推送实际产品并核它自身CI与干净主线交接。验收：HEAD=main=origin/main及所有own CI jobs/steps核准；handoff区分本债务和未关闭CF11/71单元。
