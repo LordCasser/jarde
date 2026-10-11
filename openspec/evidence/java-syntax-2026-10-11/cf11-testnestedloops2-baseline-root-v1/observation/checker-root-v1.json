@@ -1,0 +1,523 @@
+{
+  "schema": "cf11-nested-loops2-observation-v2",
+  "status": "verified_observation_capture",
+  "execution": {
+    "path": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/execution.json",
+    "bytes": 546303,
+    "sha256": "a7791a753850c636aa0c2d5fee5cce5b0a79434ef539eb486f5f4c8499f56951"
+  },
+  "command_count": 29,
+  "raw_stream_count": 58,
+  "command_labels": [
+    "javac8-original-compile",
+    "javac8-original-run",
+    "javac8-original-javap",
+    "javac23-original-compile",
+    "javac23-original-run",
+    "javac23-original-javap",
+    "jadx-version",
+    "jadx-default",
+    "javac8-jadx-default-compile",
+    "javac8-jadx-default-run",
+    "javac23-jadx-default-compile",
+    "javac23-jadx-default-run",
+    "jadx-none",
+    "javac8-jadx-none-compile",
+    "javac8-jadx-none-run",
+    "javac23-jadx-none-compile",
+    "javac23-jadx-none-run",
+    "javac8-jarde-default-render",
+    "javac8-jarde-default-compile",
+    "javac8-jarde-default-run",
+    "javac8-jarde-all-render",
+    "javac8-jarde-all-compile",
+    "javac8-jarde-all-run",
+    "javac23-jarde-default-render",
+    "javac23-jarde-default-compile",
+    "javac23-jarde-default-run",
+    "javac23-jarde-all-render",
+    "javac23-jarde-all-compile",
+    "javac23-jarde-all-run"
+  ],
+  "original_oracle": {
+    "stdout_sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953",
+    "jdk8_jdk23_equal": true
+  },
+  "jadx": {
+    "default": {
+      "profile": "default",
+      "exit_code": 0,
+      "raw_stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_count": 1,
+      "exact_subject_source": true,
+      "compile_legs": [
+        {
+          "jdk": "javac8",
+          "compile_exit": 0,
+          "compile_succeeded": true,
+          "class_paths_observed": [
+            "cf11/Runner.class",
+            "cf11/UpstreamNestedLoops2.class"
+          ],
+          "class_set_exact": true,
+          "runtime": {
+            "matches_original": true
+          }
+        },
+        {
+          "jdk": "javac23",
+          "compile_exit": 0,
+          "compile_succeeded": true,
+          "class_paths_observed": [
+            "cf11/Runner.class",
+            "cf11/UpstreamNestedLoops2.class"
+          ],
+          "class_set_exact": true,
+          "runtime": {
+            "matches_original": true
+          }
+        }
+      ],
+      "observation_status": "source_compiled_and_runtime_checked"
+    },
+    "none": {
+      "profile": "none",
+      "exit_code": 0,
+      "raw_stdout_sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_count": 1,
+      "exact_subject_source": true,
+      "compile_legs": [
+        {
+          "jdk": "javac8",
+          "compile_exit": 0,
+          "compile_succeeded": true,
+          "class_paths_observed": [
+            "cf11/Runner.class",
+            "cf11/UpstreamNestedLoops2.class"
+          ],
+          "class_set_exact": true,
+          "runtime": {
+            "matches_original": true
+          }
+        },
+        {
+          "jdk": "javac23",
+          "compile_exit": 0,
+          "compile_succeeded": true,
+          "class_paths_observed": [
+            "cf11/Runner.class",
+            "cf11/UpstreamNestedLoops2.class"
+          ],
+          "class_set_exact": true,
+          "runtime": {
+            "matches_original": true
+          }
+        }
+      ],
+      "observation_status": "source_compiled_and_runtime_checked"
+    }
+  },
+  "jarde": [
+    {
+      "profile": "javac8-jarde-default",
+      "render_exit": 0,
+      "render_stdout_sha256": "7d910fa589ec371a2f05fe70a546bd6579c618358e720fa1351090c518a5dc51",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "methods": [
+        {
+          "identity": "<init>()V",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "<init>()V",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              4
+            ],
+            "source_origin_bci_count": 3,
+            "source_origin_records": 3,
+            "method_index": 0,
+            "access_flags": 1,
+            "code_span": {
+              "start": 591,
+              "length": 47
+            },
+            "utf8_spans_checked": 3
+          }
+        },
+        {
+          "identity": "test(Ljava/util/List;)Z",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "test(Ljava/util/List;)Z",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              11,
+              14,
+              15,
+              16,
+              21,
+              24,
+              26,
+              27,
+              29,
+              32,
+              35,
+              38,
+              41,
+              44,
+              47,
+              48,
+              50,
+              53,
+              54,
+              57,
+              58
+            ],
+            "source_origin_bci_count": 28,
+            "source_origin_records": 43,
+            "method_index": 1,
+            "access_flags": 1,
+            "code_span": {
+              "start": 652,
+              "length": 211
+            },
+            "utf8_spans_checked": 43
+          }
+        }
+      ],
+      "compile": {
+        "compile_exit": 0,
+        "compile_succeeded": true,
+        "class_paths_observed": [
+          "cf11/Runner.class",
+          "cf11/UpstreamNestedLoops2.class"
+        ],
+        "class_set_exact": true,
+        "runtime": {
+          "matches_original": true
+        }
+      }
+    },
+    {
+      "profile": "javac8-jarde-all",
+      "render_exit": 0,
+      "render_stdout_sha256": "2f3b283bbae619ad48cd7f0e9ac7cfe8f29ed2eb448f7632068dbf365f3177bd",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "methods": [
+        {
+          "identity": "<init>()V",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "<init>()V",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              4
+            ],
+            "source_origin_bci_count": 3,
+            "source_origin_records": 3,
+            "method_index": 0,
+            "access_flags": 1,
+            "code_span": {
+              "start": 591,
+              "length": 47
+            },
+            "utf8_spans_checked": 3
+          }
+        },
+        {
+          "identity": "test(Ljava/util/List;)Z",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "test(Ljava/util/List;)Z",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              11,
+              14,
+              15,
+              16,
+              21,
+              24,
+              26,
+              27,
+              29,
+              32,
+              35,
+              38,
+              41,
+              44,
+              47,
+              48,
+              50,
+              53,
+              54,
+              57,
+              58
+            ],
+            "source_origin_bci_count": 28,
+            "source_origin_records": 43,
+            "method_index": 1,
+            "access_flags": 1,
+            "code_span": {
+              "start": 652,
+              "length": 211
+            },
+            "utf8_spans_checked": 43
+          }
+        }
+      ],
+      "compile": {
+        "compile_exit": 0,
+        "compile_succeeded": true,
+        "class_paths_observed": [
+          "cf11/Runner.class",
+          "cf11/UpstreamNestedLoops2.class"
+        ],
+        "class_set_exact": true,
+        "runtime": {
+          "matches_original": true
+        }
+      }
+    },
+    {
+      "profile": "javac23-jarde-default",
+      "render_exit": 0,
+      "render_stdout_sha256": "d452ee4977043abbb327de9b7b5a058032617d4bad41ed044ebae7cf06b96531",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "methods": [
+        {
+          "identity": "<init>()V",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "<init>()V",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              4
+            ],
+            "source_origin_bci_count": 3,
+            "source_origin_records": 3,
+            "method_index": 0,
+            "access_flags": 1,
+            "code_span": {
+              "start": 588,
+              "length": 47
+            },
+            "utf8_spans_checked": 3
+          }
+        },
+        {
+          "identity": "test(Ljava/util/List;)Z",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "test(Ljava/util/List;)Z",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              11,
+              14,
+              15,
+              16,
+              21,
+              24,
+              26,
+              27,
+              29,
+              32,
+              35,
+              38,
+              41,
+              44,
+              47,
+              48,
+              50,
+              53,
+              54,
+              57,
+              58
+            ],
+            "source_origin_bci_count": 28,
+            "source_origin_records": 43,
+            "method_index": 1,
+            "access_flags": 1,
+            "code_span": {
+              "start": 649,
+              "length": 211
+            },
+            "utf8_spans_checked": 43
+          }
+        }
+      ],
+      "compile": {
+        "compile_exit": 0,
+        "compile_succeeded": true,
+        "class_paths_observed": [
+          "cf11/Runner.class",
+          "cf11/UpstreamNestedLoops2.class"
+        ],
+        "class_set_exact": true,
+        "runtime": {
+          "matches_original": true
+        }
+      }
+    },
+    {
+      "profile": "javac23-jarde-all",
+      "render_exit": 0,
+      "render_stdout_sha256": "bf54134593c335a55be6598cbb671b7c93b15ea855b785912e1d5cdb37f7ad2f",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "methods": [
+        {
+          "identity": "<init>()V",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "<init>()V",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              4
+            ],
+            "source_origin_bci_count": 3,
+            "source_origin_records": 3,
+            "method_index": 0,
+            "access_flags": 1,
+            "code_span": {
+              "start": 588,
+              "length": 47
+            },
+            "utf8_spans_checked": 3
+          }
+        },
+        {
+          "identity": "test(Ljava/util/List;)Z",
+          "quality": "structured",
+          "content": "contains_statements",
+          "fallbacks": [],
+          "compile_status": "not_attempted",
+          "physical_map": {
+            "method": "test(Ljava/util/List;)Z",
+            "owner": "cf11/UpstreamNestedLoops2",
+            "instruction_bcis": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              11,
+              14,
+              15,
+              16,
+              21,
+              24,
+              26,
+              27,
+              29,
+              32,
+              35,
+              38,
+              41,
+              44,
+              47,
+              48,
+              50,
+              53,
+              54,
+              57,
+              58
+            ],
+            "source_origin_bci_count": 28,
+            "source_origin_records": 43,
+            "method_index": 1,
+            "access_flags": 1,
+            "code_span": {
+              "start": 649,
+              "length": 211
+            },
+            "utf8_spans_checked": 43
+          }
+        }
+      ],
+      "compile": {
+        "compile_exit": 0,
+        "compile_succeeded": true,
+        "class_paths_observed": [
+          "cf11/Runner.class",
+          "cf11/UpstreamNestedLoops2.class"
+        ],
+        "class_set_exact": true,
+        "runtime": {
+          "matches_original": true
+        }
+      }
+    }
+  ],
+  "default_all": [
+    {
+      "jdk": "javac8",
+      "both_rendered": true,
+      "identity_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "both_rendered": true,
+      "identity_equal": true
+    }
+  ],
+  "physical_source_maps_checked_for_successful_renders": true,
+  "compile_or_runtime_failures_are_observations": true,
+  "checker": {
+    "path": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/check_nested_loops2.py",
+    "bytes": 36347,
+    "sha256": "f4eeff0adfd08b178dd4eb71dae32b6f2882a9ffaf19354dc1cbf64a8b44cd5f"
+  }
+}

@@ -53,3 +53,11 @@ Root已用这版字节不同的v10 CLI重新实跑双JDK三方：固定和十cas
 Root fresh workspace v3完整95批、metadata派生360目标，每个恰好一次，3455/0/97；format/metadata/全部test/clean exit0，5GiB/target1GiB守卫未触发，peak814346343bytes且target不存在。全部4707源码/include/fixture inputs执行前后恒同，并等于最终v10 CLI和lint v4闭包。workspace receipt SHA02311f04c679a697297fe8cd8ce09793b8394ca8e6004d792baf4bea6a609d40；lint receipt SHA c701d54876f0843bb18465d570af332241290e2cfe6d4914eee6a1b180be1d61。
 
 Root local independent checker实际exit0，重构raw counts/目标及命令、核全部streams/source closure/resources/clean；status accepted_local_workspace_lint_only。actualwrapper与完整证据在results/final-workspace-root-v3。3.2和独立栈片3.1接受，不冒称产品Git/live绑定或自身CI已通过；3.3/3.4仍开放。
+
+## 3.3 产品自身 CI 与 3.4 主线交付（11/11）
+
+实际产品 b155877ee9a3b1894b053e70ffbf1cbf0a9512fa 已推送 main；自身 [CI 38144212651](https://github.com/LordCasser/jarde/actions/runs/38144212651) 全部4 jobs/52 steps通过。Root实际独立verifier exit0，两固定seed各360个metadata目标、3455/0/97，逐目标及named outcomes同fresh workspace，38项明确列名增量测试及既有控制核准。GitHub两个脱敏public labels仅绑定唯一同status本地结果。验收receipt SHA869d06e36785db4770972d4ee3a6ee38442cad87f3619eb518fb05a9e6558be7；全部4707源码/include/fixture inputs逐一等于产品Git/live/最终CLI闭包。原始summary、stable/supply日志、捕获/verifier真实调用与原raw见results/own-product-ci-clean-root-v1；不是借旧CI或仅读取绿色状态。
+
+产品提交后的实际clean audit接受HEAD=main=origin/main=b155877ee9a3b1894b053e70ffbf1cbf0a9512fa，真实远端与本地仅main，15物理checkout/14辅助detached且均为main祖先、干净，不占用功能分支；全部无target/fuzz target，冻结CLI仍0555/61213840bytes/准确SHA，free11911950336bytes。目录仍存在，不能称已删除。这个checkpoint在后续证据/文档更新前；本次关闭文档推送后，root将以实际新HEAD执行outside-repo最终audit，避免自记录提交循环。3.4按该实际审计交付，失败则不得发布干净交接结论。
+
+本片11/11、独立Builder栈片6/6在其窄范围接受。保持整个CF11与71/612完成数不变。下一固定TestNestedLoops2已经真实完成29命令双JDK完整三方，九行行为一致，但外层indexed for退成while以及List<String>退成raw List；两项分开。证据见../../evidence/java-syntax-2026-10-11/cf11-testnestedloops2-baseline-root-v1。ForHeader的Invoke白名单是静态候选门槛，仍需同次IR首拒诊断，不以候选推导冒称实测或新增机制。

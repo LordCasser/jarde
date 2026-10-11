@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 2,
+  "all_warnings_are_preserved_raw_streams_or_original_private_patch_context": true,
+  "warning_count": 303,
+  "patch_paths": [
+    "openspec/changes/bound-structured-region-render-stack-frames/results/private-extraction-review-root-v1/build.rs.patch",
+    "openspec/changes/bound-structured-region-render-stack-frames/results/private-extraction-review-root-v2/build.rs.patch"
+  ],
+  "stdout_sha256": "2bd3bf80da5f61bf013113eb5c2b46044250c6d41ceb189b55fe41cf6a225a98",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "first_categorizer": "asserted all raw and correctly refused before writing a receipt; exact private patch context is now separately identified; evidence bytes untouched"
+}

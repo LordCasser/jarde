@@ -1,0 +1,14 @@
+--- v3/check_nested_loops2.py
++++ v4/check_nested_loops2.py
+@@ -264,7 +264,10 @@
+     if require_success:
+         need(comp.get('exit_code')==0 and run is not None and run.get('exit_code')==0 and actual_paths==expected,
+              label+' original oracle fixture did not compile/run exactly')
+-    return {'compile_exit':comp.get('exit_code'),'class_paths':actual_paths,'class_set_exact':actual_paths==expected,
++    compile_succeeded=comp.get('exit_code')==0
++    return {'compile_exit':comp.get('exit_code'),'compile_succeeded':compile_succeeded,
++            'class_paths_observed':actual_paths,
++            'class_set_exact':(actual_paths==expected) if compile_succeeded else None,
+             'runtime':runtime}
+ 
+ 

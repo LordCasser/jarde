@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-delivery-prep-luna-v4/archive.py",
+    "openspec/changes/recover-proved-nested-loop-side-exits/results/own-product-ci-clean-root-v1",
+    "b155877ee9a3b1894b053e70ffbf1cbf0a9512fa",
+    "/private/tmp/jarde-cf11-own-product-ci-capture-root-v1",
+    "/private/tmp/jarde-cf11-full-workspace-root-v3",
+    "/private/tmp/jarde-cf11-side-exits-lint-root-v4",
+    "/private/tmp/jarde-cf11-product-clean-main-root-v1"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T14:12:16.557987+00:00",
+  "finished_at": "2026-10-11T14:12:16.758361+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-evidence-archive/stdout.raw",
+      "bytes": 298,
+      "sha256": "070a038c5d4dcf0d6df42201b0c23d93c6ddef235cbf832eb954acdb54610958"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-evidence-archive/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,185 @@
+{
+  "status": "archived_accepted_actual_receipts",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-cf11-own-product-ci-acceptance-root-v1.json",
+      "archived": "acceptance/jarde-cf11-own-product-ci-acceptance-root-v1.json",
+      "bytes": 1415568,
+      "sha256": "869d06e36785db4770972d4ee3a6ee38442cad87f3619eb518fb05a9e6558be7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-product-local-binding-root-v1.json",
+      "archived": "acceptance/jarde-cf11-product-local-binding-root-v1.json",
+      "bytes": 16238,
+      "sha256": "384b0a0623d064cff968e592a92668d3c7fccd7f99a67d0a81cd877ec4c49845"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-product-local-binding-root-v1.py",
+      "archived": "acceptance/jarde-cf11-product-local-binding-root-v1.py",
+      "bytes": 1635,
+      "sha256": "18fd3c2e10f0beddc968ba6ff3201a5a0955c4f6f64246c5544a30667fa2dfb5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-local-acceptance-root-v3.json",
+      "archived": "acceptance/jarde-cf11-local-acceptance-root-v3.json",
+      "bytes": 1024,
+      "sha256": "807572b8c45d90c79975a2b2842b4c44d59b6610287ebfbe4d9665650f953332"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-local-acceptance-root-v3.py",
+      "archived": "acceptance/jarde-cf11-local-acceptance-root-v3.py",
+      "bytes": 3473,
+      "sha256": "d282197ebc7165b762a27c777841b67ea150ba88d7120bf7cacfb54eb596e25a"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-own-ci-prep-luna-v5/verify-cf11-own-ci.py",
+      "archived": "acceptance/verify-cf11-own-ci.py",
+      "bytes": 38306,
+      "sha256": "7669fb27ff653b5e8e35b68a2b54ec0723b4d5d63ee5c05fc0d7af5ed639c1f7"
+    },
+    {
+      "source": "/private/tmp/jarde-conditional-ci-public-labels-root-v1.py",
+      "archived": "acceptance/jarde-conditional-ci-public-labels-root-v1.py",
+      "bytes": 3697,
+      "sha256": "d7a6bcebb703b1520332cf4c7419c50d21d919d6a0c6123162d0d4d78bbcac65"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/record.py",
+      "archived": "acceptance/record.py",
+      "bytes": 911,
+      "sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-capture/execution.json",
+      "archived": "invocations/own-product-ci-capture/execution.json",
+      "bytes": 999,
+      "sha256": "fe9bff48968d10b1e1a7bbd8e1ce669520c3caf16e51c541745961290ccf45fc"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-capture/stderr.raw",
+      "archived": "invocations/own-product-ci-capture/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-capture/stdout.raw",
+      "archived": "invocations/own-product-ci-capture/stdout.raw",
+      "bytes": 128,
+      "sha256": "ef347bbee4e28e8357e9ccddfb7488151305fcb4b0f3e42a07c9df294593e9a9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-verifier/execution.json",
+      "archived": "invocations/own-product-ci-verifier/execution.json",
+      "bytes": 1597,
+      "sha256": "9a90cb18a9145b094b0ae33e8313f61cb7bc43bd040a441cc5fe09f947752ae9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-verifier/stderr.raw",
+      "archived": "invocations/own-product-ci-verifier/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-verifier/stdout.raw",
+      "archived": "invocations/own-product-ci-verifier/stdout.raw",
+      "bytes": 232,
+      "sha256": "711dab75530cd9b4734add7d534c723730b62184aad459c101d31c7d8c002e01"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-evidence-archive/execution.json",
+      "archived": "invocations/own-product-evidence-archive/execution.json",
+      "bytes": 1157,
+      "sha256": "8f25c642d81cc67835be32f4ff4f306f2d0cce90896a00e6e49111ca9d6c8c2e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-evidence-archive/stderr.raw",
+      "archived": "invocations/own-product-evidence-archive/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-evidence-archive/stdout.raw",
+      "archived": "invocations/own-product-evidence-archive/stdout.raw",
+      "bytes": 298,
+      "sha256": "070a038c5d4dcf0d6df42201b0c23d93c6ddef235cbf832eb954acdb54610958"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/product-local-binding/execution.json",
+      "archived": "invocations/product-local-binding/execution.json",
+      "bytes": 767,
+      "sha256": "9f9d778648fc0d00eecbcee88457386928d98cf202e555926f6a53e9b1a00e8b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/product-local-binding/stderr.raw",
+      "archived": "invocations/product-local-binding/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/product-local-binding/stdout.raw",
+      "archived": "invocations/product-local-binding/stdout.raw",
+      "bytes": 179,
+      "sha256": "40c5aa5ec6ae4b6c58c48c18375c11df577985ba29a1737b5c6b9ffe226d33bd"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/product-clean-audit/execution.json",
+      "archived": "invocations/product-clean-audit/execution.json",
+      "bytes": 878,
+      "sha256": "4109d7982e007433fb3f0c4ae57a90daa57b1a0a6f777bb44ac57abba7a801ad"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/product-clean-audit/stderr.raw",
+      "archived": "invocations/product-clean-audit/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/product-clean-audit/stdout.raw",
+      "archived": "invocations/product-clean-audit/stdout.raw",
+      "bytes": 211,
+      "sha256": "e18ade63423eb46c20a6e86da6b8a7bd787cee4b9909b2b97eed614ff41a9547"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/local-acceptance/execution.json",
+      "archived": "invocations/local-acceptance/execution.json",
+      "bytes": 752,
+      "sha256": "765216497b7b15f8ba32d86dbaaa5a633cfd5bfb1abc16c9dbde7daf9363d429"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/local-acceptance/stderr.raw",
+      "archived": "invocations/local-acceptance/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/local-acceptance/stdout.raw",
+      "archived": "invocations/local-acceptance/stdout.raw",
+      "bytes": 958,
+      "sha256": "031248fabf0ae835aae2c5e6ea5de4a48521bf13651793e587f9614ce65e0d2e"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-staged-whitespace-root-v1/execution.json",
+      "archived": "staged-whitespace-product/execution.json",
+      "bytes": 820,
+      "sha256": "3c3922e53a8b030e32bc7b976af79140de82d57d28f971aae690666dd01264a3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-staged-whitespace-root-v1/stderr.raw",
+      "archived": "staged-whitespace-product/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-staged-whitespace-root-v1/stdout.raw",
+      "archived": "staged-whitespace-product/stdout.raw",
+      "bytes": 42258,
+      "sha256": "2bd3bf80da5f61bf013113eb5c2b46044250c6d41ceb189b55fe41cf6a225a98"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-own-ci-supplement-root-v1.py",
+      "archived": "acceptance/jarde-cf11-own-ci-supplement-root-v1.py",
+      "bytes": 2799,
+      "sha256": "89e70ec4cb999e6aeb5fe2ec484637d25babf14fea2244d7baf7984612ee02a0"
+    }
+  ]
+}

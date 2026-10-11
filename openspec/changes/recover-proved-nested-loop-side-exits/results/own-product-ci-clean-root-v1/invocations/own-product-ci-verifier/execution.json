@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-own-ci-prep-luna-v5/verify-cf11-own-ci.py",
+    "--product-commit",
+    "b155877ee9a3b1894b053e70ffbf1cbf0a9512fa",
+    "--run-id",
+    "38144212651",
+    "--capture",
+    "/private/tmp/jarde-cf11-own-product-ci-capture-root-v1",
+    "--workspace",
+    "/private/tmp/jarde-cf11-full-workspace-root-v3",
+    "--out",
+    "/private/tmp/jarde-cf11-own-product-ci-acceptance-root-v1.json",
+    "--final-cli-build",
+    "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/execution.json",
+    "--final-cli-runner",
+    "/private/tmp/jarde-cf11-cli-build-root-v10.py",
+    "--final-cli-runner-sha256",
+    "6ac9b86ad5ea5be20c0f65f0613fec14fead0c3d55b8340c5675e29b26c1ba3a",
+    "--candidate-cli",
+    "/private/tmp/jarde-cf11-side-exits-candidate-cli-root-v10",
+    "--candidate-cli-sha256",
+    "09f4eac277ee9ddfd60a627f7b132877841f4859bb2c655fc21cb8d25ac197db"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T14:11:48.679043+00:00",
+  "finished_at": "2026-10-11T14:11:51.545519+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-verifier/stdout.raw",
+      "bytes": 232,
+      "sha256": "711dab75530cd9b4734add7d534c723730b62184aad459c101d31c7d8c002e01"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/own-product-ci-verifier/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-cf11-delivery-prep-luna-v4/clean-main-audit.py",
+    "/private/tmp/jarde-cf11-product-clean-main-root-v1",
+    "b155877ee9a3b1894b053e70ffbf1cbf0a9512fa"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T13:44:12.252013+00:00",
+  "finished_at": "2026-10-11T13:44:19.625887+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/product-clean-audit/stdout.raw",
+      "bytes": 211,
+      "sha256": "e18ade63423eb46c20a6e86da6b8a7bd787cee4b9909b2b97eed614ff41a9547"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/product-clean-audit/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

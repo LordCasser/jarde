@@ -1,0 +1,50 @@
+{
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/collect_nested_loops2.py": {
+    "bytes": 22751,
+    "sha256": "b77c5848bf567199f11e787d1d580913556b34a07ec441c28259eb15dc95432d"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/check_nested_loops2.py": {
+    "bytes": 36347,
+    "sha256": "f4eeff0adfd08b178dd4eb71dae32b6f2882a9ffaf19354dc1cbf64a8b44cd5f"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/README.md": {
+    "bytes": 3786,
+    "sha256": "ff0014e277645a3c65dc4913a5f905f21b4af4a6d929b3f67f88c865e55fc7eb"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/checker-v3-to-v4.patch": {
+    "bytes": 727,
+    "sha256": "bd57fba96f4c76a93d506642118b843526e60177b4473dab39456c3f546e9e3c"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v3/collect_nested_loops2.py": {
+    "bytes": 22751,
+    "sha256": "b77c5848bf567199f11e787d1d580913556b34a07ec441c28259eb15dc95432d"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v3/check_nested_loops2.py": {
+    "bytes": 36194,
+    "sha256": "9794d5b9b6f8a66fb40c918086b98ddbda493ef112d485e78c7fb3105f03eb90"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v3/README.md": {
+    "bytes": 3194,
+    "sha256": "8ce87657ccfd6116485735d8c093ca88c9ef94424c25323933e054c066f8d0fd"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v1/UpstreamNestedLoops2.java": {
+    "bytes": 273,
+    "sha256": "ee79a454a2e92da4f50dad00a5e6bc1d33388bc00f028d0c5213f0befdca0cf5"
+  },
+  "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v1/Runner.java": {
+    "bytes": 1531,
+    "sha256": "279c0e72dba8bcaf57f53ccb20b9e41aaa7d5efe3b7931cd9616de32e65b6dc3"
+  },
+  "/private/tmp/jarde-cf11-side-exits-cli-build-root-v9/execution.json": {
+    "bytes": 2276225,
+    "sha256": "fb807e1dc4cd3598f07ae962b2ad5940c65a63646626931c8454423481f0213d"
+  },
+  "/private/tmp/jarde-cf11-postfix-tools-root-v4/collect_postfix.py": {
+    "bytes": 22402,
+    "sha256": "eb25e7db637f64b740d2d9586744e7b70d33fa6f42555e8c573173cef5dc4905"
+  },
+  "/private/tmp/jarde-cf11-postfix-tools-root-v4/check_postfix.py": {
+    "bytes": 30496,
+    "sha256": "d274af6c34bf72d8ef292fe51ad262d22c2e32b94748a5b1f4d902c9ce5ffeaf"
+  }
+}

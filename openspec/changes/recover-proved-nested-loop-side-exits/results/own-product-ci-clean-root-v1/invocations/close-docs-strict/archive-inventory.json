@@ -1,0 +1,17 @@
+[
+  {
+    "path": "execution.json",
+    "bytes": 767,
+    "sha256": "9e019dafa39ace99c7bc1806da3942573580a92eceed47a8685399e84f13e013"
+  },
+  {
+    "path": "stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "stdout.raw",
+    "bytes": 16161,
+    "sha256": "2b3a5381888aebfca6c11565c0561f36cc069c5eb166245271f38ec2a57ef1d2"
+  }
+]

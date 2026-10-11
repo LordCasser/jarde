@@ -1,14 +1,14 @@
 # HANDOFF — jarde 主线接续入口
 
-当前在制（2026-10-11）：持续目标 active，用户继续当前聊天；HEAD/main/origin/main 仍 b922a0eced5c0b4424254dd87cfd03c0433e452a。CF11 `recover-proved-nested-loop-side-exits` **9/11**，独立栈债务 `bound-structured-region-render-stack-frames` **5/6**。最终源码 Clippy/fmt/global strict 已实际通过（351/0），最终 CLI v10 双JDK固定/控制各29命令完整三方已root独立接受。Fresh workspace v3完整95批/360目标、3455/0/97，同4707 closure并clean，root独立raw/目标exact-once核验接受；现在提交推送产品并待自身CI/clean主线，当前不是完成交接。
+当前断点（2026-10-11）：持续目标 active，用户明确继续当前聊天。产品 **b155877ee9a3b1894b053e70ffbf1cbf0a9512fa** 已推送 main，其自身 [CI 38144212651](https://github.com/LordCasser/jarde/actions/runs/38144212651) 已 root 独立接受 **4 jobs/52 steps**，双seed各 **360目标/3455通过/0失败/97忽略**，全部named outcomes及4707项输入绑定产品Git/live/最终CLI。不是借旧CI。
 
-本片仅固定 TestNestedLoops4 与独立十 case side-exit/count 控制。proof 保持 natural 集合，核精确 prefix/child/return/gateway owners 与全部 incident canonical 边，四状态 Stop 回滚，新增扫描 precharge/poll 已补齐。default-stack focused-v7 的 476/0/1 包含重复库测试，不当 workspace 唯一总数。consumer full12332/limit12331/usage12326@31，proof limit3/usage3@23，公开 lateStop source17858/limit17857，预取消零usage；不冒称预取消覆盖中途异步取消。真实JSR clone跨path和额外回边仅局部row扰动，旧不可约全图门禁保持。
+本片 [recover-proved-nested-loop-side-exits](openspec/changes/recover-proved-nested-loop-side-exits/verification.md) **11/11**，仅固定 TestNestedLoops4 与十case受控退出；自然环集合保持，以完整incident边/owners证明child loop、return和break gateway，再复用Frame/Region接续。独立 [Builder栈帧修复](openspec/changes/bound-structured-region-render-stack-frames/verification-root.md) **6/6**，Try/Loop/Guard私有抽取保持原body/预算/作用域顺序。整个CF11、71单元/612测试的完成数不变。
 
-独立栈债务保留默认栈失败、LLDB及 Try-only 失败。最终 Try/Loop/Guard private extraction 与原 body 逐句恒同，当前 ARM64 debug dispatcher 单帧44960 bytes（原202512），不宣称跨平台统一栈预算。最终源码较 focused-v7 仅 Reader census 实测更新及两处等价 Clippy 修正；精确逆变换保持记录，fresh 最终测试仍必需。
+最终CLI `/private/tmp/jarde-cf11-side-exits-candidate-cli-root-v10`，61213840bytes/0555/SHA256 `09f4eac277ee9ddfd60a627f7b132877841f4859bb2c655fc21cb8d25ac197db`。固定/控制各29命令双JDK完整三方已重新实跑接受。fresh workspace v3为95批/360目标/3455-0-97；fmt、CI等价Clippy、global strict351/0通过。完整闭包与clean证据在 [own-product-ci-clean-root-v1](openspec/changes/recover-proved-nested-loop-side-exits/results/own-product-ci-clean-root-v1/README.md)。原失败均保留；default-stack focused476/0/1含重复库测试，不当唯一workspace总数。
 
-最终 CLI `/private/tmp/jarde-cf11-side-exits-candidate-cli-root-v10`，61213840 bytes/0555/SHA 09f4eac277ee9ddfd60a627f7b132877841f4859bb2c655fc21cb8d25ac197db，receipt `/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/execution.json`，完整4707 closure 前后恒同并 clean。v10 字节与旧 v8/v9 不同，不借旧三方对照。旧 focused 的错误 bin 101、workspace v1 的 census 失败、lint v2/v3 的实际失败均保留；workspace v2 曾实际3455/0/97，但在最终两处 Clippy 修正前，不当最终版本验收。
+产品提交后的clean checkpoint已实际接受：HEAD=main=origin/main=b155877ee，真实远端/本地仅main；15物理checkout仍存在，14辅助detached且为main祖先、全干净，不占功能分支；target/fuzz target均不存在。关闭证据文档推送后以实际新HEAD另做outside-repo final audit，不预写未知commit。资源继续用用户批准的 **5GiB free/target1GiB、一秒进程组守卫、结束clean**；root独占shared/Git/Cargo/JDK/JADX/CLI，Luna仅private准备或只读审查。
 
-资源：**5GiB free/target1GiB、一秒进程组守卫、结束clean** 为用户明确授权。root独占shared/Git/Cargo/JDK/JADX/CLI；Luna只做private准备。不新建branch/worktree；仅main，15物理checkout/14辅助detached祖先仍存在，不能称目录已删。整CF11及71单元完成数不变。下一固定候选 TestNestedLoops2 仅私有准备，真实三方尚未执行；其 j 为最大字符串长度，不是长度总和。
+**下一固定项：TestNestedLoops2 外层indexed for恢复。** [实际基线](openspec/evidence/java-syntax-2026-10-11/cf11-testnestedloops2-baseline-root-v1/README.md) 已接受29命令/58raw，完整原/JADX default-none/Jarde default-all源码在JDK8/23编译、-Xverify:all运行，九行行为相同。Jarde仍把外层for写成while+尾更新，并因ordinary_generic_source_unproved将List<String>退为raw List；j=max(lengths)，不是长度总和。ForHeader条件白名单拒绝Invoke@6目前只是源码/javap候选，需要同次IR trace确认首拒后，按现有ForHeader/Builder做最小OpenSpec，不增加识别器；泛型body proof单列债务。Luna已准备私有临时诊断，尚未编译/运行/应用生产。其它固定NestedLoops/SequentialLoops2仅静态准备，不算实际对照。
 
 以下为上一产品与历史记录，当前在制状态以本段和变更验收记录为准。
 

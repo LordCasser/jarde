@@ -1,0 +1,719 @@
+{
+  "product_commit": "b155877ee9a3b1894b053e70ffbf1cbf0a9512fa",
+  "files": [
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/checker-root-v1.json",
+      "archived": "observation/checker-root-v1.json",
+      "bytes": 14231,
+      "sha256": "45f098281a8deebe115d8048ec0cb077228853817ba554220520bf64e7f5b0f7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/execution.json",
+      "archived": "observation/execution.json",
+      "bytes": 546303,
+      "sha256": "a7791a753850c636aa0c2d5fee5cce5b0a79434ef539eb486f5f4c8499f56951"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/inputs/Runner.java",
+      "archived": "observation/inputs/Runner.java",
+      "bytes": 1531,
+      "sha256": "279c0e72dba8bcaf57f53ccb20b9e41aaa7d5efe3b7931cd9616de32e65b6dc3"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/inputs/TestNestedLoops2.java",
+      "archived": "observation/inputs/TestNestedLoops2.java",
+      "bytes": 693,
+      "sha256": "795ea73a0acfc5695f9e67c456746919f889d52026695f406d88f9693469b6db"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/inputs/UpstreamNestedLoops2.jar",
+      "archived": "observation/inputs/UpstreamNestedLoops2.jar",
+      "bytes": 1038,
+      "sha256": "7fc3908a1bcf109569b404b6df04485c35b6252cf37fb275883fea3694e4a952"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/inputs/UpstreamNestedLoops2.java",
+      "archived": "observation/inputs/UpstreamNestedLoops2.java",
+      "bytes": 273,
+      "sha256": "ee79a454a2e92da4f50dad00a5e6bc1d33388bc00f028d0c5213f0befdca0cf5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/inputs/jadx-default/UpstreamNestedLoops2.java",
+      "archived": "observation/inputs/jadx-default/UpstreamNestedLoops2.java",
+      "bytes": 423,
+      "sha256": "7806a6f5e714c9bf0ca7a5c6dcecd9cd6f247c1ad455f7c4dd55e11f26e7570c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/inputs/jadx-none/UpstreamNestedLoops2.java",
+      "archived": "observation/inputs/jadx-none/UpstreamNestedLoops2.java",
+      "bytes": 423,
+      "sha256": "7806a6f5e714c9bf0ca7a5c6dcecd9cd6f247c1ad455f7c4dd55e11f26e7570c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jadx/default/sources/cf11/UpstreamNestedLoops2.java",
+      "archived": "observation/jadx/default/sources/cf11/UpstreamNestedLoops2.java",
+      "bytes": 423,
+      "sha256": "7806a6f5e714c9bf0ca7a5c6dcecd9cd6f247c1ad455f7c4dd55e11f26e7570c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jadx/none/sources/cf11/UpstreamNestedLoops2.java",
+      "archived": "observation/jadx/none/sources/cf11/UpstreamNestedLoops2.java",
+      "bytes": 423,
+      "sha256": "7806a6f5e714c9bf0ca7a5c6dcecd9cd6f247c1ad455f7c4dd55e11f26e7570c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac23-jarde-all/UpstreamNestedLoops2.java",
+      "archived": "observation/jarde/javac23-jarde-all/UpstreamNestedLoops2.java",
+      "bytes": 1478,
+      "sha256": "81b98b0da027341eac054bc571b06c93e18d2e6f75c07f6b4bedf875d2930845"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac23-jarde-all/report.json",
+      "archived": "observation/jarde/javac23-jarde-all/report.json",
+      "bytes": 112460,
+      "sha256": "1065360c16aba9fbaaad230680abf3450d327f58bac756c03ee586f7fa28a5d2"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac23-jarde-default/UpstreamNestedLoops2.java",
+      "archived": "observation/jarde/javac23-jarde-default/UpstreamNestedLoops2.java",
+      "bytes": 1478,
+      "sha256": "81b98b0da027341eac054bc571b06c93e18d2e6f75c07f6b4bedf875d2930845"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac23-jarde-default/report.json",
+      "archived": "observation/jarde/javac23-jarde-default/report.json",
+      "bytes": 109125,
+      "sha256": "fd6ad3e5e2dd7e0a64fdc66f6406fe156abe444f5c67a93f8cd44cfbd77841ca"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac8-jarde-all/UpstreamNestedLoops2.java",
+      "archived": "observation/jarde/javac8-jarde-all/UpstreamNestedLoops2.java",
+      "bytes": 1478,
+      "sha256": "81b98b0da027341eac054bc571b06c93e18d2e6f75c07f6b4bedf875d2930845"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac8-jarde-all/report.json",
+      "archived": "observation/jarde/javac8-jarde-all/report.json",
+      "bytes": 112460,
+      "sha256": "a7912551284f8ab2d2ecaa07b9fd28fb8e7c5d2406e8b18e60d20a227fb496af"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac8-jarde-default/UpstreamNestedLoops2.java",
+      "archived": "observation/jarde/javac8-jarde-default/UpstreamNestedLoops2.java",
+      "bytes": 1478,
+      "sha256": "81b98b0da027341eac054bc571b06c93e18d2e6f75c07f6b4bedf875d2930845"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/jarde/javac8-jarde-default/report.json",
+      "archived": "observation/jarde/javac8-jarde-default/report.json",
+      "bytes": 109125,
+      "sha256": "0114e5189e53faf5619df484497fb5a93ecd06f19fcbc278a00bdf5827af47ad"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac23-jadx-default/classes/cf11/Runner.class",
+      "bytes": 2413,
+      "sha256": "70498c4826e6786960f143e8e3a65343a5642b9e08f6878b236ed5ad801842ba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jadx-default/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac23-jadx-default/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 878,
+      "sha256": "3908361971005b8ba7674b617e078dbe9925d785dbf21eeb04ef7cb6ec4bff57"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac23-jadx-none/classes/cf11/Runner.class",
+      "bytes": 2413,
+      "sha256": "70498c4826e6786960f143e8e3a65343a5642b9e08f6878b236ed5ad801842ba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jadx-none/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac23-jadx-none/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 878,
+      "sha256": "3908361971005b8ba7674b617e078dbe9925d785dbf21eeb04ef7cb6ec4bff57"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jarde-all/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac23-jarde-all/classes/cf11/Runner.class",
+      "bytes": 2413,
+      "sha256": "70498c4826e6786960f143e8e3a65343a5642b9e08f6878b236ed5ad801842ba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jarde-all/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac23-jarde-all/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 742,
+      "sha256": "2fbcad56cdd6349814fdbd63dd950c792742089e4278bc6aab85927a3eecb608"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jarde-default/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac23-jarde-default/classes/cf11/Runner.class",
+      "bytes": 2413,
+      "sha256": "70498c4826e6786960f143e8e3a65343a5642b9e08f6878b236ed5ad801842ba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-jarde-default/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac23-jarde-default/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 742,
+      "sha256": "2fbcad56cdd6349814fdbd63dd950c792742089e4278bc6aab85927a3eecb608"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-original/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac23-original/classes/cf11/Runner.class",
+      "bytes": 2413,
+      "sha256": "70498c4826e6786960f143e8e3a65343a5642b9e08f6878b236ed5ad801842ba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac23-original/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 878,
+      "sha256": "1b11e7ac235ff48798edb6bd1f47c02829592bdbcf7f4af0066fec278d095547"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac23-original/javap.txt",
+      "archived": "observation/legs/javac23-original/javap.txt",
+      "bytes": 5521,
+      "sha256": "e37d56ddbdd0630e8f42fa95662186c79595360db19aa29f0496b1bf94f87e8b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac8-jadx-default/classes/cf11/Runner.class",
+      "bytes": 2416,
+      "sha256": "595ac63dab0bf3e9dad4b33907f662bbc11b707af7b2c9d695df85d4ea6a5323"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jadx-default/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac8-jadx-default/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 881,
+      "sha256": "2725b70e775428321cf48c5869507e63c84b5889364d4cab8c3ad70a398659be"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac8-jadx-none/classes/cf11/Runner.class",
+      "bytes": 2416,
+      "sha256": "595ac63dab0bf3e9dad4b33907f662bbc11b707af7b2c9d695df85d4ea6a5323"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jadx-none/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac8-jadx-none/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 881,
+      "sha256": "2725b70e775428321cf48c5869507e63c84b5889364d4cab8c3ad70a398659be"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jarde-all/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac8-jarde-all/classes/cf11/Runner.class",
+      "bytes": 2416,
+      "sha256": "595ac63dab0bf3e9dad4b33907f662bbc11b707af7b2c9d695df85d4ea6a5323"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jarde-all/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac8-jarde-all/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 745,
+      "sha256": "a8417df49f2f57730d07bb180c154d954ef27b304102dd08f581de4b7591c490"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jarde-default/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac8-jarde-default/classes/cf11/Runner.class",
+      "bytes": 2416,
+      "sha256": "595ac63dab0bf3e9dad4b33907f662bbc11b707af7b2c9d695df85d4ea6a5323"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-jarde-default/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac8-jarde-default/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 745,
+      "sha256": "a8417df49f2f57730d07bb180c154d954ef27b304102dd08f581de4b7591c490"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-original/classes/cf11/Runner.class",
+      "archived": "observation/legs/javac8-original/classes/cf11/Runner.class",
+      "bytes": 2416,
+      "sha256": "595ac63dab0bf3e9dad4b33907f662bbc11b707af7b2c9d695df85d4ea6a5323"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamNestedLoops2.class",
+      "archived": "observation/legs/javac8-original/classes/cf11/UpstreamNestedLoops2.class",
+      "bytes": 881,
+      "sha256": "74c029b433db4b53268ef5cda68edbdf5b9137b73808b52ba38d52ba0d7d15b9"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/legs/javac8-original/javap.txt",
+      "archived": "observation/legs/javac8-original/javap.txt",
+      "bytes": 5325,
+      "sha256": "73641df11e1497a1f43a9a51c65e1ef2f730d95978cc1e6a45bab1c07e00d227"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/1.stderr.raw",
+      "archived": "observation/raw/1.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/1.stdout.raw",
+      "archived": "observation/raw/1.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/10.stderr.raw",
+      "archived": "observation/raw/10.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/10.stdout.raw",
+      "archived": "observation/raw/10.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/11.stderr.raw",
+      "archived": "observation/raw/11.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/11.stdout.raw",
+      "archived": "observation/raw/11.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/12.stderr.raw",
+      "archived": "observation/raw/12.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/12.stdout.raw",
+      "archived": "observation/raw/12.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/13.stderr.raw",
+      "archived": "observation/raw/13.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/13.stdout.raw",
+      "archived": "observation/raw/13.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/14.stderr.raw",
+      "archived": "observation/raw/14.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/14.stdout.raw",
+      "archived": "observation/raw/14.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/15.stderr.raw",
+      "archived": "observation/raw/15.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/15.stdout.raw",
+      "archived": "observation/raw/15.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/16.stderr.raw",
+      "archived": "observation/raw/16.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/16.stdout.raw",
+      "archived": "observation/raw/16.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/17.stderr.raw",
+      "archived": "observation/raw/17.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/17.stdout.raw",
+      "archived": "observation/raw/17.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/18.stderr.raw",
+      "archived": "observation/raw/18.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/18.stdout.raw",
+      "archived": "observation/raw/18.stdout.raw",
+      "bytes": 37640,
+      "sha256": "7d910fa589ec371a2f05fe70a546bd6579c618358e720fa1351090c518a5dc51"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/19.stderr.raw",
+      "archived": "observation/raw/19.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/19.stdout.raw",
+      "archived": "observation/raw/19.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/2.stderr.raw",
+      "archived": "observation/raw/2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/2.stdout.raw",
+      "archived": "observation/raw/2.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/20.stderr.raw",
+      "archived": "observation/raw/20.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/20.stdout.raw",
+      "archived": "observation/raw/20.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/21.stderr.raw",
+      "archived": "observation/raw/21.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/21.stdout.raw",
+      "archived": "observation/raw/21.stdout.raw",
+      "bytes": 38949,
+      "sha256": "2f3b283bbae619ad48cd7f0e9ac7cfe8f29ed2eb448f7632068dbf365f3177bd"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/22.stderr.raw",
+      "archived": "observation/raw/22.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/22.stdout.raw",
+      "archived": "observation/raw/22.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/23.stderr.raw",
+      "archived": "observation/raw/23.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/23.stdout.raw",
+      "archived": "observation/raw/23.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/24.stderr.raw",
+      "archived": "observation/raw/24.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/24.stdout.raw",
+      "archived": "observation/raw/24.stdout.raw",
+      "bytes": 37640,
+      "sha256": "d452ee4977043abbb327de9b7b5a058032617d4bad41ed044ebae7cf06b96531"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/25.stderr.raw",
+      "archived": "observation/raw/25.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/25.stdout.raw",
+      "archived": "observation/raw/25.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/26.stderr.raw",
+      "archived": "observation/raw/26.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/26.stdout.raw",
+      "archived": "observation/raw/26.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/27.stderr.raw",
+      "archived": "observation/raw/27.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/27.stdout.raw",
+      "archived": "observation/raw/27.stdout.raw",
+      "bytes": 38949,
+      "sha256": "bf54134593c335a55be6598cbb671b7c93b15ea855b785912e1d5cdb37f7ad2f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/28.stderr.raw",
+      "archived": "observation/raw/28.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/28.stdout.raw",
+      "archived": "observation/raw/28.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/29.stderr.raw",
+      "archived": "observation/raw/29.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/29.stdout.raw",
+      "archived": "observation/raw/29.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/3.stderr.raw",
+      "archived": "observation/raw/3.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/3.stdout.raw",
+      "archived": "observation/raw/3.stdout.raw",
+      "bytes": 5325,
+      "sha256": "73641df11e1497a1f43a9a51c65e1ef2f730d95978cc1e6a45bab1c07e00d227"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/4.stderr.raw",
+      "archived": "observation/raw/4.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/4.stdout.raw",
+      "archived": "observation/raw/4.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/5.stderr.raw",
+      "archived": "observation/raw/5.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/5.stdout.raw",
+      "archived": "observation/raw/5.stdout.raw",
+      "bytes": 194,
+      "sha256": "443cba4940c80da3ee9f0c85dcdd2b883f766a3fcf996c52170383176372f953"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/6.stderr.raw",
+      "archived": "observation/raw/6.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/6.stdout.raw",
+      "archived": "observation/raw/6.stdout.raw",
+      "bytes": 5521,
+      "sha256": "e37d56ddbdd0630e8f42fa95662186c79595360db19aa29f0496b1bf94f87e8b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/7.stderr.raw",
+      "archived": "observation/raw/7.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/7.stdout.raw",
+      "archived": "observation/raw/7.stdout.raw",
+      "bytes": 6,
+      "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/8.stderr.raw",
+      "archived": "observation/raw/8.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/8.stdout.raw",
+      "archived": "observation/raw/8.stdout.raw",
+      "bytes": 148,
+      "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/9.stderr.raw",
+      "archived": "observation/raw/9.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-baseline-root-v1/raw/9.stdout.raw",
+      "archived": "observation/raw/9.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/README.md",
+      "archived": "tools/README.md",
+      "bytes": 3786,
+      "sha256": "ff0014e277645a3c65dc4913a5f905f21b4af4a6d929b3f67f88c865e55fc7eb"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/check_nested_loops2.py",
+      "archived": "tools/check_nested_loops2.py",
+      "bytes": 36347,
+      "sha256": "f4eeff0adfd08b178dd4eb71dae32b6f2882a9ffaf19354dc1cbf64a8b44cd5f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/checker-v3-to-v4.patch",
+      "archived": "tools/checker-v3-to-v4.patch",
+      "bytes": 727,
+      "sha256": "bd57fba96f4c76a93d506642118b843526e60177b4473dab39456c3f546e9e3c"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/collect_nested_loops2.py",
+      "archived": "tools/collect_nested_loops2.py",
+      "bytes": 22751,
+      "sha256": "b77c5848bf567199f11e787d1d580913556b34a07ec441c28259eb15dc95432d"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-prep-luna-v4/pins.json",
+      "archived": "tools/pins.json",
+      "bytes": 2186,
+      "sha256": "757a65e07860b0ae709c3b5dbe307e8b5afd94822669cf15275eef384535a905"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-run-root-v1/execution.json",
+      "archived": "runner/execution.json",
+      "bytes": 2929,
+      "sha256": "b9614c7634d470194efdc1c55e8211c7a5f966fabf0a42bb06d580241fbbd50b"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-run-root-v1/jobs.json",
+      "archived": "runner/jobs.json",
+      "bytes": 2981,
+      "sha256": "73be47d8c3fe397e4812e8bf448dbb4ac0f38d7682f5b1909a1eb561cf17f741"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-run-root-v1/launch.py",
+      "archived": "runner/launch.py",
+      "bytes": 562,
+      "sha256": "d478be414742b43939a925688ce6af49c9efb5b847b7f65c9169f916fbbceaba"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-run-root-v1/nested-loops2.stderr.raw",
+      "archived": "runner/nested-loops2.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-nested-loops2-run-root-v1/nested-loops2.stdout.raw",
+      "archived": "runner/nested-loops2.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-collector/execution.json",
+      "archived": "invocations/collector/execution.json",
+      "bytes": 773,
+      "sha256": "37c2788539225e0560a1d13256e5374b6e8c010133abcabfac74b923069404fa"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-collector/stderr.raw",
+      "archived": "invocations/collector/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-collector/stdout.raw",
+      "archived": "invocations/collector/stdout.raw",
+      "bytes": 63,
+      "sha256": "590a195e93dea15e0c8e1798682f436cff19990a5cc7e4a9215d917bb7ac58f7"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-checker/execution.json",
+      "archived": "invocations/checker/execution.json",
+      "bytes": 982,
+      "sha256": "b23647584f37f43a8f547f43cb07e9acbbe0624f480af63b34d481a4bb1a4b31"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-checker/stderr.raw",
+      "archived": "invocations/checker/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-invocations-root-v1/nested-loops2-checker/stdout.raw",
+      "archived": "invocations/checker/stdout.raw",
+      "bytes": 326,
+      "sha256": "4c2d388b2c9909a5fa31b122c4b5eda4353ca2f0fc3740444e9d5360ea8a9f0f"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-testnestedloops2-for-gate-luna-v1.md",
+      "archived": "research/jarde-cf11-testnestedloops2-for-gate-luna-v1.md",
+      "bytes": 4550,
+      "sha256": "dca8e7799331a5f0d23cf1693444e963a4676fe1ae237adaed238dc33d65331c"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-architecture-handoff-luna-v1.md",
+      "archived": "research/jarde-nested-loops2-architecture-handoff-luna-v1.md",
+      "bytes": 3664,
+      "sha256": "51aa8604ca16312bf413be9749423a775c6a3d0b35f906f7af89c3e253ce9279"
+    },
+    {
+      "source": "/private/tmp/jarde-cf11-next-fixed-order-root-v4.md",
+      "archived": "research/jarde-cf11-next-fixed-order-root-v4.md",
+      "bytes": 5595,
+      "sha256": "958d3740f3d6ee5555b70fbbbbf6208a79ee7d8fc53ab87ac2ec7d128587976f"
+    },
+    {
+      "source": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "archived": "research/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "source": "/private/tmp/jarde-nested-loops2-archive-root-v1.py",
+      "archived": "archive-root-v1.py",
+      "bytes": 3786,
+      "sha256": "400fe35f28aca842ce99e36c97b7b2e1e8fce29a932f4219c78c7328923a716d"
+    }
+  ]
+}
