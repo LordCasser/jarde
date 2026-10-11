@@ -1,5 +1,9 @@
 # Root 验证记录
 
+当前12/13；Switch2/FT2、cross-case接续与拒绝/Stop已按最终CLI及fresh完整workspace v4接受。产品 e041b7635 的自身 CI 38116415118 在 overdeep lambda helper 发生 stack overflow/SIGABRT，任务3.3仍未完成；独立 bound-arithmetic-render-stack-frames 修复及重新产品验收是交付前提。以下保留历史诊断，不以历史6/13状态覆盖当前进度。
+
+## 历史验证记录
+
 目前6/13，前置及真实失败诊断、root串行集成、FT2永久物理来源测试和完整十类观察记录已完成。3.2接受的是按真实失败/环境问题完整记录的比较，不代表Switch2已恢复。生产候选已应用；FT2核心和完整类正向已独立接受，Switch2仍在复合条件处拒绝，完整产品测试/lint与CI未完成，不宣称此变更或CF12完成。
 
 上一conditional产品自身CI精确验收、7/7和最终clean主线0f6cf4ca3已闭合；本变更前置baseline实际复核199Git/live源/测试/fixture pins、277对照文件。formal四中文artifact经实际CLI生成并strict通过，规划提交b34b5b35c已推送。

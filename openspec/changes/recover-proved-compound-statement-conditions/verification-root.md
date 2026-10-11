@@ -1,5 +1,9 @@
 # Root verification
 
+当前9/10；最终源码本地整库/Clippy及最终CLI完整对照已接受，产品 e041b7635 已提交推送，但自身 CI 38116415118 在既有 overdeep lambda helper 回归 stack overflow/SIGABRT。交付任务3.3继续未完成，独立修复 bound-arithmetic-render-stack-frames 正在实施。以下历史事实不替代新产品 CI。
+
+## 历史验证记录
+
 当前9/10；CompoundIf实现和整类行为已接受，最终源码重放及拒绝/Stop回归正在收尾，自身产品CI/干净交付尚未接受。以下保留实际历史失败与修订记录。
 
 本地JADX HEAD2fb1b16386941660fda07e9017285aec40fcb37f，root实际git show该对象与工作树IfRegionMaker源码逐字节相同；原始源和Apache2 LICENSE/NOTICE作为分析资料保留于results/architecture-root-v1。生产拟议实现只参考算法，不复制Java代码。此前末位e为root笔误，v2/v3原笔记保留及更正。
