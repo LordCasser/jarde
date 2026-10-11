@@ -1,0 +1,48 @@
+{
+  "schema": "cf11-type-analysis-next-prep-root-v1",
+  "status": "read_only_review_and_unapplied_uncompiled_unrun_private_diagnostic",
+  "files": [
+    {
+      "source_path": "/private/tmp/jarde-cf11-reference-write-compatibility-review-luna-v1/review.md",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/reference-review-v1/review.md",
+      "bytes": 13827,
+      "sha256": "0a58ef31a8b9759c40b8e99b41dcf29706f5589368c22cabcbe1b8f8289a555b"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-reference-write-compatibility-review-luna-v2/review.md",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/reference-review-v2/review.md",
+      "bytes": 15788,
+      "sha256": "d79878e1b64062ec90e256186344d95902c5d636ff3c371abb9cbb6a4bdecb79"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/README.md",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/method-signature-diagnostic-prep/README.md",
+      "bytes": 3506,
+      "sha256": "cb1c0e4d516a8fd2ca3fd8dfb79f24ca88aedf42065e1d8e40ea6d5e925f4f2b"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/diagnostic.patch",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/method-signature-diagnostic-prep/diagnostic.patch",
+      "bytes": 11954,
+      "sha256": "c736eb2b70475d2a00f10d8eebb5e92c990910a5c4a413ed4cf32f65e9c3ac11"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/run_diagnostic.py",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/method-signature-diagnostic-prep/run_diagnostic.py",
+      "bytes": 12175,
+      "sha256": "6c4ad2598a898b104560bb4aed07f547584107d1656d2f4d8a9696eb5ee6c6ed"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/source_pins.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/method-signature-diagnostic-prep/source_pins.json",
+      "bytes": 752572,
+      "sha256": "d59db1838d9a0eaa4628457ddd6929dccfdaed455097de5b959a78470fbb9f6d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/pins.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/method-signature-diagnostic-prep/pins.json",
+      "bytes": 3227,
+      "sha256": "6cfea1dbff211e1abaf9da809b354204d6ef9d9e59670da271083772a545779d"
+    }
+  ]
+}

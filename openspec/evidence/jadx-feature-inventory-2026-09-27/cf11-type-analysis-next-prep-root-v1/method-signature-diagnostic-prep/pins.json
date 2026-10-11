@@ -1,0 +1,80 @@
+{
+  "schema": "cf11-method-signature-diagnostic-prep-v1",
+  "status": "prepared_unapplied_uncompiled_unrun",
+  "product_identity": "73adae (parent supplied)",
+  "workspace_head_at_prep": "371dfc38833f17e289b37ab41930b3af572712df",
+  "source_closure": {
+    "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/source_pins.json",
+    "count": 4744,
+    "sha256": "d59db1838d9a0eaa4628457ddd6929dccfdaed455097de5b959a78470fbb9f6d",
+    "closure_helper": "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace_runner.py",
+    "closure_helper_sha256": "63e52b55fe5d20d5f2ece98ac80676ccdb2de8dfd33d7199b688e075fb1e9673"
+  },
+  "fixture": {
+    "path": "openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-baseline-root-v1/capture/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+    "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231",
+    "already_in_source_closure": true
+  },
+  "test": {
+    "path": "tests/p3_hoisted_iterator_foreach.rs",
+    "sha256": "076f28a6330c6ee2ad1b83e23fe4ea73965a85caee17aefee3033b778d08b7d5",
+    "name": "nested_iterators_project_and_preserve_the_outer_assignment_and_cast",
+    "existing_request_variants": [
+      "default",
+      "all-evidence",
+      "no-rule-details"
+    ]
+  },
+  "base_files": {
+    "src/class_source.rs": {
+      "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/class_source.rs.orig",
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f"
+    },
+    "crates/jarde-java/src/report.rs": {
+      "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/report.rs.orig",
+      "sha256": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    }
+  },
+  "candidate_files": {
+    "src/class_source.rs": {
+      "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/class_source.rs.candidate",
+      "sha256": "bb45f4f2b8d6b18ece95b51d045ad340e0125d6f2bf60816e0a7d096301c7af1"
+    },
+    "crates/jarde-java/src/report.rs": {
+      "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/report.rs.candidate",
+      "sha256": "60a3247cff20da5bef5b093c1fb9b3fb40cc2228005d9005de35a186001dd9bd"
+    }
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/diagnostic.patch",
+    "sha256": "c736eb2b70475d2a00f10d8eebb5e92c990910a5c4a413ed4cf32f65e9c3ac11"
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf11-method-signature-diagnostic-prep-luna-v1/run_diagnostic.py",
+    "sha256": "6c4ad2598a898b104560bb4aed07f547584107d1656d2f4d8a9696eb5ee6c6ed"
+  },
+  "guardrails": {
+    "test_minimum_free_bytes": 5368709120,
+    "test_maximum_target_bytes": 1073741824,
+    "rust_min_stack": "default",
+    "finally_cleanup_only_argv": [
+      "cargo",
+      "clean"
+    ],
+    "restore": "byte-exact"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "p3_hoisted_iterator_foreach",
+    "nested_iterators_project_and_preserve_the_outer_assignment_and_cast",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "diagnostic_env": {
+    "JARDE_METHOD_SIGNATURE_DIAGNOSTIC": "1"
+  },
+  "runtime_execution": "not performed"
+}
