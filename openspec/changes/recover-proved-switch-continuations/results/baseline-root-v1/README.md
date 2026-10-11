@@ -1,0 +1,5 @@
+# 只读候选基线
+
+主线0f6cf4ca320676b0b36d9c219b24587f373a059b已实际推送且final clean audit接受。上一conditional产品自身CI准确验收与7/7交付闭合，不能借本规划的CI。root重新读四artifact与remaining证据，实际复核199项源码/测试/fixture Git+live SHA，以及remaining closed inventory 277个文件。冻结CLI仍为原0555只读产品，SHA39d5699c1665b16e0c4a46934f0e773aeedf392f5bc60869a7b2762680dd10f1；尚未生产修复，不将旧失败改记为新成功。
+
+当前2/13仅是前置交付与只读基线检查。两个失败内部原因待真实受控诊断，CF12尚未完成。baseline.json写明实际源码commit、源输入pins、产品CI与final clean证据hash。
