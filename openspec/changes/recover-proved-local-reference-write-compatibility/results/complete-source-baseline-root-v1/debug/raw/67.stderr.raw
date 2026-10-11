@@ -1,0 +1,16 @@
+/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java:36: 错误: 不兼容的类型: Object无法转换为String
+            target = iterator.next();
+                                  ^
+/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11CastReadControl/CF11CastReadControl.java:21: 错误: 不兼容的类型: Object无法转换为String
+            target = values.get(0);
+                               ^
+/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java:27: 错误: 不兼容的类型: StringBuilder无法转换为String
+        value = new java.lang.StringBuilder("builder");
+                ^
+/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java:21: 错误: 不兼容的类型: CharSequence[]无法转换为String[]
+            target = new java.lang.CharSequence[1];
+                     ^
+/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java:23: 错误: 不兼容的类型: Object无法转换为String
+            local2 = values.get(0);
+                               ^
+5 个错误

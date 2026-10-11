@@ -1,0 +1,4 @@
+/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java:21: 错误: 不兼容的类型: CharSequence[]无法转换为String[]
+            local1 = new java.lang.CharSequence[1];
+                     ^
+1 个错误

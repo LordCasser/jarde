@@ -1,0 +1,4 @@
+/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java:23: 错误: 不兼容的类型: Object无法转换为String
+            local2 = arg1.get(0);
+                             ^
+1 个错误

@@ -1,0 +1,1972 @@
+{
+  "source_map_gaps": [
+    {
+      "label": "javac8-jarde-default-CF11HandlerWriteControl",
+      "name": "handlerWrite",
+      "descriptor": "()Ljava/lang/Object;",
+      "access_flags": 9,
+      "method_index": 2,
+      "code_span": {
+        "start": 402,
+        "length": 62
+      },
+      "code_length": 21,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        13,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "source_origin_bci_count": 2,
+      "source_origin_records": 2,
+      "missing_physical_bcis": [
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "source_map_available": true,
+      "outcome_kind": "recovered",
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-CF11HandlerWriteControl",
+      "name": "handlerWrite",
+      "descriptor": "()Ljava/lang/Object;",
+      "access_flags": 9,
+      "method_index": 2,
+      "code_span": {
+        "start": 402,
+        "length": 62
+      },
+      "code_length": 21,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        13,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "source_origin_bci_count": 2,
+      "source_origin_records": 2,
+      "missing_physical_bcis": [
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "source_map_available": true,
+      "outcome_kind": "recovered",
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-CF11HandlerWriteControl",
+      "name": "handlerWrite",
+      "descriptor": "()Ljava/lang/Object;",
+      "access_flags": 9,
+      "method_index": 2,
+      "code_span": {
+        "start": 396,
+        "length": 62
+      },
+      "code_length": 21,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        13,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "source_origin_bci_count": 2,
+      "source_origin_records": 2,
+      "missing_physical_bcis": [
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "source_map_available": true,
+      "outcome_kind": "recovered",
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-CF11HandlerWriteControl",
+      "name": "handlerWrite",
+      "descriptor": "()Ljava/lang/Object;",
+      "access_flags": 9,
+      "method_index": 2,
+      "code_span": {
+        "start": 396,
+        "length": 62
+      },
+      "code_length": 21,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 3,
+          "end_pc": 13,
+          "handler_pc": 13,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        13,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "source_origin_bci_count": 2,
+      "source_origin_records": 2,
+      "missing_physical_bcis": [
+        2,
+        3,
+        6,
+        7,
+        9,
+        12,
+        14,
+        15,
+        18,
+        19,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "source_map_available": true,
+      "outcome_kind": "recovered",
+      "quality": "fallback"
+    }
+  ],
+  "all_method_physical_coverage_complete": false,
+  "schema": "cf11-target-full-source-observation-v3",
+  "status": "verified_observation_capture_with_quality_gaps",
+  "javac_debug_profile": "none",
+  "javac_profile_compile_commands": [
+    {
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-original/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jadx-default/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jadx-default/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-default/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jadx-none/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jadx-none/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/jadx-none/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-combined/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11OuterAssignmentTarget-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11OuterAssignmentTarget/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11CastReadControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11CastReadControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11CastReadControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11CastReadControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11CharSequenceControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11CharSequenceControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11CharSequenceControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11CharSequenceControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11ReferenceArrayControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11ReferenceArrayControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11ParameterControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11ParameterControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11ParameterControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11ParameterControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11SlotReuseControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11SlotReuseControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11SlotReuseControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11SlotReuseControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11HandlerWriteControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11HandlerWriteControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11HandlerWriteControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-default-isolated-CF11HandlerWriteControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-combined/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11OuterAssignmentTarget-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11OuterAssignmentTarget/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11CastReadControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11CastReadControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11CastReadControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11CastReadControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11CharSequenceControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11CharSequenceControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11CharSequenceControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11CharSequenceControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11ReferenceArrayControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11ReferenceArrayControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11ParameterControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11ParameterControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11ParameterControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11ParameterControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11SlotReuseControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11SlotReuseControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11SlotReuseControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11SlotReuseControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11HandlerWriteControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11HandlerWriteControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11HandlerWriteControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-jarde-all-isolated-CF11HandlerWriteControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-combined/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11OuterAssignmentTarget-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11OuterAssignmentTarget/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11CastReadControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11CastReadControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11CastReadControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11CastReadControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11CharSequenceControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11CharSequenceControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11CharSequenceControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11CharSequenceControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11ReferenceArrayControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11ReferenceArrayControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11ParameterControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11ParameterControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11ParameterControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11ParameterControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11SlotReuseControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11SlotReuseControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11SlotReuseControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11SlotReuseControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11HandlerWriteControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11HandlerWriteControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11HandlerWriteControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-default-isolated-CF11HandlerWriteControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-combined/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11OuterAssignmentTarget-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11OuterAssignmentTarget/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11OuterAssignmentTarget/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11CastReadControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11CastReadControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11CastReadControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11CastReadControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11CharSequenceControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11CharSequenceControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11CharSequenceControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11CharSequenceControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11ReferenceArrayControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11ReferenceArrayControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11ReferenceArrayControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11ParameterControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11ParameterControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11ParameterControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11ParameterControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11SlotReuseControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11SlotReuseControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11SlotReuseControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11SlotReuseControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11HandlerWriteControl-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-proc:none",
+        "-classpath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11HandlerWriteControl/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11HandlerWriteControl/empty-paths",
+        "-d",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac23-jarde-all-isolated-CF11HandlerWriteControl/classes",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11OuterAssignmentTarget.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CastReadControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11CharSequenceControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ReferenceArrayControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11ParameterControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/CF11SlotReuseControl.java",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/inputs/Runner.java"
+      ],
+      "debug_flags": [
+        "-g:none"
+      ]
+    }
+  ],
+  "javac_debug_profile_evidence": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11OuterAssignmentTarget",
+      "method": "positive",
+      "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+      "attributes": {},
+      "profile": "none"
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11OuterAssignmentTarget",
+      "method": "positive",
+      "descriptor": "(Ljava/util/List;)Ljava/lang/String;",
+      "attributes": {},
+      "profile": "none"
+    }
+  ],
+  "slot_storage_evidence": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11SlotReuseControl",
+      "method": "afterStringLifetime",
+      "descriptor": "(ZLjava/util/List;)Ljava/lang/Object;",
+      "javap_reference_load_store_lines": [
+        "2: astore_2",
+        "3: aload_2",
+        "10: astore_2",
+        "15: aload_1",
+        "22: astore_2",
+        "23: aload_2"
+      ],
+      "actual_local_variable_table": null,
+      "ssa_identity": "not_collected",
+      "slot_reuse_conclusion": "not_claimed"
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11SlotReuseControl",
+      "method": "afterStringLifetime",
+      "descriptor": "(ZLjava/util/List;)Ljava/lang/Object;",
+      "javap_reference_load_store_lines": [
+        "2: astore_2",
+        "3: aload_2",
+        "10: astore_2",
+        "15: aload_1",
+        "22: astore_2",
+        "23: aload_2"
+      ],
+      "actual_local_variable_table": null,
+      "ssa_identity": "not_collected",
+      "slot_reuse_conclusion": "not_claimed"
+    }
+  ],
+  "runner_case_count": 29,
+  "pinned_reference_case_count": 9,
+  "pinned_no_cast_case_count": 9,
+  "rendered_class_digest_validation": "BLAKE3 shape and location/owner/default-all consistency only; physical files separately SHA256 pinned; no independent BLAKE3 recomputation",
+  "assessment": "observation_only; no product behavior acceptance claimed",
+  "execution": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/execution.json",
+    "bytes": 403933,
+    "sha256": "12468c49c34208753e502eb8381ee102982696b4b663f89e6e3291549873760d"
+  },
+  "actual_command_count": 97,
+  "raw_stream_count": 194,
+  "classes": [
+    "cf11.CF11OuterAssignmentTarget",
+    "cf11.CF11CastReadControl",
+    "cf11.CF11CharSequenceControl",
+    "cf11.CF11ReferenceArrayControl",
+    "cf11.CF11ParameterControl",
+    "cf11.CF11SlotReuseControl",
+    "cf11.CF11HandlerWriteControl"
+  ],
+  "original_oracle": {
+    "exit_code": 0,
+    "stdout_nonempty": true,
+    "stderr_empty": true,
+    "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jdk8_jdk23_equal": true,
+    "case_count": 29,
+    "pinned_named_cases_verified": 18
+  },
+  "behavior_mismatches": [],
+  "jadx_version_observation": {
+    "exit_code": 0,
+    "stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "expected_version_on_success": "1.5.6"
+  },
+  "jadx_unusable_outputs": [],
+  "jarde_method_maps_checked": 76,
+  "default_all": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11OuterAssignmentTarget",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11CastReadControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11CharSequenceControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11ReferenceArrayControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11ParameterControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11SlotReuseControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.CF11HandlerWriteControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11OuterAssignmentTarget",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11CastReadControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11CharSequenceControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11ReferenceArrayControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11ParameterControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11SlotReuseControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.CF11HandlerWriteControl",
+      "both_rendered": true,
+      "source_equal": true,
+      "method_count_equal": true,
+      "source_and_maps_equal": true,
+      "differences": []
+    }
+  ],
+  "generated_compile_observations": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11OuterAssignmentTarget",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11CastReadControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11CharSequenceControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11ReferenceArrayControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11ParameterControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11SlotReuseControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-CF11HandlerWriteControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11OuterAssignmentTarget",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11CastReadControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11CharSequenceControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11ReferenceArrayControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11ParameterControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11SlotReuseControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-CF11HandlerWriteControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11OuterAssignmentTarget",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11CastReadControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11CharSequenceControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11ReferenceArrayControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11ParameterControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11SlotReuseControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-CF11HandlerWriteControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11OuterAssignmentTarget",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11CastReadControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11CharSequenceControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11ReferenceArrayControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11ParameterControl",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11SlotReuseControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-CF11HandlerWriteControl",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/CF11CastReadControl.class",
+        "cf11/CF11CharSequenceControl.class",
+        "cf11/CF11HandlerWriteControl.class",
+        "cf11/CF11OuterAssignmentTarget.class",
+        "cf11/CF11ParameterControl.class",
+        "cf11/CF11ReferenceArrayControl.class",
+        "cf11/CF11SlotReuseControl.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jarde_unusable_outputs": [],
+  "compile_failures_remain_observations": true,
+  "checker": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-checker-root-v9/check_controls.py",
+    "bytes": 45654,
+    "sha256": "583cf7738c783bfd48f16bad3f4c3b8a79018a6ddd6b9d67ecea08bfd60643a8"
+  }
+}

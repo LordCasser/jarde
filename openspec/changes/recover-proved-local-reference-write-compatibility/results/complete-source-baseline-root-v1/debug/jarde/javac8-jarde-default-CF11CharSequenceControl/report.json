@@ -1,0 +1,2217 @@
+{
+  "anonymous_interface_projection": {
+    "state": "absent"
+  },
+  "bridge_proofs": [],
+  "class": {
+    "class_bytes": {
+      "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+      "length": 675
+    },
+    "location": {
+      "kind": "standalone_root",
+      "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+    },
+    "variant": {
+      "kind": "base"
+    }
+  },
+  "coverage": {
+    "artifact_structural": {
+      "scanned": [
+        {
+          "end": 1,
+          "label": "navigation_candidates",
+          "start": 0
+        },
+        {
+          "end": 3,
+          "label": "class_methods",
+          "start": 0
+        },
+        {
+          "end": 3,
+          "label": "class_source_bodies",
+          "start": 0
+        }
+      ],
+      "skipped": [],
+      "state": "complete_within_schema",
+      "uninterpreted_extensions": []
+    },
+    "dynamic_analysis": {
+      "scanned": [],
+      "skipped": [],
+      "state": "not_requested",
+      "uninterpreted_extensions": []
+    },
+    "runtime_resolution": {
+      "scanned": [],
+      "skipped": [],
+      "state": "not_requested",
+      "uninterpreted_extensions": []
+    }
+  },
+  "declaration": {
+    "annotation_attributes": [],
+    "annotation_refusals": [],
+    "annotation_uses": [],
+    "declaration": "public final class CF11CharSequenceControl extends java.lang.Object",
+    "generic_refusal": null,
+    "generic_signature": null,
+    "item": {
+      "binding": {
+        "kind": "standalone_root"
+      },
+      "declaration": {
+        "access_flags": 49,
+        "interfaces": [],
+        "super_class": {
+          "escaped": "java/lang/Object",
+          "raw": [
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116
+          ],
+          "utf16": [
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116
+          ]
+        },
+        "this_class": {
+          "escaped": "cf11/CF11CharSequenceControl",
+          "raw": [
+            99,
+            102,
+            49,
+            49,
+            47,
+            67,
+            70,
+            49,
+            49,
+            67,
+            104,
+            97,
+            114,
+            83,
+            101,
+            113,
+            117,
+            101,
+            110,
+            99,
+            101,
+            67,
+            111,
+            110,
+            116,
+            114,
+            111,
+            108
+          ],
+          "utf16": [
+            99,
+            102,
+            49,
+            49,
+            47,
+            67,
+            70,
+            49,
+            49,
+            67,
+            104,
+            97,
+            114,
+            83,
+            101,
+            113,
+            117,
+            101,
+            110,
+            99,
+            101,
+            67,
+            111,
+            110,
+            116,
+            114,
+            111,
+            108
+          ]
+        }
+      },
+      "definition": {
+        "class_bytes": {
+          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+          "length": 675
+        },
+        "location": {
+          "kind": "standalone_root",
+          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+        },
+        "variant": {
+          "kind": "base"
+        }
+      },
+      "member_table": null
+    },
+    "name": "CF11CharSequenceControl"
+  },
+  "diagnostics": [],
+  "direct_override_proofs": [],
+  "enum_switch_proofs": [],
+  "execution": {
+    "status": "complete",
+    "usage": {
+      "analysis_steps": 387,
+      "archive_entries": 0,
+      "attribute_bytes": 589,
+      "class_bytes": 1350,
+      "class_headers": 1,
+      "code_bytes": 35,
+      "dependency_depth": 0,
+      "elapsed_millis": 3,
+      "entry_bytes": 0,
+      "input_bytes": 675,
+      "ir_edges": 14,
+      "ir_items": 407,
+      "method_bodies": 3,
+      "nested_depth": 0,
+      "normalization_clones": 0,
+      "output_bytes": 1430,
+      "read_bytes": 675,
+      "result_items": 11
+    }
+  },
+  "fields": [],
+  "initializer_proof": {
+    "kind": "not_applicable"
+  },
+  "integer_constant_projections": [],
+  "limits": {
+    "analysis_steps": 4194304,
+    "archive_entries": 65536,
+    "attribute_bytes": 67108864,
+    "class_bytes": 67108864,
+    "class_headers": 4096,
+    "code_bytes": 16777216,
+    "dependency_depth": 8,
+    "elapsed_millis": 30000,
+    "entry_bytes": 67108864,
+    "input_bytes": 67108864,
+    "ir_edges": 4194304,
+    "ir_items": 4194304,
+    "method_bodies": 4096,
+    "nested_depth": 4,
+    "normalization_clones": 1048576,
+    "output_bytes": 16777216,
+    "read_bytes": 67108864,
+    "result_items": 65536
+  },
+  "member_family": {
+    "state": "absent"
+  },
+  "methods": [
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public CF11CharSequenceControl()",
+      "item": {
+        "access_flags": 1,
+        "body": {
+          "content_span": {
+            "length": 47,
+            "start": 464
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "()V",
+          "raw": [
+            40,
+            41,
+            86
+          ],
+          "utf16": [
+            40,
+            41,
+            86
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+              "length": 675
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 0,
+        "name": {
+          "escaped": "<init>",
+          "raw": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ],
+          "utf16": [
+            60,
+            105,
+            110,
+            105,
+            116,
+            62
+          ]
+        }
+      },
+      "markers": [],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 24,
+              "archive_entries": 0,
+              "attribute_bytes": 451,
+              "class_bytes": 1350,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 1,
+              "entry_bytes": 0,
+              "input_bytes": 675,
+              "ir_edges": 2,
+              "ir_items": 48,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 675,
+              "read_bytes": 675,
+              "result_items": 8
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "standalone_class",
+                        "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 0,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "name": [
+                  60,
+                  105,
+                  110,
+                  105,
+                  116,
+                  62
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                    "length": 675
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 202,
+              "text_digest": "4b2df338a0b115ae2bf3cdd60d3c0242"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "contains_statements",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 2 statement(s), 2 segment(s), 202 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_constructor_prologue",
+              "message": "the body is an instance initializer and its prologue is written under init@1 as `super`: the call at BCI 1 names `java/lang/Object`, and the class that declares this constructor is `cf11/CF11CharSequenceControl`",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a constructor",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 100,
+              "archive_entries": 0,
+              "attribute_bytes": 451,
+              "class_bytes": 1350,
+              "class_headers": 1,
+              "code_bytes": 5,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 0,
+              "input_bytes": 675,
+              "ir_edges": 2,
+              "ir_items": 68,
+              "method_bodies": 1,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 877,
+              "read_bytes": 675,
+              "result_items": 8
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "<init>()V",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "structured",
+          "regions": [],
+          "representation": "java",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 188,
+                "origin": {
+                  "derived": [
+                    {
+                      "bci": 0,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          41,
+                          86
+                        ],
+                        "name": [
+                          60,
+                          105,
+                          110,
+                          105,
+                          116,
+                          62
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                            "length": 675
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    }
+                  ],
+                  "primary": {
+                    "bci": 1,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        60,
+                        105,
+                        110,
+                        105,
+                        116,
+                        62
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 175
+              },
+              {
+                "end": 200,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 4,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        86
+                      ],
+                      "name": [
+                        60,
+                        105,
+                        110,
+                        105,
+                        116,
+                        62
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 188
+              }
+            ]
+          },
+          "syntax_status": "unchecked",
+          "text": "// @method <init>()V\n// @declaration a constructor of `cf11.CF11CharSequenceControl`, member flags 0x0001\n// recovered from bytecode; presentation is not claimed to compile\n{\n    super();\n    return;\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": []
+      },
+      "text": "    public CF11CharSequenceControl() {\n        // @method <init>()V\n        // @declaration a constructor of `cf11.CF11CharSequenceControl`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public static int stringLength()",
+      "item": {
+        "access_flags": 9,
+        "body": {
+          "content_span": {
+            "length": 56,
+            "start": 525
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "()I",
+          "raw": [
+            40,
+            41,
+            73
+          ],
+          "utf16": [
+            40,
+            41,
+            73
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            41,
+            73
+          ],
+          "name": [
+            115,
+            116,
+            114,
+            105,
+            110,
+            103,
+            76,
+            101,
+            110,
+            103,
+            116,
+            104
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+              "length": 675
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 1,
+        "name": {
+          "escaped": "stringLength",
+          "raw": [
+            115,
+            116,
+            114,
+            105,
+            110,
+            103,
+            76,
+            101,
+            110,
+            103,
+            116,
+            104
+          ],
+          "utf16": [
+            115,
+            116,
+            114,
+            105,
+            110,
+            103,
+            76,
+            101,
+            110,
+            103,
+            116,
+            104
+          ]
+        }
+      },
+      "markers": [],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 130,
+              "archive_entries": 0,
+              "attribute_bytes": 513,
+              "class_bytes": 1350,
+              "class_headers": 1,
+              "code_bytes": 15,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 0,
+              "input_bytes": 675,
+              "ir_edges": 6,
+              "ir_items": 137,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 877,
+              "read_bytes": 675,
+              "result_items": 9
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "standalone_class",
+                        "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 1,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  73
+                ],
+                "name": [
+                  115,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103,
+                  76,
+                  101,
+                  110,
+                  103,
+                  116,
+                  104
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                    "length": 675
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 251,
+              "text_digest": "447ca564fc17611bbbcfdeda3c08349d"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "contains_statements",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 2 statement(s), 5 segment(s), 251 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 180,
+              "archive_entries": 0,
+              "attribute_bytes": 513,
+              "class_bytes": 1350,
+              "class_headers": 1,
+              "code_bytes": 15,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 0,
+              "input_bytes": 675,
+              "ir_edges": 6,
+              "ir_items": 175,
+              "method_bodies": 2,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1128,
+              "read_bytes": 675,
+              "result_items": 9
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "stringLength()I",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "structured",
+          "regions": [],
+          "representation": "java",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 220,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 0,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        115,
+                        116,
+                        114,
+                        105,
+                        110,
+                        103,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 212
+              },
+              {
+                "end": 222,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 2,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        115,
+                        116,
+                        114,
+                        105,
+                        110,
+                        103,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 183
+              },
+              {
+                "end": 238,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 3,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        115,
+                        116,
+                        114,
+                        105,
+                        110,
+                        103,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 233
+              },
+              {
+                "end": 247,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 4,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        115,
+                        116,
+                        114,
+                        105,
+                        110,
+                        103,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 233
+              },
+              {
+                "end": 249,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 9,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        115,
+                        116,
+                        114,
+                        105,
+                        110,
+                        103,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 222
+              }
+            ]
+          },
+          "syntax_status": "unchecked",
+          "text": "// @method stringLength()I\n// @declaration a static method of `cf11.CF11CharSequenceControl`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    java.lang.String value = \"string\";\n    return value.length();\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": []
+      },
+      "text": "    public static int stringLength() {\n        // @method stringLength()I\n        // @declaration a static method of `cf11.CF11CharSequenceControl`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.String value = \"string\";\n        return value.length();\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    },
+    {
+      "annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses": []
+      },
+      "declaration": "public static int builderLength()",
+      "item": {
+        "access_flags": 9,
+        "body": {
+          "content_span": {
+            "length": 70,
+            "start": 595
+          },
+          "kind": "code_attribute"
+        },
+        "descriptor": {
+          "escaped": "()I",
+          "raw": [
+            40,
+            41,
+            73
+          ],
+          "utf16": [
+            40,
+            41,
+            73
+          ]
+        },
+        "identity": {
+          "descriptor": [
+            40,
+            41,
+            73
+          ],
+          "name": [
+            98,
+            117,
+            105,
+            108,
+            100,
+            101,
+            114,
+            76,
+            101,
+            110,
+            103,
+            116,
+            104
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+              "length": 675
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "index": 2,
+        "name": {
+          "escaped": "builderLength",
+          "raw": [
+            98,
+            117,
+            105,
+            108,
+            100,
+            101,
+            114,
+            76,
+            101,
+            110,
+            103,
+            116,
+            104
+          ],
+          "utf16": [
+            98,
+            117,
+            105,
+            108,
+            100,
+            101,
+            114,
+            76,
+            101,
+            110,
+            103,
+            116,
+            104
+          ]
+        }
+      },
+      "markers": [],
+      "no_body_kind": null,
+      "outcome": {
+        "analysis": {
+          "diagnostics": 0,
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 233,
+              "archive_entries": 0,
+              "attribute_bytes": 589,
+              "class_bytes": 1350,
+              "class_headers": 1,
+              "code_bytes": 35,
+              "dependency_depth": 0,
+              "elapsed_millis": 2,
+              "entry_bytes": 0,
+              "input_bytes": 675,
+              "ir_edges": 14,
+              "ir_items": 312,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1128,
+              "read_bytes": 675,
+              "result_items": 10
+            }
+          }
+        },
+        "kind": "recovered",
+        "report": {
+          "accessors": [],
+          "aliased_names": [],
+          "artifact": {
+            "agreement": {
+              "state": "not_stated"
+            },
+            "binding": {
+              "engine": "0.1.0",
+              "environment": {
+                "content": [
+                  "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                ],
+                "domain_loaders": [
+                  "app"
+                ],
+                "providers": [],
+                "runtime": {
+                  "load_domain": {
+                    "delegation": {
+                      "kind": "parent_first"
+                    },
+                    "external_override": "none",
+                    "loader": "app",
+                    "module_mode": {
+                      "kind": "class_path"
+                    },
+                    "parent_loader": null,
+                    "roots": [
+                      {
+                        "kind": "standalone_class",
+                        "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                      }
+                    ],
+                    "runtime_transformation": "none"
+                  },
+                  "physical": {
+                    "scope": {
+                      "kind": "snapshot_all"
+                    },
+                    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                  },
+                  "profile": {
+                    "java_release": 8,
+                    "layout": {
+                      "kind": "generic"
+                    },
+                    "multi_release": {
+                      "kind": "disabled"
+                    }
+                  }
+                }
+              },
+              "member_ordinal": 2,
+              "method": {
+                "descriptor": [
+                  40,
+                  41,
+                  73
+                ],
+                "name": [
+                  98,
+                  117,
+                  105,
+                  108,
+                  100,
+                  101,
+                  114,
+                  76,
+                  101,
+                  110,
+                  103,
+                  116,
+                  104
+                ],
+                "owner": {
+                  "class_bytes": {
+                    "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                    "length": 675
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                }
+              },
+              "profile": {
+                "java_release": 8,
+                "layout": {
+                  "kind": "generic"
+                },
+                "multi_release": {
+                  "kind": "disabled"
+                }
+              },
+              "registry": 71,
+              "rules": [
+                "straight@1",
+                "if@1",
+                "loop@1",
+                "switch@1",
+                "lambda@1",
+                "concat@1",
+                "bridge@1",
+                "accessor@1",
+                "new@1",
+                "field@1",
+                "enumswitch@1",
+                "init@1",
+                "declaration@1",
+                "twr@1",
+                "monitor@1",
+                "finally@1"
+              ],
+              "schema": 1,
+              "text_bytes": 302,
+              "text_digest": "823f0e9447df93ad009988acbf53ab4c"
+            }
+          },
+          "bridges": [],
+          "compile_status": "not_attempted",
+          "concats": [],
+          "content": "contains_statements",
+          "declaration": null,
+          "diagnostics": [
+            {
+              "code": "jre_recovery_produced",
+              "message": "1 region(s), 3 statement(s), 8 segment(s), 302 byte(s) written from 1 canonical block(s)",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_concat_shape",
+              "message": "the concatenation at BCI 3 was not presented: the instruction after the `dup` at BCI 6 is not `java/lang/StringBuilder.<init>()V`: the instance a chain builds is constructed by its own class",
+              "provenance": null,
+              "severity": "warning"
+            },
+            {
+              "code": "jre_concat_chains",
+              "message": "1 concatenation candidate(s) read under concat@1: 0 presented, 1 refused",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_new_sites",
+              "message": "1 construction candidate(s) read under new@1: 1 presented as `new`, 0 refused",
+              "provenance": null,
+              "severity": "info"
+            },
+            {
+              "code": "jre_declaration",
+              "message": "the artifact's envelope states the member's declaration under declaration@1: a static method",
+              "provenance": null,
+              "severity": "info"
+            }
+          ],
+          "enum_switches": [],
+          "evidence": {
+            "categories": [
+              {
+                "kind": "source_map",
+                "state": {
+                  "state": "complete"
+                }
+              },
+              {
+                "kind": "region_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "rule_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "name_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              },
+              {
+                "kind": "read_details",
+                "state": {
+                  "state": "not_requested"
+                }
+              }
+            ],
+            "requested": {
+              "driver_bci_range": null,
+              "expected_artifact": null,
+              "kinds": [
+                "source_map"
+              ]
+            }
+          },
+          "execution": {
+            "status": "complete",
+            "usage": {
+              "analysis_steps": 387,
+              "archive_entries": 0,
+              "attribute_bytes": 589,
+              "class_bytes": 1350,
+              "class_headers": 1,
+              "code_bytes": 35,
+              "dependency_depth": 0,
+              "elapsed_millis": 3,
+              "entry_bytes": 0,
+              "input_bytes": 675,
+              "ir_edges": 14,
+              "ir_items": 407,
+              "method_bodies": 3,
+              "nested_depth": 0,
+              "normalization_clones": 0,
+              "output_bytes": 1430,
+              "read_bytes": 675,
+              "result_items": 10
+            }
+          },
+          "fallbacks": [],
+          "fields": [],
+          "init": null,
+          "lambdas": [],
+          "method": "builderLength()I",
+          "news": [],
+          "outcome": "produced",
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "disabled"
+            }
+          },
+          "quality": "structured",
+          "regions": [],
+          "representation": "java",
+          "rules": [],
+          "semantic_validation": "unproven",
+          "source_map": {
+            "segments": [
+              {
+                "end": 219,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 0,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 213
+              },
+              {
+                "end": 221,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 2,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 184
+              },
+              {
+                "end": 270,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 7,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 261
+              },
+              {
+                "end": 271,
+                "origin": {
+                  "derived": [
+                    {
+                      "bci": 3,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          98,
+                          117,
+                          105,
+                          108,
+                          100,
+                          101,
+                          114,
+                          76,
+                          101,
+                          110,
+                          103,
+                          116,
+                          104
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                            "length": 675
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    },
+                    {
+                      "bci": 6,
+                      "cp": null,
+                      "method": {
+                        "descriptor": [
+                          40,
+                          41,
+                          73
+                        ],
+                        "name": [
+                          98,
+                          117,
+                          105,
+                          108,
+                          100,
+                          101,
+                          114,
+                          76,
+                          101,
+                          110,
+                          103,
+                          116,
+                          104
+                        ],
+                        "owner": {
+                          "class_bytes": {
+                            "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                            "length": 675
+                          },
+                          "location": {
+                            "kind": "standalone_root",
+                            "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                          },
+                          "variant": {
+                            "kind": "base"
+                          }
+                        }
+                      },
+                      "provenance": "Derived"
+                    }
+                  ],
+                  "primary": {
+                    "bci": 9,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 233
+              },
+              {
+                "end": 273,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 12,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 221
+              },
+              {
+                "end": 289,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 13,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 284
+              },
+              {
+                "end": 298,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 14,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 284
+              },
+              {
+                "end": 300,
+                "origin": {
+                  "derived": [],
+                  "primary": {
+                    "bci": 19,
+                    "cp": null,
+                    "method": {
+                      "descriptor": [
+                        40,
+                        41,
+                        73
+                      ],
+                      "name": [
+                        98,
+                        117,
+                        105,
+                        108,
+                        100,
+                        101,
+                        114,
+                        76,
+                        101,
+                        110,
+                        103,
+                        116,
+                        104
+                      ],
+                      "owner": {
+                        "class_bytes": {
+                          "digest": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e",
+                          "length": 675
+                        },
+                        "location": {
+                          "kind": "standalone_root",
+                          "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+                        },
+                        "variant": {
+                          "kind": "base"
+                        }
+                      }
+                    },
+                    "provenance": "Direct"
+                  }
+                },
+                "start": 273
+              }
+            ]
+          },
+          "syntax_status": "unchecked",
+          "text": "// @method builderLength()I\n// @declaration a static method of `cf11.CF11CharSequenceControl`, member flags 0x0009\n// recovered from bytecode; presentation is not claimed to compile\n{\n    java.lang.String value = \"seed\";\n    value = new java.lang.StringBuilder(\"builder\");\n    return value.length();\n}\n",
+          "verification": "not_performed"
+        }
+      },
+      "parameter_annotations": {
+        "attributes": [],
+        "refusals": [],
+        "uses_by_position": []
+      },
+      "text": "    public static int builderLength() {\n        // @method builderLength()I\n        // @declaration a static method of `cf11.CF11CharSequenceControl`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.String value = \"seed\";\n        value = new java.lang.StringBuilder(\"builder\");\n        return value.length();\n    }\n",
+      "type_annotations": {
+        "attributes": [],
+        "field_uses": [],
+        "parameter_uses": [],
+        "refusals": [],
+        "return_uses": []
+      }
+    }
+  ],
+  "nested_annotation_family": {
+    "state": "absent"
+  },
+  "nested_enum_family": {
+    "state": "absent"
+  },
+  "outcome": "performed",
+  "stages": [
+    "raw_facts",
+    "raw_cfg",
+    "legacy_normalization",
+    "canonical_cfg",
+    "frame",
+    "ssa"
+  ],
+  "text": "// jarde: presentation of `cf11/CF11CharSequenceControl` from the class file's own declaration and one recovery run per member.\n// jarde: not a compilable project: no imports and no resources are claimed (the `package` line is the class file's own name, not a claim about a directory); every place this text is not a full recovery carries a marker of this prefix.\npackage cf11;\n\npublic final class CF11CharSequenceControl extends java.lang.Object {\n    public CF11CharSequenceControl() {\n        // @method <init>()V\n        // @declaration a constructor of `cf11.CF11CharSequenceControl`, member flags 0x0001\n        // recovered from bytecode; presentation is not claimed to compile\n        super();\n        return;\n    }\n\n    public static int stringLength() {\n        // @method stringLength()I\n        // @declaration a static method of `cf11.CF11CharSequenceControl`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.String value = \"string\";\n        return value.length();\n    }\n\n    public static int builderLength() {\n        // @method builderLength()I\n        // @declaration a static method of `cf11.CF11CharSequenceControl`, member flags 0x0009\n        // recovered from bytecode; presentation is not claimed to compile\n        java.lang.String value = \"seed\";\n        value = new java.lang.StringBuilder(\"builder\");\n        return value.length();\n    }\n}\n",
+  "usage": {
+    "analysis_steps": 387,
+    "archive_entries": 0,
+    "attribute_bytes": 589,
+    "class_bytes": 1350,
+    "class_headers": 1,
+    "code_bytes": 35,
+    "dependency_depth": 0,
+    "elapsed_millis": 3,
+    "entry_bytes": 0,
+    "input_bytes": 675,
+    "ir_edges": 14,
+    "ir_items": 407,
+    "method_bodies": 3,
+    "nested_depth": 0,
+    "normalization_clones": 0,
+    "output_bytes": 1430,
+    "read_bytes": 675,
+    "result_items": 11
+  },
+  "view": {
+    "scope": {
+      "kind": "snapshot_all"
+    },
+    "snapshot": "555153a4783971f8a1ff5cd77fe70f1232812d79478773078044f3a452cbea2e"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "local-reference-checker-root-v9-plan",
+  "runs": [
+    {
+      "profile": "debug",
+      "argv": [
+        "python3",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-root-v9/check_controls.py",
+        "--execution",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/execution.json",
+        "--expected-javac-debug",
+        "debug",
+        "--out",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-root-v9/debug-observation.json"
+      ]
+    },
+    {
+      "profile": "none",
+      "argv": [
+        "python3",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-root-v9/check_controls.py",
+        "--execution",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/execution.json",
+        "--expected-javac-debug",
+        "none",
+        "--out",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-root-v9/no-debug-observation.json"
+      ]
+    }
+  ]
+}

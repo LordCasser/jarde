@@ -1,0 +1,27 @@
+{
+  "schema": "local-reference-baseline-root-assessment-v2",
+  "assessment": "accepted_observation_only",
+  "supersedes": "root-assessment.json for scoped profile comparison only",
+  "profiles": [
+    {
+      "profile": "debug",
+      "path": "openspec/changes/recover-proved-local-reference-write-compatibility/results/complete-source-baseline-root-v1/checker-root-v9/debug-observation.json",
+      "sha256": "6bd0baaded6abf0b9db56f049f71077502186c20f780a3aad263e71db6a4b4e3",
+      "default_all_pairs": 14,
+      "same_body_map": true,
+      "status": "verified_observation_capture_with_quality_gaps",
+      "source_map_gap_rows": 4
+    },
+    {
+      "profile": "none",
+      "path": "openspec/changes/recover-proved-local-reference-write-compatibility/results/complete-source-baseline-root-v1/checker-root-v9/no-debug-observation.json",
+      "sha256": "5006577b977c69ca4c84600c035779d8721fff37e9eb985e79b3d148fc750372",
+      "default_all_pairs": 14,
+      "same_body_map": true,
+      "status": "verified_observation_capture_with_quality_gaps",
+      "source_map_gap_rows": 4
+    }
+  ],
+  "correction": "v8 compared entire recovery reports, including requested evidence and elapsed execution; v9 restores existing v7 body/source-map comparison. Both actual invocations exit0. Raw captures unchanged.",
+  "candidate_applied": false
+}

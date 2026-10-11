@@ -1,0 +1,37 @@
+{
+  "schema": "cf11-local-reference-write-checker-run-plan-v1",
+  "status": "planned_not_executed",
+  "checker": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+  "source_execution_inputs": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/pins.json",
+  "runs": [
+    {
+      "profile": "debug",
+      "argv": [
+        "python3",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+        "--execution",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/execution.json",
+        "--expected-javac-debug",
+        "debug",
+        "--out",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/debug-observation.json"
+      ],
+      "status": "planned_not_executed"
+    },
+    {
+      "profile": "none",
+      "argv": [
+        "python3",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+        "--execution",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/execution.json",
+        "--expected-javac-debug",
+        "none",
+        "--out",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/no-debug-observation.json"
+      ],
+      "status": "planned_not_executed"
+    }
+  ],
+  "execution_restriction": "Private static preparation only; do not run this checker or any Java/JADX/Jarde/Rust tool here. Root executes it after each full-source profile capture."
+}

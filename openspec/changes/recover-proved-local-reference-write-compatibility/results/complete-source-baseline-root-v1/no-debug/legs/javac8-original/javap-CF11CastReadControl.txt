@@ -1,0 +1,72 @@
+Classfile /private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11CastReadControl.class
+  Last modified 2026-10-12; size 402 bytes
+  MD5 checksum 4f533aa07f24cdf1b021f4b7d9f96e43
+public final class cf11.CF11CastReadControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#16         // java/lang/Object."<init>":()V
+   #2 = String             #17            // seed
+   #3 = InterfaceMethodref #18.#19        // java/util/List.isEmpty:()Z
+   #4 = InterfaceMethodref #18.#20        // java/util/List.get:(I)Ljava/lang/Object;
+   #5 = Class              #21            // java/lang/String
+   #6 = Methodref          #5.#22         // java/lang/String.length:()I
+   #7 = Class              #23            // cf11/CF11CastReadControl
+   #8 = Class              #24            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               castRead
+  #13 = Utf8               (Ljava/util/List;)I
+  #14 = Utf8               StackMapTable
+  #15 = Class              #24            // java/lang/Object
+  #16 = NameAndType        #9:#10         // "<init>":()V
+  #17 = Utf8               seed
+  #18 = Class              #25            // java/util/List
+  #19 = NameAndType        #26:#27        // isEmpty:()Z
+  #20 = NameAndType        #28:#29        // get:(I)Ljava/lang/Object;
+  #21 = Utf8               java/lang/String
+  #22 = NameAndType        #30:#31        // length:()I
+  #23 = Utf8               cf11/CF11CastReadControl
+  #24 = Utf8               java/lang/Object
+  #25 = Utf8               java/util/List
+  #26 = Utf8               isEmpty
+  #27 = Utf8               ()Z
+  #28 = Utf8               get
+  #29 = Utf8               (I)Ljava/lang/Object;
+  #30 = Utf8               length
+  #31 = Utf8               ()I
+{
+  public cf11.CF11CastReadControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int castRead(java.util.List);
+    descriptor: (Ljava/util/List;)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=1
+         0: ldc           #2                  // String seed
+         2: astore_1
+         3: aload_0
+         4: invokeinterface #3,  1            // InterfaceMethod java/util/List.isEmpty:()Z
+         9: ifne          20
+        12: aload_0
+        13: iconst_0
+        14: invokeinterface #4,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        19: astore_1
+        20: aload_1
+        21: checkcast     #5                  // class java/lang/String
+        24: invokevirtual #6                  // Method java/lang/String.length:()I
+        27: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 20
+          locals = [ class java/lang/Object ]
+}

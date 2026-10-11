@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+    "--execution",
+    "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/execution.json",
+    "--expected-javac-debug",
+    "debug",
+    "--out",
+    "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/debug-observation.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T23:44:59.126139+00:00",
+  "finished_at": "2026-10-11T23:44:59.434937+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-check-invocation-root-v1-debug/stdout.raw",
+      "bytes": 365,
+      "sha256": "12b32cedcb38750e78dadab8000a114d304fb7b8b599686df208850a9c83c6d4"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-check-invocation-root-v1-debug/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

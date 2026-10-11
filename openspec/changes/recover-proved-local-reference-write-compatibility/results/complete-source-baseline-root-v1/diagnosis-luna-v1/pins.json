@@ -1,0 +1,1247 @@
+{
+  "schema": "cf11-local-reference-write-baseline-diagnosis-v1",
+  "status": "read_only_diagnosis_from_completed_captures",
+  "source_pins": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/pins.json",
+    "bytes": 25725,
+    "sha256": "eeddbbc55a91f763771fe2ef8fa2fd3671480d53d933befd8cbff5b449dc4475"
+  },
+  "manifest": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/manifest.json",
+    "bytes": 1720,
+    "sha256": "f0041e028254fd7dbaf45053f26079fdc4a167b85384db5aab2ba933c5410c90"
+  },
+  "profiles": {
+    "debug": {
+      "execution": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/execution.json",
+        "bytes": 382758,
+        "sha256": "17ce6f9d1712725e6d72a6ccbd1076e285cb24fbeb404f426cb2290c86ffdec5"
+      },
+      "checker_observation": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/debug-observation.json",
+        "bytes": 100334,
+        "sha256": "9f28ecf436b78cc2d73c777e47a87cec96f932d5f405ee0818c9c0f24a2b5a1e"
+      },
+      "status": "verified_observation_capture_with_quality_gaps",
+      "source_closure_count": 4744
+    },
+    "none": {
+      "execution": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/execution.json",
+        "bytes": 403933,
+        "sha256": "12468c49c34208753e502eb8381ee102982696b4b663f89e6e3291549873760d"
+      },
+      "checker_observation": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/no-debug-observation.json",
+        "bytes": 100522,
+        "sha256": "1321f37497f4681c9632308e56cc6055c1e04e7631b34580c3688a37fd202c0c"
+      },
+      "status": "verified_observation_capture_with_quality_gaps",
+      "source_closure_count": 4744
+    }
+  },
+  "target_classes": {
+    "debug": {
+      "CF11OuterAssignmentTarget": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/59.stderr.raw",
+              "bytes": 294,
+              "sha256": "0ffe390c5e7a94ffdae2319a6fccd92a7b9a0024342f0735e67f2ab7d81bf326"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3212,
+              "sha256": "c3e28047f20b435348ce548eba58b4ec85c51c7c2b8a8c3a986911557cf988d2"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/68.stderr.raw",
+              "bytes": 290,
+              "sha256": "5bb89cb80aabde7ec319432bc0366e33d6d0cf63c8eb901a8f49bbfbc4e0cc3b"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3212,
+              "sha256": "c3e28047f20b435348ce548eba58b4ec85c51c7c2b8a8c3a986911557cf988d2"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/77.stderr.raw",
+              "bytes": 538,
+              "sha256": "691809578ad93ff3a0b42620ecb7c832a9b360ccb867d6e8c8253235057a62f8"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3212,
+              "sha256": "c3e28047f20b435348ce548eba58b4ec85c51c7c2b8a8c3a986911557cf988d2"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/86.stderr.raw",
+              "bytes": 534,
+              "sha256": "898c0cd06515a0f6e5a583c64522ec443d0f4e7650e24341b027031c39f6fc77"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3212,
+              "sha256": "c3e28047f20b435348ce548eba58b4ec85c51c7c2b8a8c3a986911557cf988d2"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/59.stderr.raw",
+          "bytes": 294,
+          "sha256": "0ffe390c5e7a94ffdae2319a6fccd92a7b9a0024342f0735e67f2ab7d81bf326"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+          "bytes": 3212,
+          "sha256": "c3e28047f20b435348ce548eba58b4ec85c51c7c2b8a8c3a986911557cf988d2"
+        }
+      },
+      "CF11CastReadControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/60.stderr.raw",
+              "bytes": 277,
+              "sha256": "22d4d3f7e6d1ffb7980f71ab30ad1ebbf338b865856193c963a848aa0bb076c6"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1176,
+              "sha256": "4e69b1676119d1919efd4648306c31aa6535b4eded78064269d75097d07c5401"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/69.stderr.raw",
+              "bytes": 273,
+              "sha256": "7ba0371f206458740cc5801cc420d8326674c3ada8560966bb3fbf979cba13f2"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1176,
+              "sha256": "4e69b1676119d1919efd4648306c31aa6535b4eded78064269d75097d07c5401"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/78.stderr.raw",
+              "bytes": 521,
+              "sha256": "720c665400d86b74315ebdda80cbd12f70b331ae4b9a3119c8052b10668455b3"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1176,
+              "sha256": "4e69b1676119d1919efd4648306c31aa6535b4eded78064269d75097d07c5401"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/87.stderr.raw",
+              "bytes": 517,
+              "sha256": "7a1862b65f7be3e4ff6ad299768881b867b9bfd3b40b375c74dd8526155cc1f2"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1176,
+              "sha256": "4e69b1676119d1919efd4648306c31aa6535b4eded78064269d75097d07c5401"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/60.stderr.raw",
+          "bytes": 277,
+          "sha256": "22d4d3f7e6d1ffb7980f71ab30ad1ebbf338b865856193c963a848aa0bb076c6"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+          "bytes": 1176,
+          "sha256": "4e69b1676119d1919efd4648306c31aa6535b4eded78064269d75097d07c5401"
+        }
+      },
+      "CF11CharSequenceControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/61.stderr.raw",
+              "bytes": 297,
+              "sha256": "2a9afb6064e23ad09f298a3e301241a17e0caef9222a51c4666d5e6ccdbfdbb7"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1432,
+              "sha256": "3462ee066fe116e47c3550da7b56c74881320e098e1053850576010dafc0906f"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/70.stderr.raw",
+              "bytes": 293,
+              "sha256": "e812c5437aeaf2df95a8c946bfeb5a4043ff2ed5ee36aff92cdab4cc9ffec2f7"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1432,
+              "sha256": "3462ee066fe116e47c3550da7b56c74881320e098e1053850576010dafc0906f"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/79.stderr.raw",
+              "bytes": 541,
+              "sha256": "a71a8933b47cf6e6d3a39611bb2705efb4698d53d2c853c89224391ef3434881"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1432,
+              "sha256": "3462ee066fe116e47c3550da7b56c74881320e098e1053850576010dafc0906f"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/88.stderr.raw",
+              "bytes": 537,
+              "sha256": "cf191c413a87fc91523e83ea0475e3f79b46a0ecf74a1d5bf41adb8daaa0fdb7"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1432,
+              "sha256": "3462ee066fe116e47c3550da7b56c74881320e098e1053850576010dafc0906f"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/61.stderr.raw",
+          "bytes": 297,
+          "sha256": "2a9afb6064e23ad09f298a3e301241a17e0caef9222a51c4666d5e6ccdbfdbb7"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+          "bytes": 1432,
+          "sha256": "3462ee066fe116e47c3550da7b56c74881320e098e1053850576010dafc0906f"
+        }
+      },
+      "CF11ReferenceArrayControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/62.stderr.raw",
+              "bytes": 305,
+              "sha256": "22975ae50cec40909db3b4ca665077fff9b0d3edbd654d717d818e4dfbe7f689"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1237,
+              "sha256": "b7ffe40acc13c9575ce62f271976b40b7be624882ba1c14868029aa18829510a"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/71.stderr.raw",
+              "bytes": 301,
+              "sha256": "cca2ec25e0f6b3522976e549642d7cd0f310bcd2fd5ea889d63659b432a02c1a"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1237,
+              "sha256": "b7ffe40acc13c9575ce62f271976b40b7be624882ba1c14868029aa18829510a"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/80.stderr.raw",
+              "bytes": 549,
+              "sha256": "b2d99fdcd8c6eede3e2c8f12d419e8ba4a8381ef4e9e813811e18a4b87b896f2"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1237,
+              "sha256": "b7ffe40acc13c9575ce62f271976b40b7be624882ba1c14868029aa18829510a"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/89.stderr.raw",
+              "bytes": 545,
+              "sha256": "5e9e1780e08101ff19d4dbec2215e454d8894c44eb6de71175ed4be2cd0203cc"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1237,
+              "sha256": "b7ffe40acc13c9575ce62f271976b40b7be624882ba1c14868029aa18829510a"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/62.stderr.raw",
+          "bytes": 305,
+          "sha256": "22975ae50cec40909db3b4ca665077fff9b0d3edbd654d717d818e4dfbe7f689"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+          "bytes": 1237,
+          "sha256": "b7ffe40acc13c9575ce62f271976b40b7be624882ba1c14868029aa18829510a"
+        }
+      },
+      "CF11ParameterControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/63.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1164,
+              "sha256": "3a22deec131b165859cf552b40c05964b6df5dab2dcae50d8c3cd0368390a710"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/72.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1164,
+              "sha256": "3a22deec131b165859cf552b40c05964b6df5dab2dcae50d8c3cd0368390a710"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/81.stderr.raw",
+              "bytes": 243,
+              "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1164,
+              "sha256": "3a22deec131b165859cf552b40c05964b6df5dab2dcae50d8c3cd0368390a710"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/90.stderr.raw",
+              "bytes": 243,
+              "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1164,
+              "sha256": "3a22deec131b165859cf552b40c05964b6df5dab2dcae50d8c3cd0368390a710"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/63.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+          "bytes": 1164,
+          "sha256": "3a22deec131b165859cf552b40c05964b6df5dab2dcae50d8c3cd0368390a710"
+        }
+      },
+      "CF11SlotReuseControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/65.stderr.raw",
+              "bytes": 279,
+              "sha256": "d5adf09d85aefb24f9b5772b18c016672ca39709f6454b6b6fa140cbb6a68761"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1258,
+              "sha256": "e9391fece9cd05e25216e0000df49c8ee9e6b984fcd480bb9b06406cd249293a"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/74.stderr.raw",
+              "bytes": 275,
+              "sha256": "e3a67fa608cecd4e93fbfa97e5b4b7f1300da742cee8e3e72f60932baa5e4458"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1258,
+              "sha256": "e9391fece9cd05e25216e0000df49c8ee9e6b984fcd480bb9b06406cd249293a"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/83.stderr.raw",
+              "bytes": 523,
+              "sha256": "2fa85a9ae685aae1ebe3df488c872bbc292ff6f8aa6927e6d6dd9a07d9f113ed"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1258,
+              "sha256": "e9391fece9cd05e25216e0000df49c8ee9e6b984fcd480bb9b06406cd249293a"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/92.stderr.raw",
+              "bytes": 519,
+              "sha256": "cf27c83ed1912d58144983cc3b792f586d8a40737fca3aa25046ed9c04227ab3"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1258,
+              "sha256": "e9391fece9cd05e25216e0000df49c8ee9e6b984fcd480bb9b06406cd249293a"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/65.stderr.raw",
+          "bytes": 279,
+          "sha256": "d5adf09d85aefb24f9b5772b18c016672ca39709f6454b6b6fa140cbb6a68761"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+          "bytes": 1258,
+          "sha256": "e9391fece9cd05e25216e0000df49c8ee9e6b984fcd480bb9b06406cd249293a"
+        }
+      },
+      "CF11HandlerWriteControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/66.stderr.raw",
+              "bytes": 199,
+              "sha256": "cdc0f62ba8bb9fe35cfae93f558eee2619b1c468cbd227609de936fa0bab0345"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1668,
+              "sha256": "4b038d3a730d81aa7f1b95d64ee10c097bb5ffffbc05ca7873d07de1cc307dcf"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/75.stderr.raw",
+              "bytes": 195,
+              "sha256": "94ddceb43564603cd89b495900722620bd2c46a505af9940852436492ef26fb8"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1668,
+              "sha256": "4b038d3a730d81aa7f1b95d64ee10c097bb5ffffbc05ca7873d07de1cc307dcf"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/84.stderr.raw",
+              "bytes": 443,
+              "sha256": "67ee8e4bc8bf8db1b6fd32c58cd427a2881889fa7c57efda53607aa3ae85b990"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1668,
+              "sha256": "4b038d3a730d81aa7f1b95d64ee10c097bb5ffffbc05ca7873d07de1cc307dcf"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/93.stderr.raw",
+              "bytes": 439,
+              "sha256": "aaaa57b3bb5dceecd140afee8968aa543a242643059da3bb75a8e512767f871c"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac23-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1668,
+              "sha256": "4b038d3a730d81aa7f1b95d64ee10c097bb5ffffbc05ca7873d07de1cc307dcf"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/raw/66.stderr.raw",
+          "bytes": 199,
+          "sha256": "cdc0f62ba8bb9fe35cfae93f558eee2619b1c468cbd227609de936fa0bab0345"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/jarde/javac8-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+          "bytes": 1668,
+          "sha256": "4b038d3a730d81aa7f1b95d64ee10c097bb5ffffbc05ca7873d07de1cc307dcf"
+        }
+      }
+    },
+    "none": {
+      "CF11OuterAssignmentTarget": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/59.stderr.raw",
+              "bytes": 293,
+              "sha256": "61fde4f0fb7f1373105d2db89d32dc1d9dbbde05b25d33dc82636e8b6dd3ab8c"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3170,
+              "sha256": "735b33198d674d3e605c4d6560f5a28aa8aff20473c0e866da5ce4d963ff5825"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/69.stderr.raw",
+              "bytes": 289,
+              "sha256": "b41fdded7f59c3c8b95e4308d234767d5c94be6e235e895d8dee740e1256acc6"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3170,
+              "sha256": "735b33198d674d3e605c4d6560f5a28aa8aff20473c0e866da5ce4d963ff5825"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/79.stderr.raw",
+              "bytes": 537,
+              "sha256": "96508dee6683931898805d98d80afe9c43f86aef3f271aa48857f337bf37f055"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3170,
+              "sha256": "735b33198d674d3e605c4d6560f5a28aa8aff20473c0e866da5ce4d963ff5825"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/89.stderr.raw",
+              "bytes": 533,
+              "sha256": "9984f01d8338dce515882434741f6d47dd0b5e8f76bd33be0af4528c1867aab1"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+              "bytes": 3170,
+              "sha256": "735b33198d674d3e605c4d6560f5a28aa8aff20473c0e866da5ce4d963ff5825"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/59.stderr.raw",
+          "bytes": 293,
+          "sha256": "61fde4f0fb7f1373105d2db89d32dc1d9dbbde05b25d33dc82636e8b6dd3ab8c"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11OuterAssignmentTarget/CF11OuterAssignmentTarget.java",
+          "bytes": 3170,
+          "sha256": "735b33198d674d3e605c4d6560f5a28aa8aff20473c0e866da5ce4d963ff5825"
+        }
+      },
+      "CF11CastReadControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/60.stderr.raw",
+              "bytes": 276,
+              "sha256": "96ce292a59297326d029c7966c507cd476e5a9e9787f5f512627b26901254f5f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1170,
+              "sha256": "304d679f7f698db65b45b705cb914fc4f8e1431032c73e281847e8002bb3bc68"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/70.stderr.raw",
+              "bytes": 272,
+              "sha256": "fc3812a76263df96652562d3ddf8e429b92007239daf6f3f3d483132809c7ec8"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1170,
+              "sha256": "304d679f7f698db65b45b705cb914fc4f8e1431032c73e281847e8002bb3bc68"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/80.stderr.raw",
+              "bytes": 520,
+              "sha256": "b296221049deee9cc8baa590c4d8ca629b74055e087da2df8a09787a0d5116b8"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1170,
+              "sha256": "304d679f7f698db65b45b705cb914fc4f8e1431032c73e281847e8002bb3bc68"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/90.stderr.raw",
+              "bytes": 516,
+              "sha256": "beb2c351640a99dd861dd3fe10a890e2f67f87a69f981209f9563351886b9730"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11CastReadControl/CF11CastReadControl.java",
+              "bytes": 1170,
+              "sha256": "304d679f7f698db65b45b705cb914fc4f8e1431032c73e281847e8002bb3bc68"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/60.stderr.raw",
+          "bytes": 276,
+          "sha256": "96ce292a59297326d029c7966c507cd476e5a9e9787f5f512627b26901254f5f"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CastReadControl/CF11CastReadControl.java",
+          "bytes": 1170,
+          "sha256": "304d679f7f698db65b45b705cb914fc4f8e1431032c73e281847e8002bb3bc68"
+        }
+      },
+      "CF11CharSequenceControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/61.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1465,
+              "sha256": "ddbfc16942e7b6d242e85ea2f686b80211fb38a522dc1c7870ca2a7dad11362e"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/71.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1465,
+              "sha256": "ddbfc16942e7b6d242e85ea2f686b80211fb38a522dc1c7870ca2a7dad11362e"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/81.stderr.raw",
+              "bytes": 243,
+              "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1465,
+              "sha256": "ddbfc16942e7b6d242e85ea2f686b80211fb38a522dc1c7870ca2a7dad11362e"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/91.stderr.raw",
+              "bytes": 243,
+              "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11CharSequenceControl/CF11CharSequenceControl.java",
+              "bytes": 1465,
+              "sha256": "ddbfc16942e7b6d242e85ea2f686b80211fb38a522dc1c7870ca2a7dad11362e"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/61.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11CharSequenceControl/CF11CharSequenceControl.java",
+          "bytes": 1465,
+          "sha256": "ddbfc16942e7b6d242e85ea2f686b80211fb38a522dc1c7870ca2a7dad11362e"
+        }
+      },
+      "CF11ReferenceArrayControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/63.stderr.raw",
+              "bytes": 308,
+              "sha256": "3cb4cab4a9351c49f9434b6b451ba812ca356ca511c726dc36fb5be42c728dc5"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1211,
+              "sha256": "1266111e8c6f7294b9cd21596267e9f2b3337d098c1f3f7942533f3b6f12f40d"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/73.stderr.raw",
+              "bytes": 304,
+              "sha256": "65e6f64378b0cd0c8be75a25fa94267ca9440e2202d2aff0c058da1b07f929e8"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1211,
+              "sha256": "1266111e8c6f7294b9cd21596267e9f2b3337d098c1f3f7942533f3b6f12f40d"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/83.stderr.raw",
+              "bytes": 552,
+              "sha256": "8d45ad96e8f82b4ac6150f5818498adee276ad8308c8d4258e5bd0914f879aa4"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1211,
+              "sha256": "1266111e8c6f7294b9cd21596267e9f2b3337d098c1f3f7942533f3b6f12f40d"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/93.stderr.raw",
+              "bytes": 548,
+              "sha256": "b3bdd5f7ddf87c3d4da0675769ae18b56f9726f40fb70221349dd19863aae4b4"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+              "bytes": 1211,
+              "sha256": "1266111e8c6f7294b9cd21596267e9f2b3337d098c1f3f7942533f3b6f12f40d"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/63.stderr.raw",
+          "bytes": 308,
+          "sha256": "3cb4cab4a9351c49f9434b6b451ba812ca356ca511c726dc36fb5be42c728dc5"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ReferenceArrayControl/CF11ReferenceArrayControl.java",
+          "bytes": 1211,
+          "sha256": "1266111e8c6f7294b9cd21596267e9f2b3337d098c1f3f7942533f3b6f12f40d"
+        }
+      },
+      "CF11ParameterControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/64.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1152,
+              "sha256": "1a346739e4c695017777a310ca9cc2a56bb9bab38a0deeb6c8d9b2fa9df0d84a"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/74.stderr.raw",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1152,
+              "sha256": "1a346739e4c695017777a310ca9cc2a56bb9bab38a0deeb6c8d9b2fa9df0d84a"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/84.stderr.raw",
+              "bytes": 243,
+              "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1152,
+              "sha256": "1a346739e4c695017777a310ca9cc2a56bb9bab38a0deeb6c8d9b2fa9df0d84a"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 0,
+            "runtime_exit": 0,
+            "same_jdk_original": true,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/94.stderr.raw",
+              "bytes": 243,
+              "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11ParameterControl/CF11ParameterControl.java",
+              "bytes": 1152,
+              "sha256": "1a346739e4c695017777a310ca9cc2a56bb9bab38a0deeb6c8d9b2fa9df0d84a"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/64.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11ParameterControl/CF11ParameterControl.java",
+          "bytes": 1152,
+          "sha256": "1a346739e4c695017777a310ca9cc2a56bb9bab38a0deeb6c8d9b2fa9df0d84a"
+        }
+      },
+      "CF11SlotReuseControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/66.stderr.raw",
+              "bytes": 278,
+              "sha256": "95b3d0146440d40daf1aa451cf5fd9abf0d0835725c0c4bdc0ef35e31240ea14"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1248,
+              "sha256": "84ef10c2391162205b4c745d4a4c5667215d2c55951857e2f562832f10f689a9"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/76.stderr.raw",
+              "bytes": 274,
+              "sha256": "c83246c8a96e330481123d4bd678a9bffbb95c280497430a5eb2af2164ecaaef"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1248,
+              "sha256": "84ef10c2391162205b4c745d4a4c5667215d2c55951857e2f562832f10f689a9"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/86.stderr.raw",
+              "bytes": 522,
+              "sha256": "e0889fe9529f7408918c2e0dd7e17a0551410154d738f8127e8574929eaa4d6f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1248,
+              "sha256": "84ef10c2391162205b4c745d4a4c5667215d2c55951857e2f562832f10f689a9"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/96.stderr.raw",
+              "bytes": 518,
+              "sha256": "15195bef242c88337a6cda62cac6f4c075e2eacf060c08e2fb79a4ab8dd66971"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11SlotReuseControl/CF11SlotReuseControl.java",
+              "bytes": 1248,
+              "sha256": "84ef10c2391162205b4c745d4a4c5667215d2c55951857e2f562832f10f689a9"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/66.stderr.raw",
+          "bytes": 278,
+          "sha256": "95b3d0146440d40daf1aa451cf5fd9abf0d0835725c0c4bdc0ef35e31240ea14"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11SlotReuseControl/CF11SlotReuseControl.java",
+          "bytes": 1248,
+          "sha256": "84ef10c2391162205b4c745d4a4c5667215d2c55951857e2f562832f10f689a9"
+        }
+      },
+      "CF11HandlerWriteControl": {
+        "matrix": [
+          {
+            "jdk": "javac8",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/67.stderr.raw",
+              "bytes": 202,
+              "sha256": "854389440d73a7c224ba1d935736f044b3bdc09b52d9cc71ad029594116a116a"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1666,
+              "sha256": "332b7a62bb357bead51f8499f0b916befb9f6d20a15ff84e6cb6cf8697bc485b"
+            }
+          },
+          {
+            "jdk": "javac8",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/77.stderr.raw",
+              "bytes": 198,
+              "sha256": "2aecc6d40b72ccbfa0d085392dd9ac2ca602ef6dd26683be6e1e754d97919eb2"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1666,
+              "sha256": "332b7a62bb357bead51f8499f0b916befb9f6d20a15ff84e6cb6cf8697bc485b"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "default",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/87.stderr.raw",
+              "bytes": 446,
+              "sha256": "d6bbdf7e9557638210135098d6d976e08651caac8d41d88f099b7bd86771568f"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1666,
+              "sha256": "332b7a62bb357bead51f8499f0b916befb9f6d20a15ff84e6cb6cf8697bc485b"
+            }
+          },
+          {
+            "jdk": "javac23",
+            "mode": "all",
+            "exit_code": 1,
+            "runtime_exit": null,
+            "same_jdk_original": null,
+            "stderr": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/97.stderr.raw",
+              "bytes": 442,
+              "sha256": "6b80ecd8be5d6a284808da75d0b75ced89a7aece86eb028796fa4d05cb772ad0"
+            },
+            "generated_source": {
+              "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac23-jarde-all-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+              "bytes": 1666,
+              "sha256": "332b7a62bb357bead51f8499f0b916befb9f6d20a15ff84e6cb6cf8697bc485b"
+            }
+          }
+        ],
+        "representative_stderr": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/raw/67.stderr.raw",
+          "bytes": 202,
+          "sha256": "854389440d73a7c224ba1d935736f044b3bdc09b52d9cc71ad029594116a116a"
+        },
+        "representative_source": {
+          "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/jarde/javac8-jarde-default-CF11HandlerWriteControl/CF11HandlerWriteControl.java",
+          "bytes": 1666,
+          "sha256": "332b7a62bb357bead51f8499f0b916befb9f6d20a15ff84e6cb6cf8697bc485b"
+        }
+      }
+    }
+  },
+  "javap_evidence": {
+    "debug-javac8-CF11CharSequenceControl-javap": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/javap-CF11CharSequenceControl.txt",
+      "bytes": 4144,
+      "sha256": "9ef304841bd4d64f968e83bd587f34c1f165ff764ecb729ca1314674908e2b8e"
+    },
+    "debug-javac8-CF11SlotReuseControl-javap": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/javap-CF11SlotReuseControl.txt",
+      "bytes": 4248,
+      "sha256": "f68a31a6e3adcacab70efaad5d60fd490301db6fd1bde3a8756bc2354aa210f7"
+    },
+    "none-javac8-CF11CharSequenceControl-javap": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/javap-CF11CharSequenceControl.txt",
+      "bytes": 3113,
+      "sha256": "db062984c0b1c5bce6034f253a72d6dd37f0f03d9840516a88c07591b1e3bf82"
+    },
+    "none-javac8-CF11SlotReuseControl-javap": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/javap-CF11SlotReuseControl.txt",
+      "bytes": 3006,
+      "sha256": "cdb73bc092c94eeed354010f8d70e738444c55da57c373c7030bad85b6bcb5fc"
+    }
+  },
+  "original_runner_oracle": {
+    "debug": {
+      "exit_code": 0,
+      "stdout_nonempty": true,
+      "stderr_empty": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "jdk8_jdk23_equal": true,
+      "case_count": 29,
+      "pinned_named_cases_verified": 18
+    },
+    "none": {
+      "exit_code": 0,
+      "stdout_nonempty": true,
+      "stderr_empty": true,
+      "stdout_sha256": "06d5983027988a0b07e3ac14de4f983688d448c4235e4f3cdae8819eed835f7b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "jdk8_jdk23_equal": true,
+      "case_count": 29,
+      "pinned_named_cases_verified": 18
+    }
+  },
+  "analysis": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-diagnosis-luna-v1/analysis.md",
+    "bytes": 5402,
+    "sha256": "293e69741f76962592eff03ed0400448945a78e66f4b8728e748f99e86d1db84"
+  }
+}

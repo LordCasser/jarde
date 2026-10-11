@@ -1,0 +1,76 @@
+{
+  "schema": "local-reference-write-baseline-root-assessment-v1",
+  "assessment": "accepted_independent_observation_only",
+  "product_behavior_accepted": false,
+  "candidate_applied": false,
+  "production_commit": "73adae72c6d89e8eba0a34e3cd92fe81e899cb3e",
+  "profiles": [
+    {
+      "profile": "debug",
+      "observation": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/debug-observation.json",
+        "bytes": 100334,
+        "sha256": "9f28ecf436b78cc2d73c777e47a87cec96f932d5f405ee0818c9c0f24a2b5a1e"
+      },
+      "invocation": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-check-invocation-root-v1-debug/execution.json",
+        "bytes": 1091,
+        "sha256": "b15f98f12ab6c7dd476a93f8f7b648868cd19f9f078edc3f87df2b05fb416a0a"
+      },
+      "commands": 93,
+      "raw_streams": 186,
+      "class_count": 7,
+      "original_runner_cases": 29,
+      "jadx_complete_runtime_legs_same_original": 4,
+      "jarde_complete_combined_compile_failures": 4,
+      "source_map_gap_rows": 4,
+      "isolated_compile_successes": [
+        "javac8-jarde-default-isolated-CF11ParameterControl",
+        "javac8-jarde-all-isolated-CF11ParameterControl",
+        "javac23-jarde-default-isolated-CF11ParameterControl",
+        "javac23-jarde-all-isolated-CF11ParameterControl"
+      ],
+      "slot_evidence": "physical astore/aload and real LVT or its absence; no SSA reuse conclusion"
+    },
+    {
+      "profile": "none",
+      "observation": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/no-debug-observation.json",
+        "bytes": 100522,
+        "sha256": "1321f37497f4681c9632308e56cc6055c1e04e7631b34580c3688a37fd202c0c"
+      },
+      "invocation": {
+        "path": "/private/tmp/jarde-local-reference-write-baseline-check-invocation-root-v1-none/execution.json",
+        "bytes": 1094,
+        "sha256": "b52cfbf97f1f97213caced52fa8c58e0f81eb05f906987891b8b000f9ebca036"
+      },
+      "commands": 97,
+      "raw_streams": 194,
+      "class_count": 7,
+      "original_runner_cases": 29,
+      "jadx_complete_runtime_legs_same_original": 4,
+      "jarde_complete_combined_compile_failures": 4,
+      "source_map_gap_rows": 4,
+      "isolated_compile_successes": [
+        "javac8-jarde-default-isolated-CF11CharSequenceControl",
+        "javac8-jarde-default-isolated-CF11ParameterControl",
+        "javac8-jarde-all-isolated-CF11CharSequenceControl",
+        "javac8-jarde-all-isolated-CF11ParameterControl",
+        "javac23-jarde-default-isolated-CF11CharSequenceControl",
+        "javac23-jarde-default-isolated-CF11ParameterControl",
+        "javac23-jarde-all-isolated-CF11CharSequenceControl",
+        "javac23-jarde-all-isolated-CF11ParameterControl"
+      ],
+      "slot_evidence": "physical astore/aload and real LVT or its absence; no SSA reuse conclusion"
+    }
+  ],
+  "root_packaging_attempt": "Initial archive copy succeeded, assessment assertion used absent runtime_exit for compile failure and raised KeyError. No captured output or checker receipt changed. Retry reads runtime via get, preserving failure semantics.",
+  "source_count": 4744,
+  "target_absent": true,
+  "free_bytes_after": 12281155584,
+  "launcher": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-local-reference-write-compatibility/results/complete-source-baseline-root-v1/launch/execution.json",
+    "bytes": 1531106,
+    "sha256": "cfd92c096c6f01c15c46128217ec9e3a4bc79e10f0baa5e20c2c84d034e750b2"
+  }
+}

@@ -1,0 +1,527 @@
+{
+  "schema": "recover-proved-local-reference-write-compatibility-baseline-prep-v2",
+  "status": "private source/collector/argv preparation only; no Java/JADX/Rust command run",
+  "change": "recover-proved-local-reference-write-compatibility",
+  "sources": {
+    "CF11OuterAssignmentTarget.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11OuterAssignmentTarget.java",
+      "bytes": 1322,
+      "sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc"
+    },
+    "CF11CastReadControl.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11CastReadControl.java",
+      "bytes": 288,
+      "sha256": "36328ec2905b93ebba5415eea247423a09383b0e8c30dcf8b44b3cdc27908628"
+    },
+    "CF11CharSequenceControl.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11CharSequenceControl.java",
+      "bytes": 338,
+      "sha256": "ebbc05a570e1ed10ee0e206257cd1355d43aab5c6eed5be17c16c16807a949ac"
+    },
+    "CF11ReferenceArrayControl.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11ReferenceArrayControl.java",
+      "bytes": 322,
+      "sha256": "c26fc40214dcbcea6c8899e38cb6796408fad1ed0a3522c4d9ca404b8503f0bb"
+    },
+    "CF11ParameterControl.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11ParameterControl.java",
+      "bytes": 254,
+      "sha256": "56198ef3b4818468916e89b8b2bf5d57566d46bcc6f847ab29b7af9e98b644d3"
+    },
+    "CF11SlotReuseControl.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11SlotReuseControl.java",
+      "bytes": 400,
+      "sha256": "89ae995ef346fee3a89c73adc351cb4addde80ddb8ebecb0590de47600b4b609"
+    },
+    "CF11HandlerWriteControl.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11HandlerWriteControl.java",
+      "bytes": 417,
+      "sha256": "a22603d8e6a5c6f69fb6c80a28d03bff8f4ff6c027c60a8838956928dba5fc3e"
+    },
+    "Runner.java": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/Runner.java",
+      "bytes": 7213,
+      "sha256": "b25be5ae110ae986631252ed0d3999c0c6935a890e4a0f008b5aec0f85c5bb73"
+    }
+  },
+  "manifest": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/manifest.json",
+    "bytes": 1720,
+    "sha256": "f0041e028254fd7dbaf45053f26079fdc4a167b85384db5aab2ba933c5410c90"
+  },
+  "collector": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/collect_controls.py",
+    "bytes": 17654,
+    "sha256": "626865322096ff1ac7418dce672feb526e9ffddbda9fad53fe006482de47d4f3",
+    "base_path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+    "base_sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac",
+    "private_delta": [
+      "required --javac-debug debug|none",
+      "use -g or -g:none in each javac command",
+      "record javac_debug_profile in capture receipt"
+    ]
+  },
+  "legacy_literal_input": {
+    "source": {
+      "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/CF11OuterAssignmentTarget.java",
+      "bytes": 1322,
+      "sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc"
+    },
+    "origin_path": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/CF11OuterAssignmentTarget.java",
+    "origin_sha256": "cbda7f2c8f2478d8f0f3adf21c297189fe5c761232197e8b4b01be7a108e9cdc",
+    "original_javac8_class_path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v2/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+    "original_javac8_class_sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93",
+    "original_javac8_class_bytes": 1483
+  },
+  "legacy_runner_origin": {
+    "path": "/private/tmp/jarde-cf11-outer-assignment-controls-prep-luna-v2/Runner.java",
+    "sha256": "4ea39b4a79a2b4c9e68c17754e9ef1cf989ed36ab1a9c788d4fce92a43fa0143",
+    "note": "v1 calls and oracle implementation preserved; v1 12 case calls remain first; new deterministic control cases appended"
+  },
+  "current_product": {
+    "final_build_receipt": {
+      "path": "/private/tmp/jarde-iterator-assignment-final-validation-prep-luna-v2/final-build-root-v1/execution.json",
+      "bytes": 1540432,
+      "sha256": "b3ea22423fee9a51f8839c4a7920cf301aa3b02a48c99b9c2229061c2d7d744c"
+    },
+    "receipt_status": "passed_candidate_build_only",
+    "cli": {
+      "path": "/private/tmp/jarde-iterator-assignment-candidate-cli-root-v1",
+      "bytes": 61314560,
+      "sha256": "526e2e5a6db8a798a92d491123264bbb4d7105c0c1c3c2c9495c1b316eb89dd5",
+      "mode": "0o555"
+    },
+    "source_closure_helper": {
+      "path": "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace_runner.py",
+      "bytes": 34627,
+      "sha256": "63e52b55fe5d20d5f2ece98ac80676ccdb2de8dfd33d7199b688e075fb1e9673"
+    },
+    "source_pins_before_count": 4744,
+    "source_pins_after_count": 4744,
+    "source_maps_equal": true
+  },
+  "tool_pins": {
+    "jdk_manifest": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+      "exists": true,
+      "actual_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    "jadx": {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+      "exists": true,
+      "actual_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    "jadx_jar": {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+      "exists": true,
+      "actual_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    "guard": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "exists": true,
+      "actual_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    "scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "exists": true,
+      "actual_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    "classfile_parser": {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469",
+      "exists": true,
+      "actual_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    }
+  },
+  "jdk_legs": [
+    {
+      "leg": "javac8",
+      "jdk_tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+          "bytes": 152128,
+          "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+          "bytes": 152096,
+          "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+          "bytes": 152128,
+          "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+        }
+      },
+      "classes_dir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes",
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/empty",
+      "commands": [
+        {
+          "label": "compile",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/empty",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/empty",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes",
+            "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/NestedIntUpdates.java",
+            "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/Runner.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "exit": 0,
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ],
+          "stdout": {
+            "path": "javac8/compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "javac8/compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "javap-nested",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes/NestedIntUpdates.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "exit": 0,
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ],
+          "stdout": {
+            "path": "javac8/javap-nested.stdout",
+            "bytes": 6328,
+            "sha256": "ae07327936a3d4866a44da2e1ad15f6f6c203724b72fa1b445f9a489b63f4fbf"
+          },
+          "stderr": {
+            "path": "javac8/javap-nested.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "run-runner",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes",
+            "Runner"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "exit": 0,
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ],
+          "stdout": {
+            "path": "javac8/run-runner.stdout",
+            "bytes": 158,
+            "sha256": "05249092cc15ec86bfd867ed710f901ec088697357e336da57ebb1821ef112eb"
+          },
+          "stderr": {
+            "path": "javac8/run-runner.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "runtime_comparison": {
+        "exit_is_zero": true,
+        "stdout_matches_oracle": true,
+        "stderr_is_empty": true
+      },
+      "class_files": [
+        {
+          "path": "openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes/NestedIntUpdates.class",
+          "bytes": 742,
+          "sha256": "cf17b99fc66303514f08e56cccb50e767f3c59726f6f2d0a0e395ea348fc4132"
+        },
+        {
+          "path": "openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac8/classes/Runner.class",
+          "bytes": 2205,
+          "sha256": "28b7f007132a4db68203d46bcd104f3f72562542a7170c5571c5f6efbd7757fe"
+        }
+      ]
+    },
+    {
+      "leg": "javac23",
+      "jdk_tools": {
+        "javac": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+          "bytes": 69872,
+          "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+        },
+        "java": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+          "bytes": 69952,
+          "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+        },
+        "javap": {
+          "path": "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+          "bytes": 69872,
+          "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+        }
+      },
+      "classes_dir": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes",
+      "empty_classpath_sourcepath": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/empty",
+      "commands": [
+        {
+          "label": "compile",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-g:none",
+            "-Xlint:-options",
+            "-classpath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/empty",
+            "-sourcepath",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/empty",
+            "-d",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes",
+            "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/NestedIntUpdates.java",
+            "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/nested-int-array-compound-updates/Runner.java"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "exit": 0,
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ],
+          "stdout": {
+            "path": "javac23/compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "javac23/compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "javap-nested",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+            "-p",
+            "-c",
+            "-s",
+            "-v",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes/NestedIntUpdates.class"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "exit": 0,
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ],
+          "stdout": {
+            "path": "javac23/javap-nested.stdout",
+            "bytes": 6668,
+            "sha256": "bc19481d272c95873e88cb7d51e30f1311e586aed8be7fa47f01c296f42c5f7e"
+          },
+          "stderr": {
+            "path": "javac23/javap-nested.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "label": "run-runner",
+          "argv": [
+            "/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+            "-Xverify:all",
+            "-cp",
+            "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes",
+            "Runner"
+          ],
+          "cwd": "/Users/lordcasser/workspace/projects/jarde",
+          "exit": 0,
+          "environment_removed": [
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JDK_JAVA_OPTIONS",
+            "CLASSPATH"
+          ],
+          "stdout": {
+            "path": "javac23/run-runner.stdout",
+            "bytes": 158,
+            "sha256": "05249092cc15ec86bfd867ed710f901ec088697357e336da57ebb1821ef112eb"
+          },
+          "stderr": {
+            "path": "javac23/run-runner.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "runtime_comparison": {
+        "exit_is_zero": true,
+        "stdout_matches_oracle": true,
+        "stderr_is_empty": true
+      },
+      "class_files": [
+        {
+          "path": "openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes/NestedIntUpdates.class",
+          "bytes": 742,
+          "sha256": "a17f352cf5f261b88424dd8e829f808ae007ec7e8285b8c1f69912de4928ecce"
+        },
+        {
+          "path": "openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/javac23/classes/Runner.class",
+          "bytes": 2196,
+          "sha256": "913829a57e968a28aa4f76fef53b8bfda04f6f4e5b7b7d1b82943dda27ed017f"
+        }
+      ]
+    }
+  ],
+  "expected_case_oracles": [
+    {
+      "case": "literal-seeded-object",
+      "expected_source_semantics": "Legacy Runner unchanged cases; baseline-v1 Jarde full-class had eight compile failures and no Jarde runtime. New capture must re-run; never reuse old outputs as new results."
+    },
+    {
+      "case": "cast-read",
+      "stdout_line": "cast-read|result=4|exception=none",
+      "expected_candidate_boundary": "Object write followed by checkcast and String.length; not a unique direct Object Return, so the new candidate must refuse."
+    },
+    {
+      "case": "char-sequence-string",
+      "stdout_line": "char-sequence-string|result=6|exception=none",
+      "expected_candidate_boundary": "String write with CharSequence.length; the candidate must not unconditionally widen this interface case to Object. Capture existing reliable source or precise fallback; original runtime line remains the oracle."
+    },
+    {
+      "case": "char-sequence-builder",
+      "stdout_line": "char-sequence-builder|result=7|exception=none",
+      "expected_candidate_boundary": "String and StringBuilder writes with CharSequence.length; must not be unconditionally Objectified. Existing refusal/fallback is recorded distinctly from a successful generated compile/runtime."
+    },
+    {
+      "case": "reference-array-string-array",
+      "stdout_line": "reference-array-string-array|result=1|exception=none",
+      "expected_candidate_boundary": "Branch reassigns String[] to CharSequence[] before indexed String store/read; scalar-local Object proof must not alter the array descriptor or runtime behavior."
+    },
+    {
+      "case": "reference-array-interface-array",
+      "stdout_line": "reference-array-interface-array|result=1|exception=none",
+      "expected_candidate_boundary": "Branch reassigns String[] to CharSequence[] before indexed String store/read; scalar-local Object proof must not alter the array descriptor or runtime behavior."
+    },
+    {
+      "case": "parameter-write",
+      "stdout_line": "parameter-write|result=after|exception=none",
+      "expected_candidate_boundary": "Keep descriptor (Object,List)Object; parameter identity is excluded from new candidate."
+    },
+    {
+      "case": "slot-reuse-no-replace",
+      "stdout_line": "slot-reuse-no-replace|result=seed|exception=none",
+      "expected_candidate_boundary": "Control path leaves the Object local at its literal seed; compare with the replacement branch and inspect actual slot/SSA evidence."
+    },
+    {
+      "case": "slot-reuse-object-write",
+      "stdout_line": "slot-reuse-object-write|result=replacement|exception=none",
+      "expected_candidate_boundary": "A String local ends after a real length() call, then an ordinary Object local receives a List.get Object value and is directly returned. Confirm physical slot reuse from javap/SSA; source ordering alone is not evidence."
+    },
+    {
+      "case": "handler-object-write",
+      "stdout_line": "handler-object-write|result=java.lang.IllegalArgumentException: handler|exception=none",
+      "expected_candidate_boundary": "Exact Object producer write in catch handler; candidate must refuse because handler/path completeness is not proved."
+    }
+  ],
+  "profiles": [
+    "debug (-g)",
+    "no-debug (-g:none)"
+  ],
+  "run_plan": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/run-plan.json",
+    "bytes": 6079,
+    "sha256": "1386b8d8735f267708718747d0c9112a80dbe08e5db499759cba9533eca43490"
+  },
+  "README": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/README.md",
+    "bytes": 3883,
+    "sha256": "30fd77e5b17e769e8e7b1250dee7aced321e16ce5b573e51859c5c6347420eab"
+  },
+  "additional_no_cast_assignment_cases": [
+    {
+      "case": "control-no-cast-empty",
+      "stdout_line": "control-no-cast-empty|result=seed|exception=none|trace=values.iterator();values.hasNext();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-null-element",
+      "stdout_line": "control-no-cast-null-element|result=null|exception=none|trace=values.iterator();values.hasNext();values.next();values.hasNext();values.next();values.hasNext();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-integer-element",
+      "stdout_line": "control-no-cast-integer-element|result=7|exception=none|trace=values.iterator();values.hasNext();values.next();values.hasNext();values.next();values.hasNext();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-null-iterable",
+      "stdout_line": "control-no-cast-null-iterable|result=null|exception=java.lang.NullPointerException|trace=",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-iterator-throws",
+      "stdout_line": "control-no-cast-iterator-throws|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-hasNext-throws-before-write",
+      "stdout_line": "control-no-cast-hasNext-throws-before-write|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();values.hasNext();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-next-throws-before-write",
+      "stdout_line": "control-no-cast-next-throws-before-write|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();values.hasNext();values.next();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    },
+    {
+      "case": "control-no-cast-hasNext-throws-after-write",
+      "stdout_line": "control-no-cast-hasNext-throws-after-write|result=null|exception=java.lang.IllegalStateException|trace=values.iterator();values.hasNext();values.next();values.hasNext();",
+      "reason": "Exercise noCastAssign Object return/write behavior without String cast; raw line is an intended source-level oracle, not observed."
+    }
+  ],
+  "legacy_no_cast_assignment_case": {
+    "case": "control-no-cast-assign",
+    "stdout_line": "control-no-cast-assign|result=two|exception=none|trace=values.iterator();values.hasNext();values.next();values.hasNext();values.next();values.hasNext();",
+    "reason": "Existing noCastAssign last-value path, pinned as an intended line and checked against the fresh original JDK oracle."
+  }
+}

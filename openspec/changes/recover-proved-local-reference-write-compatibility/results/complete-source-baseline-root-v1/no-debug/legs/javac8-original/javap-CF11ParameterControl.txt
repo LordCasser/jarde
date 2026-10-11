@@ -1,0 +1,57 @@
+Classfile /private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11ParameterControl.class
+  Last modified 2026-10-12; size 363 bytes
+  MD5 checksum 4ced3b2410fc5b0edee6a68d5928bf27
+public final class cf11.CF11ParameterControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #5.#12         // java/lang/Object."<init>":()V
+   #2 = InterfaceMethodref #13.#14        // java/util/List.isEmpty:()Z
+   #3 = InterfaceMethodref #13.#15        // java/util/List.get:(I)Ljava/lang/Object;
+   #4 = Class              #16            // cf11/CF11ParameterControl
+   #5 = Class              #17            // java/lang/Object
+   #6 = Utf8               <init>
+   #7 = Utf8               ()V
+   #8 = Utf8               Code
+   #9 = Utf8               replace
+  #10 = Utf8               (Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;
+  #11 = Utf8               StackMapTable
+  #12 = NameAndType        #6:#7          // "<init>":()V
+  #13 = Class              #18            // java/util/List
+  #14 = NameAndType        #19:#20        // isEmpty:()Z
+  #15 = NameAndType        #21:#22        // get:(I)Ljava/lang/Object;
+  #16 = Utf8               cf11/CF11ParameterControl
+  #17 = Utf8               java/lang/Object
+  #18 = Utf8               java/util/List
+  #19 = Utf8               isEmpty
+  #20 = Utf8               ()Z
+  #21 = Utf8               get
+  #22 = Utf8               (I)Ljava/lang/Object;
+{
+  public cf11.CF11ParameterControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static java.lang.Object replace(java.lang.Object, java.util.List);
+    descriptor: (Ljava/lang/Object;Ljava/util/List;)Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: aload_1
+         1: invokeinterface #2,  1            // InterfaceMethod java/util/List.isEmpty:()Z
+         6: ifne          17
+         9: aload_1
+        10: iconst_0
+        11: invokeinterface #3,  2            // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+        16: astore_0
+        17: aload_0
+        18: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 17 /* same */
+}

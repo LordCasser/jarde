@@ -1,0 +1,79 @@
+{
+  "schema": "cf11-local-reference-write-checker-prep-v1",
+  "status": "private static checker preparation only; checker not executed",
+  "checker": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+    "bytes": 45602,
+    "sha256": "acff374b03ccd680cc4b16b2e145e2ee0a1b0950916bd1f6d19645ec7981faa0"
+  },
+  "accepted_base_checker": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py",
+    "bytes": 35349,
+    "sha256": "a05acce687bf0e22bfab9eb8ae00520d53a006b740732f4b0041182ce72a464a"
+  },
+  "input_manifest": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/manifest.json",
+    "bytes": 1720,
+    "sha256": "f0041e028254fd7dbaf45053f26079fdc4a167b85384db5aab2ba933c5410c90"
+  },
+  "input_manifest_sha256": "f0041e028254fd7dbaf45053f26079fdc4a167b85384db5aab2ba933c5410c90",
+  "input_case_pins": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/pins.json",
+    "bytes": 25725,
+    "sha256": "eeddbbc55a91f763771fe2ef8fa2fd3671480d53d933befd8cbff5b449dc4475"
+  },
+  "collector": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-prep-luna-v2/collect_controls.py",
+    "bytes": 17654,
+    "sha256": "626865322096ff1ac7418dce672feb526e9ffddbda9fad53fe006482de47d4f3"
+  },
+  "run_plan": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/run-plan.json",
+    "bytes": 1528,
+    "sha256": "d18b7883ce657bddd6895316b7b35e4f89afe47f152f16d88afbe8c0ab9c31de"
+  },
+  "README": {
+    "path": "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/README.md",
+    "bytes": 2689,
+    "sha256": "610c729635f9cb350473c9466c8816ea14f4783e8fbe95b8f1d43092ddbf9701"
+  },
+  "argv": [
+    {
+      "profile": "debug",
+      "argv": [
+        "python3",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+        "--execution",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-debug/execution.json",
+        "--expected-javac-debug",
+        "debug",
+        "--out",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/debug-observation.json"
+      ],
+      "status": "planned_not_executed"
+    },
+    {
+      "profile": "none",
+      "argv": [
+        "python3",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/check_controls.py",
+        "--execution",
+        "/private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/execution.json",
+        "--expected-javac-debug",
+        "none",
+        "--out",
+        "/private/tmp/jarde-local-reference-write-baseline-checker-prep-luna-v1/no-debug-observation.json"
+      ],
+      "status": "planned_not_executed"
+    }
+  ],
+  "delta_summary": [
+    "require full-source capture schema v3 and explicit debug profile",
+    "check real javac argv contains only the expected debug flag",
+    "parse Code nested LVT/LVTT/LineNumberTable from physical class bytes",
+    "verify fixed positive method debug rows and no-debug attribute absence",
+    "verify 29 original Runner cases and pinned no-cast/reference cases",
+    "record actual slot javap stores/LVT ranges without inferring SSA slot identity",
+    "record source-map gaps and Jarde/JADX/compile/runtime differences without product acceptance"
+  ]
+}

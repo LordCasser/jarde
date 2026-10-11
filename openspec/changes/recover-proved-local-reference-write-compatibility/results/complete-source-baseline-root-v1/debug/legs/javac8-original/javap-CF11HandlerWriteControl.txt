@@ -1,0 +1,113 @@
+Classfile /private/tmp/jarde-local-reference-write-baseline-root-v2-debug/legs/javac8-original/classes/cf11/CF11HandlerWriteControl.class
+  Last modified 2026-10-12; size 798 bytes
+  MD5 checksum c980bc6f7955e2ad2606262fe76452ea
+  Compiled from "CF11HandlerWriteControl.java"
+public final class cf11.CF11HandlerWriteControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#30         // java/lang/Object."<init>":()V
+   #2 = String             #31            // seed
+   #3 = Class              #32            // java/lang/IllegalArgumentException
+   #4 = String             #33            // handler
+   #5 = Methodref          #3.#34         // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+   #6 = Methodref          #7.#35         // cf11/CF11HandlerWriteControl.asObject:(Ljava/lang/Object;)Ljava/lang/Object;
+   #7 = Class              #36            // cf11/CF11HandlerWriteControl
+   #8 = Class              #37            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               LocalVariableTable
+  #14 = Utf8               this
+  #15 = Utf8               Lcf11/CF11HandlerWriteControl;
+  #16 = Utf8               asObject
+  #17 = Utf8               (Ljava/lang/Object;)Ljava/lang/Object;
+  #18 = Utf8               value
+  #19 = Utf8               Ljava/lang/Object;
+  #20 = Utf8               handlerWrite
+  #21 = Utf8               ()Ljava/lang/Object;
+  #22 = Utf8               error
+  #23 = Utf8               Ljava/lang/IllegalArgumentException;
+  #24 = Utf8               target
+  #25 = Utf8               StackMapTable
+  #26 = Class              #37            // java/lang/Object
+  #27 = Class              #32            // java/lang/IllegalArgumentException
+  #28 = Utf8               SourceFile
+  #29 = Utf8               CF11HandlerWriteControl.java
+  #30 = NameAndType        #9:#10         // "<init>":()V
+  #31 = Utf8               seed
+  #32 = Utf8               java/lang/IllegalArgumentException
+  #33 = Utf8               handler
+  #34 = NameAndType        #9:#38         // "<init>":(Ljava/lang/String;)V
+  #35 = NameAndType        #16:#17        // asObject:(Ljava/lang/Object;)Ljava/lang/Object;
+  #36 = Utf8               cf11/CF11HandlerWriteControl
+  #37 = Utf8               java/lang/Object
+  #38 = Utf8               (Ljava/lang/String;)V
+{
+  public cf11.CF11HandlerWriteControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/CF11HandlerWriteControl;
+
+  private static java.lang.Object asObject(java.lang.Object);
+    descriptor: (Ljava/lang/Object;)Ljava/lang/Object;
+    flags: ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: areturn
+      LineNumberTable:
+        line 5: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       2     0 value   Ljava/lang/Object;
+
+  public static java.lang.Object handlerWrite();
+    descriptor: ()Ljava/lang/Object;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=0
+         0: ldc           #2                  // String seed
+         2: astore_0
+         3: new           #3                  // class java/lang/IllegalArgumentException
+         6: dup
+         7: ldc           #4                  // String handler
+         9: invokespecial #5                  // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        12: athrow
+        13: astore_1
+        14: aload_1
+        15: invokestatic  #6                  // Method asObject:(Ljava/lang/Object;)Ljava/lang/Object;
+        18: astore_0
+        19: aload_0
+        20: areturn
+      Exception table:
+         from    to  target type
+             3    13    13   Class java/lang/IllegalArgumentException
+      LineNumberTable:
+        line 9: 0
+        line 11: 3
+        line 12: 13
+        line 13: 14
+        line 15: 19
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           14       5     1 error   Ljava/lang/IllegalArgumentException;
+            3      18     0 target   Ljava/lang/Object;
+      StackMapTable: number_of_entries = 1
+        frame_type = 255 /* full_frame */
+          offset_delta = 13
+          locals = [ class java/lang/Object ]
+          stack = [ class java/lang/IllegalArgumentException ]
+}
+SourceFile: "CF11HandlerWriteControl.java"

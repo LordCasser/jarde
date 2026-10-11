@@ -1,0 +1,69 @@
+Classfile /private/tmp/jarde-local-reference-write-baseline-root-v2-no-debug/legs/javac8-original/classes/cf11/CF11ReferenceArrayControl.class
+  Last modified 2026-10-12; size 360 bytes
+  MD5 checksum f8513a8b5fca356cbbef82fef13ee2c8
+public final class cf11.CF11ReferenceArrayControl
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #7.#15         // java/lang/Object."<init>":()V
+   #2 = Class              #16            // java/lang/String
+   #3 = Class              #17            // java/lang/CharSequence
+   #4 = String             #18            // x
+   #5 = InterfaceMethodref #3.#19         // java/lang/CharSequence.length:()I
+   #6 = Class              #20            // cf11/CF11ReferenceArrayControl
+   #7 = Class              #21            // java/lang/Object
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               lengthAt
+  #12 = Utf8               (Z)I
+  #13 = Utf8               StackMapTable
+  #14 = Class              #22            // "[Ljava/lang/CharSequence;"
+  #15 = NameAndType        #8:#9          // "<init>":()V
+  #16 = Utf8               java/lang/String
+  #17 = Utf8               java/lang/CharSequence
+  #18 = Utf8               x
+  #19 = NameAndType        #23:#24        // length:()I
+  #20 = Utf8               cf11/CF11ReferenceArrayControl
+  #21 = Utf8               java/lang/Object
+  #22 = Utf8               [Ljava/lang/CharSequence;
+  #23 = Utf8               length
+  #24 = Utf8               ()I
+{
+  public cf11.CF11ReferenceArrayControl();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+
+  public static int lengthAt(boolean);
+    descriptor: (Z)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=1
+         0: iconst_1
+         1: anewarray     #2                  // class java/lang/String
+         4: astore_1
+         5: iload_0
+         6: ifeq          14
+         9: iconst_1
+        10: anewarray     #3                  // class java/lang/CharSequence
+        13: astore_1
+        14: aload_1
+        15: iconst_0
+        16: ldc           #4                  // String x
+        18: aastore
+        19: aload_1
+        20: iconst_0
+        21: aaload
+        22: invokeinterface #5,  1            // InterfaceMethod java/lang/CharSequence.length:()I
+        27: ireturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 14
+          locals = [ class "[Ljava/lang/CharSequence;" ]
+}
