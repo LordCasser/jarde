@@ -1,0 +1,58 @@
+{
+  "schema": "cf11-local-type-debt-observation-prep-v3",
+  "status": "private observation-only candidate; unapplied, uncompiled, unrun",
+  "source_closure": {
+    "path": "/private/tmp/jarde-iterator-assignment-full-validation-prep-luna-v2/workspace_runner.py",
+    "sha256": "63e52b55fe5d20d5f2ece98ac80676ccdb2de8dfd33d7199b688e075fb1e9673",
+    "base_pin_count": 4744,
+    "candidate_pin_count": 4745,
+    "candidate_fixture_path": "openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+    "candidate_fixture_sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93"
+  },
+  "base_files": {
+    "crates/jarde-java/src/build.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/build.rs.orig",
+      "bytes": 1766688,
+      "sha256": "3bce6972b9b8516a270725148e8e3e662b9dce09ff86c11207c6bb3b124d20f7"
+    },
+    "tests/p3_hoisted_iterator_foreach.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2/p3_hoisted_iterator_foreach.rs.orig",
+      "bytes": 21697,
+      "sha256": "076f28a6330c6ee2ad1b83e23fe4ea73965a85caee17aefee3033b778d08b7d5"
+    }
+  },
+  "candidate_files": {
+    "crates/jarde-java/src/build.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/build.rs.candidate",
+      "bytes": 1773124,
+      "sha256": "3910b0d4c4ccf6100315f1e499cbd0f68db1976e44bd549423c5c61da97865b0"
+    },
+    "tests/p3_hoisted_iterator_foreach.rs": {
+      "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/p3_hoisted_iterator_foreach.rs.candidate",
+      "bytes": 22860,
+      "sha256": "526a0c36a34378b662b135dfa732c5297818c2b5e8eff2648683613ceb3053aa"
+    }
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/observation.patch",
+    "bytes": 9419,
+    "sha256": "26d9b02565f8ea5e8793776f3a5a0c69d9adf9c75b0e8502e01a309dbf1a090c"
+  },
+  "runner": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/run_observation.py",
+    "bytes": 8946,
+    "sha256": "81aff04094719ca2323fc174d8b0c6e4bae330cd028d4169870080aeb3020a3e"
+  },
+  "fixture": {
+    "path": "openspec/changes/recover-proved-iterator-assignment-foreach/results/controlled-baseline-root-v1/baseline-v1/capture/legs/javac8-original/classes/cf11/CF11OuterAssignmentTarget.class",
+    "bytes": 1483,
+    "sha256": "f593c7a42c8326f6e030f437242354e564ee88fb2918512392e38e38074aaf93"
+  },
+  "run_root": "/private/tmp/jarde-cf11-local-type-debt-observation-run-root-v3",
+  "v2_preserved": {
+    "path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v2",
+    "runner_sha256": "b5db19efd34771f61fd13177dba90687574a8fd0924ef00c440a26567d9bf032",
+    "acceptance_root_acceptance_sha256": "ed4bedde6906100545ff7a41d6b6975daaebc1bb5daf1f68c88aa479b35cc52c"
+  },
+  "added_observation": "For the target slot-1 load at physical BCI 29, log each written SSA value with ty/def/replaced_by/all uses; log each use with its block, physical BCI, exact consumer SsaInstruction, and decoded operation. Runner requires the single expected output and Return consumer at BCI 30."
+}

@@ -43,6 +43,30 @@
       "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/method-signature-diagnostic-prep/pins.json",
       "bytes": 3227,
       "sha256": "6cfea1dbff211e1abaf9da809b354204d6ef9d9e59670da271083772a545779d"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/README.md",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/local-read-diagnostic-prep-v3/README.md",
+      "bytes": 1864,
+      "sha256": "e72f0432d0b43b08cd10577a60d11639e324ca5c1a8da6f75727c844d6413cb1"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/observation.patch",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/local-read-diagnostic-prep-v3/observation.patch",
+      "bytes": 9419,
+      "sha256": "26d9b02565f8ea5e8793776f3a5a0c69d9adf9c75b0e8502e01a309dbf1a090c"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/run_observation.py",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/local-read-diagnostic-prep-v3/run_observation.py",
+      "bytes": 8946,
+      "sha256": "81aff04094719ca2323fc174d8b0c6e4bae330cd028d4169870080aeb3020a3e"
+    },
+    {
+      "source_path": "/private/tmp/jarde-cf11-local-type-debt-observation-luna-v3/pins.json",
+      "archive_path": "openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/local-read-diagnostic-prep-v3/pins.json",
+      "bytes": 3241,
+      "sha256": "cefd27d24cc055adc1b25d981f6b73750ddce305f2e12451e0a9142e388ec418"
     }
   ]
 }
