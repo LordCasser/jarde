@@ -1,0 +1,759 @@
+--- a/crates/jarde-java/src/init.rs
++++ b/crates/jarde-java/src/init.rs
+@@ -99,6 +99,9 @@
+     pub(crate) instance: Vec<u32>,
+     /// The exact completed instance value paired with an array store, only for composed sites.
+     pub(crate) finished_value: Option<ValueId>,
++    /// The one physical consumer reached through one live stack Phi; this marks the conditional
++    /// candidate path without replacing the Builder's complete conditional-expression proof.
++    pub(crate) conditional_consumer: Option<u32>,
+     /// Every instruction from the allocation through the constructor call that the verifier
+     /// accepted as this expression, including the value-producing argument instructions. A
+     /// resource header can use this closed range to prove that its complete initializer is this
+@@ -333,13 +336,14 @@
+ /// One verdict of this rule's plan: the site it verified, or the candidate it refused.
+ enum Decision<'a> {
+     Presented(&'a Site),
++    ConditionalNotEmitted(&'a Site),
+     Refused(&'a Refused),
+ }
+ 
+ impl Decision<'_> {
+     fn head(&self) -> u32 {
+         match self {
+-            Self::Presented(site) => site.head,
++            Self::Presented(site) | Self::ConditionalNotEmitted(site) => site.head,
+             Self::Refused(refused) => refused.head,
+         }
+     }
+@@ -348,7 +352,7 @@
+     /// constructor and every argument, and a refused candidate's own allocation.
+     fn positions(&self) -> Vec<u32> {
+         match self {
+-            Self::Presented(site) => site_positions(site),
++            Self::Presented(site) | Self::ConditionalNotEmitted(site) => site_positions(site),
+             Self::Refused(refused) => vec![refused.head],
+         }
+     }
+@@ -358,6 +362,10 @@
+         crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+         match self {
+             Self::Presented(site) => NewRecord::of_site(site),
++            Self::ConditionalNotEmitted(site) => NewRecord::of_unpresented_site(
++                site,
++                NewRefusal::conditional_not_emitted(site),
++            ),
+             Self::Refused(refused) => NewRecord::of_candidate(
+                 refused.head,
+                 &refused.class,
+@@ -423,11 +431,47 @@
+         matches.next().is_none().then_some(site)
+     }
+ 
+-    /// Every candidate the rule refused, in BCI order.
+-    pub(crate) fn refusals(&self) -> impl Iterator<Item = Gap> + '_ {
+-        self.refusals.iter().map(|refused| {
+-            let refusal = NewRefusal::of(&refused.refusal, refused.head);
+-            Gap::at(refusal.code, refused.head, refusal.message)
++    /// Constructor identities that need a final-AST receipt. Only these candidates are counted by
++    /// the existing Program walk; ordinary New publication remains on its existing path.
++    pub(crate) fn conditional_constructor_bcis(&self) -> impl Iterator<Item = u32> + '_ {
++        self.sites
++            .iter()
++            .filter(|site| site.conditional_consumer.is_some())
++            .map(|site| site.constructor)
++    }
++
++    /// Every candidate the rule refused, plus conditional candidates that did not become one
++    /// method-local New expression in the final Program. This uses the same predicate as counts
++    /// and record materialization.
++    pub(crate) fn refusals(
++        &self,
++        committed: &field::CommittedPresentations,
++    ) -> impl Iterator<Item = Gap> + '_ {
++        let mut refusals = self.refusals.iter().peekable();
++        let mut not_emitted = self
++            .sites
++            .iter()
++            .filter(|site| {
++                site.conditional_consumer.is_some()
++                    && !conditional_site_presented(site, committed)
++            })
++            .peekable();
++        std::iter::from_fn(move || {
++            let take_refusal = match (refusals.peek(), not_emitted.peek()) {
++                (Some(refused), Some(site)) => refused.head <= site.head,
++                (Some(_), None) => true,
++                (None, Some(_)) => false,
++                (None, None) => return None,
++            };
++            if take_refusal {
++                let refused = refusals.next()?;
++                let refusal = NewRefusal::of(&refused.refusal, refused.head);
++                Some(Gap::at(refusal.code, refused.head, refusal.message))
++            } else {
++                let site = not_emitted.next()?;
++                let refusal = NewRefusal::conditional_not_emitted(site);
++                Some(Gap::at(refusal.code, site.head, refusal.message))
++            }
+         })
+     }
+ 
+@@ -436,17 +480,28 @@
+         !self.sites.is_empty() || !self.refusals.is_empty()
+     }
+ 
+-    /// How many candidates the rule read, and how many of them it presented as sites.
+-    pub(crate) fn counts(&self) -> (u64, u64) {
+-        let presented = u64::try_from(self.sites.len()).unwrap_or(u64::MAX);
+-        let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
+-        (presented + refused, presented)
++    /// How many candidates the rule read, and how many became a committed site expression.
++    pub(crate) fn counts(
++        &self,
++        committed: &field::CommittedPresentations,
++    ) -> (u64, u64) {
++        let read = u64::try_from(self.sites.len().saturating_add(self.refusals.len()))
++            .unwrap_or(u64::MAX);
++        let presented = u64::try_from(
++            self.sites
++                .iter()
++                .filter(|site| conditional_site_presented(site, committed))
++                .count(),
++        )
++        .unwrap_or(u64::MAX);
++        (read, presented)
+     }
+ 
+     /// The owning records this plan publishes under `publication`, in BCI order, within the phase's
+     /// remaining allowance.
+     pub(crate) fn materialize(
+         &self,
++        committed: &field::CommittedPresentations,
+         publication: Publication,
+         phase: &mut crate::evidence::EvidencePhase,
+         budget: &mut jarde_reader::budget::Budget,
+@@ -454,7 +509,13 @@
+         let mut decisions: Vec<Decision<'_>> = self
+             .sites
+             .iter()
+-            .map(Decision::Presented)
++            .map(|site| {
++                if conditional_site_presented(site, committed) {
++                    Decision::Presented(site)
++                } else {
++                    Decision::ConditionalNotEmitted(site)
++                }
++            })
+             .chain(self.refusals.iter().map(Decision::Refused))
+             .collect();
+         decisions.sort_by_key(Decision::head);
+@@ -466,6 +527,14 @@
+             Decision::record,
+         )
+     }
++}
++
++fn conditional_site_presented(
++    site: &Site,
++    committed: &field::CommittedPresentations,
++) -> bool {
++    site.conditional_consumer.is_none()
++        || committed.conditional_new_count(site.constructor) == 1
+ }
+ 
+ /// Reads every construction site of one body.
+@@ -1108,7 +1177,8 @@
+     // out. The place the value is written is the reader's own text: a store, a call, a `return`, a
+     // test and a *claimed* field access ([`renders_its_reads`]) all write the value they read, and
+     // every other instruction is quoted as bytecode and writes nothing.
+-    let readers = outside_readers(ssa, block, &produced_by, meter)?;
++    let (readers, conditional_consumer) =
++        outside_readers(ssa, block, &produced_by, at, meter)?;
+     let mut written = Vec::new();
+     for bci in &readers {
+         meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
+@@ -1334,6 +1404,7 @@
+         owned,
+         instance: produced_by,
+         finished_value: expected_array_store.map(|(_, value)| value),
++        conditional_consumer,
+         expression,
+         single_use_atoms,
+         nested_sites,
+@@ -2288,17 +2359,25 @@
+     ssa: &SsaTable,
+     block: &[SsaInstruction],
+     produced_by: &[u32],
++    constructor: u32,
+     meter: &mut VerifyMeter<'_>,
+-) -> Result<Vec<u32>, VerifyFailure> {
++) -> Result<(Vec<u32>, Option<u32>), VerifyFailure> {
+     let mut readers: Vec<u32> = Vec::new();
++    let mut constructor_stack_writes = 0;
++    let mut conditional_phi_input = None;
+     for producer in block {
+         meter.charge(CountedBudgetDimension::AnalysisSteps, Some(producer.bci()))?;
+         if !produced_by.contains(&producer.bci()) {
+             continue;
+         }
+-        for (_, value) in producer.writes() {
++        for (slot, value) in producer.writes() {
+             meter.charge(CountedBudgetDimension::IrItems, Some(producer.bci()))?;
+-            for usage in ssa.value(*value).uses() {
++            let constructor_output = producer.bci() == constructor && matches!(slot, Slot::Stack(_));
++            if constructor_output {
++                constructor_stack_writes += 1;
++            }
++            let uses = ssa.value(*value).uses();
++            for usage in uses {
+                 meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
+                 let Some(bci) = usage.bci() else {
+                     continue;
+@@ -2307,10 +2386,115 @@
+                     readers.push(bci);
+                 }
+             }
+-        }
++            if constructor_output
++                && uses.len() == 1
++                && uses[0].bci().is_none()
++                && ssa.value(*value).replaced_by().is_none()
++                && matches!(ssa.value(*value).def(), Definition::Instruction { bci, .. } if *bci == constructor)
++            {
++                conditional_phi_input = Some((*value, uses[0].block()));
++            }
++        }
++    }
++    if constructor_stack_writes != 1 {
++        conditional_phi_input = None;
++    }
++    // Ordinary constructors stop after the existing reader walk; only its exact None-BCI use
++    // enters the added charged Phi/consumer proof used by the Builder's conditional-value path.
++    let conditional_consumer = match conditional_phi_input {
++        Some((value, block)) => conditional_phi_consumer(ssa, value, block, meter)?,
++        None => None,
++    };
++    if let Some(consumer) = conditional_consumer
++        && !readers.contains(&consumer)
++    {
++        readers.push(consumer);
+     }
+     readers.sort_unstable();
+-    Ok(readers)
++    Ok((readers, conditional_consumer))
++}
++
++/// Recognizes only the finished constructor's direct output flowing through one live, two-input
++/// stack Phi to one physical same-join instruction that reads the Phi result once. The Builder
++/// retains the complete CFG and arm-effect proof before it can emit the conditional expression.
++fn conditional_phi_consumer(
++    ssa: &SsaTable,
++    constructor_value: ValueId,
++    operand_block: &jarde_jvm::method_ir::CanonicalBlockId,
++    meter: &mut VerifyMeter<'_>,
++) -> Result<Option<u32>, VerifyFailure> {
++    use jarde_jvm::method_ir::PhiInput;
++
++    let mut selected = None;
++    for phi in ssa.phis() {
++        meter.charge(CountedBudgetDimension::IrItems, None)?;
++        if phi.block() != operand_block
++            || !matches!(phi.slot(), Slot::Stack(_))
++            || phi.inputs().len() != 2
++        {
++            continue;
++        }
++        for _ in phi.inputs() {
++            meter.charge(CountedBudgetDimension::IrItems, None)?;
++        }
++        let (PhiInput::Value(left), PhiInput::Value(right)) =
++            (&phi.inputs()[0], &phi.inputs()[1])
++        else {
++            continue;
++        };
++        if left == right
++            || ((*left == constructor_value) as usize) + ((*right == constructor_value) as usize)
++                != 1
++        {
++            continue;
++        }
++        let merged = ssa.value(phi.value());
++        if merged.replaced_by().is_some()
++            || !matches!(merged.def(), Definition::Phi { block, slot }
++                if block == phi.block() && *slot == phi.slot())
++        {
++            continue;
++        }
++        if selected.replace(phi.value()).is_some() {
++            return Ok(None);
++        }
++    }
++    let Some(phi_value) = selected else {
++        return Ok(None);
++    };
++    let phi = ssa.value(phi_value);
++    let uses = phi.uses();
++    for usage in uses {
++        meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
++    }
++    let [usage] = uses else {
++        return Ok(None);
++    };
++    let Some(consumer) = usage.bci() else {
++        return Ok(None);
++    };
++    let Definition::Phi { block: join_block, .. } = phi.def() else {
++        return Ok(None);
++    };
++    if usage.block() != join_block {
++        return Ok(None);
++    }
++    let Some(join) = ssa.block(join_block) else {
++        return Ok(None);
++    };
++    for instruction in join.instructions() {
++        meter.charge(CountedBudgetDimension::AnalysisSteps, Some(instruction.bci()))?;
++        if instruction.bci() != consumer {
++            continue;
++        }
++        let mut reads_phi = 0;
++        for (_, value) in instruction.reads() {
++            meter.charge(CountedBudgetDimension::IrItems, Some(consumer))?;
++            reads_phi += (*value == phi_value) as usize;
++        }
++        return Ok((reads_phi == 1).then_some(consumer));
++    }
++    Ok(None)
+ }
+ 
+ /// Whether the instruction at one BCI writes the values it reads into the text this build produces.
+@@ -2763,6 +2947,18 @@
+         }
+     }
+ 
++    fn of_unpresented_site(site: &Site, refusal: NewRefusal) -> Self {
++        Self {
++            head: site.head,
++            dup: Some(site.dup),
++            constructor: Some(site.constructor),
++            class: site.class.clone(),
++            arguments: site.arguments.clone(),
++            presented: false,
++            refusal: Some(refusal),
++        }
++    }
++
+     fn of_candidate(head: u32, class: &str, refusal: NewRefusal) -> Self {
+         Self {
+             head,
+@@ -2791,6 +2987,18 @@
+ }
+ 
+ impl NewRefusal {
++    fn conditional_not_emitted(site: &Site) -> Self {
++        Self {
++            code: "jre_new_conditional_not_emitted",
++            rule: NEW_RULE,
++            requirement: None,
++            message: format!(
++                "the constructor at BCI {} passed the one-hop conditional-value ownership check, but the final body did not contain exactly one matching method-local `new` expression",
++                site.constructor
++            ),
++        }
++    }
++
+     fn of(refusal: &Refusal, head: u32) -> Self {
+         Self {
+             code: refusal.code(),
+@@ -3186,6 +3394,9 @@
+     const VARARGS_V2: &[u8] = include_bytes!(
+         "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
+     );
++    const SEQUENTIAL_LOOPS2_CONDITIONAL_CTOR: &[u8] = include_bytes!(
++        "../../../openspec/evidence/java-syntax-2026-10-11/cf11-testsequentialloops2-baseline-root-v1/actual/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class"
++    );
+     const NESTED_PROBE: &[u8] = include_bytes!(
+         "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
+     );
+@@ -3342,6 +3553,43 @@
+     const BOUND_RECEIVER_WIDENED: &[u8] = include_bytes!(
+         "../../../openspec/evidence/java-syntax-2026-10-04/realistic-class-combination-patrol/fixture/C1.class"
+     );
++
++    #[test]
++    fn conditional_constructor_output_has_one_live_stack_phi_and_one_join_consumer() {
++        let (analysis, _) = analyzed_caller(
++            SEQUENTIAL_LOOPS2_CONDITIONAL_CTOR,
++            "asciiToLowerCase",
++            "(Ljava/lang/String;)Ljava/lang/String;",
++        );
++        let ssa = analysis.ir().ssa().expect("SSA table");
++        let constructor_value = stack_value_written_at(ssa, 96).expect("constructor stack output");
++        let [operand_use] = ssa.value(constructor_value).uses() else {
++            panic!("the constructor output has exactly one use");
++        };
++        assert!(operand_use.bci().is_none(), "the one use is an entry Phi operand");
++        let operand_block = operand_use.block();
++        let mut meter = VerifyMeter::unmetered();
++        assert_eq!(
++            conditional_phi_consumer(ssa, constructor_value, operand_block, &mut meter)
++                .expect("one-hop proof completes"),
++            Some(99),
++            "the exact two-input live stack Phi reaches its one same-join reader",
++        );
++
++        let wrong_block = ssa
++            .blocks()
++            .iter()
++            .map(|block| block.block())
++            .find(|block| *block != operand_block)
++            .expect("fixture has another block");
++        let mut meter = VerifyMeter::unmetered();
++        assert_eq!(
++            conditional_phi_consumer(ssa, constructor_value, wrong_block, &mut meter)
++                .expect("wrong-block proof completes"),
++            None,
++            "a Phi in another block cannot own this constructor output",
++        );
++    }
+ 
+     /// One method's own `Sites` plan, over the fixture's own class file.
+     fn sites_of(class: &[u8], name: &str, descriptor: &str) -> Sites {
+@@ -6025,7 +6273,9 @@
+             let site = sites.site_at_head(0).unwrap_or_else(|| {
+                 panic!(
+                     "the outer exception construction is proved: {:?}",
+-                    sites.refusals().collect::<Vec<_>>()
++                    sites
++                        .refusals(&field::CommittedPresentations::empty())
++                        .collect::<Vec<_>>()
+                 )
+             });
+             assert!(site.arguments.contains(&chain.tail));
+--- a/crates/jarde-java/src/field.rs
++++ b/crates/jarde-java/src/field.rs
+@@ -250,19 +250,54 @@
+     }
+ }
+ 
+-/// Collects only real field operations in the final AST. Direct origins and the plan must agree;
+-/// derived origins, bytecode quotes and synthetic accessor field text cannot create a receipt.
++/// The immutable final-Program facts shared by Site diagnostics, counts and records.
++pub(crate) struct CommittedPresentations {
++    field_positions: BTreeSet<u32>,
++    conditional_new_counts: BTreeMap<u32, u8>,
++}
++
++impl CommittedPresentations {
++    #[cfg(test)]
++    pub(crate) fn empty() -> Self {
++        Self {
++            field_positions: BTreeSet::new(),
++            conditional_new_counts: BTreeMap::new(),
++        }
++    }
++
++    pub(crate) fn field_positions(&self) -> &BTreeSet<u32> {
++        &self.field_positions
++    }
++
++    pub(crate) fn conditional_new_count(&self, constructor: u32) -> u8 {
++        self.conditional_new_counts
++            .get(&constructor)
++            .copied()
++            .unwrap_or(0)
++    }
++}
++
++/// Collects real field operations and only the conditional candidate New identities in one walk.
++/// Direct New origins must be method-local and match the exact constructor BCI; derived origins,
++/// foreign methods, bytecode quotes and method references cannot create a receipt.
+ pub(crate) fn committed_presentations(
+     program: &crate::build::Program,
+     plan: &Plan,
++    conditional_constructors: impl IntoIterator<Item = u32>,
+     budget: &mut Budget,
+-) -> Result<BTreeSet<u32>, StopReason> {
++) -> Result<CommittedPresentations, StopReason> {
+     enum Node<'a> {
+         Stmt(&'a Stmt),
+         Expr(&'a Expr),
+     }
+     let mut pending: Vec<_> = program.stmts.iter().map(Node::Stmt).collect();
+     let mut presented = BTreeSet::new();
++    let mut conditional_candidates = BTreeSet::new();
++    for constructor in conditional_constructors {
++        stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(constructor))?;
++        conditional_candidates.insert(constructor);
++    }
++    let mut conditional_new_counts = BTreeMap::new();
+     while let Some(node) = pending.pop() {
+         let at = match node {
+             Node::Stmt(stmt) => stmt.origin.primary().bci(),
+@@ -444,6 +479,13 @@
+                 ExprKind::New {
+                     qualifier, args, ..
+                 } => {
++                    if conditional_candidates.contains(&at) {
++                        stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
++                        if expr.origin.primary().method().is_none() {
++                            let count = conditional_new_counts.entry(at).or_insert(0_u8);
++                            *count = count.saturating_add(1).min(2);
++                        }
++                    }
+                     if let Some(qualifier) = qualifier {
+                         pending.push(Node::Expr(qualifier));
+                     }
+@@ -506,7 +548,10 @@
+             },
+         }
+     }
+-    Ok(presented)
++    Ok(CommittedPresentations {
++        field_positions: presented,
++        conditional_new_counts,
++    })
+ }
+ 
+ /// The member one field instruction names, as the pool and the instruction itself state it.
+@@ -971,6 +1016,136 @@
+         }
+     }
+ 
++    fn program_returning(value: Expr) -> Program {
++        Program {
++            stmts: vec![Stmt::new(
++                StmtKind::Return { value: Some(value) },
++                OriginSet::new(Origin::direct(0)),
++            )],
++            field_increments: BTreeMap::new(),
++            statements: 1,
++            ragged: false,
++            lambdas: Vec::new(),
++            accessors: Vec::new(),
++            array_constructor_sites: Vec::new(),
++            lambda_refusals: Vec::new(),
++            accessor_refusals: Vec::new(),
++            lambdas_presented: 0,
++            accessors_presented: 0,
++        }
++    }
++
++    fn candidate_new(bci: u32) -> Expr {
++        Expr::direct(
++            ExprKind::New {
++                ty: "Example".to_owned(),
++                qualifier: None,
++                member_name: None,
++                diamond: false,
++                args: Vec::new(),
++            },
++            bci,
++        )
++    }
++
++    fn conditional_value(when_true: Expr, when_false: Expr) -> Expr {
++        Expr::direct(
++            ExprKind::Conditional {
++                test: Box::new(Expr::direct(ExprKind::Boolean(true), 2)),
++                when_true: Box::new(when_true),
++                when_false: Box::new(when_false),
++            },
++            3,
++        )
++    }
++
++    fn candidate_new_count(value: Expr, candidate: u32) -> u8 {
++        let program = program_returning(value);
++        let mut budget = Budget::new(Limits {
++            analysis_steps: u64::MAX,
++            ir_items: u64::MAX,
++            elapsed_millis: u64::MAX,
++            ..Limits::default()
++        });
++        committed_presentations(&program, &Plan::empty(), [candidate], &mut budget)
++            .expect("final Program receipt")
++            .conditional_new_count(candidate)
++    }
++
++    #[test]
++    fn conditional_new_receipt_counts_only_one_method_local_direct_new() {
++        const CANDIDATE: u32 = 11;
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(
++                    Expr::direct(ExprKind::Integer(1), 4),
++                    Expr::direct(ExprKind::Integer(2), 5),
++                ),
++                CANDIDATE,
++            ),
++            0,
++            "zero matching New nodes is not a committed conditional site",
++        );
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(candidate_new(CANDIDATE), Expr::direct(ExprKind::Null, 5)),
++                CANDIDATE,
++            ),
++            1,
++            "one direct method-local New is the accepted receipt",
++        );
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(candidate_new(CANDIDATE), candidate_new(CANDIDATE)),
++                CANDIDATE,
++            ),
++            2,
++            "counts saturate at two so duplicate presentations refuse",
++        );
++
++        let foreign = jarde_reader::model::PhysicalMethodId {
++            owner: jarde_reader::model::PhysicalDefinitionId {
++                location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
++                    snapshot: jarde_reader::model::SnapshotId("foreign".to_owned()),
++                },
++                class_bytes: jarde_reader::model::ClassBytesId {
++                    digest: jarde_reader::model::Digest("foreign".to_owned()),
++                    length: 0,
++                },
++                variant: jarde_reader::model::PhysicalVariant::Base,
++            },
++            name: jarde_reader::model::JvmBytes(b"foreign".to_vec()),
++            descriptor: jarde_reader::model::JvmBytes(b"()V".to_vec()),
++        };
++        let foreign_new = Expr::new(
++            candidate_new(CANDIDATE).kind,
++            OriginSet::new(Origin::direct(CANDIDATE).in_method(&foreign)),
++        );
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(foreign_new, Expr::direct(ExprKind::Null, 5)),
++                CANDIDATE,
++            ),
++            0,
++            "foreign-method New origins cannot satisfy this body's constructor",
++        );
++        let method_reference = Expr::new(
++            ExprKind::MethodReference {
++                qualifier: Box::new(Expr::direct(ExprKind::Path("Example".to_owned()), 4)),
++                name: "new".to_owned(),
++            },
++            OriginSet::new(Origin::direct(CANDIDATE)),
++        );
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(method_reference, Expr::direct(ExprKind::Null, 5)),
++                CANDIDATE,
++            ),
++            0,
++            "a method reference is not a New node even at the candidate BCI",
++        );
++    }
++
+     #[test]
+     fn receipt_budget_and_cancellation_never_return_a_partial_verdict() {
+         let mut plan = Plan::empty();
+@@ -1022,7 +1197,7 @@
+         };
+         let mut limited = Budget::new(limits.clone());
+         assert!(matches!(
+-            committed_presentations(&program, &plan, &mut limited),
++            committed_presentations(&program, &plan, std::iter::empty(), &mut limited),
+             Err(StopReason::Budget {
+                 dimension: CountedBudgetDimension::AnalysisSteps,
+                 ..
+@@ -1033,7 +1208,7 @@
+         token.cancel();
+         let mut cancelled = Budget::with_cancellation_token(limits, token);
+         assert!(matches!(
+-            committed_presentations(&program, &plan, &mut cancelled),
++            committed_presentations(&program, &plan, std::iter::empty(), &mut cancelled),
+             Err(StopReason::Cancelled { .. })
+         ));
+ 
+@@ -1044,7 +1219,7 @@
+             ..Limits::default()
+         });
+         assert_eq!(
+-            committed_presentations(&program, &plan, &mut complete).expect("complete receipt"),
++            committed_presentations(&program, &plan, std::iter::empty(), &mut complete).expect("complete receipt").field_positions().clone(),
+             BTreeSet::from([7])
+         );
+     }
+--- a/crates/jarde-java/src/report.rs
++++ b/crates/jarde-java/src/report.rs
+@@ -11893,7 +11893,12 @@
+         Ok(emitted) => emitted,
+         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+     };
+-    let field_presentations = match field::committed_presentations(&program, &fields, budget) {
++    let committed_presentations = match field::committed_presentations(
++        &program,
++        &fields,
++        sites.conditional_constructor_bcis(),
++        budget,
++    ) {
+         Ok(presentations) => presentations,
+         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
+     };
+@@ -11922,7 +11927,7 @@
+         match same_class_field_receiver_sites(
+             &program,
+             &fields,
+-            &field_presentations,
++            committed_presentations.field_positions(),
+             &request,
+             &names,
+             &reuse,
+@@ -12138,14 +12143,14 @@
+     // its own, and a summary states how many candidates were read and how many were presented. A body
+     // that read none of a shape says nothing about that shape's rule at all — except for the
+     // declaration, which every body has and which therefore always states what it read.
+-    for gap in sites.refusals() {
++    for gap in sites.refusals(&committed_presentations) {
+         diagnostics.push(diagnostic(
+             gap.code(),
+             DiagnosticSeverity::Warning,
+             gap.message(),
+         ));
+     }
+-    let (new_read, new_presented) = sites.counts();
++    let (new_read, new_presented) = sites.counts(&committed_presentations);
+     if new_read > 0 {
+         diagnostics.push(diagnostic(
+             "jre_new_sites",
+@@ -12157,14 +12162,14 @@
+             ),
+         ));
+     }
+-    for gap in fields.refusals(&field_presentations) {
++    for gap in fields.refusals(committed_presentations.field_positions()) {
+         diagnostics.push(diagnostic(
+             gap.code(),
+             DiagnosticSeverity::Warning,
+             gap.message(),
+         ));
+     }
+-    let (field_read, field_presented) = fields.counts(&field_presentations);
++    let (field_read, field_presented) = fields.counts(committed_presentations.field_positions());
+     if field_read > 0 {
+         diagnostics.push(diagnostic(
+             "jre_field_accesses",
+@@ -12325,9 +12330,14 @@
+                 .collect(),
+             None => Vec::new(),
+         };
+-        news = delivery.take(sites.materialize(publication, &mut phase, budget));
++        news = delivery.take(sites.materialize(
++            &committed_presentations,
++            publication,
++            &mut phase,
++            budget,
++        ));
+         field_records = delivery.take(fields.materialize(
+-            &field_presentations,
++            committed_presentations.field_positions(),
+             publication,
+             &mut phase,
+             budget,

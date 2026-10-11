@@ -1,0 +1,219 @@
+--- /Users/lordcasser/workspace/projects/jarde/tests/recover_proved_conditional_constructor_values.rs
++++ /private/tmp/jarde-conditional-constructor-api-test-prep-luna-v3/recover_proved_conditional_constructor_values.rs
+@@ -152,6 +152,70 @@
+     assert_eq!(body.quality, Quality::Structured);
+     assert!(matches!(&body.execution, ExecutionReport::Complete { .. }));
+     assert!(body.fallbacks.is_empty(), "{}", body.text);
++}
++
++fn assert_range_outcomes_for_other_methods(
++    report: &ClassSourceReport,
++    selected_identity: &PhysicalMethodId,
++    range: BytecodeRange,
++    expected_invalid_methods: &[(&str, &str)],
++) {
++    let mut expected: Vec<(Vec<u8>, Vec<u8>)> = expected_invalid_methods
++        .iter()
++        .map(|(name, descriptor)| (name.as_bytes().to_vec(), descriptor.as_bytes().to_vec()))
++        .collect();
++    let mut observed_invalid = Vec::new();
++    for method in &report.methods {
++        if &method.item.identity == selected_identity {
++            continue;
++        }
++        let key = (
++            method.item.name.raw().0.clone(),
++            method.item.descriptor.raw().0.clone(),
++        );
++        let should_refuse = expected.contains(&key);
++        let ClassSourceOutcome::Recovered { report: body, .. } = &method.outcome else {
++            panic!(
++                "non-target {:?} has a method-local recovery result: {:?}",
++                method.item.identity, method.outcome
++            );
++        };
++        assert_eq!(body.evidence.requested().driver_bci_range(), Some(range));
++        if should_refuse {
++            assert!(
++                matches!(
++                    body.stop(),
++                    Some(StopReason::EvidenceRefused { code: "jre_evidence_range_invalid", .. })
++                ),
++                "non-target {:?} records its exact out-of-method range refusal: {:?}",
++                method.item.identity,
++                body.stop()
++            );
++            assert!(!body.produced());
++            assert_eq!(body.text, "");
++            assert!(body.source_map.is_empty());
++            assert_eq!(body.content, RecoveryContent::NotProduced);
++            assert!(body.news.is_empty());
++            for kind in body.evidence.requested().kinds() {
++                assert_eq!(
++                    body.evidence.state(kind),
++                    EvidenceState::NotPerformed,
++                    "the refused member did not materialize {kind:?}"
++                );
++            }
++            observed_invalid.push(key);
++        } else {
++            assert!(body.produced(), "valid non-target range for {:?}", method.item.identity);
++            assert!(matches!(&body.execution, ExecutionReport::Complete { .. }));
++        }
++    }
++    expected.sort();
++    observed_invalid.sort();
++    assert_eq!(
++        observed_invalid,
++        expected,
++        "the listed non-target members, and only those members, reject this shared driver range"
++    );
+ }
+ 
+ #[test]
+@@ -284,14 +348,23 @@
+         &RecoveryEvidenceRequest::all().with_driver_bci_range(selected_range),
+     );
+     let (ranged_method, ranged_body) = target(&ranged);
+-    assert_eq!(ranged.text, all.text);
+     assert_eq!(ranged_body.text, all_body.text);
++    assert_eq!(ranged_method.text, all_method.text);
+     assert_eq!(new_diagnostics(ranged_body), new_diagnostics(all_body));
+     assert_eq!(
+         ranged_body.news, all_body.news,
+-        "range selects this record by its physical allocation BCI"
++        "the target method's range selects the record by its physical allocation BCI"
+     );
+     assert_eq!(ranged_method.item.identity, all_method.item.identity);
++    assert_utf8_map(ranged_body);
++    assert!(ranged_body.source_map.len() <= all_body.source_map.len());
++    assert_source_for_bci(ranged_body, ranged_method, record.head);
++    assert_range_outcomes_for_other_methods(
++        &ranged,
++        &ranged_method.item.identity,
++        selected_range,
++        &[("<init>", "()V"), ("<clinit>", "()V")],
++    );
+ }
+ 
+ const POSITIVE_INTERNAL_CLASS: &str = "cf11/ConditionalConstructionPositive";
+@@ -432,22 +505,27 @@
+                 .chain(record.arguments.iter().copied())
+         })
+         .collect();
+-    let excluded_range = inspection
++    let selected_bci = all_body
++        .source_map
++        .segments()
++        .iter()
++        .flat_map(|segment| {
++            std::iter::once(segment.origin().primary()).chain(segment.origin().derived())
++        })
++        .filter(|origin| origin.method() == Some(&all_method.item.identity))
++        .map(|origin| origin.bci())
++        .find(|bci| !site_bcis.contains(bci))
++        .expect("the full target map has a physical position outside both construction records");
++    assert!(!site_bcis.contains(&selected_bci));
++    let selected_instruction = inspection
+         .instructions
+         .iter()
+-        .find(|instruction| {
+-            let end = instruction.bci + u32::from(instruction.width);
+-            site_bcis
+-                .iter()
+-                .all(|bci| *bci < instruction.bci || *bci >= end)
+-        })
+-        .map(|instruction| {
+-            BytecodeRange::new(
+-                instruction.bci,
+-                instruction.bci + u32::from(instruction.width),
+-            )
+-        })
+-        .expect("the method has a physical instruction range outside both allocation sites");
++        .find(|instruction| instruction.bci == selected_bci)
++        .expect("the selected mapped BCI is a physical instruction");
++    let excluded_range = BytecodeRange::new(
++        selected_bci,
++        selected_bci + u32::from(selected_instruction.width),
++    );
+     let ranged = source_with_evidence(
+         &snapshot,
+         &request,
+@@ -461,14 +539,27 @@
+     else {
+         panic!("ranged {name} has a report: {:?}", ranged_method.outcome);
+     };
+-    assert_eq!(ranged.text, all.text);
+     assert_eq!(ranged_body.text, all_body.text);
++    assert_eq!(ranged_method.text, all_method.text);
+     assert_eq!(new_diagnostics(ranged_body), new_diagnostics(all_body));
+     assert!(
+         ranged_body.news.is_empty(),
+         "the range excludes every NewRecord BCI"
+     );
+     assert_eq!(ranged_method.item.identity, all_method.item.identity);
++    assert_utf8_map(ranged_body);
++    assert!(ranged_body.source_map.len() <= all_body.source_map.len());
++    assert_source_for_bci(ranged_body, ranged_method, selected_bci);
++    assert_range_outcomes_for_other_methods(
++        &ranged,
++        &ranged_method.item.identity,
++        excluded_range,
++        &[
++            ("<init>", "()V"),
++            ("condition", "(ZZ)Z"),
++            ("argument", "(Ljava/lang/String;Z)Ljava/lang/String;"),
++        ],
++    );
+ }
+ 
+ #[test]
+@@ -690,7 +781,7 @@
+ }
+ 
+ #[test]
+-fn conditional_sites_are_not_reported_presented_when_the_final_body_refuses() {
++fn conditional_sites_are_not_presented_when_the_final_body_is_explanation_only() {
+     let fixture = include_bytes!(
+         "../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class"
+     );
+@@ -715,8 +806,19 @@
+     };
+     assert_eq!(default.text, all.text);
+     assert_eq!(new_diagnostics(default_body), new_diagnostics(all_body));
++    assert_eq!(all_body.representation, Representation::Mixed);
+     assert_eq!(all_body.quality, Quality::Fallback);
+-    assert!(!all_body.fallbacks.is_empty());
++    assert!(all_body.produced(), "the explanation artifact was committed");
++    assert_eq!(all_body.content, RecoveryContent::ExplanationOnly);
++    assert_eq!(default_body.content, RecoveryContent::ExplanationOnly);
++    assert!(
++        !all_body.regions.is_empty() && all_body.regions.iter().all(|region| region.structured),
++        "the decoded regions are structured; the final body builder did not emit Java statements"
++    );
++    assert!(
++        all_body.fallbacks.is_empty(),
++        "fallbacks lists Region-level fallback reasons; this failure is an explanation-only final body"
++    );
+     assert!(default_body.news.is_empty());
+     assert_eq!(
+         all_body
+@@ -727,6 +829,18 @@
+         [0, 10, 22]
+     );
+     assert!(all_body.news.iter().all(|record| !record.presented));
++    assert_eq!(
++        all_body
++            .news
++            .iter()
++            .map(|record| record.refusal.as_ref().expect("every candidate is refused").code)
++            .collect::<Vec<_>>(),
++        [
++            "jre_new_shape",
++            "jre_new_conditional_not_emitted",
++            "jre_new_conditional_not_emitted",
++        ]
++    );
+     assert_eq!(
+         new_summary(all_body),
+         "3 construction candidate(s) read under new@1: 0 presented as `new`, 3 refused"

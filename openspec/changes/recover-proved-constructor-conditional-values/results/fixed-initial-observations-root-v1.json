@@ -1,0 +1,49 @@
+{
+  "status": "accepted_task_1_1_fixed_historical_baseline_and_current_same_ir_first_refusal",
+  "utc": "2026-10-11T17:16:47.990842+00:00",
+  "baseline_receipt": {
+    "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/execution.json",
+    "sha256": "2360cad6e7dc1ca19b1f839baf46868499a15f51a9087fbb856549ff70d84dce",
+    "commands": 29,
+    "raw_streams": 58,
+    "cli": {
+      "path": "/private/tmp/jarde-cf11-side-exits-candidate-cli-root-v10",
+      "bytes": 61213840,
+      "sha256": "09f4eac277ee9ddfd60a627f7b132877841f4859bb2c655fc21cb8d25ac197db"
+    },
+    "baseline_cli_is_older_v10_not_current_final_cli": true
+  },
+  "oracle": {
+    "lines": 10,
+    "stdout_sha256": "d6e77be8a5b6b47c581365b3c7b81510874409158ea74d38f87bc9b6262bb3b9",
+    "original_jdk_legs": 2,
+    "jadx_generated_success_legs": 4,
+    "jarde_generated_compile_failures": 8,
+    "no_jarde_runtime": true
+  },
+  "observation": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf11-testsequentialloops2-baseline-root-v1/observations-root-v1.json",
+    "sha256": "0468358465e435067af0c84a2c4aa3e7d84a07f09899982e681e8d490604f4f1",
+    "physical_gaps": [
+      88,
+      94,
+      95,
+      96
+    ]
+  },
+  "same_ir": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testsequentialloops2-same-ir-root-v1/diagnostic/execution.json",
+    "sha256": "637499de1581b51a3a9c4f5b46963c6f496a04e6cdaf18f3484220c9d2781d61",
+    "root_acceptance": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testsequentialloops2-same-ir-root-v1/root-acceptance.json",
+    "blocks": 13,
+    "edges": 18,
+    "scope": "init/Sites only; Region/Builder not run",
+    "source_count": 4718,
+    "current_live_restored_equal_finalbuild": true
+  },
+  "architecture_review": {
+    "actual_openspec_design_sha256": "dff49fcb3a044a400ea4b375daca20c6ae6a43320771b32758b61745b58eb52d",
+    "jadx_ternary_source_sha256": "e53ed32d3e4ec109fb68f9f3c90d066ccc400eeec4185506a85127a2067086a1"
+  },
+  "control_baseline_and_product_implementation_not_claimed": true
+}

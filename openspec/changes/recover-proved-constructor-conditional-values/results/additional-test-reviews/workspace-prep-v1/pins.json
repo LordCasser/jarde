@@ -1,0 +1,95 @@
+{
+  "schema": "constructor-conditional-workspace-runner-preparation-v1",
+  "status": "private_static_candidate_only_not_executed",
+  "runner": {
+    "path": "/private/tmp/jarde-constructor-conditional-workspace-prep-luna-v1/workspace-root-v1.py",
+    "sha256": "db4c251cc76eab3f877e5e88c81a915f450a0dc5fc8e61bb02b51ee0037c04d9",
+    "bytes": 27508
+  },
+  "planned_output_path": "/private/tmp/jarde-constructor-conditional-workspace-root-v1",
+  "static_review": {
+    "python_ast_parse": "passed",
+    "python_symtable_parse": "passed",
+    "toolchain_executed": false,
+    "workspace_source_closure_count_at_prep": 4727,
+    "source_closure_runtime_policy": "recomputed at runner start and after each command; no prep-time or old fingerprint hash is hard-coded",
+    "new_fixture_and_api_source_paths": [
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.java",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.java",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/README.md",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.java",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/pins.json",
+      "tests/recover_proved_conditional_constructor_values.rs"
+    ],
+    "target_count_from_manifests_and_files": 361,
+    "target_kind_counts": {
+      "bin": 1,
+      "example": 7,
+      "lib": 5,
+      "test": 348
+    },
+    "test_target_count_by_package": {
+      "jarde": 296,
+      "jarde-cli": 6,
+      "jarde-java": 41,
+      "jarde-query": 1,
+      "jarde-reader": 4
+    },
+    "unit_target_batches": 6,
+    "test_target_batches_of_four": 89,
+    "derived_test_batch_count": 95,
+    "derived_command_count": "2 (fmt + metadata) + derived batches + 1 (final cargo clean)",
+    "delta_from_v4_captured_metadata": {
+      "added": [
+        [
+          "jarde",
+          "recover_proved_conditional_constructor_values",
+          "test"
+        ]
+      ],
+      "removed": []
+    },
+    "required_named_test_count": 10,
+    "prior_raw_stream_parser_compatibility": "all captured v4 summary rows matched named outcomes; this only checks parser shape and is not a current workspace test result"
+  },
+  "runtime_references": [
+    {
+      "path": "/private/tmp/jarde-for-condition-workspace-root-v4.py",
+      "sha256": "70f4b0f974ea934f0bc761b4b56722aef8ceee010fa7e6027ed9c30b88b8fabd"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-run-conditional-workspace-batches-root-v5.py",
+      "sha256": "15fb42dd044f2371fa8d0c75010f9b87b3474ad4a20c5f9d1007f15af299c76f"
+    },
+    {
+      "path": "/private/tmp/jarde-for-condition-focused-root-v3.py",
+      "sha256": "b65b77d235366e22e8d76453b6c966d624a6c0a1eeb1a397cdf71f7236b59c99"
+    }
+  ],
+  "current_source_snapshot_informational_only": {
+    "source_files": 4727,
+    "required_current_paths_sha256": {
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class": "bf0acebb4a538950a431fbe913f0c0522379582af6615369f425226a13e32bd1",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.java": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.java": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/README.md": "3f85037455efb184dbc79e277a5c6bffc923a270977f445cb25abc3cb1dff41f",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.java": "118617f1cddf04d79f72e12d4d100edf090edebff3695517ceae6b0a022749dd",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/pins.json": "a81d39884fb7fa406f1df3a3546993264e65f6cc41cdf4413ed316ca8241e4ba",
+      "tests/recover_proved_conditional_constructor_values.rs": "577a65ca2c8e7763e7a3c4c2a2609f03208093d49598dace80504b7d0c52287d"
+    },
+    "corpus_fingerprint_runtime_bound_only": "tests/fixtures/corpus-fingerprint.json is included in source closure; its hash is not fixed here or in the runner"
+  }
+}

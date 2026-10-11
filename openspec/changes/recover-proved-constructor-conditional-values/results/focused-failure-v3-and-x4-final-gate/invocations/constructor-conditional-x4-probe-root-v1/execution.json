@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-constructor-conditional-x4-probe-root-v1.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T17:45:31.107264+00:00",
+  "finished_at": "2026-10-11T17:45:32.243616+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-x4-probe-root-v1/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-x4-probe-root-v1/stderr.raw",
+      "bytes": 652,
+      "sha256": "7c1c1e5638e3aabf8acd3b9151c9eadfcd97b098c8ca54fc66019c50c1ad1222"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

@@ -1,0 +1,210 @@
+{
+  "schema": "recover-proved-constructor-conditional-values-control-inputs-v1",
+  "status": "prepared_not_compiled_or_run",
+  "scope": "two isolated control classes plus Runner; no generated recovery source or implementation edits",
+  "openspec": {
+    "proposal.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/proposal.md",
+      "bytes": 1931,
+      "sha256": "e0b9a7d3b331e6e58dbd35acd7a8e486c8e4aa12ca94997725f6e3fb02536cf8"
+    },
+    "design.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/design.md",
+      "bytes": 5421,
+      "sha256": "dff49fcb3a044a400ea4b375daca20c6ae6a43320771b32758b61745b58eb52d"
+    },
+    "tasks.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/tasks.md",
+      "bytes": 2853,
+      "sha256": "58d625c39d5badd8929d2b80c195b5e9747b265d01d33e19cdc3f122b65a9061"
+    },
+    "specs/java8-recovery/spec.md": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/specs/java8-recovery/spec.md",
+      "bytes": 3710,
+      "sha256": "e75118ce418d9a76b8ef937b986849aa4c89e99929cfd47403d02797c5949211"
+    }
+  },
+  "new_control_sources": {
+    "ConditionalConstructionPositive.java": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v2/ConditionalConstructionPositive.java",
+      "bytes": 2168,
+      "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+    },
+    "ConditionalConstructionRefusals.java": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v2/ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    },
+    "Runner.java": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v2/Runner.java",
+      "bytes": 10771,
+      "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+    },
+    "manifest.json": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v2/manifest.json",
+      "bytes": 711,
+      "sha256": "e8761975ad6842b7c426db50827bf5efc040a3b35bd695e7320f894f25f75a68"
+    },
+    "README.md": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v2/README.md",
+      "bytes": 4231,
+      "sha256": "b498074fe1563f8ba930d660981331f80278da8eaf2f91c40fbedc7c871cf595"
+    }
+  },
+  "fixed_baseline": {
+    "execution": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/execution.json",
+      "bytes": 85650,
+      "sha256": "2360cad6e7dc1ca19b1f839baf46868499a15f51a9087fbb856549ff70d84dce"
+    },
+    "schema": "cf11-target-full-source-capture-v2",
+    "status": "observed",
+    "command_count": 29,
+    "source_tool_inputs_unchanged": true,
+    "adapted_source": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/inputs/UpstreamSequentialLoops2.java",
+      "bytes": 542,
+      "sha256": "118617f1cddf04d79f72e12d4d100edf090edebff3695517ceae6b0a022749dd"
+    },
+    "runner": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/inputs/Runner.java",
+      "bytes": 934,
+      "sha256": "83ab844177d6944d62f4d3ed1d3d4f2ec472ba9e3b54043b9c312db8faa0e1a4"
+    },
+    "original_class_bytes": [
+      {
+        "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamSequentialLoops2.class",
+        "bytes": 934,
+        "sha256": "ca1965e47275b62c18ace49993f935ed13e763c8bcbbce154b9b5e3402c073ce"
+      },
+      {
+        "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+        "bytes": 931,
+        "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+      }
+    ],
+    "source_upstream": {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestSequentialLoops2.java",
+      "bytes": 1213,
+      "sha256": "adb34f80f7d55cd3309ed7708f0fdb46768cf32e4004dbd13d4e278530306720"
+    },
+    "adaptation_source": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-input-luna-v2/UpstreamSequentialLoops2.java",
+      "bytes": 542,
+      "sha256": "118617f1cddf04d79f72e12d4d100edf090edebff3695517ceae6b0a022749dd"
+    },
+    "old_cli": {
+      "path": "/private/tmp/jarde-cf11-side-exits-candidate-cli-root-v10",
+      "sha256": "09f4eac277ee9ddfd60a627f7b132877841f4859bb2c655fc21cb8d25ac197db",
+      "bytes": 61213840,
+      "mode": "0o555",
+      "build_receipt": {
+        "path": "/private/tmp/jarde-cf11-side-exits-cli-build-root-v10/execution.json",
+        "sha256": "c4955d789f6c26177bc2015a898fac0f0beb5fd856ffc00e7c030b76ed91cd0f",
+        "bytes": 2276631
+      }
+    },
+    "collector": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/collect_sequential_loops2.py",
+      "bytes": 17384,
+      "sha256": "79fe4e3767f7f3a179956f1f424104b830c26baa8a9e1518b67e7636f71f2a2c"
+    },
+    "checker": {
+      "path": "/private/tmp/jarde-sequential-loops2-collector-prep-luna-v1/check_sequential_loops2.py",
+      "bytes": 31442,
+      "sha256": "0a23034168b54de3d92c8fc56029b4257984b857c857f5694622dc06caeca57a"
+    },
+    "upstream_slice_pins": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-input-luna-v2/pins.json",
+      "bytes": 868,
+      "sha256": "efc4e3fdf6bb9ca24d2ba52e894a298a608a89265da118f61a19e429e7109ccf",
+      "method": {
+        "signature": "public static String asciiToLowerCase(String s)",
+        "byte_offset_start": 388,
+        "byte_offset_end_exclusive": 808,
+        "sha256": "80c97a42c86da19956b70d9626219b7f456d277d5e2a3a0e580fa7586f6ea577"
+      },
+      "field": {
+        "name": "lowercases",
+        "byte_offset_start": 330,
+        "byte_offset_end_exclusive": 386,
+        "sha256": "3209860a1335c2128aa1a82e3e5668cd15580a18d7ae07c1407a36a3bd5801fd"
+      }
+    }
+  },
+  "same_ir_diagnostic": {
+    "execution": {
+      "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-root-v1/execution.json",
+      "bytes": 1530518,
+      "sha256": "637499de1581b51a3a9c4f5b46963c6f496a04e6cdaf18f3484220c9d2781d61"
+    },
+    "raw_stdout": {
+      "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-root-v1/0.stdout.raw",
+      "bytes": 197,
+      "sha256": "bacaae21d440a17ff22f41c6f483e10cc5487a6d1ff3d2be4d982fcd5c85cc59"
+    },
+    "raw_stderr": {
+      "path": "/private/tmp/jarde-sequential-loops2-same-ir-diagnostic-root-v1/0.stderr.raw",
+      "bytes": 18042,
+      "sha256": "59ac08bf6b5e4d60c724a274403c78b28502766f804636aaeabd681d658016f0"
+    },
+    "status": "completed_same_ir_diagnostic_only",
+    "test_summary": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "actual_shape": {
+      "canonical_blocks": 13,
+      "edges": 18,
+      "allocate_bci": 91,
+      "allocate_writes": "Stack(0), ValueId(49)",
+      "dup_bci": 94,
+      "constructor_bci": 96,
+      "constructor_descriptor": "([C)V",
+      "constructor_result": "Stack(0), ValueId(53)",
+      "join_bci": 99,
+      "join_phi_slot": "Stack(0)",
+      "join_phi_value": "ValueId(14)",
+      "join_phi_inputs": [
+        "ValueId(48)",
+        "ValueId(53)"
+      ],
+      "return_bci": 99,
+      "return_reads": "Stack(0), ValueId(14)"
+    }
+  },
+  "source_intent_not_observed": {
+    "positive": [
+      "one-arm new versus reuse of original reference",
+      "two independent new expressions, only selected argument effect/exception",
+      "condition event precedes selected argument event",
+      "direct static and instance field-store consumers"
+    ],
+    "refusal": [
+      "local boundary",
+      "conditional assignment value shared by static field write and return",
+      "nested conditional",
+      "branch-local independent effect",
+      "handler around the conditional construction"
+    ],
+    "expected_shape_is_inference_only": true
+  },
+  "constraints": {
+    "java8_sources_only": true,
+    "top_level_targets": 2,
+    "runner": true,
+    "explicit_clinit": false,
+    "loops_in_sources": false,
+    "new_external_dependencies": false,
+    "compiled_or_run": false,
+    "shared_files_modified": false,
+    "git_used": false
+  },
+  "prepared_from": {
+    "path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v1",
+    "pins_path": "/private/tmp/jarde-conditional-constructor-values-input-luna-v1/pins.json",
+    "pins_sha256": "89a94f9c919654a8978ca8cfc1f8adfe0472543038c48d8bc6f9400b9a74e0be",
+    "scope": "v2 preserves both target source files and adds null-constructor and field-store Runner observations; README clarifies uncertain refusal boundaries"
+  }
+}

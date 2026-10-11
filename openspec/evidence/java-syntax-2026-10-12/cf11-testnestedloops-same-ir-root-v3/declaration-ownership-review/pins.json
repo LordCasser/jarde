@@ -1,0 +1,81 @@
+{
+  "scope": "private static review; no toolchain/Git/shared edits",
+  "hash_algorithm": "SHA-256",
+  "artifacts": {
+    "baseline_execution": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/execution.json",
+      "bytes": 81267,
+      "sha256": "5635e60b5565a19ba4fab116d0b6ae73f72e62568e0761edeff2365291c95435"
+    },
+    "baseline_class": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    "baseline_javap": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "bytes": 8494,
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    "baseline_generated_java": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "bytes": 1964,
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+    },
+    "baseline_report": {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+      "bytes": 180360,
+      "sha256": "8bb714b7c2bcef014db446d5501a4902832a66ea52eecb00d66d9a889c2fe76a"
+    },
+    "diagnostic_execution_v3": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3/execution.json",
+      "bytes": 1530299,
+      "sha256": "53ff3e460616632733dea68e54794ac10d4d2f054191e2afa7fa5860166b134e"
+    },
+    "diagnostic_stderr_v3": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-root-v3/0.stderr.raw",
+      "bytes": 6664,
+      "sha256": "dd853ee46eff134645137cf80380d27418e9d64701c9ae9f53b7195785b1c850"
+    },
+    "candidate_v4_build_rs": {
+      "path": "/private/tmp/jarde-testnestedloops-same-ir-diagnostic-candidate-luna-v4/build.rs.candidate",
+      "bytes": 1734842,
+      "sha256": "fe7ec5c8892b09f2095468db15f2af29baaec250cf9db66f17144fb5906f835a"
+    },
+    "jarde_build_rs_base": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    "jarde_reuse_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/reuse.rs",
+      "bytes": 49833,
+      "sha256": "fbf36813f3dbf3f7f4ed7b339d36b7380d49e5a66d121716698f62bf33dc9458"
+    },
+    "jarde_ast_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "bytes": 52168,
+      "sha256": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171"
+    },
+    "jadx_loop_region_visitor": {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java",
+      "bytes": 14587,
+      "sha256": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515"
+    },
+    "jadx_region_gen": {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/codegen/RegionGen.java",
+      "bytes": 12433,
+      "sha256": "8b80ef618487e38cb09a2bbd81b70de0dd096996a321a0c9dcf55e1dc011d4ee"
+    },
+    "jadx_test_iterable_foreach": {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/test/java/jadx/tests/integration/loops/TestIterableForEach.java",
+      "bytes": 710,
+      "sha256": "115ee466f2d428b5372deff6cec7aa5a0246573fd5ede80b24f74153a0728012"
+    },
+    "jadx_build_gradle": {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/build.gradle.kts",
+      "bytes": 5890,
+      "sha256": "34e0febdc5acc1b6364588fd5fda07d004ad62794c9775560ad8f2cc0aa8fc9e"
+    }
+  }
+}

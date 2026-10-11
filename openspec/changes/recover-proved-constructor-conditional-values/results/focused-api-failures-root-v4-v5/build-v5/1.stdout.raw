@@ -1,0 +1,17 @@
+
+running 5 tests
+test conditional_constructor_positive_all_evidence_reports_four_exact_methods ... ok
+test conditional_constructor_public_late_stop_and_precancel_publish_atomically ... ok
+test conditional_constructor_public_reports_agree_across_evidence_selections ... FAILED
+test conditional_constructor_range_excluding_all_new_bcis_keeps_summary_and_text ... FAILED
+test conditional_sites_are_not_reported_presented_when_the_final_body_refuses ... FAILED
+
+failures:
+
+failures:
+    conditional_constructor_public_reports_agree_across_evidence_selections
+    conditional_constructor_range_excluding_all_new_bcis_keeps_summary_and_text
+    conditional_sites_are_not_reported_presented_when_the_final_body_refuses
+
+test result: FAILED. 2 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+

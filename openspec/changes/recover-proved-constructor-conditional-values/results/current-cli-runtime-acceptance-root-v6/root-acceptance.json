@@ -1,0 +1,1591 @@
+{
+  "status": "accepted_current_cli_conditional_constructor_runtime_scope_only",
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v6",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "mode": "0o555"
+  },
+  "build_receipt_sha256": "4e3260ecfd829cc3ab139552918cc5fc2e119f259338aa3a400b77e37c91ad67",
+  "source_closure_count": 4727,
+  "stages": [
+    {
+      "stage": "fixed",
+      "commands": 29,
+      "raw_streams": 58,
+      "successful_full_generated_runtime_legs": 8,
+      "jarde_runtime_legs": 4,
+      "failed_compile_legs_without_runtime": 0,
+      "checked_conditional_methods": [
+        {
+          "label": "javac8-jarde-default-UpstreamSequentialLoops2",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              97,
+              115,
+              99,
+              105,
+              105,
+              84,
+              111,
+              76,
+              111,
+              119,
+              101,
+              114,
+              67,
+              97,
+              115,
+              101
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "8b2c1afb307498ebcf4e63496832d81a582f99f1c97b84cbf65901309b0d7d6b",
+                "length": 934
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "8b2c1afb307498ebcf4e63496832d81a582f99f1c97b84cbf65901309b0d7d6b"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac8-jarde-all-UpstreamSequentialLoops2",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              97,
+              115,
+              99,
+              105,
+              105,
+              84,
+              111,
+              76,
+              111,
+              119,
+              101,
+              114,
+              67,
+              97,
+              115,
+              101
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "8b2c1afb307498ebcf4e63496832d81a582f99f1c97b84cbf65901309b0d7d6b",
+                "length": 934
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "8b2c1afb307498ebcf4e63496832d81a582f99f1c97b84cbf65901309b0d7d6b"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-default-UpstreamSequentialLoops2",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              97,
+              115,
+              99,
+              105,
+              105,
+              84,
+              111,
+              76,
+              111,
+              119,
+              101,
+              114,
+              67,
+              97,
+              115,
+              101
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7",
+                "length": 931
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-all-UpstreamSequentialLoops2",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              97,
+              115,
+              99,
+              105,
+              105,
+              84,
+              111,
+              76,
+              111,
+              119,
+              101,
+              114,
+              67,
+              97,
+              115,
+              101
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7",
+                "length": 931
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "a6bcabcece6b623876c8f66fa083f17560fd1ee8d898a6ab5b6414b99adf39e7"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        }
+      ],
+      "source_map_gap_methods": [],
+      "execution_sha256": "901b2d16f98aeaef939c13de8e0b5ff803bd4625f597266b0c25264b0f2581ed",
+      "checker_sha256": "569078ea68587095668494e2ba4c1a8ef06c7dcdabb6f2f300633924ab214469",
+      "launcher_receipt_sha256": "5ab67590068ea1bf052b35ee423afd4adb1da4a5c85581a872c6e589e6b763b5"
+    },
+    {
+      "stage": "controls",
+      "commands": 43,
+      "raw_streams": 86,
+      "successful_full_generated_runtime_legs": 8,
+      "jarde_runtime_legs": 4,
+      "failed_compile_legs_without_runtime": 8,
+      "checked_conditional_methods": [
+        {
+          "label": "javac8-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              111,
+              110,
+              101,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac8-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              116,
+              119,
+              111,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109,
+              115
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 2
+        },
+        {
+          "label": "javac8-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              83,
+              116,
+              97,
+              116,
+              105,
+              99,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac8-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              73,
+              110,
+              115,
+              116,
+              97,
+              110,
+              99,
+              101,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac8-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              111,
+              110,
+              101,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac8-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              116,
+              119,
+              111,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109,
+              115
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 2
+        },
+        {
+          "label": "javac8-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              83,
+              116,
+              97,
+              116,
+              105,
+              99,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac8-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              73,
+              110,
+              115,
+              116,
+              97,
+              110,
+              99,
+              101,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a",
+                "length": 2086
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "1b76aa07d10e9fd5ee458f0259b45a01d46f1ca9a6d7559086d1e0e4cb69800a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              111,
+              110,
+              101,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              116,
+              119,
+              111,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109,
+              115
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 2
+        },
+        {
+          "label": "javac23-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              83,
+              116,
+              97,
+              116,
+              105,
+              99,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-default-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              73,
+              110,
+              115,
+              116,
+              97,
+              110,
+              99,
+              101,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              111,
+              110,
+              101,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59
+            ],
+            "name": [
+              116,
+              119,
+              111,
+              67,
+              111,
+              110,
+              115,
+              116,
+              114,
+              117,
+              99,
+              116,
+              101,
+              100,
+              65,
+              114,
+              109,
+              115
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 2
+        },
+        {
+          "label": "javac23-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              83,
+              116,
+              97,
+              116,
+              105,
+              99,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        },
+        {
+          "label": "javac23-jarde-all-ConditionalConstructionPositive",
+          "physical_identity": {
+            "descriptor": [
+              40,
+              90,
+              90,
+              90,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              59,
+              41,
+              86
+            ],
+            "name": [
+              119,
+              114,
+              105,
+              116,
+              101,
+              73,
+              110,
+              115,
+              116,
+              97,
+              110,
+              99,
+              101,
+              83,
+              108,
+              111,
+              116
+            ],
+            "owner": {
+              "class_bytes": {
+                "digest": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a",
+                "length": 2092
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "5ad94f0ac30f7841f0f9b8c2ee7745bb7e89ba459adae75a98b1d6596113fb6a"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            }
+          },
+          "expected_new_count": 1
+        }
+      ],
+      "source_map_gap_methods": [
+        "handlerAroundConditional",
+        "nestedConditionals",
+        "sharedFieldAndReturn"
+      ],
+      "execution_sha256": "01ead8df75c52d4d6637d0ad83ea2843e2c60bf211efa395e44442358fd0c8bc",
+      "checker_sha256": "e5504fda50be5d1b005b58152391f380c95a2568533f95f5a9c52815487b98ed",
+      "launcher_receipt_sha256": "fa189f369cb678f436ccfa0bb98b08347d75a44b80014e40e224ae5d8d12c410"
+    }
+  ],
+  "actual_command_count": 72,
+  "raw_stream_count": 144,
+  "whole_refusals_generated_runtime_accepted": false,
+  "positive_runtime_uses_same_generated_source_isolated_when_combined_fails": true,
+  "workspace_lint_own_ci_main_delivery_pending": true,
+  "acceptor_sha256": "6b5ae715187c7d528769ec0edf6e7c18ce46d1b252cbab22225c786f992b6ddf"
+}

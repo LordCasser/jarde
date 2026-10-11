@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-constructor-conditional-workspace-root-v1.py"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T18:05:09.560056+00:00",
+  "finished_at": "2026-10-11T18:16:22.096758+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-workspace-root-v1/stdout.raw",
+      "bytes": 7040,
+      "sha256": "c3843362b27e313bed4b14cf206e29806f24f2a187f7f5ae9b109794eb9ed92e"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-workspace-root-v1/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

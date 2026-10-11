@@ -1,0 +1,1437 @@
+{
+  "source_map_gaps": [
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionPositive",
+      "name": "oneConstructedArm",
+      "descriptor": "(ZZZLjava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 4,
+      "code_span": {
+        "start": 1485,
+        "length": 118
+      },
+      "code_length": 25,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionPositive",
+      "name": "twoConstructedArms",
+      "descriptor": "(ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1617,
+        "length": 155
+      },
+      "code_length": 38,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        24,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        27,
+        28,
+        30,
+        31,
+        34
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionPositive",
+      "name": "oneConstructedArm",
+      "descriptor": "(ZZZLjava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 4,
+      "code_span": {
+        "start": 1485,
+        "length": 118
+      },
+      "code_length": 25,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionPositive",
+      "name": "twoConstructedArms",
+      "descriptor": "(ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1617,
+        "length": 155
+      },
+      "code_length": 38,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        24,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        27,
+        28,
+        30,
+        31,
+        34
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionRefusals",
+      "name": "localBoundary",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1736,
+        "length": 120
+      },
+      "code_length": 27,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionRefusals",
+      "name": "sharedFieldAndReturn",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 6,
+      "code_span": {
+        "start": 1870,
+        "length": 112
+      },
+      "code_length": 29,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        28
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionRefusals",
+      "name": "nestedConditionals",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 7,
+      "code_span": {
+        "start": 1996,
+        "length": 161
+      },
+      "code_length": 49,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        9,
+        10,
+        13,
+        16,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        31,
+        32,
+        35,
+        38,
+        39,
+        41,
+        42,
+        45,
+        48
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        9,
+        10,
+        13,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        32,
+        38,
+        39,
+        41,
+        42,
+        45
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionRefusals",
+      "name": "handlerAroundConditional",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 9,
+      "code_span": {
+        "start": 2329,
+        "length": 167
+      },
+      "code_length": 40,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        27,
+        30,
+        32,
+        33,
+        34,
+        35,
+        38,
+        39
+      ],
+      "source_origin_bci_count": 20,
+      "source_origin_records": 27,
+      "missing_physical_bcis": [
+        20,
+        23
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionRefusals",
+      "name": "localBoundary",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1736,
+        "length": 120
+      },
+      "code_length": 27,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionRefusals",
+      "name": "sharedFieldAndReturn",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 6,
+      "code_span": {
+        "start": 1870,
+        "length": 112
+      },
+      "code_length": 29,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        28
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionRefusals",
+      "name": "nestedConditionals",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 7,
+      "code_span": {
+        "start": 1996,
+        "length": 161
+      },
+      "code_length": 49,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        9,
+        10,
+        13,
+        16,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        31,
+        32,
+        35,
+        38,
+        39,
+        41,
+        42,
+        45,
+        48
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        9,
+        10,
+        13,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        32,
+        38,
+        39,
+        41,
+        42,
+        45
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionRefusals",
+      "name": "handlerAroundConditional",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 9,
+      "code_span": {
+        "start": 2329,
+        "length": 167
+      },
+      "code_length": 40,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        27,
+        30,
+        32,
+        33,
+        34,
+        35,
+        38,
+        39
+      ],
+      "source_origin_bci_count": 20,
+      "source_origin_records": 27,
+      "missing_physical_bcis": [
+        20,
+        23
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionPositive",
+      "name": "oneConstructedArm",
+      "descriptor": "(ZZZLjava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 4,
+      "code_span": {
+        "start": 1479,
+        "length": 122
+      },
+      "code_length": 25,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionPositive",
+      "name": "twoConstructedArms",
+      "descriptor": "(ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1615,
+        "length": 155
+      },
+      "code_length": 38,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        24,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        27,
+        28,
+        30,
+        31,
+        34
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionPositive",
+      "name": "oneConstructedArm",
+      "descriptor": "(ZZZLjava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 4,
+      "code_span": {
+        "start": 1479,
+        "length": 122
+      },
+      "code_length": 25,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionPositive",
+      "name": "twoConstructedArms",
+      "descriptor": "(ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1615,
+        "length": 155
+      },
+      "code_length": 38,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        24,
+        27,
+        28,
+        30,
+        31,
+        34,
+        37
+      ],
+      "source_origin_bci_count": 7,
+      "source_origin_records": 7,
+      "missing_physical_bcis": [
+        11,
+        12,
+        14,
+        15,
+        18,
+        21,
+        27,
+        28,
+        30,
+        31,
+        34
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionRefusals",
+      "name": "localBoundary",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1730,
+        "length": 124
+      },
+      "code_length": 27,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionRefusals",
+      "name": "sharedFieldAndReturn",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 6,
+      "code_span": {
+        "start": 1868,
+        "length": 116
+      },
+      "code_length": 29,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        28
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionRefusals",
+      "name": "nestedConditionals",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 7,
+      "code_span": {
+        "start": 1998,
+        "length": 165
+      },
+      "code_length": 49,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        9,
+        10,
+        13,
+        16,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        31,
+        32,
+        35,
+        38,
+        39,
+        41,
+        42,
+        45,
+        48
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        9,
+        10,
+        13,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        32,
+        38,
+        39,
+        41,
+        42,
+        45
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionRefusals",
+      "name": "handlerAroundConditional",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 9,
+      "code_span": {
+        "start": 2335,
+        "length": 171
+      },
+      "code_length": 40,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        27,
+        30,
+        32,
+        33,
+        34,
+        35,
+        38,
+        39
+      ],
+      "source_origin_bci_count": 20,
+      "source_origin_records": 27,
+      "missing_physical_bcis": [
+        20,
+        23
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionRefusals",
+      "name": "localBoundary",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 5,
+      "code_span": {
+        "start": 1730,
+        "length": 124
+      },
+      "code_length": 27,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionRefusals",
+      "name": "sharedFieldAndReturn",
+      "descriptor": "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 6,
+      "code_span": {
+        "start": 1868,
+        "length": 116
+      },
+      "code_length": 29,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        28
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionRefusals",
+      "name": "nestedConditionals",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 7,
+      "code_span": {
+        "start": 1998,
+        "length": 165
+      },
+      "code_length": 49,
+      "exception_handler_count": 0,
+      "exception_table": [],
+      "javap_exception_table": [],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        9,
+        10,
+        13,
+        16,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        31,
+        32,
+        35,
+        38,
+        39,
+        41,
+        42,
+        45,
+        48
+      ],
+      "source_origin_bci_count": 8,
+      "source_origin_records": 8,
+      "missing_physical_bcis": [
+        1,
+        9,
+        10,
+        13,
+        19,
+        20,
+        21,
+        22,
+        25,
+        28,
+        32,
+        38,
+        39,
+        41,
+        42,
+        45
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionRefusals",
+      "name": "handlerAroundConditional",
+      "descriptor": "(ZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "access_flags": 9,
+      "method_index": 9,
+      "code_span": {
+        "start": 2335,
+        "length": 171
+      },
+      "code_length": 40,
+      "exception_handler_count": 1,
+      "exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "javap_exception_table": [
+        {
+          "start_pc": 0,
+          "end_pc": 24,
+          "handler_pc": 25,
+          "catch_type": "java/lang/IllegalArgumentException"
+        }
+      ],
+      "instruction_bcis": [
+        0,
+        1,
+        2,
+        5,
+        8,
+        11,
+        12,
+        13,
+        14,
+        17,
+        20,
+        23,
+        24,
+        25,
+        27,
+        30,
+        32,
+        33,
+        34,
+        35,
+        38,
+        39
+      ],
+      "source_origin_bci_count": 20,
+      "source_origin_records": 27,
+      "missing_physical_bcis": [
+        20,
+        23
+      ],
+      "physical_coverage_complete": false,
+      "quality": "fallback"
+    }
+  ],
+  "all_method_physical_coverage_complete": false,
+  "schema": "cf11-target-full-source-observation-v2",
+  "status": "verified_observation_capture_with_quality_gaps",
+  "rendered_class_digest_validation": "BLAKE3 shape and location/owner/default-all consistency only; physical files separately SHA256 pinned; no independent BLAKE3 recomputation",
+  "behavioral_acceptance": "not_claimed",
+  "behavior_mismatches": [],
+  "execution": {
+    "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/execution.json",
+    "bytes": 129204,
+    "sha256": "ea9563353916d1b690883328fa0a304a0997fdaf29aaba8f61417fc73767e7e2"
+  },
+  "actual_command_count": 39,
+  "raw_stream_count": 78,
+  "classes": [
+    "cf11.ConditionalConstructionPositive",
+    "cf11.ConditionalConstructionRefusals"
+  ],
+  "original_oracle": {
+    "exit_code": 0,
+    "stdout_nonempty": true,
+    "stderr_empty": true,
+    "stdout_sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jdk8_jdk23_equal": true
+  },
+  "jarde_method_maps_checked": 72,
+  "default_all": [
+    {
+      "jdk": "javac8",
+      "class": "cf11.ConditionalConstructionPositive",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac8",
+      "class": "cf11.ConditionalConstructionRefusals",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.ConditionalConstructionPositive",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    },
+    {
+      "jdk": "javac23",
+      "class": "cf11.ConditionalConstructionRefusals",
+      "both_rendered": true,
+      "source_and_maps_equal": true
+    }
+  ],
+  "generated_compile_observations": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionPositive",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionRefusals",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionPositive",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionRefusals",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionPositive",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionRefusals",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionPositive",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionRefusals",
+      "compile_exit": 1,
+      "class_paths": [],
+      "class_set_exact": null,
+      "runtime": null
+    },
+    {
+      "label": "javac8-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_exit": 0,
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "runtime_exit": 0,
+      "same_jdk_original": true,
+      "stdout_sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jarde_unusable_outputs": [],
+  "compile_failures_remain_observations": true,
+  "checker": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py",
+    "bytes": 35662,
+    "sha256": "51c08b5d7aedd975853f18803ee9f3387073468a5e7efb4a4fa165e32b118ce3"
+  }
+}

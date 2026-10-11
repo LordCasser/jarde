@@ -1,0 +1,10 @@
+
+running 5 tests
+test conditional_constructor_positive_all_evidence_reports_four_exact_methods ... ok
+test conditional_constructor_public_late_stop_and_precancel_publish_atomically ... ok
+test conditional_constructor_public_reports_agree_across_evidence_selections ... ok
+test conditional_constructor_range_excluding_all_new_bcis_keeps_summary_and_text ... ok
+test conditional_sites_are_not_presented_when_the_final_body_is_explanation_only ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+

@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 1.43s
+[1m[92m     Running[0m tests/p1_query_demand.rs (target/debug/deps/p1_query_demand-bbdd4c76e69ac0ed)
+[1m[92m     Running[0m tests/p1_query_model.rs (target/debug/deps/p1_query_model-8fe99fcce4437530)
+[1m[92m     Running[0m tests/p1_query_planes.rs (target/debug/deps/p1_query_planes-5868854c72537cf5)
+[1m[92m     Running[0m tests/p1_query_positions.rs (target/debug/deps/p1_query_positions-e444afcc150a2bf3)

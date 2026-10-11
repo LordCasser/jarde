@@ -1,0 +1,5 @@
+Root实际读当前Builder loop/iterable helper与ordinary generic projection后接受静态方向，仅为下一片候选规划：祖先空Iterator声明通过split-aware LocalVariable/DeclarationPlacement的可见owner核验，init删除只限当前parent statement list，不新增跨frame编辑协议。
+
+v1没有说清当前foreach呈现；root最初按String直接头提出raw List类型顾虑，随后实际读完helper末尾确认现有代码已使用synthetic Object iteratorElement+保留String cast/body binding。因此无需新增element转换机制，也不应以该错误假设要求generic前置。v2纠正这一点；typed String header/List<String>源码质量仍单列。JADX可变type fix不替代本仓proof。
+
+现有sameIR仅首拒已测，余下SSA/effect/handlers尚未运行；不得把静态owner设计当新实现或完整class重编成功。外层Assign元素绑定另片。current constructor production完全不混入这些修改。

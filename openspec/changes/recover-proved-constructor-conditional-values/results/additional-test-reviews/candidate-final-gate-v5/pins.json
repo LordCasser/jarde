@@ -1,0 +1,39 @@
+{
+  "schema": "jarde-constructor-phi-impl-luna-v5",
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+    "bytes": 281939,
+    "sha256": "60383acca5703d2cfe7e8379455b02bb1742219c371ceb21b6cddf035b18493d"
+  },
+  "candidate": {
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v5/init.rs",
+    "bytes": 284090,
+    "sha256": "ffd71bb83e1ba3e3379b84c00d9864bf44af6ef6cd5682de6bc1c76190eab56f"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v5/init.rs.patch",
+    "bytes": 2784,
+    "sha256": "d5f7ca7c192fbb818e29d2bb2b71a60b4fb5f2e8f90ccc3c768c6216412fb8f6"
+  },
+  "diagnostic_only_evidence": [
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-x4-probe-root-v1/0.stdout.raw",
+      "bytes": 78861,
+      "sha256": "329a5c46709b8a97781d4ac6ef01e8248411042b2307c2f9d20d5b886a2fb338",
+      "scope": "frozen v2 CLI X4 full-class rendering; not final current-source acceptance"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-x4-probe-root-v1/execution.json",
+      "bytes": 1883,
+      "sha256": "7f982ae5380b5ec34d421e8b0fa917bb854fa58c97d11bae013b7f620211d778",
+      "scope": "command exited 0; artifact records terminal diagnostic output only"
+    }
+  ],
+  "change_scope": [
+    "init.rs test only",
+    "distinguish ownership candidates from final AST presentation",
+    "pin inner candidates to shared physical consumer BCI 31",
+    "assert outer refusal, and empty-receipt refusal/count/materialization agreement"
+  ],
+  "verification": "static preparation only; no shared files or toolchain modified/run"
+}

@@ -1,0 +1,114 @@
+{
+  "status": "accepted_frozen_v2_final_presentation_refusal_observation_only",
+  "raw_stdout_sha256": "329a5c46709b8a97781d4ac6ef01e8248411042b2307c2f9d20d5b886a2fb338",
+  "method_identity": {
+    "descriptor": [
+      40,
+      90,
+      41,
+      76,
+      106,
+      97,
+      118,
+      97,
+      47,
+      108,
+      97,
+      110,
+      103,
+      47,
+      83,
+      116,
+      114,
+      105,
+      110,
+      103,
+      59
+    ],
+    "name": [
+      99,
+      114,
+      111,
+      115,
+      115,
+      66,
+      108,
+      111,
+      99,
+      107
+    ],
+    "owner": {
+      "class_bytes": {
+        "digest": "7789398eb368585ebfaadf20259a9a467137c22455a4740bb9dee2f7943d15e9",
+        "length": 1400
+      },
+      "location": {
+        "kind": "standalone_root",
+        "snapshot": "7789398eb368585ebfaadf20259a9a467137c22455a4740bb9dee2f7943d15e9"
+      },
+      "variant": {
+        "kind": "base"
+      }
+    }
+  },
+  "news": [
+    {
+      "arguments": [],
+      "class": "X4$Tag",
+      "constructor": null,
+      "dup": null,
+      "head": 0,
+      "presented": false,
+      "refusal": {
+        "code": "jre_new_shape",
+        "message": "the construction at BCI 0 was not presented: the allocation at BCI 0 is never constructed: no `X4$Tag.<init>(\u2026)` call reads the instance it builds and the copy of it",
+        "requirement": null,
+        "rule": {
+          "rule": "new",
+          "version": "1"
+        }
+      }
+    },
+    {
+      "arguments": [
+        14
+      ],
+      "class": "X4$Val",
+      "constructor": 16,
+      "dup": 13,
+      "head": 10,
+      "presented": false,
+      "refusal": {
+        "code": "jre_new_conditional_not_emitted",
+        "message": "the constructor at BCI 16 passed the one-hop conditional-value ownership check, but the final body did not contain exactly one matching method-local `new` expression",
+        "requirement": null,
+        "rule": {
+          "rule": "new",
+          "version": "1"
+        }
+      }
+    },
+    {
+      "arguments": [
+        26
+      ],
+      "class": "X4$Val",
+      "constructor": 28,
+      "dup": 25,
+      "head": 22,
+      "presented": false,
+      "refusal": {
+        "code": "jre_new_conditional_not_emitted",
+        "message": "the constructor at BCI 28 passed the one-hop conditional-value ownership check, but the final body did not contain exactly one matching method-local `new` expression",
+        "requirement": null,
+        "rule": {
+          "rule": "new",
+          "version": "1"
+        }
+      }
+    }
+  ],
+  "summary": "3 construction candidate(s) read under new@1: 0 presented as `new`, 3 refused",
+  "probe_postprocessing_failure_preserved": true,
+  "not_current_source_product_validation": true
+}

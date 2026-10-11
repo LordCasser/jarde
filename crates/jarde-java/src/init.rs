@@ -99,6 +99,9 @@ pub(crate) struct Site {
     pub(crate) instance: Vec<u32>,
     /// The exact completed instance value paired with an array store, only for composed sites.
     pub(crate) finished_value: Option<ValueId>,
+    /// The one physical consumer reached through one live stack Phi; this marks the conditional
+    /// candidate path without replacing the Builder's complete conditional-expression proof.
+    pub(crate) conditional_consumer: Option<u32>,
     /// Every instruction from the allocation through the constructor call that the verifier
     /// accepted as this expression, including the value-producing argument instructions. A
     /// resource header can use this closed range to prove that its complete initializer is this
@@ -333,13 +336,14 @@ struct Refused {
 /// One verdict of this rule's plan: the site it verified, or the candidate it refused.
 enum Decision<'a> {
     Presented(&'a Site),
+    ConditionalNotEmitted(&'a Site),
     Refused(&'a Refused),
 }
 
 impl Decision<'_> {
     fn head(&self) -> u32 {
         match self {
-            Self::Presented(site) => site.head,
+            Self::Presented(site) | Self::ConditionalNotEmitted(site) => site.head,
             Self::Refused(refused) => refused.head,
         }
     }
@@ -348,7 +352,7 @@ impl Decision<'_> {
     /// constructor and every argument, and a refused candidate's own allocation.
     fn positions(&self) -> Vec<u32> {
         match self {
-            Self::Presented(site) => site_positions(site),
+            Self::Presented(site) | Self::ConditionalNotEmitted(site) => site_positions(site),
             Self::Refused(refused) => vec![refused.head],
         }
     }
@@ -358,6 +362,9 @@ impl Decision<'_> {
         crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
         match self {
             Self::Presented(site) => NewRecord::of_site(site),
+            Self::ConditionalNotEmitted(site) => {
+                NewRecord::of_unpresented_site(site, NewRefusal::conditional_not_emitted(site))
+            }
             Self::Refused(refused) => NewRecord::of_candidate(
                 refused.head,
                 &refused.class,
@@ -423,11 +430,46 @@ impl Sites {
         matches.next().is_none().then_some(site)
     }
 
-    /// Every candidate the rule refused, in BCI order.
-    pub(crate) fn refusals(&self) -> impl Iterator<Item = Gap> + '_ {
-        self.refusals.iter().map(|refused| {
-            let refusal = NewRefusal::of(&refused.refusal, refused.head);
-            Gap::at(refusal.code, refused.head, refusal.message)
+    /// Constructor identities that need a final-AST receipt. Only these candidates are counted by
+    /// the existing Program walk; ordinary New publication remains on its existing path.
+    pub(crate) fn conditional_constructor_bcis(&self) -> impl Iterator<Item = u32> + '_ {
+        self.sites
+            .iter()
+            .filter(|site| site.conditional_consumer.is_some())
+            .map(|site| site.constructor)
+    }
+
+    /// Every candidate the rule refused, plus conditional candidates that did not become one
+    /// method-local New expression in the final Program. This uses the same predicate as counts
+    /// and record materialization.
+    pub(crate) fn refusals<'a>(
+        &'a self,
+        committed: &'a field::CommittedPresentations,
+    ) -> impl Iterator<Item = Gap> + 'a {
+        let mut refusals = self.refusals.iter().peekable();
+        let mut not_emitted = self
+            .sites
+            .iter()
+            .filter(move |site| {
+                site.conditional_consumer.is_some() && !conditional_site_presented(site, committed)
+            })
+            .peekable();
+        std::iter::from_fn(move || {
+            let take_refusal = match (refusals.peek(), not_emitted.peek()) {
+                (Some(refused), Some(site)) => refused.head <= site.head,
+                (Some(_), None) => true,
+                (None, Some(_)) => false,
+                (None, None) => return None,
+            };
+            if take_refusal {
+                let refused = refusals.next()?;
+                let refusal = NewRefusal::of(&refused.refusal, refused.head);
+                Some(Gap::at(refusal.code, refused.head, refusal.message))
+            } else {
+                let site = not_emitted.next()?;
+                let refusal = NewRefusal::conditional_not_emitted(site);
+                Some(Gap::at(refusal.code, site.head, refusal.message))
+            }
         })
     }
 
@@ -436,17 +478,25 @@ impl Sites {
         !self.sites.is_empty() || !self.refusals.is_empty()
     }
 
-    /// How many candidates the rule read, and how many of them it presented as sites.
-    pub(crate) fn counts(&self) -> (u64, u64) {
-        let presented = u64::try_from(self.sites.len()).unwrap_or(u64::MAX);
-        let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
-        (presented + refused, presented)
+    /// How many candidates the rule read, and how many became a committed site expression.
+    pub(crate) fn counts(&self, committed: &field::CommittedPresentations) -> (u64, u64) {
+        let read =
+            u64::try_from(self.sites.len().saturating_add(self.refusals.len())).unwrap_or(u64::MAX);
+        let presented = u64::try_from(
+            self.sites
+                .iter()
+                .filter(|site| conditional_site_presented(site, committed))
+                .count(),
+        )
+        .unwrap_or(u64::MAX);
+        (read, presented)
     }
 
     /// The owning records this plan publishes under `publication`, in BCI order, within the phase's
     /// remaining allowance.
     pub(crate) fn materialize(
         &self,
+        committed: &field::CommittedPresentations,
         publication: Publication,
         phase: &mut crate::evidence::EvidencePhase,
         budget: &mut jarde_reader::budget::Budget,
@@ -454,7 +504,13 @@ impl Sites {
         let mut decisions: Vec<Decision<'_>> = self
             .sites
             .iter()
-            .map(Decision::Presented)
+            .map(|site| {
+                if conditional_site_presented(site, committed) {
+                    Decision::Presented(site)
+                } else {
+                    Decision::ConditionalNotEmitted(site)
+                }
+            })
             .chain(self.refusals.iter().map(Decision::Refused))
             .collect();
         decisions.sort_by_key(Decision::head);
@@ -466,6 +522,10 @@ impl Sites {
             Decision::record,
         )
     }
+}
+
+fn conditional_site_presented(site: &Site, committed: &field::CommittedPresentations) -> bool {
+    site.conditional_consumer.is_none() || committed.conditional_new_count(site.constructor) == 1
 }
 
 /// Reads every construction site of one body.
@@ -1108,7 +1168,7 @@ fn verify_metered(
     // out. The place the value is written is the reader's own text: a store, a call, a `return`, a
     // test and a *claimed* field access ([`renders_its_reads`]) all write the value they read, and
     // every other instruction is quoted as bytecode and writes nothing.
-    let readers = outside_readers(ssa, block, &produced_by, meter)?;
+    let (readers, conditional_consumer) = outside_readers(ssa, block, &produced_by, at, meter)?;
     let mut written = Vec::new();
     for bci in &readers {
         meter.charge(CountedBudgetDimension::IrItems, Some(*bci))?;
@@ -1334,6 +1394,7 @@ fn verify_metered(
         owned,
         instance: produced_by,
         finished_value: expected_array_store.map(|(_, value)| value),
+        conditional_consumer,
         expression,
         single_use_atoms,
         nested_sites,
@@ -2288,17 +2349,26 @@ fn outside_readers(
     ssa: &SsaTable,
     block: &[SsaInstruction],
     produced_by: &[u32],
+    constructor: u32,
     meter: &mut VerifyMeter<'_>,
-) -> Result<Vec<u32>, VerifyFailure> {
+) -> Result<(Vec<u32>, Option<u32>), VerifyFailure> {
     let mut readers: Vec<u32> = Vec::new();
+    let mut constructor_stack_writes = 0;
+    let mut conditional_phi_input = None;
     for producer in block {
         meter.charge(CountedBudgetDimension::AnalysisSteps, Some(producer.bci()))?;
         if !produced_by.contains(&producer.bci()) {
             continue;
         }
-        for (_, value) in producer.writes() {
+        for (slot, value) in producer.writes() {
             meter.charge(CountedBudgetDimension::IrItems, Some(producer.bci()))?;
-            for usage in ssa.value(*value).uses() {
+            let constructor_output =
+                producer.bci() == constructor && matches!(slot, Slot::Stack(_));
+            if constructor_output {
+                constructor_stack_writes += 1;
+            }
+            let uses = ssa.value(*value).uses();
+            for usage in uses {
                 meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
                 let Some(bci) = usage.bci() else {
                     continue;
@@ -2307,10 +2377,120 @@ fn outside_readers(
                     readers.push(bci);
                 }
             }
+            if constructor_output
+                && uses.len() == 1
+                && uses[0].bci().is_none()
+                && ssa.value(*value).replaced_by().is_none()
+                && matches!(ssa.value(*value).def(), Definition::Instruction { bci, .. } if *bci == constructor)
+            {
+                conditional_phi_input = Some((*value, uses[0].block()));
+            }
         }
     }
+    if constructor_stack_writes != 1 {
+        conditional_phi_input = None;
+    }
+    // Ordinary constructors stop after the existing reader walk; only its exact None-BCI use
+    // enters the added charged Phi/consumer proof used by the Builder's conditional-value path.
+    let conditional_consumer = match conditional_phi_input {
+        Some((value, block)) => conditional_phi_consumer(ssa, value, block, meter)?,
+        None => None,
+    };
+    if let Some(consumer) = conditional_consumer
+        && !readers.contains(&consumer)
+    {
+        readers.push(consumer);
+    }
     readers.sort_unstable();
-    Ok(readers)
+    Ok((readers, conditional_consumer))
+}
+
+/// Recognizes only the finished constructor's direct output flowing through one live, two-input
+/// stack Phi to one physical same-join instruction that reads the Phi result once. The Builder
+/// retains the complete CFG and arm-effect proof before it can emit the conditional expression.
+fn conditional_phi_consumer(
+    ssa: &SsaTable,
+    constructor_value: ValueId,
+    operand_block: &jarde_jvm::method_ir::CanonicalBlockId,
+    meter: &mut VerifyMeter<'_>,
+) -> Result<Option<u32>, VerifyFailure> {
+    use jarde_jvm::method_ir::PhiInput;
+
+    let mut selected = None;
+    for phi in ssa.phis() {
+        meter.charge(CountedBudgetDimension::IrItems, None)?;
+        if phi.block() != operand_block
+            || !matches!(phi.slot(), Slot::Stack(_))
+            || phi.inputs().len() != 2
+        {
+            continue;
+        }
+        for _ in phi.inputs() {
+            meter.charge(CountedBudgetDimension::IrItems, None)?;
+        }
+        let (PhiInput::Value(left), PhiInput::Value(right)) = (&phi.inputs()[0], &phi.inputs()[1])
+        else {
+            continue;
+        };
+        if left == right
+            || ((*left == constructor_value) as usize) + ((*right == constructor_value) as usize)
+                != 1
+        {
+            continue;
+        }
+        let merged = ssa.value(phi.value());
+        if merged.replaced_by().is_some()
+            || !matches!(merged.def(), Definition::Phi { block, slot }
+                if block == phi.block() && *slot == phi.slot())
+        {
+            continue;
+        }
+        if selected.replace(phi.value()).is_some() {
+            return Ok(None);
+        }
+    }
+    let Some(phi_value) = selected else {
+        return Ok(None);
+    };
+    let phi = ssa.value(phi_value);
+    let uses = phi.uses();
+    for usage in uses {
+        meter.charge(CountedBudgetDimension::IrItems, usage.bci())?;
+    }
+    let [usage] = uses else {
+        return Ok(None);
+    };
+    let Some(consumer) = usage.bci() else {
+        return Ok(None);
+    };
+    let Definition::Phi {
+        block: join_block, ..
+    } = phi.def()
+    else {
+        return Ok(None);
+    };
+    if usage.block() != join_block {
+        return Ok(None);
+    }
+    let Some(join) = ssa.block(join_block) else {
+        return Ok(None);
+    };
+    for instruction in join.instructions() {
+        meter.charge(
+            CountedBudgetDimension::AnalysisSteps,
+            Some(instruction.bci()),
+        )?;
+        if instruction.bci() != consumer {
+            continue;
+        }
+        let mut reads_phi = 0;
+        for (_, value) in instruction.reads() {
+            meter.charge(CountedBudgetDimension::IrItems, Some(consumer))?;
+            reads_phi += (*value == phi_value) as usize;
+        }
+        return Ok((reads_phi == 1).then_some(consumer));
+    }
+    Ok(None)
 }
 
 /// Whether the instruction at one BCI writes the values it reads into the text this build produces.
@@ -2763,6 +2943,18 @@ impl NewRecord {
         }
     }
 
+    fn of_unpresented_site(site: &Site, refusal: NewRefusal) -> Self {
+        Self {
+            head: site.head,
+            dup: Some(site.dup),
+            constructor: Some(site.constructor),
+            class: site.class.clone(),
+            arguments: site.arguments.clone(),
+            presented: false,
+            refusal: Some(refusal),
+        }
+    }
+
     fn of_candidate(head: u32, class: &str, refusal: NewRefusal) -> Self {
         Self {
             head,
@@ -2791,6 +2983,18 @@ pub struct NewRefusal {
 }
 
 impl NewRefusal {
+    fn conditional_not_emitted(site: &Site) -> Self {
+        Self {
+            code: "jre_new_conditional_not_emitted",
+            rule: NEW_RULE,
+            requirement: None,
+            message: format!(
+                "the constructor at BCI {} passed the one-hop conditional-value ownership check, but the final body did not contain exactly one matching method-local `new` expression",
+                site.constructor
+            ),
+        }
+    }
+
     fn of(refusal: &Refusal, head: u32) -> Self {
         Self {
             code: refusal.code(),
@@ -3186,6 +3390,12 @@ mod tests {
     const VARARGS_V2: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-02/varargs-ctor-arg-patrol/variants-vca/V2.class"
     );
+    const SEQUENTIAL_LOOPS2_CONDITIONAL_CTOR: &[u8] = include_bytes!(
+        "../../../tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class"
+    );
+    const CONDITIONAL_CONSTRUCTION_REFUSALS: &[u8] = include_bytes!(
+        "../../../tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class"
+    );
     const NESTED_PROBE: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
     );
@@ -3304,7 +3514,11 @@ mod tests {
             let refused = inline_char_sites(name, descriptor, 8, None);
             assert!(refused.site_at_head(0).is_none(), "{name} must not embed");
             assert_eq!(
-                refused.refusals().next().expect("physical refusal").code(),
+                refused
+                    .refusals(&field::CommittedPresentations::empty())
+                    .next()
+                    .expect("physical refusal")
+                    .code(),
                 "jre_new_interleaved_effect",
                 "{name}"
             );
@@ -3314,7 +3528,11 @@ mod tests {
         let crossed = inline_char_sites("direct", "()Ljava/lang/String;", 8, Some((5, 22)));
         assert!(crossed.site_at_head(0).is_none());
         assert_eq!(
-            crossed.refusals().next().expect("handler refusal").code(),
+            crossed
+                .refusals(&field::CommittedPresentations::empty())
+                .next()
+                .expect("handler refusal")
+                .code(),
             "jre_new_inline_char_array_exception_boundary"
         );
     }
@@ -3342,6 +3560,133 @@ mod tests {
     const BOUND_RECEIVER_WIDENED: &[u8] = include_bytes!(
         "../../../openspec/evidence/java-syntax-2026-10-04/realistic-class-combination-patrol/fixture/C1.class"
     );
+
+    #[test]
+    fn conditional_constructor_output_has_one_live_stack_phi_and_one_join_consumer() {
+        let (analysis, _) = analyzed_caller(
+            SEQUENTIAL_LOOPS2_CONDITIONAL_CTOR,
+            "asciiToLowerCase",
+            "(Ljava/lang/String;)Ljava/lang/String;",
+        );
+        let ssa = analysis.ir().ssa().expect("SSA table");
+        let constructor_value = stack_value_written_at(ssa, 96).expect("constructor stack output");
+        let [operand_use] = ssa.value(constructor_value).uses() else {
+            panic!("the constructor output has exactly one use");
+        };
+        assert!(
+            operand_use.bci().is_none(),
+            "the one use is an entry Phi operand"
+        );
+        let operand_block = operand_use.block();
+        let mut meter = VerifyMeter::unmetered();
+        assert_eq!(
+            conditional_phi_consumer(ssa, constructor_value, operand_block, &mut meter)
+                .expect("one-hop proof completes"),
+            Some(99),
+            "the exact two-input live stack Phi reaches its one same-join reader",
+        );
+
+        let wrong_block = ssa
+            .blocks()
+            .iter()
+            .map(|block| block.block())
+            .find(|block| *block != operand_block)
+            .expect("fixture has another block");
+        let mut meter = VerifyMeter::unmetered();
+        assert_eq!(
+            conditional_phi_consumer(ssa, constructor_value, wrong_block, &mut meter)
+                .expect("wrong-block proof completes"),
+            None,
+            "a Phi in another block cannot own this constructor output",
+        );
+    }
+
+    fn conditional_refusals_sites(name: &str, descriptor: &str, parameter_slots: u16) -> Sites {
+        let (analysis, _) = analyzed_caller(CONDITIONAL_CONSTRUCTION_REFUSALS, name, descriptor);
+        let ir = analysis.ir();
+        let ssa = ir.ssa().expect("ssa");
+        let code = ir.code().expect("code");
+        let operations = Operations::of(code, ir.constant_pool());
+        let chains = crate::concat::Plan::empty();
+        let fields = field::Plan::empty();
+        let mut budget = proof_budget();
+        let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
+            .expect("array proof completes");
+        let method = crate::facts::MethodFacts::new(name, descriptor, parameter_slots)
+            .with_access_flags(0x0009);
+        sites(
+            ssa,
+            &operations,
+            &chains,
+            chains.owned(),
+            &fields,
+            &arrays,
+            8,
+            &[],
+            &method,
+            code,
+        )
+    }
+
+    #[test]
+    fn actual_local_conditional_new_has_its_local_store_as_the_single_consumer() {
+        let plan = conditional_refusals_sites(
+            "localBoundary",
+            "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            3,
+        );
+        let site = plan
+            .site_at_head(8)
+            .expect("the existing local-boundary fixture has a single store consumer");
+        assert_eq!(site.constructor, 17);
+        assert_eq!(site.conditional_consumer, Some(24));
+    }
+
+    #[test]
+    fn actual_shared_field_return_keeps_dup_outside_the_new_expression() {
+        let plan = conditional_refusals_sites(
+            "sharedFieldAndReturn",
+            "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            3,
+        );
+        assert!(
+            plan.site_at_head(8).is_none(),
+            "BCI 24 dup fans one Phi result to putstatic@25 and areturn@28; dup is not a text-writing consumer"
+        );
+        let refusal = plan
+            .refusals
+            .iter()
+            .find(|refused| refused.head == 8)
+            .expect("the shared construction remains refused");
+        assert!(refusal.refusal.message().contains("24"));
+    }
+
+    #[test]
+    fn actual_nested_conditional_constructor_arms_do_not_become_one_two_way_site() {
+        let plan = conditional_refusals_sites(
+            "nestedConditionals",
+            "(ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            5,
+        );
+        assert!(plan.site_at_head(16).is_none());
+        assert!(plan.site_at_head(35).is_none());
+        assert!(plan.refusals.iter().any(|refused| refused.head == 16));
+        assert!(plan.refusals.iter().any(|refused| refused.head == 35));
+    }
+
+    #[test]
+    fn actual_independent_branch_effect_stays_on_the_existing_statement_path() {
+        let plan = conditional_refusals_sites(
+            "independentBranchEffect",
+            "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            3,
+        );
+        let site = plan
+            .site_at_head(11)
+            .expect("existing report presents this branch-local construction");
+        assert_eq!(site.constructor, 20);
+        assert_eq!(site.conditional_consumer, None);
+    }
 
     /// One method's own `Sites` plan, over the fixture's own class file.
     fn sites_of(class: &[u8], name: &str, descriptor: &str) -> Sites {
@@ -3428,7 +3773,12 @@ mod tests {
                     .unwrap_or_else(|| panic!("{leg} {name} constructor proves"));
                 assert_eq!(site.constructor, constructor, "{leg} {name}");
                 assert!(site.expression.contains(&dynamic), "{leg} {name}");
-                assert!(plan.refusals().next().is_none(), "{leg} {name}");
+                assert!(
+                    plan.refusals(&field::CommittedPresentations::empty())
+                        .next()
+                        .is_none(),
+                    "{leg} {name}"
+                );
             }
         }
     }
@@ -3486,7 +3836,12 @@ mod tests {
                 })
                 .unwrap_or_else(|| panic!("{leg}: physical Byte argument is its i2b result"));
             assert!(site.expression.contains(&conversion), "{leg}");
-            assert!(plan.refusals().next().is_none(), "{leg}");
+            assert!(
+                plan.refusals(&field::CommittedPresentations::empty())
+                    .next()
+                    .is_none(),
+                "{leg}"
+            );
 
             // The production census charges the physical ordinary-construction walk itself.
             // Its Result cannot expose a partially filled Sites plan when that walk stops.
@@ -3600,7 +3955,12 @@ mod tests {
                     ),
                     "{leg}/{name}: argument anchor is the exact decoded conversion"
                 );
-                assert!(plan.refusals().next().is_none(), "{leg}/{name}");
+                assert!(
+                    plan.refusals(&field::CommittedPresentations::empty())
+                        .next()
+                        .is_none(),
+                    "{leg}/{name}"
+                );
             }
 
             let stored = sites_of(class, "storedLocalReuse", "(I)LPrimitiveLongPair;");
@@ -3647,7 +4007,13 @@ mod tests {
                 contrast.site_at_head(0).is_some(),
                 "{leg}: no-conversion control"
             );
-            assert!(contrast.refusals().next().is_none(), "{leg}");
+            assert!(
+                contrast
+                    .refusals(&field::CommittedPresentations::empty())
+                    .next()
+                    .is_none(),
+                "{leg}"
+            );
         }
     }
 
@@ -3826,7 +4192,12 @@ mod tests {
                 .site_at_head(0)
                 .unwrap_or_else(|| panic!("{leg}: matching allocation-through-astore handlers"));
             assert_eq!(site.constructor, 9, "{leg}");
-            assert!(plan.refusals().next().is_none(), "{leg}");
+            assert!(
+                plan.refusals(&field::CommittedPresentations::empty())
+                    .next()
+                    .is_none(),
+                "{leg}"
+            );
 
             let mut budget = proof_budget();
             let facts = jarde_reader::classfile::class_facts(class, &mut budget)
@@ -3904,7 +4275,10 @@ mod tests {
                 boundary,
             );
             assert!(plan.site_at_head(0).is_none(), "boundary {boundary:?}");
-            let refusal = plan.refusals().next().expect("handler refusal");
+            let refusal = plan
+                .refusals(&field::CommittedPresentations::empty())
+                .next()
+                .expect("handler refusal");
             assert_eq!(
                 refusal.code(),
                 "jre_new_dynamic_argument_exception_boundary",
@@ -6003,7 +6377,7 @@ mod tests {
                 code,
             );
             let reserved_refusal = reserved_only
-                .refusals()
+                .refusals(&field::CommittedPresentations::empty())
                 .next()
                 .expect("reserved ownership cannot prove a nested argument");
             assert_eq!(reserved_refusal.code(), "jre_new_interleaved_effect");
@@ -6025,7 +6399,9 @@ mod tests {
             let site = sites.site_at_head(0).unwrap_or_else(|| {
                 panic!(
                     "the outer exception construction is proved: {:?}",
-                    sites.refusals().collect::<Vec<_>>()
+                    sites
+                        .refusals(&field::CommittedPresentations::empty())
+                        .collect::<Vec<_>>()
                 )
             });
             assert!(site.arguments.contains(&chain.tail));
@@ -6253,7 +6629,12 @@ mod tests {
         );
         assert!(outer.owned.is_disjoint(&inner.owned));
         assert!(outer.expression.is_superset(&inner.expression));
-        assert!(probe.refusals().next().is_none());
+        assert!(
+            probe
+                .refusals(&field::CommittedPresentations::empty())
+                .next()
+                .is_none()
+        );
         assert!(
             probe
                 .allocation_candidates()
@@ -6287,7 +6668,12 @@ mod tests {
                     "{name}: the nested completed instance is one outer argument"
                 );
             }
-            assert!(plan.refusals().next().is_none(), "{name}");
+            assert!(
+                plan.refusals(&field::CommittedPresentations::empty())
+                    .next()
+                    .is_none(),
+                "{name}"
+            );
             assert!(
                 plan.allocation_candidates()
                     .iter()
@@ -6306,7 +6692,11 @@ mod tests {
         );
         assert!(crossed.site_at_head(0).is_none());
         assert_eq!(
-            crossed.refusals().next().expect("boundary refusal").code(),
+            crossed
+                .refusals(&field::CommittedPresentations::empty())
+                .next()
+                .expect("boundary refusal")
+                .code(),
             "jre_new_nested_exception_boundary"
         );
     }
@@ -6337,7 +6727,10 @@ mod tests {
             four.site_at_head(0).is_none(),
             "the outermost of four layers"
         );
-        let refusal = four.refusals().next().expect("the outer refusal registers");
+        let refusal = four
+            .refusals(&field::CommittedPresentations::empty())
+            .next()
+            .expect("the outer refusal registers");
         assert!(
             refusal
                 .message()
@@ -6349,7 +6742,7 @@ mod tests {
         assert!(double.site_at_head(0).is_none());
         assert!(double.site_at_head(6).is_none());
         let codes: Vec<_> = double
-            .refusals()
+            .refusals(&field::CommittedPresentations::empty())
             .map(|gap| gap.code().to_string())
             .collect();
         assert_eq!(codes, ["jre_new_interleaved_effect", "jre_new_shape"]);
@@ -6360,9 +6753,67 @@ mod tests {
             "(Z)Ljava/lang/String;",
             None,
         );
-        assert!(cross.site_at_head(0).is_none());
-        assert!(cross.site_at_head(10).is_none());
-        assert!(cross.site_at_head(22).is_none());
+        let no_final_new = field::CommittedPresentations::empty();
+        assert!(
+            cross.site_at_head(0).is_none(),
+            "the outer Tag is still refused"
+        );
+        let outer_refusal = cross
+            .refusals(&no_final_new)
+            .find(|gap| {
+                gap.message()
+                    .contains("construction at BCI 0 was not presented")
+            })
+            .expect("the original outer Tag refusal remains registered");
+        assert_eq!(outer_refusal.code(), "jre_new_shape");
+
+        let then_candidate = cross
+            .site_at_head(10)
+            .expect("the first Val is an ownership candidate, not yet a presentation");
+        let else_candidate = cross
+            .site_at_head(22)
+            .expect("the second Val is an ownership candidate, not yet a presentation");
+        assert_eq!(then_candidate.conditional_consumer, Some(31));
+        assert_eq!(else_candidate.conditional_consumer, Some(31));
+
+        assert_eq!(cross.counts(&no_final_new), (3, 0));
+        assert_eq!(
+            cross
+                .refusals(&no_final_new)
+                .map(|gap| gap.code())
+                .collect::<Vec<_>>(),
+            [
+                "jre_new_shape",
+                "jre_new_conditional_not_emitted",
+                "jre_new_conditional_not_emitted",
+            ],
+            "the two one-hop candidates remain unpresented without final Program New receipts",
+        );
+        let mut budget = proof_budget();
+        let mut phase = crate::evidence::EvidencePhase::new();
+        let (records, materialized) = cross.materialize(
+            &no_final_new,
+            Publication::of(&crate::evidence::RecoveryEvidenceRequest::all()),
+            &mut phase,
+            &mut budget,
+        );
+        assert_eq!(materialized, crate::evidence::Materialized::Complete);
+        assert_eq!(
+            records.iter().map(|record| record.head).collect::<Vec<_>>(),
+            [0, 10, 22]
+        );
+        assert!(records.iter().all(|record| !record.presented()));
+        assert_eq!(
+            records
+                .iter()
+                .map(|record| record.refusal.as_ref().expect("unpresented record").code)
+                .collect::<Vec<_>>(),
+            [
+                "jre_new_shape",
+                "jre_new_conditional_not_emitted",
+                "jre_new_conditional_not_emitted",
+            ],
+        );
     }
 
     /// The varargs inline array chain of a construction's argument run — `new ArrayList<>(Arrays
@@ -6378,7 +6829,11 @@ mod tests {
         assert_eq!((site.head, site.dup, site.constructor), (0, 3, 32));
         assert_eq!(site.arguments, [29]);
         assert!(site.expression.contains(&5) && site.expression.contains(&28));
-        assert!(w3.refusals().next().is_none());
+        assert!(
+            w3.refusals(&field::CommittedPresentations::empty())
+                .next()
+                .is_none()
+        );
         assert!(
             w3.allocation_candidates()
                 .iter()
@@ -6392,7 +6847,12 @@ mod tests {
             .expect("the empty varargs construction proves");
         assert_eq!((site.head, site.dup, site.constructor), (0, 3, 11));
         assert_eq!(site.arguments, [8]);
-        assert!(empty.refusals().next().is_none());
+        assert!(
+            empty
+                .refusals(&field::CommittedPresentations::empty())
+                .next()
+                .is_none()
+        );
 
         for name in [
             "viaEmptyCall",
@@ -6408,7 +6868,12 @@ mod tests {
                 site.expression.contains(&5),
                 "{name}: the chain allocation belongs to the expression"
             );
-            assert!(plan.refusals().next().is_none(), "{name}");
+            assert!(
+                plan.refusals(&field::CommittedPresentations::empty())
+                    .next()
+                    .is_none(),
+                "{name}"
+            );
             assert!(
                 plan.allocation_candidates()
                     .iter()
@@ -6434,7 +6899,7 @@ mod tests {
             let plan = varargs_sites(VARARGS_V2, name, "()I", None);
             assert!(plan.site_at_head(0).is_none(), "{name}");
             assert_eq!(
-                plan.refusals()
+                plan.refusals(&field::CommittedPresentations::empty())
                     .next()
                     .unwrap_or_else(|| panic!("{name} refusal registers"))
                     .code(),
@@ -6452,7 +6917,11 @@ mod tests {
         let crossed = varargs_sites(VARARGS_CTOR_W3, "viaArrays", "()I", Some((0, 4)));
         assert!(crossed.site_at_head(0).is_none());
         assert_eq!(
-            crossed.refusals().next().expect("boundary refusal").code(),
+            crossed
+                .refusals(&field::CommittedPresentations::empty())
+                .next()
+                .expect("boundary refusal")
+                .code(),
             "jre_new_inline_array_exception_boundary"
         );
     }

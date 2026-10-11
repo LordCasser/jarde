@@ -1,0 +1,87 @@
+{
+  "scope": "private checker-only v6; no collector/checker/toolchain execution",
+  "hash_algorithm": "SHA-256",
+  "base_checker": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v5/check_controls.py",
+    "bytes": 31233,
+    "sha256": "d338d6ae9b4bec67f9b2fa76db0f71dc04ea7d75c82f7155805bb8ba6975c51b"
+  },
+  "actual_baseline_execution": {
+    "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/execution.json",
+    "bytes": 129204,
+    "sha256": "ea9563353916d1b690883328fa0a304a0997fdaf29aaba8f61417fc73767e7e2"
+  },
+  "parser": {
+    "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "bytes": 35854,
+    "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "artifacts": {
+    "checker_v5": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v5/check_controls.py",
+      "bytes": 31233,
+      "sha256": "d338d6ae9b4bec67f9b2fa76db0f71dc04ea7d75c82f7155805bb8ba6975c51b"
+    },
+    "checker_v6": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py",
+      "bytes": 35662,
+      "sha256": "51c08b5d7aedd975853f18803ee9f3387073468a5e7efb4a4fa165e32b118ce3"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.patch",
+      "bytes": 8278,
+      "sha256": "51c1fa03bcf74dfae618ed6468e8044a30b7ce1c209607fbbe3c40775503c998"
+    },
+    "execution": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/execution.json",
+      "bytes": 129204,
+      "sha256": "ea9563353916d1b690883328fa0a304a0997fdaf29aaba8f61417fc73767e7e2"
+    },
+    "classfile_parser": {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    "javap_javac8_ConditionalConstructionPositive": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac8-original/javap-ConditionalConstructionPositive.txt",
+      "bytes": 15370,
+      "sha256": "d40da12b249df3709ce281f045a2afc8137c5898101dada8c7a79c4e6790041e"
+    },
+    "class_javac8_ConditionalConstructionPositive": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac8-original/classes/cf11/ConditionalConstructionPositive.class",
+      "bytes": 2086,
+      "sha256": "ac9d30eea0417b66469123d1e9c6d2a9debc8b22b2c78cebe4156d4b54eb2d27"
+    },
+    "javap_javac8_ConditionalConstructionRefusals": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac8-original/javap-ConditionalConstructionRefusals.txt",
+      "bytes": 18788,
+      "sha256": "7ebe7f1debec98099eb20f8080880d8f53c502f06c347025cb1caf006b331c8c"
+    },
+    "class_javac8_ConditionalConstructionRefusals": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac8-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "bytes": 2506,
+      "sha256": "f3022fa2d9b8870d783e2a96f0885f3e517a3e49ab5f5de146b3ba8f4de4767a"
+    },
+    "javap_javac23_ConditionalConstructionPositive": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/javap-ConditionalConstructionPositive.txt",
+      "bytes": 15650,
+      "sha256": "308cc78eea3ee7e15e99db4f8d41a5dcec813a36547ef94289f3c617a2a0fe7b"
+    },
+    "class_javac23_ConditionalConstructionPositive": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class",
+      "bytes": 2092,
+      "sha256": "bf0acebb4a538950a431fbe913f0c0522379582af6615369f425226a13e32bd1"
+    },
+    "javap_javac23_ConditionalConstructionRefusals": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/javap-ConditionalConstructionRefusals.txt",
+      "bytes": 19109,
+      "sha256": "906028a113ed613e39813f8e2fa88195b415c0117b0f375375868e31bde2a343"
+    },
+    "class_javac23_ConditionalConstructionRefusals": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "bytes": 2516,
+      "sha256": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f"
+    }
+  },
+  "policy": "Preserves v5 checks; records every Code exception-table row and requires exact ordered Javap agreement, including BCI boundary and catch type. No unconditional exception_count==0 rejection."
+}

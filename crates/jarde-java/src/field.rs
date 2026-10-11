@@ -58,6 +58,7 @@ use crate::facts::{DeclaringClass, FieldAccess, Operation, internal_form};
 use crate::names::is_java_identifier;
 use crate::pass::{FIELD, Precondition, RuleVersion};
 use crate::refusal::{Gap, Refusal};
+use crate::source_map::Provenance;
 use crate::stop::{self, StopReason};
 
 /// The pass answerable for every verdict of this module.
@@ -250,19 +251,59 @@ impl Plan {
     }
 }
 
-/// Collects only real field operations in the final AST. Direct origins and the plan must agree;
-/// derived origins, bytecode quotes and synthetic accessor field text cannot create a receipt.
+/// The immutable final-Program facts shared by Site diagnostics, counts and records.
+pub(crate) struct CommittedPresentations {
+    field_positions: BTreeSet<u32>,
+    conditional_new_counts: BTreeMap<u32, u8>,
+}
+
+impl CommittedPresentations {
+    #[cfg(test)]
+    pub(crate) fn empty() -> Self {
+        Self {
+            field_positions: BTreeSet::new(),
+            conditional_new_counts: BTreeMap::new(),
+        }
+    }
+
+    pub(crate) fn field_positions(&self) -> &BTreeSet<u32> {
+        &self.field_positions
+    }
+
+    pub(crate) fn conditional_new_count(&self, constructor: u32) -> u8 {
+        self.conditional_new_counts
+            .get(&constructor)
+            .copied()
+            .unwrap_or(0)
+    }
+}
+
+/// Collects real field operations and only the conditional candidate New identities in one walk.
+/// Direct New origins must be method-local and match the exact constructor BCI; derived origins,
+/// foreign methods, bytecode quotes and method references cannot create a receipt.
 pub(crate) fn committed_presentations(
     program: &crate::build::Program,
     plan: &Plan,
+    conditional_constructors: impl IntoIterator<Item = u32>,
     budget: &mut Budget,
-) -> Result<BTreeSet<u32>, StopReason> {
+) -> Result<CommittedPresentations, StopReason> {
     enum Node<'a> {
         Stmt(&'a Stmt),
         Expr(&'a Expr),
     }
     let mut pending: Vec<_> = program.stmts.iter().map(Node::Stmt).collect();
     let mut presented = BTreeSet::new();
+    let mut conditional_candidates = BTreeSet::new();
+    for constructor in conditional_constructors {
+        stop::charge(
+            budget,
+            CountedBudgetDimension::IrItems,
+            1,
+            Some(constructor),
+        )?;
+        conditional_candidates.insert(constructor);
+    }
+    let mut conditional_new_counts = BTreeMap::new();
     while let Some(node) = pending.pop() {
         let at = match node {
             Node::Stmt(stmt) => stmt.origin.primary().bci(),
@@ -444,6 +485,15 @@ pub(crate) fn committed_presentations(
                 ExprKind::New {
                     qualifier, args, ..
                 } => {
+                    if conditional_candidates.contains(&at) {
+                        stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+                        if expr.origin.primary().method().is_none()
+                            && expr.origin.primary().provenance() == Provenance::Direct
+                        {
+                            let count = conditional_new_counts.entry(at).or_insert(0_u8);
+                            *count = count.saturating_add(1).min(2);
+                        }
+                    }
                     if let Some(qualifier) = qualifier {
                         pending.push(Node::Expr(qualifier));
                     }
@@ -506,7 +556,10 @@ pub(crate) fn committed_presentations(
             },
         }
     }
-    Ok(presented)
+    Ok(CommittedPresentations {
+        field_positions: presented,
+        conditional_new_counts,
+    })
 }
 
 /// The member one field instruction names, as the pool and the instruction itself state it.
@@ -971,6 +1024,166 @@ mod tests {
         }
     }
 
+    fn program_returning(value: Expr) -> Program {
+        Program {
+            stmts: vec![Stmt::new(
+                StmtKind::Return { value: Some(value) },
+                OriginSet::new(Origin::direct(0)),
+            )],
+            field_increments: BTreeMap::new(),
+            statements: 1,
+            ragged: false,
+            lambdas: Vec::new(),
+            accessors: Vec::new(),
+            array_constructor_sites: Vec::new(),
+            lambda_refusals: Vec::new(),
+            accessor_refusals: Vec::new(),
+            lambdas_presented: 0,
+            accessors_presented: 0,
+        }
+    }
+
+    fn candidate_new(bci: u32) -> Expr {
+        Expr::direct(
+            ExprKind::New {
+                ty: "Example".to_owned(),
+                qualifier: None,
+                member_name: None,
+                diamond: false,
+                args: Vec::new(),
+            },
+            bci,
+        )
+    }
+
+    fn conditional_value(when_true: Expr, when_false: Expr) -> Expr {
+        Expr::direct(
+            ExprKind::Conditional {
+                test: Box::new(Expr::direct(ExprKind::Boolean(true), 2)),
+                when_true: Box::new(when_true),
+                when_false: Box::new(when_false),
+            },
+            3,
+        )
+    }
+
+    fn candidate_new_count(value: Expr, candidate: u32) -> u8 {
+        let program = program_returning(value);
+        let mut budget = Budget::new(Limits {
+            analysis_steps: u64::MAX,
+            ir_items: u64::MAX,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        committed_presentations(&program, &Plan::empty(), [candidate], &mut budget)
+            .expect("final Program receipt")
+            .conditional_new_count(candidate)
+    }
+
+    #[test]
+    fn conditional_new_receipt_counts_only_one_method_local_direct_new() {
+        const CANDIDATE: u32 = 11;
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(
+                    Expr::direct(ExprKind::Integer(1), 4),
+                    Expr::direct(ExprKind::Integer(2), 5),
+                ),
+                CANDIDATE,
+            ),
+            0,
+            "zero matching New nodes is not a committed conditional site",
+        );
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(candidate_new(CANDIDATE), Expr::direct(ExprKind::Null, 5)),
+                CANDIDATE,
+            ),
+            1,
+            "one direct method-local New is the accepted receipt",
+        );
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(candidate_new(CANDIDATE), candidate_new(CANDIDATE)),
+                CANDIDATE,
+            ),
+            2,
+            "counts saturate at two so duplicate presentations refuse",
+        );
+
+        let foreign = jarde_reader::model::PhysicalMethodId {
+            owner: jarde_reader::model::PhysicalDefinitionId {
+                location: jarde_reader::model::PhysicalClassLocation::StandaloneRoot {
+                    snapshot: jarde_reader::model::SnapshotId("foreign".to_owned()),
+                },
+                class_bytes: jarde_reader::model::ClassBytesId {
+                    digest: jarde_reader::model::Digest("foreign".to_owned()),
+                    length: 0,
+                },
+                variant: jarde_reader::model::PhysicalVariant::Base,
+            },
+            name: jarde_reader::model::JvmBytes(b"foreign".to_vec()),
+            descriptor: jarde_reader::model::JvmBytes(b"()V".to_vec()),
+        };
+        let foreign_new = Expr::new(
+            candidate_new(CANDIDATE).kind,
+            OriginSet::new(Origin::direct(CANDIDATE).in_method(&foreign)),
+        );
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(foreign_new, Expr::direct(ExprKind::Null, 5)),
+                CANDIDATE,
+            ),
+            0,
+            "foreign-method New origins cannot satisfy this body's constructor",
+        );
+        let method_reference = Expr::new(
+            ExprKind::MethodReference {
+                qualifier: Box::new(Expr::direct(ExprKind::Path("Example".to_owned()), 4)),
+                name: "new".to_owned(),
+            },
+            OriginSet::new(Origin::direct(CANDIDATE)),
+        );
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(method_reference, Expr::direct(ExprKind::Null, 5)),
+                CANDIDATE,
+            ),
+            0,
+            "a method reference is not a New node even at the candidate BCI",
+        );
+    }
+
+    #[test]
+    fn conditional_new_receipt_rejects_derived_primary_and_derived_only_candidate_anchors() {
+        const CANDIDATE: u32 = 11;
+        let derived_primary = Expr::new(
+            candidate_new(CANDIDATE).kind,
+            OriginSet::new(Origin::derived(CANDIDATE)),
+        );
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(derived_primary, Expr::direct(ExprKind::Null, 5)),
+                CANDIDATE,
+            ),
+            0,
+            "a matching BCI on a derived primary is not owned by this New node",
+        );
+
+        let derived_only_candidate = Expr::new(
+            candidate_new(12).kind,
+            OriginSet::derived_from(Origin::direct(12), Origin::derived(CANDIDATE)),
+        );
+        assert_eq!(
+            candidate_new_count(
+                conditional_value(derived_only_candidate, Expr::direct(ExprKind::Null, 5),),
+                CANDIDATE,
+            ),
+            0,
+            "a candidate BCI present only as a derived anchor is not a committed New",
+        );
+    }
+
     #[test]
     fn receipt_budget_and_cancellation_never_return_a_partial_verdict() {
         let mut plan = Plan::empty();
@@ -1022,7 +1235,7 @@ mod tests {
         };
         let mut limited = Budget::new(limits.clone());
         assert!(matches!(
-            committed_presentations(&program, &plan, &mut limited),
+            committed_presentations(&program, &plan, std::iter::empty(), &mut limited),
             Err(StopReason::Budget {
                 dimension: CountedBudgetDimension::AnalysisSteps,
                 ..
@@ -1033,7 +1246,7 @@ mod tests {
         token.cancel();
         let mut cancelled = Budget::with_cancellation_token(limits, token);
         assert!(matches!(
-            committed_presentations(&program, &plan, &mut cancelled),
+            committed_presentations(&program, &plan, std::iter::empty(), &mut cancelled),
             Err(StopReason::Cancelled { .. })
         ));
 
@@ -1044,7 +1257,10 @@ mod tests {
             ..Limits::default()
         });
         assert_eq!(
-            committed_presentations(&program, &plan, &mut complete).expect("complete receipt"),
+            committed_presentations(&program, &plan, std::iter::empty(), &mut complete)
+                .expect("complete receipt")
+                .field_positions()
+                .clone(),
             BTreeSet::from([7])
         );
     }

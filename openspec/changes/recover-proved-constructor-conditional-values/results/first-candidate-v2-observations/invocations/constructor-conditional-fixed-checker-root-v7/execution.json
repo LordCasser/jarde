@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py",
+    "--execution",
+    "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/execution.json",
+    "--out",
+    "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/checker-root-v7.json"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-10-11T17:37:26.347130+00:00",
+  "finished_at": "2026-10-11T17:37:26.531293+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-fixed-checker-root-v7/stdout.raw",
+      "bytes": 343,
+      "sha256": "d7b0b600a2ffd2dffb0291156d13eab92e76b161198c16a32128eeb0c0c34c66"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-fixed-checker-root-v7/stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

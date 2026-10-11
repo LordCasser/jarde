@@ -1,0 +1,115 @@
+{
+  "schema": "jarde-constructor-phi-private-adversarial-tests-v1",
+  "status": "private-optional-unvalidated",
+  "base_v2_sources": [
+    {
+      "role": "v2-private-source",
+      "relative_path": "v2/init.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/init.rs",
+      "bytes": 276499,
+      "sha256": "fe7cfbb06c104ee51d5f45d9a9b721fdb6acc727a4691b82d39b20941f71f39b"
+    },
+    {
+      "role": "v2-private-source",
+      "relative_path": "v2/field.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/field.rs",
+      "bytes": 52330,
+      "sha256": "a99c6f3426205f9c66a3064c8ec01dd93ee5656dc57ff2b63464500877166985"
+    },
+    {
+      "role": "v2-private-source",
+      "relative_path": "v2/report.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/report.rs",
+      "bytes": 628361,
+      "sha256": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    }
+  ],
+  "candidate_v3_sources": [
+    {
+      "role": "v3-test-candidate",
+      "relative_path": "v3/init.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/init.rs",
+      "bytes": 280152,
+      "sha256": "082515ab26ae53808e4b4befc3f20be09d172bcc78986aa8b5da6b7ef4146daa"
+    },
+    {
+      "role": "v3-test-candidate",
+      "relative_path": "v3/field.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/field.rs",
+      "bytes": 52330,
+      "sha256": "a99c6f3426205f9c66a3064c8ec01dd93ee5656dc57ff2b63464500877166985"
+    },
+    {
+      "role": "v3-test-candidate",
+      "relative_path": "v3/report.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/report.rs",
+      "bytes": 628361,
+      "sha256": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    }
+  ],
+  "accepted_control_evidence": [
+    {
+      "role": "frozen-source",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/frozen-inputs/ConditionalConstructionRefusals.java",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/frozen-inputs/ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    },
+    {
+      "role": "javac23-class",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "bytes": 2516,
+      "sha256": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f"
+    },
+    {
+      "role": "javac23-javap",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac23-original/javap-ConditionalConstructionRefusals.txt",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac23-original/javap-ConditionalConstructionRefusals.txt",
+      "bytes": 19109,
+      "sha256": "906028a113ed613e39813f8e2fa88195b415c0117b0f375375868e31bde2a343"
+    },
+    {
+      "role": "javac23-jarde-report",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/jarde/javac23-jarde-all-ConditionalConstructionRefusals/report.json",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/jarde/javac23-jarde-all-ConditionalConstructionRefusals/report.json",
+      "bytes": 594537,
+      "sha256": "34d7649a8fdb96bd2ae086992894e1657cd9d32f3e8245545f3e765cab21db26"
+    },
+    {
+      "role": "javac8-class",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac8-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac8-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "bytes": 2506,
+      "sha256": "f3022fa2d9b8870d783e2a96f0885f3e517a3e49ab5f5de146b3ba8f4de4767a"
+    },
+    {
+      "role": "javac8-javap",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac8-original/javap-ConditionalConstructionRefusals.txt",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac8-original/javap-ConditionalConstructionRefusals.txt",
+      "bytes": 18788,
+      "sha256": "7ebe7f1debec98099eb20f8080880d8f53c502f06c347025cb1caf006b331c8c"
+    },
+    {
+      "role": "accepted-control-receipt",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/root-acceptance.json",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/root-acceptance.json",
+      "bytes": 28440,
+      "sha256": "e4a902b9c0f6214892cd4ebf564483ef8fb87b4cd17135049e555d838660c871"
+    }
+  ],
+  "optional_test_patch": {
+    "role": "optional-test-patch",
+    "relative_path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/optional-tests.patch",
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/optional-tests.patch",
+    "bytes": 4477,
+    "sha256": "869a67fcc86423c27a82596d0188d713462ad587cbf76363d8bf175709b03839"
+  },
+  "review": {
+    "role": "private-review",
+    "relative_path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/review.md",
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v3/review.md",
+    "bytes": 4125,
+    "sha256": "e6b24fe27fea62330090b8f8b2f745f23e3d388233afafd7eb14b76efb626c38"
+  }
+}

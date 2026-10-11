@@ -1,0 +1,114 @@
+--- a/crates/jarde-java/src/init.rs
++++ b/crates/jarde-java/src/init.rs
+@@ -3397,6 +3397,9 @@
+     const SEQUENTIAL_LOOPS2_CONDITIONAL_CTOR: &[u8] = include_bytes!(
+         "../../../openspec/evidence/java-syntax-2026-10-11/cf11-testsequentialloops2-baseline-root-v1/actual/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class"
+     );
++    const CONDITIONAL_CONSTRUCTION_REFUSALS: &[u8] = include_bytes!(
++        "../../../openspec/changes/recover-proved-constructor-conditional-values/results/control-baseline-root-v1/actual/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class"
++    );
+     const NESTED_PROBE: &[u8] = include_bytes!(
+         "../../../openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/fixture/X2.class"
+     );
+@@ -3589,6 +3592,101 @@
+             None,
+             "a Phi in another block cannot own this constructor output",
+         );
++    }
++
++    fn conditional_refusals_sites(
++        name: &str,
++        descriptor: &str,
++        parameter_slots: u16,
++    ) -> Sites {
++        let (analysis, _) = analyzed_caller(
++            CONDITIONAL_CONSTRUCTION_REFUSALS,
++            name,
++            descriptor,
++        );
++        let ir = analysis.ir();
++        let ssa = ir.ssa().expect("ssa");
++        let code = ir.code().expect("code");
++        let operations = Operations::of(code, ir.constant_pool());
++        let chains = crate::concat::Plan::empty();
++        let fields = field::Plan::empty();
++        let mut budget = proof_budget();
++        let arrays = crate::build::ArrayInitializers::prove(ssa, &operations, &fields, &mut budget)
++            .expect("array proof completes");
++        let method = crate::facts::MethodFacts::new(name, descriptor, parameter_slots)
++            .with_access_flags(0x0009);
++        sites(
++            ssa,
++            &operations,
++            &chains,
++            chains.owned(),
++            &fields,
++            &arrays,
++            8,
++            &[],
++            &method,
++            code,
++        )
++    }
++
++    #[test]
++    fn actual_local_conditional_new_has_its_local_store_as_the_single_consumer() {
++        let plan = conditional_refusals_sites(
++            "localBoundary",
++            "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++            3,
++        );
++        let site = plan
++            .site_at_head(8)
++            .expect("the existing local-boundary fixture has a single store consumer");
++        assert_eq!(site.constructor, 17);
++        assert_eq!(site.conditional_consumer, Some(24));
++    }
++
++    #[test]
++    fn actual_shared_field_return_keeps_dup_outside_the_new_expression() {
++        let plan = conditional_refusals_sites(
++            "sharedFieldAndReturn",
++            "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++            3,
++        );
++        assert!(
++            plan.site_at_head(8).is_none(),
++            "BCI 24 dup fans one Phi result to putstatic@25 and areturn@28; dup is not a text-writing consumer"
++        );
++        let refusal = plan
++            .refusals
++            .iter()
++            .find(|refused| refused.head == 8)
++            .expect("the shared construction remains refused");
++        assert!(refusal.refusal.message().contains("24"));
++    }
++
++    #[test]
++    fn actual_nested_conditional_constructor_arms_do_not_become_one_two_way_site() {
++        let plan = conditional_refusals_sites(
++            "nestedConditionals",
++            "(ZZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++            5,
++        );
++        assert!(plan.site_at_head(16).is_none());
++        assert!(plan.site_at_head(35).is_none());
++        assert!(plan.refusals.iter().any(|refused| refused.head == 16));
++        assert!(plan.refusals.iter().any(|refused| refused.head == 35));
++    }
++
++    #[test]
++    fn actual_independent_branch_effect_stays_on_the_existing_statement_path() {
++        let plan = conditional_refusals_sites(
++            "independentBranchEffect",
++            "(ZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++            3,
++        );
++        let site = plan
++            .site_at_head(11)
++            .expect("existing report presents this branch-local construction");
++        assert_eq!(site.constructor, 20);
++        assert_eq!(site.conditional_consumer, None);
+     }
+ 
+     /// One method's own `Sites` plan, over the fixture's own class file.

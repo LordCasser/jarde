@@ -1,0 +1,24 @@
+{
+  "package": "cf11",
+  "source_level": "Java 8",
+  "target_classes": [
+    {
+      "class": "cf11.ConditionalConstructionPositive",
+      "source": "ConditionalConstructionPositive.java",
+      "bytes": 2168,
+      "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+    },
+    {
+      "class": "cf11.ConditionalConstructionRefusals",
+      "source": "ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    }
+  ],
+  "runner": {
+    "class": "cf11.Runner",
+    "source": "Runner.java",
+    "bytes": 10771,
+    "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+  }
+}

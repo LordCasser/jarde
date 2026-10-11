@@ -1,0 +1,64 @@
+--- a/crates/jarde-java/src/init.rs
++++ b/crates/jarde-java/src/init.rs
+@@ -6753,9 +6753,58 @@
+             "(Z)Ljava/lang/String;",
+             None,
+         );
+-        assert!(cross.site_at_head(0).is_none());
+-        assert!(cross.site_at_head(10).is_none());
+-        assert!(cross.site_at_head(22).is_none());
++        let no_final_new = field::CommittedPresentations::empty();
++        assert!(cross.site_at_head(0).is_none(), "the outer Tag is still refused");
++        let outer_refusal = cross
++            .refusals(&no_final_new)
++            .find(|gap| gap.message().contains("construction at BCI 0 was not presented"))
++            .expect("the original outer Tag refusal remains registered");
++        assert_eq!(outer_refusal.code(), "jre_new_shape");
++
++        let then_candidate = cross
++            .site_at_head(10)
++            .expect("the first Val is an ownership candidate, not yet a presentation");
++        let else_candidate = cross
++            .site_at_head(22)
++            .expect("the second Val is an ownership candidate, not yet a presentation");
++        assert_eq!(then_candidate.conditional_consumer, Some(31));
++        assert_eq!(else_candidate.conditional_consumer, Some(31));
++
++        assert_eq!(cross.counts(&no_final_new), (3, 0));
++        assert_eq!(
++            cross
++                .refusals(&no_final_new)
++                .map(|gap| gap.code())
++                .collect::<Vec<_>>(),
++            [
++                "jre_new_shape",
++                "jre_new_conditional_not_emitted",
++                "jre_new_conditional_not_emitted",
++            ],
++            "the two one-hop candidates remain unpresented without final Program New receipts",
++        );
++        let mut budget = proof_budget();
++        let mut phase = crate::evidence::EvidencePhase::new();
++        let (records, materialized) = cross.materialize(
++            &no_final_new,
++            Publication::of(&crate::evidence::RecoveryEvidenceRequest::all()),
++            &mut phase,
++            &mut budget,
++        );
++        assert_eq!(materialized, crate::evidence::Materialized::Complete);
++        assert_eq!(records.iter().map(|record| record.head).collect::<Vec<_>>(), [0, 10, 22]);
++        assert!(records.iter().all(|record| !record.presented()));
++        assert_eq!(
++            records
++                .iter()
++                .map(|record| record.refusal.as_ref().expect("unpresented record").code)
++                .collect::<Vec<_>>(),
++            [
++                "jre_new_shape",
++                "jre_new_conditional_not_emitted",
++                "jre_new_conditional_not_emitted",
++            ],
++        );
+     }
+ 
+     /// The varargs inline array chain of a construction's argument run — `new ArrayList<>(Arrays

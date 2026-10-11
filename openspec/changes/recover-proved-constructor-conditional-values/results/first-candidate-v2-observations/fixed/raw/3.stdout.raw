@@ -1,0 +1,191 @@
+Classfile /private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac8-original/classes/cf11/UpstreamSequentialLoops2.class
+  Last modified 2026-10-12; size 934 bytes
+  MD5 checksum 45b34379d7c0250e1a03faa7858e4fd6
+  Compiled from "UpstreamSequentialLoops2.java"
+public final class cf11.UpstreamSequentialLoops2
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_FINAL, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #9.#35         // java/lang/Object."<init>":()V
+   #2 = Methodref          #6.#36         // java/lang/String.length:()I
+   #3 = Methodref          #6.#37         // java/lang/String.charAt:(I)C
+   #4 = Fieldref           #8.#38         // cf11/UpstreamSequentialLoops2.lowercases:[C
+   #5 = Methodref          #6.#39         // java/lang/String.toCharArray:()[C
+   #6 = Class              #40            // java/lang/String
+   #7 = Methodref          #6.#41         // java/lang/String."<init>":([C)V
+   #8 = Class              #42            // cf11/UpstreamSequentialLoops2
+   #9 = Class              #43            // java/lang/Object
+  #10 = Utf8               lowercases
+  #11 = Utf8               [C
+  #12 = Utf8               <init>
+  #13 = Utf8               ()V
+  #14 = Utf8               Code
+  #15 = Utf8               LineNumberTable
+  #16 = Utf8               LocalVariableTable
+  #17 = Utf8               this
+  #18 = Utf8               Lcf11/UpstreamSequentialLoops2;
+  #19 = Utf8               asciiToLowerCase
+  #20 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #21 = Utf8               c2
+  #22 = Utf8               C
+  #23 = Utf8               c1
+  #24 = Utf8               s
+  #25 = Utf8               Ljava/lang/String;
+  #26 = Utf8               c
+  #27 = Utf8               i
+  #28 = Utf8               I
+  #29 = Utf8               StackMapTable
+  #30 = Class              #11            // "[C"
+  #31 = Class              #40            // java/lang/String
+  #32 = Utf8               <clinit>
+  #33 = Utf8               SourceFile
+  #34 = Utf8               UpstreamSequentialLoops2.java
+  #35 = NameAndType        #12:#13        // "<init>":()V
+  #36 = NameAndType        #44:#45        // length:()I
+  #37 = NameAndType        #46:#47        // charAt:(I)C
+  #38 = NameAndType        #10:#11        // lowercases:[C
+  #39 = NameAndType        #48:#49        // toCharArray:()[C
+  #40 = Utf8               java/lang/String
+  #41 = NameAndType        #12:#50        // "<init>":([C)V
+  #42 = Utf8               cf11/UpstreamSequentialLoops2
+  #43 = Utf8               java/lang/Object
+  #44 = Utf8               length
+  #45 = Utf8               ()I
+  #46 = Utf8               charAt
+  #47 = Utf8               (I)C
+  #48 = Utf8               toCharArray
+  #49 = Utf8               ()[C
+  #50 = Utf8               ([C)V
+{
+  private static char[] lowercases;
+    descriptor: [C
+    flags: ACC_PRIVATE, ACC_STATIC
+
+  public cf11.UpstreamSequentialLoops2();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/UpstreamSequentialLoops2;
+
+  public static java.lang.String asciiToLowerCase(java.lang.String);
+    descriptor: (Ljava/lang/String;)Ljava/lang/String;
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=5, locals=5, args_size=1
+         0: aconst_null
+         1: astore_1
+         2: aload_0
+         3: invokevirtual #2                  // Method java/lang/String.length:()I
+         6: istore_2
+         7: iload_2
+         8: iinc          2, -1
+        11: ifle          55
+        14: aload_0
+        15: iload_2
+        16: invokevirtual #3                  // Method java/lang/String.charAt:(I)C
+        19: istore_3
+        20: iload_3
+        21: bipush        127
+        23: if_icmpgt     52
+        26: getstatic     #4                  // Field lowercases:[C
+        29: iload_3
+        30: caload
+        31: istore        4
+        33: iload_3
+        34: iload         4
+        36: if_icmpeq     52
+        39: aload_0
+        40: invokevirtual #5                  // Method java/lang/String.toCharArray:()[C
+        43: astore_1
+        44: aload_1
+        45: iload_2
+        46: iload         4
+        48: castore
+        49: goto          55
+        52: goto          7
+        55: iload_2
+        56: iinc          2, -1
+        59: ifle          83
+        62: aload_1
+        63: iload_2
+        64: caload
+        65: bipush        127
+        67: if_icmpgt     55
+        70: aload_1
+        71: iload_2
+        72: getstatic     #4                  // Field lowercases:[C
+        75: aload_1
+        76: iload_2
+        77: caload
+        78: caload
+        79: castore
+        80: goto          55
+        83: aload_1
+        84: ifnonnull     91
+        87: aload_0
+        88: goto          99
+        91: new           #6                  // class java/lang/String
+        94: dup
+        95: aload_1
+        96: invokespecial #7                  // Method java/lang/String."<init>":([C)V
+        99: areturn
+      LineNumberTable:
+        line 7: 0
+        line 8: 2
+        line 9: 7
+        line 10: 14
+        line 11: 20
+        line 12: 26
+        line 13: 33
+        line 14: 39
+        line 15: 44
+        line 16: 49
+        line 19: 52
+        line 20: 55
+        line 21: 62
+        line 22: 70
+        line 25: 83
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           33      19     4    c2   C
+           20      32     3    c1   C
+            0     100     0     s   Ljava/lang/String;
+            2      98     1     c   [C
+            7      93     2     i   I
+      StackMapTable: number_of_entries = 6
+        frame_type = 253 /* append */
+          offset_delta = 7
+          locals = [ class "[C", int ]
+        frame_type = 44 /* same */
+        frame_type = 2 /* same */
+        frame_type = 27 /* same */
+        frame_type = 7 /* same */
+        frame_type = 71 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+
+  static {};
+    descriptor: ()V
+    flags: ACC_STATIC
+    Code:
+      stack=4, locals=0, args_size=0
+         0: iconst_1
+         1: newarray       char
+         3: dup
+         4: iconst_0
+         5: bipush        97
+         7: castore
+         8: putstatic     #4                  // Field lowercases:[C
+        11: return
+      LineNumberTable:
+        line 4: 0
+}
+SourceFile: "UpstreamSequentialLoops2.java"

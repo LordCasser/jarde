@@ -1,0 +1,1 @@
+Root审阅与上一actual runner的完整diff：保留fresh/guard/metadata全部target/batch/闭包/clean，增强named outcome与failed原始结果保留。static inventory仅用于当前manifest对actual metadata独立一致性核验，不能当Cargo通用解析器；当前manifest无显式custom override，actual metadata仍是本次执行目标来源。Root将X4 required test改为当前实际ExplanationOnly命名，补两个Direct/derived receipt对抗test required names。新private runner未执行，95/361是静态计划，不能预写通过。

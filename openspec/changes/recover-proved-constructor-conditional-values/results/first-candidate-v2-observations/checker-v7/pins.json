@@ -1,0 +1,67 @@
+{
+  "scope": "private checker-only v7 static-initializer locator extension; no checker/collector/toolchain execution",
+  "hash_algorithm": "SHA-256",
+  "actual_capture": {
+    "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/execution.json",
+    "bytes": 83821,
+    "sha256": "e01b61633a4e700923bd18fb1c70f4ba4924ace1f2cdb58ee3a1c58254826e14"
+  },
+  "base_checker": {
+    "path": "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py",
+    "bytes": 35662,
+    "sha256": "51c08b5d7aedd975853f18803ee9f3387073468a5e7efb4a4fa165e32b118ce3"
+  },
+  "classfile_parser": {
+    "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "bytes": 35854,
+    "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "artifacts": {
+    "checker_v6": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py",
+      "bytes": 35662,
+      "sha256": "51c08b5d7aedd975853f18803ee9f3387073468a5e7efb4a4fa165e32b118ce3"
+    },
+    "checker_v7": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.py",
+      "bytes": 35349,
+      "sha256": "a05acce687bf0e22bfab9eb8ae00520d53a006b740732f4b0041182ce72a464a"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-for-condition-checker-root-v7/check_controls.patch",
+      "bytes": 4166,
+      "sha256": "c1df3fe0269171a310b4f89146dc6e8e1c9fde54bb90fbafdde949fdca634fb6"
+    },
+    "execution": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/execution.json",
+      "bytes": 83821,
+      "sha256": "e01b61633a4e700923bd18fb1c70f4ba4924ace1f2cdb58ee3a1c58254826e14"
+    },
+    "classfile_parser": {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    "javap_javac8": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac8-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6663,
+      "sha256": "5a71a6504997c970980a65a280fa3f5508a1f134283af94d3c78275e8a4e680a"
+    },
+    "original_class_javac8": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac8-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 934,
+      "sha256": "ca1965e47275b62c18ace49993f935ed13e763c8bcbbce154b9b5e3402c073ce"
+    },
+    "javap_javac23": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac23-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6881,
+      "sha256": "de3151ac38c9d550aff7d0a62f561db815bbb4ff478266e859de94d614694a3c"
+    },
+    "original_class_javac23": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 931,
+      "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+    }
+  },
+  "locator_policy": "Both javap instruction and exception-table extraction use the same method-block selector. <clinit>()V requires the exact javap declaration static {}; full physical owner/flags/Code/BCI/exception-table checks remain enabled."
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-constructor-conditional-focused-build-root-v3.py", line 27, in <module>
+    run(['cargo','test','-p','jarde-java','--lib','--locked','--','--nocapture'])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-constructor-conditional-focused-build-root-v3.py", line 17, in run
+    c=g.run_command(len(x['commands']),argv,env);x['commands'].append(c);save();assert c['exit_code']==0 and c['guard_stop'] is None,(argv,c['exit_code'],c['guard_stop'])
+                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (['cargo', 'test', '-p', 'jarde-java', '--lib', '--locked', '--', '--nocapture'], 101, None)

@@ -1,0 +1,40 @@
+{
+  "status": "accepted_current_production_focused_tests_and_new_build_only",
+  "build_receipt_sha256": "4e3260ecfd829cc3ab139552918cc5fc2e119f259338aa3a400b77e37c91ad67",
+  "source_closure_count": 4727,
+  "library_reader_predecessor_bound": {
+    "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v4/execution.json",
+    "sha256": "4d5e6c68e6e130156fa12b7a54cc5de8121aab096e9d5d3492049aa67ecbda88",
+    "observed_summaries": [
+      {
+        "passed": 360,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    ]
+  },
+  "public_api_tests": 5,
+  "fingerprint_added_files": [
+    "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class",
+    "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.java",
+    "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.class",
+    "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionRefusals.java",
+    "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class",
+    "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.java",
+    "tests/fixtures/java8/cf11-conditional-constructor-values/pins.json"
+  ],
+  "fingerprint_old_entries_unchanged": true,
+  "late_stop_physical_bci": 72,
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v6",
+    "bytes": 61286928,
+    "sha256": "a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241",
+    "mode": "0o555"
+  },
+  "full_class_runtime_workspace_lint_own_ci_pending": true
+}

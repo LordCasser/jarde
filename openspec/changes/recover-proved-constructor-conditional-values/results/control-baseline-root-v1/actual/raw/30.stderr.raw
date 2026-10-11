@@ -1,0 +1,13 @@
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:82: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:97: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:108: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:145: 错误: 缺少返回语句
+    }
+    ^
+4 个错误

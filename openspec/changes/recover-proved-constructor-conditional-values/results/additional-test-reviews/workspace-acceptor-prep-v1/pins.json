@@ -1,0 +1,97 @@
+{
+  "schema": "constructor-conditional-workspace-acceptor-preparation-v1",
+  "status": "private_static_candidate_only_not_run",
+  "artifacts": {
+    "README.md": {
+      "sha256": "122623d0a4675082874b8911b98271f9638a79f26c274bd9c59c999400723542",
+      "bytes": 1240
+    },
+    "accept_workspace.py": {
+      "sha256": "fe721af1a54f3437810c52487ce07e3487f2604f5ecdf2b1897d4b32ba86085d",
+      "bytes": 31531
+    },
+    "review.md": {
+      "sha256": "77047fb1b7d4d1d23005cebac184fc259c34cd1f15d81ccf426ef4a06022f450",
+      "bytes": 3455
+    }
+  },
+  "inputs": {
+    "root_runner": {
+      "path": "/private/tmp/jarde-constructor-conditional-workspace-root-v1.py",
+      "sha256": "81484f984cdf909980b7dab25ee38ac560de0a1fa6028dc912b82ca05e0f0606",
+      "bytes": 27700
+    },
+    "committed_ci_base": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-nested-loop-side-exits/results/final-workspace-root-v3/verify-cf11-own-ci.py",
+      "sha256": "7669fb27ff653b5e8e35b68a2b54ec0723b4d5d63ee5c05fc0d7af5ed639c1f7",
+      "bytes": 38306
+    },
+    "conditional_ci_helper": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/verify-conditional-ci-root-v5.py",
+      "sha256": "bea37c7d4d37182168a7c1cbbde3ee31c94d61f6bc32667bedbdd02ce7e5b0ca",
+      "bytes": 43302
+    },
+    "guard_template": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+      "bytes": 23507
+    },
+    "target_size_scanner": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+      "bytes": 471
+    },
+    "reference_acceptor_v2": {
+      "path": "/private/tmp/jarde-for-condition-local-workspace-accept-luna-v2/accept_workspace.py",
+      "sha256": "bd6861fabda78a3e268cc74b522bf86ccbbef913ac3b5345bbb970b2a4336f66",
+      "bytes": 23494
+    }
+  },
+  "required_tests_by_source": {
+    "tests/recover_proved_conditional_constructor_values.rs": [
+      "conditional_constructor_public_reports_agree_across_evidence_selections",
+      "conditional_constructor_positive_all_evidence_reports_four_exact_methods",
+      "conditional_constructor_range_excluding_all_new_bcis_keeps_summary_and_text",
+      "conditional_constructor_public_late_stop_and_precancel_publish_atomically",
+      "conditional_sites_are_not_presented_when_the_final_body_is_explanation_only"
+    ],
+    "crates/jarde-java/src/field.rs": [
+      "field::tests::conditional_new_receipt_counts_only_one_method_local_direct_new",
+      "field::tests::conditional_new_receipt_rejects_derived_primary_and_derived_only_candidate_anchors"
+    ],
+    "crates/jarde-java/src/init.rs": [
+      "init::tests::conditional_constructor_output_has_one_live_stack_phi_and_one_join_consumer",
+      "init::tests::actual_local_conditional_new_has_its_local_store_as_the_single_consumer",
+      "init::tests::actual_shared_field_return_keeps_dup_outside_the_new_expression",
+      "init::tests::actual_nested_conditional_constructor_arms_do_not_become_one_two_way_site",
+      "init::tests::actual_independent_branch_effect_stays_on_the_existing_statement_path"
+    ]
+  },
+  "contract": {
+    "workspace": "/private/tmp/jarde-constructor-conditional-workspace-root-v1",
+    "workspace_schema": "constructor-conditional-full-workspace-batched-root-v1",
+    "expected_source_pin_count": 4727,
+    "metadata_target_count": 361,
+    "batch_count": 95,
+    "command_count": 98,
+    "raw_stream_count": 196,
+    "required_named_test_count": 12,
+    "required_outcome_totals": "computed from completed workspace raw streams at acceptance time; no historical totals pinned",
+    "resource_limits": {
+      "minimum_free_bytes": 5368709120,
+      "maximum_target_bytes": 1073741824,
+      "poll_interval_seconds": 1
+    }
+  },
+  "static_checks": [
+    "ast.parse passed",
+    "symtable.symtable passed",
+    "required 12 names exactly match pinned root runner AST",
+    "no acceptor/runner/toolchain/Git executed"
+  ],
+  "execution_state_when_read": {
+    "status": "running",
+    "command_records": 2,
+    "informational_only": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-conditional-constructor-values-baseline-launch-root-v1.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T17:26:32.195789+00:00",
+  "finished_at": "2026-10-11T17:27:13.555109+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/conditional-constructor-baseline-root-v1/stdout.raw",
+      "bytes": 141,
+      "sha256": "61a94b62fe7b545da984584f0a0e613b26b89b0f0f69e5963830dd7a7997042c"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/conditional-constructor-baseline-root-v1/stderr.raw",
+      "bytes": 1898,
+      "sha256": "6544276f6084a4f0435286d0a68b2a74dc0bdf6af5cf14f4d7c46df11a60b8e9"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

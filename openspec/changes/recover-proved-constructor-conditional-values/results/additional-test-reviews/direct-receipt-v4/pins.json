@@ -1,0 +1,24 @@
+{
+  "schema": "jarde-constructor-phi-impl-luna-v4",
+  "source": {
+    "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+    "bytes": 52440,
+    "sha256": "03a44a511f6bfb23effdb1bc3102175880336e8c39df9fdf6cadca60f2a92b88"
+  },
+  "candidate": {
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v4/field.rs",
+    "bytes": 53713,
+    "sha256": "3380452e88a5c275272cc220863312fe950ff4047b23b30307e05f3fda4b8e59"
+  },
+  "patch": {
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v4/field.rs.patch",
+    "bytes": 2350,
+    "sha256": "b2cb178eb7de1457ffab2c09ba64ec0c4f19c8ee3c672b195befd60d461cfefd"
+  },
+  "scope": [
+    "field.rs only",
+    "Provenance::Direct receipt gate",
+    "derived-primary and derived-only matching-BCI negative unit cases"
+  ],
+  "verification": "static preparation only; no shared files or toolchain modified/run"
+}

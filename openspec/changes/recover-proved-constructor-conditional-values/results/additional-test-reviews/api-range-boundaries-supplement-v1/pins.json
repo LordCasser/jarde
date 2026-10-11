@@ -1,0 +1,64 @@
+{
+  "schema": "conditional-constructor-range-audit-v1",
+  "status": "static_audit_only",
+  "selection": {
+    "target": "twoConstructedArms(ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "first_mapped_physical_bci": 0,
+    "new_record_positions": [
+      8,
+      11,
+      15,
+      18,
+      24,
+      27,
+      31,
+      34
+    ],
+    "selected_instruction": "iload_0",
+    "selected_width": 1,
+    "range": [
+      0,
+      1
+    ]
+  },
+  "expected_invalid_other_methods": [
+    "condition(ZZ)Z",
+    "argument(Ljava/lang/String;Z)Ljava/lang/String;"
+  ],
+  "other_valid_members": [
+    "<init>()V",
+    "reset()V",
+    "oneConstructedArm(ZZZLjava/lang/String;)Ljava/lang/String;",
+    "twoConstructedArms(ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "writeStaticSlot(ZZZLjava/lang/String;)V",
+    "writeInstanceSlot(ZZZLjava/lang/String;)V"
+  ],
+  "reason": "only condition and argument begin with three-byte getstatic at BCI 0, so endpoint 1 is not an instruction boundary; the listed valid members begin with one-byte instructions; no <clinit> exists",
+  "pins": {
+    "frozen_v2_positive_report": {
+      "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/report.json",
+      "bytes": 575025,
+      "sha256": "3d6b8d7dafd738d4f9de6b20bb2a7421e3d5291604ef63e60f2909e9d1d78302"
+    },
+    "frozen_v2_positive_javap": {
+      "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/javap-ConditionalConstructionPositive.txt",
+      "bytes": 15653,
+      "sha256": "d27475185fca28a4936284290ba266be00c2027a2b97983ec848a83678c40e77"
+    },
+    "candidate_test": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v4/recover_proved_conditional_constructor_values.rs",
+      "bytes": 32383,
+      "sha256": "9a301776907ceded649aa9d1addba7d71ce45d128bff4cab3a8b15078d84ad9d"
+    },
+    "candidate_patch": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v4/candidate.patch",
+      "bytes": 2321,
+      "sha256": "c4dea62ef3e419de98ebe45a3e0dcd2d212964de0c0dcd60f9e269253c4e5a92"
+    },
+    "supplement_readme": {
+      "path": "/private/tmp/jarde-conditional-constructor-range-audit-luna-v1/README.md",
+      "bytes": 1819,
+      "sha256": "c1b76572adefb3948a9ea00f3d9b60bacf3d438207ecf75005aa7528c141f5fd"
+    }
+  }
+}

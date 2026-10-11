@@ -1,0 +1,2 @@
+{"status": "verified_observation_capture_with_quality_gaps", "execution": {"path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/execution.json", "bytes": 142618, "sha256": "9855c9bd3edea863bb106ce534fa7551a0c73a39b8c337d1d3233edeb11381f0"}, "out": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/checker-root-v6.json"}
+{"status": "complete", "collector_exit_code": 0, "checker_exit_code": 0, "source_pins_unchanged": true, "target_absent_after": true}

@@ -1,0 +1,7 @@
+# 当前严格门与公开 API 实际验收
+
+Root逐raw SHA/exit/guard/source closure独立接受v6：公開API 5/0/0、既有fingerprint updater1/0/0和检查5/0/1、新CLI构建/clean实际成功。相同production/fixture输入绑定v4 Java360/0/0与reader1/0/0，不借上一产品；v6仅test假设修订与由现有updater生成的manifest变化。
+
+4727 inputs；manifest原条目逐项不变，只有本轮7文件新增。三永久class字节保持javac23实际输出，所有JDK三方runtime尚待当前CLI新跑。真实lateStop在目标方法BCI72/AnalysisSteps、无部分正文/map/news/content，pre-cancel零计费单列。X4最终ExplanationOnly/Mixed/Fallback、Region结构成立但Builder未呈现New，三候选0呈现3拒绝统一。
+
+CLI61286928B/0555，SHA a71c31e80da7c6550aa572e5368f0ecad12ac862066c5d40535f5818c2263241；build receipt4e3260ecfd829cc3ab139552918cc5fc2e119f259338aa3a400b77e37c91ad67。actualpeak607453502B、finallyclean0/target不存在。此处不宣称完整runtime、workspace、lint或自身CI通过。

@@ -1,0 +1,14 @@
+--- /Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/classfile.rs
++++ /Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/classfile.rs (candidate)
+@@ -12235,7 +12235,10 @@
+             // branch targets (10 + 20), no jsr; independently counted from accepted javap.
+             // For-condition originals: five Java 8 classes, twenty-four Code bodies, no handlers,
+             // forty-one branch targets (12 + 12 + 5 + 6 + 6), and no jsr; accepted javap counts.
+-            (1100, 4890, 468, 2953, 10),
++            // Conditional-constructor-values and fixed SequentialLoops2: three javac 23 --release 8
++            // classfiles (3/8/10 Code bodies; 10/10/14 branch/switch targets), 21 bodies total,
++            // one handler (`handlerAroundConditional`), 34 branch/switch targets and no jsr.
++            (1103, 4911, 469, 2987, 10),
+             "fixture population changed: re-measure these counts"
+         );
+     }

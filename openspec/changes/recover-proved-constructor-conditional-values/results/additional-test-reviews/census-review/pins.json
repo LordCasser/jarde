@@ -1,0 +1,114 @@
+{
+  "scope": "private static census preparation; no shared edits, ignored updater, or toolchain",
+  "hash_algorithm": "SHA-256",
+  "census_before": [
+    1100,
+    4890,
+    468,
+    2953,
+    10
+  ],
+  "delta": [
+    3,
+    21,
+    1,
+    34,
+    0
+  ],
+  "census_candidate": [
+    1103,
+    4911,
+    469,
+    2987,
+    10
+  ],
+  "tuple_order": [
+    "class_paths",
+    "Code_bodies",
+    "exception_handler_records",
+    "non_handler_branch_switch_target_records",
+    "jsr_jsr_w_instructions"
+  ],
+  "per_class": {
+    "UpstreamSequentialLoops2.class": {
+      "Code_bodies": 3,
+      "handlers": 0,
+      "branch_switch_targets": 10,
+      "jsr_jsr_w": 0
+    },
+    "ConditionalConstructionPositive.class": {
+      "Code_bodies": 8,
+      "handlers": 0,
+      "branch_switch_targets": 10,
+      "jsr_jsr_w": 0
+    },
+    "ConditionalConstructionRefusals.class": {
+      "Code_bodies": 10,
+      "handlers": 1,
+      "branch_switch_targets": 14,
+      "jsr_jsr_w": 0
+    }
+  },
+  "artifacts": {
+    "census_source_before": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/classfile.rs",
+      "bytes": 530678,
+      "sha256": "73aa3e4befe33690c70d0fa05373f88d47d3bc23a33072b623e4096cdd354b3e"
+    },
+    "existing_parser": {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    "sequential_loops2_execution": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/execution.json",
+      "bytes": 83821,
+      "sha256": "e01b61633a4e700923bd18fb1c70f4ba4924ace1f2cdb58ee3a1c58254826e14"
+    },
+    "conditional_constructor_values_execution": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/execution.json",
+      "bytes": 129204,
+      "sha256": "ea9563353916d1b690883328fa0a304a0997fdaf29aaba8f61417fc73767e7e2"
+    },
+    "UpstreamSequentialLoops2.class": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 931,
+      "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+    },
+    "ConditionalConstructionPositive.class": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class",
+      "bytes": 2092,
+      "sha256": "bf0acebb4a538950a431fbe913f0c0522379582af6615369f425226a13e32bd1"
+    },
+    "ConditionalConstructionRefusals.class": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+      "bytes": 2516,
+      "sha256": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f"
+    },
+    "UpstreamSequentialLoops2.javap": {
+      "path": "/private/tmp/jarde-constructor-conditional-fixed-candidate-root-v2/legs/javac23-original/javap-UpstreamSequentialLoops2.txt",
+      "bytes": 6881,
+      "sha256": "de3151ac38c9d550aff7d0a62f561db815bbb4ff478266e859de94d614694a3c"
+    },
+    "ConditionalConstructionPositive.javap": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/javap-ConditionalConstructionPositive.txt",
+      "bytes": 15650,
+      "sha256": "308cc78eea3ee7e15e99db4f8d41a5dcec813a36547ef94289f3c617a2a0fe7b"
+    },
+    "ConditionalConstructionRefusals.javap": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/javap-ConditionalConstructionRefusals.txt",
+      "bytes": 19109,
+      "sha256": "906028a113ed613e39813f8e2fa88195b415c0117b0f375375868e31bde2a343"
+    },
+    "candidate_patch": {
+      "path": "/private/tmp/jarde-reader-census-conditional-constructors-review-v1/classfile-census.patch",
+      "bytes": 962,
+      "sha256": "3ba48257ebb5b522eb7883e6861d7c5cf9aabd2f8ac51de60d3971a5f6a4dc07"
+    },
+    "README": {
+      "path": "/private/tmp/jarde-reader-census-conditional-constructors-review-v1/README.md",
+      "bytes": 965,
+      "sha256": "8f73f6a33173a1f90b657e9d2d95098ae15ee888957a183ff5cd68215a49310e"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "jarde-cf11-foreach-next-design-luna-v2",
+  "scope": "private read-only architecture supplement; no shared edits, no Cargo/JDK/JADX/CLI/Git execution",
+  "hash_algorithm": "SHA-256",
+  "sources": [
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 731108,
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/dex/visitors/regions/LoopRegionVisitor.java",
+      "bytes": 14587,
+      "sha256": "921f09e8934fda33452a00359588b293117f160813477e7068fa1ec3b71e6515"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/testzone/jadx/jadx-core/src/main/java/jadx/core/codegen/RegionGen.java",
+      "bytes": 12433,
+      "sha256": "8b80ef618487e38cb09a2bbd81b70de0dd096996a321a0c9dcf55e1dc011d4ee"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/inputs/UpstreamNestedLoops.java",
+      "bytes": 371,
+      "sha256": "e81601f723b0e588e03cf177d01beea7f074af11a0f3445f5a8a96d6ea2be7d1"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamNestedLoops.class",
+      "bytes": 1213,
+      "sha256": "8ece89e4d38751c20529622b57417afc8601368fc20078656ea2b24c17ed8231"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/legs/javac23-original/javap-UpstreamNestedLoops.txt",
+      "bytes": 8494,
+      "sha256": "c1e623df5fa6d4c6b4125dc2073debd9bcc1ba15ece01b30eb604be91393a272"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/UpstreamNestedLoops.java",
+      "bytes": 1964,
+      "sha256": "e24607d81410e4d673b4d4d020c3eb19c1ebc0f417e0e2eb564a33bb825bfaf1"
+    },
+    {
+      "path": "/private/tmp/jarde-cf11-testnestedloops-baseline-root-v1/jarde/javac23-jarde-default-UpstreamNestedLoops/report.json",
+      "bytes": 180360,
+      "sha256": "8bb714b7c2bcef014db446d5501a4902832a66ea52eecb00d66d9a889c2fe76a"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/README.md",
+      "bytes": 1311,
+      "sha256": "be3277b2d7631517db77de6f1edfc27bae07bd06d877134132d21bde7efe1a5c"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-12/cf11-testnestedloops-same-ir-root-v3/root-acceptance.json",
+      "bytes": 1287,
+      "sha256": "ee98cbf4368b284d3346e90c9775132eb6519666e59b26fa1f03bee6a94eb69d"
+    }
+  ],
+  "normative_reference": {
+    "title": "JLS Java SE 8 \u00a714.14.2 Enhanced for statement",
+    "url": "https://docs.oracle.com/javase/specs/jls/se8/html/jls-14.html#jls-14.14.2",
+    "accessed": "2026-10-12"
+  }
+}

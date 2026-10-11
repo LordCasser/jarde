@@ -11893,7 +11893,12 @@ fn recover_inner(
         Ok(emitted) => emitted,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
-    let field_presentations = match field::committed_presentations(&program, &fields, budget) {
+    let committed_presentations = match field::committed_presentations(
+        &program,
+        &fields,
+        sites.conditional_constructor_bcis(),
+        budget,
+    ) {
         Ok(presentations) => presentations,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
@@ -11922,7 +11927,7 @@ fn recover_inner(
         match same_class_field_receiver_sites(
             &program,
             &fields,
-            &field_presentations,
+            committed_presentations.field_positions(),
             &request,
             &names,
             &reuse,
@@ -12138,14 +12143,14 @@ fn recover_inner(
     // its own, and a summary states how many candidates were read and how many were presented. A body
     // that read none of a shape says nothing about that shape's rule at all — except for the
     // declaration, which every body has and which therefore always states what it read.
-    for gap in sites.refusals() {
+    for gap in sites.refusals(&committed_presentations) {
         diagnostics.push(diagnostic(
             gap.code(),
             DiagnosticSeverity::Warning,
             gap.message(),
         ));
     }
-    let (new_read, new_presented) = sites.counts();
+    let (new_read, new_presented) = sites.counts(&committed_presentations);
     if new_read > 0 {
         diagnostics.push(diagnostic(
             "jre_new_sites",
@@ -12157,14 +12162,14 @@ fn recover_inner(
             ),
         ));
     }
-    for gap in fields.refusals(&field_presentations) {
+    for gap in fields.refusals(committed_presentations.field_positions()) {
         diagnostics.push(diagnostic(
             gap.code(),
             DiagnosticSeverity::Warning,
             gap.message(),
         ));
     }
-    let (field_read, field_presented) = fields.counts(&field_presentations);
+    let (field_read, field_presented) = fields.counts(committed_presentations.field_positions());
     if field_read > 0 {
         diagnostics.push(diagnostic(
             "jre_field_accesses",
@@ -12325,9 +12330,14 @@ fn recover_inner(
                 .collect(),
             None => Vec::new(),
         };
-        news = delivery.take(sites.materialize(publication, &mut phase, budget));
+        news = delivery.take(sites.materialize(
+            &committed_presentations,
+            publication,
+            &mut phase,
+            budget,
+        ));
         field_records = delivery.take(fields.materialize(
-            &field_presentations,
+            committed_presentations.field_positions(),
             publication,
             &mut phase,
             budget,

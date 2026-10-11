@@ -1,0 +1,60 @@
+--- /private/tmp/jarde-for-condition-checker-root-v6/check_controls.py
++++ /private/tmp/jarde-for-condition-checker-root-v7/check_controls.py
+@@ -77,33 +77,35 @@
+         result.append({'index':idx,'flags':flags,'owner':owner,'name':name,'descriptor':desc,'code_span':code,'code_length':code_length,'exception_table':exception_table})
+     class_attrs=parser.u2(data,at); at=skip_attrs(at+2,class_attrs); need(at==len(data),'class parser did not consume exact class bytes')
+     return owner,result
+-def javap_bcis(raw,name,desc,constructor_name):
+-    """Extract instruction offsets for these switch-free fixtures; reject tables whose numeric rows resemble BCIs."""
++def javap_method_block(raw,name,desc,owner_simple):
++    """Select one Javap method body by source declaration and descriptor, including static {}."""
+     lines=raw.decode('utf-8').splitlines(); target=None
+     for i,line in enumerate(lines):
+-        if line.strip()==f'descriptor: {desc}':
+-            prior=next((lines[j].strip() for j in range(i-1,max(-1,i-5),-1) if '(' in lines[j] and ')' in lines[j]),'')
+-            head=prior.split('(',1)[0].split()[-1].rsplit('.',1)[-1] if prior else ''
+-            if (name=='<init>' and head==constructor_name) or head==name:
+-                target=i; break
++        if line.strip()!=f'descriptor: {desc}':
++            continue
++        prior=next((lines[j].strip() for j in range(i-1,max(-1,i-5),-1) if lines[j].strip()),'')
++        if name=='<clinit>':
++            matches=desc=='()V' and prior=='static {};'
++        else:
++            head=prior.split('(',1)[0].split()[-1].rsplit('.',1)[-1] if '(' in prior and ')' in prior else ''
++            matches=(name=='<init>' and head==owner_simple) or head==name
++        if matches:
++            target=i; break
+     need(target is not None,f'javap method declaration missing {name}{desc}')
+     end=next((j for j in range(target+1,len(lines)) if lines[j].strip().startswith('descriptor: ')),len(lines))
+-    block='\n'.join(lines[target:end])
++    return lines[target:end]
++
++def javap_bcis(raw,name,desc,owner_simple):
++    """Extract instruction offsets for these switch-free fixtures; reject tables whose numeric rows resemble BCIs."""
++    lines=javap_method_block(raw,name,desc,owner_simple)
++    block='\n'.join(lines)
+     need(re.search(r'\b(?:tableswitch|lookupswitch)\b',block) is None,'switch-bearing fixture is outside this numeric Javap extractor')
+-    offsets=[int(m.group(1)) for line in lines[target:end] if (m:=re.match(r'^\s{4,}(\d+):\s',line))]
+-    need('Code:' in '\n'.join(lines[target:end]) and offsets,f'javap Code offsets missing {name}{desc}'); return offsets
+-def javap_exception_table(raw,name,desc,constructor_name):
+-    """Read the exact Code exception table from this switch-free fixture's Javap method block."""
+-    lines=raw.decode('utf-8').splitlines(); target=None
+-    for i,line in enumerate(lines):
+-        if line.strip()==f'descriptor: {desc}':
+-            prior=next((lines[j].strip() for j in range(i-1,max(-1,i-5),-1) if '(' in lines[j] and ')' in lines[j]),'')
+-            head=prior.split('(',1)[0].split()[-1].rsplit('.',1)[-1] if prior else ''
+-            if (name=='<init>' and head==constructor_name) or head==name:
+-                target=i; break
+-    need(target is not None,f'javap method declaration missing {name}{desc}')
+-    end=next((j for j in range(target+1,len(lines)) if lines[j].strip().startswith('descriptor: ')),len(lines))
+-    block=lines[target:end]; starts=[i for i,line in enumerate(block) if line.strip()=='Exception table:']
++    offsets=[int(m.group(1)) for line in lines if (m:=re.match(r'^\s{4,}(\d+):\s',line))]
++    need('Code:' in block and offsets,f'javap Code offsets missing {name}{desc}'); return offsets
++
++def javap_exception_table(raw,name,desc,owner_simple):
++    """Read the exact Code exception table from this method's Javap block."""
++    block=javap_method_block(raw,name,desc,owner_simple); starts=[i for i,line in enumerate(block) if line.strip()=='Exception table:']
+     need(len(starts)<=1,f'duplicate Javap exception table {name}{desc}')
+     if not starts: return []
+     i=starts[0]+1

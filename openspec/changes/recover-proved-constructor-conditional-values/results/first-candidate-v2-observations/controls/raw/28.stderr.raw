@@ -1,0 +1,10 @@
+/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:92: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:103: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:136: 错误: 缺少返回语句
+    }
+    ^
+3 个错误

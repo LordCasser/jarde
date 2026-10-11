@@ -1,0 +1,18 @@
+CF11 observation verification failed: javap method declaration missing <clinit>()V
+Traceback (most recent call last):
+  File "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py", line 399, in <module>
+    try: main()
+         ~~~~^^
+  File "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py", line 397, in main
+    p=argparse.ArgumentParser(description=__doc__); p.add_argument('--execution',type=Path,required=True); p.add_argument('--out',type=Path,required=True); a=p.parse_args(); out=a.out.resolve(); need(not out.exists(),'refuse overwrite '+str(out)); result=verify(a); result['checker']=pin(Path(__file__).resolve()); out.parent.mkdir(parents=True,exist_ok=True); out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8'); print(json.dumps({'status':result['status'],'execution':result['execution'],'out':str(out)}))
+                                                                                                                                                                                                                                                               ~~~~~~^^^
+  File "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py", line 269, in verify
+    need(offsets==javap_bcis(javaps[(jdk,cls)],ph['name'],ph['descriptor'],cls.split('.')[-1]),'original physical/javap BCI differs')
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py", line 89, in javap_bcis
+    need(target is not None,f'javap method declaration missing {name}{desc}')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-for-condition-checker-root-v6/check_controls.py", line 10, in need
+    if not ok: raise ValueError(msg)
+               ^^^^^^^^^^^^^^^^^^^^^
+ValueError: javap method declaration missing <clinit>()V

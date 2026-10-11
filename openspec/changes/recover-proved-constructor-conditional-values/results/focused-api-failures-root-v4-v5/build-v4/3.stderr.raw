@@ -1,0 +1,15 @@
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[91merror[E0609][0m[1m: no field `usage` on type `&Box<TargetCandidates>`[0m
+   [1m[94m--> [0mtests/recover_proved_conditional_constructor_values.rs:573:38
+    [1m[94m|[0m
+[1m[94m573[0m [1m[94m|[0m             report.execution, report.usage, report.candidates
+    [1m[94m|[0m                                      [1m[91m^^^^^[0m [1m[91munknown field[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: available fields are: `query`, `candidates`, `limits`, `coverage`, `execution`, `diagnostics`
+
+[1mFor more information about this error, try `rustc --explain E0609`.[0m
+[1m[91merror[0m: could not compile `jarde` (test "recover_proved_conditional_constructor_values") due to 1 previous error

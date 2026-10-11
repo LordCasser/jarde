@@ -1,0 +1,398 @@
+[1m[92m   Compiling[0m proc-macro2 v1.0.107
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m quote v1.0.47
+[1m[92m   Compiling[0m syn v3.0.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.12
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m cc v1.4.6
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m crc32fast v1.5.2
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m serde_core v1.0.229
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m indexmap v2.14.2
+[1m[92m   Compiling[0m blake3 v1.8.7
+[1m[92m   Compiling[0m thiserror v2.0.20
+[1m[92m   Compiling[0m serde v1.0.229
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m simd-adler32 v0.3.10
+[1m[92m   Compiling[0m miniz_oxide v0.9.1
+[1m[92m   Compiling[0m thiserror-impl v2.0.20
+[1m[92m   Compiling[0m serde_derive v1.0.229
+[1m[92m   Compiling[0m arrayvec v0.7.8
+[1m[92m   Compiling[0m constant_time_eq v0.4.2
+[1m[92m   Compiling[0m bitflags v2.13.2
+[1m[92m   Compiling[0m noak v0.7.0
+[1m[92m   Compiling[0m flate2 v1.1.10
+[1m[92m   Compiling[0m rawzip v0.5.1
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m jarde-reader v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader)
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m jarde-query v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-query)
+[1m[92m   Compiling[0m jarde-jvm v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm)
+[1m[92m   Compiling[0m jarde-java v0.1.0 (/Users/lordcasser/workspace/projects/jarde/crates/jarde-java)
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:3514:25
+     [1m[94m|[0m
+[1m[94m3514[0m [1m[94m|[0m                 refused.refusals().next().expect("physical refusal").code(),
+     [1m[94m|[0m                         [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m3514[0m [1m[94m| [0m                refused.refusals([92m/* &CommittedPresentations */[0m).next().expect("physical refusal").code(),
+     [1m[94m|[0m                                  [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:3524:21
+     [1m[94m|[0m
+[1m[94m3524[0m [1m[94m|[0m             crossed.refusals().next().expect("handler refusal").code(),
+     [1m[94m|[0m                     [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m3524[0m [1m[94m| [0m            crossed.refusals([92m/* &CommittedPresentations */[0m).next().expect("handler refusal").code(),
+     [1m[94m|[0m                              [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:3678:30
+     [1m[94m|[0m
+[1m[94m3678[0m [1m[94m|[0m                 assert!(plan.refusals().next().is_none(), "{leg} {name}");
+     [1m[94m|[0m                              [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m3678[0m [1m[94m| [0m                assert!(plan.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{leg} {name}");
+     [1m[94m|[0m                                       [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:3736:26
+     [1m[94m|[0m
+[1m[94m3736[0m [1m[94m|[0m             assert!(plan.refusals().next().is_none(), "{leg}");
+     [1m[94m|[0m                          [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m3736[0m [1m[94m| [0m            assert!(plan.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{leg}");
+     [1m[94m|[0m                                   [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:3850:30
+     [1m[94m|[0m
+[1m[94m3850[0m [1m[94m|[0m                 assert!(plan.refusals().next().is_none(), "{leg}/{name}");
+     [1m[94m|[0m                              [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m3850[0m [1m[94m| [0m                assert!(plan.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{leg}/{name}");
+     [1m[94m|[0m                                       [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:3897:30
+     [1m[94m|[0m
+[1m[94m3897[0m [1m[94m|[0m             assert!(contrast.refusals().next().is_none(), "{leg}");
+     [1m[94m|[0m                              [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m3897[0m [1m[94m| [0m            assert!(contrast.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{leg}");
+     [1m[94m|[0m                                       [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:4076:26
+     [1m[94m|[0m
+[1m[94m4076[0m [1m[94m|[0m             assert!(plan.refusals().next().is_none(), "{leg}");
+     [1m[94m|[0m                          [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m4076[0m [1m[94m| [0m            assert!(plan.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{leg}");
+     [1m[94m|[0m                                   [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:4154:32
+     [1m[94m|[0m
+[1m[94m4154[0m [1m[94m|[0m             let refusal = plan.refusals().next().expect("handler refusal");
+     [1m[94m|[0m                                [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m4154[0m [1m[94m| [0m            let refusal = plan.refusals([92m/* &CommittedPresentations */[0m).next().expect("handler refusal");
+     [1m[94m|[0m                                         [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6253:18
+     [1m[94m|[0m
+[1m[94m6253[0m [1m[94m|[0m                 .refusals()
+     [1m[94m|[0m                  [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6253[0m [1m[94m| [0m                .refusals([92m/* &CommittedPresentations */[0m)
+     [1m[94m|[0m                           [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6505:23
+     [1m[94m|[0m
+[1m[94m6505[0m [1m[94m|[0m         assert!(probe.refusals().next().is_none());
+     [1m[94m|[0m                       [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6505[0m [1m[94m| [0m        assert!(probe.refusals([92m/* &CommittedPresentations */[0m).next().is_none());
+     [1m[94m|[0m                                [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6539:26
+     [1m[94m|[0m
+[1m[94m6539[0m [1m[94m|[0m             assert!(plan.refusals().next().is_none(), "{name}");
+     [1m[94m|[0m                          [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6539[0m [1m[94m| [0m            assert!(plan.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{name}");
+     [1m[94m|[0m                                   [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6558:21
+     [1m[94m|[0m
+[1m[94m6558[0m [1m[94m|[0m             crossed.refusals().next().expect("boundary refusal").code(),
+     [1m[94m|[0m                     [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6558[0m [1m[94m| [0m            crossed.refusals([92m/* &CommittedPresentations */[0m).next().expect("boundary refusal").code(),
+     [1m[94m|[0m                              [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6589:28
+     [1m[94m|[0m
+[1m[94m6589[0m [1m[94m|[0m         let refusal = four.refusals().next().expect("the outer refusal registers");
+     [1m[94m|[0m                            [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6589[0m [1m[94m| [0m        let refusal = four.refusals([92m/* &CommittedPresentations */[0m).next().expect("the outer refusal registers");
+     [1m[94m|[0m                                     [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6601:14
+     [1m[94m|[0m
+[1m[94m6601[0m [1m[94m|[0m             .refusals()
+     [1m[94m|[0m              [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6601[0m [1m[94m| [0m            .refusals([92m/* &CommittedPresentations */[0m)
+     [1m[94m|[0m                       [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6630:20
+     [1m[94m|[0m
+[1m[94m6630[0m [1m[94m|[0m         assert!(w3.refusals().next().is_none());
+     [1m[94m|[0m                    [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6630[0m [1m[94m| [0m        assert!(w3.refusals([92m/* &CommittedPresentations */[0m).next().is_none());
+     [1m[94m|[0m                             [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6644:23
+     [1m[94m|[0m
+[1m[94m6644[0m [1m[94m|[0m         assert!(empty.refusals().next().is_none());
+     [1m[94m|[0m                       [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6644[0m [1m[94m| [0m        assert!(empty.refusals([92m/* &CommittedPresentations */[0m).next().is_none());
+     [1m[94m|[0m                                [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6660:26
+     [1m[94m|[0m
+[1m[94m6660[0m [1m[94m|[0m             assert!(plan.refusals().next().is_none(), "{name}");
+     [1m[94m|[0m                          [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6660[0m [1m[94m| [0m            assert!(plan.refusals([92m/* &CommittedPresentations */[0m).next().is_none(), "{name}");
+     [1m[94m|[0m                                   [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6686:22
+     [1m[94m|[0m
+[1m[94m6686[0m [1m[94m|[0m                 plan.refusals()
+     [1m[94m|[0m                      [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6686[0m [1m[94m| [0m                plan.refusals([92m/* &CommittedPresentations */[0m)
+     [1m[94m|[0m                               [92m+++++++++++++++++++++++++++++[0m
+
+[1m[91merror[E0061][0m[1m: this method takes 1 argument but 0 arguments were supplied[0m
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:6704:21
+     [1m[94m|[0m
+[1m[94m6704[0m [1m[94m|[0m             crossed.refusals().next().expect("boundary refusal").code(),
+     [1m[94m|[0m                     [1m[91m^^^^^^^^[0m[1m[94m--[0m [1m[94margument #1 of type `&CommittedPresentations` is missing[0m
+     [1m[94m|[0m
+[1m[92mnote[0m: method defined here
+    [1m[94m--> [0mcrates/jarde-java/src/init.rs:445:19
+     [1m[94m|[0m
+[1m[94m 445[0m [1m[94m|[0m     pub(crate) fn refusals<'a>(
+     [1m[94m|[0m                   [1m[92m^^^^^^^^[0m
+[1m[94m 446[0m [1m[94m|[0m         &'a self,
+[1m[94m 447[0m [1m[94m|[0m         committed: &'a field::CommittedPresentations,
+     [1m[94m|[0m         [1m[94m--------------------------------------------[0m
+[1m[96mhelp[0m: provide the argument
+     [1m[94m|[0m
+[1m[94m6704[0m [1m[94m| [0m            crossed.refusals([92m/* &CommittedPresentations */[0m).next().expect("boundary refusal").code(),
+     [1m[94m|[0m                              [92m+++++++++++++++++++++++++++++[0m
+
+[1mFor more information about this error, try `rustc --explain E0061`.[0m
+[1m[91merror[0m: could not compile `jarde-java` (lib test) due to 19 previous errors

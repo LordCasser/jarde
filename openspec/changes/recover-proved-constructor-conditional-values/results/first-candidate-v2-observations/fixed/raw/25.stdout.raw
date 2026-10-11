@@ -1,0 +1,10 @@
+empty=
+allNonASCII=0080
+NUL=0061
+NULNUL=0061 0061
+U0080NUL=0080 0061
+NULU0080=0061 0080
+a=java.lang.ArrayIndexOutOfBoundsException
+aNUL=java.lang.ArrayIndexOutOfBoundsException
+NULa=java.lang.ArrayIndexOutOfBoundsException
+null=java.lang.NullPointerException

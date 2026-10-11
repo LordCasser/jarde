@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/jarde-constructor-conditional-focused-build-root-v5.py"
+  ],
+  "exit_code": 1,
+  "started_at": "2026-10-11T17:53:17.449264+00:00",
+  "finished_at": "2026-10-11T17:54:09.123243+00:00",
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-focused-build-root-v5/stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/jarde-cf11-invocations-root-v1/constructor-conditional-focused-build-root-v5/stderr.raw",
+      "bytes": 897,
+      "sha256": "baa9bc8a2b6fef2cfaa2e3d72e1eee7a59bb115350f47ecc72f4f38d001e264e"
+    }
+  },
+  "recorder_sha256": "825c263039006ed7f92beaf1afede1c0ea1671da83d12a6bdb6625d55cf94f4e"
+}

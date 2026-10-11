@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/jarde-constructor-conditional-x4-probe-root-v1.py", line 10, in <module>
+    d=json.loads(Path(c['streams']['stdout']['path']).read_text());rows=[m for m in d['methods'] if m['item']['name']['display']=='crossBlock'];assert len(rows)==1;m=rows[0];b=m['outcome']['report'];print(json.dumps({'text':m['text'],'news':b.get('news'),'new_diagnostics':[z for z in b['diagnostics'] if z['code'].startswith('jre_new_')],'quality':b['quality']},indent=2))
+                                                                                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: 'display'

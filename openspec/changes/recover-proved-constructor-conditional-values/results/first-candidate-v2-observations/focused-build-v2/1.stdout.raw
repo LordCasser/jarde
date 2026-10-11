@@ -1,0 +1,14 @@
+
+running 9 tests
+test build::tests::a_conditional_proof_binds_each_straight_arm_to_one_stack_phi_and_consumer ... ok
+test build::tests::a_switch_join_is_not_admitted_as_an_if_conditional_value ... ok
+test build::tests::a_three_leaf_nested_conditional_is_published_as_one_value ... ok
+test build::tests::carried_constructor_argument_keeps_both_conditionals_and_all_origins ... ok
+test build::tests::nested_conditionals_in_the_false_arm_and_four_leaf_trees_are_supported ... ok
+test field::tests::conditional_new_receipt_counts_only_one_method_local_direct_new ... ok
+test guard::finally_copy_tests::conditional_test14_two_copies_and_verifier_valid_neighbors ... ok
+test init::tests::conditional_constructor_output_has_one_live_stack_phi_and_one_join_consumer ... ok
+test region::tests::real_multiple_exit_class_refuses_conditional_switch_certificate ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 346 filtered out; finished in 0.02s
+

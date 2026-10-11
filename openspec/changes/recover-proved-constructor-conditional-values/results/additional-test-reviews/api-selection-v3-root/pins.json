@@ -1,0 +1,110 @@
+{
+  "schema": "recover-proved-conditional-constructor-values-test-revision-prep-v3",
+  "status": "private_candidate_not_compiled_or_run",
+  "repo_root": "/Users/lordcasser/workspace/projects/jarde",
+  "base_shared_test_sha256": "577a65ca2c8e7763e7a3c4c2a2609f03208093d49598dace80504b7d0c52287d",
+  "focused_v5_observation": {
+    "status": "failed",
+    "summary": "2 passed, 3 failed; range tests fail on whole-class text equality after method-local range validation; X4 fails only because the test expects nonempty fallbacks",
+    "passing_tests": [
+      "conditional_constructor_positive_all_evidence_reports_four_exact_methods",
+      "conditional_constructor_public_late_stop_and_precancel_publish_atomically"
+    ],
+    "range_non_target_refusals": {
+      "UpstreamSequentialLoops2": [
+        "<init>()V",
+        "<clinit>()V"
+      ],
+      "ConditionalConstructionPositive": [
+        "<init>()V",
+        "condition(ZZ)Z",
+        "argument(Ljava/lang/String;Z)Ljava/lang/String;"
+      ]
+    },
+    "candidate_status": "proposal only; no rerun"
+  },
+  "changes": [
+    "remove whole-class text equality from both method-specific range cases while retaining exact target class member/body text, summary, gaps, identity and selected records checks",
+    "verify the ranged target source map retains a known physical selected BCI and does not grow beyond its full map",
+    "assert exact non-target method-level jre_evidence_range_invalid refusals and that all other non-target code methods remain complete",
+    "model X4 as committed Mixed/Fallback/ExplanationOnly output with structured regions and no Region fallback reasons; preserve exact three unpresented NewRecord refusal codes and summary"
+  ],
+  "prohibited_actions_observed": [
+    "no shared-file writes",
+    "no Cargo/test/compiler/JDK/JADX/CLI execution",
+    "no Git commands",
+    "no production change"
+  ],
+  "reviewed_inputs": {
+    "shared_test_before": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/recover_proved_conditional_constructor_values.rs",
+      "bytes": 27813,
+      "sha256": "577a65ca2c8e7763e7a3c4c2a2609f03208093d49598dace80504b7d0c52287d"
+    },
+    "facade_api": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "bytes": 1934970,
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b"
+    },
+    "class_source_model": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 731108,
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f"
+    },
+    "report_planes": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 628361,
+      "sha256": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    },
+    "evidence_range_contract": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/evidence.rs",
+      "bytes": 56225,
+      "sha256": "ffba9c81f14fded43888e140b8b79e3a4c72c7bf4e0799424fdd1f04acfa825e"
+    },
+    "x4_fixture": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-02/nested-ctor-argument-patrol/variants-nested/X4.class",
+      "bytes": 1400,
+      "sha256": "2adb7613d88e496122acd950562145a56421ba66a6281e365f040a1ec71f00af"
+    },
+    "focused_v5_stdout": {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v5/1.stdout.raw",
+      "bytes": 812,
+      "sha256": "860f5dab2dea1908d3e889699c351cae7e2385f69f0c08aada802de3eb5568ca"
+    },
+    "focused_v5_stderr": {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v5/1.stderr.raw",
+      "bytes": 19976,
+      "sha256": "523dc996d2cb3d885bd90ee315471803f4532e7f303aad2eba3d676a686ce0a7"
+    },
+    "focused_v5_execution": {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v5/execution.json",
+      "bytes": 2284721,
+      "sha256": "8ad6c1b92d8cb9f4d17f80451fb3b773415791ce4a29f5695156ee4335f4bdc9"
+    },
+    "prior_x4_capture_stdout": {
+      "path": "/private/tmp/jarde-constructor-conditional-x4-probe-root-v1/0.stdout.raw",
+      "bytes": 78861,
+      "sha256": "329a5c46709b8a97781d4ac6ef01e8248411042b2307c2f9d20d5b886a2fb338"
+    },
+    "prior_x4_capture_acceptance": {
+      "path": "/private/tmp/jarde-constructor-conditional-x4-probe-root-v1/root-acceptance.json",
+      "bytes": 2731,
+      "sha256": "57dab30e74f87a7234a7cdf58e8b3e456f3a6a8b504fa7e0bbe8138cbba87300"
+    },
+    "candidate_test": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v3/recover_proved_conditional_constructor_values.rs",
+      "bytes": 32414,
+      "sha256": "270e421d577d99c5677b54a42667d15eb584530cde32b76c012af4cab31019f4"
+    },
+    "readme": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v3/README.md",
+      "bytes": 3270,
+      "sha256": "84594b84d0338a4a7062165df0e3d54fea88207a53c2be74a7fbe4421837a69c"
+    },
+    "patch": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v3/candidate.patch",
+      "bytes": 8708,
+      "sha256": "7ada28d206b511e8f06155feb905a4742c40bd99cd9ddc96e9afc43134b4175f"
+    }
+  }
+}

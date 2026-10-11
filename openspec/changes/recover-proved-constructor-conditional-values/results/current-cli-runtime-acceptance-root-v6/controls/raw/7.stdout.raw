@@ -1,0 +1,367 @@
+Classfile /private/tmp/jarde-constructor-conditional-controls-candidate-root-v6/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class
+  Last modified 2026年10月12日; size 2092 bytes
+  SHA-256 checksum bf0acebb4a538950a431fbe913f0c0522379582af6615369f425226a13e32bd1
+  Compiled from "ConditionalConstructionPositive.java"
+public class cf11.ConditionalConstructionPositive
+  minor version: 0
+  major version: 52
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // cf11/ConditionalConstructionPositive
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 5, methods: 8, attributes: 1
+Constant pool:
+   #1 = Methodref          #2.#3          // java/lang/Object."<init>":()V
+   #2 = Class              #4             // java/lang/Object
+   #3 = NameAndType        #5:#6          // "<init>":()V
+   #4 = Utf8               java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Fieldref           #8.#9          // cf11/ConditionalConstructionPositive.events:I
+   #8 = Class              #10            // cf11/ConditionalConstructionPositive
+   #9 = NameAndType        #11:#12        // events:I
+  #10 = Utf8               cf11/ConditionalConstructionPositive
+  #11 = Utf8               events
+  #12 = Utf8               I
+  #13 = Fieldref           #8.#14         // cf11/ConditionalConstructionPositive.conditionCalls:I
+  #14 = NameAndType        #15:#12        // conditionCalls:I
+  #15 = Utf8               conditionCalls
+  #16 = Fieldref           #8.#17         // cf11/ConditionalConstructionPositive.argumentCalls:I
+  #17 = NameAndType        #18:#12        // argumentCalls:I
+  #18 = Utf8               argumentCalls
+  #19 = Fieldref           #8.#20         // cf11/ConditionalConstructionPositive.staticSlot:Ljava/lang/String;
+  #20 = NameAndType        #21:#22        // staticSlot:Ljava/lang/String;
+  #21 = Utf8               staticSlot
+  #22 = Utf8               Ljava/lang/String;
+  #23 = Class              #24            // java/lang/IllegalStateException
+  #24 = Utf8               java/lang/IllegalStateException
+  #25 = String             #26            // condition
+  #26 = Utf8               condition
+  #27 = Methodref          #23.#28        // java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+  #28 = NameAndType        #5:#29         // "<init>":(Ljava/lang/String;)V
+  #29 = Utf8               (Ljava/lang/String;)V
+  #30 = Class              #31            // java/lang/IllegalArgumentException
+  #31 = Utf8               java/lang/IllegalArgumentException
+  #32 = String             #33            // argument
+  #33 = Utf8               argument
+  #34 = Methodref          #30.#28        // java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+  #35 = Methodref          #8.#36         // cf11/ConditionalConstructionPositive.condition:(ZZ)Z
+  #36 = NameAndType        #26:#37        // condition:(ZZ)Z
+  #37 = Utf8               (ZZ)Z
+  #38 = Class              #39            // java/lang/String
+  #39 = Utf8               java/lang/String
+  #40 = Methodref          #8.#41         // cf11/ConditionalConstructionPositive.argument:(Ljava/lang/String;Z)Ljava/lang/String;
+  #41 = NameAndType        #33:#42        // argument:(Ljava/lang/String;Z)Ljava/lang/String;
+  #42 = Utf8               (Ljava/lang/String;Z)Ljava/lang/String;
+  #43 = Methodref          #38.#28        // java/lang/String."<init>":(Ljava/lang/String;)V
+  #44 = Fieldref           #8.#45         // cf11/ConditionalConstructionPositive.instanceSlot:Ljava/lang/String;
+  #45 = NameAndType        #46:#22        // instanceSlot:Ljava/lang/String;
+  #46 = Utf8               instanceSlot
+  #47 = Utf8               Code
+  #48 = Utf8               LineNumberTable
+  #49 = Utf8               LocalVariableTable
+  #50 = Utf8               this
+  #51 = Utf8               Lcf11/ConditionalConstructionPositive;
+  #52 = Utf8               reset
+  #53 = Utf8               selected
+  #54 = Utf8               Z
+  #55 = Utf8               fail
+  #56 = Utf8               StackMapTable
+  #57 = Utf8               value
+  #58 = Utf8               oneConstructedArm
+  #59 = Utf8               (ZZZLjava/lang/String;)Ljava/lang/String;
+  #60 = Utf8               conditionFails
+  #61 = Utf8               argumentFails
+  #62 = Utf8               original
+  #63 = Utf8               twoConstructedArms
+  #64 = Utf8               (ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+  #65 = Utf8               firstSelected
+  #66 = Utf8               firstArgumentFails
+  #67 = Utf8               secondArgumentFails
+  #68 = Utf8               firstValue
+  #69 = Utf8               secondValue
+  #70 = Utf8               writeStaticSlot
+  #71 = Utf8               (ZZZLjava/lang/String;)V
+  #72 = Utf8               writeInstanceSlot
+  #73 = Utf8               SourceFile
+  #74 = Utf8               ConditionalConstructionPositive.java
+{
+  public static int events;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int conditionCalls;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static int argumentCalls;
+    descriptor: I
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public static java.lang.String staticSlot;
+    descriptor: Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+
+  public java.lang.String instanceSlot;
+    descriptor: Ljava/lang/String;
+    flags: (0x0001) ACC_PUBLIC
+
+  public cf11.ConditionalConstructionPositive();
+    descriptor: ()V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lcf11/ConditionalConstructionPositive;
+
+  public static void reset();
+    descriptor: ()V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: iconst_0
+         1: putstatic     #7                  // Field events:I
+         4: iconst_0
+         5: putstatic     #13                 // Field conditionCalls:I
+         8: iconst_0
+         9: putstatic     #16                 // Field argumentCalls:I
+        12: aconst_null
+        13: putstatic     #19                 // Field staticSlot:Ljava/lang/String;
+        16: return
+      LineNumberTable:
+        line 11: 0
+        line 12: 4
+        line 13: 8
+        line 14: 12
+        line 15: 16
+
+  private static boolean condition(boolean, boolean);
+    descriptor: (ZZ)Z
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: getstatic     #7                  // Field events:I
+         3: bipush        10
+         5: imul
+         6: iconst_1
+         7: iadd
+         8: putstatic     #7                  // Field events:I
+        11: getstatic     #13                 // Field conditionCalls:I
+        14: iconst_1
+        15: iadd
+        16: putstatic     #13                 // Field conditionCalls:I
+        19: iload_1
+        20: ifeq          33
+        23: new           #23                 // class java/lang/IllegalStateException
+        26: dup
+        27: ldc           #25                 // String condition
+        29: invokespecial #27                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+        32: athrow
+        33: iload_0
+        34: ireturn
+      LineNumberTable:
+        line 18: 0
+        line 19: 11
+        line 20: 19
+        line 21: 23
+        line 23: 33
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      35     0 selected   Z
+            0      35     1  fail   Z
+      StackMapTable: number_of_entries = 1
+        frame_type = 33 /* same */
+
+  private static java.lang.String argument(java.lang.String, boolean);
+    descriptor: (Ljava/lang/String;Z)Ljava/lang/String;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=3, locals=2, args_size=2
+         0: getstatic     #7                  // Field events:I
+         3: bipush        10
+         5: imul
+         6: iconst_2
+         7: iadd
+         8: putstatic     #7                  // Field events:I
+        11: getstatic     #16                 // Field argumentCalls:I
+        14: iconst_1
+        15: iadd
+        16: putstatic     #16                 // Field argumentCalls:I
+        19: iload_1
+        20: ifeq          33
+        23: new           #30                 // class java/lang/IllegalArgumentException
+        26: dup
+        27: ldc           #32                 // String argument
+        29: invokespecial #34                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+        32: athrow
+        33: aload_0
+        34: areturn
+      LineNumberTable:
+        line 27: 0
+        line 28: 11
+        line 29: 19
+        line 30: 23
+        line 32: 33
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      35     0 value   Ljava/lang/String;
+            0      35     1  fail   Z
+      StackMapTable: number_of_entries = 1
+        frame_type = 33 /* same */
+
+  public static java.lang.String oneConstructedArm(boolean, boolean, boolean, java.lang.String);
+    descriptor: (ZZZLjava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #35                 // Method condition:(ZZ)Z
+         5: ifeq          23
+         8: new           #38                 // class java/lang/String
+        11: dup
+        12: aload_3
+        13: iload_2
+        14: invokestatic  #40                 // Method argument:(Ljava/lang/String;Z)Ljava/lang/String;
+        17: invokespecial #43                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        20: goto          24
+        23: aload_3
+        24: areturn
+      LineNumberTable:
+        line 37: 0
+        line 38: 8
+        line 39: 23
+        line 37: 24
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      25     0 selected   Z
+            0      25     1 conditionFails   Z
+            0      25     2 argumentFails   Z
+            0      25     3 original   Ljava/lang/String;
+      StackMapTable: number_of_entries = 2
+        frame_type = 23 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+
+  public static java.lang.String twoConstructedArms(boolean, boolean, boolean, boolean, java.lang.String, java.lang.String);
+    descriptor: (ZZZZLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=6, args_size=6
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #35                 // Method condition:(ZZ)Z
+         5: ifeq          24
+         8: new           #38                 // class java/lang/String
+        11: dup
+        12: aload         4
+        14: iload_2
+        15: invokestatic  #40                 // Method argument:(Ljava/lang/String;Z)Ljava/lang/String;
+        18: invokespecial #43                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        21: goto          37
+        24: new           #38                 // class java/lang/String
+        27: dup
+        28: aload         5
+        30: iload_3
+        31: invokestatic  #40                 // Method argument:(Ljava/lang/String;Z)Ljava/lang/String;
+        34: invokespecial #43                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        37: areturn
+      LineNumberTable:
+        line 45: 0
+        line 46: 8
+        line 47: 24
+        line 45: 37
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      38     0 firstSelected   Z
+            0      38     1 conditionFails   Z
+            0      38     2 firstArgumentFails   Z
+            0      38     3 secondArgumentFails   Z
+            0      38     4 firstValue   Ljava/lang/String;
+            0      38     5 secondValue   Ljava/lang/String;
+      StackMapTable: number_of_entries = 2
+        frame_type = 24 /* same */
+        frame_type = 76 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+
+  public static void writeStaticSlot(boolean, boolean, boolean, java.lang.String);
+    descriptor: (ZZZLjava/lang/String;)V
+    flags: (0x0009) ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=4, args_size=4
+         0: iload_0
+         1: iload_1
+         2: invokestatic  #35                 // Method condition:(ZZ)Z
+         5: ifeq          23
+         8: new           #38                 // class java/lang/String
+        11: dup
+        12: aload_3
+        13: iload_2
+        14: invokestatic  #40                 // Method argument:(Ljava/lang/String;Z)Ljava/lang/String;
+        17: invokespecial #43                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        20: goto          24
+        23: aload_3
+        24: putstatic     #19                 // Field staticSlot:Ljava/lang/String;
+        27: return
+      LineNumberTable:
+        line 52: 0
+        line 53: 8
+        line 54: 23
+        line 55: 27
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      28     0 selected   Z
+            0      28     1 conditionFails   Z
+            0      28     2 argumentFails   Z
+            0      28     3 original   Ljava/lang/String;
+      StackMapTable: number_of_entries = 2
+        frame_type = 23 /* same */
+        frame_type = 64 /* same_locals_1_stack_item */
+          stack = [ class java/lang/String ]
+
+  public void writeInstanceSlot(boolean, boolean, boolean, java.lang.String);
+    descriptor: (ZZZLjava/lang/String;)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=5, locals=5, args_size=5
+         0: aload_0
+         1: iload_1
+         2: iload_2
+         3: invokestatic  #35                 // Method condition:(ZZ)Z
+         6: ifeq          25
+         9: new           #38                 // class java/lang/String
+        12: dup
+        13: aload         4
+        15: iload_3
+        16: invokestatic  #40                 // Method argument:(Ljava/lang/String;Z)Ljava/lang/String;
+        19: invokespecial #43                 // Method java/lang/String."<init>":(Ljava/lang/String;)V
+        22: goto          27
+        25: aload         4
+        27: putfield      #44                 // Field instanceSlot:Ljava/lang/String;
+        30: return
+      LineNumberTable:
+        line 59: 0
+        line 60: 9
+        line 61: 25
+        line 62: 30
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      31     0  this   Lcf11/ConditionalConstructionPositive;
+            0      31     1 selected   Z
+            0      31     2 conditionFails   Z
+            0      31     3 argumentFails   Z
+            0      31     4 original   Ljava/lang/String;
+      StackMapTable: number_of_entries = 2
+        frame_type = 89 /* same_locals_1_stack_item */
+          stack = [ class cf11/ConditionalConstructionPositive ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 1
+          locals = [ class cf11/ConditionalConstructionPositive, int, int, int, class java/lang/String ]
+          stack = [ class cf11/ConditionalConstructionPositive, class java/lang/String ]
+}
+SourceFile: "ConditionalConstructionPositive.java"

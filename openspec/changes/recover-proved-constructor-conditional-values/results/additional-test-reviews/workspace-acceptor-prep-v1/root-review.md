@@ -1,0 +1,1 @@
+Root复核完整diff、current lib模块声明、metadata deepest-package target mapping、raw outcomes/summary cleaner、源闭包和最终cleanup。与runner12完整names一致，counts来自actualraw；准备期间读取running receipt的旧hash仅为观察pin，不要求之后运行receipt停在该hash。当前尚未执行acceptor，不声明fullworkspace通过。

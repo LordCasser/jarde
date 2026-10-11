@@ -1,0 +1,34 @@
+{
+  "schema": "conditional-constructor-control-frozen-inputs-root-v1",
+  "files": [
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/ConditionalConstructionPositive.java",
+      "bytes": 2168,
+      "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/Runner.java",
+      "bytes": 10771,
+      "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/manifest.json",
+      "bytes": 711,
+      "sha256": "e8761975ad6842b7c426db50827bf5efc040a3b35bd695e7320f894f25f75a68"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/README.md",
+      "bytes": 4231,
+      "sha256": "b498074fe1563f8ba930d660981331f80278da8eaf2f91c40fbedc7c871cf595"
+    }
+  ],
+  "preparation": {
+    "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/preparation-pins.json",
+    "sha256": "ab38b616fc0abcbb1ee75666ad9fe7e81e50cb64b47066044be465d29e90a34e"
+  }
+}

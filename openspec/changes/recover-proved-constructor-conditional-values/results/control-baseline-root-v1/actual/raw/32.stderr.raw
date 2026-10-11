@@ -1,0 +1,11 @@
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java:92: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 ConditionalConstructionPositive
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java:104: 错误: 找不到符号
+        jarde_refused_body();
+        ^
+  符号:   方法 jarde_refused_body()
+  位置: 类 ConditionalConstructionPositive
+2 个错误

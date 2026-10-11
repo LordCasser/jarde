@@ -1,0 +1,129 @@
+{
+  "schema": "jarde-constructor-phi-private-candidate-pins-v2",
+  "status": "private-unapplied-unvalidated",
+  "base_sources": [
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-java/src/init.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 266684,
+      "sha256": "f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1"
+    },
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-java/src/field.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/field.rs",
+      "bytes": 45933,
+      "sha256": "68cb90ff3dc08d9ad8ccb834079f1e2590b1b2c145fc55cc4594b4259d377145"
+    },
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-java/src/report.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 628063,
+      "sha256": "461448d858f299b399ab7d3564faf0b2220ef0d23f971b90f7326fa238864f7e"
+    },
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-java/src/build.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1728202,
+      "sha256": "f5c0757ec670ec72aa377ea1f84529a576fe595c895a2d3ce1c7c66ee441c5fe"
+    },
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-jvm/src/ssa.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-jvm/src/ssa.rs",
+      "bytes": 158622,
+      "sha256": "03e01dcda42e6022f217b4238184fc1b5d45a63b05811f7692b39d7fefa2c90a"
+    },
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-java/src/ast.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/ast.rs",
+      "bytes": 52168,
+      "sha256": "9b2fed3d493458ea1a9fe28365f763fc32729bc039c2f08cd57a0f513f42c171"
+    },
+    {
+      "role": "base-source",
+      "relative_path": "crates/jarde-java/src/source_map.rs",
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/source_map.rs",
+      "bytes": 21374,
+      "sha256": "f5803ffa204b2af9621fc057ee628046bae1c61c83881f8682950e0d7fe73d8b"
+    }
+  ],
+  "candidate_sources": [
+    {
+      "role": "private-candidate",
+      "relative_path": "crates/jarde-java/src/init.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/init.rs",
+      "bytes": 276499,
+      "sha256": "fe7cfbb06c104ee51d5f45d9a9b721fdb6acc727a4691b82d39b20941f71f39b"
+    },
+    {
+      "role": "private-candidate",
+      "relative_path": "crates/jarde-java/src/field.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/field.rs",
+      "bytes": 52330,
+      "sha256": "a99c6f3426205f9c66a3064c8ec01dd93ee5656dc57ff2b63464500877166985"
+    },
+    {
+      "role": "private-candidate",
+      "relative_path": "crates/jarde-java/src/report.rs",
+      "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/report.rs",
+      "bytes": 628361,
+      "sha256": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    }
+  ],
+  "openspec_artifacts": [
+    {
+      "role": "openspec-artifact",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/proposal.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/proposal.md",
+      "bytes": 1931,
+      "sha256": "e0b9a7d3b331e6e58dbd35acd7a8e486c8e4aa12ca94997725f6e3fb02536cf8"
+    },
+    {
+      "role": "openspec-artifact",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/design.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/design.md",
+      "bytes": 5421,
+      "sha256": "dff49fcb3a044a400ea4b375daca20c6ae6a43320771b32758b61745b58eb52d"
+    },
+    {
+      "role": "openspec-artifact",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/specs/java8-recovery/spec.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/specs/java8-recovery/spec.md",
+      "bytes": 3710,
+      "sha256": "e75118ce418d9a76b8ef937b986849aa4c89e99929cfd47403d02797c5949211"
+    },
+    {
+      "role": "openspec-artifact",
+      "relative_path": "openspec/changes/recover-proved-constructor-conditional-values/tasks.md",
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/tasks.md",
+      "bytes": 2853,
+      "sha256": "58d625c39d5badd8929d2b80c195b5e9747b265d01d33e19cdc3f122b65a9061"
+    }
+  ],
+  "test_fixture": {
+    "role": "private-test-fixture",
+    "relative_path": "openspec/evidence/java-syntax-2026-10-11/cf11-testsequentialloops2-baseline-root-v1/actual/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+    "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf11-testsequentialloops2-baseline-root-v1/actual/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+    "bytes": 931,
+    "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+  },
+  "candidate_patch": {
+    "role": "private-patch",
+    "relative_path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/candidate.patch",
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/candidate.patch",
+    "bytes": 29630,
+    "sha256": "6ed6378d67aaddc3c1ffa595b1e36d71a09162e95e448898813d9f8a1e72dc8c"
+  },
+  "review": {
+    "role": "private-review",
+    "relative_path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/review.md",
+    "path": "/private/tmp/jarde-constructor-phi-impl-luna-v2/review.md",
+    "bytes": 4989,
+    "sha256": "3522c4d1372b4261c343ea1c238b0f75098ca451cc01f8cc8d3ab6c364b3d185"
+  }
+}

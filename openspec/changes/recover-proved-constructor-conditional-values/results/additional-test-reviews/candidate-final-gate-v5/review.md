@@ -1,0 +1,11 @@
+# Private v5 X4 crossBlock regression update
+
+This is an unapplied private test-only patch against the current shared `init.rs` bytes pinned in `pins.json`. The previous assertion that `site_at_head(10)` and `(22)` must be absent conflated an ownership candidate (`Sites`) with final Program presentation. The patch accepts both verified inner candidates and pins both `conditional_consumer` markers to the same physical join instruction at BCI 31. It retains the outer Tag absence and asserts its registered `jre_new_shape` refusal.
+
+For an empty final-Program receipt, the test asserts `(read, presented) == (3, 0)`, the ordered core refusal codes are outer shape plus two `jre_new_conditional_not_emitted`, and RuleDetails materialization yields exactly the three same unpresented records at heads 0/10/22. That exercises the existing shared predicate across refusals, counts, and materialization without weakening the ownership check. It does not claim that an empty receipt is the actual Builder result.
+
+The actual frozen v2 CLI diagnostic artifact is pinned separately: full X4 rendering has `crossBlock` as comment-only/fallback, outer head 0 refused as `jre_new_shape`, candidates 10 and 22 unpresented with constructors 16 and 28, and summary `3 construction candidate(s) ... 0 presented ... 3 refused`; the core gaps contain one outer refusal and two conditional-not-emitted refusals. Its command exited 0, but it is diagnostic evidence from the frozen v2 CLI only, not acceptance of the current source. Root is adding the real public Builder/report regression to verify the final Program receipt and default/all report agreement.
+
+Static code path checked: Builder `new_expr` anchors the produced AST `New` at the constructor BCI; `report` builds `CommittedPresentations` from the final emitted Program and conditional constructor BCIs; `Sites::refusals`, `counts`, and `materialize` all use `conditional_site_presented`, which requires exactly one matching final-Program New for marked candidates. The one-hop marker only requests that final receipt.
+
+No compiler, formatter, Git, Java, JADX, or CLI was run in this preparation. This patch is not known to compile or pass tests and preserves the earlier v3 full-java-lib failure record.

@@ -1,0 +1,23 @@
+{
+  "status": "accepted_actual_foreach_first_post_entry_gate_observation_only",
+  "actual_logs": [
+    "JARDE_FOREACH_CANDIDATE event=attempt test_bci=42 header_bci=35 path=[1, 1] form=While tests=1 for_header=false body_first=Declare",
+    "JARDE_FOREACH_CANDIDATE event=refused test_bci=42 gate=post_entry_candidate_proof_incomplete stage=iterator_declaration_before_init",
+    "JARDE_FOREACH_CANDIDATE event=attempt test_bci=13 header_bci=7 path=[1] form=While tests=1 for_header=false body_first=Assign",
+    "JARDE_FOREACH_CANDIDATE event=refused test_bci=13 gate=body_first_not_initialized_declaration statement=Assign"
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "commands": 2,
+  "source_closure_count": 4718,
+  "source_restored_equal_finalbuild_and_current": true,
+  "target_absent_after": true,
+  "peak_target_bytes": 319783317,
+  "inner_first_refusal_stage": "iterator_declaration_before_init",
+  "outer_first_refusal_gate": "body_first_not_initialized_declaration",
+  "later_candidate_proofs_not_run": true,
+  "source_scope_explanation": "In full generated source local5 declaration is hoisted outside outer while; actual stage locates failed current-frame declaration lookup. AST ancestor ownership/liveness still requires design review."
+}

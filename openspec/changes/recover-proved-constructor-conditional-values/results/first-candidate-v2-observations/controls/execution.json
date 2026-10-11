@@ -1,0 +1,3245 @@
+{
+  "schema": "cf11-target-full-source-capture-v2",
+  "status": "observed",
+  "package": "cf11",
+  "classes": [
+    "cf11.ConditionalConstructionPositive",
+    "cf11.ConditionalConstructionRefusals"
+  ],
+  "runner_class": "cf11.Runner",
+  "inputs_manifest": {
+    "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/manifest.json",
+    "bytes": 711,
+    "sha256": "e8761975ad6842b7c426db50827bf5efc040a3b35bd695e7320f894f25f75a68"
+  },
+  "inputs_manifest_path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/manifest.json",
+  "input_entries": {
+    "package": "cf11",
+    "source_level": "Java 8",
+    "target_classes": [
+      {
+        "class": "cf11.ConditionalConstructionPositive",
+        "source": "ConditionalConstructionPositive.java",
+        "bytes": 2168,
+        "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+      },
+      {
+        "class": "cf11.ConditionalConstructionRefusals",
+        "source": "ConditionalConstructionRefusals.java",
+        "bytes": 2748,
+        "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+      }
+    ],
+    "runner": {
+      "class": "cf11.Runner",
+      "source": "Runner.java",
+      "bytes": 10771,
+      "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+    }
+  },
+  "commands": [
+    {
+      "index": 1,
+      "label": "javac8-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:30.881094+00:00",
+      "duration_seconds": 1.008862292044796,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17225007104,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/1.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/1.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "javac8-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:31.893481+00:00",
+      "duration_seconds": 1.0150630829739384,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17225273344,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/2.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/2.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "javac8-original-javap-ConditionalConstructionPositive",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes",
+        "cf11.ConditionalConstructionPositive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:32.914307+00:00",
+      "duration_seconds": 1.015548333991319,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17225142272,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/3.stdout.raw",
+          "bytes": 15373,
+          "sha256": "503b55eb8d60c3f93a4104376c3b4f586a62bfd0011cb1b50c5a771d5a0512b1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/3.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "javac8-original-javap-ConditionalConstructionRefusals",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes",
+        "cf11.ConditionalConstructionRefusals"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:33.933717+00:00",
+      "duration_seconds": 1.0164622500305995,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17225089024,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/4.stdout.raw",
+          "bytes": 18791,
+          "sha256": "f4892e5bcf9b7d6215863ba613bcc4822c9d09ca7a71fa8146daf266cd56bb29"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/4.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "javac23-original-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:34.953852+00:00",
+      "duration_seconds": 1.0122081659501418,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17225080832,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/5.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/5.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "javac23-original-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:35.969124+00:00",
+      "duration_seconds": 1.0144917499856092,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17225011200,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/6.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/6.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "javac23-original-javap-ConditionalConstructionPositive",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes",
+        "cf11.ConditionalConstructionPositive"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:36.984609+00:00",
+      "duration_seconds": 1.0048256249865517,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224921088,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/7.stdout.raw",
+          "bytes": 15653,
+          "sha256": "d27475185fca28a4936284290ba266be00c2027a2b97983ec848a83678c40e77"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/7.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "javac23-original-javap-ConditionalConstructionRefusals",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+        "-p",
+        "-c",
+        "-s",
+        "-v",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes",
+        "cf11.ConditionalConstructionRefusals"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:37.993301+00:00",
+      "duration_seconds": 1.0125462919822894,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224867840,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/8.stdout.raw",
+          "bytes": 19112,
+          "sha256": "b0956a05e6fe863c1b2811acc458e4e03cf356556e261c2d61c91388ab29c3ce"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/8.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "jadx-version",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--version"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:39.011315+00:00",
+      "duration_seconds": 1.012504042009823,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224806400,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/9.stdout.raw",
+          "bytes": 6,
+          "sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/9.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "label": "jadx-default",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jadx/default",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:40.027492+00:00",
+      "duration_seconds": 1.0150405410095118,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224765440,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/10.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/10.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "label": "javac8-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:41.048822+00:00",
+      "duration_seconds": 1.0057011250173673,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224732672,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/11.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/11.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "label": "javac8-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:42.055315+00:00",
+      "duration_seconds": 1.0067707079579122,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224687616,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/12.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/12.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "label": "javac23-jadx-default-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:43.067025+00:00",
+      "duration_seconds": 1.0126095410087146,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224695808,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/13.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/13.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "label": "javac23-jadx-default-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:44.083359+00:00",
+      "duration_seconds": 1.0102213749778457,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224634368,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/14.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/14.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "label": "jadx-none",
+      "argv": [
+        "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+        "--no-res",
+        "--config",
+        "none",
+        "--threads-count",
+        "1",
+        "--rename-flags",
+        "none",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jadx/none",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/for-condition-controls.jar"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:45.099571+00:00",
+      "duration_seconds": 1.0143124170135707,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224593408,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/15.stdout.raw",
+          "bytes": 148,
+          "sha256": "65086977c5bc58c6ccc124f1418c14cf6cb0fb92dfa1d961d96a501ef0247289"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/15.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "label": "javac8-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:46.115328+00:00",
+      "duration_seconds": 1.0094645409844816,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224572928,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/16.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/16.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "label": "javac8-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:47.128270+00:00",
+      "duration_seconds": 1.0131168339867145,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224744960,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/17.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/17.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "label": "javac23-jadx-none-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:48.146679+00:00",
+      "duration_seconds": 1.0076677500037476,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224712192,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/18.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/18.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "label": "javac23-jadx-none-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:49.155230+00:00",
+      "duration_seconds": 1.0125081249861978,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224634368,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/19.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/19.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "label": "javac8-jarde-default-ConditionalConstructionPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/ConditionalConstructionPositive.class",
+        "--class",
+        "cf11.ConditionalConstructionPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:50.173768+00:00",
+      "duration_seconds": 1.013279665959999,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17224429568,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/20.stdout.raw",
+          "bytes": 159766,
+          "sha256": "5358f33fc82c83d7519acd7a0a5d84da20ac4a1183972bf7232ffe23d458a457"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/20.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "label": "javac8-jarde-all-ConditionalConstructionPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/ConditionalConstructionPositive.class",
+        "--class",
+        "cf11.ConditionalConstructionPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:51.197845+00:00",
+      "duration_seconds": 1.0091829170123674,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17223659520,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/21.stdout.raw",
+          "bytes": 167213,
+          "sha256": "d8197f05ddde0f085d56c00b58ac9254ea0572c9da42df359392aa93d80003af"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/21.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "label": "javac8-jarde-default-ConditionalConstructionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/ConditionalConstructionRefusals.class",
+        "--class",
+        "cf11.ConditionalConstructionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:52.212811+00:00",
+      "duration_seconds": 1.010260457987897,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17222877184,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/22.stdout.raw",
+          "bytes": 184153,
+          "sha256": "2972fb6b660b91aba22b4ba36299046d0f07f59ff945950ab38f470291e296bf"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/22.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "label": "javac8-jarde-all-ConditionalConstructionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/ConditionalConstructionRefusals.class",
+        "--class",
+        "cf11.ConditionalConstructionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:53.235073+00:00",
+      "duration_seconds": 1.014108249975834,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17222041600,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/23.stdout.raw",
+          "bytes": 195096,
+          "sha256": "ca2e5468f8c7e6d459d22f7f7d191cddfc79e0cc3e7bb6a74f90f59efbcd321c"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/23.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "label": "javac23-jarde-default-ConditionalConstructionPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class",
+        "--class",
+        "cf11.ConditionalConstructionPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:54.264013+00:00",
+      "duration_seconds": 1.0162828749744222,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17221201920,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/24.stdout.raw",
+          "bytes": 159766,
+          "sha256": "2eb3d7b9670a29a6bb431768123c739f6cc02affd7d9db1c931471df75c77bd4"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/24.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "label": "javac23-jarde-all-ConditionalConstructionPositive-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class",
+        "--class",
+        "cf11.ConditionalConstructionPositive",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:55.291298+00:00",
+      "duration_seconds": 1.0065907499520108,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17220456448,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/25.stdout.raw",
+          "bytes": 167212,
+          "sha256": "cca802f2be44757370446f336c69043c6b3250eac5df49791774e880a01e32e5"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/25.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 26,
+      "label": "javac23-jarde-default-ConditionalConstructionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+        "--class",
+        "cf11.ConditionalConstructionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:56.301715+00:00",
+      "duration_seconds": 1.0101427920162678,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17219649536,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/26.stdout.raw",
+          "bytes": 184153,
+          "sha256": "57c01788e2f03733eba7cfcde62c3c63ec52f1cdc1950b4d62fc5a774e2679e1"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/26.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 27,
+      "label": "javac23-jarde-all-ConditionalConstructionRefusals-render",
+      "argv": [
+        "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+        "--class",
+        "cf11.ConditionalConstructionRefusals",
+        "--policy",
+        "single-class",
+        "--release",
+        "8",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:57.316334+00:00",
+      "duration_seconds": 1.005354333028663,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17218809856,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/27.stdout.raw",
+          "bytes": 195090,
+          "sha256": "0c327b3036a22f727ddd1f07d1b00d00b635b522e86a5c88640dcfb9513ded55"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/27.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 28,
+      "label": "javac8-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-combined/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:58.334611+00:00",
+      "duration_seconds": 1.0140867920126766,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17209602048,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/28.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/28.stderr.raw",
+          "bytes": 641,
+          "sha256": "1db29a48675a6e9f5135501d8272e23468157a0dcf6c846f975665565926dc8b"
+        }
+      }
+    },
+    {
+      "index": 29,
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:36:59.354754+00:00",
+      "duration_seconds": 1.0070230830460787,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217933312,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/29.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/29.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 30,
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:00.372097+00:00",
+      "duration_seconds": 1.0181916669826023,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217900544,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/30.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/30.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 31,
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionRefusals/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:01.398044+00:00",
+      "duration_seconds": 1.0139316249988042,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217871872,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/31.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/31.stderr.raw",
+          "bytes": 641,
+          "sha256": "1db29a48675a6e9f5135501d8272e23468157a0dcf6c846f975665565926dc8b"
+        }
+      }
+    },
+    {
+      "index": 32,
+      "label": "javac8-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-combined/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:02.413654+00:00",
+      "duration_seconds": 1.011384374985937,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217855488,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/32.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/32.stderr.raw",
+          "bytes": 629,
+          "sha256": "f4c03dded4866318707db0c6a3bc0b412deabb3408ba2cfebc61b58b4f11d3ea"
+        }
+      }
+    },
+    {
+      "index": 33,
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:03.427238+00:00",
+      "duration_seconds": 1.004460417025257,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217818624,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/33.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/33.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 34,
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:04.435866+00:00",
+      "duration_seconds": 1.015807792020496,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217826816,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/34.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/34.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 35,
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+        "-source",
+        "8",
+        "-target",
+        "8",
+        "-Xlint:-options",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionRefusals/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:05.460169+00:00",
+      "duration_seconds": 1.0078964999993332,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17217802240,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/35.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/35.stderr.raw",
+          "bytes": 629,
+          "sha256": "f4c03dded4866318707db0c6a3bc0b412deabb3408ba2cfebc61b58b4f11d3ea"
+        }
+      }
+    },
+    {
+      "index": 36,
+      "label": "javac23-jarde-default-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-combined/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:06.475397+00:00",
+      "duration_seconds": 1.0154200829565525,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17218150400,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/36.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/36.stderr.raw",
+          "bytes": 887,
+          "sha256": "539ac8b39b6d1e9520401698d2d9a90329c49a192147fc436d02c849ad184ab0"
+        }
+      }
+    },
+    {
+      "index": 37,
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:07.496352+00:00",
+      "duration_seconds": 1.0106594579992816,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17218088960,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/37.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/37.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 38,
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:08.511343+00:00",
+      "duration_seconds": 1.0133655840181746,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17218035712,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/38.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/38.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 39,
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionRefusals/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:09.532058+00:00",
+      "duration_seconds": 1.0050755830015987,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17216978944,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/39.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/39.stderr.raw",
+          "bytes": 887,
+          "sha256": "539ac8b39b6d1e9520401698d2d9a90329c49a192147fc436d02c849ad184ab0"
+        }
+      }
+    },
+    {
+      "index": 40,
+      "label": "javac23-jarde-all-combined-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-combined/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-combined/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-combined/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:10.541454+00:00",
+      "duration_seconds": 1.0130563750280999,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17216962560,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/40.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/40.stderr.raw",
+          "bytes": 875,
+          "sha256": "ade4b946725147e2aec62a1959b3daf5af4cc502d36baf7b67a55a5178913fb3"
+        }
+      }
+    },
+    {
+      "index": 41,
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionPositive-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:11.556792+00:00",
+      "duration_seconds": 1.0037177500198595,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17215864832,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/41.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/41.stderr.raw",
+          "bytes": 243,
+          "sha256": "4f875b75f0bac1d971d8fc3ab19a64d5d92273f61235f2bb734eed34ab07458f"
+        }
+      }
+    },
+    {
+      "index": 42,
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionPositive-run",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+        "-Xverify:all",
+        "-cp",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/classes",
+        "cf11.Runner"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:12.565386+00:00",
+      "duration_seconds": 1.0132046670187265,
+      "exit_code": 0,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17215856640,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/42.stdout.raw",
+          "bytes": 2253,
+          "sha256": "a06d6cc59147b779796efa914406f8ff35028263a534906893de5ee2dabf5c7e"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/42.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "index": 43,
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionRefusals-compile",
+      "argv": [
+        "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+        "--release",
+        "8",
+        "-proc:none",
+        "-g",
+        "-classpath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-sourcepath",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionRefusals/empty-paths",
+        "-d",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionRefusals/classes",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+        "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java"
+      ],
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "java_home": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home",
+      "state": "observed",
+      "started_at": "2026-10-11T17:37:13.586629+00:00",
+      "duration_seconds": 1.0082147079519928,
+      "exit_code": 1,
+      "guard_stop": null,
+      "peak_target_bytes": 0,
+      "free_bytes_after": 17215832064,
+      "env_overrides": {},
+      "test_summary_check": null,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/43.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/raw/43.stderr.raw",
+          "bytes": 875,
+          "sha256": "ade4b946725147e2aec62a1959b3daf5af4cc502d36baf7b67a55a5178913fb3"
+        }
+      }
+    }
+  ],
+  "original_compile_rows": [
+    {
+      "label": "javac8-original",
+      "compile_command": "javac8-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+          "bytes": 2168,
+          "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+          "bytes": 2748,
+          "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2086,
+          "sha256": "ac9d30eea0417b66469123d1e9c6d2a9debc8b22b2c78cebe4156d4b54eb2d27"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2506,
+          "sha256": "f3022fa2d9b8870d783e2a96f0885f3e517a3e49ab5f5de146b3ba8f4de4767a"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/classes/cf11/Runner.class",
+          "bytes": 6691,
+          "sha256": "3dc3f7697f03e11767422291ec2d8190cb4a48e3441eafeba4722d5786103d63"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-original",
+      "compile_command": "javac23-original-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-original-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+          "bytes": 2168,
+          "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+          "bytes": 2748,
+          "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2092,
+          "sha256": "bf0acebb4a538950a431fbe913f0c0522379582af6615369f425226a13e32bd1"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2516,
+          "sha256": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/classes/cf11/Runner.class",
+          "bytes": 6676,
+          "sha256": "31e0ea5d337693a07f75731f2703f823216fdf1691d292af8fc0e75514b8652e"
+        }
+      ],
+      "runtime_comparison": null
+    }
+  ],
+  "javap": [
+    {
+      "class": "cf11.ConditionalConstructionPositive",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-ConditionalConstructionPositive",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/javap-ConditionalConstructionPositive.txt",
+        "bytes": 15373,
+        "sha256": "503b55eb8d60c3f93a4104376c3b4f586a62bfd0011cb1b50c5a771d5a0512b1"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ConditionalConstructionRefusals",
+      "jdk": "javac8",
+      "command": "javac8-original-javap-ConditionalConstructionRefusals",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-original/javap-ConditionalConstructionRefusals.txt",
+        "bytes": 18791,
+        "sha256": "f4892e5bcf9b7d6215863ba613bcc4822c9d09ca7a71fa8146daf266cd56bb29"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ConditionalConstructionPositive",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-ConditionalConstructionPositive",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/javap-ConditionalConstructionPositive.txt",
+        "bytes": 15653,
+        "sha256": "d27475185fca28a4936284290ba266be00c2027a2b97983ec848a83678c40e77"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "class": "cf11.ConditionalConstructionRefusals",
+      "jdk": "javac23",
+      "command": "javac23-original-javap-ConditionalConstructionRefusals",
+      "stdout_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-original/javap-ConditionalConstructionRefusals.txt",
+        "bytes": 19112,
+        "sha256": "b0956a05e6fe863c1b2811acc458e4e03cf356556e261c2d61c91388ab29c3ce"
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jadx": {
+    "version_command": "jadx-version",
+    "version_exit": 0,
+    "version_stdout_sha256": "dab64e06c0817d77b4f887261832cbb34ba023cac7c74d72d81068553652d0c5",
+    "version_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "jar_pin": {
+      "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/for-condition-controls.jar",
+      "bytes": 4950,
+      "sha256": "85e2b25db39580bc22ee5e1a3a926393f6d890a3183a850b729d636c77e21c18"
+    },
+    "jar_entries": [
+      "cf11.ConditionalConstructionPositive",
+      "cf11.ConditionalConstructionRefusals"
+    ],
+    "profiles": {
+      "default": {
+        "command": "jadx-default",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jadx/default/sources/cf11/ConditionalConstructionPositive.java",
+            "bytes": 2366,
+            "sha256": "98b8035aafe3f67719562032818acb1baaf53593a4595d0b79fd349f3a996d58"
+          },
+          {
+            "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jadx/default/sources/cf11/ConditionalConstructionRefusals.java",
+            "bytes": 3002,
+            "sha256": "3a70de072c156c4c35f9e4b39be546574abd9cc5802558d54421f3c31af13fef"
+          }
+        ],
+        "names": [
+          "ConditionalConstructionPositive.java",
+          "ConditionalConstructionRefusals.java"
+        ],
+        "packages": [
+          "cf11",
+          "cf11"
+        ],
+        "exact_target_sources": true
+      },
+      "none": {
+        "command": "jadx-none",
+        "exit_code": 0,
+        "sources": [
+          {
+            "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jadx/none/sources/cf11/ConditionalConstructionPositive.java",
+            "bytes": 2366,
+            "sha256": "98b8035aafe3f67719562032818acb1baaf53593a4595d0b79fd349f3a996d58"
+          },
+          {
+            "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jadx/none/sources/cf11/ConditionalConstructionRefusals.java",
+            "bytes": 3002,
+            "sha256": "3a70de072c156c4c35f9e4b39be546574abd9cc5802558d54421f3c31af13fef"
+          }
+        ],
+        "names": [
+          "ConditionalConstructionPositive.java",
+          "ConditionalConstructionRefusals.java"
+        ],
+        "packages": [
+          "cf11",
+          "cf11"
+        ],
+        "exact_target_sources": true
+      }
+    }
+  },
+  "jadx_compile_rows": [
+    {
+      "label": "javac8-jadx-default",
+      "compile_command": "javac8-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionPositive.java",
+          "bytes": 2366,
+          "sha256": "98b8035aafe3f67719562032818acb1baaf53593a4595d0b79fd349f3a996d58"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionRefusals.java",
+          "bytes": 3002,
+          "sha256": "3a70de072c156c4c35f9e4b39be546574abd9cc5802558d54421f3c31af13fef"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2124,
+          "sha256": "e73e1e3bce4b6eb639f3628cf9faa8a4aef2bcca6662fe688fd847ac767fa104"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2570,
+          "sha256": "34bfaaf5dcdedb9dc41d4f4fffc75f988b65aa6548a3b18f1f99a34683a2e911"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-default/classes/cf11/Runner.class",
+          "bytes": 6691,
+          "sha256": "3dc3f7697f03e11767422291ec2d8190cb4a48e3441eafeba4722d5786103d63"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jadx-default",
+      "compile_command": "javac23-jadx-default-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-default-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionPositive.java",
+          "bytes": 2366,
+          "sha256": "98b8035aafe3f67719562032818acb1baaf53593a4595d0b79fd349f3a996d58"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-default/ConditionalConstructionRefusals.java",
+          "bytes": 3002,
+          "sha256": "3a70de072c156c4c35f9e4b39be546574abd9cc5802558d54421f3c31af13fef"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2121,
+          "sha256": "3a63527f3d8bedf979666cfb89ba2d3da89c4f117bfccc00349627d27028ffe7"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2564,
+          "sha256": "2c6623aff1f7f024ba88697f9607b7aad89ef90c0fc5b7f81de06acf187a06a3"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-default/classes/cf11/Runner.class",
+          "bytes": 6676,
+          "sha256": "31e0ea5d337693a07f75731f2703f823216fdf1691d292af8fc0e75514b8652e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jadx-none",
+      "compile_command": "javac8-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionPositive.java",
+          "bytes": 2366,
+          "sha256": "98b8035aafe3f67719562032818acb1baaf53593a4595d0b79fd349f3a996d58"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionRefusals.java",
+          "bytes": 3002,
+          "sha256": "3a70de072c156c4c35f9e4b39be546574abd9cc5802558d54421f3c31af13fef"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2124,
+          "sha256": "e73e1e3bce4b6eb639f3628cf9faa8a4aef2bcca6662fe688fd847ac767fa104"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2570,
+          "sha256": "34bfaaf5dcdedb9dc41d4f4fffc75f988b65aa6548a3b18f1f99a34683a2e911"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jadx-none/classes/cf11/Runner.class",
+          "bytes": 6691,
+          "sha256": "3dc3f7697f03e11767422291ec2d8190cb4a48e3441eafeba4722d5786103d63"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jadx-none",
+      "compile_command": "javac23-jadx-none-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jadx-none-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionPositive.java",
+          "bytes": 2366,
+          "sha256": "98b8035aafe3f67719562032818acb1baaf53593a4595d0b79fd349f3a996d58"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/jadx-none/ConditionalConstructionRefusals.java",
+          "bytes": 3002,
+          "sha256": "3a70de072c156c4c35f9e4b39be546574abd9cc5802558d54421f3c31af13fef"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2121,
+          "sha256": "3a63527f3d8bedf979666cfb89ba2d3da89c4f117bfccc00349627d27028ffe7"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2564,
+          "sha256": "2c6623aff1f7f024ba88697f9607b7aad89ef90c0fc5b7f81de06acf187a06a3"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jadx-none/classes/cf11/Runner.class",
+          "bytes": 6676,
+          "sha256": "31e0ea5d337693a07f75731f2703f823216fdf1691d292af8fc0e75514b8652e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    }
+  ],
+  "jarde_profiles": [
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionPositive",
+      "class": "cf11.ConditionalConstructionPositive",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-ConditionalConstructionPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "5358f33fc82c83d7519acd7a0a5d84da20ac4a1183972bf7232ffe23d458a457",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionPositive/report.json",
+        "bytes": 557905,
+        "sha256": "a7d1c4b384b704669e9b2eaa1f4ba16d3a0e71d0a05425f988ddfcd68ff422c2"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "bytes": 5230,
+        "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2798,
+          "archive_entries": 0,
+          "attribute_bytes": 2791,
+          "class_bytes": 4172,
+          "class_headers": 1,
+          "code_bytes": 214,
+          "dependency_depth": 0,
+          "elapsed_millis": 11,
+          "entry_bytes": 0,
+          "input_bytes": 2086,
+          "ir_edges": 231,
+          "ir_items": 4004,
+          "method_bodies": 8,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 5470,
+          "read_bytes": 2086,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionPositive",
+      "class": "cf11.ConditionalConstructionPositive",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-ConditionalConstructionPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "d8197f05ddde0f085d56c00b58ac9254ea0572c9da42df359392aa93d80003af",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionPositive/report.json",
+        "bytes": 575026,
+        "sha256": "de2eb8923ad462c8be49bf837e8d20dd79dd22e0bf295eb2771c9b1b6c6e6bd0"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "bytes": 5230,
+        "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2798,
+          "archive_entries": 0,
+          "attribute_bytes": 2791,
+          "class_bytes": 4172,
+          "class_headers": 1,
+          "code_bytes": 214,
+          "dependency_depth": 0,
+          "elapsed_millis": 11,
+          "entry_bytes": 0,
+          "input_bytes": 2086,
+          "ir_edges": 231,
+          "ir_items": 4046,
+          "method_bodies": 8,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 5470,
+          "read_bytes": 2086,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-default-ConditionalConstructionRefusals",
+      "class": "cf11.ConditionalConstructionRefusals",
+      "jdk": "javac8",
+      "mode": "default",
+      "render_command": "javac8-jarde-default-ConditionalConstructionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "2972fb6b660b91aba22b4ba36299046d0f07f59ff945950ab38f470291e296bf",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/report.json",
+        "bytes": 626670,
+        "sha256": "e8730d5bf41f0338f171622dcd59411fccac3f931140d83976716fc67486f22e"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "bytes": 7802,
+        "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3716,
+          "archive_entries": 0,
+          "attribute_bytes": 3472,
+          "class_bytes": 5012,
+          "class_headers": 1,
+          "code_bytes": 292,
+          "dependency_depth": 0,
+          "elapsed_millis": 9,
+          "entry_bytes": 0,
+          "input_bytes": 2506,
+          "ir_edges": 330,
+          "ir_items": 5199,
+          "method_bodies": 10,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 7666,
+          "read_bytes": 2506,
+          "result_items": 42
+        }
+      }
+    },
+    {
+      "label": "javac8-jarde-all-ConditionalConstructionRefusals",
+      "class": "cf11.ConditionalConstructionRefusals",
+      "jdk": "javac8",
+      "mode": "all",
+      "render_command": "javac8-jarde-all-ConditionalConstructionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "ca2e5468f8c7e6d459d22f7f7d191cddfc79e0cc3e7bb6a74f90f59efbcd321c",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionRefusals/report.json",
+        "bytes": 650313,
+        "sha256": "24932f115759764de7f81bcfbe6c9ffd4a4a868e315598aa5e38fb1b611146c5"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "bytes": 7802,
+        "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3716,
+          "archive_entries": 0,
+          "attribute_bytes": 3472,
+          "class_bytes": 5012,
+          "class_headers": 1,
+          "code_bytes": 292,
+          "dependency_depth": 0,
+          "elapsed_millis": 12,
+          "entry_bytes": 0,
+          "input_bytes": 2506,
+          "ir_edges": 330,
+          "ir_items": 5253,
+          "method_bodies": 10,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 7666,
+          "read_bytes": 2506,
+          "result_items": 42
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionPositive",
+      "class": "cf11.ConditionalConstructionPositive",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-ConditionalConstructionPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "2eb3d7b9670a29a6bb431768123c739f6cc02affd7d9db1c931471df75c77bd4",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionPositive/report.json",
+        "bytes": 557905,
+        "sha256": "1b24ef6237aa67fd40cd73e8c5ea0e4ef378207e113fc2a91cb0d9d3616e6891"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "bytes": 5230,
+        "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2798,
+          "archive_entries": 0,
+          "attribute_bytes": 2827,
+          "class_bytes": 4184,
+          "class_headers": 1,
+          "code_bytes": 214,
+          "dependency_depth": 0,
+          "elapsed_millis": 12,
+          "entry_bytes": 0,
+          "input_bytes": 2092,
+          "ir_edges": 231,
+          "ir_items": 4004,
+          "method_bodies": 8,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 5476,
+          "read_bytes": 2092,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionPositive",
+      "class": "cf11.ConditionalConstructionPositive",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-ConditionalConstructionPositive-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "cca802f2be44757370446f336c69043c6b3250eac5df49791774e880a01e32e5",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/report.json",
+        "bytes": 575025,
+        "sha256": "3d6b8d7dafd738d4f9de6b20bb2a7421e3d5291604ef63e60f2909e9d1d78302"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+        "bytes": 5230,
+        "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 2798,
+          "archive_entries": 0,
+          "attribute_bytes": 2827,
+          "class_bytes": 4184,
+          "class_headers": 1,
+          "code_bytes": 214,
+          "dependency_depth": 0,
+          "elapsed_millis": 10,
+          "entry_bytes": 0,
+          "input_bytes": 2092,
+          "ir_edges": 231,
+          "ir_items": 4046,
+          "method_bodies": 8,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 5476,
+          "read_bytes": 2092,
+          "result_items": 36
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-default-ConditionalConstructionRefusals",
+      "class": "cf11.ConditionalConstructionRefusals",
+      "jdk": "javac23",
+      "mode": "default",
+      "render_command": "javac23-jarde-default-ConditionalConstructionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "57c01788e2f03733eba7cfcde62c3c63ec52f1cdc1950b4d62fc5a774e2679e1",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionRefusals/report.json",
+        "bytes": 626670,
+        "sha256": "8b65d2f8210da403f794434f1fdab4b93c5adb0277aec0d1535d9f13cf0691c9"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "bytes": 7802,
+        "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3716,
+          "archive_entries": 0,
+          "attribute_bytes": 3520,
+          "class_bytes": 5032,
+          "class_headers": 1,
+          "code_bytes": 292,
+          "dependency_depth": 0,
+          "elapsed_millis": 8,
+          "entry_bytes": 0,
+          "input_bytes": 2516,
+          "ir_edges": 330,
+          "ir_items": 5199,
+          "method_bodies": 10,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 7676,
+          "read_bytes": 2516,
+          "result_items": 42
+        }
+      }
+    },
+    {
+      "label": "javac23-jarde-all-ConditionalConstructionRefusals",
+      "class": "cf11.ConditionalConstructionRefusals",
+      "jdk": "javac23",
+      "mode": "all",
+      "render_command": "javac23-jarde-all-ConditionalConstructionRefusals-render",
+      "render_exit": 0,
+      "render_stdout_sha256": "0c327b3036a22f727ddd1f07d1b00d00b635b522e86a5c88640dcfb9513ded55",
+      "render_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile_run": null,
+      "report_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionRefusals/report.json",
+        "bytes": 650307,
+        "sha256": "f552a7f72d602c2045cfa65a6b6fafbbcf0bce2c970aa229251a5d24ec93f736"
+      },
+      "source_pin": {
+        "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+        "bytes": 7802,
+        "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+      },
+      "report_execution": {
+        "status": "complete",
+        "usage": {
+          "analysis_steps": 3716,
+          "archive_entries": 0,
+          "attribute_bytes": 3520,
+          "class_bytes": 5032,
+          "class_headers": 1,
+          "code_bytes": 292,
+          "dependency_depth": 0,
+          "elapsed_millis": 8,
+          "entry_bytes": 0,
+          "input_bytes": 2516,
+          "ir_edges": 330,
+          "ir_items": 5253,
+          "method_bodies": 10,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 7676,
+          "read_bytes": 2516,
+          "result_items": 42
+        }
+      }
+    }
+  ],
+  "jarde_compile_rows": [
+    {
+      "label": "javac8-jarde-default-combined",
+      "compile_command": "javac8-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-combined/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2062,
+          "sha256": "4377976d0f97ea3f121f0d3fcd1f9f8574791508c659e22c4259db57db1a0c0d"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionPositive",
+      "compile_command": "javac8-jarde-default-isolated-ConditionalConstructionPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-default-isolated-ConditionalConstructionPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+          "bytes": 2748,
+          "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2062,
+          "sha256": "4377976d0f97ea3f121f0d3fcd1f9f8574791508c659e22c4259db57db1a0c0d"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2506,
+          "sha256": "f3022fa2d9b8870d783e2a96f0885f3e517a3e49ab5f5de146b3ba8f4de4767a"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-default-isolated-ConditionalConstructionPositive/classes/cf11/Runner.class",
+          "bytes": 6691,
+          "sha256": "3dc3f7697f03e11767422291ec2d8190cb4a48e3441eafeba4722d5786103d63"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-default-isolated-ConditionalConstructionRefusals",
+      "compile_command": "javac8-jarde-default-isolated-ConditionalConstructionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+          "bytes": 2168,
+          "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-combined",
+      "compile_command": "javac8-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-combined/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2062,
+          "sha256": "4377976d0f97ea3f121f0d3fcd1f9f8574791508c659e22c4259db57db1a0c0d"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionPositive",
+      "compile_command": "javac8-jarde-all-isolated-ConditionalConstructionPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac8-jarde-all-isolated-ConditionalConstructionPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+          "bytes": 2748,
+          "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2062,
+          "sha256": "4377976d0f97ea3f121f0d3fcd1f9f8574791508c659e22c4259db57db1a0c0d"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2506,
+          "sha256": "f3022fa2d9b8870d783e2a96f0885f3e517a3e49ab5f5de146b3ba8f4de4767a"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac8-jarde-all-isolated-ConditionalConstructionPositive/classes/cf11/Runner.class",
+          "bytes": 6691,
+          "sha256": "3dc3f7697f03e11767422291ec2d8190cb4a48e3441eafeba4722d5786103d63"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac8-jarde-all-isolated-ConditionalConstructionRefusals",
+      "compile_command": "javac8-jarde-all-isolated-ConditionalConstructionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac8-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+          "bytes": 2168,
+          "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-combined",
+      "compile_command": "javac23-jarde-default-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-combined/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2056,
+          "sha256": "ada0fe0721593e704602464584168aa20916cbd7f9b565bc8695db693e92e94c"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionPositive",
+      "compile_command": "javac23-jarde-default-isolated-ConditionalConstructionPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-default-isolated-ConditionalConstructionPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+          "bytes": 2748,
+          "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2056,
+          "sha256": "ada0fe0721593e704602464584168aa20916cbd7f9b565bc8695db693e92e94c"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2516,
+          "sha256": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-default-isolated-ConditionalConstructionPositive/classes/cf11/Runner.class",
+          "bytes": 6676,
+          "sha256": "31e0ea5d337693a07f75731f2703f823216fdf1691d292af8fc0e75514b8652e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-default-isolated-ConditionalConstructionRefusals",
+      "compile_command": "javac23-jarde-default-isolated-ConditionalConstructionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-default-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+          "bytes": 2168,
+          "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-combined",
+      "compile_command": "javac23-jarde-all-combined-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class"
+      ],
+      "class_set_exact": null,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-combined/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2056,
+          "sha256": "ada0fe0721593e704602464584168aa20916cbd7f9b565bc8695db693e92e94c"
+        }
+      ],
+      "runtime_comparison": null
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionPositive",
+      "compile_command": "javac23-jarde-all-isolated-ConditionalConstructionPositive-compile",
+      "compile_exit": 0,
+      "run_command": "javac23-jarde-all-isolated-ConditionalConstructionPositive-run",
+      "run_exit": 0,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionPositive/ConditionalConstructionPositive.java",
+          "bytes": 5230,
+          "sha256": "e1e03cc1805d23496d90f64042fd074cd63330ca09292fbf661989cae5858896"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionRefusals.java",
+          "bytes": 2748,
+          "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [
+        "cf11/ConditionalConstructionPositive.class",
+        "cf11/ConditionalConstructionRefusals.class",
+        "cf11/Runner.class"
+      ],
+      "class_set_exact": true,
+      "classes": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionPositive.class",
+          "bytes": 2056,
+          "sha256": "ada0fe0721593e704602464584168aa20916cbd7f9b565bc8695db693e92e94c"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/classes/cf11/ConditionalConstructionRefusals.class",
+          "bytes": 2516,
+          "sha256": "48095205f9b9e3f36661b266229a14f21b35005d7e3263b1cc315b58965ead3f"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/legs/javac23-jarde-all-isolated-ConditionalConstructionPositive/classes/cf11/Runner.class",
+          "bytes": 6676,
+          "sha256": "31e0ea5d337693a07f75731f2703f823216fdf1691d292af8fc0e75514b8652e"
+        }
+      ],
+      "runtime_comparison": {
+        "same_jdk_original": true
+      }
+    },
+    {
+      "label": "javac23-jarde-all-isolated-ConditionalConstructionRefusals",
+      "compile_command": "javac23-jarde-all-isolated-ConditionalConstructionRefusals-compile",
+      "compile_exit": 1,
+      "run_command": null,
+      "run_exit": null,
+      "source_pins": [
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java",
+          "bytes": 7802,
+          "sha256": "a7dd57b747c0a0bc8309dd96d7d48d05ff802605612a70d1e63915f9b877bd2b"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/ConditionalConstructionPositive.java",
+          "bytes": 2168,
+          "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+        },
+        {
+          "path": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2/inputs/Runner.java",
+          "bytes": 10771,
+          "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+        }
+      ],
+      "class_paths": [],
+      "class_set_exact": null,
+      "classes": [],
+      "runtime_comparison": null
+    }
+  ],
+  "build_receipt": {
+    "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v2/execution.json",
+    "bytes": 2282253,
+    "sha256": "5db7733b84bab2140a7d8e09dd10310d8c6541df5b49ad52f68c1729739ad009"
+  },
+  "build_receipt_cli_binding": {
+    "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+    "bytes": 61286928,
+    "sha256": "a6ecbe9efc3f33806ee7964d68f6fe0bc0a3af02b9f00b2a4797dbb35a1f3dc4",
+    "mode": "0o555"
+  },
+  "cli": {
+    "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+    "bytes": 61286928,
+    "sha256": "a6ecbe9efc3f33806ee7964d68f6fe0bc0a3af02b9f00b2a4797dbb35a1f3dc4"
+  },
+  "cli_mode": "0o555",
+  "resource_guard": {
+    "minimum_free_bytes": 5368709120,
+    "maximum_target_bytes": 1073741824,
+    "poll_seconds": 1,
+    "peak_target_sampled": true
+  },
+  "collector_config": {
+    "inputs_dir": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1",
+    "inputs_manifest": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/manifest.json",
+    "out": "/private/tmp/jarde-constructor-conditional-controls-candidate-root-v2",
+    "cli": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+    "cli_sha256": "a6ecbe9efc3f33806ee7964d68f6fe0bc0a3af02b9f00b2a4797dbb35a1f3dc4",
+    "build_receipt": "/private/tmp/jarde-constructor-conditional-focused-build-root-v2/execution.json",
+    "build_receipt_sha256": "5db7733b84bab2140a7d8e09dd10310d8c6541df5b49ad52f68c1729739ad009",
+    "receipt_cli_object": "candidate_cli",
+    "receipt_status_key": "status",
+    "receipt_accepted_value": "passed_candidate_build_only",
+    "receipt_mode_key": "mode",
+    "jdk_manifest": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+    "jdk_manifest_sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec",
+    "jadx": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+    "jadx_sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7",
+    "jadx_jar": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+    "jadx_jar_sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65",
+    "guard": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+    "guard_sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33",
+    "scanner": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+    "scanner_sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7",
+    "classfile_parser": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+    "classfile_parser_sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+  },
+  "source_tool_pins_before": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/manifest.json",
+      "bytes": 711,
+      "sha256": "e8761975ad6842b7c426db50827bf5efc040a3b35bd695e7320f894f25f75a68"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+      "bytes": 61286928,
+      "sha256": "a6ecbe9efc3f33806ee7964d68f6fe0bc0a3af02b9f00b2a4797dbb35a1f3dc4"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v2/execution.json",
+      "bytes": 2282253,
+      "sha256": "5db7733b84bab2140a7d8e09dd10310d8c6541df5b49ad52f68c1729739ad009"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/ConditionalConstructionPositive.java",
+      "bytes": 2168,
+      "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/Runner.java",
+      "bytes": 10771,
+      "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+    }
+  ],
+  "source_tool_pins_after": [
+    {
+      "path": "/private/tmp/jarde-for-condition-collector-root-v3/collect_controls.py",
+      "bytes": 17400,
+      "sha256": "f944a892f4920feaff9631822bddf4dd9e49a0e8349ec4e09e4a16046257a7ac"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/manifest.json",
+      "bytes": 711,
+      "sha256": "e8761975ad6842b7c426db50827bf5efc040a3b35bd695e7320f894f25f75a68"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2",
+      "bytes": 61286928,
+      "sha256": "a6ecbe9efc3f33806ee7964d68f6fe0bc0a3af02b9f00b2a4797dbb35a1f3dc4"
+    },
+    {
+      "path": "/private/tmp/jarde-constructor-conditional-focused-build-root-v2/execution.json",
+      "bytes": 2282253,
+      "sha256": "5db7733b84bab2140a7d8e09dd10310d8c6541df5b49ad52f68c1729739ad009"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-nested-int-array-compound-updates/results/controls-v1/manifest.json",
+      "bytes": 23113,
+      "sha256": "ec27b5a0e8a9d2345d289b4626bac516e055e0f86d70ab3b2f744c336f961aec"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/bin/jadx",
+      "bytes": 160,
+      "sha256": "64a6ee6bcf7490ea682508db2a73d6cda8b671a5211af5ee3ff098441af038a7"
+    },
+    {
+      "path": "/opt/homebrew/Cellar/jadx/1.5.6/libexec/lib/jadx-1.5.6-all.jar",
+      "bytes": 78266806,
+      "sha256": "966d314282d95ff7c72f597bb9c744999856666a3b856575e3c035a9c12a0b65"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    },
+    {
+      "path": "/private/tmp/jarde-computed-for-cf07-final-replay-verifier-root-v4.py",
+      "bytes": 35854,
+      "sha256": "f30754e1e52403713a671ce38f274b772f188583df6c4a1bc6b4400937233469"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javac",
+      "bytes": 152128,
+      "sha256": "598601455e9f81ef05225c014743aaafa993d572afc7f83f5e7934ff10f9dddd"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/java",
+      "bytes": 152096,
+      "sha256": "3167d94b1b56e1330e25e48a92bba9cba423ca578525c4ae66e8b5a06fb5dbb5"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/corretto-1.8.0_432/Contents/Home/bin/javap",
+      "bytes": 152128,
+      "sha256": "fe06c052822fef0e9d8398650bd88bf9cf129404d59cfc600056b0e4ca0e1ac1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javac",
+      "bytes": 69872,
+      "sha256": "a3e79462d70cb70c34b85ab94ae615328d1cbe7ac6a2c69635288ae6cbb902a8"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/java",
+      "bytes": 69952,
+      "sha256": "b79b8bac2b2a2c2b4d0dcb9c3981d477bd58bc95c5c4404dfb40a37e581497a1"
+    },
+    {
+      "path": "/Users/lordcasser/Library/Java/JavaVirtualMachines/openjdk-23.0.1/Contents/Home/bin/javap",
+      "bytes": 69872,
+      "sha256": "f8e5fca8a790cc2f82cf2fa6a5a8d34dad2550a79ba553260df249d06602198e"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/ConditionalConstructionPositive.java",
+      "bytes": 2168,
+      "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    },
+    {
+      "path": "/private/tmp/jarde-conditional-constructor-values-inputs-root-v1/Runner.java",
+      "bytes": 10771,
+      "sha256": "fcd7cee43d017025711e43b5bd526f6ee5c24be205e1f4e4049e891e93580207"
+    }
+  ],
+  "source_tool_inputs_unchanged": true,
+  "actual_command_count": 43
+}

@@ -1,0 +1,1 @@
+{"status": "passed_candidate_build_only", "source_count": 4719, "test_summaries": [{"passed": 9, "failed": 0, "ignored": 0}], "target_absent": true, "peak_target_bytes": 462011625, "cli": {"path": "/private/tmp/jarde-constructor-conditional-candidate-cli-root-v2", "bytes": 61286928, "sha256": "a6ecbe9efc3f33806ee7964d68f6fe0bc0a3af02b9f00b2a4797dbb35a1f3dc4", "mode": "0o555"}}

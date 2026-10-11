@@ -1,0 +1,179 @@
+{
+  "schema": "recover-proved-conditional-constructor-values-public-api-test-prep-v2",
+  "status": "private_candidate_not_compiled_or_run",
+  "repo_root": "/Users/lordcasser/workspace/projects/jarde",
+  "basehash": "31fec81389ad073da0415191be123ebb750a9e20227b6814fc6ba323abd75412",
+  "fixture": {
+    "proposed_shared_paths": [
+      "tests/fixtures/java8/cf11-conditional-constructor-values/UpstreamSequentialLoops2.class",
+      "tests/fixtures/java8/cf11-conditional-constructor-values/ConditionalConstructionPositive.class"
+    ],
+    "present_in_checkout": false,
+    "bytes_added_by_prep": false,
+    "class_bytes_are_external_pinned_baseline_inputs": true
+  },
+  "reviewed_inputs": {
+    "openspec_proposal": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/proposal.md",
+      "bytes": 1931,
+      "sha256": "e0b9a7d3b331e6e58dbd35acd7a8e486c8e4aa12ca94997725f6e3fb02536cf8"
+    },
+    "openspec_design": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/design.md",
+      "bytes": 5421,
+      "sha256": "dff49fcb3a044a400ea4b375daca20c6ae6a43320771b32758b61745b58eb52d"
+    },
+    "openspec_spec": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/specs/java8-recovery/spec.md",
+      "bytes": 3710,
+      "sha256": "e75118ce418d9a76b8ef937b986849aa4c89e99929cfd47403d02797c5949211"
+    },
+    "openspec_tasks": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-constructor-conditional-values/tasks.md",
+      "bytes": 2853,
+      "sha256": "e732c16b0ffe867fa90f5bc40f57c93e3a54891c4c03d9a255e9a1176306cf03"
+    },
+    "facade": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/facade.rs",
+      "bytes": 1934970,
+      "sha256": "9c55f3a53b0e435ea5c3e2bedac0fe66f32d474aecc9d1237029518f3703f22b"
+    },
+    "class_source": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/src/class_source.rs",
+      "bytes": 731108,
+      "sha256": "bd797db1b47a0258c5031260f867fcd766ae9d5036eb4e8373f7be6fb827a71f"
+    },
+    "java_report": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/report.rs",
+      "bytes": 628361,
+      "sha256": "9dde045eb410c797f840a85df5b9dccf711bea140ccce30651fd34243bcd2497"
+    },
+    "java_init": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/init.rs",
+      "bytes": 282017,
+      "sha256": "ce4f973cc464e3790c675fda6739a8a934e7abd53ad7f9617557ddbf48951d4a"
+    },
+    "java_evidence": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/evidence.rs",
+      "bytes": 56225,
+      "sha256": "ffba9c81f14fded43888e140b8b79e3a4c72c7bf4e0799424fdd1f04acfa825e"
+    },
+    "java_source_map": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/source_map.rs",
+      "bytes": 21374,
+      "sha256": "f5803ffa204b2af9621fc057ee628046bae1c61c83881f8682950e0d7fe73d8b"
+    },
+    "reader_classfile": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/classfile.rs",
+      "bytes": 530970,
+      "sha256": "16738bf18db0674c4b2761cc7cb2f175eebd1945bb06617cf0c60ad4a84907c2"
+    },
+    "reader_budget": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/budget.rs",
+      "bytes": 56599,
+      "sha256": "3605b5da30231613ef55f91312fbfbe2f2ecba09b0dd5cb7850e4e6b88a26687"
+    },
+    "reader_model": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-reader/src/model.rs",
+      "bytes": 24711,
+      "sha256": "af42d1e8fe142f996ac2eb845831f1324455710b81db49885b67cc11d9559d02"
+    },
+    "adjacent_constructed_reference_test": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_constructed_reference_array_elements.rs",
+      "bytes": 29927,
+      "sha256": "aeab58c35db8637b50f5cfcf58f19071d97ad54adfe6d8e139147bd0a25142d2"
+    },
+    "adjacent_field_report_test": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_field_presentations.rs",
+      "bytes": 4438,
+      "sha256": "cbb075dbaa4106155dd1769a8cc27af9bbdef254fe161c3084fc2b39a3e6435a"
+    },
+    "adjacent_evidence_selection_test": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/d1_evidence_selection.rs",
+      "bytes": 36118,
+      "sha256": "06988c2c58e392f4bc0729815cbb3816ed5effc8aba729c5cd5c4cd50ad33091"
+    },
+    "adjacent_stop_test": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_nested_loop_side_exits.rs",
+      "bytes": 18551,
+      "sha256": "2f3a7d1553e36a7293cb6c068cf0bcfa6bd1f54e5fcc903b726892b1522b5fc7"
+    },
+    "fixed_capture_execution": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/execution.json",
+      "bytes": 85650,
+      "sha256": "2360cad6e7dc1ca19b1f839baf46868499a15f51a9087fbb856549ff70d84dce"
+    },
+    "fixed_adapted_source": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/inputs/UpstreamSequentialLoops2.java",
+      "bytes": 542,
+      "sha256": "118617f1cddf04d79f72e12d4d100edf090edebff3695517ceae6b0a022749dd"
+    },
+    "fixed_javac8_class": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac8-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 934,
+      "sha256": "ca1965e47275b62c18ace49993f935ed13e763c8bcbbce154b9b5e3402c073ce"
+    },
+    "fixed_javac23_class": {
+      "path": "/private/tmp/jarde-cf11-sequential-loops2-baseline-root-v1/legs/javac23-original/classes/cf11/UpstreamSequentialLoops2.class",
+      "bytes": 931,
+      "sha256": "524b1746bdff10a3b9da021679f9832202df1552c2eb42c02d150284b7dd8664"
+    },
+    "controls_capture_execution": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/execution.json",
+      "bytes": 129204,
+      "sha256": "ea9563353916d1b690883328fa0a304a0997fdaf29aaba8f61417fc73767e7e2"
+    },
+    "conditional_positive_source": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/inputs/ConditionalConstructionPositive.java",
+      "bytes": 2168,
+      "sha256": "6432a82531f101ccb83733c8c5c990b3320206cf75d3ea8b9ab20924827b05e6"
+    },
+    "conditional_positive_javac23_class": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac23-original/classes/cf11/ConditionalConstructionPositive.class",
+      "bytes": 2092,
+      "sha256": "bf0acebb4a538950a431fbe913f0c0522379582af6615369f425226a13e32bd1"
+    },
+    "conditional_positive_javac8_class": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/legs/javac8-original/classes/cf11/ConditionalConstructionPositive.class",
+      "bytes": 2086,
+      "sha256": "ac9d30eea0417b66469123d1e9c6d2a9debc8b22b2c78cebe4156d4b54eb2d27"
+    },
+    "conditional_refusals_source": {
+      "path": "/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/inputs/ConditionalConstructionRefusals.java",
+      "bytes": 2748,
+      "sha256": "74b357168e4dca2824e953c00f8829e79d317507d4267d50ca7b487f869730aa"
+    },
+    "candidate_test": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v2/recover_proved_conditional_constructor_values.rs",
+      "bytes": 24999,
+      "sha256": "0faba5e9c6cc3aa87af4711362d29a424a2851936d52540233759630ba334e1b"
+    },
+    "readme": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v2/README.md",
+      "bytes": 2628,
+      "sha256": "e03ea9f4c995ad01c304ff3c48546924dacf46497a8e5995595ea1c836e32004"
+    },
+    "v1_to_v2_patch": {
+      "path": "/private/tmp/jarde-conditional-constructor-api-test-prep-luna-v2/v1-to-v2.patch",
+      "bytes": 15185,
+      "sha256": "52fe99dbf015cba75374df10671765af1481649faa298d9714664d89d50a9003"
+    }
+  },
+  "test_intent": [
+    "public class_source default/all/no-RuleDetails/ranged selection comparison on UpstreamSequentialLoops2",
+    "summary and jre_new_* diagnostics invariant under evidence choice",
+    "NewRecord delivery follows RuleDetails; selected range follows physical new BCI",
+    "NewRecord physical instruction and exact PhysicalMethodId source-map origins with UTF-8 byte boundaries",
+    "all-evidence ConditionalConstructionPositive methods report presented NewRecord counts 1/2/1/1 with no gaps",
+    "range excluding every NewRecord BCI retains text/summary/gaps and emits no NewRecord",
+    "late AnalysisSteps threshold is derived from complete report usage and requires the exact target method itself to stop at a physical location without partial artifacts",
+    "pre-cancelled request has zero counted usage excluding elapsed_millis and no partial class artifacts"
+  ],
+  "not_in_scope": [
+    "field visitor unit tests",
+    "init@1 unit tests",
+    "fixture byte generation",
+    "runtime output oracle",
+    "fixed numeric budget constants"
+  ]
+}

@@ -1,0 +1,17 @@
+警告: [options] 源值 8 已过时，将在未来发行版中删除
+警告: [options] 目标值 8 已过时，将在未来发行版中删除
+警告: [options] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:82: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:97: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:108: 错误: 缺少返回语句
+    }
+    ^
+/private/tmp/jarde-conditional-constructor-values-baseline-root-v1/jarde/javac23-jarde-all-ConditionalConstructionRefusals/ConditionalConstructionRefusals.java:145: 错误: 缺少返回语句
+    }
+    ^
+4 个错误
+3 个警告

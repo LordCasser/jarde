@@ -1,0 +1,61 @@
+--- a/crates/jarde-java/src/field.rs
++++ b/crates/jarde-java/src/field.rs
+@@ -58,6 +58,7 @@
+ use crate::names::is_java_identifier;
+ use crate::pass::{FIELD, Precondition, RuleVersion};
+ use crate::refusal::{Gap, Refusal};
++use crate::source_map::Provenance;
+ use crate::stop::{self, StopReason};
+ 
+ /// The pass answerable for every verdict of this module.
+@@ -486,7 +487,9 @@
+                 } => {
+                     if conditional_candidates.contains(&at) {
+                         stop::charge(budget, CountedBudgetDimension::IrItems, 1, Some(at))?;
+-                        if expr.origin.primary().method().is_none() {
++                        if expr.origin.primary().method().is_none()
++                            && expr.origin.primary().provenance() == Provenance::Direct
++                        {
+                             let count = conditional_new_counts.entry(at).or_insert(0_u8);
+                             *count = count.saturating_add(1).min(2);
+                         }
+@@ -1152,6 +1155,39 @@
+     }
+ 
+     #[test]
++    fn conditional_new_receipt_rejects_derived_primary_and_derived_only_candidate_anchors() {
++        const CANDIDATE: u32 = 11;
++        let derived_primary = Expr::new(
++            candidate_new(CANDIDATE).kind,
++            OriginSet::new(Origin::derived(CANDIDATE)),
++        );
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(derived_primary, Expr::direct(ExprKind::Null, 5)),
++                CANDIDATE,
++            ),
++            0,
++            "a matching BCI on a derived primary is not owned by this New node",
++        );
++
++        let derived_only_candidate = Expr::new(
++            candidate_new(12).kind,
++            OriginSet::derived_from(Origin::direct(12), Origin::derived(CANDIDATE)),
++        );
++        assert_eq!(
++            candidate_new_count(
++                conditional_value(
++                    derived_only_candidate,
++                    Expr::direct(ExprKind::Null, 5),
++                ),
++                CANDIDATE,
++            ),
++            0,
++            "a candidate BCI present only as a derived anchor is not a committed New",
++        );
++    }
++
++    #[test]
+     fn receipt_budget_and_cancellation_never_return_a_partial_verdict() {
+         let mut plan = Plan::empty();
+         plan.claimed.insert(

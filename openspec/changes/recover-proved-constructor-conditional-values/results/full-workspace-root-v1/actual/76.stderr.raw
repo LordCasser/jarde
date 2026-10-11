@@ -1,0 +1,6 @@
+[1m[92m   Compiling[0m jarde v0.1.0 (/Users/lordcasser/workspace/projects/jarde)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 2.40s
+[1m[92m     Running[0m tests/same_class_generic_binding.rs (target/debug/deps/same_class_generic_binding-ebad099aa72bc5de)
+[1m[92m     Running[0m tests/same_class_generic_call_consumers.rs (target/debug/deps/same_class_generic_call_consumers-8bf3b81f4c048626)
+[1m[92m     Running[0m tests/static_method_local_generic_throws.rs (target/debug/deps/static_method_local_generic_throws-357d13e1e395af02)
+[1m[92m     Running[0m tests/task_operations.rs (target/debug/deps/task_operations-733fa7b96595bbd9)
