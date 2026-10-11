@@ -1,0 +1,22 @@
+{
+  "patch_sha256": "373067be16fb6a03e7efbeee24ff0efee30bbda78c52b51b56fa94a04347609e",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/private/tmp/bound-arithmetic-render-stack-frames-luna-v2/candidate.patch"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/private/tmp/bound-arithmetic-render-stack-frames-luna-v2/candidate.patch"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

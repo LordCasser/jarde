@@ -1,0 +1,314 @@
+{
+  "scope": "local/Git/live/CLI/source-name binding only, no CI acceptance",
+  "product_commit": "e041b7635886d3ef2eeb2c5314a9f4868d85dac5",
+  "verifier_sha256": "6746cbb67d6e79003bd7c9333b32eb5b174a2a0a0011867e8e7983dc4883475a",
+  "workspace": {
+    "execution": "/private/tmp/jarde-compound-full-workspace-root-v4/execution.json",
+    "execution_sha256": "128e8abfa8074ff184d0f673b8abb6b27beff93aeb95f77a91b1214faefebfc4",
+    "metadata": "/private/tmp/jarde-compound-full-workspace-root-v4/metadata.json",
+    "metadata_sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248",
+    "seed": "5350648285461741569",
+    "target_count": 359,
+    "batch_count": 95,
+    "workspace_totals": [
+      3444,
+      0,
+      97
+    ],
+    "source_pin_count": 4693
+  },
+  "checklist_pin_count": 13,
+  "cli": {
+    "build_path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json",
+    "build_sha256": "5a77262910c4771206af4cd968077dba2478128de8666a531ef51491e50c3bde",
+    "cli": {
+      "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+      "bytes": 60819568,
+      "sha256": "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+      "mode": 365
+    },
+    "product_source_pin_count": 124,
+    "production_source_pins_git_bound": 124,
+    "build_evidence_helper_sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3",
+    "build_runner_sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93"
+  },
+  "tests": {
+    "prior_controls": [
+      {
+        "source_path": "crates/jarde-java/src/region.rs",
+        "required_test_count": 6,
+        "target": [
+          "jarde-java",
+          "jarde_java",
+          "lib"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/src/build.rs",
+        "required_test_count": 1,
+        "target": [
+          "jarde-java",
+          "jarde_java",
+          "lib"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/tests/cf12_proved_local_source_types.rs",
+        "required_test_count": 9,
+        "target": [
+          "jarde-java",
+          "cf12_proved_local_source_types",
+          "test"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs",
+        "required_test_count": 3,
+        "target": [
+          "jarde-java",
+          "p3_conditional_switch_fallthrough",
+          "test"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/tests/p3_conditional_switch_boundary_rejection.rs",
+        "required_test_count": 2,
+        "target": [
+          "jarde-java",
+          "p3_conditional_switch_boundary_rejection",
+          "test"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/tests/p3_conditional_switch_scope_boundaries.rs",
+        "required_test_count": 2,
+        "target": [
+          "jarde-java",
+          "p3_conditional_switch_scope_boundaries",
+          "test"
+        ]
+      }
+    ],
+    "increment_tests": [
+      {
+        "source_path": "crates/jarde-jvm/src/canonical.rs",
+        "target": [
+          "jarde-jvm",
+          "jarde_jvm",
+          "lib"
+        ],
+        "passed_test_names": [
+          "shared_conditional_subroutine_is_covered_per_call_path",
+          "clone_coverage_rejects_a_disconnected_internal_node",
+          "clone_coverage_rejects_a_disconnected_self_cycle",
+          "clone_coverage_rejects_wrong_normal_call_return_and_exception_paths",
+          "clone_coverage_accepts_a_nested_return_continuation",
+          "an_uncovered_nested_return_cannot_cover_its_outer_continuation",
+          "explicit_dead_callsite_seed_stays_unreachable_after_coverage",
+          "clone_coverage_budgets_storage_work_and_assembly_cancellation",
+          "a_clone_exception_edge_reaches_its_handler_and_ret_restores_the_caller_path"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/src/region.rs",
+        "target": [
+          "jarde-java",
+          "jarde_java",
+          "lib"
+        ],
+        "passed_test_names": [
+          "real_compound_statement_with_two_payload_arms_has_one_shared_join",
+          "real_compound_non_tree_conditions_refuse_without_walker_state_leaks",
+          "real_legacy_clone_target_with_different_path_refuses_switch_certificate",
+          "real_nested_switch_target_refuses_candidate_certificate_without_partial_result"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/src/build.rs",
+        "target": [
+          "jarde-java",
+          "jarde_java",
+          "lib"
+        ],
+        "passed_test_names": [
+          "compound_builder_proof_and_emission_stops_restore_the_trial"
+        ]
+      },
+      {
+        "source_path": "tests/p3_switch_forward_join.rs",
+        "target": [
+          "jarde",
+          "p3_switch_forward_join",
+          "test"
+        ],
+        "passed_test_names": [
+          "cross_case_goto_target_owns_the_shared_forward_continuation",
+          "looping_arm_backedge_does_not_gain_a_forward_join"
+        ]
+      },
+      {
+        "source_path": "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs",
+        "target": [
+          "jarde-java",
+          "p3_conditional_switch_fallthrough",
+          "test"
+        ],
+        "passed_test_names": [
+          "cf12_conditional_switch_keeps_exact_case_and_exit_sources",
+          "cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins",
+          "cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact",
+          "cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact",
+          "compound_statement_conditions_have_exact_physical_origins",
+          "compound_float_condition_preserves_nan_sensitive_comparison_origins",
+          "compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact",
+          "compound_pre_cancelled_public_recovery_publishes_no_partial_artifact"
+        ]
+      },
+      {
+        "source_path": "tests/p3_reference_slot_lifetimes.rs",
+        "target": [
+          "jarde",
+          "p3_reference_slot_lifetimes",
+          "test"
+        ],
+        "passed_test_names": [
+          "null_first_exact_builder_writes_refine_local_type_and_compound_condition"
+        ]
+      }
+    ],
+    "source_text_checks": {
+      "crates/jarde-jvm/src/canonical.rs": {
+        "sha256": "79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86",
+        "test_names": [
+          "shared_conditional_subroutine_is_covered_per_call_path",
+          "clone_coverage_rejects_a_disconnected_internal_node",
+          "clone_coverage_rejects_a_disconnected_self_cycle",
+          "clone_coverage_rejects_wrong_normal_call_return_and_exception_paths",
+          "clone_coverage_accepts_a_nested_return_continuation",
+          "an_uncovered_nested_return_cannot_cover_its_outer_continuation",
+          "explicit_dead_callsite_seed_stays_unreachable_after_coverage",
+          "clone_coverage_budgets_storage_work_and_assembly_cancellation",
+          "a_clone_exception_edge_reaches_its_handler_and_ret_restores_the_caller_path"
+        ]
+      },
+      "crates/jarde-java/src/region.rs": {
+        "sha256": "acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168",
+        "test_names": [
+          "real_compound_statement_with_two_payload_arms_has_one_shared_join",
+          "real_compound_non_tree_conditions_refuse_without_walker_state_leaks",
+          "real_legacy_clone_target_with_different_path_refuses_switch_certificate",
+          "real_nested_switch_target_refuses_candidate_certificate_without_partial_result"
+        ]
+      },
+      "crates/jarde-java/src/build.rs": {
+        "sha256": "2586f9eaa09c06056bc8c565ed6bd00c18c35ad6ddb28970ef3d6e0ee2fa5bef",
+        "test_names": [
+          "compound_builder_proof_and_emission_stops_restore_the_trial"
+        ]
+      },
+      "tests/p3_switch_forward_join.rs": {
+        "sha256": "82fa69c6dd947623728d4659126d42cc5169710964bf1b6bb1283ed8ea7e7a37",
+        "test_names": [
+          "cross_case_goto_target_owns_the_shared_forward_continuation",
+          "looping_arm_backedge_does_not_gain_a_forward_join"
+        ]
+      },
+      "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": {
+        "sha256": "fd33f68e175185bb043ea45c70af36c9872c34fe17925cd77fbbbd8b0b76ecec",
+        "test_names": [
+          "cf12_conditional_switch_keeps_exact_case_and_exit_sources",
+          "cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins",
+          "cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact",
+          "cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact",
+          "compound_statement_conditions_have_exact_physical_origins",
+          "compound_float_condition_preserves_nan_sensitive_comparison_origins",
+          "compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact",
+          "compound_pre_cancelled_public_recovery_publishes_no_partial_artifact"
+        ]
+      },
+      "tests/p3_reference_slot_lifetimes.rs": {
+        "sha256": "9956da89a4472f3d113416df88456cc2401c26d724f4767388bb78f773c8d014",
+        "test_names": [
+          "null_first_exact_builder_writes_refine_local_type_and_compound_condition"
+        ]
+      }
+    },
+    "source_to_metadata_target": {
+      "crates/jarde-jvm/src/canonical.rs": {
+        "target": [
+          "jarde-jvm",
+          "jarde_jvm",
+          "lib"
+        ],
+        "target_source_path": "crates/jarde-jvm/src/lib.rs"
+      },
+      "crates/jarde-java/src/region.rs": {
+        "target": [
+          "jarde-java",
+          "jarde_java",
+          "lib"
+        ],
+        "target_source_path": "crates/jarde-java/src/lib.rs"
+      },
+      "crates/jarde-java/src/build.rs": {
+        "target": [
+          "jarde-java",
+          "jarde_java",
+          "lib"
+        ],
+        "target_source_path": "crates/jarde-java/src/lib.rs"
+      },
+      "tests/p3_switch_forward_join.rs": {
+        "target": [
+          "jarde",
+          "p3_switch_forward_join",
+          "test"
+        ],
+        "target_source_path": "tests/p3_switch_forward_join.rs"
+      },
+      "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs": {
+        "target": [
+          "jarde-java",
+          "p3_conditional_switch_fallthrough",
+          "test"
+        ],
+        "target_source_path": "crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs"
+      },
+      "tests/p3_reference_slot_lifetimes.rs": {
+        "target": [
+          "jarde",
+          "p3_reference_slot_lifetimes",
+          "test"
+        ],
+        "target_source_path": "tests/p3_reference_slot_lifetimes.rs"
+      }
+    },
+    "target_summary_checks": {
+      "('jarde-jvm', 'jarde_jvm', 'lib')": [
+        243,
+        0,
+        0
+      ],
+      "('jarde-java', 'jarde_java', 'lib')": [
+        351,
+        0,
+        0
+      ],
+      "('jarde-java', 'p3_conditional_switch_fallthrough', 'test')": [
+        8,
+        0,
+        0
+      ]
+    },
+    "null_test_rename": {
+      "target": [
+        "jarde",
+        "p3_reference_slot_lifetimes",
+        "test"
+      ],
+      "passed": "null_first_exact_builder_writes_refine_local_type_and_compound_condition",
+      "stale_name_absent": true
+    }
+  },
+  "status": "accepted_local_git_binding_only"
+}

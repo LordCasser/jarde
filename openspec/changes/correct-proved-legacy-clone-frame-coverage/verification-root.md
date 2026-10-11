@@ -1,5 +1,9 @@
 # Root 验收
 
+当前5/6；完整workspace v4 JVM243/Java351、最终Clippy及原CLI观察已接受。父片产品 e041b7635 的自身 CI 38116415118 在 overdeep lambda helper stack overflow/SIGABRT，2.4继续未完成，等待独立 bound-arithmetic-render-stack-frames 修复后的新产品验收。
+
+## 历史验证记录
+
 实际 v2 格式化、jarde-jvm 全库 243/0/0、jarde-java 全库 350/0/0，5GiB free/target1GiB 守卫未触发，source pins 恒同，cargo clean 成功。新九项 canonical 测试覆盖共享普通分支、nested Return、handler Exception、明确 dead seed、断开/自环/错路径/未覆盖 Return 以及新增存储/工作预算和收费后的取消。ordinary 图只复用原邻接，新增闭包在 clones>0 执行。
 
 真实双 JDK 已验证的完整 class 经 Reader 六阶段全部 Completed，实际 CanonicalCFG/Frame/SSA 可取得，两套克隆来源保留；region 因跨调用路径 join 拒绝且没有消费泄漏。Jarde verification 保持 NotPerformed。不是扩大 Java 恢复或完整 verifier 声明。

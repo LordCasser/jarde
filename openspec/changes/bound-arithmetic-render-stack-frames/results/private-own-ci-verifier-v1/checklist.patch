@@ -1,0 +1,29 @@
+--- /private/tmp/jarde-compound-own-ci-audit-luna-v2/ci-handoff-checklist.md
++++ /private/tmp/jarde-arithmetic-stack-own-ci-verifier-luna-v1/ci-handoff-checklist.md
+@@ -1,4 +1,4 @@
+-# Current-product own-CI handoff checklist v2 (read-only)
++# Current-product own-CI handoff checklist v3 (arithmetic stack fix) (read-only)
+ 
+ Snapshot date: 2026-10-11. This is a source/workflow audit, not a run result. I did not invoke Git, Cargo, JDK, JADX, or any CLI. The exact product commit for the upcoming CI run must be the commit that contains the complete current product increment; the earlier accepted CI records below are reference contracts only and must not be reused as acceptance for that commit.
+ 
+@@ -32,7 +32,8 @@
+ | .github/workflows/ci.yml | b545890a55cc4fda31d70b332889c111d789afbf0949581e96bf2b94ea6cd18a |
+ | crates/jarde-jvm/src/canonical.rs | 79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86 |
+ | crates/jarde-jvm/src/call_context.rs | 119acaf83c14eefd0a7b707c08aeae6fd56fec06287f0d7912efc5b587478f57 |
+-| crates/jarde-java/src/build.rs | 2586f9eaa09c06056bc8c565ed6bd00c18c35ad6ddb28970ef3d6e0ee2fa5bef |
++| crates/jarde-java/src/build.rs | f4660755cf2ebc699dccf8ee7f7c984a94f6695a22a62cf649d4b728c76a1ade |
++| tests/p3_immediate_functional_receivers.rs | 881c186b4d1f16bb4bea58a8f22f72956a7f04a1648f8087740b0666dd6dd54d |
+ | crates/jarde-java/src/region.rs | acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168 |
+ | crates/jarde-java/src/init.rs | f1c0c96fed82e86729fefbef55f40d85473526fb86b0389b9253bb6f41f4c4a1 |
+ | crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs | fd33f68e175185bb043ea45c70af36c9872c34fe17925cd77fbbbd8b0b76ecec |
+@@ -51,7 +52,9 @@
+ - Legacy clone/path coverage in crates/jarde-jvm/src/canonical.rs: shared_conditional_subroutine_is_covered_per_call_path; clone_coverage_rejects_a_disconnected_internal_node; clone_coverage_rejects_a_disconnected_self_cycle; clone_coverage_rejects_wrong_normal_call_return_and_exception_paths; clone_coverage_accepts_a_nested_return_continuation; an_uncovered_nested_return_cannot_cover_its_outer_continuation; explicit_dead_callsite_seed_stays_unreachable_after_coverage; clone_coverage_budgets_storage_work_and_assembly_cancellation; a_clone_exception_edge_reaches_its_handler_and_ret_restores_the_caller_path.
+ - Region certificates in crates/jarde-java/src/region.rs: real_compound_statement_with_two_payload_arms_has_one_shared_join; real_compound_non_tree_conditions_refuse_without_walker_state_leaks; real_legacy_clone_target_with_different_path_refuses_switch_certificate; and the newly added nested certificate regression real_nested_switch_target_refuses_candidate_certificate_without_partial_result. The nested test is this increment's regression; do not misidentify historic init::tests::nested_argument_sites_present_the_complete_inner_construction as newly added.
+ - Builder and continuation stop behavior: build::tests::compound_builder_proof_and_emission_stops_restore_the_trial; p3_conditional_switch_fallthrough::cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact.
+-- The eight public cases in crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs, all of which should be present in both seed summaries: cf12_conditional_switch_keeps_exact_case_and_exit_sources; cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins; cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact; cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact; compound_statement_conditions_have_exact_physical_origins; compound_float_condition_preserves_nan_sensitive_comparison_origins; compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact; compound_pre_cancelled_public_recovery_publishes_no_partial_artifact.
++- The existing 2 MiB stack-size regression in tests/p3_immediate_functional_receivers.rs must also appear as a passing named outcome: an_overdeep_lambda_helper_renames_instead_of_walking_an_unbounded_body.
++
++The eight public cases in crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs, all of which should be present in both seed summaries: cf12_conditional_switch_keeps_exact_case_and_exit_sources; cf12_ft2_outer_if_owns_switch_join_and_tail_with_physical_origins; cf12_recovery_with_pre_cancelled_public_budget_publishes_no_partial_artifact; cf12_switch_proof_stops_at_observed_analysis_step_boundaries_without_an_artifact; compound_statement_conditions_have_exact_physical_origins; compound_float_condition_preserves_nan_sensitive_comparison_origins; compound_whole_recovery_late_analysis_step_stop_publishes_no_partial_artifact; compound_pre_cancelled_public_recovery_publishes_no_partial_artifact.
+ - In tests/p3_reference_slot_lifetimes.rs, require the renamed current test null_first_exact_builder_writes_refine_local_type_and_compound_condition. The earlier null_first_exact_builder_writes_refine_only_the_local_type name is stale and must not satisfy the pin. The original fixture class and baseline remain inputs; the test derives its compound-condition expectation.
+ - The permanent P2 golden requires historical-v45 through historical-v48 to report ir_items=552 and analysis_steps=186 (prior 540/154), and shared-subroutine-two-call-sites to report 205/125 (prior 195/98). Every other normalized report field, plus historical-v49 through v52 zero-clone cases, must remain exact. Preserve the whole-report comparison.
+ 

@@ -1,0 +1,28 @@
+--- /private/tmp/jarde-arithmetic-stack-build-evidence-luna-v1/build_evidence.py
++++ /private/tmp/jarde-arithmetic-stack-build-evidence-luna-v2/build_evidence.py
+@@ -8,11 +8,11 @@
+ from pathlib import Path
+ 
+ ROOT = Path('/Users/lordcasser/workspace/projects/jarde').resolve()
+-BUILD_PATH = Path('/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v1/execution.json').resolve()
+-CLI_PATH = Path('/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v1').resolve()
+-RUNNER_PATH = Path('/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v1.py').resolve()
+-RUNNER_SHA256 = '8b08654562647a030cb81b61ec0839fc6009e6bcb5d449893e074c4975fe2a71'
+-BUILD_SCHEMA = 'arithmetic-stack-focused-and-cli-root-v1'
++BUILD_PATH = Path('/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2/execution.json').resolve()
++CLI_PATH = Path('/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2').resolve()
++RUNNER_PATH = Path('/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2.py').resolve()
++RUNNER_SHA256 = 'dc0c74fa9e5944a2cc19a7968bed6c66e700ba7f1c798cab6d32167f04f24844'
++BUILD_SCHEMA = 'arithmetic-stack-focused-and-cli-root-v2'
+ ANSI_RE = re.compile(r'\x1b\[[0-9;]*m')
+ SUMMARY_RE = re.compile(
+     r'^test result: (?:ok|FAILED)\. (?P<passed>\d+) passed; (?P<failed>\d+) failed; '
+@@ -114,7 +114,7 @@
+     require(set(before) == expected_paths and set(after) == expected_paths,
+             'product source pin keys differ from current arithmetic-stack runner dynamic selection')
+     require(paths_before == sorted(expected_paths) and paths_after == sorted(expected_paths),
+-            'product source paths differ from v5 dynamic selection')
++            'product source paths differ from v2 dynamic selection')
+     require(before == after, 'product source pins changed during build')
+     for rel, expected in before.items():
+         source = (ROOT / rel).resolve(strict=True)

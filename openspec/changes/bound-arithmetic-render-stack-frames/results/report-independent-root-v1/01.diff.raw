@@ -1,0 +1,92 @@
+[
+  {
+    "path": "$.execution.usage.elapsed_millis",
+    "before": 30,
+    "after": 27
+  },
+  {
+    "path": "$.methods[0].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 7,
+    "after": 1
+  },
+  {
+    "path": "$.methods[0].outcome.report.execution.usage.elapsed_millis",
+    "before": 11,
+    "after": 3
+  },
+  {
+    "path": "$.methods[1].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 12,
+    "after": 3
+  },
+  {
+    "path": "$.methods[1].outcome.report.execution.usage.elapsed_millis",
+    "before": 13,
+    "after": 4
+  },
+  {
+    "path": "$.methods[2].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 14,
+    "after": 4
+  },
+  {
+    "path": "$.methods[2].outcome.report.execution.usage.elapsed_millis",
+    "before": 17,
+    "after": 6
+  },
+  {
+    "path": "$.methods[3].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 18,
+    "after": 7
+  },
+  {
+    "path": "$.methods[3].outcome.report.execution.usage.elapsed_millis",
+    "before": 18,
+    "after": 8
+  },
+  {
+    "path": "$.methods[4].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 20,
+    "after": 11
+  },
+  {
+    "path": "$.methods[4].outcome.report.execution.usage.elapsed_millis",
+    "before": 22,
+    "after": 14
+  },
+  {
+    "path": "$.methods[5].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 23,
+    "after": 17
+  },
+  {
+    "path": "$.methods[5].outcome.report.execution.usage.elapsed_millis",
+    "before": 25,
+    "after": 20
+  },
+  {
+    "path": "$.methods[6].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 26,
+    "after": 23
+  },
+  {
+    "path": "$.methods[6].outcome.report.execution.usage.elapsed_millis",
+    "before": 27,
+    "after": 25
+  },
+  {
+    "path": "$.methods[7].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 28,
+    "after": 26
+  },
+  {
+    "path": "$.methods[7].outcome.report.execution.usage.elapsed_millis",
+    "before": 29,
+    "after": 27
+  },
+  {
+    "path": "$.usage.elapsed_millis",
+    "before": 30,
+    "after": 27
+  }
+]

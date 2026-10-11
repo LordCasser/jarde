@@ -1,0 +1,8 @@
+{
+  "argv": [
+    "cargo",
+    "fmt",
+    "--all"
+  ],
+  "note": "guard ran command and wrote raw streams; metadata serialization failed on relative_to for private OUT; exit/guard result not returned and not accepted as separate validation. Subsequent focused runner performs actual format check with supported adapter."
+}

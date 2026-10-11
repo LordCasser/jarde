@@ -1,0 +1,4 @@
+error: patch failed: crates/jarde-java/src/build.rs:25942
+error: crates/jarde-java/src/build.rs: patch does not apply
+error: patch failed: tests/p3_immediate_functional_receivers.rs:1513
+error: tests/p3_immediate_functional_receivers.rs: patch does not apply

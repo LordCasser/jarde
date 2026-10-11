@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+  File "/private/tmp/jarde-compound-own-ci-verifier-luna-v4/verify-own-ci.py", line 328, in verify_named_tests
+    need(key in targets and targets[key]['counts'] == expected,
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         f'fresh local target {key!r} does not have the requested exact current summary')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/jarde-compound-own-ci-verifier-luna-v4/verify-own-ci.py", line 48, in need
+    raise ValueError(message)
+ValueError: fresh local target ('jarde-jvm', 'jarde_jvm', 'lib') does not have the requested exact current summary

@@ -1,0 +1,52 @@
+{
+  "product_commit": "e041b7635886d3ef2eeb2c5314a9f4868d85dac5",
+  "run_id": 38116415118,
+  "scope": "actual CI failure; not acceptance",
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38116415118",
+        "--json",
+        "headSha,status,conclusion,jobs,url"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-product-ci-failure-root-v1/00-stdout.raw",
+          "sha256": "9a689b007e1dd60c48d856a096fc764634f925e47561d3eb80ba4d47c2fb871e",
+          "bytes": 10113
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-product-ci-failure-root-v1/00-stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "38116415118",
+        "--log-failed"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/jarde-compound-product-ci-failure-root-v1/01-stdout.raw",
+          "sha256": "51b7cdf4364ef57e68830863b16a832decef382e30ffa5b63d47295dd0340aae",
+          "bytes": 411248
+        },
+        "stderr": {
+          "path": "/private/tmp/jarde-compound-product-ci-failure-root-v1/01-stderr.raw",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    }
+  ]
+}

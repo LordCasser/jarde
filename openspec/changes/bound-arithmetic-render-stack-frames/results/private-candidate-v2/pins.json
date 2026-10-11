@@ -1,0 +1,63 @@
+{
+  "change": "bound-arithmetic-render-stack-frames",
+  "artifacts": {
+    "proposal": "81e32d9df2d78a6a0ac4315d933a9ed41da987d52c91026bd76528ef4e226501",
+    "design": "3195e9c5fd1543cf12ef44714ff56957f4752dd93e8342b5dd902b6fd2d37159",
+    "tasks": "d22695ac3fda04c25b2f8e414eac5fa132c39f39605c0aaff3b28e95cf3f9dda"
+  },
+  "baseline": {
+    "build_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/crates/jarde-java/src/build.rs",
+      "bytes": 1742664,
+      "sha256": "2586f9eaa09c06056bc8c565ed6bd00c18c35ad6ddb28970ef3d6e0ee2fa5bef"
+    },
+    "test_rs": {
+      "path": "/Users/lordcasser/workspace/projects/jarde/tests/p3_immediate_functional_receivers.rs",
+      "bytes": 58967,
+      "sha256": "ce60b1a18ac11d109c5f5866c9b8e5eb34eae93f2f3be584c8b155e01fcd4e87"
+    }
+  },
+  "candidate": {
+    "build_rs": {
+      "path": "/private/tmp/bound-arithmetic-render-stack-frames-luna-v1/build.rs.candidate",
+      "bytes": 1743964,
+      "sha256": "c033c80d6c16063764e1308da7ae1c390c3f2f48281133c5bc1e724d4b8c14ac"
+    },
+    "test_rs": {
+      "path": "/private/tmp/bound-arithmetic-render-stack-frames-luna-v1/p3_immediate_functional_receivers.rs.candidate",
+      "bytes": 59225,
+      "sha256": "881c186b4d1f16bb4bea58a8f22f72956a7f04a1648f8087740b0666dd6dd54d"
+    },
+    "patch": {
+      "path": "/private/tmp/bound-arithmetic-render-stack-frames-luna-v2/candidate.patch",
+      "bytes": 5411,
+      "sha256": "373067be16fb6a03e7efbeee24ff0efee30bbda78c52b51b56fa94a04347609e"
+    }
+  },
+  "evidence": {
+    "stack_trace": {
+      "path": "/private/tmp/jarde-lambda-depth-backtrace-root-v2/stdout.raw",
+      "sha256": "7efdb0db14f868cb05cc5a3d81cfd08a2b4f4fbd60b561ab47855338ed43811f",
+      "observed_by": "root"
+    },
+    "default_stack_baseline": {
+      "path": "/private/tmp/jarde-lambda-depth-baseline-root-v1/cli-default-stdout.raw",
+      "sha256": "117befb5d7986f7f9e0a227d8ff7ec3f3f6566f9b59d3de45c2220ec1d1efc21",
+      "observed_by": "root",
+      "usage": {
+        "analysis_steps": 7471,
+        "ir_items": 11068
+      },
+      "helper": "ExplanationOnly at bytecode 601; physical helper retained with $jarde rename"
+    }
+  },
+  "verification": {
+    "command": "git apply --check /private/tmp/bound-arithmetic-render-stack-frames-luna-v2/candidate.patch",
+    "exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "v1_failure": "The prior generated hunk did not match either pinned source; git apply --recount --check still failed in build.rs. Workspace baseline SHA-256 values match the pins. The replacement patch is generated line-by-line with difflib.unified_diff(n=3).",
+    "v1_error_capture": "/private/tmp/bound-arithmetic-render-stack-frames-luna-v2/v1-apply-check.stderr.raw",
+    "v1_recount_error_capture": "/private/tmp/bound-arithmetic-render-stack-frames-luna-v2/v1-recount.stderr.raw"
+  }
+}

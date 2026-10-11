@@ -1,0 +1,67 @@
+(lldb) target create "/private/tmp/jarde-compound-condition-candidate-cli-root-v2"
+Current executable set to '/private/tmp/jarde-compound-condition-candidate-cli-root-v2' (arm64).
+(lldb) settings set -- target.run-args  "class-source" "--input" "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.class" "--class" "LambdaDeep" "--policy" "single-class" "--format" "json" "--evidence" "all"
+(lldb) settings set target.disable-aslr false
+(lldb) run
+Process 75531 launched: '/private/tmp/jarde-compound-condition-candidate-cli-root-v2' (arm64)
+Process 75531 stopped
+* thread #1, name = 'main', queue = 'com.apple.main-thread', stop reason = EXC_BAD_ACCESS (code=2, address=0x16bb8b240)
+       frame #0: 0x0000000104950240 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 20
+jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value:
+->  0x104950240 <+20>: str    xzr, [sp]
+    0x104950244 <+24>: cmp    sp, x9
+    0x104950248 <+28>: b.ne   0x10495023c               ; <+16>
+    0x10495024c <+32>: sub    sp, sp, #0xc10
+Target 0: (jarde-compound-condition-candidate-cli-root-v2) stopped.
+(lldb) thread backtrace -c 60
+* thread #1, name = 'main', queue = 'com.apple.main-thread', stop reason = EXC_BAD_ACCESS (code=2, address=0x16bb8b240)
+   * frame #0: 0x0000000104950240 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 20
+     frame #1: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #2: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #3: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #4: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #5: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #6: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #7: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #8: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #9: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #10: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #11: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #12: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #13: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #14: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #15: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #16: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #17: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #18: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #19: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #20: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #21: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #22: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #23: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #24: 0x0000000104952198 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 8044
+     frame #25: 0x000000010494e3cc jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::return_expr + 440
+     frame #26: 0x000000010494903c jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::instruction + 20052
+     frame #27: 0x000000010498ecec jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::block + 2528
+     frame #28: 0x0000000104991e20 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::region + 11364
+     frame #29: 0x0000000104a0ab44 jarde-compound-condition-candidate-cli-root-v2`jarde_java::build::build + 20880
+     frame #30: 0x0000000104eb8d80 jarde-compound-condition-candidate-cli-root-v2`jarde_java::report::recover_inner + 13560
+     frame #31: 0x0000000104eface4 jarde-compound-condition-candidate-cli-root-v2`jarde_java::report::recover_for_class_source_with_anonymous_ast + 1052
+     frame #32: 0x000000010442b41c jarde-compound-condition-candidate-cli-root-v2`jarde::facade::recovery_from_with_class_candidates + 7636
+     frame #33: 0x000000010442ca10 jarde-compound-condition-candidate-cli-root-v2`jarde::facade::recovery_presented_for_class_source + 284
+     frame #34: 0x00000001043c2884 jarde-compound-condition-candidate-cli-root-v2`jarde::facade::recover_prepared_member + 1972
+     frame #35: 0x000000010436fca0 jarde-compound-condition-candidate-cli-root-v2`<jarde::facade::Engine>::prepare_physical_class_source + 29604
+     frame #36: 0x000000010435d710 jarde-compound-condition-candidate-cli-root-v2`<jarde::facade::Engine>::class_source_with_evidence + 2228
+     frame #37: 0x00000001042897b8 jarde-compound-condition-candidate-cli-root-v2`jarde_cli::task::class_source::{closure#0} + 80
+     frame #38: 0x000000010427b8fc jarde-compound-condition-candidate-cli-root-v2`<jarde_cli::task::Session>::call::<jarde::facade::OperationOutcome<jarde::class_source::ClassSourceReport>, jarde_cli::task::class_source::{closure#0}> + 96
+     frame #39: 0x000000010429174c jarde-compound-condition-candidate-cli-root-v2`jarde_cli::task::class_source + 1360
+     frame #40: 0x0000000104294cc8 jarde-compound-condition-candidate-cli-root-v2`jarde_cli::task::dispatch + 836
+     frame #41: 0x00000001042931f8 jarde-compound-condition-candidate-cli-root-v2`jarde_cli::task::run + 72
+     frame #42: 0x00000001041fda14 jarde-compound-condition-candidate-cli-root-v2`jarde_cli::main + 304
+     frame #43: 0x00000001041dbee0 jarde-compound-condition-candidate-cli-root-v2`<fn() -> std::process::ExitCode as core::ops::function::FnOnce<()>>::call_once + 16
+     frame #44: 0x00000001041a1c88 jarde-compound-condition-candidate-cli-root-v2`std::sys::backtrace::__rust_begin_short_backtrace::<fn() -> std::process::ExitCode, std::process::ExitCode> + 16
+     frame #45: 0x0000000104252fc0 jarde-compound-condition-candidate-cli-root-v2`std::rt::lang_start::<std::process::ExitCode>::{closure#0} + 16
+     frame #46: 0x0000000105445838 jarde-compound-condition-candidate-cli-root-v2`std::rt::lang_start_internal + 952
+     frame #47: 0x000000010423e8d8 jarde-compound-condition-candidate-cli-root-v2`std::rt::lang_start::<std::process::ExitCode> + 60
+     frame #48: 0x000000010420121c jarde-compound-condition-candidate-cli-root-v2`main + 36
+     frame #49: 0x0000000192e73e80 dyld`start + 6688

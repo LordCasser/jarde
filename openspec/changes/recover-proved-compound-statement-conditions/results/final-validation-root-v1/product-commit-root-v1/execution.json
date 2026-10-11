@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "git",
+    "commit",
+    "-m",
+    "Recover proved statement conditions, switch continuations and clone coverage"
+  ],
+  "exit_code": 0
+}

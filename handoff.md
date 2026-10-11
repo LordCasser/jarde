@@ -1,6 +1,6 @@
 # HANDOFF — jarde 主线接续入口
 
-当前断点（2026-10-11）：持续目标 active，用户明确继续本聊天。main/origin 为 238c6aaf187c7727aae3b5a58542e1ad1d394535，当前组合候选未提交、自身 CI 尚待。用户已批准最低 **5 GiB free / target 1 GiB**，一秒进程组守卫、每轮 cargo clean；root 独占工具链/Git，Luna 只准备私有候选。只剩 main 分支，不新建 worktree。
+当前断点（2026-10-11）：持续目标 active，用户明确继续本聊天。main/origin 为 e041b7635886d3ef2eeb2c5314a9f4868d85dac5，真实 CI 38116415118 在 overdeep lambda helper 的第一轮测试 stack overflow/SIGABRT；另三个 job 成功，后继步骤 skipped，父片交付仍开放。独立 `bound-arithmetic-render-stack-frames` 当前 5/6：已应用最小算术递归帧拆分，保留 MAX_VALUE_DEPTH=24、前置优先级和预算；最终构建 lambda16/public8/fmt 通过并 clean，新 CLI b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0。同 class 的 2MiB 重放及父片完整报告59对仅 elapsed_millis 变化，独立绑定已通过；fresh全 workspace95批/359 targets/3444-0-97、Clippy与strict348均通过并clean（未借旧v4）。见 stack 变更 verification-root.md/results。常量名 gate v5 仍私有未应用。用户已批准 **5 GiB free / target 1 GiB**，一秒进程组守卫和完成后 clean；root 独占工具链/Git，Luna私有候选/验证器。仅 main 分支，不新建 worktree。以下旧构建/验收记录保留历史，当前源码以本段及 stack 执行 pins 为准。
 
 本轮组合：复合语句条件 9/10、switch continuation 12/13、独立 legacy clone coverage 5/6。region/build/canonical SHA 分别 acdb5d22195ce0b5d283fe1b7a3003f35830c85811b18e2e713b7f4728e93168 / 2586f9eaa09c06056bc8c565ed6bd00c18c35ad6ddb28970ef3d6e0ee2fa5bef / 79d7725b697433ae9f00360818cf5c3deece227c4d15101412a730fd8bed9a86。已有真实 JVM243/Java350通过，新增 nested certificate 测试将随最终 Java351 全库验收。真实 Stop 的 reason/usage/location 与原子无产物已接受；取消在 Builder prepare 后、进入 emitter 前，不能冒称异步中途注入。verification 保持 NotPerformed，不新增 pass/公开 IR。
 

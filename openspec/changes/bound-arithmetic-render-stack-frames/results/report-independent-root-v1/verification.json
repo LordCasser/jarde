@@ -1,0 +1,1844 @@
+{
+  "schema": "arithmetic-stack-independent-report-equivalence-audit-v1",
+  "status": "passed_report_equivalence_only",
+  "product_completion_claim": false,
+  "verifier": {
+    "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v2.py",
+    "bytes": 12813,
+    "sha256": "c382fa1f7872c706df3fb0da8e75ecdeef8263b04e5cefa76afccf657120f35b"
+  },
+  "replay_execution": {
+    "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/execution.json",
+    "bytes": 184361,
+    "sha256": "b720fdf4ba11e04eea63baac682d13ba5c35d5dcab2b47458a5179391cc5eea8"
+  },
+  "replay_runner": {
+    "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1.py",
+    "bytes": 4231,
+    "sha256": "0229c59bef95660c9bf72d15239126b090b1edba9f9aaf9c882f2e1125ee5f76"
+  },
+  "candidate_cli": {
+    "path": "/private/tmp/jarde-arithmetic-stack-candidate-cli-root-v2",
+    "bytes": 60820032,
+    "sha256": "b081ca53080d0a41f00bf8f5b924499a2c781f413746fc9facb7862ef8b9cfe0"
+  },
+  "build_execution": {
+    "path": "/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2/execution.json",
+    "bytes": 78609,
+    "sha256": "c23b1409f461201ecf74bde68a67cc02c62833d9cb315de4ac31105e716f66f2"
+  },
+  "build_verification": {
+    "path": "/private/tmp/jarde-arithmetic-stack-build-independent-root-v1/verification.json",
+    "bytes": 13541,
+    "sha256": "2c92d8492ba0f00d7793db05b7389828daf1299772f456443fad0724e3c1664e"
+  },
+  "source_pin_count_checked": 21,
+  "all_build_product_pins_checked": 132,
+  "baseline_execution": {
+    "path": "/private/tmp/jarde-lambda-depth-baseline-root-v1/execution.json",
+    "bytes": 1665,
+    "sha256": "94687806366d8289e8cf0218193d325f410a9eadf7a8632208ff8e63662c2639"
+  },
+  "fixed_generated_class_oracle": {
+    "verifier": {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v2/runtime-verifier-v3.py",
+      "bytes": 34884,
+      "sha256": "5d2d28300e7c545e919488f8e909af1bfb92044e72aba4e40dda48ce80180334"
+    },
+    "acceptance_record": {
+      "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/verification.json",
+      "bytes": 63529,
+      "sha256": "339e31b220b3eaaf5bb2258d01b2140143005f704df6c62098d25f3a1de3273d"
+    },
+    "bytes": 2848,
+    "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa",
+    "scope": "compound-final-runtime generated class only; old/new raw class_bytes checked"
+  },
+  "historical_record_statuses_preserved_as_nonterminal_provenance": {
+    "jarde-compound-final-runtime-cli-v2": "incomplete_or_mismatching_observations",
+    "jarde-compound-cf12-final-cli-v2": "observed_pending_root_independent_acceptance",
+    "jarde-compound-negative-render-final-cli-v2": "observations_collected",
+    "jarde-candidate-continuation-final-cli-v2-attempt-v4": "all_19_commands_observed",
+    "jarde-null-builder-final-cli-v2-replay": "all_19_commands_observed"
+  },
+  "pair_count": 59,
+  "allowed_differences": "numeric elapsed_millis leaves only; bool explicitly excluded",
+  "pairs": [
+    {
+      "index": 0,
+      "reference_record": {
+        "path": "/private/tmp/jarde-lambda-depth-baseline-root-v1/execution.json",
+        "bytes": 1665,
+        "sha256": "94687806366d8289e8cf0218193d325f410a9eadf7a8632208ff8e63662c2639"
+      },
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "input": {
+        "path": "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.class",
+        "bytes": 1328,
+        "sha256": "ff4dedcc3197402308c4c310efbbbb81b8756253b83bbe3895c9f0c8400675b5"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-lambda-depth-baseline-root-v1/cli-default-stdout.raw",
+        "bytes": 29948,
+        "sha256": "117befb5d7986f7f9e0a227d8ff7ec3f3f6566f9b59d3de45c2220ec1d1efc21"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/0.stdout.raw",
+        "bytes": 29947,
+        "sha256": "c6411c1fd54bc3e60bf5ae54906ecca1091aa3daff216f070db07253d8c1c7d3"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/00.diff.raw",
+        "bytes": 882,
+        "sha256": "ef3e0fcbc2d8fb939bc3593c187aea3a6435561386b34a4f37bac7479cebfde7"
+      },
+      "elapsed_only_difference_count": 8
+    },
+    {
+      "index": 1,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/execution.json",
+        "bytes": 165798,
+        "sha256": "3f3d9a466ad8719ba33aa725d4a8ff66b31f2746b77ec13fb5a51dedfc7d07b9"
+      },
+      "cwd": "/private/tmp/jarde-compound-final-runtime-cli-v2/jarde-default",
+      "input": {
+        "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/original-bytecode/CompoundStatementConditions.class",
+        "bytes": 2848,
+        "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/raw/0003.class-source-default.stdout.raw",
+        "bytes": 275847,
+        "sha256": "4a2ad747a0280cd8531b2b906866ce3fd03ab836a641a289e975c9ff529b1c99"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/1.stdout.raw",
+        "bytes": 275840,
+        "sha256": "a99dc201ca4be320633802a2ae73300bac7296057ed48dc5e3abf8d939ee7511"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/01.diff.raw",
+        "bytes": 2054,
+        "sha256": "ec8dd0093482ec36fb530b2d53ca0a7d326a8fde56b2137592fa54b1fa6f5a0c"
+      },
+      "elapsed_only_difference_count": 18
+    },
+    {
+      "index": 2,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/execution.json",
+        "bytes": 165798,
+        "sha256": "3f3d9a466ad8719ba33aa725d4a8ff66b31f2746b77ec13fb5a51dedfc7d07b9"
+      },
+      "cwd": "/private/tmp/jarde-compound-final-runtime-cli-v2/jarde-all",
+      "input": {
+        "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/original-bytecode/CompoundStatementConditions.class",
+        "bytes": 2848,
+        "sha256": "2fc584d5ba9d35940516fcf9001479a72851ebb0216c22a62f3ec5500dbc35aa"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-final-runtime-cli-v2/raw/0004.class-source-all.stdout.raw",
+        "bytes": 282910,
+        "sha256": "ac8c18ec55eb880396df8284122666e00d300f6b1638aed2ca9471aa0cfa2051"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/2.stdout.raw",
+        "bytes": 282911,
+        "sha256": "c5e283f6b2d74a7bd6905193923aa678ae0b6acedbdc1b9233b741b8abc9b1f9"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/02.diff.raw",
+        "bytes": 1457,
+        "sha256": "5183fc7fe1993afc0ecb3ff8a6e5ea2a9ef93d05b9b1ffaf9bd75940aca722c5"
+      },
+      "elapsed_only_difference_count": 13
+    },
+    {
+      "index": 3,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class",
+        "bytes": 1083,
+        "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0008.TestSwitch-jdk8_tools-jarde-default-TestSwitch$TestCls-class-source.stdout.raw",
+        "bytes": 46788,
+        "sha256": "e15721fca16f4e34a338d8ccabac1fc697c58203e54febe839548326fd663a68"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/3.stdout.raw",
+        "bytes": 46788,
+        "sha256": "5a613f76c8c80677363284201fad499fbf3d224c13d3ba51ffd33809b470441b"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/03.diff.raw",
+        "bytes": 403,
+        "sha256": "111b3cff40a9322faafdbd69f53d22bdbc9b971252124d0dec70e1a1ad0b2797"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 4,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class",
+        "bytes": 1083,
+        "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0011.TestSwitch-jdk8_tools-jarde-all-TestSwitch$TestCls-class-source.stdout.raw",
+        "bytes": 48627,
+        "sha256": "d34c125c93d090dc594fc6789e23a3806f4c82d202c95afbf8ba05647aa386e3"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/4.stdout.raw",
+        "bytes": 48627,
+        "sha256": "de47a200e7de7d9b9d770c87e301148cb2aef95b803846bcca95d26228592bcd"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/04.diff.raw",
+        "bytes": 635,
+        "sha256": "7b26ce9bc29d1cf224ddcb2f85939e6e0ade2ec5645d08e6c1c74333d0e31b7b"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 5,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class",
+        "bytes": 1083,
+        "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0017.TestSwitch-jdk23_tools-jarde-default-TestSwitch$TestCls-class-source.stdout.raw",
+        "bytes": 46788,
+        "sha256": "5fd40e305797a91b59beea379a8db6a4701a2626549541678d4c50feb5fe23bc"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/5.stdout.raw",
+        "bytes": 46788,
+        "sha256": "35df1d2d167bcbd1a3d5315c082ff72b8c6f1b046d085b90625fc009de3a743f"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/05.diff.raw",
+        "bytes": 518,
+        "sha256": "e28ca774bdcf938debc45b52b8d2fa774caa9f6fea9f07818aef9b13d102b91c"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 6,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitch.test/input/TestSwitch$TestCls.class",
+        "bytes": 1083,
+        "sha256": "f96762425f2c714e4a8bb1b9c796dc7a99ce15564f6c320195bf8c7072fcaa18"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0020.TestSwitch-jdk23_tools-jarde-all-TestSwitch$TestCls-class-source.stdout.raw",
+        "bytes": 48627,
+        "sha256": "7984aa55de7e577c084d0ed588acaa6cfd8c351ec003ee2b265313bfe270f050"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/6.stdout.raw",
+        "bytes": 48630,
+        "sha256": "c658ce02c228c35c03a8a8765281a34f40c03146095efc83ba1f8ad5379c0be3"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/06.diff.raw",
+        "bytes": 638,
+        "sha256": "f1deed01d9b4b897d0823fa9608b8571874ae747b7d04f1bed3f103215068dc2"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 7,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchNoDefault/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class",
+        "bytes": 899,
+        "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0026.TestSwitchNoDefault-jdk8_tools-jarde-default-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+        "bytes": 27432,
+        "sha256": "7289190cf1953c70ee04ac72cee00b33ae756f046d7090ce1fdf482b223a9fa4"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/7.stdout.raw",
+        "bytes": 27432,
+        "sha256": "b0a851025a99cc86b9170e83749c96329df8e3dd2cd3167f8fb67d1fb4c88605"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/07.diff.raw",
+        "bytes": 635,
+        "sha256": "63956e90257907fa7699d5e90b1a9a25c7a2a1293e740fdced49f5642a51dee3"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 8,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchNoDefault/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class",
+        "bytes": 899,
+        "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0029.TestSwitchNoDefault-jdk8_tools-jarde-all-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+        "bytes": 28767,
+        "sha256": "49c257dd9f477bb92e0f203ff6c1a6ee137a68e4db7a9c4cb54d1e825d96614d"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/8.stdout.raw",
+        "bytes": 28767,
+        "sha256": "a4e31965d9564c438d4d6d50cb782bdf27d8981e15af11d7f636edffd728797f"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/08.diff.raw",
+        "bytes": 520,
+        "sha256": "e8b6f30c2c5d447ea307f9cf54909ac8e6561cadfe792c6d1d4d763a86c63453"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 9,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchNoDefault/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class",
+        "bytes": 899,
+        "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0035.TestSwitchNoDefault-jdk23_tools-jarde-default-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+        "bytes": 27432,
+        "sha256": "825add3e6289fca3ba2efdd72407bbab03008beb1e86f9acf3da80255a679a78"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/9.stdout.raw",
+        "bytes": 27432,
+        "sha256": "e5b7d47f3b1a97129bffbf602d973a9d3341de146f6dc57c902bd90edae3d571"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/09.diff.raw",
+        "bytes": 235,
+        "sha256": "ad0c4475c8137350a825f81cef3d5d0c02f66170a96db1bf9c26a65c19be8ce7"
+      },
+      "elapsed_only_difference_count": 2
+    },
+    {
+      "index": 10,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchNoDefault/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchNoDefault.test/input/TestSwitchNoDefault$TestCls.class",
+        "bytes": 899,
+        "sha256": "a82ea948de0b047ff3b9c4eeca200f9f59344e93d6a17ab62a08723aa7d33834"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0038.TestSwitchNoDefault-jdk23_tools-jarde-all-TestSwitchNoDefault$TestCls-class-source.stdout.raw",
+        "bytes": 28767,
+        "sha256": "7507a82815f19a9187d6cc74bb2d3b05272691182f3c04f55487d5a64c5ad170"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/10.stdout.raw",
+        "bytes": 28767,
+        "sha256": "e07c93ca316c7dfbbebe5e77c45dab7184ffc8ce278ac2bc228759f0bedf46d1"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/10.diff.raw",
+        "bytes": 403,
+        "sha256": "e22cb69e4e7381a50170deaf7ca52f0adf318e590b453aad25addee559821c94"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 11,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+        "bytes": 744,
+        "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0044.TestSwitchLabels-jdk8_tools-jarde-default-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+        "bytes": 20818,
+        "sha256": "ab9884c33f10f59eb80e4df9600da54e2d3b6de6d325ef6126cf37de0597838b"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/11.stdout.raw",
+        "bytes": 20818,
+        "sha256": "82b07edd86fabf5df72e12b3c86f93e8cf3ae468e59c63a7e05ab2f6c4c76d57"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/11.diff.raw",
+        "bytes": 635,
+        "sha256": "05106a45f6faa508f6ec73d78604c896b8403cd62de67e5a4e52619100d75436"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 12,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+        "bytes": 753,
+        "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0045.TestSwitchLabels-jdk8_tools-jarde-default-TestSwitchLabels$TestCls-class-source.stdout.raw",
+        "bytes": 21419,
+        "sha256": "1291f12aa384a6d0b220c5bb1ee704005c8e0d504212848fd5d89a74e4bd899a"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/12.stdout.raw",
+        "bytes": 21419,
+        "sha256": "6cf8f01a94ab9ad12400e4da88fe7af658689b76c4f6d407f7b4a92b44b8c6ff"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/12.diff.raw",
+        "bytes": 403,
+        "sha256": "e22cb69e4e7381a50170deaf7ca52f0adf318e590b453aad25addee559821c94"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 13,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+        "bytes": 744,
+        "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0048.TestSwitchLabels-jdk8_tools-jarde-all-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+        "bytes": 21826,
+        "sha256": "08960107f4bfac7bb1e1ebde7d35b9677de29a4b2ede98534425cfcddc4b3bcc"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/13.stdout.raw",
+        "bytes": 21826,
+        "sha256": "b40237d228a5a7ce6e8e8b87ca812e4368a9b1e6fa66e727a3c8ac81fcd5190f"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/13.diff.raw",
+        "bytes": 635,
+        "sha256": "7b4f673a41eec69cc9b92869d96e6d186a0cc63e8c5bf78d4ffca063cfc4f58d"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 14,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+        "bytes": 753,
+        "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0049.TestSwitchLabels-jdk8_tools-jarde-all-TestSwitchLabels$TestCls-class-source.stdout.raw",
+        "bytes": 22407,
+        "sha256": "cad1526f99ea72ee38e14af0a0ff30e7d10938788ee338dc8ea19ee7623a3b64"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/14.stdout.raw",
+        "bytes": 22407,
+        "sha256": "cad1526f99ea72ee38e14af0a0ff30e7d10938788ee338dc8ea19ee7623a3b64"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/14.diff.raw",
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "elapsed_only_difference_count": 0
+    },
+    {
+      "index": 15,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+        "bytes": 744,
+        "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0055.TestSwitchLabels-jdk23_tools-jarde-default-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+        "bytes": 20818,
+        "sha256": "9904352cf645a215004d8d70894d5589a120cf95de8411c9069adf5467f95e63"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/15.stdout.raw",
+        "bytes": 20818,
+        "sha256": "0946220ce741c0ef7da6bc0ed1f4667cddf3c7e361bbf49650317ec7b65eccfa"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/15.diff.raw",
+        "bytes": 518,
+        "sha256": "3db037c5161615035109338043268d3a3bba685157eb7ee25a382c2f6406834c"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 16,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+        "bytes": 753,
+        "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0056.TestSwitchLabels-jdk23_tools-jarde-default-TestSwitchLabels$TestCls-class-source.stdout.raw",
+        "bytes": 21419,
+        "sha256": "cc0cecaabadc32a44156af182f4f134b0c767efcf8ec414ae71b890822b4e347"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/16.stdout.raw",
+        "bytes": 21419,
+        "sha256": "f2e8c3a079b7303838493d98109bd5fb98c0d29a8c428fbccfd9792260720a98"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/16.diff.raw",
+        "bytes": 635,
+        "sha256": "823f4dbf37a06cc1e6d259da8a63b45f02ecd4bea4314599832976d089296d47"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 17,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls$Inner.class",
+        "bytes": 744,
+        "sha256": "2d6221bb75ba81cba428c32e3139038982c4078c80a1af99532c3a45acd54a99"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0059.TestSwitchLabels-jdk23_tools-jarde-all-TestSwitchLabels$TestCls$Inner-class-source.stdout.raw",
+        "bytes": 21826,
+        "sha256": "08960107f4bfac7bb1e1ebde7d35b9677de29a4b2ede98534425cfcddc4b3bcc"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/17.stdout.raw",
+        "bytes": 21826,
+        "sha256": "596a139ecd36dd4c0034efa8d895ee70007b4c82ff18243bf0d1580d0a62b560"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/17.diff.raw",
+        "bytes": 403,
+        "sha256": "217ea8f513b8f9861f03b049a4ed4f5aaa5c6db95412ff7f86bb588f9e6e5ccb"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 18,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchLabels/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchLabels.test/input/TestSwitchLabels$TestCls.class",
+        "bytes": 753,
+        "sha256": "4997ca33261d0585a1008dd860131c5ed3f2438206209bb7acb82c90eb743d22"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0060.TestSwitchLabels-jdk23_tools-jarde-all-TestSwitchLabels$TestCls-class-source.stdout.raw",
+        "bytes": 22407,
+        "sha256": "cad1526f99ea72ee38e14af0a0ff30e7d10938788ee338dc8ea19ee7623a3b64"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/18.stdout.raw",
+        "bytes": 22407,
+        "sha256": "6f67b7c26e9b94945adb06eae17bcfc4767198718d30c99ee8d03ea5711f4687"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/18.diff.raw",
+        "bytes": 635,
+        "sha256": "d97f55cfb7177040f439a44ed26f58cd559e7fb124b001e7f4f522f9ec734ccf"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 19,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchFallThrough/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class",
+        "bytes": 1531,
+        "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0065.TestSwitchFallThrough-jdk8_tools-jarde-default-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+        "bytes": 64337,
+        "sha256": "4b0f53fd50a611fa539b476ac44d4219a2b4c328a086d6d2cf61d2216662b6be"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/19.stdout.raw",
+        "bytes": 64337,
+        "sha256": "094bd7b6c92064c6774d7c9e564c1c37674ebce66fa221dd061a5547f088d13b"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/19.diff.raw",
+        "bytes": 750,
+        "sha256": "e1757b8fb4a4b0241808bcef52c176eecdbfab12a8754cd359f90e9cf5106d0b"
+      },
+      "elapsed_only_difference_count": 7
+    },
+    {
+      "index": 20,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchFallThrough/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class",
+        "bytes": 1531,
+        "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0067.TestSwitchFallThrough-jdk8_tools-jarde-all-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+        "bytes": 68647,
+        "sha256": "54d3a3f14d4d45aa95b50874efa74dcb59c8c51a26ceff9b2a14b9fa862f2e28"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/20.stdout.raw",
+        "bytes": 68647,
+        "sha256": "7094b7aa4e78b1cf147717f5867bc3e540c02478b0a92408848f4f0c7b868811"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/20.diff.raw",
+        "bytes": 750,
+        "sha256": "8330d28d5ff3d69c1f295a53b5583cd6a6062130adc247583e332e2c4d652132"
+      },
+      "elapsed_only_difference_count": 7
+    },
+    {
+      "index": 21,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchFallThrough/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class",
+        "bytes": 1531,
+        "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0072.TestSwitchFallThrough-jdk23_tools-jarde-default-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+        "bytes": 64337,
+        "sha256": "4b0f53fd50a611fa539b476ac44d4219a2b4c328a086d6d2cf61d2216662b6be"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/21.stdout.raw",
+        "bytes": 64337,
+        "sha256": "1ab0f6950bdd8705534b987fff4f4ad3d1b1d920cb763e713e21adbedd6dfe27"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/21.diff.raw",
+        "bytes": 635,
+        "sha256": "75d14286418940caa2e2a35cfc7aa0e1cf9c41de5d3ebc4fe1d8921a3a33a7ed"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 22,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchFallThrough/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchFallThrough.test/input/TestSwitchFallThrough$TestCls.class",
+        "bytes": 1531,
+        "sha256": "610cbb34e57e2d6019f201b5053f608fbe776f702d7f0cb3a8cfd6f2d8c5e20f"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0075.TestSwitchFallThrough-jdk23_tools-jarde-all-TestSwitchFallThrough$TestCls-class-source.stdout.raw",
+        "bytes": 68647,
+        "sha256": "36a018ddf75800499e9d374fe6c9d7fa2ba37a5b4adbccc4a441eb6f030c46ec"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/22.stdout.raw",
+        "bytes": 68652,
+        "sha256": "db566c4e69f4ded4985fa781ee5a0c523ec7e59b4c2a57626e90a7808b3fc910"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/22.diff.raw",
+        "bytes": 987,
+        "sha256": "14cfd1a6971bd6c8774880e555fd8b799f7b9805bfd5dd9c049ee1c2ce54df2e"
+      },
+      "elapsed_only_difference_count": 9
+    },
+    {
+      "index": 23,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class",
+        "bytes": 1563,
+        "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0081.TestSwitchWithFallThroughCase-jdk8_tools-jarde-default-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+        "bytes": 96835,
+        "sha256": "1368cf38caa927fb096f2f77eeec30c9f6500b2d6fa9e9935166dcf980652eb9"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/23.stdout.raw",
+        "bytes": 96837,
+        "sha256": "4dbd57fb43222477ee648b4f537ceb03712503150ee2bd1a7f0e130e114efb5a"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/23.diff.raw",
+        "bytes": 520,
+        "sha256": "d37fab08b4d6008fb8d710363aa07fe83714f60fcce60dedc4cc3e8c047d53a3"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 24,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class",
+        "bytes": 1563,
+        "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0084.TestSwitchWithFallThroughCase-jdk8_tools-jarde-all-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+        "bytes": 99626,
+        "sha256": "06fc00bf8b7705db373b9023fe4ef90a6c1a6a71ad482120091e9a0ce4dc7170"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/24.stdout.raw",
+        "bytes": 99626,
+        "sha256": "34a91664ae0d8a2388003060497d572cb50742d90f29e5cd805474392d88a984"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/24.diff.raw",
+        "bytes": 286,
+        "sha256": "ff5a51986417eb4f8d4dd0db7a79f21c547412a11b3eff539010485a1cae75f1"
+      },
+      "elapsed_only_difference_count": 3
+    },
+    {
+      "index": 25,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class",
+        "bytes": 1563,
+        "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0090.TestSwitchWithFallThroughCase-jdk23_tools-jarde-default-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+        "bytes": 96835,
+        "sha256": "c13469feed62bf9ac9243a850ac32bafb663eb678b5bb2bf78f4ebe45a12692d"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/25.stdout.raw",
+        "bytes": 96835,
+        "sha256": "aac293fe0b54f41d965b3f03327e24e6ccfc89dd723b01cecb20e6331b52062c"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/25.diff.raw",
+        "bytes": 699,
+        "sha256": "87d4ca2aaa8494339562280acb3f8c0fda046747d8aa304c366ef34bfe0a3310"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 26,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-java-root-v1/harness-v3-java/capture/TestSwitchWithFallThroughCase.test/input/TestSwitchWithFallThroughCase$TestCls.class",
+        "bytes": 1563,
+        "sha256": "5347758d128465aa1889769ac2a18448f060682a7f6567b27f8d98e3499fc034"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0093.TestSwitchWithFallThroughCase-jdk23_tools-jarde-all-TestSwitchWithFallThroughCase$TestCls-class-source.stdout.raw",
+        "bytes": 99629,
+        "sha256": "7130dd009274ee46bec42c3c5c8c71d756c4fc9f504c3a89d93f3e3a0c5f2e9d"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/26.stdout.raw",
+        "bytes": 99626,
+        "sha256": "128e452e1924ae7b64925b10f8b9256bffad57708a69e20f241bce16580a9357"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/26.diff.raw",
+        "bytes": 753,
+        "sha256": "df37db1797248b1297403a59112174367a0d4d2ed71909457131a358b9e15aa1"
+      },
+      "elapsed_only_difference_count": 7
+    },
+    {
+      "index": 27,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch2/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "bytes": 1123,
+        "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0099.TestSwitch2-jdk8_tools-jarde-default-TestSwitch2$TestCls-class-source.stdout.raw",
+        "bytes": 72693,
+        "sha256": "0591499e93d63d20f705bc4e2556305bb4799abab3999bdcd897f9f2fdbed821"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/27.stdout.raw",
+        "bytes": 72693,
+        "sha256": "b85819bafd86e64a7a3cf043ddc2d9c44e794d735da96749db0af1179897a686"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/27.diff.raw",
+        "bytes": 286,
+        "sha256": "38a5c919dffa8d387fc73a25f63d2bbc0f37190616804882557a9f768833bffb"
+      },
+      "elapsed_only_difference_count": 3
+    },
+    {
+      "index": 28,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch2/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "bytes": 1123,
+        "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0102.TestSwitch2-jdk8_tools-jarde-all-TestSwitch2$TestCls-class-source.stdout.raw",
+        "bytes": 76968,
+        "sha256": "baf48165ff28bd3453b528165a303e15945187ed15af4bda84f3fd0b4a129268"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/28.stdout.raw",
+        "bytes": 76968,
+        "sha256": "d852b2c7e52a54174ce01fe9295ebf04a0b1923b7e494bdc693f0f393b2941e6"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/28.diff.raw",
+        "bytes": 467,
+        "sha256": "7dbadd9e38fe0d16bb5ec50800309b435efb76983358266eed0de189c36e4f96"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 29,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch2/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "bytes": 1123,
+        "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0108.TestSwitch2-jdk23_tools-jarde-default-TestSwitch2$TestCls-class-source.stdout.raw",
+        "bytes": 72699,
+        "sha256": "0f320c792b2a2683846fbbac6f379e9465a02897479cea038de3d051b4d58aa3"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/29.stdout.raw",
+        "bytes": 72693,
+        "sha256": "f0a68bb1b7051f9d0c0b93590d5e62cfdbc2d6ce8b592c55fe3af6526240c885"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/29.diff.raw",
+        "bytes": 641,
+        "sha256": "933834e6ea365bbbb059bc7081ee006193ec206370a397adb13efaf216aba1a8"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 30,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch2/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch2.test/input/TestSwitch2$TestCls.class",
+        "bytes": 1123,
+        "sha256": "70bb1828bb497a2d61a09fb9f37b653917e29a12c5bda638ccc19bc26d0d75c9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0111.TestSwitch2-jdk23_tools-jarde-all-TestSwitch2$TestCls-class-source.stdout.raw",
+        "bytes": 76971,
+        "sha256": "f9e8ac3b684151efcc8508be2ebd0cc41b65168c83e64fc4e20f05a751f7068d"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/30.stdout.raw",
+        "bytes": 76968,
+        "sha256": "d3843d719b50b93f197a5aa8d7a0aa34cc20b6dfd59064a8b33b85471dcebb0e"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/30.diff.raw",
+        "bytes": 638,
+        "sha256": "311ffe4d166ea66e91eee3d3e2470feb911063a5a91471ee6d69b44eedabf6fd"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 31,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch3/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+        "bytes": 1037,
+        "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0116.TestSwitch3-jdk8_tools-jarde-default-TestSwitch3$TestCls-class-source.stdout.raw",
+        "bytes": 58153,
+        "sha256": "c43d80f3cca446d21b4bb960e749865e6f959e32dbff6254788f551398331c89"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/31.stdout.raw",
+        "bytes": 58153,
+        "sha256": "dadf7bc74805c5abccd1c162cc472289599c7f50979ec2714b1b3b2cbaa3150f"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/31.diff.raw",
+        "bytes": 635,
+        "sha256": "2db95b7b572794fca3d4e7c156e7c458db418adfc12da2b2cd3cd2cbdfd951db"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 32,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch3/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+        "bytes": 1037,
+        "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0118.TestSwitch3-jdk8_tools-jarde-all-TestSwitch3$TestCls-class-source.stdout.raw",
+        "bytes": 61100,
+        "sha256": "b2ff833bb54b377e8349fddbfb970471cfe96b40a0b96eb5ed62222b4763b1c8"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/32.stdout.raw",
+        "bytes": 61100,
+        "sha256": "da2899c5bc338cb73170b4a109c3da576dc5fd391db68963b84160f0e8a2f26c"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/32.diff.raw",
+        "bytes": 867,
+        "sha256": "96742cc9d4d8ea531ef9bd5e6650d80bf2d8b8d71c3089405ad3c6b230d026ff"
+      },
+      "elapsed_only_difference_count": 8
+    },
+    {
+      "index": 33,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch3/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+        "bytes": 1037,
+        "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0123.TestSwitch3-jdk23_tools-jarde-default-TestSwitch3$TestCls-class-source.stdout.raw",
+        "bytes": 58153,
+        "sha256": "70a993a4ff2c62d6eebbec3e3cdb7f27c85d49e72a3c6bd118fa703908708c7c"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/33.stdout.raw",
+        "bytes": 58153,
+        "sha256": "bc5bf32bef1112996f1dbfe8b46029d1bf7536981edff7303bc00b0079b26297"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/33.diff.raw",
+        "bytes": 520,
+        "sha256": "d8271c344518123276828a2962da7a6432d1658d39f7f1f3df6200bf35e9f240"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 34,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch3/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch3.test/input/TestSwitch3$TestCls.class",
+        "bytes": 1037,
+        "sha256": "69160cedc65caec73dc7bf15953ea6a4e41133a74c9f7d9a49ae7d20d80e26a6"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0126.TestSwitch3-jdk23_tools-jarde-all-TestSwitch3$TestCls-class-source.stdout.raw",
+        "bytes": 61100,
+        "sha256": "b9f8700ad82bb55f5230da100716d2c0e8ecea4074aa506585b5ca32749d46bf"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/34.stdout.raw",
+        "bytes": 61100,
+        "sha256": "03129dc3bcdc1ab00ca370bff6bb36899e36d1c0a65d008d23ce02857b3ed173"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/34.diff.raw",
+        "bytes": 867,
+        "sha256": "7442d8ae71ac45c73092c90dc17d0b0a61f6603a396c6b5bcb706fafabea68bc"
+      },
+      "elapsed_only_difference_count": 8
+    },
+    {
+      "index": 35,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch4/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+        "bytes": 1088,
+        "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0131.TestSwitch4-jdk8_tools-jarde-default-TestSwitch4$TestCls-class-source.stdout.raw",
+        "bytes": 57099,
+        "sha256": "5d32e3daaf1e6407b990a637fe67726bf5c4e8b029a372995cfcbe0b43ab17cf"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/35.stdout.raw",
+        "bytes": 57099,
+        "sha256": "968f087b2c2cf49d63055c9226448c86614b64dcae11c559edb15b1813bd3e5c"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/35.diff.raw",
+        "bytes": 403,
+        "sha256": "6305a3434adfc01588fe84bb21bac43bbc315611f46049bc0b7a5d2fd71e3fb5"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 36,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch4/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+        "bytes": 1088,
+        "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0133.TestSwitch4-jdk8_tools-jarde-all-TestSwitch4$TestCls-class-source.stdout.raw",
+        "bytes": 58628,
+        "sha256": "980bca9f649e50d9b288eabdd1542e921afb4e208d9f16d197cd6fbec0c5f356"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/36.stdout.raw",
+        "bytes": 58630,
+        "sha256": "549d387cd542ade099d7f2b1fab96a07f926d8be80c127bb19bc8637d2983e92"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/36.diff.raw",
+        "bytes": 869,
+        "sha256": "4af90a88996517da6a1c4be506f01e00e0fd4544fef7f5f821fa9f2d96cffd2d"
+      },
+      "elapsed_only_difference_count": 8
+    },
+    {
+      "index": 37,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch4/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+        "bytes": 1088,
+        "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0138.TestSwitch4-jdk23_tools-jarde-default-TestSwitch4$TestCls-class-source.stdout.raw",
+        "bytes": 57099,
+        "sha256": "cddcfc8f9885089111aeca2eb1914b733817482e2f866475fa31fe5f6abb7b40"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/37.stdout.raw",
+        "bytes": 57099,
+        "sha256": "f31ad4278753405fbafa5c76430d80595be616ce1b0bdfd54a69bda07a854913"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/37.diff.raw",
+        "bytes": 118,
+        "sha256": "f78e8a113729ff240f34a67e753ab63355d0fdc56717425ad38edf9be60d9986"
+      },
+      "elapsed_only_difference_count": 1
+    },
+    {
+      "index": 38,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitch4/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitch4.test/input/TestSwitch4$TestCls.class",
+        "bytes": 1088,
+        "sha256": "9e8a852890b8b2cce5db5cc1c5086c2dd52ad66e27f499001e3f910439149526"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0141.TestSwitch4-jdk23_tools-jarde-all-TestSwitch4$TestCls-class-source.stdout.raw",
+        "bytes": 58628,
+        "sha256": "980bca9f649e50d9b288eabdd1542e921afb4e208d9f16d197cd6fbec0c5f356"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/38.stdout.raw",
+        "bytes": 58628,
+        "sha256": "980bca9f649e50d9b288eabdd1542e921afb4e208d9f16d197cd6fbec0c5f356"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/38.diff.raw",
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "elapsed_only_difference_count": 0
+    },
+    {
+      "index": 39,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchSimple/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+        "bytes": 926,
+        "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0147.TestSwitchSimple-jdk8_tools-jarde-default-TestSwitchSimple$TestCls-class-source.stdout.raw",
+        "bytes": 31001,
+        "sha256": "66f12ab49e09a91af9278c6d441271c3cec52bd406cbd23f1168c56925591234"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/39.stdout.raw",
+        "bytes": 31001,
+        "sha256": "0a6afd1f8cd430ba15d93ffa47fbfa6df1b72ffcc7e7157ab34a7b9a15168df1"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/39.diff.raw",
+        "bytes": 403,
+        "sha256": "7880a8c8b5693cb55cdf857b3a75044c81dd995347f7ab1f1ab0fbce8369a54d"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 40,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchSimple/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+        "bytes": 926,
+        "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0150.TestSwitchSimple-jdk8_tools-jarde-all-TestSwitchSimple$TestCls-class-source.stdout.raw",
+        "bytes": 32483,
+        "sha256": "1f17578fec4a3a952ecb8abf682c8eab0682e55fdeb53f4d0598384ab1d3be09"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/40.stdout.raw",
+        "bytes": 32483,
+        "sha256": "b53387ce4c4605c7f7b0a2bc5d27ccd24f2eae2964fff7616c208f768bfd5aac"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/40.diff.raw",
+        "bytes": 403,
+        "sha256": "63aa42ed00ad83860a77100ef6114a3d70423a4be6f2c448853796e633c35f43"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 41,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchSimple/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+        "bytes": 926,
+        "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0156.TestSwitchSimple-jdk23_tools-jarde-default-TestSwitchSimple$TestCls-class-source.stdout.raw",
+        "bytes": 31001,
+        "sha256": "0a6afd1f8cd430ba15d93ffa47fbfa6df1b72ffcc7e7157ab34a7b9a15168df1"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/41.stdout.raw",
+        "bytes": 31001,
+        "sha256": "19f8dee12b97291455610593b55becf48bc76992787cd15e4a8231e257fec279"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/41.diff.raw",
+        "bytes": 635,
+        "sha256": "84d03cf173115bc410d5943f8c7e16be8fdc12949b9a46faff57bc3c1058c7c5"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 42,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchSimple/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchSimple.test/input/TestSwitchSimple$TestCls.class",
+        "bytes": 926,
+        "sha256": "2afecf631940d61efd781e0bff15b2aaac3ac80042ddc1db1ffdb65a5e8f5fa9"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0159.TestSwitchSimple-jdk23_tools-jarde-all-TestSwitchSimple$TestCls-class-source.stdout.raw",
+        "bytes": 32483,
+        "sha256": "1f17578fec4a3a952ecb8abf682c8eab0682e55fdeb53f4d0598384ab1d3be09"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/42.stdout.raw",
+        "bytes": 32483,
+        "sha256": "527d90eaef9ba0dd2dde1f3fc7b61f25ce2bdaba08c58b2de455859862fb4403"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/42.diff.raw",
+        "bytes": 403,
+        "sha256": "7d0633c8963aa95deb10ba11957131513955591f3ef563dbf86974bca324833c"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 43,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase2/jdk8_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "bytes": 1654,
+        "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0165.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-default-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+        "bytes": 114361,
+        "sha256": "070a70d7c422ff7915a6166e38cc012df1fc196ad6eefb242fa4d19fd84948c4"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/43.stdout.raw",
+        "bytes": 114361,
+        "sha256": "f18ea7ed04ff0dd7913297053330fe8b92f6684ee36c075b6589be83c94420ec"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/43.diff.raw",
+        "bytes": 518,
+        "sha256": "a4ee970f6b4332fbe589c0e652ca8cdea169bfcbc070aab0938b2d7fa4f1b8af"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 44,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase2/jdk8_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "bytes": 1654,
+        "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0168.TestSwitchWithFallThroughCase2-jdk8_tools-jarde-all-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+        "bytes": 117457,
+        "sha256": "0ec008934dce19349dac84fc58d9170168b1d257d66e45f84dc7f90bc30aa99d"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/44.stdout.raw",
+        "bytes": 117461,
+        "sha256": "483b53f56ab1ceb6ac4888ec8c08ac130d9923c41c399baf66e08508d40af3b9"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/44.diff.raw",
+        "bytes": 871,
+        "sha256": "6d29b259d32ffea1b601212632fb51dafb9be9223e31c5a5ee17c80e382a0b29"
+      },
+      "elapsed_only_difference_count": 8
+    },
+    {
+      "index": 45,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase2/jdk23_tools/jarde-default",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "bytes": 1654,
+        "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0174.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-default-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+        "bytes": 114361,
+        "sha256": "4a02f24c1012daf79bbcd2f3356816c8bf1b37fb39fb05baa2a99592d592c458"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/45.stdout.raw",
+        "bytes": 114361,
+        "sha256": "f18ea7ed04ff0dd7913297053330fe8b92f6684ee36c075b6589be83c94420ec"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/45.diff.raw",
+        "bytes": 171,
+        "sha256": "ef77e9ebf91b221efa81df37e775f8cd16211fddfe491e290d58cbd5231a1d52"
+      },
+      "elapsed_only_difference_count": 2
+    },
+    {
+      "index": 46,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/execution.json",
+        "bytes": 6658753,
+        "sha256": "abac5de2647a5c3dd998fe492759fbd3305c1b22c2f365507fa102a921018473"
+      },
+      "cwd": "/private/tmp/jarde-compound-cf12-final-cli-v2/TestSwitchWithFallThroughCase2/jdk23_tools/jarde-all",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/evidence/java-syntax-2026-10-11/cf12-upstream-remaining-root-v1/direct-root-v1/capture/TestSwitchWithFallThroughCase2.test/input/TestSwitchWithFallThroughCase2$TestCls.class",
+        "bytes": 1654,
+        "sha256": "1b1e78da99c371f3292bdf672e599fb07737b2b9f4eca5233bad5fd724f66a3b"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-cf12-final-cli-v2/raw/0177.TestSwitchWithFallThroughCase2-jdk23_tools-jarde-all-TestSwitchWithFallThroughCase2$TestCls-class-source.stdout.raw",
+        "bytes": 117457,
+        "sha256": "4946cc761ad6940d1e0abed157943f5fc5c97e968e36ae50c792767432d9d5ec"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/46.stdout.raw",
+        "bytes": 117457,
+        "sha256": "4a72bfd00a0f83e4db0dbef7ed3745d6802a55d545ff0a0ac878f5b0af7e7e1f"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/46.diff.raw",
+        "bytes": 235,
+        "sha256": "ca52fccd8b0ab89b5b8aa6dc7e660d242373cbbbdb109f461dbda95c7319231f"
+      },
+      "elapsed_only_difference_count": 2
+    },
+    {
+      "index": 47,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class",
+        "bytes": 2848,
+        "sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/01.cycle-default.stdout.raw",
+        "bytes": 260403,
+        "sha256": "d04ec3c0f7abaea95f41444e45c059ee8a8cd3d5a929740777a54a6176b291d4"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/47.stdout.raw",
+        "bytes": 260404,
+        "sha256": "568718f1c05bd4a9cb8b4f636fa5372326e3f224785d9beab933085ea75549bb"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/47.diff.raw",
+        "bytes": 1465,
+        "sha256": "bd7d2b80ebd4aaea7b77d25d5039d24d5f7fa53ce1ba46fcdd9583b123d3535a"
+      },
+      "elapsed_only_difference_count": 13
+    },
+    {
+      "index": 48,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsCycle.class",
+        "bytes": 2848,
+        "sha256": "ae7e3cd6a47e6a83f7cfadd44c9d459f910ed4bf1f257c218b558141d4037a78"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/02.cycle-all.stdout.raw",
+        "bytes": 267432,
+        "sha256": "5dd92ce96762065ee0b0baf8114c54d3374ec5a1cb1a83810a7662d61b8dbf37"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/48.stdout.raw",
+        "bytes": 267434,
+        "sha256": "c273e908e6f054f79c8af8f4b3e578edaaeade281498d2502f5c521a295d01f2"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/48.diff.raw",
+        "bytes": 1696,
+        "sha256": "10433b4c25341523e224e8296e41409c038da4c619a8a7ab5778fdb98963cbc6"
+      },
+      "elapsed_only_difference_count": 15
+    },
+    {
+      "index": 49,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsIrreducible.class",
+        "bytes": 2848,
+        "sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/04.irreducible-default.stdout.raw",
+        "bytes": 260503,
+        "sha256": "a3e94dec7f93a57dfbef78c361ac898799660fbdbd0a0e48dc159cd6e4bfee7b"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/49.stdout.raw",
+        "bytes": 260504,
+        "sha256": "cfbab7a9658c1fe9aec2deb749afb6438774ccfe0864db7d5a8f8aad8a6306dc"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/49.diff.raw",
+        "bytes": 1338,
+        "sha256": "92223f81e474051ac317e38139ba52a49760cc0e8a06e42af66320573223637f"
+      },
+      "elapsed_only_difference_count": 12
+    },
+    {
+      "index": 50,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsIrreducible.class",
+        "bytes": 2848,
+        "sha256": "ddd0392488f32b92a18be09a7bfed6fae32487bde72a63daec8b2d95fe059f08"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/05.irreducible-all.stdout.raw",
+        "bytes": 267548,
+        "sha256": "10bd1e2f2ed5a6126350e9094f094b3f7934e53bc5a4d27f354e56e0516e4038"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/50.stdout.raw",
+        "bytes": 267551,
+        "sha256": "fea8f04c2df6212b4222c4135d1a854a2f56870eccf26ae5e6d17f74be456619"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/50.diff.raw",
+        "bytes": 1689,
+        "sha256": "909d35fbbeb7a73c37dfa8ed956661b6872bd37ad19d9709cf0bb59c231fe0bd"
+      },
+      "elapsed_only_difference_count": 15
+    },
+    {
+      "index": 51,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsNoRepeat.class",
+        "bytes": 2849,
+        "sha256": "8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/07.no-repeat-default.stdout.raw",
+        "bytes": 260143,
+        "sha256": "93d4735fa608e7e4d2932d0f1d45a3fc264f4029f09737d2c2f4846b6e3ec3ff"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/51.stdout.raw",
+        "bytes": 260147,
+        "sha256": "e15a36e4ca1626a1e0a11ef7e2f1de7a7bbae9161a6c282b9ced2046e3d683c7"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/51.diff.raw",
+        "bytes": 2041,
+        "sha256": "c537eb4bbfba55f71f9d2f7d9624258d7b76c0b87ca3c9fd95cfd62679a1e4bd"
+      },
+      "elapsed_only_difference_count": 18
+    },
+    {
+      "index": 52,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/cycle-negative-validation-root-v1/fixtures/CompoundStatementConditionsNoRepeat.class",
+        "bytes": 2849,
+        "sha256": "8e7de3062d5478ffe4a17448f61ae63be0266dbab75a601e36b022c81898485b"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/08.no-repeat-all.stdout.raw",
+        "bytes": 267109,
+        "sha256": "67bb28b4e47d87bfd231da843d3d235edd92ea207f2aaee9f37215b1585ce73e"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/52.stdout.raw",
+        "bytes": 267110,
+        "sha256": "3f2ceea98bd11c12a9caa9cbe224578a9520e09e4765d559f8bdeb69a1bdd62a"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/52.diff.raw",
+        "bytes": 1699,
+        "sha256": "8c1771ecde77cfe08e634dc13acda0b6c366fd522618420a1147fe66d3c2df95"
+      },
+      "elapsed_only_difference_count": 15
+    },
+    {
+      "index": 53,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class",
+        "bytes": 2662,
+        "sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/10.clone-default.stdout.raw",
+        "bytes": 246128,
+        "sha256": "be1736c11fe0b11d7b81b118d8181a11f6671f63bfd2cc958015586177f10ee1"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/53.stdout.raw",
+        "bytes": 246130,
+        "sha256": "ad2cd0bbdb516b9ac1ae276d7a7b8b6526543eb95f7fc38da962edf321212c05"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/53.diff.raw",
+        "bytes": 1930,
+        "sha256": "66ce0d742a6ed9c6a0a5ef1d291f9407c4d6899b8b5ca126a952708b5efe9b8e"
+      },
+      "elapsed_only_difference_count": 17
+    },
+    {
+      "index": 54,
+      "reference_record": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/execution.json",
+        "bytes": 9727972,
+        "sha256": "140a400dd0c302856b50fe6271d1695bb25338a9ed932ba56a1221ac35076edd"
+      },
+      "cwd": "/private/tmp/jarde-compound-negative-render-final-cli-v2",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-compound-statement-conditions/results/clone-negative-validation-root-v1/fixtures/CompoundStatementConditions.class",
+        "bytes": 2662,
+        "sha256": "74d632baa95485b7233476984a56598b9689cfa1552f965b5a1dd87704ad1525"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-compound-negative-render-final-cli-v2/raw/11.clone-all.stdout.raw",
+        "bytes": 252798,
+        "sha256": "3eb572b684d6402f5d3de8ae613567fb14159df1ef6ab582b052cbfde27b537f"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/54.stdout.raw",
+        "bytes": 252798,
+        "sha256": "8177dd097c7d9bdc0ea011a2b5eaf61ce9e4ab7eabae2dcfe0bb4a5279a3407c"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/54.diff.raw",
+        "bytes": 1111,
+        "sha256": "7e4c0b85bf38a638304505cf2565fe53ed26b9da7fb8a01298897ba734643f1e"
+      },
+      "elapsed_only_difference_count": 10
+    },
+    {
+      "index": 55,
+      "reference_record": {
+        "path": "/private/tmp/jarde-candidate-continuation-final-cli-v2-attempt-v4/execution.json",
+        "bytes": 61393,
+        "sha256": "d3754858fc1041690082fd47e77015595c961f87ba1a91824ce38f8cc8d949c0"
+      },
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class",
+        "bytes": 255,
+        "sha256": "9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-candidate-continuation-final-cli-v2-attempt-v4/guard/0.stdout.raw",
+        "bytes": 23182,
+        "sha256": "d1c7206e5bbe1cc8d5a2b5a1cd7fe5ec4d7cf7d5c7c7e02a5e5583b226393551"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/55.stdout.raw",
+        "bytes": 23182,
+        "sha256": "03d2582f0a75a37881aa45c71880d5e2855e505ce4a886261cfd06b70a79219e"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/55.diff.raw",
+        "bytes": 635,
+        "sha256": "6b0bd9425182192ca7586fbef7a2fc949a867af44b160897bc34946ec12e6752"
+      },
+      "elapsed_only_difference_count": 6
+    },
+    {
+      "index": 56,
+      "reference_record": {
+        "path": "/private/tmp/jarde-candidate-continuation-final-cli-v2-attempt-v4/execution.json",
+        "bytes": 61393,
+        "sha256": "d3754858fc1041690082fd47e77015595c961f87ba1a91824ce38f8cc8d949c0"
+      },
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-switch-continuations/results/cross-case-continuation-regression-root-v1/two-member-control/cross-case/CandidateContinuation.class",
+        "bytes": 255,
+        "sha256": "9aa523e64295cdf5738d1240ea2ba4b30b136cfec4a5b90cd362a61bfdb6c238"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-candidate-continuation-final-cli-v2-attempt-v4/guard/1.stdout.raw",
+        "bytes": 24218,
+        "sha256": "9ef5551fd546400d8c2c7bd5446e42fd1c5155eeabe0a33f42b62eb4a08bd56c"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/56.stdout.raw",
+        "bytes": 24218,
+        "sha256": "1bbc49496ce882b63a09c84f26b9d33e00d8ec9adb5006bed0ca5cf1d2216f62"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/56.diff.raw",
+        "bytes": 520,
+        "sha256": "d858b6d391269a286cfde87caccc3721c3c2b4743b1059deef384561dbb67be3"
+      },
+      "elapsed_only_difference_count": 5
+    },
+    {
+      "index": 57,
+      "reference_record": {
+        "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay/execution.json",
+        "bytes": 59574,
+        "sha256": "281bda30357977e3020d07c321b887e17b3a1677615125f408ce1e90cb6b62db"
+      },
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class",
+        "bytes": 629,
+        "sha256": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay/guard/0.stdout.raw",
+        "bytes": 44474,
+        "sha256": "436ce42495511dc2d77082de99864e3e8e4e4a1032b74b74133573061823ec83"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/57.stdout.raw",
+        "bytes": 44474,
+        "sha256": "e1c50dc952b134c0061772fed06d6c7d73355948c706830eca11918bb658a515"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/57.diff.raw",
+        "bytes": 403,
+        "sha256": "d471d942543533464df0c3231646285fca86d03428d959aa42291892b82fd8fb"
+      },
+      "elapsed_only_difference_count": 4
+    },
+    {
+      "index": 58,
+      "reference_record": {
+        "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay/execution.json",
+        "bytes": 59574,
+        "sha256": "281bda30357977e3020d07c321b887e17b3a1677615125f408ce1e90cb6b62db"
+      },
+      "cwd": "/Users/lordcasser/workspace/projects/jarde",
+      "input": {
+        "path": "/Users/lordcasser/workspace/projects/jarde/tests/fixtures/p3-reference-slot-lifetimes/negative/unknown-null/NullThenBuilder.class",
+        "bytes": 629,
+        "sha256": "93acdfe27b312e2c98666a00dbfcb5f61299b03f62ac0dbd916b385232f260b3"
+      },
+      "old_stdout": {
+        "path": "/private/tmp/jarde-null-builder-final-cli-v2-replay/guard/1.stdout.raw",
+        "bytes": 46626,
+        "sha256": "e76583234843eab52e13fb43c2b23cc317ef64e0ff66eed6c7eb227b22586a70"
+      },
+      "new_stdout": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-root-v1/58.stdout.raw",
+        "bytes": 46626,
+        "sha256": "04ab3f939c3079870867cf652f4502cfc3be540bdd563642a0fe7d6f907d96e4"
+      },
+      "diff_raw": {
+        "path": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1/58.diff.raw",
+        "bytes": 867,
+        "sha256": "0e7402d980af84f4a621c59e7a1b5475fb125fe9cc84aad55793d5c07f945359"
+      },
+      "elapsed_only_difference_count": 8
+    }
+  ],
+  "diff_raw_directory": "/private/tmp/jarde-arithmetic-stack-replay-independent-root-v1",
+  "limitations": [
+    "This establishes full JSON equivalence for these pinned inputs and old outputs only.",
+    "JADX NaN differences and incomplete CF12 observations remain unresolved.",
+    "Historical status labels are not product CI completion claims."
+  ]
+}

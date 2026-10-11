@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "lldb",
+    "-x",
+    "--batch",
+    "-o",
+    "settings set target.disable-aslr false",
+    "-o",
+    "run",
+    "-o",
+    "thread backtrace -c 24",
+    "--",
+    "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+    "class-source",
+    "--input",
+    "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.class",
+    "--class",
+    "LambdaDeep",
+    "--policy",
+    "single-class",
+    "--format",
+    "json",
+    "--evidence",
+    "all"
+  ],
+  "exit_code": 0,
+  "main_stack_limit_bytes": 2097152,
+  "stdout_sha256": "f9c3e811bc4b163c597ed5f1e7592306fa26cf5ba7a51c0f3bec7dae53a1a418",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

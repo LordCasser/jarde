@@ -1,0 +1,5 @@
+{
+  "accepted_source_scope": "shared prefix unchanged; arithmetic arm moved; other dispatch extracted; fixed depth/at/origin/errors/budget unchanged",
+  "private_patch_sha256": "373067be16fb6a03e7efbeee24ff0efee30bbda78c52b51b56fa94a04347609e",
+  "root_followup": "Arithmetic filter moved before pure site_of scan, eliminating added non-arithmetic scan. site absence still required before arithmetic executes. cargo fmt restores malformed whitespace. v1 passed 16 lambda and 8 public then clean but v2 binds final source."
+}

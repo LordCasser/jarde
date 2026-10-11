@@ -1,0 +1,21 @@
+
+running 16 tests
+test a_branchy_lambda_helper_renames_while_the_straight_one_inlines ... ok
+test all_three_frozen_classes_keep_typed_immediate_receivers_and_compile_whole ... ok
+test an_overdeep_lambda_helper_renames_instead_of_walking_an_unbounded_body ... ok
+test array_constructor_projection_budget_stop_keeps_method_and_helper_together ... ok
+test captured_array_length_stays_a_lambda_call_and_keeps_its_physical_helper ... ok
+test captured_helper_handle_or_physical_flags_mismatch_refuses_omission ... ok
+test captured_int_parameter_precedes_sam_parameter_in_the_helper_mapping ... ok
+test captured_lambda_ir_budget_stop_keeps_physical_helpers_and_does_not_inline ... ok
+test class_source_projects_array_constructor_atomically_with_same_named_helper ... ok
+test direct_int_and_this_plus_int_captures_inline_with_call_time_semantics ... ok
+test effectful_capture_source_inlines_its_local_capture_once_with_call_time_semantics ... ok
+test lambda_helper_projection_budget_stop_does_not_publish_partial_helpers ... ok
+test no_capture_primitive_lambda_helpers_inline_as_one_class_projection ... ok
+test phi_merged_capture_source_is_refused_without_hiding_its_helper ... ok
+test raw_function_array_constructor_keeps_its_physical_helper_and_lambda_site ... ok
+test receiver_cast_output_and_ir_budgets_and_cancellation_do_not_publish_partial_java ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.74s
+

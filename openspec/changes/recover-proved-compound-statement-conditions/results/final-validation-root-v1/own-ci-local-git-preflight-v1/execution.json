@@ -1,0 +1,37 @@
+{
+  "scope": "local raw/Git/live/source-name/CLI binding only, no CI acceptance",
+  "product_commit": "e041b7635886d3ef2eeb2c5314a9f4868d85dac5",
+  "verifier_sha256": "05c0bc76f46c3de5ce453374e7cf716deed3d7da1d9670950e2896c0d17528b5",
+  "status": "failed",
+  "workspace": {
+    "execution": "/private/tmp/jarde-compound-full-workspace-root-v4/execution.json",
+    "execution_sha256": "128e8abfa8074ff184d0f673b8abb6b27beff93aeb95f77a91b1214faefebfc4",
+    "metadata": "/private/tmp/jarde-compound-full-workspace-root-v4/metadata.json",
+    "metadata_sha256": "e516decd696e4e766c591f87ff9812b2c6c44101385d4a55120db8daf3c30248",
+    "seed": "5350648285461741569",
+    "target_count": 359,
+    "batch_count": 95,
+    "workspace_totals": [
+      3444,
+      0,
+      97
+    ],
+    "source_pin_count": 4693
+  },
+  "checklist_pin_count": 13,
+  "cli": {
+    "build_path": "/private/tmp/jarde-compound-condition-focused-and-cli-root-v2/execution.json",
+    "build_sha256": "5a77262910c4771206af4cd968077dba2478128de8666a531ef51491e50c3bde",
+    "cli": {
+      "path": "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+      "bytes": 60819568,
+      "sha256": "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+      "mode": 365
+    },
+    "product_source_pin_count": 124,
+    "production_source_pins_git_bound": 124,
+    "build_evidence_helper_sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3",
+    "build_runner_sha256": "d82b0196f028c57728b1248cc82eb68777f2c29cf388f80b6d1111543d117c93"
+  },
+  "error": "ValueError(\"fresh local target ('jarde-jvm', 'jarde_jvm', 'lib') does not have the requested exact current summary\")"
+}

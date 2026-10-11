@@ -1,0 +1,15 @@
+--- /private/tmp/jarde-compound-own-ci-verifier-luna-v4/verify-own-ci.py
++++ /private/tmp/jarde-compound-own-ci-verifier-luna-v5/verify-own-ci.py
+@@ -318,9 +318,9 @@
+         checked.append({'source_path': source, 'target': key, 'passed_test_names': list(names)})
+ 
+     expected_counts_by_source = {
+-        'crates/jarde-jvm/src/lib.rs': [243, 0, 0],
+-        'crates/jarde-java/src/lib.rs': [351, 0, 0],
+-        'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs': [8, 0, 0],
++        'crates/jarde-jvm/src/lib.rs': (243, 0, 0),
++        'crates/jarde-java/src/lib.rs': (351, 0, 0),
++        'crates/jarde-java/tests/p3_conditional_switch_fallthrough.rs': (8, 0, 0),
+     }
+     summary_checks = {}
+     for source, expected in expected_counts_by_source.items():

@@ -1,0 +1,42 @@
+{
+  "schema": "private-adapter-pins-v1",
+  "inputs": [
+    {
+      "path": "/private/tmp/jarde-compound-final-replay-verifier-luna-v2/build_evidence.py",
+      "bytes": 8233,
+      "sha256": "8b06e82de2fc696b3b82d32b444026b57a2d28f8c5cc51fef87d4ffcbe4ffec3"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-focused-and-cli-root-v2.py",
+      "bytes": 11044,
+      "sha256": "dc0c74fa9e5944a2cc19a7968bed6c66e700ba7f1c798cab6d32167f04f24844"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/preserve-proved-loop-latch-origins/results/run-validation-build-root-v9.py",
+      "bytes": 23507,
+      "sha256": "51103f51323197db7663279776c80bd1eab95adbf5e98e26f9360293d82b8c33"
+    },
+    {
+      "path": "/Users/lordcasser/workspace/projects/jarde/openspec/changes/recover-proved-conditional-switch-fallthrough/results/target-size-scan-root-v1.py",
+      "bytes": 471,
+      "sha256": "d954cd53555e261b2033ead9fa601db51ef24a0a2602d2cb770a5413dbf0a8a7"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-build-evidence-luna-v2/build_evidence.py",
+      "bytes": 8627,
+      "sha256": "9d3c76233f23757522a3edbd52017c3a845f188f34e1086269502d43f43b2afb"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-build-evidence-luna-v2/adapter.patch",
+      "bytes": 1901,
+      "sha256": "c25e4e8a72a9fd5f2fbe23620242ed62ad4727bb4832bc5ebb5b07ca8d77473b"
+    },
+    {
+      "path": "/private/tmp/jarde-arithmetic-stack-build-evidence-luna-v2/FINAL.md",
+      "bytes": 1245,
+      "sha256": "a24507c2f7fa79c7db238c9e2fe1b7aa13aa185e77866b2f245d511fa8f5264d"
+    }
+  ]
+}

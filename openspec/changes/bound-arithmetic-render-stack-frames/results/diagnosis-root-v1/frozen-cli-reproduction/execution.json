@@ -1,0 +1,62 @@
+{
+  "scope": "actual frozen final CLI baseline; main-thread stack limit differs from Rust test thread",
+  "source_sha256": "640830bea739046798e565280737c80bf0930dc32069328a3d59374dec7b2fd6",
+  "class_sha256": "ff4dedcc3197402308c4c310efbbbb81b8756253b83bbe3895c9f0c8400675b5",
+  "commands": [
+    {
+      "argv": [
+        "javac",
+        "--release",
+        "8",
+        "-g:none",
+        "-d",
+        "/private/tmp/jarde-lambda-depth-baseline-root-v1",
+        "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.java"
+      ],
+      "exit_code": 0,
+      "main_stack_limit_bytes": null,
+      "stdout_bytes": 0,
+      "stderr_bytes": 243
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.class",
+        "--class",
+        "LambdaDeep",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": 0,
+      "main_stack_limit_bytes": null,
+      "stdout_bytes": 29948,
+      "stderr_bytes": 0
+    },
+    {
+      "argv": [
+        "/private/tmp/jarde-compound-condition-candidate-cli-root-v2",
+        "class-source",
+        "--input",
+        "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.class",
+        "--class",
+        "LambdaDeep",
+        "--policy",
+        "single-class",
+        "--format",
+        "json",
+        "--evidence",
+        "all"
+      ],
+      "exit_code": -6,
+      "main_stack_limit_bytes": 2097152,
+      "stdout_bytes": 0,
+      "stderr_bytes": 97
+    }
+  ]
+}

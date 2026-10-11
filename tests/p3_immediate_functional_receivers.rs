@@ -1510,10 +1510,18 @@ fn an_overdeep_lambda_helper_renames_instead_of_walking_an_unbounded_body() {
         "{}",
         String::from_utf8_lossy(&compile.stderr)
     );
-    let snapshot = open(&fs::read(original.join("LambdaDeep.class")).unwrap());
-    let recovered = class_source(&snapshot, "LambdaDeep", &RecoveryEvidenceRequest::all());
-    // The over-deep straight body stays out of the bounded inline proof and keeps its companion
-    // under the `$jarde` name instead — the whole class still recompiles and runs.
+    let bytes = fs::read(original.join("LambdaDeep.class")).unwrap();
+    let recovered = std::thread::Builder::new()
+        .stack_size(2 * 1024 * 1024)
+        .spawn(move || {
+            let snapshot = open(&bytes);
+            class_source(&snapshot, "LambdaDeep", &RecoveryEvidenceRequest::all())
+        })
+        .unwrap()
+        .join()
+        .expect("class-source completes on a standard two-megabyte thread");
+    // The existing value-depth refusal remains in force; class-source preserves the renamed
+    // physical helper instead of claiming the over-deep body as a structured inline.
     assert!(recovered.text.contains("lambda$deep$0$jarde"));
     assert!(
         recovered

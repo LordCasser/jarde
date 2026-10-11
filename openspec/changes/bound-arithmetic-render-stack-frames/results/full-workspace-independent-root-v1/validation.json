@@ -1,0 +1,20 @@
+{
+  "schema": "compound-full-workspace-batch-validation-v1",
+  "utc": "2026-10-11T06:44:38.422456+00:00",
+  "status": "passed",
+  "execution_dir": "/private/tmp/jarde-arithmetic-stack-full-workspace-root-v1",
+  "execution_sha256": "4458a81d1fc3e8099d3d355281ef5a5f214bc55dcb0efe4fa8933f4f1c7149b2",
+  "metadata_target_count": 359,
+  "expected_batch_count": 95,
+  "completed_batch_count": 95,
+  "workspace_summary_count": 359,
+  "workspace_totals": [
+    3444,
+    0,
+    97
+  ],
+  "raw_stream_count": 196,
+  "removed_test_executable_count": 359,
+  "clean_raw_present": true,
+  "failures": []
+}

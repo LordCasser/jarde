@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "openspec",
+    "validate",
+    "--all",
+    "--strict",
+    "--json"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "2a810e4b6db164bb2c1796efbe67e859c90b4e0217389c4b059e4153039cba5a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "summary": {
+    "totals": {
+      "items": 348,
+      "passed": 348,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 330,
+        "passed": 330,
+        "failed": 0
+      },
+      "spec": {
+        "items": 18,
+        "passed": 18,
+        "failed": 0
+      }
+    }
+  }
+}

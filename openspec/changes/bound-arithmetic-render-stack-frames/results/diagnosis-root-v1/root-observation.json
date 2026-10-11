@@ -1,0 +1,16 @@
+{
+  "status": "actual_diagnosis_accepted_not_fix",
+  "product_commit": "e041b7635886d3ef2eeb2c5314a9f4868d85dac5",
+  "failed_ci": 38116415118,
+  "cli_sha256": "378c410083dccb6d7d0ac08dcd7c0bcc519b57e29dd4a5d073b314779c06fe3d",
+  "actual_local_signal": -6,
+  "actual_local_stack_bytes": 2097152,
+  "actual_backtrace_consumer": "Builder::render_value function stack probe",
+  "linux_frame_attribution": "not directly measured; CI only stack overflow/SIGABRT",
+  "arm64_prologue_stack_bytes": 48176,
+  "kept_ordinary_default_stack_baseline": true,
+  "baseline_sources": {
+    "crates/jarde-java/src/build.rs": "2586f9eaa09c06056bc8c565ed6bd00c18c35ad6ddb28970ef3d6e0ee2fa5bef",
+    "tests/p3_immediate_functional_receivers.rs": "ce60b1a18ac11d109c5f5866c9b8e5eb34eae93f2f3be584c8b155e01fcd4e87"
+  }
+}

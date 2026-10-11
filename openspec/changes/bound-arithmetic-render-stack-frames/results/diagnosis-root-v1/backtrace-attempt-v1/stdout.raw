@@ -1,0 +1,15 @@
+(lldb) target create "/private/tmp/jarde-compound-condition-candidate-cli-root-v2"
+Current executable set to '/private/tmp/jarde-compound-condition-candidate-cli-root-v2' (arm64).
+(lldb) settings set -- target.run-args  "class-source" "--input" "/private/tmp/jarde-lambda-depth-baseline-root-v1/LambdaDeep.class" "--class" "LambdaDeep" "--policy" "single-class" "--format" "json" "--evidence" "all"
+(lldb) settings set target.disable-aslr false
+(lldb) run
+Process 75481 launched: '/private/tmp/jarde-compound-condition-candidate-cli-root-v2' (arm64)
+Process 75481 stopped
+* thread #1, name = 'main', queue = 'com.apple.main-thread', stop reason = EXC_BAD_ACCESS (code=2, address=0x16afcf240)
+       frame #0: 0x000000010550c240 jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value + 20
+jarde-compound-condition-candidate-cli-root-v2`<jarde_java::build::Builder>::render_value:
+->  0x10550c240 <+20>: str    xzr, [sp]
+    0x10550c244 <+24>: cmp    sp, x9
+    0x10550c248 <+28>: b.ne   0x10550c23c               ; <+16>
+    0x10550c24c <+32>: sub    sp, sp, #0xc10
+Target 0: (jarde-compound-condition-candidate-cli-root-v2) stopped.

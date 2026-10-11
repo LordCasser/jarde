@@ -1,0 +1,22 @@
+[
+  {
+    "path": "$.execution.usage.elapsed_millis",
+    "before": 2,
+    "after": 3
+  },
+  {
+    "path": "$.methods[2].outcome.analysis.execution.usage.elapsed_millis",
+    "before": 2,
+    "after": 3
+  },
+  {
+    "path": "$.methods[2].outcome.report.execution.usage.elapsed_millis",
+    "before": 2,
+    "after": 3
+  },
+  {
+    "path": "$.usage.elapsed_millis",
+    "before": 2,
+    "after": 3
+  }
+]

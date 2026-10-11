@@ -1,0 +1,70 @@
+{
+  "scope": "private verifier and actual local/Git preflight; no CI acceptance",
+  "product_commit": "e041b7635886d3ef2eeb2c5314a9f4868d85dac5",
+  "records": [
+    {
+      "source": "/private/tmp/jarde-compound-own-ci-verifier-luna-v5",
+      "archive": "openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-private-verifier-candidates/luna-v5",
+      "files": {
+        "verify-own-ci.py": {
+          "bytes": 29635,
+          "sha256": "6746cbb67d6e79003bd7c9333b32eb5b174a2a0a0011867e8e7983dc4883475a"
+        },
+        "v4-to-v5.patch": {
+          "bytes": 779,
+          "sha256": "4c19245e5a9e80dea30c77962c4d94f15b2e46c37eab58243bef2c72e8a7c48b"
+        },
+        "FINAL.md": {
+          "bytes": 696,
+          "sha256": "3ca0b09054a2c86fa22507b0a540a5b3c4ed7c26a03a167b5428c3b929028c00"
+        },
+        "pins.json": {
+          "bytes": 8288,
+          "sha256": "ed150e1ed578200613191fedd4e8fb4955e14b79ba21e7da6307f563cb5939da"
+        }
+      }
+    },
+    {
+      "source": "/private/tmp/jarde-compound-own-ci-local-git-preflight-root-v1",
+      "archive": "openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-local-git-preflight-v1",
+      "files": {
+        "error.raw": {
+          "bytes": 734,
+          "sha256": "b1922b40fe3caab685c915d9dd9a971ed4315de9a3925c124f4e9585d031b877"
+        },
+        "execution.json": {
+          "bytes": 1676,
+          "sha256": "cda7041071ee29387c3896e905246a74d875a4226eb7657aa5c345c78a27c1ab"
+        }
+      }
+    },
+    {
+      "source": "/private/tmp/jarde-compound-own-ci-local-git-preflight-root-v2",
+      "archive": "openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/own-ci-local-git-preflight-v2",
+      "files": {
+        "execution.json": {
+          "bytes": 11405,
+          "sha256": "de46425f354c27825e514fac6ed0444f2b6053ab25404e1573e49658f70a3682"
+        }
+      }
+    },
+    {
+      "source": "/private/tmp/jarde-compound-product-commit-root-v1",
+      "archive": "openspec/changes/recover-proved-compound-statement-conditions/results/final-validation-root-v1/product-commit-root-v1",
+      "files": {
+        "stderr.raw": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.raw": {
+          "bytes": 664441,
+          "sha256": "ca27b8a71b78151b4c1ff00c21b529cd9aae86f1ccc5f0e6a6a0b2a1824b214d"
+        },
+        "execution.json": {
+          "bytes": 156,
+          "sha256": "9e3e4e6ea8020e6f8545a49334fc21db54728685943499c0b8680e2d8e24a9e2"
+        }
+      }
+    }
+  ]
+}

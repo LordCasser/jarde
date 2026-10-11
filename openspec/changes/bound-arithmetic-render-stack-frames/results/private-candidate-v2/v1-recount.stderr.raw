@@ -1,0 +1,2 @@
+error: patch failed: crates/jarde-java/src/build.rs:25942
+error: crates/jarde-java/src/build.rs: patch does not apply

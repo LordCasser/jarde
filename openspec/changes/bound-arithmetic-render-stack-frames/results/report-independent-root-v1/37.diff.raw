@@ -1,0 +1,7 @@
+[
+  {
+    "path": "$.methods[2].outcome.report.execution.usage.elapsed_millis",
+    "before": 3,
+    "after": 4
+  }
+]

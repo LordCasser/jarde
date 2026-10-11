@@ -1,0 +1,110 @@
+--- a/crates/jarde-java/src/build.rs
++++ b/crates/jarde-java/src/build.rs
+@@ -26000,6 +26000,47 @@
+             }
+             return Ok(receiver);
+         }
++        if let Definition::Instruction { bci, .. } = self.ssa.value(value).def()
++            && self.sites.site_of(*bci).is_none()
++            && let Some(Operation::Arithmetic { op }) = self.operations.get(*bci)
++        {
++            let bci = *bci;
++            let Some(instruction) = self.instructions.get(&bci).copied() else {
++                return Err(format!(
++                    "no names record for the instruction at BCI {bci}"
++                ).into());
++            };
++            let operands = stack_operands(instruction);
++            if operands.len() != 2 {
++                return Err(format!(
++                    "the arithmetic at BCI {bci} reads {} values, not two",
++                    operands.len()
++                ).into());
++            }
++            // Both operands are read by the sum, so both are checked where the sum is
++            // evaluated: a nested arithmetic does not move the use point to itself
++            // (P3-R8 — the value the operand names is on the stack when the sum runs,
++            // whatever the slot holds by then).
++            let left = self.render_value(operands[0].1, at, depth + 1)?;
++            let right = self.render_value(operands[1].1, at, depth + 1)?;
++            return Ok(Expr::direct(
++                ExprKind::Binary {
++                    op: arithmetic_op(*op),
++                    left: Box::new(left),
++                    right: Box::new(right),
++                },
++                bci,
++            ));
++        }
++        self.render_value_definition(value, at, depth)
++    }
++
++    fn render_value_definition(
++        &mut self,
++        value: ValueId,
++        at: u32,
++        depth: usize,
++    ) -> Result<Expr, ValueRenderFailure> {
+         match self.ssa.value(value).def() {
+             Definition::Entry { block, slot } | Definition::Phi { block, slot } => match slot {
+                 Slot::Local(slot) => {
+@@ -26136,34 +26177,6 @@
+                                 "the load at BCI {bci} reads local {slot}, and the two variables the debug table states over that slot do not place this read in either"
+                             ).into()),
+                         }
+-                    }
+-                    Operation::Arithmetic { op } => {
+-                        let Some(instruction) = self.instructions.get(&bci).copied() else {
+-                            return Err(format!(
+-                                "no names record for the instruction at BCI {bci}"
+-                            ).into());
+-                        };
+-                        let operands = stack_operands(instruction);
+-                        if operands.len() != 2 {
+-                            return Err(format!(
+-                                "the arithmetic at BCI {bci} reads {} values, not two",
+-                                operands.len()
+-                            ).into());
+-                        }
+-                        // Both operands are read by the sum, so both are checked where the sum is
+-                        // evaluated: a nested arithmetic does not move the use point to itself
+-                        // (P3-R8 — the value the operand names is on the stack when the sum runs,
+-                        // whatever the slot holds by then).
+-                        let left = self.render_value(operands[0].1, at, depth + 1)?;
+-                        let right = self.render_value(operands[1].1, at, depth + 1)?;
+-                        Ok(Expr::direct(
+-                            ExprKind::Binary {
+-                                op: arithmetic_op(*op),
+-                                left: Box::new(left),
+-                                right: Box::new(right),
+-                            },
+-                            bci,
+-                        ))
+                     }
+                     Operation::Shift { op } => {
+                         let Some(instruction) = self.instructions.get(&bci).copied() else {
+--- a/tests/p3_immediate_functional_receivers.rs
++++ b/tests/p3_immediate_functional_receivers.rs
+@@ -1510,10 +1510,18 @@
+         "{}",
+         String::from_utf8_lossy(&compile.stderr)
+     );
+-    let snapshot = open(&fs::read(original.join("LambdaDeep.class")).unwrap());
+-    let recovered = class_source(&snapshot, "LambdaDeep", &RecoveryEvidenceRequest::all());
+-    // The over-deep straight body stays out of the bounded inline proof and keeps its companion
+-    // under the `$jarde` name instead — the whole class still recompiles and runs.
++    let bytes = fs::read(original.join("LambdaDeep.class")).unwrap();
++    let recovered = std::thread::Builder::new()
++        .stack_size(2 * 1024 * 1024)
++        .spawn(move || {
++            let snapshot = open(&bytes);
++            class_source(&snapshot, "LambdaDeep", &RecoveryEvidenceRequest::all())
++        })
++        .unwrap()
++        .join()
++        .expect("class-source completes on a standard two-megabyte thread");
++    // The existing value-depth refusal remains in force; class-source preserves the renamed
++    // physical helper instead of claiming the over-deep body as a structured inline.
+     assert!(recovered.text.contains("lambda$deep$0$jarde"));
+     assert!(
+         recovered
