@@ -12,8 +12,10 @@
 
 下一固定诊断是 [引用局部首写错误收窄债务](openspec/evidence/jadx-feature-inventory-2026-09-27/local-reference-type-narrowing-loop-debt.md)。等待产品 CI 期间，root 已串行运行 observation-v2：单测实际1/0/0且日志完整，但结束余量5352644608B低于5GiB，guard拒绝，runner/invocation exit1，不接受为正式诊断成功。两文件原字节恢复、4744→4745→4744、finally clean exit0、target不存在。原始证据见[类型路径诊断](openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-root-v1/README.md)。same local1/index0先String常量写、后Object next写、Unknown Phi，经首次写入规则仍决定String；普通LVT descriptor在facade普通映射未传播，LVTT唯一匹配才传type metadata。后续需核全生命周期赋值兼容性与读约束，不能按raw LVT或无条件Object化修复。固定TestNestedLoops真实method Signature含List<String>，当前双foreach已恢复但raw方法头/ordinary_generic_source_unproved仍在，另作准确泛型拒绝子门诊断。未新增机制或类型修复，71/612不变。
 
-以下上一交付记录作为历史保留。
+新增[后续最小诊断准备](openspec/evidence/jadx-feature-inventory-2026-09-27/cf11-type-analysis-next-prep-root-v1/README.md)：引用类型读链尚缺 Load29 的 Stack Value14→Return30 消费者展开，先补诊断再定实现 spec；合法 CharSequence/数组反证禁止无条件Object化。方法泛型拒绝位于Signature解析/擦除之后的same-run body candidate缺失门，私有diagnostic-prep-v1 patch c736eb2b…/runner6c4ad259…静态核对后未应用/编译/运行，使用已有三profile测试和4744闭包。余量不足不运行。当前产品CI最新已进入stable第二seed，MSRV/fuzz/supply均success，尚未整体terminal/capture/独立验收。
 
+
+以下上一交付记录作为历史保留。
 
 当前断点（2026-10-12）：持续目标 active，用户明确继续当前聊天。产品 **02ecd63ff33270cea4413793db2f99d6927dc65c** 已提交推送 main，自身 [CI 38154998619](https://github.com/LordCasser/jarde/actions/runs/38154998619) 已 root 独立接受四 jobs/52 steps、双 seed 各360目标/3461-0-97、全部3558 named outcomes、4718输入与产品Git/live/最终CLI绑定。[for-condition窄片](openspec/changes/recover-proved-for-condition-expressions/verification-root.md) **9/9**，原始证据见 [自身CI与产品clean checkpoint](openspec/changes/recover-proved-for-condition-expressions/results/own-product-ci-clean-root-v1/README.md)。
 
